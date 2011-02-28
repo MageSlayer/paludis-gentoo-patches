@@ -18,6 +18,7 @@
  */
 
 #include <paludis/filter_handler.hh>
+#include <paludis/util/options.hh>
 
 using namespace paludis;
 
@@ -53,5 +54,11 @@ AllFilterHandlerBase::ids(const Environment * const,
         const std::shared_ptr<const PackageIDSet> & s) const
 {
     return s;
+}
+
+const RepositoryContentMayExcludes
+AllFilterHandlerBase::may_excludes() const
+{
+    return { };
 }
 

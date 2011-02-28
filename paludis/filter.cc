@@ -105,6 +105,12 @@ Filter::ids(
     return _imp->handler->ids(env, i);
 }
 
+const RepositoryContentMayExcludes
+Filter::may_excludes() const
+{
+    return _imp->handler->may_excludes();
+}
+
 std::string
 Filter::as_string() const
 {
@@ -167,6 +173,11 @@ namespace
     struct NotMaskedFilterHandler :
         AllFilterHandlerBase
     {
+        virtual const RepositoryContentMayExcludes may_excludes() const
+        {
+            return { rcme_masked };
+        }
+
         virtual std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos) const
@@ -263,6 +274,12 @@ namespace
         {
         }
 
+        virtual const RepositoryContentMayExcludes may_excludes() const
+        {
+            /* we can exclude anything either filter would reject */
+            return f1.may_excludes() | f2.may_excludes();
+        }
+
         virtual std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & s) const
@@ -309,6 +326,11 @@ namespace
         {
         }
 
+        virtual const RepositoryContentMayExcludes may_excludes() const
+        {
+            return { };
+        }
+
         virtual std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
                 const std::shared_ptr<const PackageIDSet> & id) const
@@ -345,6 +367,11 @@ namespace
         SlotHandler(const SlotName & s) :
             slot(s)
         {
+        }
+
+        virtual const RepositoryContentMayExcludes may_excludes() const
+        {
+            return { };
         }
 
         virtual std::shared_ptr<const PackageIDSet> ids(
@@ -384,6 +411,11 @@ namespace
             return result;
         }
 
+        virtual const RepositoryContentMayExcludes may_excludes() const
+        {
+            return { };
+        }
+
         virtual std::string as_string() const
         {
             return "has no slot";
@@ -402,6 +434,11 @@ namespace
             from_id(f),
             options(o)
         {
+        }
+
+        virtual const RepositoryContentMayExcludes may_excludes() const
+        {
+            return { };
         }
 
         virtual std::shared_ptr<const PackageIDSet> ids(

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2011 Ciaran McCreesh
  * Copyright (c) 2008 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -25,6 +25,7 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/repository-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <memory>
 
@@ -36,6 +37,8 @@ namespace paludis
             virtual ~FilterHandler() = 0;
 
             virtual std::string as_string() const = 0;
+
+            virtual const RepositoryContentMayExcludes may_excludes() const = 0;
 
             virtual std::shared_ptr<const RepositoryNameSet> repositories(
                     const Environment * const,
@@ -60,6 +63,8 @@ namespace paludis
         public FilterHandler
     {
         public:
+            virtual const RepositoryContentMayExcludes may_excludes() const;
+
             virtual std::shared_ptr<const RepositoryNameSet> repositories(
                     const Environment * const,
                     const std::shared_ptr<const RepositoryNameSet> &) const;

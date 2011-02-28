@@ -131,6 +131,11 @@ namespace
         {
         }
 
+        virtual const RepositoryContentMayExcludes may_excludes() const
+        {
+            return { };
+        }
+
         virtual std::string as_string() const
         {
             return "with mask '" + mask + "'";

@@ -32,6 +32,7 @@
 #include <paludis/action-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/match_package-fwd.hh>
+#include <paludis/repository-fwd.hh>
 #include <memory>
 
 /** \file
@@ -81,6 +82,14 @@ namespace paludis
 
             ///\name For use by Selection
             ///\{
+
+            /**
+             * Return any RepositoryContentMayExcludes that are implied by this
+             * filter.
+             *
+             * \since 0.59
+             */
+            const RepositoryContentMayExcludes may_excludes() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Filter candidate repository names.
