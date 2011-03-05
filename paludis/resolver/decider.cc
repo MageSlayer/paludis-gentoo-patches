@@ -1367,19 +1367,6 @@ Decider::find_any_score(
             return std::make_pair(acs_already_installed, operator_bias);
     }
 
-    /* next: already installed, except with the wrong options */
-    static_assert(acs_wrong_options_installed < acs_already_installed, "acs order changed");
-    if (! is_block && spec.additional_requirements_ptr())
-    {
-        Context sub_context("When working out whether it's acs_wrong_options_installed:");
-
-        const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, our_id, { mpo_ignore_additional_requirements }) |
-                    filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
-        if (! installed_ids->empty())
-            return std::make_pair(acs_wrong_options_installed, operator_bias);
-    }
-
     /* various things only if we're not a block... */
     if (! is_block)
     {
@@ -1388,7 +1375,7 @@ Decider::find_any_score(
         const std::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason).first);
 
         /* next: will already be installing */
-        static_assert(acs_will_be_installing < acs_wrong_options_installed, "acs order changed");
+        static_assert(acs_will_be_installing < acs_already_installed, "acs order changed");
         for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
                 r != r_end ; ++r)
         {
@@ -1410,7 +1397,7 @@ Decider::find_any_score(
                 return std::make_pair(acs_will_be_installing, operator_bias);
         }
 
-        /* next: cou;d install */
+        /* next: could install */
         static_assert(acs_could_install < acs_will_be_installing, "acs order changed");
         for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
                 r != r_end ; ++r)
@@ -1440,22 +1427,7 @@ Decider::find_any_score(
             return std::make_pair(acs_blocks_installed, operator_bias);
     }
 
-    /* next: installable not masked */
-    static_assert(acs_installable < acs_could_install, "acs order changed");
-    if (! is_block)
-    {
-        Context sub_context("When working out whether it's acs_installable:");
-
-        const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, our_id, { mpo_ignore_additional_requirements }) |
-                    filter::SupportsAction<InstallAction>() |
-                    filter::NotMasked()
-                    )]);
-        if (! ids->empty())
-            return std::make_pair(acs_installable, operator_bias);
-    }
-
-    static_assert(acs_not_installable < acs_installable, "acs order changed");
+    static_assert(acs_not_installable < acs_could_install, "acs order changed");
     return std::make_pair(acs_not_installable, operator_bias);
 }
 
