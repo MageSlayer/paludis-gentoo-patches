@@ -107,7 +107,6 @@ namespace test_cases
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("test/dep"))
                         .change(QualifiedPackageName("test/target"))
                         .finished()),
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()

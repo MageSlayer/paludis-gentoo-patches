@@ -280,7 +280,7 @@ namespace
                         g != g_end ; ++g)
                 {
                     /* best possible, to get ( ) right */
-                    std::pair<AnyChildScore, OperatorScore> worst_score(acs_already_installed, os_greater_or_none);
+                    std::pair<AnyChildScore, OperatorScore> worst_score(acs_better_than_best, os_better_than_best);
 
                     /* score of a group is the score of the worst child. */
                     for (std::list<PackageOrBlockDepSpec>::const_iterator h(g->begin()), h_end(g->end()) ;

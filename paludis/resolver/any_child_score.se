@@ -17,6 +17,7 @@ make_enum_AnyChildScore()
     key acs_already_installed        "Already installed"
     key acs_vacuous_blocker          "Blocker that doesn't match any installable packages"
     key acs_prefer                   "Explicitly preferred"
+    key acs_better_than_best         "Better than the best option"
 
     want_destringify
 }
@@ -31,6 +32,7 @@ make_enum_OperatorScore()
     key os_less                    "<, <= etc, or blocker with >, >= etc"
     key os_equal                   "=, =* etc"
     key os_greater_or_none         ">, >= etc, or no operator, or blocker with <, <= etc"
+    key os_better_than_best        "Better than the best option"
 
     want_destringify
 }
