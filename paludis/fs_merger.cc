@@ -795,6 +795,13 @@ FSMerger::try_to_copy_xattrs(const FSPath & src, int dst_fd, FSMergerStatusFlags
             }
 
             std::shared_ptr<char> value_holder(static_cast<char *>(::operator new(value_sz)));
+
+            if (key == "security.selinux")
+            {
+                /* we handle selinux stuff specially */
+                continue;
+            }
+
             value_sz = fgetxattr(src_fd, key.c_str(), value_holder.get(), value_sz);
             if (-1 == value_sz)
             {
@@ -808,8 +815,9 @@ FSMerger::try_to_copy_xattrs(const FSPath & src, int dst_fd, FSMergerStatusFlags
                 if (ENOTSUP == errno)
                 {
                     Log::get_instance()->message("merger.xattrs.failure", ll_warning, lc_context) <<
-                        "Could not copy extended attributes from source file '" << src << "'";
-                    return;
+                        "Could not copy extended attributes from source file '" << src << "', discarding attribute '" <<
+                        key << "' = '" << std::string(value_holder.get(), value_sz) << "'";
+                    continue;
                 }
                 else
                     Log::get_instance()->message("merger.xattrs.failure", ll_warning, lc_context) <<
