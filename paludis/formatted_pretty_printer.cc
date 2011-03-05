@@ -70,7 +70,7 @@ FormattedPrettyPrinter::prettify(const PackageDepSpec & v) const
             auto ids((*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(v, _imp->package_id, { }) |
                         filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
             if (! ids->empty())
-                return format_installed(stringify(v));
+                return format_installable(stringify(v));
         }
 
         return format_masked(stringify(v));
