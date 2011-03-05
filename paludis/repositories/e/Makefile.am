@@ -321,6 +321,28 @@ vdb_repository_TEST_LDADD = \
 
 vdb_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+vdb_repository_TEST_eapis_SOURCES = vdb_repository_TEST_eapis.cc
+
+vdb_repository_TEST_eapis_LDADD = \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+vdb_repository_TEST_eapis_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
+vdb_repository_TEST_cache_SOURCES = vdb_repository_TEST_cache.cc
+
+vdb_repository_TEST_cache_LDADD = \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/test_extras.o \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/test/libtest.a \
+	$(DYNAMIC_LD_LIBS)
+
+vdb_repository_TEST_cache_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
 exndbam_repository_TEST_SOURCES = exndbam_repository_TEST.cc
 
 exndbam_repository_TEST_LDADD = \
@@ -505,6 +527,12 @@ EXTRA_DIST = \
 	vdb_repository_TEST.cc \
 	vdb_repository_TEST_setup.sh \
 	vdb_repository_TEST_cleanup.sh \
+	vdb_repository_TEST_eapis.cc \
+	vdb_repository_TEST_eapis_setup.sh \
+	vdb_repository_TEST_eapis_cleanup.sh \
+	vdb_repository_TEST_cache.cc \
+	vdb_repository_TEST_cache_setup.sh \
+	vdb_repository_TEST_cache_cleanup.sh \
 	vdb_merger_TEST.cc \
 	vdb_merger_TEST_setup.sh \
 	vdb_merger_TEST_cleanup.sh \
@@ -537,6 +565,8 @@ check_SCRIPTS = \
 	e_repository_TEST_symlink_rewriting_setup.sh e_repository_TEST_symlink_rewriting_cleanup.sh \
 	xml_things_TEST_setup.sh xml_things_TEST_cleanup.sh \
 	vdb_repository_TEST_setup.sh vdb_repository_TEST_cleanup.sh \
+	vdb_repository_TEST_eapis_setup.sh vdb_repository_TEST_eapis_cleanup.sh \
+	vdb_repository_TEST_cache_setup.sh vdb_repository_TEST_cache_cleanup.sh \
 	exndbam_repository_TEST_setup.sh exndbam_repository_TEST_cleanup.sh \
 	e_repository_sets_TEST_setup.sh e_repository_sets_TEST_cleanup.sh \
 	fetch_visitor_TEST_setup.sh fetch_visitor_TEST_cleanup.sh
@@ -608,6 +638,8 @@ dist_paludis_data_DATA = traditional.exclude ebuild_entries_suffixes.conf
 
 TESTS = \
 	vdb_repository_TEST \
+	vdb_repository_TEST_eapis \
+	vdb_repository_TEST_cache \
 	e_repository_TEST \
 	e_repository_TEST_0 \
 	e_repository_TEST_1 \
