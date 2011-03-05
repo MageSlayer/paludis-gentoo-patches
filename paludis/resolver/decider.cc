@@ -1356,6 +1356,7 @@ Decider::find_any_score(
     }
 
     /* next: already installed */
+    static_assert(acs_already_installed < acs_vacuous_blocker, "acs order changed");
     {
         Context sub_context("When working out whether it's acs_already_installed:");
 
@@ -1367,6 +1368,7 @@ Decider::find_any_score(
     }
 
     /* next: already installed, except with the wrong options */
+    static_assert(acs_wrong_options_installed < acs_already_installed, "acs order changed");
     if (! is_block && spec.additional_requirements_ptr())
     {
         Context sub_context("When working out whether it's acs_wrong_options_installed:");
@@ -1386,6 +1388,7 @@ Decider::find_any_score(
         const std::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason).first);
 
         /* next: will already be installing */
+        static_assert(acs_will_be_installing < acs_wrong_options_installed, "acs order changed");
         for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
                 r != r_end ; ++r)
         {
@@ -1407,6 +1410,8 @@ Decider::find_any_score(
                 return std::make_pair(acs_will_be_installing, operator_bias);
         }
 
+        /* next: cou;d install */
+        static_assert(acs_could_install < acs_will_be_installing, "acs order changed");
         for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
                 r != r_end ; ++r)
         {
@@ -1423,6 +1428,7 @@ Decider::find_any_score(
     }
 
     /* next: blocks installed package */
+    static_assert(acs_blocks_installed < acs_could_install, "acs order changed");
     if (is_block)
     {
         Context sub_context("When working out whether it's acs_blocks_installed:");
@@ -1435,6 +1441,7 @@ Decider::find_any_score(
     }
 
     /* next: installable not masked */
+    static_assert(acs_installable < acs_could_install, "acs order changed");
     if (! is_block)
     {
         Context sub_context("When working out whether it's acs_installable:");
@@ -1448,6 +1455,7 @@ Decider::find_any_score(
             return std::make_pair(acs_installable, operator_bias);
     }
 
+    static_assert(acs_not_installable < acs_installable, "acs order changed");
     return std::make_pair(acs_not_installable, operator_bias);
 }
 
