@@ -1355,35 +1355,22 @@ Decider::find_any_score(
             return std::make_pair(acs_vacuous_blocker, operator_bias);
     }
 
-    /* next: already installed */
-    static_assert(acs_already_installed < acs_vacuous_blocker, "acs order changed");
-    {
-        Context sub_context("When working out whether it's acs_already_installed:");
+    const std::shared_ptr<DependencyReason> reason_unless_block(is_block ? make_null_shared_ptr() : std::make_shared<DependencyReason>(
+                our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _package_dep_spec_already_met(*dep.spec().if_package(), our_id)));
+    const std::shared_ptr<const Resolvents> resolvents_unless_block(_get_resolvents_for(spec, reason_unless_block).first);
 
-        const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, our_id, { }) |
-                    filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
-        if (! installed_ids->empty() ^ is_block)
-            return std::make_pair(acs_already_installed, operator_bias);
-    }
-
-    /* various things only if we're not a block... */
+    /* next: will already be installing */
+    static_assert(acs_will_be_installing < acs_vacuous_blocker, "acs order changed");
     if (! is_block)
     {
-        const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
-                    our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _package_dep_spec_already_met(*dep.spec().if_package(), our_id)));
-        const std::shared_ptr<const Resolvents> resolvents(_get_resolvents_for(spec, reason).first);
-
-        /* next: will already be installing */
-        static_assert(acs_will_be_installing < acs_already_installed, "acs order changed");
-        for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
+        for (Resolvents::ConstIterator r(resolvents_unless_block->begin()), r_end(resolvents_unless_block->end()) ;
                 r != r_end ; ++r)
         {
             bool any(false), any_bad(false);
             ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->find(*r));
             if (i != _imp->resolutions_by_resolvent->end() && (*i)->decision())
             {
-                auto constraint(_make_constraint_from_package_dependency(our_resolution, dep, reason, si_take));
+                auto constraint(_make_constraint_from_package_dependency(our_resolution, dep, reason_unless_block, si_take));
                 if (_check_constraint(constraint, (*i)->decision()))
                     any = true;
                 else
@@ -1396,15 +1383,30 @@ Decider::find_any_score(
             if (any && ! any_bad)
                 return std::make_pair(acs_will_be_installing, operator_bias);
         }
+    }
 
-        /* next: could install */
-        static_assert(acs_could_install < acs_will_be_installing, "acs order changed");
-        for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
+    /* next: already installed */
+    static_assert(acs_already_installed < acs_will_be_installing, "acs order changed");
+    {
+        Context sub_context("When working out whether it's acs_already_installed:");
+
+        const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
+                    generator::Matches(spec, our_id, { }) |
+                    filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
+        if (! installed_ids->empty() ^ is_block)
+            return std::make_pair(acs_already_installed, operator_bias);
+    }
+
+    /* next: could install */
+    if (! is_block)
+    {
+        static_assert(acs_could_install < acs_already_installed, "acs order changed");
+        for (Resolvents::ConstIterator r(resolvents_unless_block->begin()), r_end(resolvents_unless_block->end()) ;
                 r != r_end ; ++r)
         {
             const std::shared_ptr<Resolution> resolution(_create_resolution_for_resolvent(*r));
             const std::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(
-                        our_resolution, dep, reason, si_take));
+                        our_resolution, dep, reason_unless_block, si_take));
             for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                     c != c_end ; ++c)
                 resolution->constraints()->add(*c);
