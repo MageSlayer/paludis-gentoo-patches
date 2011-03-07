@@ -22,6 +22,7 @@ endif
 noinst_HEADERS = \
 	a_finder.hh \
 	aa_visitor.hh \
+	apply_annotations.hh \
 	can_skip_phase.hh \
 	check_fetched_files_visitor.hh \
 	check_userpriv.hh \
@@ -101,6 +102,7 @@ noinst_HEADERS = \
 libpaludiserepository_la_SOURCES = \
 	a_finder.cc \
 	aa_visitor.cc \
+	apply_annotations.cc \
 	can_skip_phase.cc \
 	check_fetched_files_visitor.cc \
 	check_userpriv.cc \
