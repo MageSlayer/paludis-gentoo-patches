@@ -24,6 +24,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/dep_spec.hh>
 
@@ -33,8 +34,8 @@ using namespace paludis::erepository;
 void
 paludis::erepository::apply_annotations(
         const EAPI & eapi,
-        std::shared_ptr<DepSpec> & spec,
-        std::shared_ptr<BlockDepSpec> & if_block_spec,
+        const std::shared_ptr<DepSpec> & spec,
+        const std::shared_ptr<BlockDepSpec> & if_block_spec,
         const std::shared_ptr<const Map<std::string, std::string> > & m)
 {
     auto annotations(std::make_shared<DepSpecAnnotations>());
@@ -143,11 +144,9 @@ paludis::erepository::apply_annotations(
 void
 paludis::erepository::apply_annotations_not_block(
         const EAPI & eapi,
-        std::shared_ptr<DepSpec> & spec,
+        const std::shared_ptr<DepSpec> & spec,
         const std::shared_ptr<const Map<std::string, std::string> > & m)
 {
-    std::shared_ptr<BlockDepSpec> not_block;
-    apply_annotations(eapi, spec, not_block, m);
+    apply_annotations(eapi, spec, make_null_shared_ptr(), m);
 }
-
 

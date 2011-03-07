@@ -31,13 +31,13 @@ namespace paludis
     {
         void apply_annotations(
                 const EAPI & eapi,
-                std::shared_ptr<DepSpec> & spec,
-                std::shared_ptr<BlockDepSpec> & if_block_spec,
+                const std::shared_ptr<DepSpec> & spec,
+                const std::shared_ptr<BlockDepSpec> & if_block_spec,
                 const std::shared_ptr<const Map<std::string, std::string> > & m);
 
         void apply_annotations_not_block(
                 const EAPI & eapi,
-                std::shared_ptr<DepSpec> & spec,
+                const std::shared_ptr<DepSpec> & spec,
                 const std::shared_ptr<const Map<std::string, std::string> > & m);
     }
 }
