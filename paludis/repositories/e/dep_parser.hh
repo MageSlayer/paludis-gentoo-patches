@@ -56,14 +56,6 @@ namespace paludis
                 const Environment * const, const EAPI &, const bool is_installed) PALUDIS_VISIBLE;
 
         /**
-         * Parse a dep spec label.
-         */
-        std::shared_ptr<DependenciesLabelsDepSpec> parse_dependency_label(
-                const Environment * const,
-                const std::string & s,
-                const EAPI &) PALUDIS_VISIBLE;
-
-        /**
          * Parse a provide heirarchy.
          */
         std::shared_ptr<ProvideSpecTree> parse_provide(const std::string & s,
@@ -104,16 +96,6 @@ namespace paludis
          */
         std::shared_ptr<LicenseSpecTree> parse_license(const std::string & s,
                 const Environment * const, const EAPI &, const bool is_installed) PALUDIS_VISIBLE;
-
-        /**
-         * Parse a URI label.
-         */
-        std::shared_ptr<URILabelsDepSpec> parse_uri_label(const std::string & s, const EAPI &) PALUDIS_VISIBLE;
-
-        /**
-         * Parse a plain text label.
-         */
-        std::shared_ptr<PlainTextLabelDepSpec> parse_plain_text_label(const std::string & s) PALUDIS_VISIBLE;
     }
 }
 

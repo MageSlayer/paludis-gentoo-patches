@@ -20,6 +20,7 @@
 #include <paludis/repositories/e/e_key.hh>
 #include <paludis/repositories/e/ebuild_id.hh>
 #include <paludis/repositories/e/dep_parser.hh>
+#include <paludis/repositories/e/parse_uri_label.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/vdb_contents_tokeniser.hh>
 #include <paludis/repositories/e/e_repository.hh>
