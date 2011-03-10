@@ -52,6 +52,8 @@
 #include <list>
 #include <set>
 #include <ostream>
+#include <algorithm>
+#include <functional>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -125,10 +127,18 @@ namespace
         call_annotations_go_here(annotations_go_here, spec);
     }
 
+    enum BlockFixOp
+    {
+        bfo_explicit_strong,
+        bfo_implicit_strong,
+        bfo_implicit_weak
+    };
+
     template <typename T_>
     void package_or_block_dep_spec_string_handler(
             const typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
+            BlockFixOp & block_fix_op,
             const std::string & s,
             const EAPI & eapi)
     {
@@ -142,11 +152,17 @@ namespace
                     throw EDepParseError(s, "Double-! blocks not allowed in this EAPI");
                 specstart = 2;
                 strong = true;
+                block_fix_op = bfo_explicit_strong;
             }
             else
             {
                 if (eapi.supported()->dependency_spec_tree_parse_options()[dstpo_single_bang_block_is_hard])
+                {
                     strong = true;
+                    block_fix_op = bfo_implicit_strong;
+                }
+                else
+                    block_fix_op = bfo_implicit_weak;
             }
 
             std::shared_ptr<BlockDepSpec> spec(std::make_shared<BlockDepSpec>(
@@ -352,6 +368,68 @@ namespace
         spec = s;
         block = b;
     }
+
+    void fix_block_annotations(
+            const std::shared_ptr<BlockDepSpec> & if_block_spec,
+            const BlockFixOp & block_fix_op)
+    {
+        if (! if_block_spec)
+            return;
+
+        DepSpecAnnotationRole current_role(dsar_none);
+        if (if_block_spec->maybe_annotations())
+            current_role = find_blocker_role_in_annotations(if_block_spec->maybe_annotations());
+        if (dsar_none != current_role)
+            return;
+
+        std::shared_ptr<DepSpecAnnotations> annotations(std::make_shared<DepSpecAnnotations>());
+        if (if_block_spec->maybe_annotations())
+            std::for_each(if_block_spec->maybe_annotations()->begin(), if_block_spec->maybe_annotations()->end(),
+                    std::bind(&DepSpecAnnotations::add, annotations, std::placeholders::_1));
+
+        switch (block_fix_op)
+        {
+            case bfo_explicit_strong:
+                annotations->add(make_named_values<DepSpecAnnotation>(
+                            n::key() = "<resolution>",
+                            n::kind() = dsak_synthetic,
+                            n::role() = dsar_blocker_strong,
+                            n::value() = "<explicit-strong>"
+                            ));
+                break;
+
+            case bfo_implicit_strong:
+                annotations->add(make_named_values<DepSpecAnnotation>(
+                            n::key() = "<resolution>",
+                            n::kind() = dsak_synthetic,
+                            n::role() = dsar_blocker_strong,
+                            n::value() = "<implicit-strong>"
+                            ));
+                break;
+
+            case bfo_implicit_weak:
+                annotations->add(make_named_values<DepSpecAnnotation>(
+                            n::key() = "<resolution>",
+                            n::kind() = dsak_synthetic,
+                            n::role() = dsar_blocker_weak,
+                            n::value() = "<implicit-weak>"
+                            ));
+                break;
+        }
+
+        if_block_spec->set_annotations(annotations);
+    }
+
+    void apply_annotations_then_fixup(
+            const EAPI & eapi,
+            const std::shared_ptr<DepSpec> & spec,
+            const std::shared_ptr<BlockDepSpec> & if_block_spec,
+            const BlockFixOp & block_fix_op,
+            const std::shared_ptr<const Map<std::string, std::string> > & m)
+    {
+        apply_annotations(eapi, spec, if_block_spec, m);
+        fix_block_annotations(if_block_spec, block_fix_op);
+    }
 }
 
 std::shared_ptr<DependencySpecTree>
@@ -363,6 +441,7 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
     std::shared_ptr<AllDepSpec> spec(std::make_shared<AllDepSpec>());
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<BlockDepSpec> thing_to_annotate_if_block;
+    BlockFixOp block_fix_op;
     std::shared_ptr<DependencySpecTree> top(std::make_shared<DependencySpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<DependencySpecTree>::Item>(
                 n::item() = top->top(),
@@ -372,8 +451,8 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<DependencySpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate),
-                    std::ref(thing_to_annotate_if_block), _1),
+                n::on_annotations() = std::bind(&apply_annotations_then_fixup, std::cref(eapi), std::cref(thing_to_annotate),
+                    std::cref(thing_to_annotate_if_block), std::cref(block_fix_op), _1),
                 n::on_any() = std::bind(&any_all_handler<DependencySpecTree, AnyDepSpec>, std::ref(stack)),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
@@ -383,14 +462,15 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)),
                     _1, std::cref(eapi)),
-                n::on_no_annotations() = &do_nothing,
+                n::on_no_annotations() = std::bind(&fix_block_annotations, std::cref(thing_to_annotate_if_block), std::cref(block_fix_op)),
                 n::on_pop() = std::bind(&pop_handler<DependencySpecTree>, std::ref(stack),
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<DependencySpecTree>, std::ref(stack), s),
                 n::on_string() = std::bind(&package_or_block_dep_spec_string_handler<DependencySpecTree>, std::ref(stack),
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
-                            &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)), _1, eapi),
+                            &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)),
+                    std::ref(block_fix_op), _1, eapi),
                 n::on_use() = std::bind(&use_handler<DependencySpecTree>, std::ref(stack), _1, env, std::cref(eapi), is_installed),
                 n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
             ));

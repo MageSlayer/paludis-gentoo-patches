@@ -100,6 +100,47 @@ DepSpecAnnotations::add(const DepSpecAnnotation & a)
     _imp->annotations.push_back(a);
 }
 
+DepSpecAnnotationRole
+paludis::find_blocker_role_in_annotations(
+        const std::shared_ptr<const DepSpecAnnotations> & maybe_annotations)
+{
+    if (! maybe_annotations)
+        return dsar_none;
+
+    for (auto i(maybe_annotations->begin()), i_end(maybe_annotations->end()) ;
+            i != i_end ; ++i)
+    {
+        switch (i->role())
+        {
+            case dsar_blocker_manual:
+            case dsar_blocker_uninstall_blocked_after:
+            case dsar_blocker_uninstall_blocked_before:
+            case dsar_blocker_upgrade_blocked_before:
+            case dsar_blocker_weak:
+            case dsar_blocker_strong:
+                return i->role();
+
+            case dsar_none:
+            case dsar_general_description:
+            case dsar_general_url:
+            case dsar_general_note:
+            case dsar_general_lang:
+            case dsar_general_defined_in:
+            case dsar_myoptions_requires:
+            case dsar_myoptions_n_at_least_one:
+            case dsar_myoptions_n_at_most_one:
+            case dsar_myoptions_n_exactly_one:
+            case dsar_suggestions_group_name:
+                break;
+
+            case last_dsar:
+                throw InternalError(PALUDIS_HERE, "bad dsar");
+        }
+    }
+
+    return dsar_none;
+}
+
 template class Pimp<DepSpecAnnotations>;
 template class WrappedForwardIterator<DepSpecAnnotations::ConstIteratorTag, const DepSpecAnnotation>;
 

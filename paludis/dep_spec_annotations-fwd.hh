@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,6 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <iosfwd>
+#include <memory>
 
 namespace paludis
 {
@@ -30,6 +31,8 @@ namespace paludis
 
 #include <paludis/dep_spec_annotations-se.hh>
 
+    DepSpecAnnotationRole find_blocker_role_in_annotations(
+            const std::shared_ptr<const DepSpecAnnotations> & maybe_annotations) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 }
 
 #endif
