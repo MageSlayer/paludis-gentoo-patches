@@ -264,21 +264,21 @@ namespace
             {
                 bool normal(true);
                 if (r.sanitised_dependency().spec().if_block())
-                    switch (r.sanitised_dependency().spec().if_block()->block_kind())
+                    switch (find_blocker_role_in_annotations(r.sanitised_dependency().spec().if_block()->maybe_annotations()))
                     {
-                        case bk_weak:
-                        case bk_uninstall_blocked_after:
+                        case dsar_blocker_weak:
+                        case dsar_blocker_uninstall_blocked_after:
                             normal = false;
                             break;
 
-                        case bk_strong:
-                        case bk_manual:
-                        case bk_upgrade_blocked_before:
-                        case bk_uninstall_blocked_before:
+                        case dsar_blocker_strong:
+                        case dsar_blocker_manual:
+                        case dsar_blocker_upgrade_blocked_before:
+                        case dsar_blocker_uninstall_blocked_before:
                             break;
 
-                        case last_bk:
-                            break;
+                        default:
+                            throw InternalError(PALUDIS_HERE, "unexpected role");
                     }
 
                 NAGIndex from(make_named_values<NAGIndex>(

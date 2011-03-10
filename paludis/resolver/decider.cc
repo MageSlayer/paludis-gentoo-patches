@@ -72,6 +72,7 @@
 #include <paludis/changed_choices.hh>
 #include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/dep_spec_annotations.hh>
 
 #include <paludis/util/pimp-impl.hh>
 
@@ -646,24 +647,24 @@ Decider::_make_constraints_from_blocker(
     const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
     bool nothing_is_fine_too(true), force_unable(false);
-    switch (spec.block_kind())
+    switch (find_blocker_role_in_annotations(spec.maybe_annotations()))
     {
-        case bk_weak:
-        case bk_strong:
-        case bk_uninstall_blocked_before:
-        case bk_uninstall_blocked_after:
+        case dsar_blocker_weak:
+        case dsar_blocker_strong:
+        case dsar_blocker_uninstall_blocked_before:
+        case dsar_blocker_uninstall_blocked_after:
             break;
 
-        case bk_manual:
+        case dsar_blocker_manual:
             force_unable = ! _block_dep_spec_already_met(spec, maybe_from_package_id_from_reason(reason), resolution->resolvent());
             break;
 
-        case bk_upgrade_blocked_before:
+        case dsar_blocker_upgrade_blocked_before:
             nothing_is_fine_too = ! _block_dep_spec_already_met(spec, maybe_from_package_id_from_reason(reason), resolution->resolvent());
             break;
 
-        case last_bk:
-            break;
+        default:
+            throw InternalError(PALUDIS_HERE, "unexpected role");
     }
 
     DestinationTypes destination_types(_get_destination_types_for_blocker(spec, reason));
