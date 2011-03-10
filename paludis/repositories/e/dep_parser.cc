@@ -383,6 +383,7 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)),
                     _1, std::cref(eapi)),
+                n::on_no_annotations() = &do_nothing,
                 n::on_pop() = std::bind(&pop_handler<DependencySpecTree>, std::ref(stack),
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)), s),
@@ -422,6 +423,7 @@ paludis::erepository::parse_provide(const std::string & s, const Environment * c
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
+                n::on_no_annotations() = &do_nothing,
                 n::on_pop() = std::bind(&pop_handler<ProvideSpecTree>, std::ref(stack),
                     ParseStackTypes<ProvideSpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), s),
@@ -465,6 +467,7 @@ paludis::erepository::parse_fetchable_uri(const std::string & s, const Environme
                 n::on_label() = std::bind(&fetchable_label_handler<FetchableURISpecTree>, std::ref(stack),
                     ParseStackTypes<FetchableURISpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1, std::cref(eapi)),
+                n::on_no_annotations() = &do_nothing,
                 n::on_pop() = std::bind(&pop_handler<FetchableURISpecTree>, std::ref(stack),
                     ParseStackTypes<FetchableURISpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), s),
@@ -504,6 +507,7 @@ paludis::erepository::parse_simple_uri(const std::string & s, const Environment 
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
+                n::on_no_annotations() = &do_nothing,
                 n::on_pop() = std::bind(&pop_handler<SimpleURISpecTree>, std::ref(stack),
                     ParseStackTypes<SimpleURISpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), s),
@@ -543,6 +547,7 @@ paludis::erepository::parse_license(const std::string & s, const Environment * c
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
+                n::on_no_annotations() = &do_nothing,
                 n::on_pop() = std::bind(&pop_handler<LicenseSpecTree>, std::ref(stack),
                     ParseStackTypes<LicenseSpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), s),
@@ -582,6 +587,7 @@ paludis::erepository::parse_plain_text(const std::string & s, const Environment 
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
+                n::on_no_annotations() = &do_nothing,
                 n::on_pop() = std::bind(&pop_handler<PlainTextSpecTree>, std::ref(stack),
                         ParseStackTypes<PlainTextSpecTree>::AnnotationsGoHere(std::bind(
                                 &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), s),
@@ -623,6 +629,7 @@ paludis::erepository::parse_myoptions(const std::string & s, const Environment *
                 n::on_label() = std::bind(&plain_text_label_handler<PlainTextSpecTree>, std::ref(stack),
                         ParseStackTypes<PlainTextSpecTree>::AnnotationsGoHere(std::bind(
                                 &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1),
+                n::on_no_annotations() = &do_nothing,
                 n::on_pop() = std::bind(&pop_handler<PlainTextSpecTree>, std::ref(stack),
                         ParseStackTypes<PlainTextSpecTree>::AnnotationsGoHere(std::bind(
                                 &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), s),
@@ -662,6 +669,7 @@ paludis::erepository::parse_required_use(const std::string & s, const Environmen
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&any_all_handler<RequiredUseSpecTree, ExactlyOneDepSpec>, std::ref(stack)),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
+                n::on_no_annotations() = &do_nothing,
                 n::on_pop() = std::bind(&pop_handler<RequiredUseSpecTree>, std::ref(stack),
                         ParseStackTypes<RequiredUseSpecTree>::AnnotationsGoHere(std::bind(
                                 &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), s),

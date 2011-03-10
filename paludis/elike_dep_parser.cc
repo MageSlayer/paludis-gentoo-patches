@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,7 +43,10 @@ namespace
         Context context("When parsing annotation block at offset '" + stringify(parser.offset()) + "':");
 
         if (! parser.consume(*simple_parser::any_of(" \t\r\n") & simple_parser::exact("[[")))
+        {
+            callbacks.on_no_annotations()();
             return;
+        }
 
         if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
             error(parser, callbacks, "Expected space after '[['");

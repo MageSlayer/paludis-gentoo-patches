@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -72,6 +72,7 @@ namespace test_cases
                         n::on_error() = std::bind(&handler, std::ref(out), "error<", _1, ">", "", ""),
                         n::on_exactly_one() = std::bind(&handler, std::ref(out), "x<", "", "", "", ""),
                         n::on_label() = std::bind(&handler, std::ref(out), "label<", _1, "", "", ""),
+                        n::on_no_annotations() = &do_nothing,
                         n::on_pop() = std::bind(&handler, std::ref(out), ">", "", "", "", ""),
                         n::on_should_be_empty() = std::bind(&handler, std::ref(out), "EMPTY", "", "", "", ""),
                         n::on_string() = std::bind(&handler, std::ref(out), "s<", _1, ">", "", ""),
@@ -100,6 +101,7 @@ namespace test_cases
                         n::on_error() = std::bind(&handler, std::ref(out), "error<", _1, ">", "", ""),
                         n::on_exactly_one() = std::bind(&handler, std::ref(out), "x<", "", "", "", ""),
                         n::on_label() = std::bind(&handler, std::ref(out), "label<", _1, "", "", ""),
+                        n::on_no_annotations() = &do_nothing,
                         n::on_pop() = std::bind(&handler, std::ref(out), ">", "", "", "", ""),
                         n::on_should_be_empty() = std::bind(&handler, std::ref(out), "EMPTY", "", "", "", ""),
                         n::on_string() = std::bind(&handler, std::ref(out), "s<", _1, ">", "", ""),
@@ -128,6 +130,7 @@ namespace test_cases
                         n::on_error() = std::bind(&handler, std::ref(out), "error<", _1, ">", "", ""),
                         n::on_exactly_one() = std::bind(&handler, std::ref(out), "x<", "", "", "", ""),
                         n::on_label() = std::bind(&handler, std::ref(out), "label<", _1, "", "", ""),
+                        n::on_no_annotations() = &do_nothing,
                         n::on_pop() = std::bind(&handler, std::ref(out), ">", "", "", "", ""),
                         n::on_should_be_empty() = std::bind(&handler, std::ref(out), "EMPTY", "", "", "", ""),
                         n::on_string() = std::bind(&handler, std::ref(out), "s<", _1, ">", "", ""),

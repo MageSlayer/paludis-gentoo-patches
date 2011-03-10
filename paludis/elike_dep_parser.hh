@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,6 +34,7 @@ namespace paludis
         typedef Name<struct name_on_error> on_error;
         typedef Name<struct name_on_exactly_one> on_exactly_one;
         typedef Name<struct name_on_label> on_label;
+        typedef Name<struct name_on_no_annotations> on_no_annotations;
         typedef Name<struct name_on_pop> on_pop;
         typedef Name<struct name_on_should_be_empty> on_should_be_empty;
         typedef Name<struct name_on_string> on_string;
@@ -50,6 +51,7 @@ namespace paludis
         NamedValue<n::on_error, ELikeDepParserErrorFunction> on_error;
         NamedValue<n::on_exactly_one, ELikeDepParserExactlyOneFunction> on_exactly_one;
         NamedValue<n::on_label, ELikeDepParserLabelFunction> on_label;
+        NamedValue<n::on_no_annotations, ELikeDepParserNoAnnotationsFunction> on_no_annotations;
         NamedValue<n::on_pop, ELikeDepParserPopFunction> on_pop;
         NamedValue<n::on_should_be_empty, ELikeDepParserShouldBeEmptyFunction> on_should_be_empty;
         NamedValue<n::on_string, ELikeDepParserStringFunction> on_string;
