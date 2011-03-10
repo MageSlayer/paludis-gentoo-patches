@@ -389,6 +389,7 @@ namespace
     {
         const std::shared_ptr<const Environment> env;
         const ShowCommandLine & cmdline;
+        const PrettyPrintOptions basic_ppos;
         const int indent;
         const bool important;
         const std::shared_ptr<const PackageID> maybe_current_id;
@@ -398,12 +399,15 @@ namespace
 
         InfoDisplayer(
                 const std::shared_ptr<const Environment> & e,
-                const ShowCommandLine & c, const int i, const bool m,
+                const ShowCommandLine & c,
+                const PrettyPrintOptions & bp,
+                const int i, const bool m,
                 const std::shared_ptr<const PackageID> & k,
                 const std::shared_ptr<const PackageID> & o, const bool b,
                 std::ostream & ou) :
             env(e),
             cmdline(c),
+            basic_ppos(bp),
             indent(i),
             important(m),
             maybe_current_id(k),
@@ -424,7 +428,8 @@ namespace
             for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                     s(keys.begin()), s_end(keys.end()) ; s != s_end ; ++s)
             {
-                InfoDisplayer i(env, cmdline, indent + 1, ((*s)->type() == mkt_significant), maybe_current_id, maybe_old_id, old_id_is_installed, out);
+                InfoDisplayer i(env, cmdline, basic_ppos, indent + 1,
+                        ((*s)->type() == mkt_significant), maybe_current_id, maybe_old_id, old_id_is_installed, out);
                 if (want_key(cmdline, *s, maybe_current_id))
                     accept_visitor(i)(**s);
             }
@@ -436,7 +441,7 @@ namespace
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(k.pretty_print_value(printer, { })),
+                    fv<'v'>(k.pretty_print_value(printer, basic_ppos)),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -449,7 +454,7 @@ namespace
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(k.pretty_print_value(printer, { })),
+                    fv<'v'>(k.pretty_print_value(printer, basic_ppos)),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -462,7 +467,7 @@ namespace
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(k.pretty_print_value(printer, { })),
+                    fv<'v'>(k.pretty_print_value(printer, basic_ppos)),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -475,7 +480,7 @@ namespace
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(k.pretty_print_value(printer, { })),
+                    fv<'v'>(k.pretty_print_value(printer, basic_ppos)),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -488,7 +493,7 @@ namespace
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(k.pretty_print_value(printer, { })),
+                    fv<'v'>(k.pretty_print_value(printer, basic_ppos)),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -513,7 +518,7 @@ namespace
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(k.pretty_print_value(printer, { })),
+                    fv<'v'>(k.pretty_print_value(printer, basic_ppos)),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -528,7 +533,7 @@ namespace
                 out << fuc(
                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                         fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                        fv<'v'>(k.pretty_print_value(printer, { })),
+                        fv<'v'>(k.pretty_print_value(printer, basic_ppos)),
                         fv<'i'>(std::string(indent, ' ')),
                         fv<'b'>(important ? "true" : ""),
                         fv<'p'>("")
@@ -545,7 +550,7 @@ namespace
                     out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                            fv<'v'>(k.pretty_print_value(printer, { })),
+                            fv<'v'>(k.pretty_print_value(printer, basic_ppos)),
                             fv<'i'>(std::string(indent, ' ')),
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
@@ -560,7 +565,7 @@ namespace
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
                             );
-                    out << k.pretty_print_value(printer, { ppo_multiline_allowed });
+                    out << k.pretty_print_value(printer, basic_ppos + ppo_multiline_allowed);
                 }
             }
         }
@@ -574,7 +579,7 @@ namespace
                     out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                            fv<'v'>(k.pretty_print_value(printer, { })),
+                            fv<'v'>(k.pretty_print_value(printer, basic_ppos)),
                             fv<'i'>(std::string(indent, ' ')),
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
@@ -589,7 +594,7 @@ namespace
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
                             );
-                    out << k.pretty_print_value(printer, { ppo_multiline_allowed });
+                    out << k.pretty_print_value(printer, basic_ppos + ppo_multiline_allowed);
                 }
             }
         }
@@ -603,7 +608,7 @@ namespace
                     out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                            fv<'v'>(k.pretty_print_value(printer, { })),
+                            fv<'v'>(k.pretty_print_value(printer, basic_ppos)),
                             fv<'i'>(std::string(indent, ' ')),
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
@@ -618,7 +623,7 @@ namespace
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
                             );
-                    out << k.pretty_print_value(printer, { ppo_multiline_allowed });
+                    out << k.pretty_print_value(printer, basic_ppos + ppo_multiline_allowed);
                 }
             }
         }
@@ -631,7 +636,7 @@ namespace
                 out << fuc(
                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                         fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                        fv<'v'>(k.pretty_print_value(printer, { })),
+                        fv<'v'>(k.pretty_print_value(printer, basic_ppos)),
                         fv<'i'>(std::string(indent, ' ')),
                         fv<'b'>(important ? "true" : ""),
                         fv<'p'>("")
@@ -648,7 +653,7 @@ namespace
                     out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                            fv<'v'>(k.pretty_print_value(printer, { })),
+                            fv<'v'>(k.pretty_print_value(printer, basic_ppos)),
                             fv<'i'>(std::string(indent, ' ')),
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
@@ -663,7 +668,7 @@ namespace
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
                             );
-                    out << k.pretty_print_value(printer, { ppo_multiline_allowed });
+                    out << k.pretty_print_value(printer, basic_ppos + ppo_multiline_allowed);
                 }
             }
         }
@@ -997,14 +1002,18 @@ namespace
         const std::shared_ptr<const Environment> env;
         const std::shared_ptr<const PackageID> id;
         const ShowCommandLine & cmdline;
+        const PrettyPrintOptions basic_ppos;
         const int indent;
         std::ostream & out;
 
         MaskDisplayer(const std::shared_ptr<const Environment> & e,
-                const std::shared_ptr<const PackageID> & d, const ShowCommandLine & c, const int i, std::ostream & o) :
+                const std::shared_ptr<const PackageID> & d, const ShowCommandLine & c,
+                const PrettyPrintOptions & bp,
+                const int i, std::ostream & o) :
             env(e),
             id(d),
             cmdline(c),
+            basic_ppos(bp),
             indent(i),
             out(o)
         {
@@ -1014,7 +1023,7 @@ namespace
         {
             if (! m.unaccepted_key_name().empty())
             {
-                InfoDisplayer i(env, cmdline, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false, out);
+                InfoDisplayer i(env, cmdline, basic_ppos, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false, out);
                 (*id->find_metadata(m.unaccepted_key_name()))->accept(i);
             }
             else
@@ -1088,6 +1097,7 @@ namespace
     void do_one_repository(
             const ShowCommandLine & cmdline,
             const std::shared_ptr<Environment> & env,
+            const PrettyPrintOptions & basic_ppos,
             const RepositoryName & s)
     {
         cout << fuc(fs_repository_heading(), fv<'s'>(stringify(s)));
@@ -1097,7 +1107,7 @@ namespace
         for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
-            InfoDisplayer i(env, cmdline, 0, ((*k)->type() == mkt_significant), make_null_shared_ptr(), make_null_shared_ptr(), false, cout);
+            InfoDisplayer i(env, cmdline, basic_ppos, 0, ((*k)->type() == mkt_significant), make_null_shared_ptr(), make_null_shared_ptr(), false, cout);
             if (want_key(cmdline, *k, make_null_shared_ptr()))
                 accept_visitor(i)(**k);
         }
@@ -1107,6 +1117,7 @@ namespace
     void do_one_package_id(
             const ShowCommandLine & cmdline,
             const std::shared_ptr<Environment> & env,
+            const PrettyPrintOptions & basic_ppos,
             const std::shared_ptr<const PackageID> & best,
             const std::shared_ptr<const PackageID> & maybe_old_id,
             const bool old_id_is_installed,
@@ -1118,7 +1129,7 @@ namespace
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
             bool explicit_key(cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), (*k)->raw_name()));
-            InfoDisplayer i(env, cmdline, 0, ((*k)->type() == mkt_significant) || explicit_key, best, maybe_old_id, old_id_is_installed, out);
+            InfoDisplayer i(env, cmdline, basic_ppos, 0, ((*k)->type() == mkt_significant) || explicit_key, best, maybe_old_id, old_id_is_installed, out);
             if (want_key(cmdline, *k, best))
                 accept_visitor(i)(**k);
         }
@@ -1126,14 +1137,14 @@ namespace
         if (best->masked())
         {
             out << fuc(fs_package_id_masks(), fv<'s'>("Masked"));
-            MaskDisplayer d(env, best, cmdline, 2, out);
+            MaskDisplayer d(env, best, cmdline, basic_ppos, 2, out);
             std::for_each(indirect_iterator(best->begin_masks()), indirect_iterator(best->end_masks()), accept_visitor(d));
         }
 
         if (best->begin_overridden_masks() != best->end_overridden_masks())
         {
             out << fuc(fs_package_id_masks_overridden(), fv<'s'>("Overridden Masks"));
-            MaskDisplayer d(env, best, cmdline, 2, out);
+            MaskDisplayer d(env, best, cmdline, basic_ppos, 2, out);
             for (PackageID::OverriddenMasksConstIterator m(best->begin_overridden_masks()), m_end(best->end_overridden_masks()) ;
                     m != m_end ; ++m)
                 (*m)->mask()->accept(d);
@@ -1143,6 +1154,7 @@ namespace
     void do_one_package_with_ids(
             const ShowCommandLine & cmdline,
             const std::shared_ptr<Environment> & env,
+            const PrettyPrintOptions & basic_ppos,
             const PackageDepSpec &,
             const std::shared_ptr<const PackageIDSequence> & ids,
             std::ostream & header_out,
@@ -1254,29 +1266,29 @@ namespace
         else if (cmdline.a_one_version.specified())
         {
             if (best_installable)
-                do_one_package_id(cmdline, env, best_installable, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin(),
+                do_one_package_id(cmdline, env, basic_ppos, best_installable, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin(),
                         true, rest_out);
             else if (! all_installed->empty())
-                do_one_package_id(cmdline, env, *all_installed->rbegin(), best_installable,
+                do_one_package_id(cmdline, env, basic_ppos, *all_installed->rbegin(), best_installable,
                         false, rest_out);
         }
         else if (cmdline.a_all_versions.specified())
         {
             for (PackageIDSequence::ConstIterator i(all_installed->begin()), i_end(all_installed->end()) ;
                     i != i_end ; ++i)
-                do_one_package_id(cmdline, env, *i, best_installable, false, rest_out);
+                do_one_package_id(cmdline, env, basic_ppos, *i, best_installable, false, rest_out);
 
             for (PackageIDSequence::ConstIterator i(all_not_installed->begin()), i_end(all_not_installed->end()) ;
                     i != i_end ; ++i)
-                do_one_package_id(cmdline, env, *i, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin(), true, rest_out);
+                do_one_package_id(cmdline, env, basic_ppos, *i, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin(), true, rest_out);
         }
         else
         {
             for (PackageIDSequence::ConstIterator i(all_installed->begin()), i_end(all_installed->end()) ;
                     i != i_end ; ++i)
-                do_one_package_id(cmdline, env, *i, best_installable, false, rest_out);
+                do_one_package_id(cmdline, env, basic_ppos, *i, best_installable, false, rest_out);
             if (best_installable)
-                do_one_package_id(cmdline, env, best_installable, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin(),
+                do_one_package_id(cmdline, env, basic_ppos, best_installable, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin(),
                         true, rest_out);
         }
     }
@@ -1284,6 +1296,7 @@ namespace
     void do_one_package(
             const ShowCommandLine & cmdline,
             const std::shared_ptr<Environment> & env,
+            const PrettyPrintOptions & basic_ppos,
             const PackageDepSpec & s)
     {
         cout << fuc(fs_package_heading(), fv<'s'>(stringify(s)));
@@ -1305,14 +1318,14 @@ namespace
                 auto r_ids((*env)[selection::AllVersionsGroupedBySlot(generator::Matches(
                                 PartiallyMadePackageDepSpec(s).in_repository(*r), make_null_shared_ptr(), { }))]);
                 if (! r_ids->empty())
-                    do_one_package_with_ids(cmdline, env, s, r_ids, cout, rest_out);
+                    do_one_package_with_ids(cmdline, env, basic_ppos, s, r_ids, cout, rest_out);
             }
 
             std::copy((std::istreambuf_iterator<char>(rest_out)), std::istreambuf_iterator<char>(),
                     std::ostreambuf_iterator<char>(cout));
         }
         else
-            do_one_package_with_ids(cmdline, env, s, ids, cout, cout);
+            do_one_package_with_ids(cmdline, env, basic_ppos, s, ids, cout, cout);
 
         cout << endl;
     }
@@ -1320,6 +1333,7 @@ namespace
     void do_all_packages(
             const ShowCommandLine & cmdline,
             const std::shared_ptr<Environment> & env,
+            const PrettyPrintOptions & basic_ppos,
             const PackageDepSpec & s)
     {
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(generator::Matches(s,
@@ -1329,7 +1343,7 @@ namespace
 
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
-            do_one_package(cmdline, env, PartiallyMadePackageDepSpec(s).package((*i)->name()));
+            do_one_package(cmdline, env, basic_ppos, PartiallyMadePackageDepSpec(s).package((*i)->name()));
     }
 }
 
@@ -1357,17 +1371,21 @@ ShowCommand::run(
     if (cmdline.begin_parameters() == cmdline.end_parameters())
         throw args::DoHelp("show requires at least one parameter");
 
+    PrettyPrintOptions basic_ppos;
+    if (cmdline.a_internal_keys.specified())
+        basic_ppos += ppo_include_special_annotations;
+
     for (ShowCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
             p != p_end ; ++p)
     {
         if (cmdline.a_type.argument() == "set")
             do_one_set(env, SetName(*p));
         else if (cmdline.a_type.argument() == "repository")
-            do_one_repository(cmdline, env, RepositoryName(*p));
+            do_one_repository(cmdline, env, basic_ppos, RepositoryName(*p));
         else if (cmdline.a_type.argument() == "wildcard")
             do_one_wildcard(env, parse_spec_with_nice_error(*p, env.get(), { updso_allow_wildcards }, filter::All()));
         else if (cmdline.a_type.argument() == "package")
-            do_all_packages(cmdline, env, parse_spec_with_nice_error(*p, env.get(), { updso_allow_wildcards }, filter::All()));
+            do_all_packages(cmdline, env, basic_ppos, parse_spec_with_nice_error(*p, env.get(), { updso_allow_wildcards }, filter::All()));
         else if (cmdline.a_type.argument() == "auto")
         {
             try
@@ -1376,7 +1394,7 @@ ShowCommand::run(
                 if ((! spec.package_ptr()))
                     do_one_wildcard(env, spec);
                 else
-                    do_one_package(cmdline, env, spec);
+                    do_one_package(cmdline, env, basic_ppos, spec);
                 continue;
             }
             catch (const GotASetNotAPackageDepSpec &)
@@ -1391,7 +1409,7 @@ ShowCommand::run(
                     RepositoryName repo_name(*p);
                     if (env->package_database()->has_repository_named(repo_name))
                     {
-                        do_one_repository(cmdline, env, repo_name);
+                        do_one_repository(cmdline, env, basic_ppos, repo_name);
                         continue;
                     }
                 }
