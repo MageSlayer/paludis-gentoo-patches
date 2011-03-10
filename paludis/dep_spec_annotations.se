@@ -37,3 +37,28 @@ make_enum_DepSpecAnnotationRole()
 END
 }
 
+make_enum_DepSpecAnnotationKind()
+{
+    prefix dsak
+
+    key dsak_literal         "Specified literally"
+    key dsak_synthetic       "Synthetic (e.g. for 0ish blockers)"
+    key dsak_expanded        "Expanded from a *key"
+    key dsak_expandable      "This is a *key"
+
+    want_destringify
+
+    doxygen_comment << "END"
+        /**
+         * What kind of annotation a DepSpecAnnotation is.
+         *
+         * Note that dsas_expandable annotations should generally be ignored
+         * for logic purposes, and that dsas_expanded should generally be
+         * ignored for display purposes.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.59
+         */
+END
+}
+

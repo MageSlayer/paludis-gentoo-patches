@@ -31,6 +31,7 @@ namespace paludis
     namespace n
     {
         typedef Name<struct name_key> key;
+        typedef Name<struct name_kind> kind;
         typedef Name<struct name_role> role;
         typedef Name<struct name_value> value;
     }
@@ -38,6 +39,7 @@ namespace paludis
     struct DepSpecAnnotation
     {
         NamedValue<n::key, std::string> key;
+        NamedValue<n::kind, DepSpecAnnotationKind> kind;
         NamedValue<n::role, DepSpecAnnotationRole> role;
         NamedValue<n::value, std::string> value;
     };

@@ -134,6 +134,7 @@ paludis::erepository::apply_annotations(
 
         annotations->add(make_named_values<DepSpecAnnotation>(
                     n::key() = k->first,
+                    n::kind() = dsak_literal,
                     n::role() = role,
                     n::value() = k->second));
     }
