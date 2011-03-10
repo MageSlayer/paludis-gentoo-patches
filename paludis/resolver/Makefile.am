@@ -70,6 +70,7 @@ noinst_HEADERS = \
 	labels_classifier.hh labels_classifier-fwd.hh \
 	make_destination_filtered_generator_helper.hh make_destination_filtered_generator_helper-fwd.hh \
 	make_origin_filtered_generator_helper.hh make_origin_filtered_generator_helper-fwd.hh \
+	make_uninstall_blocker.hh make_uninstall_blocker-fwd.hh \
 	make_unmaskable_filter_helper.hh make_unmaskable_filter_helper-fwd.hh \
 	match_qpns.hh match_qpns-fwd.hh \
 	nag.hh nag-fwd.hh \
@@ -141,6 +142,7 @@ libpaludisresolver_a_SOURCES = \
 	labels_classifier.cc \
 	make_destination_filtered_generator_helper.cc \
 	make_origin_filtered_generator_helper.cc \
+	make_uninstall_blocker.cc \
 	make_unmaskable_filter_helper.cc \
 	match_qpns.cc \
 	nag.cc \

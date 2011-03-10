@@ -39,6 +39,7 @@
 #include <paludis/resolver/why_changed_choices.hh>
 #include <paludis/resolver/same_slot.hh>
 #include <paludis/resolver/reason_utils.hh>
+#include <paludis/resolver/make_uninstall_blocker.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
@@ -1056,10 +1057,7 @@ Decider::_make_constraint_for_preloading(
     else
     {
         PackageDepSpec s(_make_spec_for_preloading(result->spec().if_block()->blocking(), changed_choices));
-        result->spec().if_block() = std::make_shared<BlockDepSpec>(
-                    "!" + stringify(s),
-                    s,
-                    result->spec().if_block()->block_kind());
+        result->spec().if_block() = make_shared_copy(make_uninstall_blocker(s));
     }
 
     return result;

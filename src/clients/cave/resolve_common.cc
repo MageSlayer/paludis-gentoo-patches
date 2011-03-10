@@ -67,6 +67,7 @@
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/required_confirmations.hh>
+#include <paludis/resolver/make_uninstall_blocker.hh>
 
 #include <paludis/resolver/allow_choice_changes_helper.hh>
 #include <paludis/resolver/allowed_to_remove_helper.hh>
@@ -148,7 +149,7 @@ namespace
                     p_suggesion.erase(0, 1);
                     seen_packages = true;
                     PackageDepSpec s(parse_spec_with_nice_error(p->first.substr(1), env.get(), { }, filter::All()));
-                    BlockDepSpec bs("!" + stringify(s), s, bk_weak);
+                    BlockDepSpec bs(make_uninstall_blocker(s));
                     result->push_back(stringify(bs));
                     resolver->add_target(bs, p->second);
                 }

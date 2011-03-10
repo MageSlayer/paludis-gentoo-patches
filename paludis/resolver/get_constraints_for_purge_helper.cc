@@ -23,6 +23,7 @@
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
+#include <paludis/resolver/make_uninstall_blocker.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_shared_copy.hh>
@@ -90,7 +91,7 @@ GetConstraintsForPurgeHelper::operator() (
                     n::from_id() = id,
                     n::nothing_is_fine_too() = true,
                     n::reason() = reason,
-                    n::spec() = BlockDepSpec("!" + stringify(spec), spec, bk_weak),
+                    n::spec() = make_uninstall_blocker(spec),
                     n::untaken() = ! _imp->purge_specs.match_any(_imp->env, id, { }),
                     n::use_existing() = ue_if_possible
                     )));
