@@ -24,6 +24,7 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/suggest_restart.hh>
+#include <paludis/resolver/make_uninstall_blocker.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
@@ -186,10 +187,8 @@ namespace test_cases
 
         void run()
         {
-            std::shared_ptr<const Resolved> resolved(get_resolved(BlockDepSpec(
-                            "!target/target",
-                            parse_user_package_dep_spec("target/target", &env, { }),
-                            bk_weak)));
+            std::shared_ptr<const Resolved> resolved(get_resolved(make_uninstall_blocker(
+                            parse_user_package_dep_spec("target/target", &env, { }))));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = exists ? make_shared_copy(DecisionChecks()

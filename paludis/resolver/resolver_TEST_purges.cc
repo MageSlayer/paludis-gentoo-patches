@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,7 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/suggest_restart.hh>
+#include <paludis/resolver/make_uninstall_blocker.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
@@ -123,10 +124,8 @@ namespace test_cases
 
         void run()
         {
-            std::shared_ptr<const Resolved> resolved(get_resolved(BlockDepSpec(
-                            "!star-slot-purges/target:1",
-                            parse_user_package_dep_spec("star-slot-purges/target:1", &env, { }),
-                            bk_weak)));
+            std::shared_ptr<const Resolved> resolved(get_resolved(make_uninstall_blocker(
+                            parse_user_package_dep_spec("star-slot-purges/target:1", &env, { }))));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()

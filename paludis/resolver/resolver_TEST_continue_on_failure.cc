@@ -28,6 +28,7 @@
 #include <paludis/resolver/job_list.hh>
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/job_requirements.hh>
+#include <paludis/resolver/make_uninstall_blocker.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
@@ -166,10 +167,8 @@ namespace test_cases
 
         void run()
         {
-            std::shared_ptr<const Resolved> resolved(get_resolved(BlockDepSpec(
-                            "!continue-on-failure-uninstall/target",
-                            parse_user_package_dep_spec("continue-on-failure-uninstall/target", &env, { }),
-                            bk_weak)));
+            std::shared_ptr<const Resolved> resolved(get_resolved(make_uninstall_blocker(
+                            parse_user_package_dep_spec("continue-on-failure-uninstall/target", &env, { }))));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
