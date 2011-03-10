@@ -35,7 +35,6 @@ void
 paludis::erepository::apply_annotations(
         const EAPI & eapi,
         const std::shared_ptr<DepSpec> & spec,
-        const std::shared_ptr<BlockDepSpec> &,
         const std::shared_ptr<const Map<std::string, std::string> > & m)
 {
     auto annotations(std::make_shared<DepSpecAnnotations>());
@@ -125,14 +124,5 @@ paludis::erepository::apply_annotations(
     }
 
     spec->set_annotations(annotations);
-}
-
-void
-paludis::erepository::apply_annotations_not_block(
-        const EAPI & eapi,
-        const std::shared_ptr<DepSpec> & spec,
-        const std::shared_ptr<const Map<std::string, std::string> > & m)
-{
-    apply_annotations(eapi, spec, make_null_shared_ptr(), m);
 }
 
