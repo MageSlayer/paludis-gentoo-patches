@@ -66,7 +66,6 @@ PackageOrBlockDepSpec::serialise(Serialiser & s) const
         w
             .member(SerialiserFlags<>(), "block", true)
             .member(SerialiserFlags<>(), "spec", stringify(if_block()->blocking()))
-            .member(SerialiserFlags<>(), "block_kind", stringify(if_block()->block_kind()))
             .member(SerialiserFlags<>(), "text", if_block()->text())
             ;
     }
@@ -133,9 +132,8 @@ PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::shared_ptr<co
 
     if (block)
     {
-        BlockKind kind(destringify<BlockKind>(v.member<std::string>("block_kind")));
         std::string text(v.member<std::string>("text"));
-        BlockDepSpec b_spec(text, spec, kind);
+        BlockDepSpec b_spec(text, spec);
         if (annotations->begin() != annotations->end())
             b_spec.set_annotations(annotations);
         return PackageOrBlockDepSpec(b_spec);

@@ -35,7 +35,7 @@ void
 paludis::erepository::apply_annotations(
         const EAPI & eapi,
         const std::shared_ptr<DepSpec> & spec,
-        const std::shared_ptr<BlockDepSpec> & if_block_spec,
+        const std::shared_ptr<BlockDepSpec> &,
         const std::shared_ptr<const Map<std::string, std::string> > & m)
 {
     auto annotations(std::make_shared<DepSpecAnnotations>());
@@ -48,36 +48,21 @@ paludis::erepository::apply_annotations(
         DepSpecAnnotationRole role(dsar_none);
 
         /* blocks */
-        if (if_block_spec && (! eapi.supported()->annotations()->blocker_resolution().empty()))
+        if (k->first == eapi.supported()->annotations()->blocker_resolution())
         {
-            if (k->first == eapi.supported()->annotations()->blocker_resolution())
+            if (k->second.empty())
             {
-                if (k->second.empty())
-                {
-                }
-                else if (k->second == eapi.supported()->annotations()->blocker_resolution_manual())
-                {
-                    if_block_spec->set_block_kind(bk_manual);
-                    role = dsar_blocker_manual;
-                }
-                else if (k->second == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_after())
-                {
-                    if_block_spec->set_block_kind(bk_uninstall_blocked_after);
-                    role = dsar_blocker_uninstall_blocked_after;
-                }
-                else if (k->second == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_before())
-                {
-                    if_block_spec->set_block_kind(bk_uninstall_blocked_before);
-                    role = dsar_blocker_uninstall_blocked_before;
-                }
-                else if (k->second == eapi.supported()->annotations()->blocker_resolution_upgrade_blocked_before())
-                {
-                    if_block_spec->set_block_kind(bk_upgrade_blocked_before);
-                    role = dsar_blocker_upgrade_blocked_before;
-                }
-                else
-                    throw EDepParseError(stringify(*if_block_spec), "Unknown value '" + k->second + "' for annotation '" + k->first + "'");
             }
+            else if (k->second == eapi.supported()->annotations()->blocker_resolution_manual())
+                role = dsar_blocker_manual;
+            else if (k->second == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_after())
+                role = dsar_blocker_uninstall_blocked_after;
+            else if (k->second == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_before())
+                role = dsar_blocker_uninstall_blocked_before;
+            else if (k->second == eapi.supported()->annotations()->blocker_resolution_upgrade_blocked_before())
+                role = dsar_blocker_upgrade_blocked_before;
+            else
+                throw EDepParseError(k->second, "Unknown value '" + k->second + "' for annotation '" + k->first + "'");
         }
 
         /* myoptions number-selected */

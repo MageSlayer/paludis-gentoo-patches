@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -71,7 +71,7 @@ namespace test_cases
             std::shared_ptr<PackageDepSpec> c(std::static_pointer_cast<PackageDepSpec>(a.clone()));
             TEST_CHECK_STRINGIFY_EQUAL(a, *c);
 
-            BlockDepSpec d("!" + stringify(*c), *c, bk_weak);
+            BlockDepSpec d("!" + stringify(*c), *c);
             std::shared_ptr<BlockDepSpec> e(std::static_pointer_cast<BlockDepSpec>(d.clone()));
             TEST_CHECK_STRINGIFY_EQUAL(d.blocking(), e->blocking());
         }

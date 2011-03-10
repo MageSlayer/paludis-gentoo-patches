@@ -144,23 +144,18 @@ namespace
     {
         if ((! s.empty()) && ('!' == s.at(0)))
         {
-            bool strong(false);
             std::string::size_type specstart(1);
             if (2 <= s.length() && '!' == s.at(1))
             {
                 if (! eapi.supported()->dependency_spec_tree_parse_options()[dstpo_double_bang_blocks])
                     throw EDepParseError(s, "Double-! blocks not allowed in this EAPI");
                 specstart = 2;
-                strong = true;
                 block_fix_op = bfo_explicit_strong;
             }
             else
             {
                 if (eapi.supported()->dependency_spec_tree_parse_options()[dstpo_single_bang_block_is_hard])
-                {
-                    strong = true;
                     block_fix_op = bfo_implicit_strong;
-                }
                 else
                     block_fix_op = bfo_implicit_weak;
             }
@@ -169,8 +164,7 @@ namespace
                         s,
                         parse_elike_package_dep_spec(s.substr(specstart),
                             eapi.supported()->package_dep_spec_parse_options(),
-                            eapi.supported()->version_spec_options()),
-                        strong ? bk_strong : bk_weak));
+                            eapi.supported()->version_spec_options())));
             h.begin()->item()->append(spec);
             annotations_go_here(spec, spec);
         }

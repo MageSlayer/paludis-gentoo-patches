@@ -31,7 +31,7 @@ class TestCase_1_DepSpecs(unittest.TestCase):
         self.pds3 = parse_user_package_dep_spec("*/*::testrepo", self.env,
                 [UserPackageDepSpecOption.ALLOW_WILDCARDS])
         self.pds4 = parse_user_package_dep_spec("cat/pkg::testrepo", self.env, [])
-        self.bds = BlockDepSpec("!>=foo/bar-1:100::testrepo", self.pds, BlockKind.WEAK)
+        self.bds = BlockDepSpec("!>=foo/bar-1:100::testrepo", self.pds)
         self.nds = NamedSetDepSpec("system")
 
     def test_01_init(self):

@@ -136,7 +136,7 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::sha
             std::string::size_type p(prefix.find_first_not_of('!'));
             if (std::string::npos != p)
                 prefix.erase(p);
-            BlockDepSpec b(prefix + stringify(spec), spec, s.if_block()->block_kind());
+            BlockDepSpec b(prefix + stringify(spec), spec);
             b.set_annotations(s.if_block()->maybe_annotations());
             result->specs()->push_back(b);
         }

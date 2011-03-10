@@ -246,14 +246,12 @@ namespace paludis
         {
             private:
                 std::shared_ptr<const PythonPackageDepSpec> _spec;
-                BlockKind _kind;
 
             public:
-                PythonBlockDepSpec(const std::string &, const std::shared_ptr<const PythonPackageDepSpec> &, const BlockKind);
+                PythonBlockDepSpec(const std::string &, const std::shared_ptr<const PythonPackageDepSpec> &);
                 PythonBlockDepSpec(const BlockDepSpec &);
 
                 std::shared_ptr<const PythonPackageDepSpec> blocking() const;
-                BlockKind block_kind() const;
         };
 
         class PALUDIS_VISIBLE PythonURILabelsDepSpec :

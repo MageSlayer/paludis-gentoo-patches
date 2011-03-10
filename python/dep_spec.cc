@@ -428,17 +428,15 @@ PythonSimpleURIDepSpec::PythonSimpleURIDepSpec(const SimpleURIDepSpec & d) :
 {
 }
 
-PythonBlockDepSpec::PythonBlockDepSpec(const std::string & t, const std::shared_ptr<const PythonPackageDepSpec> & a, const BlockKind s) :
+PythonBlockDepSpec::PythonBlockDepSpec(const std::string & t, const std::shared_ptr<const PythonPackageDepSpec> & a) :
     PythonStringDepSpec(t),
-    _spec(a),
-    _kind(s)
+    _spec(a)
 {
 }
 
 PythonBlockDepSpec::PythonBlockDepSpec(const BlockDepSpec & d) :
     PythonStringDepSpec(d.text()),
-    _spec(std::make_shared<PythonPackageDepSpec>(d.blocking())),
-    _kind(d.block_kind())
+    _spec(std::make_shared<PythonPackageDepSpec>(d.blocking()))
 {
 }
 
@@ -446,12 +444,6 @@ std::shared_ptr<const PythonPackageDepSpec>
 PythonBlockDepSpec::blocking() const
 {
     return _spec;
-}
-
-BlockKind
-PythonBlockDepSpec::block_kind() const
-{
-    return _kind;
 }
 
 PythonFetchableURIDepSpec::PythonFetchableURIDepSpec(const std::string & s) :
@@ -948,7 +940,7 @@ template <typename H_>
 void
 SpecTreeFromPython<H_>::real_visit(const PythonBlockDepSpec & d)
 {
-    _add_to->append(std::make_shared<BlockDepSpec>(d.text(), *d.blocking(), d.block_kind()));
+    _add_to->append(std::make_shared<BlockDepSpec>(d.text(), *d.blocking()));
 }
 
 template <typename H_>
@@ -1068,9 +1060,6 @@ void expose_dep_spec()
      */
     enum_auto("UserPackageDepSpecOption", last_updso,
             "Options for parse_user_package_dep_spec.");
-
-    enum_auto("BlockKind", last_bk,
-            "Options for BlockDepSpec.");
 
     /**
      * Options
@@ -1371,16 +1360,11 @@ void expose_dep_spec()
          "BlockDepSpec",
          "A BlockDepSpec represents a block on a package name (for example, 'app-editors/vim'), \n"
          "possibly with associated version and SLOT restrictions.",
-         bp::init<std::string, std::shared_ptr<const PythonPackageDepSpec>, BlockKind>("__init__(string, PackageDepSpec, BlockKind)")
+         bp::init<std::string, std::shared_ptr<const PythonPackageDepSpec> >("__init__(string, PackageDepSpec)")
         )
         .add_property("blocking", &PythonBlockDepSpec::blocking,
                 "[ro] PackageDepSpec\n"
                 "The spec we're blocking."
-                )
-
-        .add_property("block_kind", &PythonBlockDepSpec::block_kind,
-                "[ro] BlockKind\n"
-                "Are we a strong block?"
                 )
 
         //Work around epydoc bug

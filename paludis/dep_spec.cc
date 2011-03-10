@@ -44,8 +44,6 @@
 
 using namespace paludis;
 
-#include <paludis/dep_spec-se.cc>
-
 namespace paludis
 {
     template <>
@@ -213,17 +211,15 @@ NamedSetDepSpec::clone() const
     return result;
 }
 
-BlockDepSpec::BlockDepSpec(const std::string & s, const PackageDepSpec & p, const BlockKind k) :
+BlockDepSpec::BlockDepSpec(const std::string & s, const PackageDepSpec & p) :
     StringDepSpec(s),
-    _spec(p),
-    _kind(k)
+    _spec(p)
 {
 }
 
 BlockDepSpec::BlockDepSpec(const BlockDepSpec & other) :
     StringDepSpec(other.text()),
-    _spec(other._spec),
-    _kind(other._kind)
+    _spec(other._spec)
 {
     set_annotations(other.maybe_annotations());
 }
@@ -390,18 +386,6 @@ const PackageDepSpec
 BlockDepSpec::blocking() const
 {
     return _spec;
-}
-
-BlockKind
-BlockDepSpec::block_kind() const
-{
-    return _kind;
-}
-
-void
-BlockDepSpec::set_block_kind(const BlockKind k)
-{
-    _kind = k;
 }
 
 std::shared_ptr<DepSpec>
