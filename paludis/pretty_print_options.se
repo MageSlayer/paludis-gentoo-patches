@@ -6,5 +6,6 @@ make_enum_PrettyPrintOption()
     prefix ppo
 
     key ppo_multiline_allowed           "Print over multiple lines if appropriate"
+    key ppo_include_special_annotations "Include dsak_expanded and dsak_synthetic annotations"
 }
 

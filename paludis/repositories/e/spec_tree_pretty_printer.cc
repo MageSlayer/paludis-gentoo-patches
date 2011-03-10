@@ -22,6 +22,7 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/pimp-impl.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/pretty_printer.hh>
 #include <paludis/dep_spec_annotations.hh>
 #include <algorithm>
@@ -530,16 +531,38 @@ SpecTreePrettyPrinter::visit(const GenericSpecTree::NodeType<DependenciesLabelsD
 void
 SpecTreePrettyPrinter::do_annotations(const DepSpec & p)
 {
-    if (p.maybe_annotations() && (p.maybe_annotations()->begin() != p.maybe_annotations()->end()))
+    if (p.maybe_annotations())
     {
-        _imp->s << " [[ ";
+        bool done_open(false);
 
         for (auto m(p.maybe_annotations()->begin()), m_end(p.maybe_annotations()->end()) ;
                 m != m_end ; ++m)
         {
+            switch (m->kind())
+            {
+                case dsak_literal:
+                case dsak_expandable:
+                    break;
+
+                case dsak_synthetic:
+                case dsak_expanded:
+                    if (! _imp->options[ppo_include_special_annotations])
+                        continue;
+                    break;
+
+                case last_dsak:
+                    throw InternalError(PALUDIS_HERE, "bad dsak. huh?");
+            }
+
+            if (! done_open)
+                _imp->s << " [[ ";
+            done_open = true;
+
             _imp->s << m->key() << " = [" << (m->value().empty() ? " " : " " + m->value() + " ") << "] ";
         }
-        _imp->s << "]]";
+
+        if (done_open)
+            _imp->s << "]]";
     }
 }
 

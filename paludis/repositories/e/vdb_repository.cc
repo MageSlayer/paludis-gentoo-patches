@@ -1210,13 +1210,35 @@ namespace
 
         void do_annotations(const DepSpec & p)
         {
-            if (p.maybe_annotations() && (p.maybe_annotations()->begin() != p.maybe_annotations()->end()))
+            if (p.maybe_annotations())
             {
-                str << " [[ ";
+                bool done_open(false);
                 for (auto m(p.maybe_annotations()->begin()), m_end(p.maybe_annotations()->end()) ;
                         m != m_end ; ++m)
+                {
+                    switch (m->kind())
+                    {
+                        case dsak_literal:
+                        case dsak_expandable:
+                            break;
+
+                        case dsak_expanded:
+                        case dsak_synthetic:
+                            continue;
+
+                        case last_dsak:
+                            throw InternalError(PALUDIS_HERE, "bad dsak. huh?");
+                    }
+
+                    if (! done_open)
+                        str << " [[ ";
+                    done_open = true;
+
                     str << m->key() << " = [" << (m->value().empty() ? " " : " " + m->value() + " ") << "] ";
-                str << "]] ";
+                }
+
+                if (done_open)
+                    str << "]] ";
             }
         }
 

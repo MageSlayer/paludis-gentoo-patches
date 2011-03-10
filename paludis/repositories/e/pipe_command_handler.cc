@@ -123,6 +123,20 @@ namespace
                 for (auto m(p.maybe_annotations()->begin()), m_end(p.maybe_annotations()->end()) ;
                         m != m_end ; ++m)
                 {
+                    switch (m->kind())
+                    {
+                        case dsak_literal:
+                        case dsak_expandable:
+                            break;
+
+                        case dsak_synthetic:
+                        case dsak_expanded:
+                            continue;
+
+                        case last_dsak:
+                            throw InternalError(PALUDIS_HERE, "bad kind");
+                    }
+
                     if (! done_brackets)
                     {
                         str << " [[ ";
