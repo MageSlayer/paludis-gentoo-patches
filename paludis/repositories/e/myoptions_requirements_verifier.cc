@@ -147,6 +147,20 @@ MyOptionsRequirementsVerifier::verify_one(
     for (auto m(annotations->begin()), m_end(annotations->end()) ;
             m != m_end ; ++m)
     {
+        switch (m->kind())
+        {
+            case dsak_synthetic:
+            case dsak_expanded:
+            case dsak_literal:
+                break;
+
+            case dsak_expandable:
+                continue;
+
+            case last_dsak:
+                throw InternalError(PALUDIS_HERE, "bad dsak");
+        }
+
         switch (m->role())
         {
             case dsar_myoptions_requires:
