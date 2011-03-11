@@ -20,11 +20,9 @@
 #include <paludis/repositories/e/e_choice_value.hh>
 #include <paludis/repositories/e/use_desc.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
-#include <paludis/util/hashes.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
-#include <unordered_map>
+#include <paludis/util/pool-impl.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -111,9 +109,10 @@ EChoiceValue::permitted_parameter_values() const
     return make_null_shared_ptr();
 }
 
-namespace
+namespace paludis
 {
-    struct EChoiceValueParamsHash
+    template <>
+    struct Hash<EChoiceValueParams>
     {
         Hash<ChoiceNameWithPrefix> choice_name_with_prefix_hash;
         Hash<ChoicePrefixName> choice_prefix_name_hash;
@@ -139,54 +138,24 @@ namespace
         }
     };
 
-    struct EChoiceValueParamsCompare
+    bool operator== (const EChoiceValueParams & a, const EChoiceValueParams & b)
     {
-        bool operator() (const EChoiceValueParams & a, const EChoiceValueParams & b) const
-        {
-            return true
-                && (a.choice_name_with_prefix() == b.choice_name_with_prefix())
-                && (a.choice_prefix_name() == b.choice_prefix_name())
-                && (a.description() == b.description())
-                && (a.enabled() == b.enabled())
-                && (a.enabled_by_default() == b.enabled_by_default())
-                && (a.explicitly_listed() == b.explicitly_listed())
-                && (a.locked() == b.locked())
-                && (a.unprefixed_choice_name() == b.unprefixed_choice_name())
-                ;
-        }
-    };
-
-    typedef std::unordered_map<EChoiceValueParams, std::shared_ptr<const EChoiceValue>, EChoiceValueParamsHash, EChoiceValueParamsCompare> Store;
+        return true
+            && (a.choice_name_with_prefix() == b.choice_name_with_prefix())
+            && (a.choice_prefix_name() == b.choice_prefix_name())
+            && (a.description() == b.description())
+            && (a.enabled() == b.enabled())
+            && (a.enabled_by_default() == b.enabled_by_default())
+            && (a.explicitly_listed() == b.explicitly_listed())
+            && (a.locked() == b.locked())
+            && (a.unprefixed_choice_name() == b.unprefixed_choice_name())
+            ;
+    }
 }
-
-namespace paludis
-{
-    template <>
-    struct Imp<EChoiceValueStore>
-    {
-        mutable Mutex mutex;
-        mutable Store store;
-    };
-}
-
-EChoiceValueStore::EChoiceValueStore() :
-    _imp()
-{
-}
-
-EChoiceValueStore::~EChoiceValueStore() = default;
 
 const std::shared_ptr<const ChoiceValue>
-EChoiceValueStore::fetch(const EChoiceValueParams & p) const
+paludis::erepository::create_e_choice_value(const EChoiceValueParams & p)
 {
-    Lock lock(_imp->mutex);
-    auto i(_imp->store.find(p));
-    if (i == _imp->store.end())
-        i = _imp->store.insert(std::make_pair(p, std::make_shared<EChoiceValue>(p))).first;
-
-    return i->second;
+    return Pool<EChoiceValue>::get_instance()->create(p);
 }
-
-template class Pimp<erepository::EChoiceValueStore>;
-template class Singleton<erepository::EChoiceValueStore>;
 

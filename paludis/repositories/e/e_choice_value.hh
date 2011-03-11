@@ -22,7 +22,6 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/util/singleton.hh>
 #include <paludis/choice.hh>
 #include <paludis/name.hh>
 #include <functional>
@@ -56,24 +55,8 @@ namespace paludis
             NamedValue<n::unprefixed_choice_name, UnprefixedChoiceName> unprefixed_choice_name;
         };
 
-        class PALUDIS_VISIBLE EChoiceValueStore :
-            public Singleton<EChoiceValueStore>
-        {
-            friend class Singleton<EChoiceValueStore>;
-
-            private:
-                EChoiceValueStore();
-                ~EChoiceValueStore();
-
-                Pimp<EChoiceValueStore> _imp;
-
-            public:
-                const std::shared_ptr<const ChoiceValue> fetch(const EChoiceValueParams &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
+        const std::shared_ptr<const ChoiceValue> create_e_choice_value(const EChoiceValueParams &);
     }
-
-    extern template class Pimp<erepository::EChoiceValueStore>;
-    extern template class Singleton<erepository::EChoiceValueStore>;
 }
 
 #endif
