@@ -254,13 +254,15 @@ namespace
                 return;
 
             /* what sort of dep are we? */
-            LabelsClassifier classifier(env, r.from_id());
+            LabelsClassifierBuilder classifier_builder(env, r.from_id());
             for (DependenciesLabelSequence::ConstIterator l(r.sanitised_dependency().active_dependency_labels()->begin()),
                     l_end(r.sanitised_dependency().active_dependency_labels()->end()) ;
                     l != l_end ; ++l)
-                (*l)->accept(classifier);
+                (*l)->accept(classifier_builder);
 
-            if (classifier.includes_buildish || classifier.includes_non_post_runish)
+            auto classifier(classifier_builder.create());
+
+            if (classifier->includes_buildish || classifier->includes_non_post_runish)
             {
                 bool normal(true);
                 if (r.sanitised_dependency().spec().if_block())
@@ -283,7 +285,7 @@ namespace
 
                 NAGIndex from(make_named_values<NAGIndex>(
                             n::resolvent() = r.from_resolvent(),
-                            n::role() = classifier.includes_fetch ? role_for_fetching(r.from_resolvent()) : nir_done
+                            n::role() = classifier->includes_fetch ? role_for_fetching(r.from_resolvent()) : nir_done
                             ));
 
                 NAGIndex to(make_named_values<NAGIndex>(
@@ -306,10 +308,10 @@ namespace
                     nag->add_edge(from, to,
                             make_named_values<NAGEdgeProperties>(
                                 n::always() = false,
-                                n::build() = classifier.includes_buildish,
-                                n::build_all_met() = r.already_met().is_true() || ! classifier.includes_buildish,
-                                n::run() = classifier.includes_non_post_runish,
-                                n::run_all_met() = r.already_met().is_true() || ! classifier.includes_non_post_runish
+                                n::build() = classifier->includes_buildish,
+                                n::build_all_met() = r.already_met().is_true() || ! classifier->includes_buildish,
+                                n::run() = classifier->includes_non_post_runish,
+                                n::run_all_met() = r.already_met().is_true() || ! classifier->includes_non_post_runish
                                 ));
                 }
                 else
@@ -324,7 +326,7 @@ namespace
                                 ));
                 }
             }
-            else if (classifier.includes_postish)
+            else if (classifier->includes_postish)
             {
                 /* we won't add a backwards edge, since most post deps dep upon
                  * the thing requiring them anyway */

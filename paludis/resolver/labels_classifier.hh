@@ -29,28 +29,50 @@ namespace paludis
 {
     namespace resolver
     {
-        class LabelsClassifier
+        struct LabelsClassifier
+        {
+            LabelsClassifier(
+                    bool any_enabled,
+                    bool includes_buildish,
+                    bool includes_compile_against,
+                    bool includes_fetch,
+                    bool includes_non_post_runish,
+                    bool includes_non_test_buildish,
+                    bool includes_post,
+                    bool includes_postish,
+                    bool is_recommendation,
+                    bool is_requirement,
+                    bool is_suggestion
+                    );
+
+            bool any_enabled;
+
+            bool includes_buildish;
+            bool includes_compile_against;
+            bool includes_fetch;
+            bool includes_non_post_runish;
+            bool includes_non_test_buildish;
+            bool includes_post;
+            bool includes_postish;
+
+            bool is_recommendation;
+            bool is_requirement;
+            bool is_suggestion;
+
+            void serialise(Serialiser &) const;
+
+            static const std::shared_ptr<const LabelsClassifier> deserialise(
+                    Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+
+        class LabelsClassifierBuilder
         {
             private:
-                Pimp<LabelsClassifier> _imp;
+                Pimp<LabelsClassifierBuilder> _imp;
 
             public:
-                LabelsClassifier(const Environment * const, const std::shared_ptr<const PackageID> &);
-                ~LabelsClassifier();
-
-                bool any_enabled;
-
-                bool includes_buildish;
-                bool includes_compile_against;
-                bool includes_fetch;
-                bool includes_non_post_runish;
-                bool includes_non_test_buildish;
-                bool includes_post;
-                bool includes_postish;
-
-                bool is_recommendation;
-                bool is_requirement;
-                bool is_suggestion;
+                LabelsClassifierBuilder(const Environment * const, const std::shared_ptr<const PackageID> &);
+                ~LabelsClassifierBuilder();
 
                 void visit(const DependenciesBuildLabel &);
                 void visit(const DependenciesCompileAgainstLabel &);
@@ -62,10 +84,7 @@ namespace paludis
                 void visit(const DependenciesSuggestionLabel &);
                 void visit(const DependenciesTestLabel &);
 
-                void serialise(Serialiser &) const;
-
-                static const std::shared_ptr<LabelsClassifier> deserialise(
-                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const LabelsClassifier> create() const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }
