@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/e/apply_annotations.hh>
+#include <paludis/repositories/e/parse_annotations.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/util/map.hh>
@@ -26,15 +26,13 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec_annotations.hh>
-#include <paludis/dep_spec.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
 
-void
-paludis::erepository::apply_annotations(
+const std::shared_ptr<DepSpecAnnotations>
+paludis::erepository::parse_annotations(
         const EAPI & eapi,
-        const std::shared_ptr<DepSpec> & spec,
         const std::shared_ptr<const Map<std::string, std::string> > & m)
 {
     auto annotations(std::make_shared<DepSpecAnnotations>());
@@ -123,6 +121,6 @@ paludis::erepository::apply_annotations(
                     n::value() = k->second));
     }
 
-    spec->set_annotations(annotations);
+    return annotations;
 }
 

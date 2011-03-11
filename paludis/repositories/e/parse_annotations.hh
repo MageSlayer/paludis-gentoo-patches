@@ -17,21 +17,21 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_APPLY_ANNOTATIONS_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_APPLY_ANNOTATIONS_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_PARSE_ANNOTATIONS_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_PARSE_ANNOTATIONS_HH 1
 
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/util/map-fwd.hh>
-#include <paludis/dep_spec-fwd.hh>
+#include <paludis/dep_spec_annotations-fwd.hh>
 #include <memory>
 
 namespace paludis
 {
     namespace erepository
     {
-        void apply_annotations(
+        const std::shared_ptr<DepSpecAnnotations>
+        parse_annotations(
                 const EAPI & eapi,
-                const std::shared_ptr<DepSpec> & spec,
                 const std::shared_ptr<const Map<std::string, std::string> > & m);
     }
 }

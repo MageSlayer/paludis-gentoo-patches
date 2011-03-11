@@ -22,7 +22,6 @@ endif
 noinst_HEADERS = \
 	a_finder.hh \
 	aa_visitor.hh \
-	apply_annotations.hh \
 	can_skip_phase.hh \
 	check_fetched_files_visitor.hh \
 	check_userpriv.hh \
@@ -79,6 +78,7 @@ noinst_HEADERS = \
 	metadata_xml.hh \
 	myoption.hh \
 	myoptions_requirements_verifier.hh \
+	parse_annotations.hh \
 	parse_dependency_label.hh \
 	parse_plain_text_label.hh \
 	parse_uri_label.hh \
@@ -102,7 +102,6 @@ noinst_HEADERS = \
 libpaludiserepository_la_SOURCES = \
 	a_finder.cc \
 	aa_visitor.cc \
-	apply_annotations.cc \
 	can_skip_phase.cc \
 	check_fetched_files_visitor.cc \
 	check_userpriv.cc \
@@ -154,6 +153,7 @@ libpaludiserepository_la_SOURCES = \
 	metadata_xml.cc \
 	myoption.cc \
 	myoptions_requirements_verifier.cc \
+	parse_annotations.cc \
 	parse_dependency_label.cc \
 	parse_plain_text_label.cc \
 	parse_uri_label.cc \

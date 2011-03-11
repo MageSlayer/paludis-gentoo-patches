@@ -21,7 +21,7 @@
 #include <paludis/repositories/e/parse_dependency_label.hh>
 #include <paludis/repositories/e/parse_uri_label.hh>
 #include <paludis/repositories/e/parse_plain_text_label.hh>
-#include <paludis/repositories/e/apply_annotations.hh>
+#include <paludis/repositories/e/parse_annotations.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/options.hh>
@@ -379,23 +379,15 @@ namespace
         block = b;
     }
 
-    void fix_block_annotations(
-            const std::shared_ptr<BlockDepSpec> & if_block_spec,
+    void add_block_annotations(
+            std::shared_ptr<DepSpecAnnotations> & annotations,
             const BlockFixOp & block_fix_op)
     {
-        if (! if_block_spec)
-            return;
-
         DepSpecAnnotationRole current_role(dsar_none);
-        if (if_block_spec->maybe_annotations())
-            current_role = find_blocker_role_in_annotations(if_block_spec->maybe_annotations());
+        if (annotations)
+            current_role = find_blocker_role_in_annotations(annotations);
         if (dsar_none != current_role)
             return;
-
-        std::shared_ptr<DepSpecAnnotations> annotations(std::make_shared<DepSpecAnnotations>());
-        if (if_block_spec->maybe_annotations())
-            std::for_each(if_block_spec->maybe_annotations()->begin(), if_block_spec->maybe_annotations()->end(),
-                    std::bind(&DepSpecAnnotations::add, annotations, std::placeholders::_1));
 
         switch (block_fix_op)
         {
@@ -426,19 +418,40 @@ namespace
                             ));
                 break;
         }
-
-        if_block_spec->set_annotations(annotations);
     }
 
-    void apply_annotations_then_fixup(
+    void apply_maybe_blocker_annotations(
             const EAPI & eapi,
             const std::shared_ptr<DepSpec> & spec,
             const std::shared_ptr<BlockDepSpec> & if_block_spec,
             const BlockFixOp & block_fix_op,
             const std::shared_ptr<const Map<std::string, std::string> > & m)
     {
-        apply_annotations(eapi, spec, m);
-        fix_block_annotations(if_block_spec, block_fix_op);
+        auto annotations(parse_annotations(eapi, m));
+        if (if_block_spec)
+            add_block_annotations(annotations, block_fix_op);
+        spec->set_annotations(annotations);
+    }
+
+    void apply_maybe_blocker_no_annotations(
+            const std::shared_ptr<BlockDepSpec> & if_block_spec,
+            const BlockFixOp & block_fix_op)
+    {
+        if (if_block_spec)
+        {
+            auto annotations(std::make_shared<DepSpecAnnotations>());
+            add_block_annotations(annotations, block_fix_op);
+            if_block_spec->set_annotations(annotations);
+        }
+    }
+
+    void apply_non_blocker_annotations(
+            const EAPI & eapi,
+            const std::shared_ptr<DepSpec> & spec,
+            const std::shared_ptr<const Map<std::string, std::string> > & m)
+    {
+        auto annotations(parse_annotations(eapi, m));
+        spec->set_annotations(annotations);
     }
 }
 
@@ -462,7 +475,7 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<DependencySpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&apply_annotations_then_fixup, std::cref(eapi), std::cref(thing_to_annotate),
+                n::on_annotations() = std::bind(&apply_maybe_blocker_annotations, std::cref(eapi), std::cref(thing_to_annotate),
                     std::cref(thing_to_annotate_if_block), std::cref(block_fix_op), _1),
                 n::on_any() = std::bind(&any_all_handler<DependencySpecTree, AnyDepSpec>, std::ref(stack)),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
@@ -473,7 +486,7 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)),
                     _1, std::cref(eapi)),
-                n::on_no_annotations() = std::bind(&fix_block_annotations, std::cref(thing_to_annotate_if_block), std::cref(block_fix_op)),
+                n::on_no_annotations() = std::bind(&apply_maybe_blocker_no_annotations, std::cref(thing_to_annotate_if_block), std::cref(block_fix_op)),
                 n::on_pop() = std::bind(&pop_handler<DependencySpecTree>, std::ref(stack),
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)), s),
@@ -509,7 +522,7 @@ paludis::erepository::parse_provide(const std::string & s, const Environment * c
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<ProvideSpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
+                n::on_annotations() = std::bind(&apply_non_blocker_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
@@ -550,7 +563,7 @@ paludis::erepository::parse_fetchable_uri(const std::string & s, const Environme
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<FetchableURISpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
+                n::on_annotations() = std::bind(&apply_non_blocker_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrow_handler<FetchableURISpecTree>, std::ref(stack),
                     ParseStackTypes<FetchableURISpecTree>::AnnotationsGoHere(std::bind(
@@ -595,7 +608,7 @@ paludis::erepository::parse_simple_uri(const std::string & s, const Environment 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<SimpleURISpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
+                n::on_annotations() = std::bind(&apply_non_blocker_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
@@ -636,7 +649,7 @@ paludis::erepository::parse_license(const std::string & s, const Environment * c
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<LicenseSpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
+                n::on_annotations() = std::bind(&apply_non_blocker_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
                 n::on_any() = std::bind(&any_all_handler<LicenseSpecTree, AnyDepSpec>, std::ref(stack)),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
@@ -677,7 +690,7 @@ paludis::erepository::parse_plain_text(const std::string & s, const Environment 
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<PlainTextSpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
+                n::on_annotations() = std::bind(&apply_non_blocker_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
@@ -718,7 +731,7 @@ paludis::erepository::parse_myoptions(const std::string & s, const Environment *
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<PlainTextSpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
+                n::on_annotations() = std::bind(&apply_non_blocker_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
@@ -761,7 +774,7 @@ paludis::erepository::parse_required_use(const std::string & s, const Environmen
     ELikeDepParserCallbacks callbacks(
             make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&any_all_handler<RequiredUseSpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
+                n::on_annotations() = std::bind(&apply_non_blocker_annotations, std::cref(eapi), std::ref(thing_to_annotate), _1),
                 n::on_any() = std::bind(&any_all_handler<RequiredUseSpecTree, AnyDepSpec>, std::ref(stack)),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
                 n::on_error() = std::bind(&error_handler, s, _1),
