@@ -69,6 +69,7 @@ namespace paludis
 {
     namespace n
     {
+        typedef Name<struct name_children> children;
         typedef Name<struct name_item> item;
         typedef Name<struct name_spec> spec;
     }
@@ -81,6 +82,7 @@ namespace
     {
         struct Item
         {
+            NamedValue<n::children, std::list<std::shared_ptr<DepSpec> > > children;
             NamedValue<n::item, std::shared_ptr<typename T_::BasicInnerNode> > item;
             NamedValue<n::spec, std::shared_ptr<DepSpec> > spec;
         };
@@ -94,6 +96,7 @@ namespace
     {
         struct Item
         {
+            NamedValue<n::children, std::list<std::shared_ptr<DepSpec> > > children;
             NamedValue<n::item, std::shared_ptr<DependencySpecTree::BasicInnerNode> > item;
             NamedValue<n::spec, std::shared_ptr<DepSpec> > spec;
         };
@@ -115,7 +118,7 @@ namespace
 
     template <typename T_>
     void package_dep_spec_string_handler(
-            const typename ParseStackTypes<T_>::Stack & h,
+            typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s,
             const EAPI & eapi)
@@ -124,6 +127,7 @@ namespace
                     parse_elike_package_dep_spec(s, eapi.supported()->package_dep_spec_parse_options(),
                         eapi.supported()->version_spec_options())));
         h.begin()->item()->append(spec);
+        h.begin()->children().push_back(spec);
         call_annotations_go_here(annotations_go_here, spec);
     }
 
@@ -136,7 +140,7 @@ namespace
 
     template <typename T_>
     void package_or_block_dep_spec_string_handler(
-            const typename ParseStackTypes<T_>::Stack & h,
+            typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             BlockFixOp & block_fix_op,
             const std::string & s,
@@ -166,6 +170,7 @@ namespace
                             eapi.supported()->package_dep_spec_parse_options(),
                             eapi.supported()->version_spec_options())));
             h.begin()->item()->append(spec);
+            h.begin()->children().push_back(spec);
             annotations_go_here(spec, spec);
         }
         else
@@ -174,40 +179,43 @@ namespace
 
     template <typename T_>
     void license_handler(
-            const typename ParseStackTypes<T_>::Stack & h,
+            typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s)
     {
         std::shared_ptr<LicenseDepSpec> spec(std::make_shared<LicenseDepSpec>(s));
         h.begin()->item()->append(spec);
+        h.begin()->children().push_back(spec);
         annotations_go_here(spec);
     }
 
     template <typename T_>
     void plain_text_handler(
-            const typename ParseStackTypes<T_>::Stack & h,
+            typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s)
     {
         std::shared_ptr<PlainTextDepSpec> spec(std::make_shared<PlainTextDepSpec>(s));
         h.begin()->item()->append(spec);
+        h.begin()->children().push_back(spec);
         annotations_go_here(spec);
     }
 
     template <typename T_>
     void simple_uri_handler(
-            const typename ParseStackTypes<T_>::Stack & h,
+            typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s)
     {
         std::shared_ptr<SimpleURIDepSpec> spec(std::make_shared<SimpleURIDepSpec>(s));
         h.begin()->item()->append(spec);
+        h.begin()->children().push_back(spec);
         annotations_go_here(spec);
     }
 
     template <typename T_>
     void arrow_handler(
-            const typename ParseStackTypes<T_>::Stack & h,
+            typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s,
             const std::string & f,
@@ -218,6 +226,7 @@ namespace
         {
             std::shared_ptr<FetchableURIDepSpec> spec(std::make_shared<FetchableURIDepSpec>(t.empty() ? f : f + " -> " + t));
             h.begin()->item()->append(spec);
+            h.begin()->children().push_back(spec);
             annotations_go_here(spec);
         }
         else
@@ -262,36 +271,39 @@ namespace
     template <typename T_>
     void dependency_label_handler(
             const Environment * const env,
-            const typename ParseStackTypes<T_>::Stack & h,
+            typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s,
             const EAPI & eapi)
     {
         std::shared_ptr<DependenciesLabelsDepSpec> spec(parse_dependency_label(env, s, eapi));
         h.begin()->item()->append(spec);
+        h.begin()->children().push_back(spec);
         annotations_go_here(spec, make_null_shared_ptr());
     }
 
     template <typename T_>
     void fetchable_label_handler(
-            const typename ParseStackTypes<T_>::Stack & h,
+            typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s,
             const EAPI & eapi)
     {
         std::shared_ptr<URILabelsDepSpec> spec(parse_uri_label(s, eapi));
         h.begin()->item()->append(spec);
+        h.begin()->children().push_back(spec);
         annotations_go_here(spec);
     }
 
     template <typename T_>
     void plain_text_label_handler(
-            const typename ParseStackTypes<T_>::Stack & h,
+            typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s)
     {
         std::shared_ptr<PlainTextLabelDepSpec> spec(parse_plain_text_label(s));
         h.begin()->item()->append(spec);
+        h.begin()->children().push_back(spec);
         annotations_go_here(spec);
     }
 
@@ -300,6 +312,7 @@ namespace
     {
         std::shared_ptr<A_> spec(std::make_shared<A_>());
         stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
+                    n::children() = std::list<std::shared_ptr<DepSpec> >(),
                     n::item() = stack.begin()->item()->append(spec),
                     n::spec() = spec
                 ));
@@ -316,6 +329,7 @@ namespace
         std::shared_ptr<ConditionalDepSpec> spec(std::make_shared<ConditionalDepSpec>(parse_elike_conditional_dep_spec(
                         u, is_installed || ! eapi.supported()->package_dep_spec_parse_options()[epdso_missing_use_deps_is_qa])));
         stack.push_front(make_named_values<typename ParseStackTypes<T_>::Item>(
+                    n::children() = std::list<std::shared_ptr<DepSpec> >(),
                     n::item() = stack.begin()->item()->append(spec),
                     n::spec() = spec
                 ));
@@ -328,9 +342,11 @@ namespace
             const std::string & s)
     {
         call_annotations_go_here(annotations_go_here, stack.begin()->spec());
+        auto children(std::move(stack.begin()->children()));
         stack.pop_front();
         if (stack.empty())
             throw EDepParseError(s, "Too many ')'s");
+        stack.begin()->children().splice(stack.begin()->children().end(), children, children.begin(), children.end());
     }
 
     template <typename T_>
@@ -438,6 +454,7 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
     BlockFixOp block_fix_op;
     std::shared_ptr<DependencySpecTree> top(std::make_shared<DependencySpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<DependencySpecTree>::Item>(
+                n::children() = std::list<std::shared_ptr<DepSpec> >(),
                 n::item() = top->top(),
                 n::spec() = spec
             ));
@@ -484,6 +501,7 @@ paludis::erepository::parse_provide(const std::string & s, const Environment * c
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<ProvideSpecTree> top(std::make_shared<ProvideSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<ProvideSpecTree>::Item>(
+                n::children() = std::list<std::shared_ptr<DepSpec> >(),
                 n::item() = top->top(),
                 n::spec() = spec
             ));
@@ -524,6 +542,7 @@ paludis::erepository::parse_fetchable_uri(const std::string & s, const Environme
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<FetchableURISpecTree> top(std::make_shared<FetchableURISpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<FetchableURISpecTree>::Item>(
+                n::children() = std::list<std::shared_ptr<DepSpec> >(),
                 n::item() = top->top(),
                 n::spec() = spec
             ));
@@ -568,6 +587,7 @@ paludis::erepository::parse_simple_uri(const std::string & s, const Environment 
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<SimpleURISpecTree> top(std::make_shared<SimpleURISpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<SimpleURISpecTree>::Item>(
+                n::children() = std::list<std::shared_ptr<DepSpec> >(),
                 n::item() = top->top(),
                 n::spec() = spec
             ));
@@ -608,6 +628,7 @@ paludis::erepository::parse_license(const std::string & s, const Environment * c
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<LicenseSpecTree> top(std::make_shared<LicenseSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<LicenseSpecTree>::Item>(
+                n::children() = std::list<std::shared_ptr<DepSpec> >(),
                 n::item() = top->top(),
                 n::spec() = spec
             ));
@@ -648,6 +669,7 @@ paludis::erepository::parse_plain_text(const std::string & s, const Environment 
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<PlainTextSpecTree> top(std::make_shared<PlainTextSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<PlainTextSpecTree>::Item>(
+                n::children() = std::list<std::shared_ptr<DepSpec> >(),
                 n::item() = top->top(),
                 n::spec() = spec
             ));
@@ -688,6 +710,7 @@ paludis::erepository::parse_myoptions(const std::string & s, const Environment *
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<PlainTextSpecTree> top(std::make_shared<PlainTextSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<PlainTextSpecTree>::Item>(
+                n::children() = std::list<std::shared_ptr<DepSpec> >(),
                 n::item() = top->top(),
                 n::spec() = spec
             ));
@@ -730,6 +753,7 @@ paludis::erepository::parse_required_use(const std::string & s, const Environmen
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
     std::shared_ptr<RequiredUseSpecTree> top(std::make_shared<RequiredUseSpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<RequiredUseSpecTree>::Item>(
+                n::children() = std::list<std::shared_ptr<DepSpec> >(),
                 n::item() = top->top(),
                 n::spec() = spec
             ));
