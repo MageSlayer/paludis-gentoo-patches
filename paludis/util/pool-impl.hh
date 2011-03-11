@@ -23,6 +23,8 @@
 #include <paludis/util/pool.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/stringify.hh>
 #include <unordered_map>
 #include <memory>
 
@@ -37,10 +39,31 @@ namespace paludis
     }
 
     template <typename T_>
+    struct PoolReuseScore
+    {
+        static const std::string message(const int size, const int reused)
+        {
+            return "Size " + stringify(size) + " reused " + stringify(reused) + " for " + __PRETTY_FUNCTION__;
+        }
+    };
+
+    template <typename T_>
     struct Imp<Pool<T_> >
     {
         mutable Mutex mutex;
         mutable std::unordered_map<PoolKeys, std::shared_ptr<const T_>, PoolKeysHasher, PoolKeysComparator> store;
+        mutable unsigned reused;
+
+        Imp() :
+            reused(0)
+        {
+        }
+
+        ~Imp()
+        {
+            Log::get_instance()->message("pool.reused_score", ll_debug, lc_no_context)
+                << PoolReuseScore<T_>::message(store.size(), reused);
+        }
     };
 
     template <typename T_>
@@ -80,6 +103,8 @@ namespace paludis
         auto i(_imp->store.find(keys));
         if (i == _imp->store.end())
             i = _imp->store.insert(std::make_pair(keys, std::make_shared<const T_>(PreventConversion<Args_>(args)...))).first;
+        else
+            ++_imp->reused;
 
         return i->second;
     }
