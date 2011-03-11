@@ -22,27 +22,11 @@
 
 #include <paludis/mask.hh>
 #include <paludis/util/pimp.hh>
-#include <paludis/util/singleton.hh>
 
 namespace paludis
 {
     namespace erepository
     {
-        class EUnacceptedMaskStore :
-            public Singleton<EUnacceptedMaskStore>
-        {
-            friend class Singleton<EUnacceptedMaskStore>;
-
-            private:
-                Pimp<EUnacceptedMaskStore> _imp;
-
-                EUnacceptedMaskStore();
-                ~EUnacceptedMaskStore();
-
-            public:
-                const std::shared_ptr<const UnacceptedMask> fetch(const char, const std::string &, const std::string &);
-        };
-
         class EUnsupportedMask :
             public UnsupportedMask
         {
@@ -76,10 +60,10 @@ namespace paludis
                 virtual const std::string token() const;
                 virtual const FSPath mask_file() const;
         };
-    }
 
-    extern template class Singleton<erepository::EUnacceptedMaskStore>;
-    extern template class Pimp<erepository::EUnacceptedMaskStore>;
+        const std::shared_ptr<const UnacceptedMask> create_e_unaccepted_mask(
+                const char c, const std::string & s, const std::string & k);
+    }
 }
 
 #endif

@@ -533,7 +533,7 @@ EbuildID::need_masks_added() const
     {
         if (! _imp->environment->accept_keywords(keywords_key()->value(), shared_from_this()))
         {
-            add_mask(EUnacceptedMaskStore::get_instance()->fetch('K',
+            add_mask(create_e_unaccepted_mask('K',
                         DistributionData::get_instance()->distribution_from_string(
                             _imp->environment->distribution())->concept_keyword(), keywords_key()->raw_name()));
         }
@@ -542,7 +542,7 @@ EbuildID::need_masks_added() const
         {
             add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
-                                n::mask() = EUnacceptedMaskStore::get_instance()->fetch('~',
+                                n::mask() = create_e_unaccepted_mask('~',
                                             DistributionData::get_instance()->distribution_from_string(
                                                 _imp->environment->distribution())->concept_keyword() + " (unstable accepted)", keywords_key()->raw_name()),
                                 n::override_reason() = mro_accepted_unstable
@@ -555,7 +555,7 @@ EbuildID::need_masks_added() const
         LicenceChecker c(_imp->environment, &Environment::accept_license, shared_from_this());
         license_key()->value()->top()->accept(c);
         if (! c.ok)
-            add_mask(EUnacceptedMaskStore::get_instance()->fetch('L',
+            add_mask(create_e_unaccepted_mask('L',
                         DistributionData::get_instance()->distribution_from_string(
                             _imp->environment->distribution())->concept_license(), license_key()->raw_name()));
     }
