@@ -100,32 +100,6 @@ namespace
         typedef std::function<void (const std::shared_ptr<DepSpec> &)> AnnotationsGoHere;
     };
 
-    template <>
-    struct ParseStackTypes<DependencySpecTree>
-    {
-        struct Item
-        {
-            NamedValue<n::block_children, std::list<std::pair<std::shared_ptr<BlockDepSpec>, BlockFixOp> > > block_children;
-            NamedValue<n::children, std::list<std::shared_ptr<DepSpec> > > children;
-            NamedValue<n::item, std::shared_ptr<DependencySpecTree::BasicInnerNode> > item;
-            NamedValue<n::spec, std::shared_ptr<DepSpec> > spec;
-        };
-
-        typedef std::list<Item> Stack;
-        typedef std::function<void (const std::shared_ptr<DepSpec> &, const std::shared_ptr<BlockDepSpec> &)> AnnotationsGoHere;
-    };
-
-    template <typename T_>
-    void call_annotations_go_here(const T_ & f, const std::shared_ptr<DepSpec> & spec)
-    {
-        f(spec);
-    }
-
-    void call_annotations_go_here(const ParseStackTypes<DependencySpecTree>::AnnotationsGoHere & f, const std::shared_ptr<DepSpec> & spec)
-    {
-        f(spec, make_null_shared_ptr());
-    }
-
     template <typename T_>
     void package_dep_spec_string_handler(
             typename ParseStackTypes<T_>::Stack & h,
@@ -138,7 +112,7 @@ namespace
                         eapi.supported()->version_spec_options())));
         h.begin()->item()->append(spec);
         h.begin()->children().push_back(spec);
-        call_annotations_go_here(annotations_go_here, spec);
+        annotations_go_here(spec);
     }
 
     template <typename T_>
@@ -174,7 +148,8 @@ namespace
             h.begin()->item()->append(spec);
             h.begin()->block_children().push_back(std::make_pair(spec, op));
             h.begin()->children().push_back(spec);
-            annotations_go_here(spec, spec);
+
+            annotations_go_here(spec);
         }
         else
             package_dep_spec_string_handler<T_>(h, annotations_go_here, s, eapi);
@@ -282,7 +257,7 @@ namespace
         std::shared_ptr<DependenciesLabelsDepSpec> spec(parse_dependency_label(env, s, eapi));
         h.begin()->item()->append(spec);
         h.begin()->children().push_back(spec);
-        annotations_go_here(spec, make_null_shared_ptr());
+        annotations_go_here(spec);
     }
 
     template <typename T_>
@@ -346,7 +321,8 @@ namespace
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s)
     {
-        call_annotations_go_here(annotations_go_here, stack.begin()->spec());
+        annotations_go_here(stack.begin()->spec());
+
         auto children(std::move(stack.begin()->children()));
         auto block_children(std::move(stack.begin()->block_children()));
 
@@ -378,14 +354,6 @@ namespace
     void set_thing_to_annotate(std::shared_ptr<DepSpec> & spec, const std::shared_ptr<DepSpec> & s)
     {
         spec = s;
-    }
-
-    void set_thing_to_annotate_maybe_block(
-            std::shared_ptr<DepSpec> & spec, const std::shared_ptr<DepSpec> & s,
-            std::shared_ptr<BlockDepSpec> & block, const std::shared_ptr<BlockDepSpec> & b)
-    {
-        spec = s;
-        block = b;
     }
 
     void add_block_annotations(
@@ -459,7 +427,6 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
     ParseStackTypes<DependencySpecTree>::Stack stack;
     std::shared_ptr<AllDepSpec> spec(std::make_shared<AllDepSpec>());
     std::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::shared_ptr<BlockDepSpec> thing_to_annotate_if_block;
     std::shared_ptr<DependencySpecTree> top(std::make_shared<DependencySpecTree>(spec));
     stack.push_front(make_named_values<ParseStackTypes<DependencySpecTree>::Item>(
                 n::block_children() = std::list<std::pair<std::shared_ptr<BlockDepSpec>, BlockFixOp> >(),
@@ -479,16 +446,16 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
                 n::on_label() = std::bind(&dependency_label_handler<DependencySpecTree>, env,
                     std::ref(stack),
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
-                            &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)),
+                            &set_thing_to_annotate, std::ref(thing_to_annotate), _1)),
                     _1, std::cref(eapi)),
                 n::on_no_annotations() = &do_nothing,
                 n::on_pop() = std::bind(&pop_handler<DependencySpecTree>, std::ref(stack),
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
-                            &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)), s),
+                            &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), s),
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<DependencySpecTree>, std::ref(stack), s),
                 n::on_string() = std::bind(&package_or_block_dep_spec_string_handler<DependencySpecTree>, std::ref(stack),
                     ParseStackTypes<DependencySpecTree>::AnnotationsGoHere(std::bind(
-                            &set_thing_to_annotate_maybe_block, std::ref(thing_to_annotate), _1, std::ref(thing_to_annotate_if_block), _2)), _1, eapi),
+                            &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1, eapi),
                 n::on_use() = std::bind(&use_handler<DependencySpecTree>, std::ref(stack), _1, env, std::cref(eapi), is_installed),
                 n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
             ));
