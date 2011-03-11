@@ -39,13 +39,25 @@ paludis::erepository::parse_annotations(
     for (auto k(m->begin()), k_end(m->end()) ;
             k != k_end ; ++k)
     {
-        if (k->first.empty())
-            continue;
+        std::string key(k->first);
+
+        if (key.empty())
+            throw EDepParseError(key, "Empty annotation key");
+
+        bool is_star(false);
+        if ('*' == key.at(0))
+        {
+            is_star = true;
+            key.erase(0, 1);
+
+            if (key.empty())
+                throw EDepParseError(key, "Empty *annotation key");
+        }
 
         DepSpecAnnotationRole role(dsar_none);
 
         /* blocks */
-        if (k->first == eapi.supported()->annotations()->blocker_resolution())
+        if (key == eapi.supported()->annotations()->blocker_resolution())
         {
             if (k->second.empty())
             {
@@ -59,13 +71,13 @@ paludis::erepository::parse_annotations(
             else if (k->second == eapi.supported()->annotations()->blocker_resolution_upgrade_blocked_before())
                 role = dsar_blocker_upgrade_blocked_before;
             else
-                throw EDepParseError(k->second, "Unknown value '" + k->second + "' for annotation '" + k->first + "'");
+                throw EDepParseError(k->second, "Unknown value '" + k->second + "' for annotation '" + key + "'");
         }
 
         /* myoptions number-selected */
         if (dsar_none == role)
         {
-            if (k->first == eapi.supported()->annotations()->myoptions_number_selected())
+            if (key == eapi.supported()->annotations()->myoptions_number_selected())
             {
                 if (k->second.empty())
                 {
@@ -77,46 +89,46 @@ paludis::erepository::parse_annotations(
                 else if (k->second == eapi.supported()->annotations()->myoptions_number_selected_exactly_one())
                     role = dsar_myoptions_n_exactly_one;
                 else
-                    throw EDepParseError(k->first, "Unknown value '" + k->second + "' for annotation '" + k->first + "'");
+                    throw EDepParseError(key, "Unknown value '" + k->second + "' for annotation '" + key + "'");
             }
         }
 
         /* myoptions requires */
         if (dsar_none == role)
         {
-            if (k->first == eapi.supported()->annotations()->myoptions_requires())
+            if (key == eapi.supported()->annotations()->myoptions_requires())
                 role = dsar_myoptions_requires;
         }
 
         /* suggestions */
         if (dsar_none == role)
         {
-            if (k->first == eapi.supported()->annotations()->suggestions_group_name())
+            if (key == eapi.supported()->annotations()->suggestions_group_name())
                 role = dsar_suggestions_group_name;
         }
 
         /* general */
         if (dsar_none == role)
         {
-            if (k->first == eapi.supported()->annotations()->general_description())
+            if (key == eapi.supported()->annotations()->general_description())
                 role = dsar_general_description;
-            else if (k->first == eapi.supported()->annotations()->general_url())
+            else if (key == eapi.supported()->annotations()->general_url())
                 role = dsar_general_url;
-            else if (k->first == eapi.supported()->annotations()->general_note())
+            else if (key == eapi.supported()->annotations()->general_note())
                 role = dsar_general_note;
-            else if (k->first == eapi.supported()->annotations()->general_lang())
+            else if (key == eapi.supported()->annotations()->general_lang())
                 role = dsar_general_lang;
-            else if (k->first == eapi.supported()->ebuild_options()->bracket_merged_variables_annotation())
+            else if (key == eapi.supported()->ebuild_options()->bracket_merged_variables_annotation())
                 role = dsar_general_defined_in;
         }
 
         if (dsar_none == role)
             Log::get_instance()->message("e.dep_parser.unknown_annotation", ll_qa, lc_context)
-                << "Unknown annotation '" << k->first << "' = '" << k->second << "'";
+                << "Unknown annotation '" << key << "' = '" << k->second << "'";
 
         annotations->add(make_named_values<DepSpecAnnotation>(
-                    n::key() = k->first,
-                    n::kind() = dsak_literal,
+                    n::key() = k->first, /* not key */
+                    n::kind() = is_star ? dsak_expandable : dsak_literal,
                     n::role() = role,
                     n::value() = k->second));
     }
