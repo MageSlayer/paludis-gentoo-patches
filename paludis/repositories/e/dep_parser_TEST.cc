@@ -504,5 +504,32 @@ namespace test_cases
                     "[[ for = [ foo ] ]] baz? ( ) [[ for = [ baz ] ]] ) [[ for = [ bar ] ]]");
         }
     } test_annotations;
+
+    struct StarAnnotationsTest : TestCase
+    {
+        StarAnnotationsTest() : TestCase("*annotations") { }
+
+        void run()
+        {
+            TestEnvironment env;
+            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                            n::environment() = &env,
+                            n::name() = RepositoryName("repo")
+                            )));
+            env.package_database()->add_repository(1, repo);
+            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+
+            UnformattedPrettyPrinter ff;
+            SpecTreePrettyPrinter d(ff, { ppo_include_special_annotations });
+            parse_depend("cat/outer1 ( cat/mid1 ( cat/inner1 cat/inner2 ) [[ *note = [ first-inner ] ]] cat/mid2 ( cat/inner3 cat/inner4 ) "
+                    "[[ *note = [ second-inner ] ]] cat/mid3 ) [[ *description = [ mid ] ]] cat/outer2",
+                    &env, *EAPIData::get_instance()->eapi_from_string("exheres-0"), false)->top()->accept(d);
+
+            TEST_CHECK_EQUAL(stringify(d), "cat/outer1 ( cat/mid1 [[ description = [ mid ] ]] ( cat/inner1 [[ note = [ first-inner ] description = [ mid ] ]] "
+                    "cat/inner2 [[ note = [ first-inner ] description = [ mid ] ]] ) [[ *note = [ first-inner ] ]] cat/mid2 [[ description = [ mid ] ]] "
+                    "( cat/inner3 [[ note = [ second-inner ] description = [ mid ] ]] cat/inner4 [[ note = [ second-inner ] description = [ mid ] ]] ) "
+                    "[[ *note = [ second-inner ] ]] cat/mid3 [[ description = [ mid ] ]] ) [[ *description = [ mid ] ]] cat/outer2");
+        }
+    } test_star_annotations;
 }
 
