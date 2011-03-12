@@ -642,7 +642,8 @@ namespace
             {
                 if (*a == "world" || *a == "system" || *a == "security"
                         || *a == "everything" || *a == "insecurity"
-                        || *a == "installed-packages" || *a == "installed-slots")
+                        || *a == "installed-packages" || *a == "installed-slots"
+                        || *a == "nothing")
                     cout << fuc(fs_special_set_world(), fv<'a'>(*a));
                 else
                 {
