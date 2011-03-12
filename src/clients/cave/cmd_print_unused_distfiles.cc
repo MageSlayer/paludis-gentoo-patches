@@ -227,3 +227,9 @@ PrintUnusedDistfilesCommand::make_doc_cmdline()
     return std::make_shared<PrintUnusedDistfilesCommandLine>();
 }
 
+CommandImportance
+PrintUnusedDistfilesCommand::importance() const
+{
+    return ci_scripting;
+}
+

@@ -172,3 +172,9 @@ MirrorCommand::make_doc_cmdline()
     return std::make_shared<MirrorCommandLine>();
 }
 
+CommandImportance
+MirrorCommand::importance() const
+{
+    return ci_development;
+}
+

@@ -222,3 +222,9 @@ PrintIDMasksCommand::make_doc_cmdline()
     return std::make_shared<PrintIDMasksCommandLine>();
 }
 
+CommandImportance
+PrintIDMasksCommand::importance() const
+{
+    return ci_scripting;
+}
+

@@ -610,3 +610,9 @@ PerformCommand::make_doc_cmdline()
     return std::make_shared<PerformCommandLine>();
 }
 
+CommandImportance
+PerformCommand::importance() const
+{
+    return ci_internal;
+}
+

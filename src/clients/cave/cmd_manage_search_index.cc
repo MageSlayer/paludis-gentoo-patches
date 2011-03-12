@@ -309,3 +309,9 @@ ManageSearchIndexCommand::make_doc_cmdline()
     return std::make_shared<ManageSearchIndexCommandLine>();
 }
 
+CommandImportance
+ManageSearchIndexCommand::importance() const
+{
+    return ci_supplemental;
+}
+

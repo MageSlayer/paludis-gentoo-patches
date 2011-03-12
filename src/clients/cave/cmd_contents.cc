@@ -156,3 +156,9 @@ ContentsCommand::make_doc_cmdline()
     return std::make_shared<ContentsCommandLine>();
 }
 
+CommandImportance
+ContentsCommand::importance() const
+{
+    return ci_supplemental;
+}
+

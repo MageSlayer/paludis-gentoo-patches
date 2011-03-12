@@ -142,3 +142,9 @@ PrintEnvironmentMetadataCommand::make_doc_cmdline()
     return std::make_shared<PrintEnvironmentMetadataCommandLine>();
 }
 
+CommandImportance
+PrintEnvironmentMetadataCommand::importance() const
+{
+    return ci_scripting;
+}
+

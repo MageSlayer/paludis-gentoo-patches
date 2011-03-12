@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -247,12 +247,6 @@ namespace
     }
 }
 
-bool
-ResumeCommand::important() const
-{
-    return true;
-}
-
 int
 ResumeCommand::run(
         const std::shared_ptr<Environment> & env,
@@ -290,5 +284,11 @@ std::shared_ptr<args::ArgsHandler>
 ResumeCommand::make_doc_cmdline()
 {
     return std::make_shared<ResumeCommandLine>();
+}
+
+CommandImportance
+ResumeCommand::importance() const
+{
+    return ci_core;
 }
 

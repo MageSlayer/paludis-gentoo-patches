@@ -461,3 +461,9 @@ MatchCommand::make_doc_cmdline()
     return std::make_shared<MatchCommandLine>();
 }
 
+CommandImportance
+MatchCommand::importance() const
+{
+    return ci_internal;
+}
+

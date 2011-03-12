@@ -84,3 +84,9 @@ ScriptCommand::make_doc_cmdline()
     throw InternalError(PALUDIS_HERE, "no script cmdline");
 }
 
+CommandImportance
+ScriptCommand::importance() const
+{
+    return ci_supplemental;
+}
+

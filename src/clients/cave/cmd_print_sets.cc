@@ -90,3 +90,9 @@ PrintSetsCommand::make_doc_cmdline()
 {
     return std::make_shared<PrintSetsCommandLine>();
 }
+CommandImportance
+PrintSetsCommand::importance() const
+{
+    return ci_scripting;
+}
+

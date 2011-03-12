@@ -390,12 +390,6 @@ namespace
     }
 }
 
-bool
-InfoCommand::important() const
-{
-    return true;
-}
-
 int
 InfoCommand::run(
         const std::shared_ptr<Environment> & env,
@@ -443,5 +437,11 @@ std::shared_ptr<args::ArgsHandler>
 InfoCommand::make_doc_cmdline()
 {
     return std::make_shared<InfoCommandLine>();
+}
+
+CommandImportance
+InfoCommand::importance() const
+{
+    return ci_core;
 }
 

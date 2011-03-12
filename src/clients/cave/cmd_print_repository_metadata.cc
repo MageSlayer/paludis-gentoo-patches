@@ -148,3 +148,9 @@ PrintRepositoryMetadataCommand::make_doc_cmdline()
     return std::make_shared<PrintRepositoryMetadataCommandLine>();
 }
 
+CommandImportance
+PrintRepositoryMetadataCommand::importance() const
+{
+    return ci_scripting;
+}
+

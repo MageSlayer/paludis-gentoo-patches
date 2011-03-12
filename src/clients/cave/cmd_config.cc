@@ -119,3 +119,9 @@ ConfigCommand::make_doc_cmdline()
     return std::make_shared<ConfigCommandLine>();
 }
 
+CommandImportance
+ConfigCommand::importance() const
+{
+    return ci_supplemental;
+}
+

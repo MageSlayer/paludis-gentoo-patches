@@ -162,3 +162,9 @@ PrintIDEnvironmentVariableCommand::make_doc_cmdline()
     return std::make_shared<PrintIDEnvironmentVariableCommandLine>();
 }
 
+CommandImportance
+PrintIDEnvironmentVariableCommand::importance() const
+{
+    return ci_scripting;
+}
+

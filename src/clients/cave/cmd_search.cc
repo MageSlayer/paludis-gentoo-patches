@@ -254,12 +254,6 @@ namespace
     }
 }
 
-bool
-SearchCommand::important() const
-{
-    return true;
-}
-
 int
 SearchCommand::run(
         const std::shared_ptr<Environment> & env,
@@ -355,5 +349,11 @@ std::shared_ptr<args::ArgsHandler>
 SearchCommand::make_doc_cmdline()
 {
     return std::make_shared<SearchCommandLine>();
+}
+
+CommandImportance
+SearchCommand::importance() const
+{
+    return ci_core;
 }
 

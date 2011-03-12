@@ -323,3 +323,9 @@ GenerateMetadataCommand::make_doc_cmdline()
     return std::make_shared<GenerateMetadataCommandLine>();
 }
 
+CommandImportance
+GenerateMetadataCommand::importance() const
+{
+    return ci_supplemental;
+}
+

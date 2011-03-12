@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2008 Alexander Færøy
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -99,5 +99,11 @@ std::shared_ptr<args::ArgsHandler>
 PrintOwnersCommand::make_doc_cmdline()
 {
     return std::make_shared<PrintOwnersCommandLine>();
+}
+
+CommandImportance
+PrintOwnersCommand::importance() const
+{
+    return ci_scripting;
 }
 

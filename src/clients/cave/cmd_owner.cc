@@ -116,3 +116,9 @@ OwnerCommand::make_doc_cmdline()
     return std::make_shared<OwnerCommandLine>();
 }
 
+CommandImportance
+OwnerCommand::importance() const
+{
+    return ci_supplemental;
+}
+

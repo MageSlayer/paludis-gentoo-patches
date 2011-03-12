@@ -192,3 +192,9 @@ PrintIDContentsCommand::make_doc_cmdline()
     return std::make_shared<PrintContentsCommandLine>();
 }
 
+CommandImportance
+PrintIDContentsCommand::importance() const
+{
+    return ci_scripting;
+}
+

@@ -115,3 +115,9 @@ PrintSyncProtocolsCommand::make_doc_cmdline()
     return std::make_shared<PrintSyncProtocolsCommandLine>();
 }
 
+CommandImportance
+PrintSyncProtocolsCommand::importance() const
+{
+    return ci_scripting;
+}
+

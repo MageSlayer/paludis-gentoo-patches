@@ -123,3 +123,9 @@ PrintRepositoriesCommand::make_doc_cmdline()
 {
     return std::make_shared<PrintRepositoriesCommandLine>();
 }
+CommandImportance
+PrintRepositoriesCommand::importance() const
+{
+    return ci_scripting;
+}
+

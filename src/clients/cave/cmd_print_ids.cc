@@ -350,3 +350,9 @@ PrintIDsCommand::make_doc_cmdline()
     return std::make_shared<PrintIDsCommandLine>();
 }
 
+CommandImportance
+PrintIDsCommand::importance() const
+{
+    return ci_scripting;
+}
+

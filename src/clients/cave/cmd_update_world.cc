@@ -176,3 +176,9 @@ UpdateWorldCommand::make_doc_cmdline()
     return std::make_shared<UpdateWorldCommandLine>();
 }
 
+CommandImportance
+UpdateWorldCommand::importance() const
+{
+    return ci_supplemental;
+}
+

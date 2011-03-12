@@ -112,3 +112,9 @@ HasVersionCommand::make_doc_cmdline()
     return std::make_shared<HasVersionCommandLine>();
 }
 
+CommandImportance
+HasVersionCommand::importance() const
+{
+    return ci_scripting;
+}
+

@@ -295,3 +295,9 @@ PrintSpecCommand::make_doc_cmdline()
     return std::make_shared<PrintSpecCommandLine>();
 }
 
+CommandImportance
+PrintSpecCommand::importance() const
+{
+    return ci_scripting;
+}
+

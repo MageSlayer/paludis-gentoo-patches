@@ -152,12 +152,6 @@ namespace
     }
 }
 
-bool
-ReportCommand::important() const
-{
-    return true;
-}
-
 int
 ReportCommand::run(
         const std::shared_ptr<Environment> & env,
@@ -257,5 +251,11 @@ std::shared_ptr<args::ArgsHandler>
 ReportCommand::make_doc_cmdline()
 {
     return std::make_shared<ReportCommandLine>();
+}
+
+CommandImportance
+ReportCommand::importance() const
+{
+    return ci_core;
 }
 

@@ -126,3 +126,9 @@ PrintPackagesCommand::make_doc_cmdline()
 {
     return std::make_shared<PrintPackagesCommandLine>();
 }
+CommandImportance
+PrintPackagesCommand::importance() const
+{
+    return ci_scripting;
+}
+

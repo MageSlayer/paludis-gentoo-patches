@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,12 +29,22 @@ namespace paludis
 {
     namespace cave
     {
+        enum CommandImportance
+        {
+            ci_core,
+            ci_supplemental,
+            ci_development,
+            ci_scripting,
+            ci_internal,
+            last_ci
+        };
+
         class PALUDIS_VISIBLE Command
         {
             public:
                 virtual ~Command() = 0;
 
-                virtual bool important() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual CommandImportance importance() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual int run(
                         const std::shared_ptr<Environment> &,

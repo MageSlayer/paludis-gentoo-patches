@@ -19,6 +19,7 @@
 
 #include "command_line.hh"
 #include "command_factory.hh"
+#include <paludis/util/enum_iterator.hh>
 
 using namespace paludis;
 using namespace cave;
@@ -56,10 +57,11 @@ CaveCommandLine::CaveCommandLine() :
     add_environment_variable("CAVE_COMMANDS_PATH", "Colon-separated paths in which to look for "
             "additional commands.");
 
-    for (int pass(0) ; pass != 2 ; ++pass)
+    for (EnumIterator<CommandImportance> i, i_end(last_ci) ;
+            i != i_end ; ++i)
         for (CommandFactory::ConstIterator c(CommandFactory::get_instance()->begin()), c_end(CommandFactory::get_instance()->end()) ;
                 c != c_end ; ++c)
-            if (CommandFactory::get_instance()->create(*c)->important() == (0 == pass))
+            if (CommandFactory::get_instance()->create(*c)->importance() == *i)
                 add_see_also("cave-" + *c, 1);
 }
 

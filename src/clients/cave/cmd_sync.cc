@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -349,12 +349,6 @@ namespace
     }
 }
 
-bool
-SyncCommand::important() const
-{
-    return true;
-}
-
 int
 SyncCommand::run(
         const std::shared_ptr<Environment> & env,
@@ -421,5 +415,11 @@ std::shared_ptr<args::ArgsHandler>
 SyncCommand::make_doc_cmdline()
 {
     return std::make_shared<SyncCommandLine>();
+}
+
+CommandImportance
+SyncCommand::importance() const
+{
+    return ci_core;
 }
 

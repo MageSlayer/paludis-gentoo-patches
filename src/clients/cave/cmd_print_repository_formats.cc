@@ -94,3 +94,9 @@ PrintRepositoryFormatsCommand::make_doc_cmdline()
 {
     return std::make_shared<PrintRepositoryFormatsCommandLine>();
 }
+CommandImportance
+PrintRepositoryFormatsCommand::importance() const
+{
+    return ci_scripting;
+}
+

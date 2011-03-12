@@ -155,3 +155,9 @@ PrintSetCommand::make_doc_cmdline()
     return std::make_shared<PrintSetCommandLine>();
 }
 
+CommandImportance
+PrintSetCommand::importance() const
+{
+    return ci_scripting;
+}
+

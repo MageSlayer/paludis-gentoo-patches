@@ -141,3 +141,9 @@ PrintBestVersionCommand::make_doc_cmdline()
     return std::make_shared<PrintBestVersionCommandLine>();
 }
 
+CommandImportance
+PrintBestVersionCommand::importance() const
+{
+    return ci_scripting;
+}
+

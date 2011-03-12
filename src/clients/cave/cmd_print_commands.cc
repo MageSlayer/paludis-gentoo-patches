@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -90,7 +90,7 @@ PrintCommandsCommand::run(
     {
         std::shared_ptr<Command> instance(CommandFactory::get_instance()->create(*cmd));
 
-        if (! cmdline.a_all.specified() && ! instance->important())
+        if (! cmdline.a_all.specified() && ! instance->importance() == ci_core)
             continue;
 
         cout << stringify(*cmd) << endl;
@@ -103,5 +103,11 @@ std::shared_ptr<args::ArgsHandler>
 PrintCommandsCommand::make_doc_cmdline()
 {
     return std::make_shared<PrintCommandsCommandLine>();
+}
+
+CommandImportance
+PrintCommandsCommand::importance() const
+{
+    return ci_scripting;
 }
 

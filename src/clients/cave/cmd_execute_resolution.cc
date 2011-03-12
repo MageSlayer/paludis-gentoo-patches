@@ -1779,12 +1779,6 @@ namespace
     }
 }
 
-bool
-ExecuteResolutionCommand::important() const
-{
-    return false;
-}
-
 int
 ExecuteResolutionCommand::run(
         const std::shared_ptr<Environment> & env,
@@ -1840,5 +1834,11 @@ std::shared_ptr<args::ArgsHandler>
 ExecuteResolutionCommand::make_doc_cmdline()
 {
     return std::make_shared<ExecuteResolutionCommandLine>();
+}
+
+CommandImportance
+ExecuteResolutionCommand::importance() const
+{
+    return ci_internal;
 }
 

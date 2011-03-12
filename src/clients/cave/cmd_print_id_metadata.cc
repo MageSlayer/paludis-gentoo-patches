@@ -176,3 +176,9 @@ PrintIDMetadataCommand::make_doc_cmdline()
     return std::make_shared<PrintIDMetadataCommandLine>();
 }
 
+CommandImportance
+PrintIDMetadataCommand::importance() const
+{
+    return ci_scripting;
+}
+

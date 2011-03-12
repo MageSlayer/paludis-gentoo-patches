@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -208,12 +208,6 @@ namespace
     }
 }
 
-bool
-GraphJobsCommand::important() const
-{
-    return false;
-}
-
 int
 GraphJobsCommand::run(
         const std::shared_ptr<Environment> & env,
@@ -274,5 +268,11 @@ std::shared_ptr<args::ArgsHandler>
 GraphJobsCommand::make_doc_cmdline()
 {
     return std::make_shared<GraphJobsCommandLine>();
+}
+
+CommandImportance
+GraphJobsCommand::importance() const
+{
+    return ci_internal;
 }
 

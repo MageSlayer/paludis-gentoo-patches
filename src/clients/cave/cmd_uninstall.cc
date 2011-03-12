@@ -108,12 +108,6 @@ namespace
     }
 }
 
-bool
-UninstallCommand::important() const
-{
-    return true;
-}
-
 int
 UninstallCommand::run(
         const std::shared_ptr<Environment> & env,
@@ -197,5 +191,11 @@ std::shared_ptr<args::ArgsHandler>
 UninstallCommand::make_doc_cmdline()
 {
     return std::make_shared<UninstallCommandLine>(true);
+}
+
+CommandImportance
+UninstallCommand::importance() const
+{
+    return ci_core;
 }
 

@@ -244,3 +244,9 @@ VerifyCommand::make_doc_cmdline()
     return std::make_shared<VerifyCommandLine>();
 }
 
+CommandImportance
+VerifyCommand::importance() const
+{
+    return ci_supplemental;
+}
+

@@ -324,3 +324,9 @@ ImportCommand::make_doc_cmdline()
     return std::make_shared<ImportCommandLine>();
 }
 
+CommandImportance
+ImportCommand::importance() const
+{
+    return ci_core;
+}
+

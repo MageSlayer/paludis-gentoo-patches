@@ -1845,12 +1845,6 @@ namespace
     }
 }
 
-bool
-DisplayResolutionCommand::important() const
-{
-    return false;
-}
-
 int
 DisplayResolutionCommand::run(
         const std::shared_ptr<Environment> & env,
@@ -1911,5 +1905,11 @@ std::shared_ptr<args::ArgsHandler>
 DisplayResolutionCommand::make_doc_cmdline()
 {
     return std::make_shared<DisplayResolutionCommandLine>();
+}
+
+CommandImportance
+DisplayResolutionCommand::importance() const
+{
+    return ci_internal;
 }
 

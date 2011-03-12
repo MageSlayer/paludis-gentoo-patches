@@ -174,3 +174,9 @@ DigestCommand::make_doc_cmdline()
     return std::make_shared<DigestCommandLine>();
 }
 
+CommandImportance
+DigestCommand::importance() const
+{
+    return ci_development;
+}
+

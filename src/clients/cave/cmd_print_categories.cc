@@ -131,3 +131,9 @@ PrintCategoriesCommand::make_doc_cmdline()
     return std::make_shared<PrintCategoriesCommandLine>();
 }
 
+CommandImportance
+PrintCategoriesCommand::importance() const
+{
+    return ci_scripting;
+}
+

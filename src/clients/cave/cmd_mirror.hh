@@ -31,6 +31,8 @@ namespace paludis
             public Command
         {
             public:
+                virtual CommandImportance importance() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
                 int run(
                         const std::shared_ptr<Environment> &,
                         const std::shared_ptr<const Sequence<std::string > > & args

@@ -43,6 +43,8 @@ namespace paludis
                         const std::shared_ptr<const Sequence<std::string > > & args
                         ) PALUDIS_ATTRIBUTE((noreturn));
 
+                virtual CommandImportance importance() const;
+
                 std::shared_ptr<args::ArgsHandler> make_doc_cmdline() PALUDIS_ATTRIBUTE((noreturn));
         };
     }

@@ -157,3 +157,9 @@ PrintDependentIDsCommand::make_doc_cmdline()
     return std::make_shared<PrintDependentIDsCommandLine>();
 }
 
+CommandImportance
+PrintDependentIDsCommand::importance() const
+{
+    return ci_scripting;
+}
+

@@ -138,3 +138,9 @@ PrintIDActionsCommand::make_doc_cmdline()
     return std::make_shared<PrintIDActionsCommandLine>();
 }
 
+CommandImportance
+PrintIDActionsCommand::importance() const
+{
+    return ci_scripting;
+}
+

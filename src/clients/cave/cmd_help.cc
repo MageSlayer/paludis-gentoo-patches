@@ -74,22 +74,16 @@ namespace
             std::shared_ptr<Command> lhs(CommandFactory::get_instance()->create(left));
             std::shared_ptr<Command> rhs(CommandFactory::get_instance()->create(right));
 
-            if (lhs->important() && rhs->important())
+            if (lhs->importance() == ci_core && rhs->importance() == ci_core)
                 return left.length() < right.length();
-            else if (lhs->important() && ! rhs->important())
+            else if (lhs->importance() == ci_core && ! rhs->importance() == ci_core)
                 return false;
-            else if (! lhs->important() && rhs->important())
+            else if (! lhs->importance() == ci_core && rhs->importance() == ci_core)
                 return true;
             else
                 return false;
         }
     };
-}
-
-bool
-HelpCommand::important() const
-{
-    return true;
 }
 
 int
@@ -138,7 +132,7 @@ HelpCommand::run(const std::shared_ptr<Environment> & env,
         {
             std::shared_ptr<Command> instance(CommandFactory::get_instance()->create(*cmd));
 
-            if (instance->important())
+            if (instance->importance() == ci_core)
                 cout << "    " << *cmd << std::string(length - cmd->length(), ' ') << "        "
                      << instance->make_doc_cmdline()->app_synopsis() << std::endl;
         }
@@ -160,5 +154,11 @@ std::shared_ptr<args::ArgsHandler>
 HelpCommand::make_doc_cmdline()
 {
     return std::make_shared<HelpCommandLine>();
+}
+
+CommandImportance
+HelpCommand::importance() const
+{
+    return ci_supplemental;
 }
 

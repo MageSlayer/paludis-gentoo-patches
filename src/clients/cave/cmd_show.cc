@@ -1347,12 +1347,6 @@ namespace
     }
 }
 
-bool
-ShowCommand::important() const
-{
-    return true;
-}
-
 int
 ShowCommand::run(
         const std::shared_ptr<Environment> & env,
@@ -1431,5 +1425,11 @@ std::shared_ptr<args::ArgsHandler>
 ShowCommand::make_doc_cmdline()
 {
     return std::make_shared<ShowCommandLine>();
+}
+
+CommandImportance
+ShowCommand::importance() const
+{
+    return ci_core;
 }
 
