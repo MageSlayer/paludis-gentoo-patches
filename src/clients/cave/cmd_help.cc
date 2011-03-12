@@ -17,14 +17,17 @@
  */
 
 #include "cmd_help.hh"
+#include "colours.hh"
 
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
 #include <functional>
+#include <iomanip>
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/enum_iterator.hh>
 
 #include "command_factory.hh"
 #include "command_command_line.hh"
@@ -64,26 +67,6 @@ namespace
             return "Display help information for a particular command.";
         }
     };
-
-    struct IsImportantAndLonger :
-        std::binary_function<std::string, std::string, bool>
-    {
-        bool
-        operator() (const std::string & left, const std::string & right)
-        {
-            std::shared_ptr<Command> lhs(CommandFactory::get_instance()->create(left));
-            std::shared_ptr<Command> rhs(CommandFactory::get_instance()->create(right));
-
-            if (lhs->importance() == ci_core && rhs->importance() == ci_core)
-                return left.length() < right.length();
-            else if (lhs->importance() == ci_core && ! rhs->importance() == ci_core)
-                return false;
-            else if (! lhs->importance() == ci_core && rhs->importance() == ci_core)
-                return true;
-            else
-                return false;
-        }
-    };
 }
 
 int
@@ -99,43 +82,27 @@ HelpCommand::run(const std::shared_ptr<Environment> & env,
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.a_all.specified())
-    {
-        if (cmdline.begin_parameters() == cmdline.end_parameters())
-        {
-            cout << "All available cave commands:" << std::endl;
-            std::copy(CommandFactory::get_instance()->begin(), CommandFactory::get_instance()->end(),
-                    std::ostream_iterator<std::string>(cout, "\n"));
-            return EXIT_SUCCESS;
-        }
-        else
-        {
-            throw args::DoHelp("--" + cmdline.a_all.long_name() + " takes no arguments");
-        }
-    }
-
     if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) > 1)
         throw args::DoHelp("help takes at most one parameter");
 
     if (cmdline.begin_parameters() == cmdline.end_parameters())
     {
-        size_t length(0);
+        if (cmdline.a_all.specified())
+            cout << "All available cave commands:" << std::endl;
+        else
+            cout << "The most commonly used cave commands (add --all for the rest) are:" << std::endl;
 
-        CommandFactory::ConstIterator name(std::max_element(CommandFactory::get_instance()->begin(),CommandFactory::get_instance()->end(),
-                    IsImportantAndLonger()));
-        if (name != CommandFactory::get_instance()->end())
-            length = name->length();
+        for (EnumIterator<CommandImportance> e, e_end(cmdline.a_all.specified() ? last_ci : CommandImportance(ci_supplemental + 1)) ;
+                e != e_end ; ++e)
+            for (CommandFactory::ConstIterator cmd(CommandFactory::get_instance()->begin()), cmd_end(CommandFactory::get_instance()->end()) ;
+                    cmd != cmd_end ; ++cmd)
+            {
+                std::shared_ptr<Command> instance(CommandFactory::get_instance()->create(*cmd));
 
-        cout << "The most commonly used cave commands (add --all for the rest) are:" << std::endl;
-        for (CommandFactory::ConstIterator cmd(CommandFactory::get_instance()->begin()), cmd_end(CommandFactory::get_instance()->end()) ;
-                cmd != cmd_end ; ++cmd)
-        {
-            std::shared_ptr<Command> instance(CommandFactory::get_instance()->create(*cmd));
-
-            if (instance->importance() == ci_core)
-                cout << "    " << *cmd << std::string(length - cmd->length(), ' ') << "        "
-                     << instance->make_doc_cmdline()->app_synopsis() << std::endl;
-        }
+                if (instance->importance() == *e)
+                    cout << "    " << (*e == ci_core ? c::bold_blue().colour_string() : "") << std::left << std::setw(30) << *cmd
+                        << c::normal().colour_string() << " " << instance->make_doc_cmdline()->app_synopsis() << std::endl;
+            }
 
         return EXIT_SUCCESS;
     }
