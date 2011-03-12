@@ -115,6 +115,9 @@ namespace paludis
             args::SwitchArg a_dump;
             args::SwitchArg a_dump_restarts;
 
+            args::ArgsGroup g_deprecated_options;
+            args::SwitchArg a_deprecated_d;
+
             void apply_shortcuts();
             void verify(const std::shared_ptr<const Environment> & env);
         };

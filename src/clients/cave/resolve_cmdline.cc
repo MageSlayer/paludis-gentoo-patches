@@ -23,6 +23,7 @@
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/log.hh>
 #include <paludis/repository_factory.hh>
 #include <memory>
 
@@ -53,9 +54,9 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     a_lazy(&g_convenience_options, "lazy", 'z', "Do as little work as possible. Shorthand for "
             "'-Sb -sb -n'.", true),
     a_complete(&g_convenience_options, "complete", 'c', "Do all optional work. This option is often used when updating 'world'. "
-            "Shorthand for '-ks -Rw -Sa -sa -D'.", true),
+            "Shorthand for '-ks -Rw -Sa -sa -B'.", true),
     a_everything(&g_convenience_options, "everything", 'e', "Do all optional work, and also always reinstall. Shorthand for "
-            "'-kt -Sa -sa -D'.", true),
+            "'-kt -Sa -sa -B'.", true),
 
     g_resolution_options(this, "Resolution Options", "Resolution options."),
 //    a_permit_older_slot_uninstalls(&g_resolution_options, "permit-older-slot-uninstalls", '\0',
@@ -180,7 +181,7 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             ),
 
     g_dependency_options(this, "Dependency Options", "Control which dependencies are followed."),
-    a_follow_installed_build_dependencies(&g_dependency_options, "follow-installed-build-dependencies", 'D',
+    a_follow_installed_build_dependencies(&g_dependency_options, "follow-installed-build-dependencies", 'B',
             "Follow build dependencies for installed packages (default if --complete or --everything)", true),
     a_no_follow_installed_dependencies(&g_dependency_options, "no-follow-installed-dependencies", 'n',
             "Ignore dependencies (except compiled-against dependencies, which are always taken) "
@@ -293,7 +294,12 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     g_dump_options(this, "Dump Options", "Dump the resolver's state to stdout after completion, or when an "
             "error occurs. For debugging purposes; produces rather a lot of noise."),
     a_dump(&g_dump_options, "dump", '\0', "Dump debug output", true),
-    a_dump_restarts(&g_dump_options, "dump-restarts", '\0', "Dump restarts", true)
+    a_dump_restarts(&g_dump_options, "dump-restarts", '\0', "Dump restarts", true),
+
+    g_deprecated_options(this, "Deprecated Options", "Deprecated options. These will be removed or reused for "
+            "other commands in later versions."),
+    a_deprecated_d(&g_deprecated_options, "", 'D', "Deprecated short option for --" + a_follow_installed_build_dependencies.long_name()
+            + " / -" + a_follow_installed_build_dependencies.short_name(), false)
 {
 }
 
@@ -487,6 +493,13 @@ ResolveCommandLineResolutionOptions::apply_shortcuts()
             a_slots.set_argument("all");
         if (! a_follow_installed_build_dependencies.specified())
             a_follow_installed_build_dependencies.set_specified(true);
+    }
+
+    if (a_deprecated_d.specified())
+    {
+        Log::get_instance()->message("cave.resolve.d_deprecated", ll_warning, lc_context)
+            << "Use of -D is deprecated and will mean something else in the future. Use -B instead.";
+        a_no_follow_installed_dependencies.set_specified(true);
     }
 }
 
