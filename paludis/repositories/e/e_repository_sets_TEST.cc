@@ -70,6 +70,7 @@ namespace test_cases
                     "insecurity::test-repo-1 "
                     "installed-packages installed-packages::default "
                     "installed-slots installed-slots::default "
+                    "nothing "
                     "security security::test-repo-1 set1 set1* "
                     "set1::test-repo-1 set1::test-repo-1* "
                     "system system::test-repo-1 world world::default");

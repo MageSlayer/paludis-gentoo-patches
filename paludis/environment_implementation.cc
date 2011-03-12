@@ -307,6 +307,12 @@ namespace
         result->top()->append(std::make_shared<NamedSetDepSpec>(SetName("installed-packages")));
         return result;
     }
+
+    std::shared_ptr<const SetSpecTree> make_nothing_set()
+    {
+        std::shared_ptr<SetSpecTree> result(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()));
+        return result;
+    }
 }
 
 void
@@ -328,6 +334,8 @@ EnvironmentImplementation::populate_standard_sets() const
     if (_imp->sets.end() != _imp->sets.find(SetName("everything")))
         throw InternalError(PALUDIS_HERE, "something's still defining the 'everything' set");
     add_set(SetName("everything"), SetName("everything"), make_everything_set, false);
+
+    add_set(SetName("nothing"), SetName("nothing"), make_nothing_set, false);
 }
 
 namespace

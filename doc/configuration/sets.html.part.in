@@ -27,6 +27,9 @@
 
     <dt><code>insecurity</code></dt>
     <dd>The set of insecure packages (mostly for internal use).</dd>
+
+    <dt><code>nothing</code></dt>
+    <dd>An empty set.</dd>
 </dl>
 
 <p>Some sets, such as <code>system</code>, are made by combining sets from multiple repositories. For these sets, the
