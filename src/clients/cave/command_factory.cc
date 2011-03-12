@@ -59,6 +59,7 @@
 #include "cmd_print_best_version.hh"
 #include "cmd_print_categories.hh"
 #include "cmd_print_commands.hh"
+#include "cmd_print_dependent_ids.hh"
 #include "cmd_print_environment_metadata.hh"
 #include "cmd_print_id_actions.hh"
 #include "cmd_print_id_contents.hh"
@@ -179,6 +180,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("print-best-version", std::bind(&make_command<PrintBestVersionCommand>)));
     _imp->handlers.insert(std::make_pair("print-categories", std::bind(&make_command<PrintCategoriesCommand>)));
     _imp->handlers.insert(std::make_pair("print-commands", std::bind(&make_command<PrintCommandsCommand>)));
+    _imp->handlers.insert(std::make_pair("print-dependent-ids", std::bind(&make_command<PrintDependentIDsCommand>)));
     _imp->handlers.insert(std::make_pair("print-environment-metadata", std::bind(&make_command<PrintEnvironmentMetadataCommand>)));
     _imp->handlers.insert(std::make_pair("print-id-actions", std::bind(&make_command<PrintIDActionsCommand>)));
     _imp->handlers.insert(std::make_pair("print-id-contents", std::bind(&make_command<PrintIDContentsCommand>)));

@@ -50,6 +50,7 @@ CAVE_COMMANDS_HTML = \
 	cave-print-best-version.html \
 	cave-print-categories.html \
 	cave-print-commands.html \
+	cave-print-dependent-ids.html \
 	cave-print-environment-metadata.html \
 	cave-print-id-actions.html \
 	cave-print-id-contents.html \
