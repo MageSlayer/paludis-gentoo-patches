@@ -4,6 +4,19 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.60.0_pre1:
+    * The deprecated 'adjutrix', 'inquisitio', 'importare', 'paludis' and
+      'reconcilio' clients have been removed.
+
+    * 'build_options: split strip' are removed in favour of 'build_options:
+       symbols=preserve|split|strip|compress'.
+
+    * We now generate man pages via 'asciidoc'.
+
+    * The 'cave resolve -D' short option is now '-B' instead.
+
+    * A new special 'nothing' set has been added.
+
 0.58.5:
     * 'cave search' no longer fails when encountering invalid metadata.
 
