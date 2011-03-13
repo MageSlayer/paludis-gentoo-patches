@@ -4,6 +4,30 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.58.5:
+    * 'cave search' no longer fails when encountering invalid metadata.
+
+    * New 'cave' subcommand: 'mirror'
+
+0.58.4:
+    * cave resolve --via-binary would lock up under certain circumstances. This
+      is now fixed.
+
+    * New 'cave resolve' option: '--no-restarts-for'
+
+    * New 'cave' subcommand: 'generate-metadata'
+
+0.58.3:
+    * We no longer issue QA warnings for certain extremely common QA violations
+      on Gentoo.
+
+0.58.2:
+    * We now work around various libarchive oddities that cause problems with
+      binary packages.
+
+    * We now prioritise suggestions.conf over the --suggestions and
+      --recommendations command line options.
+
 0.58.1:
     * When a package strongly blocks other installed slots of itself, the
       resolver no longer fails to find an ordering if upgrading older slots
