@@ -68,6 +68,7 @@
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/required_confirmations.hh>
 #include <paludis/resolver/make_uninstall_blocker.hh>
+#include <paludis/resolver/collect_depped_upon.hh>
 
 #include <paludis/resolver/allow_choice_changes_helper.hh>
 #include <paludis/resolver/allowed_to_remove_helper.hh>
@@ -102,6 +103,9 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_database.hh>
+#include <paludis/filter.hh>
+#include <paludis/generator.hh>
+#include <paludis/selection.hh>
 
 #include <algorithm>
 #include <iostream>
@@ -123,7 +127,7 @@ namespace
     const std::shared_ptr<const Sequence<std::string> > add_resolver_targets(
             const std::shared_ptr<Environment> & env,
             const std::shared_ptr<Resolver> & resolver,
-            const ResolveCommandLineResolutionOptions &,
+            const ResolveCommandLineResolutionOptions & resolution_options,
             const std::shared_ptr<const Sequence<std::pair<std::string, std::string> > > & targets,
             bool & is_set)
     {
@@ -177,6 +181,35 @@ namespace
 
         if (seen_sets)
             is_set = true;
+
+        if (resolution_options.a_reinstall_dependents_of.specified())
+        {
+            auto installed_filter(filter::InstalledAtRoot(env->system_root_key()->value()));
+            auto installed_ids((*env)[selection::AllVersionsSorted(
+                        generator::All() |
+                        installed_filter)]);
+
+            for (auto p(resolution_options.a_reinstall_dependents_of.begin_args()), p_end(resolution_options.a_reinstall_dependents_of.end_args()) ;
+                    p != p_end ; ++p)
+            {
+                PackageDepSpec s(parse_spec_with_nice_error(*p, env.get(), { }, installed_filter));
+                auto ids((*env)[selection::AllVersionsSorted(generator::Matches(s, make_null_shared_ptr(), { }) | installed_filter)]);
+                if (ids->empty())
+                    throw args::DoHelp("Found nothing installed matching '" + *p + "' for --" + resolution_options.a_reinstall_dependents_of.long_name());
+
+                for (auto i(ids->begin()), i_end(ids->end()) ;
+                        i != i_end ; ++i)
+                {
+                    auto dependents(collect_depped_upon(env.get(), *i, installed_ids, make_null_shared_ptr()));
+                    for (auto d(dependents->begin()), d_end(dependents->end()) ;
+                            d != d_end ; ++d)
+                    {
+                        BlockDepSpec bs(make_uninstall_blocker((*d)->uniquely_identifying_spec()));
+                        resolver->add_target(bs, "reinstalling dependents of " + stringify(s));
+                    }
+                }
+            }
+        }
 
         return result;
     }

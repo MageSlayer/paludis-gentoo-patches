@@ -105,6 +105,11 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "matched by this option, the block will instead only block the installed dependent "
             "package, so if reinstalling or upgrading the package will make it no longer be dependent "
             "then this will be done instead."),
+    a_reinstall_dependents_of(&g_dependent_options, "reinstall-dependents-of", '\0', /* todo: 'D' */
+            "Force any installed package that is dependent upon any installed package matching the "
+            "supplied spec to be reinstalled. May be specified multiple times. May be combined with "
+            "--not-usable to obtain a particular ordering. Note that a target must still be specified "
+            "if this option is used, so the 'nothing' set may be helpful."),
 
     g_keep_options(this, "Reinstall Options", "Control whether installed packages are kept."),
     a_keep_targets(&g_keep_options, "keep-targets", 'K',

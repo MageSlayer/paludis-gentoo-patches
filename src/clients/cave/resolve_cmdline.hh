@@ -56,6 +56,7 @@ namespace paludis
             args::StringSetArg a_uninstalls_may_break;
             args::StringSetArg a_remove_if_dependent;
             args::StringSetArg a_less_restrictive_remove_blockers;
+            args::StringSetArg a_reinstall_dependents_of;
 
             args::ArgsGroup g_keep_options;
             args::EnumArg a_keep_targets;
