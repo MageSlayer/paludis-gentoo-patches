@@ -48,6 +48,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/package_database.hh>
 #include <paludis/always_enabled_dependency_label.hh>
+#include <paludis/elike_blocker.hh>
 #include <map>
 #include <list>
 #include <set>
@@ -123,37 +124,50 @@ namespace
             const std::string & s,
             const EAPI & eapi)
     {
-        if ((! s.empty()) && ('!' == s.at(0)))
+        auto p(split_elike_blocker(s));
+
+        switch (std::get<0>(p))
         {
-            BlockFixOp op(bfo_implicit_weak);
+            case ebk_no_block:
+                package_dep_spec_string_handler<T_>(h, annotations_go_here, s, eapi);
+                break;
 
-            std::string::size_type specstart(1);
-            if (2 <= s.length() && '!' == s.at(1))
-            {
-                if (! eapi.supported()->dependency_spec_tree_parse_options()[dstpo_double_bang_blocks])
-                    throw EDepParseError(s, "Double-! blocks not allowed in this EAPI");
-                specstart = 2;
-                op = bfo_explicit_strong;
-            }
-            else
-            {
-                if (eapi.supported()->dependency_spec_tree_parse_options()[dstpo_single_bang_block_is_hard])
-                    op = bfo_implicit_strong;
-            }
+            case ebk_bang_question:
+                throw EDepParseError(s, "!? blocks not allowed here");
 
-            std::shared_ptr<BlockDepSpec> spec(std::make_shared<BlockDepSpec>(
-                        s,
-                        parse_elike_package_dep_spec(s.substr(specstart),
-                            eapi.supported()->package_dep_spec_parse_options(),
-                            eapi.supported()->version_spec_options())));
-            h.begin()->item()->append(spec);
-            h.begin()->block_children().push_back(std::make_pair(spec, op));
-            h.begin()->children().push_back(spec);
+            case ebk_single_bang:
+            case ebk_double_bang:
+                {
+                    BlockFixOp op(bfo_implicit_weak);
 
-            annotations_go_here(spec);
+                    if (std::get<0>(p) == ebk_double_bang)
+                    {
+                        if (! eapi.supported()->dependency_spec_tree_parse_options()[dstpo_double_bang_blocks])
+                            throw EDepParseError(s, "Double-! blocks not allowed in this EAPI");
+                        op = bfo_explicit_strong;
+                    }
+                    else
+                    {
+                        if (eapi.supported()->dependency_spec_tree_parse_options()[dstpo_single_bang_block_is_hard])
+                            op = bfo_implicit_strong;
+                    }
+
+                    std::shared_ptr<BlockDepSpec> spec(std::make_shared<BlockDepSpec>(
+                                s,
+                                parse_elike_package_dep_spec(std::get<2>(p),
+                                    eapi.supported()->package_dep_spec_parse_options(),
+                                    eapi.supported()->version_spec_options())));
+                    h.begin()->item()->append(spec);
+                    h.begin()->block_children().push_back(std::make_pair(spec, op));
+                    h.begin()->children().push_back(spec);
+
+                    annotations_go_here(spec);
+                }
+                break;
+
+            case last_ebk:
+                throw InternalError(PALUDIS_HERE, "unhandled ebk");
         }
-        else
-            package_dep_spec_string_handler<T_>(h, annotations_go_here, s, eapi);
     }
 
     template <typename T_>

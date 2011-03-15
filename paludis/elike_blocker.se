@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_ELikeBlockerKind()
+{
+    prefix ebk
+
+    key ebk_no_block             "No block"
+    key ebk_single_bang          "Single !"
+    key ebk_double_bang          "Double !!"
+    key ebk_bang_question        "Synthetic !?"
+
+    want_destringify
+}
+

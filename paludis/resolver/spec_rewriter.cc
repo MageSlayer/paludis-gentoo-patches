@@ -37,6 +37,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/elike_blocker.hh>
 #include <map>
 #include <set>
 
@@ -132,11 +133,8 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::sha
                 continue;
 
             PackageDepSpec spec(PartiallyMadePackageDepSpec(s.if_block()->blocking()).package(*n));
-            std::string prefix(s.if_block()->text());
-            std::string::size_type p(prefix.find_first_not_of('!'));
-            if (std::string::npos != p)
-                prefix.erase(p);
-            BlockDepSpec b(prefix + stringify(spec), spec);
+            auto p(split_elike_blocker(s.if_block()->text()));
+            BlockDepSpec b(std::get<1>(p) + stringify(spec), spec);
             b.set_annotations(s.if_block()->maybe_annotations());
             result->specs()->push_back(b);
         }

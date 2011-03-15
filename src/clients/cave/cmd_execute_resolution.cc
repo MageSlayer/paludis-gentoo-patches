@@ -79,6 +79,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/package_database.hh>
+#include <paludis/elike_blocker.hh>
 
 #include <set>
 #include <iterator>
@@ -658,23 +659,26 @@ namespace
                     a_end(cmdline.a_world_specs.end_args()) ;
                     a != a_end ; ++a)
             {
-                std::string aa(*a);
-                if (aa.empty())
-                    continue;
-
-                if ('!' == aa.at(0))
+                auto p(split_elike_blocker(*a));
+                switch (std::get<0>(p))
                 {
-                    if (! removes)
-                        continue;
-                    aa.erase(0, 1);
-                }
-                else
-                {
-                    if (removes)
-                        continue;
+                    case ebk_no_block:
+                        if (removes)
+                            continue;
+                        break;
+
+                    case ebk_single_bang:
+                    case ebk_bang_question:
+                    case ebk_double_bang:
+                        if (! removes)
+                            continue;
+                        break;
+
+                    case last_ebk:
+                        throw InternalError(PALUDIS_HERE, "unhandled ebk");
                 }
 
-                PackageDepSpec spec(parse_user_package_dep_spec(aa, env.get(), { updso_no_disambiguation }));
+                PackageDepSpec spec(parse_user_package_dep_spec(std::get<2>(p), env.get(), { updso_no_disambiguation }));
                 if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
                                 n::has_additional_requirements() = false,
                                 n::has_category_name_part() = false,

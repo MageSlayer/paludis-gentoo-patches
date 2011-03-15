@@ -106,6 +106,7 @@
 #include <paludis/filter.hh>
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>
+#include <paludis/elike_blocker.hh>
 
 #include <algorithm>
 #include <iostream>
@@ -147,19 +148,20 @@ namespace
             std::string p_suggesion(p->first);
             try
             {
+                auto b(split_elike_blocker(p->first));
 
-                if ('!' == p->first.at(0))
+                if (ebk_no_block != std::get<0>(b))
                 {
-                    p_suggesion.erase(0, 1);
+                    p_suggesion = std::get<2>(b);
                     seen_packages = true;
-                    PackageDepSpec s(parse_spec_with_nice_error(p->first.substr(1), env.get(), { }, filter::All()));
+                    PackageDepSpec s(parse_spec_with_nice_error(std::get<2>(b), env.get(), { }, filter::All()));
                     BlockDepSpec bs(make_uninstall_blocker(s));
                     result->push_back(stringify(bs));
                     resolver->add_target(bs, p->second);
                 }
                 else
                 {
-                    PackageDepSpec s(parse_spec_with_nice_error(p->first, env.get(), { updso_throw_if_set }, filter::All()));
+                    PackageDepSpec s(parse_spec_with_nice_error(std::get<2>(b), env.get(), { updso_throw_if_set }, filter::All()));
                     result->push_back(stringify(s));
                     resolver->add_target(s, p->second);
                     seen_packages = true;
