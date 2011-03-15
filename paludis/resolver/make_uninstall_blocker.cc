@@ -29,7 +29,7 @@ using namespace paludis::resolver;
 BlockDepSpec
 paludis::resolver::make_uninstall_blocker(const PackageDepSpec & spec)
 {
-    BlockDepSpec result("!" + stringify(spec), spec);
+    BlockDepSpec result("!?" + stringify(spec), spec);
     auto annotations(std::make_shared<DepSpecAnnotations>());
     annotations->add(make_named_values<DepSpecAnnotation>(
                 n::key() = "<resolution>",
