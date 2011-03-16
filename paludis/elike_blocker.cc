@@ -43,6 +43,6 @@ paludis::split_elike_blocker(const std::string & s)
         return std::make_tuple(ebk_single_bang, s.substr(0, 1), s.substr(1));
     }
     else
-        return std::make_tuple(ebk_no_block, "", s);
+        return std::make_tuple(ebk_no_block, std::string(""), s);
 }
 
