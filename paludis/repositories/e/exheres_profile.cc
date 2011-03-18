@@ -73,7 +73,6 @@ namespace paludis
     struct Imp<ExheresProfile>
     {
         const Environment * const env;
-        const ERepository * const repository;
 
         std::shared_ptr<FSPathSequence> profiles_with_parents;
 
@@ -93,11 +92,13 @@ namespace paludis
 
         const std::shared_ptr<SetSpecTree> system_packages;
 
+        const bool has_master_repositories;
+        const EAPIForFileFunction eapi_for_file;
+
         Imp(const Environment * const e, const ERepository * const p,
                 const RepositoryName &, const FSPathSequence &,
                 const std::string &, const bool) :
             env(e),
-            repository(p),
             profiles_with_parents(std::make_shared<FSPathSequence>()),
             options_conf(make_named_values<PaludisLikeOptionsConfParams>(
                         n::allow_locking() = true,
@@ -112,7 +113,9 @@ namespace paludis
             use_expand_implicit(std::make_shared<Set<std::string>>()),
             iuse_implicit(std::make_shared<Set<std::string>>()),
             use_expand_values(std::make_shared<Set<std::string>>()),
-            system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()))
+            system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>())),
+            has_master_repositories(p->params().master_repositories()),
+            eapi_for_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1))
         {
             environment_variables["CONFIG_PROTECT"] = getenv_with_default("CONFIG_PROTECT", "/etc");
             environment_variables["CONFIG_PROTECT_MASK"] = getenv_with_default("CONFIG_PROTECT_MASK", "");
@@ -146,7 +149,7 @@ ExheresProfile::ExheresProfile(
                     ChoicePrefixName("hidden_suboptions"), *f).first.is_true())
             _imp->use_expand_hidden->insert(stringify(*f));
 
-    if (! _imp->repository->params().master_repositories())
+    if (! _imp->has_master_repositories)
         for (ProfileFile<LineConfigFile>::ConstIterator i(_imp->packages_file.begin()),
                 i_end(_imp->packages_file.end()) ; i != i_end ; ++i)
         {
@@ -228,8 +231,7 @@ ExheresProfile::_load_dir(const FSPath & f)
 
     if ((f / "make.defaults").stat().exists())
     {
-        const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
-                    _imp->repository->eapi_for_file(f / "make.defaults")));
+        auto eapi(EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(f / "make.defaults")));
         if (! eapi->supported())
             throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(f) +
                     "' because it uses an unsupported EAPI");
