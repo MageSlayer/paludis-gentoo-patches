@@ -707,11 +707,6 @@ void expose_environment()
                 "[ro] Repository\n"
                 "Master repository."
                 )
-
-        .add_property("accept_unstable", bp::object(), &NoConfigEnvironment::set_accept_unstable,
-                "[wo] bool\n"
-                "Should we accept unstable keywords?"
-                )
         ;
 
     /**

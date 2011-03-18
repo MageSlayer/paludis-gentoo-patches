@@ -387,16 +387,6 @@ NoConfigEnvironment::main_repository_dir() const
     return _imp->top_level_dir;
 }
 
-void
-NoConfigEnvironment::set_accept_unstable(const bool value)
-{
-    _imp->accept_unstable = value;
-    for (PackageDatabase::RepositoryConstIterator it(_imp->package_database->begin_repositories()),
-             it_end(_imp->package_database->end_repositories());
-         it_end != it; ++it)
-        (*it)->invalidate_masks();
-}
-
 std::shared_ptr<Repository>
 NoConfigEnvironment::main_repository()
 {

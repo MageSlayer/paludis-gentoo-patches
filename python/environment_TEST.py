@@ -70,10 +70,6 @@ class TestCase_01_Environments(unittest.TestCase):
         self.assert_(isinstance(nce2.main_repository, Repository))
         self.assert_(isinstance(nce2.master_repository, Repository))
 
-    def test_11_set_accept_unstable(self):
-        self.nce.accept_unstable = True
-        self.assertRaises(AttributeError, lambda: self.nce.accept_unstable)
-
     def test_12_config_dir(self):
         self.assert_(isinstance(self.e.config_dir, str))
 

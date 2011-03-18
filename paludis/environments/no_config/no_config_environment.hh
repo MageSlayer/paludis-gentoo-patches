@@ -110,11 +110,6 @@ namespace paludis
              */
             FSPath main_repository_dir() const;
 
-            /**
-             * Should we accept unstable keywords?
-             */
-            void set_accept_unstable(const bool value);
-
             ///\}
 
             ///\name NoConfigEnvironment-specific repository information

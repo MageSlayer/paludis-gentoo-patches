@@ -230,20 +230,6 @@ module Paludis
         end
     end
 
-    class TestCase_EnvironmentSetAcceptUnstable < Test::Unit::TestCase
-        def env
-            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
-        end
-
-        def test_set_accept_unstable
-            assert_respond_to env, :accept_unstable=
-            assert_nothing_raised do
-                env.accept_unstable=true
-                env.accept_unstable=false
-            end
-        end
-    end
-
     class TestCase_EnvironmentMirrors < Test::Unit::TestCase
         def env
             @env or @env = EnvironmentFactory.instance.create("")
