@@ -98,146 +98,99 @@ namespace
 
 namespace paludis
 {
-    /**
-     * Imp for TraditionalProfile.
-     *
-     * \ingroup grperepository
-     * \see TraditionalProfile
-     */
     template<>
-    class Imp<TraditionalProfile>
+    struct Imp<TraditionalProfile>
     {
-        private:
-            void load_environment();
-            void load_profile_directory_recursively(const FSPath & dir);
-            void load_profile_parent(const FSPath & dir);
-            void load_profile_make_defaults(const FSPath & dir);
+        void load_environment();
+        void load_profile_directory_recursively(const FSPath & dir);
+        void load_profile_parent(const FSPath & dir);
+        void load_profile_make_defaults(const FSPath & dir);
 
-            void load_basic_use_file(const FSPath & file, FlagStatusMap & m);
-            void load_spec_use_file(const EAPI &, const FSPath & file, PackageFlagStatusMapList & m);
+        void load_basic_use_file(const FSPath & file, FlagStatusMap & m);
+        void load_spec_use_file(const EAPI &, const FSPath & file, PackageFlagStatusMapList & m);
 
-            void add_use_expand_to_use();
-            void fish_out_use_expand_names();
-            void make_vars_from_file_vars();
-            void handle_profile_arch_var(const std::string &);
-            void load_special_make_defaults_vars(const FSPath &);
+        void add_use_expand_to_use();
+        void fish_out_use_expand_names();
+        void make_vars_from_file_vars();
+        void handle_profile_arch_var(const std::string &);
+        void load_special_make_defaults_vars(const FSPath &);
 
-            ProfileFile<LineConfigFile> packages_file;
-            ProfileFile<LineConfigFile> virtuals_file;
-            ProfileFile<MaskFile> package_mask_file;
+        ProfileFile<LineConfigFile> packages_file;
+        ProfileFile<LineConfigFile> virtuals_file;
+        ProfileFile<MaskFile> package_mask_file;
 
-            bool is_incremental(const EAPI &, const std::string & s) const;
+        bool is_incremental(const EAPI &, const std::string & s) const;
 
-        public:
-            ///\name General variables
-            ///\{
+        const Environment * const env;
+        const ERepository * const repository;
 
-            const Environment * const env;
-            const ERepository * const repository;
+        std::shared_ptr<FSPathSequence> profiles_with_parents;
 
-            std::shared_ptr<FSPathSequence> profiles_with_parents;
+        EnvironmentVariablesMap environment_variables;
 
-            ///\}
+        std::shared_ptr<SetSpecTree> system_packages;
 
-            ///\name Environment variables
-            ///\{
+        std::shared_ptr<Map<QualifiedPackageName, PackageDepSpec> > virtuals;
 
-            EnvironmentVariablesMap environment_variables;
+        std::set<std::pair<ChoicePrefixName, UnprefixedChoiceName> > use;
+        std::shared_ptr<Set<std::string> > use_expand;
+        std::shared_ptr<Set<std::string> > use_expand_hidden;
+        std::shared_ptr<Set<std::string> > use_expand_unprefixed;
+        std::shared_ptr<Set<std::string> > use_expand_implicit;
+        std::shared_ptr<Set<std::string> > iuse_implicit;
+        std::unordered_map<std::string, std::shared_ptr<Set<std::string> > > use_expand_values;
+        KnownMap known_choice_value_names;
+        mutable Mutex known_choice_value_names_for_separator_mutex;
+        mutable std::unordered_map<char, KnownMap> known_choice_value_names_for_separator;
+        StackedValuesList stacked_values_list;
 
-            ///\}
+        PackageMaskMap package_mask;
 
-            ///\name System package set
-            ///\{
+        Imp(const Environment * const e, const ERepository * const p,
+                const RepositoryName & name, const FSPathSequence & dirs,
+                const std::string & arch_var_if_special, const bool profiles_explicitly_set) :
+            packages_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
+            virtuals_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
+            package_mask_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
+            env(e),
+            repository(p),
+            profiles_with_parents(std::make_shared<FSPathSequence>()),
+            system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>())),
+            virtuals(std::make_shared<Map<QualifiedPackageName, PackageDepSpec>>()),
+            use_expand(std::make_shared<Set<std::string>>()),
+            use_expand_hidden(std::make_shared<Set<std::string>>()),
+            use_expand_unprefixed(std::make_shared<Set<std::string>>()),
+            use_expand_implicit(std::make_shared<Set<std::string>>()),
+            iuse_implicit(std::make_shared<Set<std::string>>())
+        {
+            Context context("When loading profiles '" + join(dirs.begin(), dirs.end(), "' '") + "' for repository '" + stringify(name) + "':");
 
-            std::shared_ptr<SetSpecTree> system_packages;
+            if (dirs.empty())
+                throw ERepositoryConfigurationError("No profiles directories specified");
 
-            ///\}
+            load_environment();
 
-            ///\name Virtuals
-            ///\{
-
-            std::shared_ptr<Map<QualifiedPackageName, PackageDepSpec> > virtuals;
-
-            ///\}
-
-            ///\name USE related values
-            ///\{
-
-            std::set<std::pair<ChoicePrefixName, UnprefixedChoiceName> > use;
-            std::shared_ptr<Set<std::string> > use_expand;
-            std::shared_ptr<Set<std::string> > use_expand_hidden;
-            std::shared_ptr<Set<std::string> > use_expand_unprefixed;
-            std::shared_ptr<Set<std::string> > use_expand_implicit;
-            std::shared_ptr<Set<std::string> > iuse_implicit;
-            std::unordered_map<std::string, std::shared_ptr<Set<std::string> > > use_expand_values;
-            KnownMap known_choice_value_names;
-            mutable Mutex known_choice_value_names_for_separator_mutex;
-            mutable std::unordered_map<char, KnownMap> known_choice_value_names_for_separator;
-            StackedValuesList stacked_values_list;
-
-            ///\}
-
-            ///\name Masks
-            ///\{
-
-            PackageMaskMap package_mask;
-
-            ///\}
-
-            ///\name Basic operations
-            ///\{
-
-            Imp(const Environment * const e, const ERepository * const p,
-                    const RepositoryName & name, const FSPathSequence & dirs,
-                    const std::string & arch_var_if_special, const bool profiles_explicitly_set) :
-                packages_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
-                virtuals_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
-                package_mask_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
-                env(e),
-                repository(p),
-                profiles_with_parents(std::make_shared<FSPathSequence>()),
-                system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>())),
-                virtuals(std::make_shared<Map<QualifiedPackageName, PackageDepSpec>>()),
-                use_expand(std::make_shared<Set<std::string>>()),
-                use_expand_hidden(std::make_shared<Set<std::string>>()),
-                use_expand_unprefixed(std::make_shared<Set<std::string>>()),
-                use_expand_implicit(std::make_shared<Set<std::string>>()),
-                iuse_implicit(std::make_shared<Set<std::string>>())
+            for (FSPathSequence::ConstIterator d(dirs.begin()), d_end(dirs.end()) ;
+                    d != d_end ; ++d)
             {
-                Context context("When loading profiles '" + join(dirs.begin(), dirs.end(), "' '") + "' for repository '" + stringify(name) + "':");
+                Context subcontext("When using directory '" + stringify(*d) + "':");
 
-                if (dirs.empty())
-                    throw ERepositoryConfigurationError("No profiles directories specified");
+                if (profiles_explicitly_set)
+                    if (! p->params().ignore_deprecated_profiles())
+                        if ((*d / "deprecated").stat().is_regular_file_or_symlink_to_regular_file())
+                            Log::get_instance()->message("e.profile.deprecated", ll_warning, lc_context) << "Profile directory '" << *d
+                                << "' is deprecated. See the file '" << (*d / "deprecated") << "' for details";
 
-                load_environment();
-
-                for (FSPathSequence::ConstIterator d(dirs.begin()), d_end(dirs.end()) ;
-                        d != d_end ; ++d)
-                {
-                    Context subcontext("When using directory '" + stringify(*d) + "':");
-
-                    if (profiles_explicitly_set)
-                        if (! p->params().ignore_deprecated_profiles())
-                            if ((*d / "deprecated").stat().is_regular_file_or_symlink_to_regular_file())
-                                Log::get_instance()->message("e.profile.deprecated", ll_warning, lc_context) << "Profile directory '" << *d
-                                    << "' is deprecated. See the file '" << (*d / "deprecated") << "' for details";
-
-                    load_profile_directory_recursively(*d);
-                }
-
-                make_vars_from_file_vars();
-                load_special_make_defaults_vars(*dirs.begin());
-                add_use_expand_to_use();
-                fish_out_use_expand_names();
-                if (! arch_var_if_special.empty())
-                    handle_profile_arch_var(arch_var_if_special);
+                load_profile_directory_recursively(*d);
             }
 
-            ~Imp()
-            {
-            }
-
-            ///\}
+            make_vars_from_file_vars();
+            load_special_make_defaults_vars(*dirs.begin());
+            add_use_expand_to_use();
+            fish_out_use_expand_names();
+            if (! arch_var_if_special.empty())
+                handle_profile_arch_var(arch_var_if_special);
+        }
     };
 }
 
