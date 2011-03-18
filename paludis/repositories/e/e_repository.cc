@@ -1693,7 +1693,7 @@ ERepository::make_id(const QualifiedPackageName & q, const FSPath & f) const
 
     std::shared_ptr<EbuildID> result(std::make_shared<EbuildID>(q, extract_package_file_version(q, f),
                 _imp->params.environment(),
-                name(), f, _guess_eapi(q, f),
+                name(), f, FileSuffixes::get_instance()->guess_eapi_from_filename(q, f),
                 _imp->master_mtime, _imp->eclass_mtimes));
     return result;
 }
@@ -1921,22 +1921,6 @@ ERepository::merge(const MergeParams & m)
     }
 }
 
-bool
-ERepository::is_package_file(const QualifiedPackageName & n, const FSPath & e) const
-{
-    Context context("When working out whether '" + stringify(e) + "' is a package file for '" + stringify(n) + "':");
-
-    if (0 != e.basename().compare(0, stringify(n.package()).length() + 1, stringify(n.package()) + "-"))
-        return false;
-
-    std::string::size_type p(e.basename().rfind('.'));
-    if (std::string::npos == p)
-        return false;
-
-    std::string suffix(e.basename().substr(p + 1));
-    return FileSuffixes::get_instance()->is_known_suffix(suffix);
-}
-
 VersionSpec
 ERepository::extract_package_file_version(const QualifiedPackageName & n, const FSPath & e) const
 {
@@ -1950,34 +1934,9 @@ ERepository::extract_package_file_version(const QualifiedPackageName & n, const 
 }
 
 const std::string
-ERepository::get_package_file_manifest_key(const FSPath & e, const QualifiedPackageName & q) const
-{
-    if (! is_package_file(q, e))
-        return "";
-
-    std::string::size_type p(e.basename().rfind('.'));
-    if (std::string::npos == p)
-        return "EBUILD";
-
-    std::string suffix(e.basename().substr(p + 1));
-    return FileSuffixes::get_instance()->manifest_key(suffix);
-}
-
-const std::string
 ERepository::binary_ebuild_name(const QualifiedPackageName & q, const VersionSpec & v, const std::string & e) const
 {
     return stringify(q.package()) + "-" + stringify(v) + "." + e;
-}
-
-const std::string
-ERepository::_guess_eapi(const QualifiedPackageName &, const FSPath & e) const
-{
-    std::string::size_type p(e.basename().rfind('.'));
-    if (std::string::npos == p)
-        return "";
-
-    std::string suffix(e.basename().substr(p + 1));
-    return FileSuffixes::get_instance()->guess_eapi(suffix);
 }
 
 const std::shared_ptr<const MirrorsSequence>

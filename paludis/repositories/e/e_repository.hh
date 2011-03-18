@@ -64,8 +64,6 @@ namespace paludis
 
             void need_mirrors() const;
 
-            const std::string _guess_eapi(const QualifiedPackageName &, const FSPath & e) const;
-
         protected:
             virtual void need_keys_added() const;
 
@@ -208,17 +206,12 @@ namespace paludis
             ///\name Entries
             ///\{
 
-            bool is_package_file(const QualifiedPackageName &, const FSPath &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSPath &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             const std::shared_ptr<const erepository::ERepositoryID> make_id(
                     const QualifiedPackageName &, const FSPath &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            const std::string get_package_file_manifest_key(const FSPath &, const QualifiedPackageName &) const;
 
             const std::string binary_ebuild_name(const QualifiedPackageName &, const VersionSpec &, const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

@@ -22,6 +22,8 @@
 
 #include <paludis/util/pimp.hh>
 #include <paludis/util/singleton.hh>
+#include <paludis/util/fs_path-fwd.hh>
+#include <paludis/name-fwd.hh>
 #include <string>
 
 namespace paludis
@@ -42,11 +44,19 @@ namespace paludis
             public:
                 bool is_known_suffix(const std::string & s) const;
 
-                std::string guess_eapi(const std::string & s) const;
+                const std::string manifest_key(const std::string & s) const;
 
-                std::string manifest_key(const std::string & s) const;
+                const std::string get_package_file_manifest_key(const FSPath & e, const QualifiedPackageName & q) const;
+
+                bool is_package_file(const QualifiedPackageName & n, const FSPath & e) const;
+
+                const std::string guess_eapi_without_hint(const std::string & s) const;
+
+                const std::string guess_eapi_from_filename(const QualifiedPackageName &, const FSPath & e) const;
         };
     }
+
+    extern template class Singleton<erepository::FileSuffixes>;
 }
 
 #endif

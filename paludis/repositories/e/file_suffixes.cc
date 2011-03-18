@@ -25,6 +25,7 @@
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/options.hh>
+#include <paludis/name.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -57,13 +58,24 @@ FileSuffixes::is_known_suffix(const std::string & s) const
     return ! _imp->file.get("suffix_" + s + "_known").empty();
 }
 
-std::string
-FileSuffixes::guess_eapi(const std::string & s) const
+const std::string
+FileSuffixes::guess_eapi_without_hint(const std::string & s) const
 {
     return _imp->file.get("guess_eapi_" + s);
 }
 
-std::string
+const std::string
+FileSuffixes::guess_eapi_from_filename(const QualifiedPackageName &, const FSPath & e) const
+{
+    std::string::size_type p(e.basename().rfind('.'));
+    if (std::string::npos == p)
+        return "";
+
+    std::string suffix(e.basename().substr(p + 1));
+    return guess_eapi_without_hint(suffix);
+}
+
+const std::string
 FileSuffixes::manifest_key(const std::string & s) const
 {
     std::string result(_imp->file.get("manifest_key_" + s));
@@ -76,4 +88,36 @@ FileSuffixes::manifest_key(const std::string & s) const
     else
         return result;
 }
+
+bool
+FileSuffixes::is_package_file(const QualifiedPackageName & n, const FSPath & e) const
+{
+    Context context("When working out whether '" + stringify(e) + "' is a package file for '" + stringify(n) + "':");
+
+    if (0 != e.basename().compare(0, stringify(n.package()).length() + 1, stringify(n.package()) + "-"))
+        return false;
+
+    std::string::size_type p(e.basename().rfind('.'));
+    if (std::string::npos == p)
+        return false;
+
+    std::string suffix(e.basename().substr(p + 1));
+    return is_known_suffix(suffix);
+}
+
+const std::string
+FileSuffixes::get_package_file_manifest_key(const FSPath & e, const QualifiedPackageName & q) const
+{
+    if (! is_package_file(q, e))
+        return "";
+
+    std::string::size_type p(e.basename().rfind('.'));
+    if (std::string::npos == p)
+        return "EBUILD";
+
+    std::string suffix(e.basename().substr(p + 1));
+    return manifest_key(suffix);
+}
+
+template class Singleton<FileSuffixes>;
 

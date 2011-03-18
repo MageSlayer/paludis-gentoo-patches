@@ -20,6 +20,8 @@
 #include <paludis/repositories/e/exheres_layout.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/file_suffixes.hh>
+
 #include <paludis/util/config_file.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
@@ -233,7 +235,7 @@ ExheresLayout::need_package_ids(const QualifiedPackageName & n) const
 
     for (FSIterator e(path, { }), e_end ; e != e_end ; ++e)
     {
-        if (! _imp->repository->is_package_file(n, *e))
+        if (! FileSuffixes::get_instance()->is_package_file(n, *e))
             continue;
 
         try
@@ -608,8 +610,8 @@ ExheresLayout::manifest_files(const QualifiedPackageName & qpn) const
             continue;
 
         std::string file_type("MISC");
-        if (_imp->repository->is_package_file(qpn, (*f)))
-            file_type=_imp->repository->get_package_file_manifest_key((*f), qpn);
+        if (FileSuffixes::get_instance()->is_package_file(qpn, (*f)))
+            file_type = FileSuffixes::get_instance()->get_package_file_manifest_key((*f), qpn);
 
         result->insert((*f), file_type);
     }
