@@ -27,6 +27,7 @@
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/mask-fwd.hh>
 #include <type_traits>
+#include <functional>
 
 namespace paludis
 {
@@ -44,7 +45,9 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                ProfileFile(const ERepository * const);
+                explicit ProfileFile(const EAPIForFileFunction &);
+                explicit ProfileFile(const ERepository * const);
+
                 ~ProfileFile();
 
                 ///\}

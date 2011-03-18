@@ -86,6 +86,7 @@ noinst_HEADERS = \
 	pipe_command_handler.hh \
 	profile.hh \
 	profile_file.hh \
+	repository_mask_store.hh \
 	required_use_verifier.hh \
 	source_uri_finder.hh \
 	spec_tree_pretty_printer.hh \
@@ -162,6 +163,7 @@ libpaludiserepository_la_SOURCES = \
 	profile.cc \
 	profile_file.cc \
 	registration.cc \
+	repository_mask_store.cc \
 	required_use_verifier.cc \
 	source_uri_finder.cc \
 	spec_tree_pretty_printer.cc \

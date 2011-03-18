@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_EAPI_FWD_HH 1
 
 #include <paludis/repositories/e/dep_parser-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/fs_merger-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/elike_package_dep_spec-fwd.hh>
@@ -45,6 +46,9 @@ namespace paludis
         class EAPI;
 
         class EAPIMetadataVariable;
+
+        typedef std::function<const std::string (const FSPath &)> EAPIForFileFunction;
+
     }
 }
 

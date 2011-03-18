@@ -84,7 +84,7 @@ namespace paludis
     template <typename F_>
     struct Imp<ProfileFile<F_> >
     {
-        const ERepository * const repository;
+        const EAPIForFileFunction eapi_for_file;
 
         typedef std::list<std::pair<std::shared_ptr<const EAPI>,
                 const typename std::remove_reference<typename F_::ConstIterator::value_type>::type> > Lines;
@@ -92,8 +92,8 @@ namespace paludis
 
         std::set<std::string> removed;
 
-        Imp(const ERepository * const r) :
-            repository(r)
+        Imp(const EAPIForFileFunction & e) :
+            eapi_for_file(e)
         {
         }
     };
@@ -140,8 +140,7 @@ ProfileFile<F_>::add_file(const FSPath & f)
     if (! f.stat().exists())
         return;
 
-    const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
-                this->_imp->repository->eapi_for_file(f)));
+    const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(f)));
     if (! eapi->supported())
         throw ERepositoryConfigurationError("Can't use profile file '" + stringify(f) +
                 "' because it uses an unsupported EAPI");
@@ -181,9 +180,23 @@ ProfileFile<F_>::add_file(const FSPath & f)
     }
 }
 
+namespace
+{
+    const std::string eapi_for_file(const ERepository * const repo, const FSPath & path)
+    {
+        return repo->eapi_for_file(path);
+    }
+}
+
 template <typename F_>
-ProfileFile<F_>::ProfileFile(const ERepository * const r) :
-    _imp(r)
+ProfileFile<F_>::ProfileFile(const ERepository * const repo) :
+    _imp(std::bind(eapi_for_file, repo, std::placeholders::_1))
+{
+}
+
+template <typename F_>
+ProfileFile<F_>::ProfileFile(const EAPIForFileFunction & f) :
+    _imp(f)
 {
 }
 

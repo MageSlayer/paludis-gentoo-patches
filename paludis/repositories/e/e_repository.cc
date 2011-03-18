@@ -43,6 +43,7 @@
 #include <paludis/repositories/e/check_userpriv.hh>
 #include <paludis/repositories/e/make_use.hh>
 #include <paludis/repositories/e/a_finder.hh>
+#include <paludis/repositories/e/repository_mask_store.hh>
 
 #include <paludis/about.hh>
 #include <paludis/action.hh>
@@ -62,9 +63,11 @@
 #include <paludis/syncer.hh>
 
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/active_object_ptr.hh>
 #include <paludis/util/cookie.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/create_iterator-impl.hh>
+#include <paludis/util/deferred_construction_ptr.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/extract_host_from_url.hh>
 #include <paludis/util/fs_stat.hh>
@@ -127,9 +130,6 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-typedef std::unordered_map<QualifiedPackageName,
-        std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const MaskInfo> > >,
-        Hash<QualifiedPackageName> > RepositoryMaskMap;
 typedef std::unordered_map<std::string, std::shared_ptr<MirrorsSequence> > MirrorMap;
 typedef std::unordered_map<QualifiedPackageName, std::shared_ptr<const PackageDepSpec>, Hash<QualifiedPackageName> > VirtualsMap;
 
@@ -182,6 +182,21 @@ namespace
         tokenise_whitespace(s, result->inserter());
         return result;
     }
+
+    std::shared_ptr<RepositoryMaskStore> make_mask_store(
+            const Environment * const env,
+            const RepositoryName & repo_name,
+            const FetchRepositoryMaskFilesFunction & f,
+            const EAPIForFileFunction & e)
+    {
+        return std::make_shared<RepositoryMaskStore>(env, repo_name, f, e);
+    }
+
+    std::shared_ptr<const FSPathSequence> fetch_repository_mask_files(
+            const std::shared_ptr<const Layout> & layout)
+    {
+        return layout->repository_mask_files();
+    }
 }
 
 namespace paludis
@@ -196,7 +211,6 @@ namespace paludis
     {
         struct Mutexes
         {
-            Mutex repo_mask_mutex;
             Mutex arch_flags_mutex;
             Mutex mirrors_mutex;
             Mutex use_desc_mutex;
@@ -211,9 +225,6 @@ namespace paludis
         const std::shared_ptr<Mutexes> mutexes;
 
         std::shared_ptr<RepositoryNameCache> names_cache;
-
-        mutable RepositoryMaskMap repo_mask;
-        mutable bool has_repo_mask;
 
         const std::map<QualifiedPackageName, QualifiedPackageName> provide_map;
 
@@ -230,6 +241,8 @@ namespace paludis
 
         mutable std::shared_ptr<ERepositorySets> sets_ptr;
         const std::shared_ptr<Layout> layout;
+
+        ActiveObjectPtr<DeferredConstructionPtr<std::shared_ptr<RepositoryMaskStore> > > repository_mask_store;
 
         mutable EAPIForFileMap eapi_for_file_map;
 
@@ -284,11 +297,14 @@ namespace paludis
         params(p),
         mutexes(m),
         names_cache(std::make_shared<RepositoryNameCache>(p.names_cache(), r)),
-        has_repo_mask(false),
         has_mirrors(false),
         sets_ptr(std::make_shared<ERepositorySets>(params.environment(), r, p)),
         layout(LayoutFactory::get_instance()->create(params.layout(), r, params.location(), get_master_locations(
                         params.master_repositories()))),
+        repository_mask_store(DeferredConstructionPtr<std::shared_ptr<RepositoryMaskStore> > (
+                    std::bind(&make_mask_store, params.environment(), r->name(),
+                        FetchRepositoryMaskFilesFunction(std::bind(fetch_repository_mask_files, layout)),
+                        EAPIForFileFunction(std::bind(std::mem_fn(&ERepository::eapi_for_file), r, std::placeholders::_1))))),
         format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format",
                     mkt_significant, params.entry_format())),
         layout_key(std::make_shared<LiteralMetadataValueKey<std::string> >("layout", "layout",
@@ -618,60 +634,7 @@ ERepository::package_ids(const QualifiedPackageName & n, const RepositoryContent
 std::shared_ptr<const MaskInfo>
 ERepository::repository_masked(const std::shared_ptr<const PackageID> & id) const
 {
-    Lock l(_imp->mutexes->repo_mask_mutex);
-
-    if (! _imp->has_repo_mask)
-    {
-        Context context("When querying repository mask for '" + stringify(*id) + "':");
-
-        using namespace std::placeholders;
-
-        std::shared_ptr<const FSPathSequence> repository_mask_files(_imp->layout->repository_mask_files());
-        ProfileFile<MaskFile> repository_mask_file(this);
-        std::for_each(repository_mask_files->begin(), repository_mask_files->end(),
-                      std::bind(&ProfileFile<MaskFile>::add_file, std::ref(repository_mask_file), _1));
-
-        for (ProfileFile<MaskFile>::ConstIterator
-                line(repository_mask_file.begin()), line_end(repository_mask_file.end()) ;
-                line != line_end ; ++line)
-        {
-            try
-            {
-                std::shared_ptr<const PackageDepSpec> a(std::make_shared<PackageDepSpec>(parse_elike_package_dep_spec(
-                                line->second.first, line->first->supported()->package_dep_spec_parse_options(),
-                                line->first->supported()->version_spec_options())));
-                if (a->package_ptr())
-                    _imp->repo_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second.second));
-                else
-                    Log::get_instance()->message("e.package_mask.bad_spec", ll_warning, lc_context)
-                        << "Loading package mask spec '" << line->second.first << "' failed because specification does not restrict to a "
-                        "unique package";
-            }
-            catch (const InternalError &)
-            {
-                throw;
-            }
-            catch (const Exception & e)
-            {
-                Log::get_instance()->message("e.package_mask.bad_spec", ll_warning, lc_context) << "Loading package mask spec '"
-                    << line->second.first << "' failed due to exception '" << e.message() << "' ("
-                    << e.what() << ")";
-            }
-        }
-
-        _imp->has_repo_mask = true;
-    }
-
-    RepositoryMaskMap::iterator r(_imp->repo_mask.find(id->name()));
-    if (_imp->repo_mask.end() == r)
-        return std::shared_ptr<const MaskInfo>();
-    else
-        for (std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const MaskInfo> > >::const_iterator
-                k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->params.environment(), *k->first, id, make_null_shared_ptr(), { }))
-                return k->second;
-
-    return std::shared_ptr<const MaskInfo>();
+    return _imp->repository_mask_store->query(id);
 }
 
 const std::shared_ptr<const Set<UnprefixedChoiceName> >
