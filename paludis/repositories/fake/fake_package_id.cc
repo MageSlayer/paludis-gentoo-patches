@@ -1105,13 +1105,6 @@ FakePackageID::invalidate_masks() const
     PackageID::invalidate_masks();
 }
 
-void
-FakePackageID::make_unsupported()
-{
-    invalidate_masks();
-    _imp->unsupported_mask = std::make_shared<FakeUnsupportedMask>();
-}
-
 namespace
 {
     struct PerformAction

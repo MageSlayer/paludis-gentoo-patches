@@ -296,8 +296,6 @@ namespace paludis
 
             virtual void invalidate_masks() const;
 
-            void make_unsupported();
-
     };
 }
 
