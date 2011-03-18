@@ -44,6 +44,7 @@
 #include <paludis/repositories/e/make_use.hh>
 #include <paludis/repositories/e/a_finder.hh>
 #include <paludis/repositories/e/repository_mask_store.hh>
+#include <paludis/repositories/e/file_suffixes.hh>
 
 #include <paludis/about.hh>
 #include <paludis/action.hh>
@@ -74,7 +75,6 @@
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/singleton-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/log.hh>
@@ -1686,44 +1686,6 @@ ERepository::sync_host_key() const
     return _imp->sync_host_key;
 }
 
-namespace
-{
-    struct Suffixes :
-        Singleton<Suffixes>
-    {
-        KeyValueConfigFile file;
-
-        Suffixes() :
-            file(FSPath(getenv_with_default("PALUDIS_SUFFIXES_FILE", DATADIR "/paludis/ebuild_entries_suffixes.conf")),
-                    { }, &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation)
-        {
-        }
-
-        bool is_known_suffix(const std::string & s) const
-        {
-            return ! file.get("suffix_" + s + "_known").empty();
-        }
-
-        std::string guess_eapi(const std::string & s) const
-        {
-            return file.get("guess_eapi_" + s);
-        }
-
-        std::string manifest_key(const std::string & s) const
-        {
-            std::string result(file.get("manifest_key_" + s));
-            if (result.empty())
-            {
-                Log::get_instance()->message("e.ebuild.unknown_manifest_key", ll_warning, lc_context)
-                    << "Don't know what the manifest key for files with suffix '" << s << "' is, guessing 'MISC'";
-                return "MISC";
-            }
-            else
-                return result;
-        }
-    };
-}
-
 const std::shared_ptr<const ERepositoryID>
 ERepository::make_id(const QualifiedPackageName & q, const FSPath & f) const
 {
@@ -1972,7 +1934,7 @@ ERepository::is_package_file(const QualifiedPackageName & n, const FSPath & e) c
         return false;
 
     std::string suffix(e.basename().substr(p + 1));
-    return Suffixes::get_instance()->is_known_suffix(suffix);
+    return FileSuffixes::get_instance()->is_known_suffix(suffix);
 }
 
 VersionSpec
@@ -1998,7 +1960,7 @@ ERepository::get_package_file_manifest_key(const FSPath & e, const QualifiedPack
         return "EBUILD";
 
     std::string suffix(e.basename().substr(p + 1));
-    return Suffixes::get_instance()->manifest_key(suffix);
+    return FileSuffixes::get_instance()->manifest_key(suffix);
 }
 
 const std::string
@@ -2015,7 +1977,7 @@ ERepository::_guess_eapi(const QualifiedPackageName &, const FSPath & e) const
         return "";
 
     std::string suffix(e.basename().substr(p + 1));
-    return Suffixes::get_instance()->guess_eapi(suffix);
+    return FileSuffixes::get_instance()->guess_eapi(suffix);
 }
 
 const std::shared_ptr<const MirrorsSequence>

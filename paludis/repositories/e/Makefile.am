@@ -64,6 +64,7 @@ noinst_HEADERS = \
 	exndbam_repository.hh \
 	extra_distribution_data.hh \
 	fetch_visitor.hh \
+	file_suffixes.hh \
 	info_metadata_key.hh \
 	iuse.hh \
 	iuse-se.hh \
@@ -141,6 +142,7 @@ libpaludiserepository_la_SOURCES = \
 	exheres_profile.cc \
 	extra_distribution_data.cc \
 	fetch_visitor.cc \
+	file_suffixes.cc \
 	info_metadata_key.cc \
 	iuse.cc \
 	pretend_fetch_visitor.cc \
