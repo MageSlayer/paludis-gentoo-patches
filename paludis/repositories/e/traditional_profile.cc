@@ -94,6 +94,13 @@ namespace
     };
 
     typedef std::list<StackedValues> StackedValuesList;
+
+    typedef std::function<bool (const UnprefixedChoiceName &)> IsArchFlagFunction;
+
+    bool is_arch_flag_func(const ERepository * const r, const UnprefixedChoiceName & p)
+    {
+        return r->arch_flags()->end() != r->arch_flags()->find(p);
+    }
 }
 
 namespace paludis
@@ -122,7 +129,9 @@ namespace paludis
         bool is_incremental(const EAPI &, const std::string & s) const;
 
         const Environment * const env;
-        const ERepository * const repository;
+        const EAPIForFileFunction eapi_for_file;
+        const IsArchFlagFunction is_arch_flag;
+        const bool has_master_repositories;
 
         std::shared_ptr<FSPathSequence> profiles_with_parents;
 
@@ -153,7 +162,9 @@ namespace paludis
             virtuals_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
             package_mask_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
             env(e),
-            repository(p),
+            eapi_for_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
+            is_arch_flag(std::bind(&is_arch_flag_func, p, std::placeholders::_1)),
+            has_master_repositories(p->params().master_repositories()),
             profiles_with_parents(std::make_shared<FSPathSequence>()),
             system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>())),
             virtuals(std::make_shared<Map<QualifiedPackageName, PackageDepSpec>>()),
@@ -213,8 +224,7 @@ Imp<TraditionalProfile>::load_profile_directory_recursively(const FSPath & dir)
         return;
     }
 
-    const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(repository->eapi_for_file(dir / "use.mask")));
-
+    auto eapi(EAPIData::get_instance()->eapi_from_string(eapi_for_file(dir / "use.mask")));
     if (! eapi->supported())
         throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
                 "' because it uses an unsupported EAPI");
@@ -292,8 +302,7 @@ Imp<TraditionalProfile>::load_profile_make_defaults(const FSPath & dir)
     if (! (dir / "make.defaults").stat().exists())
         return;
 
-    const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
-                repository->eapi_for_file(dir / "make.defaults")));
+    auto eapi(EAPIData::get_instance()->eapi_from_string(eapi_for_file(dir / "make.defaults")));
     if (! eapi->supported())
         throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
                 "' because it uses an unsupported EAPI");
@@ -434,8 +443,7 @@ Imp<TraditionalProfile>::load_profile_make_defaults(const FSPath & dir)
 void
 Imp<TraditionalProfile>::load_special_make_defaults_vars(const FSPath & dir)
 {
-    const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(
-                repository->eapi_for_file(dir / "make.defaults")));
+    auto eapi(EAPIData::get_instance()->eapi_from_string(eapi_for_file(dir / "make.defaults")));
     if (! eapi->supported())
         throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
                 "' because it uses an unsupported EAPI");
@@ -520,7 +528,7 @@ Imp<TraditionalProfile>::make_vars_from_file_vars()
 {
     try
     {
-        if (! repository->params().master_repositories())
+        if (! has_master_repositories)
             for (ProfileFile<LineConfigFile>::ConstIterator i(packages_file.begin()),
                     i_end(packages_file.end()) ; i != i_end ; ++i)
             {
@@ -802,8 +810,7 @@ TraditionalProfile::use_masked(
         const ChoiceNameWithPrefix & value_prefixed
         ) const
 {
-    if (stringify(choice->prefix()).empty() &&
-            _imp->repository->arch_flags()->end() != _imp->repository->arch_flags()->find(value_unprefixed) &&
+    if (stringify(choice->prefix()).empty() && _imp->is_arch_flag(value_unprefixed) &&
             (! use_state_ignoring_masks(id, choice, value_unprefixed, value_prefixed).is_true()))
         return true;
 
@@ -840,7 +847,7 @@ TraditionalProfile::use_forced(
 {
     if (use_masked(id, choice, value_unprefixed, value_prefixed))
         return false;
-    if (stringify(choice->prefix()).empty() && (_imp->repository->arch_flags()->end() != _imp->repository->arch_flags()->find(value_unprefixed)))
+    if (stringify(choice->prefix()).empty() && _imp->is_arch_flag(value_unprefixed))
         return true;
 
     bool result(false);
