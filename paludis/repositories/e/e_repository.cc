@@ -1051,7 +1051,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
     if (! manifest)
         throw ERepositoryConfigurationError("Couldn't open Manifest for writing.");
 
-    auto files(_imp->layout->manifest_files(qpn));
+    auto files(_imp->layout->manifest_files(qpn, package_dir));
 
     for (auto f(files->begin()) ; f != files->end() ; ++f)
     {

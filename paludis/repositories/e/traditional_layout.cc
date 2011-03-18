@@ -607,10 +607,9 @@ namespace
 }
 
 std::shared_ptr<Map<FSPath, std::string, FSPathComparator> >
-TraditionalLayout::manifest_files(const QualifiedPackageName & qpn) const
+TraditionalLayout::manifest_files(const QualifiedPackageName & qpn, const FSPath & package_dir) const
 {
     auto result(std::make_shared<Map<FSPath, std::string, FSPathComparator>>());
-    FSPath package_dir = _imp->repository->layout()->package_directory(qpn);
 
     std::list<FSPath> package_files((FSIterator(package_dir, { fsio_inode_sort, fsio_want_regular_files })), FSIterator());
     for (std::list<FSPath>::iterator f(package_files.begin()) ;

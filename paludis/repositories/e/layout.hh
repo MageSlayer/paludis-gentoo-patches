@@ -143,7 +143,8 @@ namespace paludis
                 virtual std::shared_ptr<const FSPathSequence> licenses_dirs() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual std::shared_ptr<Map<FSPath, std::string, FSPathComparator> > manifest_files(const QualifiedPackageName &) const
+                virtual std::shared_ptr<Map<FSPath, std::string, FSPathComparator> > manifest_files(
+                        const QualifiedPackageName &, const FSPath &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual std::shared_ptr<MetadataValueKey<FSPath> > accounts_repository_data_location_key() const
