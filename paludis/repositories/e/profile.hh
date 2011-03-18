@@ -126,6 +126,8 @@ namespace paludis
                         ) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
+
+    extern template class Singleton<erepository::ProfileFactory>;
 }
 
 #endif

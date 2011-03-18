@@ -26,6 +26,7 @@
 
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/map-impl.hh>
+#include <paludis/util/singleton-impl.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -62,4 +63,6 @@ ProfileFactory::create(
 template class Map<QualifiedPackageName, PackageDepSpec>;
 template class WrappedForwardIterator<Map<QualifiedPackageName, PackageDepSpec>::ConstIteratorTag,
          const std::pair<const QualifiedPackageName, PackageDepSpec> >;
+
+template class Singleton<ProfileFactory>;
 
