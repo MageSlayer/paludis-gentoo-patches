@@ -491,5 +491,6 @@ namespace paludis
             NamedValue<n::suggestions_group_name, std::string> suggestions_group_name;
         };
     }
-#endif
 }
+
+#endif
