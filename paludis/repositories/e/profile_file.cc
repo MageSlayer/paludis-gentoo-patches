@@ -180,20 +180,6 @@ ProfileFile<F_>::add_file(const FSPath & f)
     }
 }
 
-namespace
-{
-    const std::string eapi_for_file(const ERepository * const repo, const FSPath & path)
-    {
-        return repo->eapi_for_file(path);
-    }
-}
-
-template <typename F_>
-ProfileFile<F_>::ProfileFile(const ERepository * const repo) :
-    _imp(std::bind(eapi_for_file, repo, std::placeholders::_1))
-{
-}
-
 template <typename F_>
 ProfileFile<F_>::ProfileFile(const EAPIForFileFunction & f) :
     _imp(f)

@@ -190,9 +190,9 @@ namespace paludis
             Imp(const Environment * const e, const ERepository * const p,
                     const RepositoryName & name, const FSPathSequence & dirs,
                     const std::string & arch_var_if_special, const bool profiles_explicitly_set) :
-                packages_file(p),
-                virtuals_file(p),
-                package_mask_file(p),
+                packages_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
+                virtuals_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
+                package_mask_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
                 env(e),
                 repository(p),
                 profiles_with_parents(std::make_shared<FSPathSequence>()),

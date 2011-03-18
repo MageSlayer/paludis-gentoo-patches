@@ -46,7 +46,6 @@ namespace paludis
                 ///\{
 
                 explicit ProfileFile(const EAPIForFileFunction &);
-                explicit ProfileFile(const ERepository * const);
 
                 ~ProfileFile();
 

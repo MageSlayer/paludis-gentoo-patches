@@ -104,8 +104,8 @@ namespace paludis
                         n::environment() = e,
                         n::make_config_file() = &make_config_file
                         )),
-            package_mask_file(p),
-            packages_file(p),
+            package_mask_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
+            packages_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
             use_expand(std::make_shared<Set<std::string>>()),
             use_expand_hidden(std::make_shared<Set<std::string>>()),
             use_expand_unprefixed(std::make_shared<Set<std::string>>()),
