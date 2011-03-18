@@ -620,10 +620,9 @@ ExheresLayout::manifest_files(const QualifiedPackageName & qpn) const
 }
 
 FSPath
-ExheresLayout::binary_ebuild_location(const QualifiedPackageName & q, const VersionSpec & v,
-        const std::string & eapi) const
+ExheresLayout::binary_ebuild_directory(const QualifiedPackageName & q) const
 {
-    return package_directory(q) / _imp->repository->binary_ebuild_name(q, v, eapi);
+    return package_directory(q);
 }
 
 std::shared_ptr<MetadataValueKey<FSPath> >

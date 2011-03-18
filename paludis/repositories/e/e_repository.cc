@@ -1859,7 +1859,7 @@ ERepository::merge(const MergeParams & m)
     if (0 != compress_process.run().wait())
         throw ActionFailedError("Compressing tarball failed");
 
-    FSPath binary_ebuild_location(layout()->binary_ebuild_location(
+    FSPath binary_ebuild_location(layout()->binary_ebuild_directory(m.package_id()->name()) / binary_ebuild_name(
                 m.package_id()->name(), m.package_id()->version(),
                 "pbin-1+" + std::static_pointer_cast<const ERepositoryID>(m.package_id())->eapi()->name()));
 

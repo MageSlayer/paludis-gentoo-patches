@@ -108,9 +108,7 @@ namespace paludis
                 virtual FSPath category_directory(const CategoryNamePart &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
-                virtual FSPath binary_ebuild_location(const QualifiedPackageName &, const VersionSpec &,
-                        const std::string & eapi) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual FSPath binary_ebuild_directory(const QualifiedPackageName &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual std::shared_ptr<const FSPathSequence> arch_list_files() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
