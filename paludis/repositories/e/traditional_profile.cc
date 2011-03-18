@@ -98,25 +98,9 @@ namespace
 
 namespace paludis
 {
-    template<>
+    template <>
     struct Imp<TraditionalProfile>
     {
-        void load_environment();
-        void load_profile_directory_recursively(const FSPath & dir);
-        void load_profile_parent(const FSPath & dir);
-        void load_profile_make_defaults(const FSPath & dir);
-
-        void load_basic_use_file(const FSPath & file, FlagStatusMap & m);
-        void load_spec_use_file(const EAPI &, const FSPath & file, PackageFlagStatusMapList & m);
-
-        void add_use_expand_to_use();
-        void fish_out_use_expand_names();
-        void make_vars_from_file_vars();
-        void handle_profile_arch_var(const std::string &);
-        void load_special_make_defaults_vars(const FSPath &);
-
-        bool is_incremental(const EAPI &, const std::string & s) const;
-
         const Environment * const env;
         const EAPIForFileFunction eapi_for_file;
         const IsArchFlagFunction is_arch_flag;
@@ -149,14 +133,9 @@ namespace paludis
         PackageMaskMap package_mask;
 
         Imp(const Environment * const e,
-                const RepositoryName & name,
                 const EAPIForFileFunction & p,
                 const IsArchFlagFunction & a,
-                const FSPathSequence & dirs,
-                const std::string & arch_var_if_special,
-                const bool profiles_explicitly_set,
-                const bool h,
-                const bool ignore_deprecated_profiles) :
+                const bool h) :
             env(e),
             eapi_for_file(p),
             is_arch_flag(a),
@@ -173,403 +152,161 @@ namespace paludis
             use_expand_implicit(std::make_shared<Set<std::string>>()),
             iuse_implicit(std::make_shared<Set<std::string>>())
         {
-            Context context("When loading profiles '" + join(dirs.begin(), dirs.end(), "' '") + "' for repository '" + stringify(name) + "':");
-
-            if (dirs.empty())
-                throw ERepositoryConfigurationError("No profiles directories specified");
-
-            load_environment();
-
-            for (FSPathSequence::ConstIterator d(dirs.begin()), d_end(dirs.end()) ;
-                    d != d_end ; ++d)
-            {
-                Context subcontext("When using directory '" + stringify(*d) + "':");
-
-                if (profiles_explicitly_set && ! ignore_deprecated_profiles)
-                    if ((*d / "deprecated").stat().is_regular_file_or_symlink_to_regular_file())
-                        Log::get_instance()->message("e.profile.deprecated", ll_warning, lc_context) << "Profile directory '" << *d
-                            << "' is deprecated. See the file '" << (*d / "deprecated") << "' for details";
-
-                load_profile_directory_recursively(*d);
-            }
-
-            make_vars_from_file_vars();
-            load_special_make_defaults_vars(*dirs.begin());
-            add_use_expand_to_use();
-            fish_out_use_expand_names();
-            if (! arch_var_if_special.empty())
-                handle_profile_arch_var(arch_var_if_special);
         }
     };
 }
 
-void
-Imp<TraditionalProfile>::load_environment()
+namespace
 {
-    environment_variables["CONFIG_PROTECT"] = getenv_with_default("CONFIG_PROTECT", "/etc");
-    environment_variables["CONFIG_PROTECT_MASK"] = getenv_with_default("CONFIG_PROTECT_MASK", "");
+    void load_environment(Pimp<TraditionalProfile> & _imp);
+
+    void load_profile_directory_recursively(
+            Pimp<TraditionalProfile> & _imp,
+            const FSPath & dir);
+
+    void load_profile_parent(
+            Pimp<TraditionalProfile> & _imp,
+            const FSPath & dir);
+
+    void make_vars_from_file_vars(
+            Pimp<TraditionalProfile> & _imp);
+
+    void load_special_make_defaults_vars(
+            Pimp<TraditionalProfile> & _imp,
+            const FSPath & dir);
+
+    void add_use_expand_to_use(
+            Pimp<TraditionalProfile> & _imp);
+
+    void fish_out_use_expand_names(
+            Pimp<TraditionalProfile> & _imp);
+
+    void load_profile_make_defaults(
+            Pimp<TraditionalProfile> & _imp,
+            const FSPath & dir);
+
+    void load_basic_use_file(
+            const FSPath & file,
+            FlagStatusMap & m);
+
+    void load_spec_use_file(
+            const EAPI & eapi,
+            const FSPath & file,
+            PackageFlagStatusMapList & m);
 }
 
-void
-Imp<TraditionalProfile>::load_profile_directory_recursively(const FSPath & dir)
+namespace
 {
-    Context context("When adding profile directory '" + stringify(dir) + ":");
-
-    if (! dir.stat().is_directory_or_symlink_to_directory())
+    void load_environment(Pimp<TraditionalProfile> & _imp)
     {
-        Log::get_instance()->message("e.profile.not_a_directory", ll_warning, lc_context)
-            << "Profile component '" << dir << "' is not a directory";
-        return;
+        _imp->environment_variables["CONFIG_PROTECT"] = getenv_with_default("CONFIG_PROTECT", "/etc");
+        _imp->environment_variables["CONFIG_PROTECT_MASK"] = getenv_with_default("CONFIG_PROTECT_MASK", "");
     }
 
-    auto eapi(EAPIData::get_instance()->eapi_from_string(eapi_for_file(dir / "use.mask")));
-    if (! eapi->supported())
-        throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
-                "' because it uses an unsupported EAPI");
-
-    stacked_values_list.push_back(StackedValues(stringify(dir)));
-
-    load_profile_parent(dir);
-    load_profile_make_defaults(dir);
-
-    load_basic_use_file(dir / "use.mask", stacked_values_list.back().use_mask);
-    load_basic_use_file(dir / "use.force", stacked_values_list.back().use_force);
-    load_spec_use_file(*eapi, dir / "package.use", stacked_values_list.back().package_use);
-    load_spec_use_file(*eapi, dir / "package.use.mask", stacked_values_list.back().package_use_mask);
-    load_spec_use_file(*eapi, dir / "package.use.force", stacked_values_list.back().package_use_force);
-
-    packages_file.add_file(dir / "packages");
-    if ((*DistributionData::get_instance()->distribution_from_string(env->distribution())).support_old_style_virtuals())
-        virtuals_file.add_file(dir / "virtuals");
-    package_mask_file.add_file(dir / "package.mask");
-
-    profiles_with_parents->push_back(dir);
-}
-
-void
-Imp<TraditionalProfile>::load_profile_parent(const FSPath & dir)
-{
-    Context context("When handling parent file for profile directory '" + stringify(dir) + ":");
-
-    if (! (dir / "parent").stat().exists())
-        return;
-
-    LineConfigFile file(dir / "parent", { lcfo_disallow_continuations });
-
-    LineConfigFile::ConstIterator i(file.begin()), i_end(file.end());
-    bool once(false);
-    if (i == i_end)
-        Log::get_instance()->message("e.profile.parent.empty", ll_warning, lc_context) << "parent file is empty";
-    else
-        for ( ; i != i_end ; ++i)
-        {
-            if ('#' == i->at(0))
-            {
-                if (! once)
-                    Log::get_instance()->message("e.profile.parent.no_comments", ll_qa, lc_context)
-                        << "Comments not allowed in '" << (dir / "parent") << "'";
-                once = true;
-                continue;
-            }
-
-            FSPath parent_dir(dir);
-            do
-            {
-                try
-                {
-                    parent_dir = (parent_dir / *i).realpath();
-                }
-                catch (const FSError & e)
-                {
-                    Log::get_instance()->message("e.profile.parent.skipping", ll_warning, lc_context)
-                        << "Skipping parent '" << *i << "' due to exception: " << e.message() << " (" << e.what() << ")";
-                    continue;
-                }
-
-                load_profile_directory_recursively(parent_dir);
-
-            } while (false);
-        }
-}
-
-void
-Imp<TraditionalProfile>::load_profile_make_defaults(const FSPath & dir)
-{
-    Context context("When handling make.defaults file for profile directory '" + stringify(dir) + ":");
-
-    if (! (dir / "make.defaults").stat().exists())
-        return;
-
-    auto eapi(EAPIData::get_instance()->eapi_from_string(eapi_for_file(dir / "make.defaults")));
-    if (! eapi->supported())
-        throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
-                "' because it uses an unsupported EAPI");
-
-    KeyValueConfigFile file(dir / "make.defaults", { kvcfo_disallow_source, kvcfo_disallow_space_inside_unquoted_values, kvcfo_allow_inline_comments, kvcfo_allow_multiple_assigns_per_line },
-            &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
-
-    for (KeyValueConfigFile::ConstIterator k(file.begin()), k_end(file.end()) ;
-            k != k_end ; ++k)
+    void load_profile_directory_recursively(
+            Pimp<TraditionalProfile> & _imp,
+            const FSPath & dir)
     {
-        if (is_incremental(*eapi, k->first))
+        Context context("When adding profile directory '" + stringify(dir) + ":");
+
+        if (! dir.stat().is_directory_or_symlink_to_directory())
         {
-            std::list<std::string> val, val_add;
-            tokenise_whitespace(environment_variables[k->first], std::back_inserter(val));
-            tokenise_whitespace(k->second, std::back_inserter(val_add));
-
-            for (std::list<std::string>::const_iterator v(val_add.begin()), v_end(val_add.end()) ;
-                    v != v_end ; ++v)
-            {
-                if (v->empty())
-                    continue;
-                if (*v == "-*")
-                    val.clear();
-                else if ('-' == v->at(0))
-                    val.remove(v->substr(1));
-                else
-                    val.push_back(*v);
-            }
-
-            environment_variables[k->first] = join(val.begin(), val.end(), " ");
+            Log::get_instance()->message("e.profile.not_a_directory", ll_warning, lc_context)
+                << "Profile component '" << dir << "' is not a directory";
+            return;
         }
+
+        auto eapi(EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(dir / "use.mask")));
+        if (! eapi->supported())
+            throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
+                    "' because it uses an unsupported EAPI");
+
+        _imp->stacked_values_list.push_back(StackedValues(stringify(dir)));
+
+        load_profile_parent(_imp, dir);
+        load_profile_make_defaults(_imp, dir);
+
+        load_basic_use_file(dir / "use.mask", _imp->stacked_values_list.back().use_mask);
+        load_basic_use_file(dir / "use.force", _imp->stacked_values_list.back().use_force);
+        load_spec_use_file(*eapi, dir / "package.use", _imp->stacked_values_list.back().package_use);
+        load_spec_use_file(*eapi, dir / "package.use.mask", _imp->stacked_values_list.back().package_use_mask);
+        load_spec_use_file(*eapi, dir / "package.use.force", _imp->stacked_values_list.back().package_use_force);
+
+        _imp->packages_file.add_file(dir / "packages");
+        if ((*DistributionData::get_instance()->distribution_from_string(_imp->env->distribution())).support_old_style_virtuals())
+            _imp->virtuals_file.add_file(dir / "virtuals");
+        _imp->package_mask_file.add_file(dir / "package.mask");
+
+        _imp->profiles_with_parents->push_back(dir);
+    }
+
+    void load_profile_parent(
+            Pimp<TraditionalProfile> & _imp,
+            const FSPath & dir)
+    {
+        Context context("When handling parent file for profile directory '" + stringify(dir) + ":");
+
+        if (! (dir / "parent").stat().exists())
+            return;
+
+        LineConfigFile file(dir / "parent", { lcfo_disallow_continuations });
+
+        LineConfigFile::ConstIterator i(file.begin()), i_end(file.end());
+        bool once(false);
+        if (i == i_end)
+            Log::get_instance()->message("e.profile.parent.empty", ll_warning, lc_context) << "parent file is empty";
         else
-            environment_variables[k->first] = k->second;
-    }
-
-    std::string use_expand_var(eapi->supported()->ebuild_environment_variables()->env_use_expand());
-    try
-    {
-        use_expand->clear();
-        if (! use_expand_var.empty())
-            tokenise_whitespace(environment_variables[use_expand_var], use_expand->inserter());
-    }
-    catch (const InternalError &)
-    {
-        throw;
-    }
-    catch (const Exception & e)
-    {
-        Log::get_instance()->message("e.profile.make_defaults.use_expand_failure", ll_warning, lc_context)
-            << "Loading '" << use_expand_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
-    }
-
-    std::string use_expand_unprefixed_var(eapi->supported()->ebuild_environment_variables()->env_use_expand_unprefixed());
-    try
-    {
-        use_expand_unprefixed->clear();
-        if (! use_expand_unprefixed_var.empty())
-            tokenise_whitespace(environment_variables[use_expand_unprefixed_var], use_expand_unprefixed->inserter());
-    }
-    catch (const InternalError &)
-    {
-        throw;
-    }
-    catch (const Exception & e)
-    {
-        Log::get_instance()->message("e.profile.make_defaults.use_expand_unprefixed_failure", ll_warning, lc_context)
-            << "Loading '" << use_expand_unprefixed_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
-    }
-
-    std::string use_expand_implicit_var(eapi->supported()->ebuild_environment_variables()->env_use_expand_implicit());
-    try
-    {
-        use_expand_implicit->clear();
-        if (! use_expand_implicit_var.empty())
-            tokenise_whitespace(environment_variables[use_expand_implicit_var], use_expand_implicit->inserter());
-    }
-    catch (const InternalError &)
-    {
-        throw;
-    }
-    catch (const Exception & e)
-    {
-        Log::get_instance()->message("e.profile.make_defaults.use_expand_implicit_failure", ll_warning, lc_context)
-            << "Loading '" << use_expand_implicit_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
-    }
-
-    std::string iuse_implicit_var(eapi->supported()->ebuild_environment_variables()->env_iuse_implicit());
-    try
-    {
-        iuse_implicit->clear();
-        if (! iuse_implicit_var.empty())
-            tokenise_whitespace(environment_variables[iuse_implicit_var], iuse_implicit->inserter());
-    }
-    catch (const InternalError &)
-    {
-        throw;
-    }
-    catch (const Exception & e)
-    {
-        Log::get_instance()->message("e.profile.make_defaults.iuse_implicit_failure", ll_warning, lc_context)
-            << "Loading '" << iuse_implicit_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
-    }
-
-    std::string use_expand_values_part_var(eapi->supported()->ebuild_environment_variables()->env_use_expand_values_part());
-    try
-    {
-        use_expand_values.clear();
-        if (! use_expand_values_part_var.empty())
-        {
-            for (Set<std::string>::ConstIterator x(use_expand->begin()), x_end(use_expand->end()) ;
-                    x != x_end ; ++x)
+            for ( ; i != i_end ; ++i)
             {
-                std::shared_ptr<Set<std::string> > v(std::make_shared<Set<std::string>>());
-                tokenise_whitespace(environment_variables[use_expand_values_part_var + *x], v->inserter());
-                use_expand_values.insert(std::make_pair(*x, v));
-            }
-
-            for (Set<std::string>::ConstIterator x(use_expand_unprefixed->begin()), x_end(use_expand_unprefixed->end()) ;
-                    x != x_end ; ++x)
-            {
-                std::shared_ptr<Set<std::string> > v(std::make_shared<Set<std::string>>());
-                tokenise_whitespace(environment_variables[use_expand_values_part_var + *x], v->inserter());
-                use_expand_values.insert(std::make_pair(*x, v));
-            }
-        }
-    }
-    catch (const InternalError &)
-    {
-        throw;
-    }
-    catch (const Exception & e)
-    {
-        Log::get_instance()->message("e.profile.make_defaults.iuse_implicit_failure", ll_warning, lc_context)
-            << "Loading '" << iuse_implicit_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
-    }
-}
-
-void
-Imp<TraditionalProfile>::load_special_make_defaults_vars(const FSPath & dir)
-{
-    auto eapi(EAPIData::get_instance()->eapi_from_string(eapi_for_file(dir / "make.defaults")));
-    if (! eapi->supported())
-        throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
-                "' because it uses an unsupported EAPI");
-
-    std::string use_var(eapi->supported()->ebuild_environment_variables()->env_use());
-    try
-    {
-        use.clear();
-        if (! use_var.empty())
-        {
-            std::list<std::string> tokens;
-            tokenise_whitespace(environment_variables[use_var], std::back_inserter(tokens));
-            for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                    t != t_end ; ++t)
-                use.insert(std::make_pair("", *t));
-        }
-    }
-    catch (const InternalError &)
-    {
-        throw;
-    }
-    catch (const Exception & e)
-    {
-        Log::get_instance()->message("e.profile.make_defaults.use_failure", ll_warning, lc_context)
-            << "Loading '" << use_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
-    }
-
-    std::string use_expand_var(eapi->supported()->ebuild_environment_variables()->env_use_expand());
-    try
-    {
-        use_expand->clear();
-        if (! use_expand_var.empty())
-            tokenise_whitespace(environment_variables[use_expand_var], use_expand->inserter());
-    }
-    catch (const InternalError &)
-    {
-        throw;
-    }
-    catch (const Exception & e)
-    {
-        Log::get_instance()->message("e.profile.make_defaults.use_expand_failure", ll_warning, lc_context)
-            << "Loading '" << use_expand_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
-    }
-
-    std::string use_expand_hidden_var(eapi->supported()->ebuild_environment_variables()->env_use_expand_hidden());
-    try
-    {
-        use_expand_hidden->clear();
-        if (! use_expand_hidden_var.empty())
-            tokenise_whitespace(environment_variables[use_expand_hidden_var], use_expand_hidden->inserter());
-    }
-    catch (const InternalError &)
-    {
-        throw;
-    }
-    catch (const Exception & e)
-    {
-        Log::get_instance()->message("e.profile.make_defaults.use_expand_hidden_failure", ll_warning, lc_context)
-            << "Loading '" << use_expand_hidden_var << "' failed due to exception: "
-            << e.message() << " (" << e.what() << ")";
-    }
-}
-
-bool
-Imp<TraditionalProfile>::is_incremental(const EAPI & e, const std::string & s) const
-{
-    Context c("When checking whether '" + s + "' is incremental:");
-
-    return (! s.empty()) && (
-            (s == e.supported()->ebuild_environment_variables()->env_use())
-            || (s == e.supported()->ebuild_environment_variables()->env_use_expand())
-            || (s == e.supported()->ebuild_environment_variables()->env_use_expand_hidden())
-            || (s == e.supported()->ebuild_environment_variables()->env_use_expand_unprefixed())
-            || (s == e.supported()->ebuild_environment_variables()->env_use_expand_implicit())
-            || (s == e.supported()->ebuild_environment_variables()->env_iuse_implicit())
-            || s == "CONFIG_PROTECT"
-            || s == "CONFIG_PROTECT_MASK");
-}
-
-void
-Imp<TraditionalProfile>::make_vars_from_file_vars()
-{
-    try
-    {
-        if (! has_master_repositories)
-            for (ProfileFile<LineConfigFile>::ConstIterator i(packages_file.begin()),
-                    i_end(packages_file.end()) ; i != i_end ; ++i)
-            {
-                if (0 != i->second.compare(0, 1, "*", 0, 1))
+                if ('#' == i->at(0))
+                {
+                    if (! once)
+                        Log::get_instance()->message("e.profile.parent.no_comments", ll_qa, lc_context)
+                            << "Comments not allowed in '" << (dir / "parent") << "'";
+                    once = true;
                     continue;
+                }
 
-                Context context_spec("When parsing '" + i->second + "':");
-                std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
-                            parse_elike_package_dep_spec(i->second.substr(1),
-                                i->first->supported()->package_dep_spec_parse_options(),
-                                i->first->supported()->version_spec_options())));
+                FSPath parent_dir(dir);
+                do
+                {
+                    try
+                    {
+                        parent_dir = (parent_dir / *i).realpath();
+                    }
+                    catch (const FSError & e)
+                    {
+                        Log::get_instance()->message("e.profile.parent.skipping", ll_warning, lc_context)
+                            << "Skipping parent '" << *i << "' due to exception: " << e.message() << " (" << e.what() << ")";
+                        continue;
+                    }
 
-                system_packages->top()->append(spec);
+                    load_profile_directory_recursively(_imp, parent_dir);
+
+                } while (false);
             }
     }
-    catch (const InternalError &)
-    {
-        throw;
-    }
-    catch (const Exception & e)
-    {
-        Log::get_instance()->message("e.profile.packages.failure", ll_warning, lc_context) << "Loading packages "
-                " failed due to exception: " << e.message() << " (" << e.what() << ")";
-    }
 
-    if ((*DistributionData::get_instance()->distribution_from_string(
-                env->distribution())).support_old_style_virtuals())
+    void make_vars_from_file_vars(
+            Pimp<TraditionalProfile> & _imp)
+    {
         try
         {
-            for (ProfileFile<LineConfigFile>::ConstIterator line(virtuals_file.begin()), line_end(virtuals_file.end()) ;
-                    line != line_end ; ++line)
-            {
-                std::vector<std::string> tokens;
-                tokenise_whitespace(line->second, std::back_inserter(tokens));
-                if (tokens.size() < 2)
-                    continue;
+            if (! _imp->has_master_repositories)
+                for (ProfileFile<LineConfigFile>::ConstIterator i(_imp->packages_file.begin()),
+                        i_end(_imp->packages_file.end()) ; i != i_end ; ++i)
+                {
+                    if (0 != i->second.compare(0, 1, "*", 0, 1))
+                        continue;
 
-                QualifiedPackageName v(tokens[0]);
-                virtuals->erase(v);
-                virtuals->insert(v, parse_elike_package_dep_spec(tokens[1],
-                            line->first->supported()->package_dep_spec_parse_options(),
-                            line->first->supported()->version_spec_options()));
-            }
+                    Context context_spec("When parsing '" + i->second + "':");
+                    std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
+                                parse_elike_package_dep_spec(i->second.substr(1),
+                                    i->first->supported()->package_dep_spec_parse_options(),
+                                    i->first->supported()->version_spec_options())));
+
+                    _imp->system_packages->top()->append(spec);
+                }
         }
         catch (const InternalError &)
         {
@@ -577,68 +314,28 @@ Imp<TraditionalProfile>::make_vars_from_file_vars()
         }
         catch (const Exception & e)
         {
-            Log::get_instance()->message("e.profile.virtuals.failure", ll_warning, lc_context)
-                << "Loading virtuals failed due to exception: " << e.message() << " (" << e.what() << ")";
+            Log::get_instance()->message("e.profile.packages.failure", ll_warning, lc_context) << "Loading packages "
+                    " failed due to exception: " << e.message() << " (" << e.what() << ")";
         }
 
-    for (ProfileFile<MaskFile>::ConstIterator line(package_mask_file.begin()), line_end(package_mask_file.end()) ;
-            line != line_end ; ++line)
-    {
-        if (line->second.first.empty())
-            continue;
-
-        try
-        {
-            std::shared_ptr<const PackageDepSpec> a(std::make_shared<PackageDepSpec>(
-                        parse_elike_package_dep_spec(line->second.first,
-                            line->first->supported()->package_dep_spec_parse_options(),
-                            line->first->supported()->version_spec_options())));
-
-            if (a->package_ptr())
-                package_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second.second));
-            else
-                Log::get_instance()->message("e.profile.package_mask.bad_spec", ll_warning, lc_context)
-                    << "Loading package.mask spec '" << line->second.first << "' failed because specification does not restrict to a "
-                    "unique package";
-        }
-        catch (const InternalError &)
-        {
-            throw;
-        }
-        catch (const Exception & e)
-        {
-            Log::get_instance()->message("e.profile.package_mask.bad_spec", ll_warning, lc_context)
-                << "Loading package.mask spec '" << line->second.first << "' failed due to exception '" << e.message() << "' ("
-                << e.what() << ")";
-        }
-    }
-}
-
-void
-Imp<TraditionalProfile>::load_basic_use_file(const FSPath & file, FlagStatusMap & m)
-{
-    if (! file.stat().exists())
-        return;
-
-    Context context("When loading basic use file '" + stringify(file) + ":");
-    LineConfigFile f(file, { lcfo_disallow_continuations });
-    for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
-            line != line_end ; ++line)
-    {
-        std::list<std::string> tokens;
-        tokenise_whitespace(*line, std::back_inserter(tokens));
-
-        for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                t != t_end ; ++t)
-        {
+        if ((*DistributionData::get_instance()->distribution_from_string(
+                    _imp->env->distribution())).support_old_style_virtuals())
             try
             {
-                if (t->empty())
-                    continue;
-                if ('-' == t->at(0))
-                    m[ChoiceNameWithPrefix(t->substr(1))] = false;
-                else
-                    m[ChoiceNameWithPrefix(*t)] = true;
+                for (ProfileFile<LineConfigFile>::ConstIterator line(_imp->virtuals_file.begin()), line_end(_imp->virtuals_file.end()) ;
+                        line != line_end ; ++line)
+                {
+                    std::vector<std::string> tokens;
+                    tokenise_whitespace(line->second, std::back_inserter(tokens));
+                    if (tokens.size() < 2)
+                        continue;
+
+                    QualifiedPackageName v(tokens[0]);
+                    _imp->virtuals->erase(v);
+                    _imp->virtuals->insert(v, parse_elike_package_dep_spec(tokens[1],
+                                line->first->supported()->package_dep_spec_parse_options(),
+                                line->first->supported()->version_spec_options()));
+                }
             }
             catch (const InternalError &)
             {
@@ -646,38 +343,364 @@ Imp<TraditionalProfile>::load_basic_use_file(const FSPath & file, FlagStatusMap 
             }
             catch (const Exception & e)
             {
-                Log::get_instance()->message("e.profile.failure", ll_warning, lc_context) << "Ignoring token '"
-                    << *t << "' due to exception '" << e.message() << "' (" << e.what() << ")";
+                Log::get_instance()->message("e.profile.virtuals.failure", ll_warning, lc_context)
+                    << "Loading virtuals failed due to exception: " << e.message() << " (" << e.what() << ")";
+            }
+
+        for (ProfileFile<MaskFile>::ConstIterator line(_imp->package_mask_file.begin()), line_end(_imp->package_mask_file.end()) ;
+                line != line_end ; ++line)
+        {
+            if (line->second.first.empty())
+                continue;
+
+            try
+            {
+                std::shared_ptr<const PackageDepSpec> a(std::make_shared<PackageDepSpec>(
+                            parse_elike_package_dep_spec(line->second.first,
+                                line->first->supported()->package_dep_spec_parse_options(),
+                                line->first->supported()->version_spec_options())));
+
+                if (a->package_ptr())
+                    _imp->package_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second.second));
+                else
+                    Log::get_instance()->message("e.profile.package_mask.bad_spec", ll_warning, lc_context)
+                        << "Loading package.mask spec '" << line->second.first << "' failed because specification does not restrict to a "
+                        "unique package";
+            }
+            catch (const InternalError &)
+            {
+                throw;
+            }
+            catch (const Exception & e)
+            {
+                Log::get_instance()->message("e.profile.package_mask.bad_spec", ll_warning, lc_context)
+                    << "Loading package.mask spec '" << line->second.first << "' failed due to exception '" << e.message() << "' ("
+                    << e.what() << ")";
             }
         }
     }
-}
 
-void
-Imp<TraditionalProfile>::load_spec_use_file(const EAPI & eapi, const FSPath & file, PackageFlagStatusMapList & m)
-{
-    if (! file.stat().exists())
-        return;
-
-    Context context("When loading specised use file '" + stringify(file) + ":");
-    LineConfigFile f(file, { lcfo_disallow_continuations });
-    for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
-            line != line_end ; ++line)
+    void load_special_make_defaults_vars(
+            Pimp<TraditionalProfile> & _imp,
+            const FSPath & dir)
     {
-        std::list<std::string> tokens;
-        tokenise_whitespace(*line, std::back_inserter(tokens));
+        auto eapi(EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(dir / "make.defaults")));
+        if (! eapi->supported())
+            throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
+                    "' because it uses an unsupported EAPI");
 
-        if (tokens.empty())
-            continue;
-
+        std::string use_var(eapi->supported()->ebuild_environment_variables()->env_use());
         try
         {
-            std::shared_ptr<const PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
-                        parse_elike_package_dep_spec(*tokens.begin(), eapi.supported()->package_dep_spec_parse_options(),
-                            eapi.supported()->version_spec_options())));
-            PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(spec, FlagStatusMap())));
+            _imp->use.clear();
+            if (! use_var.empty())
+            {
+                std::list<std::string> tokens;
+                tokenise_whitespace(_imp->environment_variables[use_var], std::back_inserter(tokens));
+                for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+                        t != t_end ; ++t)
+                    _imp->use.insert(std::make_pair("", *t));
+            }
+        }
+        catch (const InternalError &)
+        {
+            throw;
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message("e.profile.make_defaults.use_failure", ll_warning, lc_context)
+                << "Loading '" << use_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
+        }
 
-            for (std::list<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
+        std::string use_expand_var(eapi->supported()->ebuild_environment_variables()->env_use_expand());
+        try
+        {
+            _imp->use_expand->clear();
+            if (! use_expand_var.empty())
+                tokenise_whitespace(_imp->environment_variables[use_expand_var], _imp->use_expand->inserter());
+        }
+        catch (const InternalError &)
+        {
+            throw;
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message("e.profile.make_defaults.use_expand_failure", ll_warning, lc_context)
+                << "Loading '" << use_expand_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
+        }
+
+        std::string use_expand_hidden_var(eapi->supported()->ebuild_environment_variables()->env_use_expand_hidden());
+        try
+        {
+            _imp->use_expand_hidden->clear();
+            if (! use_expand_hidden_var.empty())
+                tokenise_whitespace(_imp->environment_variables[use_expand_hidden_var], _imp->use_expand_hidden->inserter());
+        }
+        catch (const InternalError &)
+        {
+            throw;
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message("e.profile.make_defaults.use_expand_hidden_failure", ll_warning, lc_context)
+                << "Loading '" << use_expand_hidden_var << "' failed due to exception: "
+                << e.message() << " (" << e.what() << ")";
+        }
+    }
+
+    void add_use_expand_to_use(
+            Pimp<TraditionalProfile> & _imp)
+    {
+        Context context("When adding USE_EXPAND to USE:");
+
+        _imp->stacked_values_list.push_back(StackedValues("use_expand special values"));
+
+        for (Set<std::string>::ConstIterator x(_imp->use_expand->begin()), x_end(_imp->use_expand->end()) ;
+                x != x_end ; ++x)
+        {
+            std::string lower_x;
+            std::transform(x->begin(), x->end(), std::back_inserter(lower_x), &::tolower);
+
+            std::list<std::string> uses;
+            tokenise_whitespace(_imp->environment_variables[stringify(*x)], std::back_inserter(uses));
+            for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
+                    u != u_end ; ++u)
+                _imp->use.insert(std::make_pair(lower_x, *u));
+        }
+    }
+
+    void fish_out_use_expand_names(
+            Pimp<TraditionalProfile> & _imp)
+    {
+        Context context("When finding all known USE_EXPAND names:");
+
+        for (Set<std::string>::ConstIterator x(_imp->use_expand->begin()), x_end(_imp->use_expand->end()) ;
+                x != x_end ; ++x)
+        {
+            std::string lower_x;
+            std::transform(x->begin(), x->end(), std::back_inserter(lower_x), &::tolower);
+            _imp->known_choice_value_names.insert(std::make_pair(lower_x, std::make_shared<Set<UnprefixedChoiceName>>()));
+        }
+
+        for (std::set<std::pair<ChoicePrefixName, UnprefixedChoiceName> >::const_iterator u(_imp->use.begin()), u_end(_imp->use.end()) ;
+                u != u_end ; ++u)
+        {
+            if (! stringify(u->first).empty())
+            {
+                KnownMap::iterator i(_imp->known_choice_value_names.find(stringify(u->first)));
+                if (i == _imp->known_choice_value_names.end())
+                    throw InternalError(PALUDIS_HERE, stringify(u->first));
+                i->second->insert(u->second);
+            }
+        }
+    }
+
+    void handle_profile_arch_var(
+            Pimp<TraditionalProfile> & _imp,
+            const std::string & s)
+    {
+        Context context("When handling profile " + s + " variable:");
+
+        std::string arch_s(_imp->environment_variables[s]);
+        if (arch_s.empty())
+            throw ERepositoryConfigurationError("Variable '" + s + "' is unset or empty");
+
+        _imp->stacked_values_list.push_back(StackedValues("arch special values"));
+        try
+        {
+            std::string arch(arch_s);
+
+            _imp->use.insert(std::make_pair(ChoicePrefixName(""), arch));
+            _imp->stacked_values_list.back().use_force[ChoiceNameWithPrefix(arch)] = true;
+        }
+        catch (const InternalError &)
+        {
+            throw;
+        }
+        catch (const Exception &)
+        {
+            throw ERepositoryConfigurationError("Variable '" + s + "' has invalid value '" + arch_s + "'");
+        }
+    }
+
+    bool is_incremental(const EAPI & e, const std::string & s)
+    {
+        Context c("When checking whether '" + s + "' is incremental:");
+
+        return (! s.empty()) && (
+                (s == e.supported()->ebuild_environment_variables()->env_use())
+                || (s == e.supported()->ebuild_environment_variables()->env_use_expand())
+                || (s == e.supported()->ebuild_environment_variables()->env_use_expand_hidden())
+                || (s == e.supported()->ebuild_environment_variables()->env_use_expand_unprefixed())
+                || (s == e.supported()->ebuild_environment_variables()->env_use_expand_implicit())
+                || (s == e.supported()->ebuild_environment_variables()->env_iuse_implicit())
+                || s == "CONFIG_PROTECT"
+                || s == "CONFIG_PROTECT_MASK");
+    }
+
+    void load_profile_make_defaults(
+            Pimp<TraditionalProfile> & _imp,
+            const FSPath & dir)
+    {
+        Context context("When handling make.defaults file for profile directory '" + stringify(dir) + ":");
+
+        if (! (dir / "make.defaults").stat().exists())
+            return;
+
+        auto eapi(EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(dir / "make.defaults")));
+        if (! eapi->supported())
+            throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
+                    "' because it uses an unsupported EAPI");
+
+        KeyValueConfigFile file(dir / "make.defaults", { kvcfo_disallow_source, kvcfo_disallow_space_inside_unquoted_values, kvcfo_allow_inline_comments, kvcfo_allow_multiple_assigns_per_line },
+                &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
+
+        for (KeyValueConfigFile::ConstIterator k(file.begin()), k_end(file.end()) ;
+                k != k_end ; ++k)
+        {
+            if (is_incremental(*eapi, k->first))
+            {
+                std::list<std::string> val, val_add;
+                tokenise_whitespace(_imp->environment_variables[k->first], std::back_inserter(val));
+                tokenise_whitespace(k->second, std::back_inserter(val_add));
+
+                for (std::list<std::string>::const_iterator v(val_add.begin()), v_end(val_add.end()) ;
+                        v != v_end ; ++v)
+                {
+                    if (v->empty())
+                        continue;
+                    if (*v == "-*")
+                        val.clear();
+                    else if ('-' == v->at(0))
+                        val.remove(v->substr(1));
+                    else
+                        val.push_back(*v);
+                }
+
+                _imp->environment_variables[k->first] = join(val.begin(), val.end(), " ");
+            }
+            else
+                _imp->environment_variables[k->first] = k->second;
+        }
+
+        std::string use_expand_var(eapi->supported()->ebuild_environment_variables()->env_use_expand());
+        try
+        {
+            _imp->use_expand->clear();
+            if (! use_expand_var.empty())
+                tokenise_whitespace(_imp->environment_variables[use_expand_var], _imp->use_expand->inserter());
+        }
+        catch (const InternalError &)
+        {
+            throw;
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message("e.profile.make_defaults.use_expand_failure", ll_warning, lc_context)
+                << "Loading '" << use_expand_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
+        }
+
+        std::string use_expand_unprefixed_var(eapi->supported()->ebuild_environment_variables()->env_use_expand_unprefixed());
+        try
+        {
+            _imp->use_expand_unprefixed->clear();
+            if (! use_expand_unprefixed_var.empty())
+                tokenise_whitespace(_imp->environment_variables[use_expand_unprefixed_var], _imp->use_expand_unprefixed->inserter());
+        }
+        catch (const InternalError &)
+        {
+            throw;
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message("e.profile.make_defaults.use_expand_unprefixed_failure", ll_warning, lc_context)
+                << "Loading '" << use_expand_unprefixed_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
+        }
+
+        std::string use_expand_implicit_var(eapi->supported()->ebuild_environment_variables()->env_use_expand_implicit());
+        try
+        {
+            _imp->use_expand_implicit->clear();
+            if (! use_expand_implicit_var.empty())
+                tokenise_whitespace(_imp->environment_variables[use_expand_implicit_var], _imp->use_expand_implicit->inserter());
+        }
+        catch (const InternalError &)
+        {
+            throw;
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message("e.profile.make_defaults.use_expand_implicit_failure", ll_warning, lc_context)
+                << "Loading '" << use_expand_implicit_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
+        }
+
+        std::string iuse_implicit_var(eapi->supported()->ebuild_environment_variables()->env_iuse_implicit());
+        try
+        {
+            _imp->iuse_implicit->clear();
+            if (! iuse_implicit_var.empty())
+                tokenise_whitespace(_imp->environment_variables[iuse_implicit_var], _imp->iuse_implicit->inserter());
+        }
+        catch (const InternalError &)
+        {
+            throw;
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message("e.profile.make_defaults.iuse_implicit_failure", ll_warning, lc_context)
+                << "Loading '" << iuse_implicit_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
+        }
+
+        std::string use_expand_values_part_var(eapi->supported()->ebuild_environment_variables()->env_use_expand_values_part());
+        try
+        {
+            _imp->use_expand_values.clear();
+            if (! use_expand_values_part_var.empty())
+            {
+                for (Set<std::string>::ConstIterator x(_imp->use_expand->begin()), x_end(_imp->use_expand->end()) ;
+                        x != x_end ; ++x)
+                {
+                    std::shared_ptr<Set<std::string> > v(std::make_shared<Set<std::string>>());
+                    tokenise_whitespace(_imp->environment_variables[use_expand_values_part_var + *x], v->inserter());
+                    _imp->use_expand_values.insert(std::make_pair(*x, v));
+                }
+
+                for (Set<std::string>::ConstIterator x(_imp->use_expand_unprefixed->begin()), x_end(_imp->use_expand_unprefixed->end()) ;
+                        x != x_end ; ++x)
+                {
+                    std::shared_ptr<Set<std::string> > v(std::make_shared<Set<std::string>>());
+                    tokenise_whitespace(_imp->environment_variables[use_expand_values_part_var + *x], v->inserter());
+                    _imp->use_expand_values.insert(std::make_pair(*x, v));
+                }
+            }
+        }
+        catch (const InternalError &)
+        {
+            throw;
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message("e.profile.make_defaults.iuse_implicit_failure", ll_warning, lc_context)
+                << "Loading '" << iuse_implicit_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
+        }
+    }
+
+    void load_basic_use_file(
+            const FSPath & file,
+            FlagStatusMap & m)
+    {
+        if (! file.stat().exists())
+            return;
+
+        Context context("When loading basic use file '" + stringify(file) + ":");
+        LineConfigFile f(file, { lcfo_disallow_continuations });
+        for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
+                line != line_end ; ++line)
+        {
+            std::list<std::string> tokens;
+            tokenise_whitespace(*line, std::back_inserter(tokens));
+
+            for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
                     t != t_end ; ++t)
             {
                 try
@@ -685,9 +708,9 @@ Imp<TraditionalProfile>::load_spec_use_file(const EAPI & eapi, const FSPath & fi
                     if (t->empty())
                         continue;
                     if ('-' == t->at(0))
-                        n->second[ChoiceNameWithPrefix(t->substr(1))] = false;
+                        m[ChoiceNameWithPrefix(t->substr(1))] = false;
                     else
-                        n->second[ChoiceNameWithPrefix(*t)] = true;
+                        m[ChoiceNameWithPrefix(*t)] = true;
                 }
                 catch (const InternalError &)
                 {
@@ -700,85 +723,63 @@ Imp<TraditionalProfile>::load_spec_use_file(const EAPI & eapi, const FSPath & fi
                 }
             }
         }
-        catch (const PackageDepSpecError & e)
+    }
+
+    void load_spec_use_file(
+            const EAPI & eapi,
+            const FSPath & file,
+            PackageFlagStatusMapList & m)
+    {
+        if (! file.stat().exists())
+            return;
+
+        Context context("When loading specised use file '" + stringify(file) + ":");
+        LineConfigFile f(file, { lcfo_disallow_continuations });
+        for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
+                line != line_end ; ++line)
         {
-            Log::get_instance()->message("e.profile.failure", ll_warning, lc_context) << "Ignoring line '"
-                << *line << "' due to exception '" << e.message() << "' (" << e.what() << ")";
+            std::list<std::string> tokens;
+            tokenise_whitespace(*line, std::back_inserter(tokens));
+
+            if (tokens.empty())
+                continue;
+
+            try
+            {
+                std::shared_ptr<const PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
+                            parse_elike_package_dep_spec(*tokens.begin(), eapi.supported()->package_dep_spec_parse_options(),
+                                eapi.supported()->version_spec_options())));
+                PackageFlagStatusMapList::iterator n(m.insert(m.end(), std::make_pair(spec, FlagStatusMap())));
+
+                for (std::list<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
+                        t != t_end ; ++t)
+                {
+                    try
+                    {
+                        if (t->empty())
+                            continue;
+                        if ('-' == t->at(0))
+                            n->second[ChoiceNameWithPrefix(t->substr(1))] = false;
+                        else
+                            n->second[ChoiceNameWithPrefix(*t)] = true;
+                    }
+                    catch (const InternalError &)
+                    {
+                        throw;
+                    }
+                    catch (const Exception & e)
+                    {
+                        Log::get_instance()->message("e.profile.failure", ll_warning, lc_context) << "Ignoring token '"
+                            << *t << "' due to exception '" << e.message() << "' (" << e.what() << ")";
+                    }
+                }
+            }
+            catch (const PackageDepSpecError & e)
+            {
+                Log::get_instance()->message("e.profile.failure", ll_warning, lc_context) << "Ignoring line '"
+                    << *line << "' due to exception '" << e.message() << "' (" << e.what() << ")";
+            }
         }
-    }
-}
-
-void
-Imp<TraditionalProfile>::add_use_expand_to_use()
-{
-    Context context("When adding USE_EXPAND to USE:");
-
-    stacked_values_list.push_back(StackedValues("use_expand special values"));
-
-    for (Set<std::string>::ConstIterator x(use_expand->begin()), x_end(use_expand->end()) ;
-            x != x_end ; ++x)
-    {
-        std::string lower_x;
-        std::transform(x->begin(), x->end(), std::back_inserter(lower_x), &::tolower);
-
-        std::list<std::string> uses;
-        tokenise_whitespace(environment_variables[stringify(*x)], std::back_inserter(uses));
-        for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
-                u != u_end ; ++u)
-            use.insert(std::make_pair(lower_x, *u));
-    }
-}
-
-void
-Imp<TraditionalProfile>::fish_out_use_expand_names()
-{
-    Context context("When finding all known USE_EXPAND names:");
-
-    for (Set<std::string>::ConstIterator x(use_expand->begin()), x_end(use_expand->end()) ;
-            x != x_end ; ++x)
-    {
-        std::string lower_x;
-        std::transform(x->begin(), x->end(), std::back_inserter(lower_x), &::tolower);
-        known_choice_value_names.insert(std::make_pair(lower_x, std::make_shared<Set<UnprefixedChoiceName>>()));
-    }
-
-    for (std::set<std::pair<ChoicePrefixName, UnprefixedChoiceName> >::const_iterator u(use.begin()), u_end(use.end()) ;
-            u != u_end ; ++u)
-    {
-        if (! stringify(u->first).empty())
-        {
-            KnownMap::iterator i(known_choice_value_names.find(stringify(u->first)));
-            if (i == known_choice_value_names.end())
-                throw InternalError(PALUDIS_HERE, stringify(u->first));
-            i->second->insert(u->second);
-        }
-    }
-}
-
-void
-Imp<TraditionalProfile>::handle_profile_arch_var(const std::string & s)
-{
-    Context context("When handling profile " + s + " variable:");
-
-    std::string arch_s(environment_variables[s]);
-    if (arch_s.empty())
-        throw ERepositoryConfigurationError("Variable '" + s + "' is unset or empty");
-
-    stacked_values_list.push_back(StackedValues("arch special values"));
-    try
-    {
-        std::string arch(arch_s);
-
-        use.insert(std::make_pair(ChoicePrefixName(""), arch));
-        stacked_values_list.back().use_force[ChoiceNameWithPrefix(arch)] = true;
-    }
-    catch (const InternalError &)
-    {
-        throw;
-    }
-    catch (const Exception &)
-    {
-        throw ERepositoryConfigurationError("Variable '" + s + "' has invalid value '" + arch_s + "'");
     }
 }
 
@@ -792,8 +793,34 @@ TraditionalProfile::TraditionalProfile(
         const bool profiles_explicitly_set,
         const bool has_master_repositories,
         const bool ignore_deprecated_profiles) :
-    _imp(env, name, eapi_for_file, is_arch_flag, dirs, arch_var_if_special, profiles_explicitly_set, has_master_repositories, ignore_deprecated_profiles)
+    _imp(env, eapi_for_file, is_arch_flag, has_master_repositories)
 {
+    Context context("When loading profiles '" + join(dirs.begin(), dirs.end(), "' '") + "' for repository '" + stringify(name) + "':");
+
+    if (dirs.empty())
+        throw ERepositoryConfigurationError("No profiles directories specified");
+
+    load_environment(_imp);
+
+    for (FSPathSequence::ConstIterator d(dirs.begin()), d_end(dirs.end()) ;
+            d != d_end ; ++d)
+    {
+        Context subcontext("When using directory '" + stringify(*d) + "':");
+
+        if (profiles_explicitly_set && ! ignore_deprecated_profiles)
+            if ((*d / "deprecated").stat().is_regular_file_or_symlink_to_regular_file())
+                Log::get_instance()->message("e.profile.deprecated", ll_warning, lc_context) << "Profile directory '" << *d
+                    << "' is deprecated. See the file '" << (*d / "deprecated") << "' for details";
+
+        load_profile_directory_recursively(_imp, *d);
+    }
+
+    make_vars_from_file_vars(_imp);
+    load_special_make_defaults_vars(_imp, *dirs.begin());
+    add_use_expand_to_use(_imp);
+    fish_out_use_expand_names(_imp);
+    if (! arch_var_if_special.empty())
+        handle_profile_arch_var(_imp, arch_var_if_special);
 }
 
 TraditionalProfile::~TraditionalProfile()
