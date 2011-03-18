@@ -94,13 +94,6 @@ namespace
     };
 
     typedef std::list<StackedValues> StackedValuesList;
-
-    typedef std::function<bool (const UnprefixedChoiceName &)> IsArchFlagFunction;
-
-    bool is_arch_flag_func(const ERepository * const r, const UnprefixedChoiceName & p)
-    {
-        return r->arch_flags()->end() != r->arch_flags()->find(p);
-    }
 }
 
 namespace paludis
@@ -122,16 +115,16 @@ namespace paludis
         void handle_profile_arch_var(const std::string &);
         void load_special_make_defaults_vars(const FSPath &);
 
-        ProfileFile<LineConfigFile> packages_file;
-        ProfileFile<LineConfigFile> virtuals_file;
-        ProfileFile<MaskFile> package_mask_file;
-
         bool is_incremental(const EAPI &, const std::string & s) const;
 
         const Environment * const env;
         const EAPIForFileFunction eapi_for_file;
         const IsArchFlagFunction is_arch_flag;
         const bool has_master_repositories;
+
+        ProfileFile<LineConfigFile> packages_file;
+        ProfileFile<LineConfigFile> virtuals_file;
+        ProfileFile<MaskFile> package_mask_file;
 
         std::shared_ptr<FSPathSequence> profiles_with_parents;
 
@@ -155,16 +148,22 @@ namespace paludis
 
         PackageMaskMap package_mask;
 
-        Imp(const Environment * const e, const ERepository * const p,
-                const RepositoryName & name, const FSPathSequence & dirs,
-                const std::string & arch_var_if_special, const bool profiles_explicitly_set) :
-            packages_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
-            virtuals_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
-            package_mask_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
+        Imp(const Environment * const e,
+                const RepositoryName & name,
+                const EAPIForFileFunction & p,
+                const IsArchFlagFunction & a,
+                const FSPathSequence & dirs,
+                const std::string & arch_var_if_special,
+                const bool profiles_explicitly_set,
+                const bool h,
+                const bool ignore_deprecated_profiles) :
             env(e),
-            eapi_for_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
-            is_arch_flag(std::bind(&is_arch_flag_func, p, std::placeholders::_1)),
-            has_master_repositories(p->params().master_repositories()),
+            eapi_for_file(p),
+            is_arch_flag(a),
+            has_master_repositories(h),
+            packages_file(eapi_for_file),
+            virtuals_file(eapi_for_file),
+            package_mask_file(eapi_for_file),
             profiles_with_parents(std::make_shared<FSPathSequence>()),
             system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>())),
             virtuals(std::make_shared<Map<QualifiedPackageName, PackageDepSpec>>()),
@@ -186,11 +185,10 @@ namespace paludis
             {
                 Context subcontext("When using directory '" + stringify(*d) + "':");
 
-                if (profiles_explicitly_set)
-                    if (! p->params().ignore_deprecated_profiles())
-                        if ((*d / "deprecated").stat().is_regular_file_or_symlink_to_regular_file())
-                            Log::get_instance()->message("e.profile.deprecated", ll_warning, lc_context) << "Profile directory '" << *d
-                                << "' is deprecated. See the file '" << (*d / "deprecated") << "' for details";
+                if (profiles_explicitly_set && ! ignore_deprecated_profiles)
+                    if ((*d / "deprecated").stat().is_regular_file_or_symlink_to_regular_file())
+                        Log::get_instance()->message("e.profile.deprecated", ll_warning, lc_context) << "Profile directory '" << *d
+                            << "' is deprecated. See the file '" << (*d / "deprecated") << "' for details";
 
                 load_profile_directory_recursively(*d);
             }
@@ -785,10 +783,16 @@ Imp<TraditionalProfile>::handle_profile_arch_var(const std::string & s)
 }
 
 TraditionalProfile::TraditionalProfile(
-        const Environment * const env, const ERepository * const p, const RepositoryName & name,
-        const FSPathSequence & location,
-        const std::string & arch_var_if_special, const bool x) :
-    _imp(env, p, name, location, arch_var_if_special, x)
+        const Environment * const env,
+        const RepositoryName & name,
+        const EAPIForFileFunction & eapi_for_file,
+        const IsArchFlagFunction & is_arch_flag,
+        const FSPathSequence & dirs,
+        const std::string & arch_var_if_special,
+        const bool profiles_explicitly_set,
+        const bool has_master_repositories,
+        const bool ignore_deprecated_profiles) :
+    _imp(env, name, eapi_for_file, is_arch_flag, dirs, arch_var_if_special, profiles_explicitly_set, has_master_repositories, ignore_deprecated_profiles)
 {
 }
 

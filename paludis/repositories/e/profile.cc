@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,6 +22,7 @@
 #include <paludis/repositories/e/exheres_profile.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/choice.hh>
 
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/map-impl.hh>
@@ -33,41 +34,29 @@ Profile::~Profile()
 {
 }
 
-namespace
-{
-    template <typename T_>
-    std::shared_ptr<Profile>
-    make_profile(
-        const Environment * const env,
-        const ERepository * const repo,
-        const RepositoryName & name,
-        const FSPathSequence & locations,
-        const std::string & a,
-        const bool x)
-    {
-        return std::make_shared<T_>(env, repo, name, locations, a, x);
-    }
-}
-
 ProfileFactory::ProfileFactory()
 {
 }
 
 const std::shared_ptr<Profile>
 ProfileFactory::create(
-        const std::string & s,
+        const std::string & format,
         const Environment * const env,
-        const ERepository * const repo,
         const RepositoryName & name,
-        const FSPathSequence & locations,
-        const std::string & a,
-        const bool x) const
+        const EAPIForFileFunction & eapi_for_file,
+        const IsArchFlagFunction & is_arch_flag,
+        const FSPathSequence & dirs,
+        const std::string & arch_var_if_special,
+        const bool profiles_explicitly_set,
+        const bool has_master_repositories,
+        const bool ignore_deprecated_profiles) const
 {
-    if (s == "traditional")
-        return make_profile<TraditionalProfile>(env, repo, name, locations, a, x);
-    if (s == "exheres")
-        return make_profile<ExheresProfile>(env, repo, name, locations, a, x);
-    throw ConfigurationError("Unrecognised profile '" + s + "'");
+    if (format == "traditional")
+        return std::make_shared<TraditionalProfile>(env, name, eapi_for_file, is_arch_flag, dirs, arch_var_if_special, profiles_explicitly_set, has_master_repositories, ignore_deprecated_profiles);
+    if (format == "exheres")
+        return std::make_shared<ExheresProfile>(env, name, eapi_for_file, is_arch_flag, dirs, arch_var_if_special, profiles_explicitly_set, has_master_repositories, ignore_deprecated_profiles);
+
+    throw ConfigurationError("Unrecognised profile '" + format + "'");
 }
 
 template class Map<QualifiedPackageName, PackageDepSpec>;

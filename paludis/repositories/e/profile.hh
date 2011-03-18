@@ -35,6 +35,7 @@
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/mask_info.hh>
 #include <string>
+#include <functional>
 
 namespace paludis
 {
@@ -42,6 +43,8 @@ namespace paludis
 
     namespace erepository
     {
+        typedef std::function<bool (const UnprefixedChoiceName &)> IsArchFlagFunction;
+
         class PALUDIS_VISIBLE Profile
         {
             public:
@@ -110,14 +113,17 @@ namespace paludis
 
             public:
                 const std::shared_ptr<Profile> create(
-                        const std::string &,
-                        const Environment * const,
-                        const ERepository * const,
+                        const std::string & format,
+                        const Environment * const env,
                         const RepositoryName &,
-                        const FSPathSequence &,
+                        const EAPIForFileFunction & eapi_for_file,
+                        const IsArchFlagFunction & is_arch_flag,
+                        const FSPathSequence & dirs,
                         const std::string & arch_var_if_special,
-                        const bool profiles_explicitly_set)
-                    const PALUDIS_ATTRIBUTE((warn_unused_result));
+                        const bool profiles_explicitly_set,
+                        const bool has_master_repositories,
+                        const bool ignore_deprecated_profiles
+                        ) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

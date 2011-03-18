@@ -197,15 +197,15 @@ namespace
     {
         return layout->repository_mask_files();
     }
+
+    bool is_arch_flag_func(const ERepository * const r, const UnprefixedChoiceName & p)
+    {
+        return r->arch_flags()->end() != r->arch_flags()->find(p);
+    }
 }
 
 namespace paludis
 {
-    /**
-     * Imp data for a ERepository.
-     *
-     * \ingroup grperepository
-     */
     template <>
     struct Imp<ERepository>
     {
@@ -477,10 +477,15 @@ namespace paludis
 
         profile_ptr = ProfileFactory::get_instance()->create(
                 params.profile_layout(),
-                params.environment(), repo, repo->name(), *profiles,
-                EAPIData::get_instance()->eapi_from_string(
-                    params.eapi_when_unknown())->supported()->ebuild_environment_variables()->env_arch(),
-                params.profiles_explicitly_set());
+                params.environment(),
+                repo->name(),
+                EAPIForFileFunction(std::bind(&ERepository::eapi_for_file, repo, std::placeholders::_1)),
+                IsArchFlagFunction(std::bind(&is_arch_flag_func, repo, std::placeholders::_1)),
+                *profiles,
+                EAPIData::get_instance()->eapi_from_string(params.eapi_when_unknown())->supported()->ebuild_environment_variables()->env_arch(),
+                params.profiles_explicitly_set(),
+                bool(params.master_repositories()),
+                params.ignore_deprecated_profiles());
     }
 }
 

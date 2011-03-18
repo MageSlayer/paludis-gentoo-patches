@@ -73,6 +73,8 @@ namespace paludis
     struct Imp<ExheresProfile>
     {
         const Environment * const env;
+        const bool has_master_repositories;
+        const EAPIForFileFunction eapi_for_file;
 
         std::shared_ptr<FSPathSequence> profiles_with_parents;
 
@@ -92,30 +94,28 @@ namespace paludis
 
         const std::shared_ptr<SetSpecTree> system_packages;
 
-        const bool has_master_repositories;
-        const EAPIForFileFunction eapi_for_file;
-
-        Imp(const Environment * const e, const ERepository * const p,
-                const RepositoryName &, const FSPathSequence &,
-                const std::string &, const bool) :
+        Imp(
+                const Environment * const e,
+                const EAPIForFileFunction & f,
+                const bool h) :
             env(e),
+            has_master_repositories(h),
+            eapi_for_file(f),
             profiles_with_parents(std::make_shared<FSPathSequence>()),
             options_conf(make_named_values<PaludisLikeOptionsConfParams>(
                         n::allow_locking() = true,
                         n::environment() = e,
                         n::make_config_file() = &make_config_file
                         )),
-            package_mask_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
-            packages_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1)),
+            package_mask_file(eapi_for_file),
+            packages_file(eapi_for_file),
             use_expand(std::make_shared<Set<std::string>>()),
             use_expand_hidden(std::make_shared<Set<std::string>>()),
             use_expand_unprefixed(std::make_shared<Set<std::string>>()),
             use_expand_implicit(std::make_shared<Set<std::string>>()),
             iuse_implicit(std::make_shared<Set<std::string>>()),
             use_expand_values(std::make_shared<Set<std::string>>()),
-            system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>())),
-            has_master_repositories(p->params().master_repositories()),
-            eapi_for_file(std::bind(&ERepository::eapi_for_file, p, std::placeholders::_1))
+            system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()))
         {
             environment_variables["CONFIG_PROTECT"] = getenv_with_default("CONFIG_PROTECT", "/etc");
             environment_variables["CONFIG_PROTECT_MASK"] = getenv_with_default("CONFIG_PROTECT_MASK", "");
@@ -124,10 +124,16 @@ namespace paludis
 }
 
 ExheresProfile::ExheresProfile(
-        const Environment * const env, const ERepository * const p, const RepositoryName & name,
+        const Environment * const env,
+        const RepositoryName &,
+        const EAPIForFileFunction & eapi_for_file,
+        const IsArchFlagFunction &,
         const FSPathSequence & location,
-        const std::string & arch_var_if_special, const bool x) :
-    _imp(env, p, name, location, arch_var_if_special, x)
+        const std::string &,
+        const bool,
+        const bool has_master_repositories,
+        const bool) :
+    _imp(env, eapi_for_file, has_master_repositories)
 {
     for (FSPathSequence::ConstIterator l(location.begin()), l_end(location.end()) ;
             l != l_end ; ++l)

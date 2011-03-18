@@ -36,10 +36,15 @@ namespace paludis
 
             public:
                 TraditionalProfile(
-                        const Environment * const, const ERepository * const, const RepositoryName &,
-                        const FSPathSequence &,
+                        const Environment * const env,
+                        const RepositoryName &,
+                        const EAPIForFileFunction & eapi_for_file,
+                        const IsArchFlagFunction & is_arch_flag,
+                        const FSPathSequence & dirs,
                         const std::string & arch_var_if_special,
-                        const bool x
+                        const bool profiles_explicitly_set,
+                        const bool has_master_repositories,
+                        const bool ignore_deprecated_profiles
                         );
 
                 virtual ~TraditionalProfile();
