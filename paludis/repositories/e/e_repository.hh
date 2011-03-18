@@ -82,8 +82,6 @@ namespace paludis
 
             virtual void invalidate();
 
-            virtual void invalidate_masks();
-
             virtual void purge_invalid_cache() const;
 
             /* RepositoryVirtualsInterface */

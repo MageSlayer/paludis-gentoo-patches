@@ -223,11 +223,6 @@ InstalledVirtualsRepository::invalidate()
     _imp.reset(new Imp<InstalledVirtualsRepository>(_imp->env, _imp->root, _imp->ids_mutex));
 }
 
-void
-InstalledVirtualsRepository::invalidate_masks()
-{
-}
-
 HookResult
 InstalledVirtualsRepository::perform_hook(const Hook & hook, const std::shared_ptr<OutputManager> &)
 {

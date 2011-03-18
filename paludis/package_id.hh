@@ -368,15 +368,6 @@ namespace paludis
             bool masked() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Invalidate any masks.
-             *
-             * PackageID implementations may cache masks. This can cause
-             * problems if the operating environment changes. Calling this
-             * method will clear any masks held by the PackageID.
-             */
-            virtual void invalidate_masks() const;
-
-            /**
              * Do we break Portage, and if so, why?
              *
              * This method may be used by Environment implementations to apply a "we don't

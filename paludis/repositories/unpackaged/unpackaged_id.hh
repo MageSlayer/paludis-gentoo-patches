@@ -83,7 +83,6 @@ namespace paludis
                 virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void perform_action(Action &) const;
 
-                virtual void invalidate_masks() const;
                 virtual std::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual bool arbitrary_less_than_comparison(const PackageID &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));

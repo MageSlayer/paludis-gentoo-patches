@@ -171,11 +171,6 @@ UnavailableRepository::invalidate()
     _add_metadata_keys();
 }
 
-void
-UnavailableRepository::invalidate_masks()
-{
-}
-
 bool
 UnavailableRepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes & x) const
 {

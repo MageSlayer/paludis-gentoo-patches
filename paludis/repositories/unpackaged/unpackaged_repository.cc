@@ -188,11 +188,6 @@ UnpackagedRepository::invalidate()
 }
 
 void
-UnpackagedRepository::invalidate_masks()
-{
-}
-
-void
 UnpackagedRepository::need_keys_added() const
 {
 }

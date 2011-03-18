@@ -294,8 +294,6 @@ namespace paludis
 
             virtual std::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void invalidate_masks() const;
-
     };
 }
 

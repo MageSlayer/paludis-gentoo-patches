@@ -90,8 +90,6 @@ namespace paludis
 
             virtual void invalidate();
 
-            virtual void invalidate_masks();
-
             /**
              * Fetch our associated environment.
              */

@@ -81,7 +81,6 @@ namespace paludis
             ~UnpackagedRepository();
 
             virtual void invalidate();
-            virtual void invalidate_masks();
 
             virtual std::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &, const RepositoryContentMayExcludes &) const

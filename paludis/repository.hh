@@ -435,11 +435,6 @@ namespace paludis
             virtual void invalidate() = 0;
 
             /**
-             * Invalidate cached masks.
-             */
-            virtual void invalidate_masks() = 0;
-
-            /**
              * Regenerate any on disk cache.
              */
             virtual void regenerate_cache() const;

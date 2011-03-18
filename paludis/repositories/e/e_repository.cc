@@ -838,18 +838,6 @@ ERepository::purge_invalid_cache() const
 }
 
 void
-ERepository::invalidate_masks()
-{
-    _imp->layout->invalidate_masks();
-
-    if ((*DistributionData::get_instance()->distribution_from_string(_imp->params.environment()->distribution()))
-            .support_old_style_virtuals())
-        if (_imp->params.environment()->package_database()->has_repository_named(RepositoryName("virtuals")))
-            _imp->params.environment()->package_database()->fetch_repository(
-                    RepositoryName("virtuals"))->invalidate_masks();
-}
-
-void
 ERepository::update_news() const
 {
     Lock l(_imp->mutexes->news_ptr_mutex);

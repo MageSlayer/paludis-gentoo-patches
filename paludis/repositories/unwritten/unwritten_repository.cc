@@ -165,11 +165,6 @@ UnwrittenRepository::invalidate()
     _add_metadata_keys();
 }
 
-void
-UnwrittenRepository::invalidate_masks()
-{
-}
-
 bool
 UnwrittenRepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {

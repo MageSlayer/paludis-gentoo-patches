@@ -175,16 +175,6 @@ FakeRepositoryBase::invalidate()
 {
 }
 
-void
-FakeRepositoryBase::invalidate_masks()
-{
-    for (std::map<QualifiedPackageName, std::shared_ptr<PackageIDSequence> >::iterator it(_imp->ids.begin()), it_end(_imp->ids.end());
-         it_end != it; ++it)
-        for (PackageIDSequence::ConstIterator it2(it->second->begin()), it2_end(it->second->end());
-             it2_end != it2; ++it2)
-            (*it2)->invalidate_masks();
-}
-
 const Environment *
 FakeRepositoryBase::environment() const
 {

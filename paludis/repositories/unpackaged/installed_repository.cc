@@ -427,11 +427,6 @@ InstalledUnpackagedRepository::invalidate()
 }
 
 void
-InstalledUnpackagedRepository::invalidate_masks()
-{
-}
-
-void
 InstalledUnpackagedRepository::deindex(const QualifiedPackageName & q) const
 {
     _imp->ndbam.deindex(q);

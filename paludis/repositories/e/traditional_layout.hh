@@ -134,8 +134,6 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual FSPath sync_filter_file() const;
-
-                virtual void invalidate_masks();
         };
     }
 }

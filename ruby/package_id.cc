@@ -261,32 +261,6 @@ namespace
 
     /*
      * call-seq:
-     *     invalidate_masks -> Qnil
-     *
-     * Invalidate any masks.
-     *
-     * PackageID implementations may cache masks. This can cause problems if the operating environment changes.
-     * Calling this method will clear any masks held by the PackageID.
-     */
-    VALUE
-    package_id_invalidate_masks(VALUE self)
-    {
-        std::shared_ptr<const PackageID> * self_ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageID>, self_ptr);
-        try
-        {
-            (*self_ptr)->invalidate_masks();
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-
-        return Qnil;
-    }
-
-    /*
-     * call-seq:
      *     breaks_portage -> [:reason, :reason, ...]
      *
      *  Do we break Portage, and if so, why?
@@ -515,7 +489,6 @@ namespace
 
         rb_define_method(c_package_id, "masks", RUBY_FUNC_CAST(&package_id_masks), 0);
         rb_define_method(c_package_id, "masked?", RUBY_FUNC_CAST((&PackageIDBool<&PackageID::masked>::fetch)), 0);
-        rb_define_method(c_package_id, "invalidate_masks", RUBY_FUNC_CAST(&package_id_invalidate_masks), 0);
         rb_define_method(c_package_id, "breaks_portage", RUBY_FUNC_CAST(&package_id_breaks_portage), 0);
 
         rb_define_method(c_package_id, "virtual_for_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::shared_ptr<const PackageID> > , &PackageID::virtual_for_key>::fetch)), 0);

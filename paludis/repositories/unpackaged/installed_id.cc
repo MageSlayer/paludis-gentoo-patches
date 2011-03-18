@@ -790,11 +790,6 @@ InstalledUnpackagedID::perform_action(Action & action) const
     action.accept(v);
 }
 
-void
-InstalledUnpackagedID::invalidate_masks() const
-{
-}
-
 std::shared_ptr<const Set<std::string> >
 InstalledUnpackagedID::breaks_portage() const
 {

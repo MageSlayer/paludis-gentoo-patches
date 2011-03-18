@@ -1093,18 +1093,6 @@ FakePackageID::need_masks_added() const
         add_mask(_imp->unsupported_mask);
 }
 
-void
-FakePackageID::invalidate_masks() const
-{
-    Lock l(_imp->mutex);
-
-    if (! _imp->has_masks)
-        return;
-
-    _imp->has_masks = false;
-    PackageID::invalidate_masks();
-}
-
 namespace
 {
     struct PerformAction

@@ -88,7 +88,6 @@ namespace paludis
                 virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
                 virtual bool some_ids_might_not_be_masked() const;
                 virtual void invalidate();
-                virtual void invalidate_masks();
 
                 virtual bool sync(const std::string &, const std::shared_ptr<OutputManager> &) const;
 

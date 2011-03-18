@@ -280,11 +280,6 @@ AccountsRepository::invalidate()
 }
 
 void
-AccountsRepository::invalidate_masks()
-{
-}
-
-void
 AccountsRepository::regenerate_cache() const
 {
 }

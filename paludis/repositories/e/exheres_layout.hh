@@ -130,8 +130,6 @@ namespace paludis
 
                 virtual std::shared_ptr<MetadataValueKey<FSPath> > e_updates_location_key() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual void invalidate_masks();
         };
     }
 }

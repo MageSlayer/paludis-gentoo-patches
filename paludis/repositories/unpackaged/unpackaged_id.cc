@@ -511,11 +511,6 @@ UnpackagedID::perform_action(Action & action) const
     output_manager->succeeded();
 }
 
-void
-UnpackagedID::invalidate_masks() const
-{
-}
-
 std::shared_ptr<const Set<std::string> >
 UnpackagedID::breaks_portage() const
 {

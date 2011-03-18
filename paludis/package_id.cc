@@ -119,13 +119,6 @@ PackageID::masked() const
     return begin_masks() != end_masks();
 }
 
-void
-PackageID::invalidate_masks() const
-{
-    _imp->masks.clear();
-    _imp->overridden_masks.clear();
-}
-
 std::ostream &
 paludis::operator<< (std::ostream & s, const PackageID & i)
 {

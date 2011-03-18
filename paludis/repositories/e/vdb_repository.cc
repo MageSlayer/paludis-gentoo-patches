@@ -572,11 +572,6 @@ VDBRepository::invalidate()
     _add_metadata_keys();
 }
 
-void
-VDBRepository::invalidate_masks()
-{
-}
-
 std::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence>
 VDBRepository::provided_packages() const
 {

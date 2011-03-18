@@ -162,11 +162,6 @@ RepositoryRepository::invalidate()
     _add_metadata_keys();
 }
 
-void
-RepositoryRepository::invalidate_masks()
-{
-}
-
 bool
 RepositoryRepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {

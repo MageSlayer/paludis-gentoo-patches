@@ -199,11 +199,6 @@ ExndbamRepository::invalidate()
     _add_metadata_keys();
 }
 
-void
-ExndbamRepository::invalidate_masks()
-{
-}
-
 std::shared_ptr<const PackageIDSequence>
 ExndbamRepository::package_ids(const QualifiedPackageName & q,
         const RepositoryContentMayExcludes &) const

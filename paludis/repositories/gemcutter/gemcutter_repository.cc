@@ -150,11 +150,6 @@ GemcutterRepository::invalidate()
     _add_metadata_keys();
 }
 
-void
-GemcutterRepository::invalidate_masks()
-{
-}
-
 bool
 GemcutterRepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {

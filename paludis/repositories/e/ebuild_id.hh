@@ -160,8 +160,6 @@ namespace paludis
 
                 virtual const std::shared_ptr<const EAPI> eapi() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void invalidate_masks() const;
-
                 virtual const std::shared_ptr<const ChoiceValue> make_choice_value(
                         const std::shared_ptr<const Choice> &, const UnprefixedChoiceName &, const Tribool,
                         const bool, const bool, const std::string &, const bool) const;
