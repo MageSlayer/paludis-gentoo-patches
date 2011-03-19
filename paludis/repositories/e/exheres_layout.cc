@@ -21,7 +21,7 @@
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/file_suffixes.hh>
-#include <paludis/repositories/e/traditional_mask_store.hh>
+#include <paludis/repositories/e/exheres_mask_store.hh>
 
 #include <paludis/util/config_file.hh>
 #include <paludis/util/active_object_ptr.hh>
@@ -62,13 +62,13 @@ typedef std::unordered_map<QualifiedPackageName, std::shared_ptr<PackageIDSequen
 
 namespace
 {
-    std::shared_ptr<TraditionalMaskStore> make_mask_store(
+    std::shared_ptr<ExheresMaskStore> make_mask_store(
             const Environment * const env,
             const RepositoryName & repo_name,
             const std::shared_ptr<const FSPathSequence> & f,
             const EAPIForFileFunction & e)
     {
-        return std::make_shared<TraditionalMaskStore>(env, repo_name, f, e);
+        return std::make_shared<ExheresMaskStore>(env, repo_name, f, e);
     }
 }
 
@@ -97,7 +97,7 @@ namespace paludis
         std::shared_ptr<FSPathSequence> info_packages_files;
         std::shared_ptr<UseDescFileInfoSequence> use_desc_files;
 
-        ActiveObjectPtr<DeferredConstructionPtr<std::shared_ptr<TraditionalMaskStore> > > repository_mask_store;
+        ActiveObjectPtr<DeferredConstructionPtr<std::shared_ptr<ExheresMaskStore> > > repository_mask_store;
 
         Imp(const Environment * const env, const ERepository * const n, const FSPath & t) :
             repository(n),
@@ -110,7 +110,7 @@ namespace paludis
             info_variables_files(std::make_shared<FSPathSequence>()),
             info_packages_files(std::make_shared<FSPathSequence>()),
             use_desc_files(std::make_shared<UseDescFileInfoSequence>()),
-            repository_mask_store(DeferredConstructionPtr<std::shared_ptr<TraditionalMaskStore> > (
+            repository_mask_store(DeferredConstructionPtr<std::shared_ptr<ExheresMaskStore> > (
                         std::bind(&make_mask_store, env, n->name(),
                             repository_mask_files, EAPIForFileFunction(std::bind(std::mem_fn(&ERepository::eapi_for_file), n, std::placeholders::_1)))))
         {

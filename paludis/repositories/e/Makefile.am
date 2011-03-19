@@ -59,8 +59,9 @@ noinst_HEADERS = \
 	ebuild_id.hh \
 	eclass_mtimes.hh \
 	exheres_layout.hh \
-	exndbam_id.hh \
+	exheres_mask_store.hh \
 	exheres_profile.hh \
+	exndbam_id.hh \
 	exndbam_repository.hh \
 	extra_distribution_data.hh \
 	fetch_visitor.hh \
@@ -139,6 +140,7 @@ libpaludiserepository_la_SOURCES = \
 	exndbam_id.cc \
 	exndbam_repository.cc \
 	exheres_layout.cc \
+	exheres_mask_store.cc \
 	exheres_profile.cc \
 	extra_distribution_data.cc \
 	fetch_visitor.cc \
