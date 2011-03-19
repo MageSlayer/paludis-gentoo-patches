@@ -22,6 +22,8 @@
 
 #include <paludis/util/named_value.hh>
 #include <paludis/util/fs_path.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 namespace paludis
 {
@@ -40,7 +42,12 @@ namespace paludis
             NamedValue<n::mask_file, FSPath> mask_file;
             NamedValue<n::token, std::string> token;
         };
+
+        typedef Sequence<MaskInfo> MasksInfo;
     }
+
+    extern template class Sequence<erepository::MaskInfo>;
+    extern template class WrappedForwardIterator<Sequence<erepository::MaskInfo>::ConstIterator, const erepository::MaskInfo>;
 }
 
 #endif

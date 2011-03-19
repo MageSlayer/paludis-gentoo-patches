@@ -560,19 +560,19 @@ EbuildID::need_masks_added() const
                             _imp->environment->distribution())->concept_license(), license_key()->raw_name()));
     }
 
-    auto repo_mask(e_repo->repository_masked(shared_from_this()));
-    auto profile_mask(e_repo->profile()->profile_masked(shared_from_this()));
+    auto repo_masks(e_repo->repository_masks(shared_from_this()));
+    auto profile_masks(e_repo->profile()->profile_masks(shared_from_this()));
     if (! _imp->environment->unmasked_by_user(shared_from_this(), ""))
     {
         /* repo unless user */
-        if (repo_mask)
-            add_mask(std::make_shared<ERepositoryMask>('R', "repository",
-                        repo_mask->comment(), "", repo_mask->mask_file()));
+        for (auto r(repo_masks->begin()), r_end(repo_masks->end()) ;
+                r != r_end ; ++r)
+            add_mask(std::make_shared<ERepositoryMask>('R', "repository", r->comment(), "", r->mask_file())); 
 
         /* profile unless user */
-        if (profile_mask)
-            add_mask(std::make_shared<ERepositoryMask>('P', "profile",
-                        profile_mask->comment(), "", profile_mask->mask_file()));
+        for (auto r(profile_masks->begin()), r_end(profile_masks->end()) ;
+                r != r_end ; ++r)
+            add_mask(std::make_shared<ERepositoryMask>('P', "profile", r->comment(), "", r->mask_file()));
 
         /* user */
         std::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(shared_from_this(), false));
@@ -582,20 +582,22 @@ EbuildID::need_masks_added() const
     else
     {
         /* repo overridden by user */
-        if (repo_mask)
+        for (auto r(repo_masks->begin()), r_end(repo_masks->end()) ;
+                r != r_end ; ++r)
             add_overridden_mask(std::make_shared<OverriddenMask>(
-                            make_named_values<OverriddenMask>(
-                                n::mask() = std::make_shared<ERepositoryMask>('r', "repository (overridden)",
-                                    repo_mask->comment(), "", repo_mask->mask_file()),
-                                n::override_reason() = mro_overridden_by_user
-                                )));
+                        make_named_values<OverriddenMask>(
+                            n::mask() = std::make_shared<ERepositoryMask>('r', "repository (overridden)",
+                                r->comment(), "", r->mask_file()),
+                            n::override_reason() = mro_overridden_by_user
+                            )));
 
         /* profile unless user */
-        if (profile_mask)
+        for (auto r(profile_masks->begin()), r_end(profile_masks->end()) ;
+                r != r_end ; ++r)
             add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
                                 n::mask() = std::make_shared<ERepositoryMask>('p', "profile (overridden)",
-                                    profile_mask->comment(), "", profile_mask->mask_file()),
+                                    r->comment(), "", r->mask_file()),
                                 n::override_reason() = mro_overridden_by_user
                                 )));
 

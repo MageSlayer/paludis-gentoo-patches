@@ -18,7 +18,12 @@
  */
 
 #include <paludis/repositories/e/mask_info.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 
 using namespace paludis;
 using namespace paludis::erepository;
+
+template class Sequence<MaskInfo>;
+template class WrappedForwardIterator<Sequence<MaskInfo>::ConstIteratorTag, const MaskInfo>;
 

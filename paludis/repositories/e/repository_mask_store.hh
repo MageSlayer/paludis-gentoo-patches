@@ -56,7 +56,7 @@ namespace paludis
 
                 ~RepositoryMaskStore();
 
-                const std::shared_ptr<const MaskInfo> query(const std::shared_ptr<const PackageID> & id) const;
+                const std::shared_ptr<const MasksInfo> query(const std::shared_ptr<const PackageID> & id) const;
         };
     }
 

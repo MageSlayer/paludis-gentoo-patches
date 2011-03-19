@@ -636,8 +636,8 @@ ERepository::package_ids(const QualifiedPackageName & n, const RepositoryContent
     return _imp->layout->package_ids(n);
 }
 
-std::shared_ptr<const MaskInfo>
-ERepository::repository_masked(const std::shared_ptr<const PackageID> & id) const
+std::shared_ptr<const MasksInfo>
+ERepository::repository_masks(const std::shared_ptr<const PackageID> & id) const
 {
     return _imp->repository_mask_store->query(id);
 }

@@ -119,17 +119,16 @@ RepositoryMaskStore::_populate()
     }
 }
 
-const std::shared_ptr<const MaskInfo>
+const std::shared_ptr<const MasksInfo>
 RepositoryMaskStore::query(const std::shared_ptr<const PackageID> & id) const
 {
+    auto result(std::make_shared<MasksInfo>());
     auto r(_imp->repo_mask.find(id->name()));
-    if (_imp->repo_mask.end() == r)
-        return std::shared_ptr<const MaskInfo>();
-    else
+    if (_imp->repo_mask.end() != r)
         for (auto k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
             if (match_package(*_imp->env, k->first, id, make_null_shared_ptr(), { }))
-                return k->second;
+                result->push_back(*k->second);
 
-    return std::shared_ptr<const MaskInfo>();
+    return result;
 }
 
