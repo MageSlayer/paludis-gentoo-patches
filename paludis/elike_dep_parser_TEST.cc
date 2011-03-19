@@ -21,6 +21,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/options.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -79,7 +80,7 @@ namespace test_cases
                         n::on_use() = std::bind(&handler, std::ref(out), "use<", _1, ", ", "", ""),
                         n::on_use_under_any() = &do_nothing
                         ));
-            parse_elike_dependencies(in, callbacks);
+            parse_elike_dependencies(in, callbacks, { });
             TEST_CHECK_EQUAL(out, "any<s<a>s<b>all<s<c>s<d>s<e>>>EMPTY");
         }
     } elike_dep_parser_basic_test;
@@ -108,7 +109,7 @@ namespace test_cases
                         n::on_use() = std::bind(&handler, std::ref(out), "use<", _1, ", ", "", ""),
                         n::on_use_under_any() = &do_nothing
                     ));
-            parse_elike_dependencies(in, callbacks);
+            parse_elike_dependencies(in, callbacks, { });
             TEST_CHECK_EQUAL(out, "all<all<>>EMPTY");
         }
     } elike_dep_parser_test_empty_blocks;
@@ -137,7 +138,7 @@ namespace test_cases
                         n::on_use() = std::bind(&handler, std::ref(out), "use<", _1, ", ", "", ""),
                         n::on_use_under_any() = &do_nothing
                     ));
-            parse_elike_dependencies(in, callbacks);
+            parse_elike_dependencies(in, callbacks, { });
             TEST_CHECK_EQUAL(out, "s<a>[first:foo;second:bar baz;]EMPTY");
         }
     } elike_dep_parser_annotations_test;

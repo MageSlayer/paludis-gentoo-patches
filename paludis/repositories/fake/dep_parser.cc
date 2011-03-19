@@ -191,7 +191,7 @@ paludis::fakerepository::parse_depend(const std::string & s, const Environment *
                 n::on_use_under_any() = &do_nothing
                 ));
 
-    parse_elike_dependencies(s, callbacks);
+    parse_elike_dependencies(s, callbacks, { });
 
     return top;
 }
@@ -222,7 +222,7 @@ paludis::fakerepository::parse_provide(const std::string & s, const Environment 
                 n::on_use_under_any() = &do_nothing
                 ));
 
-    parse_elike_dependencies(s, callbacks);
+    parse_elike_dependencies(s, callbacks, { });
 
     return top;
 }
@@ -253,7 +253,7 @@ paludis::fakerepository::parse_fetchable_uri(const std::string & s, const Enviro
                 n::on_use_under_any() = &do_nothing
                 ));
 
-    parse_elike_dependencies(s, callbacks);
+    parse_elike_dependencies(s, callbacks, { });
 
     return top;
 }
@@ -284,7 +284,7 @@ paludis::fakerepository::parse_simple_uri(const std::string & s, const Environme
                 n::on_use_under_any() = &do_nothing
                 ));
 
-    parse_elike_dependencies(s, callbacks);
+    parse_elike_dependencies(s, callbacks, { });
 
     return top;
 }
@@ -315,7 +315,7 @@ paludis::fakerepository::parse_license(const std::string & s, const Environment 
                 n::on_use_under_any() = &do_nothing
                 ));
 
-    parse_elike_dependencies(s, callbacks);
+    parse_elike_dependencies(s, callbacks, { });
 
     return top;
 }

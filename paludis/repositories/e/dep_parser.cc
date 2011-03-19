@@ -525,7 +525,7 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
                 n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
             ));
 
-    parse_elike_dependencies(s, callbacks);
+    parse_elike_dependencies(s, callbacks, { });
 
     for (auto b(stack.begin()->block_children().begin()), b_end(stack.begin()->block_children().end()) ;
             b != b_end ; ++b)
@@ -575,7 +575,7 @@ paludis::erepository::parse_provide(const std::string & s, const Environment * c
                 n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
             ));
 
-    parse_elike_dependencies(s, callbacks);
+    parse_elike_dependencies(s, callbacks, { });
 
     return top;
 }
@@ -625,7 +625,7 @@ paludis::erepository::parse_fetchable_uri(const std::string & s, const Environme
                 n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
             ));
 
-    parse_elike_dependencies(s, callbacks);
+    parse_elike_dependencies(s, callbacks, { });
 
     return top;
 }
@@ -671,7 +671,7 @@ paludis::erepository::parse_simple_uri(const std::string & s, const Environment 
                 n::on_use_under_any() = &do_nothing
             ));
 
-    parse_elike_dependencies(s, callbacks);
+    parse_elike_dependencies(s, callbacks, { });
 
     return top;
 }
@@ -717,7 +717,7 @@ paludis::erepository::parse_license(const std::string & s, const Environment * c
                 n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
             ));
 
-    parse_elike_dependencies(s, callbacks);
+    parse_elike_dependencies(s, callbacks, { });
 
     return top;
 }
@@ -763,7 +763,7 @@ paludis::erepository::parse_plain_text(const std::string & s, const Environment 
                 n::on_use_under_any() = &do_nothing
             ));
 
-    parse_elike_dependencies(s, callbacks);
+    parse_elike_dependencies(s, callbacks, { });
 
     return top;
 }
@@ -811,7 +811,7 @@ paludis::erepository::parse_myoptions(const std::string & s, const Environment *
                 n::on_use_under_any() = &do_nothing
             ));
 
-    parse_elike_dependencies(s, callbacks);
+    parse_elike_dependencies(s, callbacks, { });
 
     return top;
 }
@@ -857,7 +857,7 @@ paludis::erepository::parse_required_use(const std::string & s, const Environmen
                 n::on_use_under_any() = &do_nothing
             ));
 
-    parse_elike_dependencies(s, callbacks);
+    parse_elike_dependencies(s, callbacks, { });
 
     return top;
 }

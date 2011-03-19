@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_ELikeDepParserOption()
+{
+    prefix edpo
+
+    key edpo_allow_embedded_comments      "Allow # comments"
+
+    doxygen_comment << "END"
+        /**
+         * Options for parse_elike_package_dep_spec.
+         *
+         * \see ELikeDepParserOptions
+         */
+END
+}
+

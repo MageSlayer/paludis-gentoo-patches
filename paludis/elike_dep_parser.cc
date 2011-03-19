@@ -257,7 +257,7 @@ namespace
 }
 
 void
-paludis::parse_elike_dependencies(const std::string & s, const ELikeDepParserCallbacks & callbacks)
+paludis::parse_elike_dependencies(const std::string & s, const ELikeDepParserCallbacks & callbacks, const ELikeDepParserOptions &)
 {
     Context context("When parsing '" + s + "':");
 

@@ -22,6 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/map-fwd.hh>
+#include <paludis/util/options-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <functional>
 #include <memory>
@@ -30,6 +31,10 @@
 namespace paludis
 {
     struct ELikeDepParserCallbacks;
+
+#include <paludis/elike_dep_parser-se.hh>
+
+    typedef Options<ELikeDepParserOption> ELikeDepParserOptions;
 
     typedef std::function<void (const std::string &)> ELikeDepParserStringFunction;
     typedef std::function<void (const std::string &, const std::string &)> ELikeDepParserArrowFunction;
@@ -47,7 +52,11 @@ namespace paludis
         ELikeDepParserAnnotationsFunction;
     typedef std::function<void ()> ELikeDepParserNoAnnotationsFunction;
 
-    void parse_elike_dependencies(const std::string &, const ELikeDepParserCallbacks & callbacks) PALUDIS_VISIBLE;
+    void parse_elike_dependencies(
+            const std::string &,
+            const ELikeDepParserCallbacks & callbacks,
+            const ELikeDepParserOptions & options
+            ) PALUDIS_VISIBLE;
 }
 
 #endif
