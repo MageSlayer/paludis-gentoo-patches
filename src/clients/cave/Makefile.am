@@ -85,23 +85,34 @@ man_MANS = \
 
 man_MANS_txts = $(man_MANS:.1=.txt)
 man_MANS_xmls = $(man_MANS_txts:.txt=.xml)
+man_MANS_html_man_fragments = $(man_MANS_txts:.txt=.html-man-fragment)
 
 command_MANS_txts = $(command_MANS:.1=.txt)
 command_MANS_xmls = $(command_MANS_txts:.txt=.xml)
+command_MANS_html_man_fragments = $(command_MANS_txts:.txt=.html-man-fragment)
 
-SUFFIXES = .1 .txt .xml
+SUFFIXES = .1 .txt .xml .html-man-fragment
 
 $(command_MANS_txts) : man-cave
 	if ! env \
 	    CAVE_FORMATS_CONF="/dev/null" \
 	    CAVE_COMMANDS_PATH="" \
-	    ./man-cave --asciidoc `echo $@ | sed -e 's.^cave-*..' -e 's,\.txt$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
+	    ./man-cave `echo $@ | sed -e 's.^cave-*..' -e 's,\.txt$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
 
 .txt.xml : $(man_MANS_txts)
 	asciidoc --doctype=manpage --backend=docbook --out-file=$@ $<
 
 .xml.1 : $(man_MANS_xmls)
 	xmlto man $<
+
+.xml.html-man-fragment : $(man_MANS_xmls)
+	xmlto html $< -o $@-dir
+	sed \
+	    -e '1s,^.*\(<div class="refnamediv">\),\1,' \
+	    -e '$$s,</body>.*,,' -e '$$s,</div><div class="navfooter"><hr></div>,,' \
+	    -e 's,<a name="[^"]*"></a>,,g' \
+	    $@-dir/index.html > $@
+	rm -fr $@-dir
 
 cave_SOURCES = \
 	cave.cc
@@ -216,14 +227,17 @@ TESTS = \
 EXTRA_DIST = \
 	cave.txt \
 	$(man_MANS) \
+	$(man_MANS_html_man_fragments) \
 	$(TESTS) \
 	continue_on_failure_TEST_setup.sh continue_on_failure_TEST_cleanup.sh \
 	moo
 
+noinst_DATA = $(man_MANS_html_man_fragments)
+
 DISTCLEANFILES = \
 	$(man_MANS) \
-	$(noinst_DATA) \
 	$(command_MANS_txts) \
+	$(man_MANS_html_man_fragments) \
 	$(man_MANS_xmls)
 
 lib_LTLIBRARIES =

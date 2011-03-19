@@ -119,25 +119,27 @@ appareo.html : header.html.part footer.html.part
 
 cave.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
-	    if test -x $(top_builddir)/src/clients/cave/man-cave ; then \
-	        env CAVE_COMMANDS_PATH="" $(top_builddir)/src/clients/cave/man-cave --html | \
-	        sed -e '/<h2>See Also<.h2>/,/<.ul>/s#<strong>\(.*\)</strong> (1)#<a href="\1.html">\1</a>#'; \
+	    if test -f $(top_builddir)/src/clients/cave/cave.html-man-fragment ; then \
+	        cat $(top_builddir)/src/clients/cave/cave.html-man-fragment ; \
+	    elif test -f $(top_srcdir)/src/clients/cave/cave.html-man-fragment ; then \
+	        cat $(top_srcdir)/src/clients/cave/cave.html-man-fragment ; \
 	    else \
 	        echo "<h1>cave</h1>"; \
 	        echo "<p>Sorry, documentation was generated without support for the cave client.</p>" ; \
-	    fi ; } && \
-	    cat footer.html.part ; } > $@
+	    fi ; } | sed -e '/<h2>SEE ALSO<.h2>/,/<.div>/s#<span class="strong"><strong>\(.*\)</strong></span>(1)#<a href="\1.html">\1</a>#' \
+	    && cat footer.html.part ; } > $@
 
 $(CAVE_COMMANDS_HTML) : header.html.part footer.html.part
 	{ cat header.html.part && { \
-	    if test -x $(top_builddir)/src/clients/cave/man-cave ; then \
-	        basename $@ .html | sed -e 's,^cave-,,' | xargs env CAVE_COMMANDS_PATH="" $(top_builddir)/src/clients/cave/man-cave --html | \
-	        sed -e '/<h2>See Also<.h2>/,/<.ul>/s#<strong>\(.*\)</strong> (1)#<a href="\1.html">\1</a>#'; \
+	    if test -f $(top_builddir)/src/clients/cave/`basename $@ .html `.html-man-fragment ; then \
+	        cat $(top_builddir)/src/clients/cave/`basename $@ .html `.html-man-fragment ; \
+	    elif test -f $(top_srcdir)/src/clients/cave/`basename $@ .html `.html-man-fragment ; then \
+	        cat $(top_srcdir)/src/clients/cave/`basename $@ .html `.html-man-fragment ; \
 	    else \
 	        echo "<h1>cave</h1>"; \
 	        echo "<p>Sorry, documentation was generated without support for the cave client.</p>" ; \
-	    fi ; } && \
-	    cat footer.html.part ; } > $@
+	    fi ; } | sed -e '/<h2>SEE ALSO<.h2>/,/<.div>/s#<span class="strong"><strong>\(.*\)</strong></span>(1)#<a href="\1.html">\1</a>#' \
+	    && cat footer.html.part ; } > $@
 
 instruo.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
