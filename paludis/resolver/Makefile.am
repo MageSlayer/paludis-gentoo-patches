@@ -175,7 +175,6 @@ if ENABLE_VIRTUALS_REPOSITORY
 virtuals_tests = resolver_TEST_virtuals
 endif
 
-if ENABLE_NEW_RESOLVER
 noinst_LIBRARIES = libpaludisresolver.a
 
 TESTS = \
@@ -191,7 +190,6 @@ TESTS = \
 	resolver_TEST_fetches \
 	resolver_TEST_purges \
 	$(virtuals_tests)
-endif
 
 check_PROGRAMS = $(TESTS)
 

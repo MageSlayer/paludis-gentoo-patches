@@ -91,7 +91,6 @@ dnl }}}
 need_xml_check=
 need_pcrecpp_check=
 need_libarchive_check=
-need_resolver=
 need_sqlite3_check=
 need_jansson_check=
 need_stripper_check=
@@ -1559,7 +1558,6 @@ AC_SUBST([ALL_CLIENTS_HTML])
 AC_SUBST([BUILD_CLIENTS])
 
 if echo $clients | tr ' ' '\n' | grep '^cave$' >/dev/null ; then
-	need_resolver=yes
 	need_pcrecpp_check=yes
 fi
 dnl }}}
@@ -1579,15 +1577,6 @@ if test x"$ENABLE_PBINS" = "xyes" ; then
 	AC_DEFINE([ENABLE_PBINS], [1], [Build pbin support])
 	need_libarchive_check=yes
 fi
-
-dnl }}}
-
-dnl {{{ new resolver
-
-if test "x$need_resolver" = "xyes" ; then
-	AC_DEFINE([ENABLE_NEW_RESOLVER], [1], [Enable new resolver])
-fi
-AM_CONDITIONAL([ENABLE_NEW_RESOLVER], test "x$need_resolver" = "xyes")
 
 dnl }}}
 
