@@ -92,6 +92,8 @@ PrintCommandsCommand::run(
 
         if (! cmdline.a_all.specified() && ! instance->importance() == ci_core)
             continue;
+        if (instance->importance() == ci_ignore)
+            continue;
 
         cout << stringify(*cmd) << endl;
     }

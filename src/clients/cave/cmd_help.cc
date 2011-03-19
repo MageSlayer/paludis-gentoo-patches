@@ -94,6 +94,10 @@ HelpCommand::run(const std::shared_ptr<Environment> & env,
 
         for (EnumIterator<CommandImportance> e, e_end(cmdline.a_all.specified() ? last_ci : CommandImportance(ci_supplemental + 1)) ;
                 e != e_end ; ++e)
+        {
+            if (*e == ci_ignore)
+                continue;
+
             for (CommandFactory::ConstIterator cmd(CommandFactory::get_instance()->begin()), cmd_end(CommandFactory::get_instance()->end()) ;
                     cmd != cmd_end ; ++cmd)
             {
@@ -103,6 +107,7 @@ HelpCommand::run(const std::shared_ptr<Environment> & env,
                     cout << "    " << (*e == ci_core ? c::bold_blue().colour_string() : "") << std::left << std::setw(30) << *cmd
                         << c::normal().colour_string() << " " << instance->make_doc_cmdline()->app_synopsis() << std::endl;
             }
+        }
 
         return EXIT_SUCCESS;
     }

@@ -87,6 +87,6 @@ ScriptCommand::make_doc_cmdline()
 CommandImportance
 ScriptCommand::importance() const
 {
-    return ci_supplemental;
+    return ci_ignore;
 }
 

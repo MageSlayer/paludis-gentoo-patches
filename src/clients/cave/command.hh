@@ -36,6 +36,7 @@ namespace paludis
             ci_development,
             ci_scripting,
             ci_internal,
+            ci_ignore,
             last_ci
         };
 
