@@ -68,6 +68,7 @@ namespace
 
         args::ArgsGroup g_sync_options;
         args::StringArg a_suffix;
+        args::StringArg a_revision;
 
         virtual std::string app_name() const
         {
@@ -90,7 +91,9 @@ namespace
             a_sequential(&g_job_options, "sequential", '\0', "Only perform one sync at a time.", false),
 
             g_sync_options(main_options_section(), "Sync Options", "Sync options."),
-            a_suffix(&g_sync_options, "suffix", 's', "Use the specified suffix for syncing.")
+            a_suffix(&g_sync_options, "suffix", 's', "Use the specified suffix for syncing."),
+            a_revision(&g_sync_options, "revision", 'r', "Sync to the specified revision. Not supported by all "
+                    "syncers. Probably doesn't make sense when not specified with a repository parameter.")
         {
             add_usage_line("[ --sequential ] [repository ...]");
         }
@@ -199,7 +202,7 @@ namespace
             {
                 const std::shared_ptr<Repository> repo(env->package_database()->fetch_repository(name));
 
-                if (! repo->sync(cmdline.a_suffix.argument(), "", output_manager))
+                if (! repo->sync(cmdline.a_suffix.argument(), cmdline.a_revision.argument(), output_manager))
                     skipped = true;
                 success = true;
             }
