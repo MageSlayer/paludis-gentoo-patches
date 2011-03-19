@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,24 +18,24 @@
  */
 
 #include <paludis/util/extract_host_from_url.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
-namespace test_cases
+TEST(ExtractHostFromURL, Empty)
 {
-    struct TestExtractHostFromURL : TestCase
-    {
-        TestExtractHostFromURL() : TestCase("extract host from url") { }
-
-        void run()
-        {
-            TEST_CHECK_EQUAL(extract_host_from_url(""), "");
-            TEST_CHECK_EQUAL(extract_host_from_url("http://foo"), "foo");
-            TEST_CHECK_EQUAL(extract_host_from_url("http://foo/bar"), "foo");
-            TEST_CHECK_EQUAL(extract_host_from_url("http://foo/bar/baz"), "foo");
-        }
-    } test_extract_host_from_url;
+    EXPECT_EQ("", extract_host_from_url(""));
 }
+
+TEST(ExtractHostFromURL, NoPath)
+{
+    EXPECT_EQ("foo", extract_host_from_url("http://foo"));
+}
+
+TEST(ExtractHostFromURL, WithPath)
+{
+    EXPECT_EQ("foo", extract_host_from_url("http://foo/bar"));
+    EXPECT_EQ("foo", extract_host_from_url("http://foo/bar/baz"));
+}
+
