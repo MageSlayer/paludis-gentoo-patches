@@ -4,6 +4,12 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.60.0:
+    * 'cave resolve' can now '--reinstall-dependents-of'
+
+    * HTML versions of man pages are now created from the generated Asciidoc
+      files rather than directly.
+
 0.60.0_pre1:
     * The deprecated 'adjutrix', 'inquisitio', 'importare', 'paludis' and
       'reconcilio' clients have been removed.
