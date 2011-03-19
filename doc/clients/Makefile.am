@@ -99,36 +99,36 @@ index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 
 accerso.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
+	    echo "<h1>accerso</h1>"; \
 	    if test -f $(top_builddir)/src/clients/accerso/accerso.html-man-fragment ; then \
 	        cat $(top_builddir)/src/clients/accerso/accerso.html-man-fragment ; \
 	    elif test -f $(top_srcdir)/src/clients/accerso/accerso.html-man-fragment ; then \
 	        cat $(top_srcdir)/src/clients/accerso/accerso.html-man-fragment ; \
 	    else \
-	        echo "<h1>accerso</h1>"; \
 	        echo "<p>Sorry, documentation was generated without support for the accerso client.</p>" ; \
 	    fi ; } \
 	    && cat footer.html.part ; } > $@
 
 appareo.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
+	    echo "<h1>appareo</h1>"; \
 	    if test -f $(top_builddir)/src/clients/appareo/appareo.html-man-fragment ; then \
 	        cat $(top_builddir)/src/clients/appareo/appareo.html-man-fragment ; \
 	    elif test -f $(top_srcdir)/src/clients/appareo/appareo.html-man-fragment ; then \
 	        cat $(top_srcdir)/src/clients/appareo/appareo.html-man-fragment ; \
 	    else \
-	        echo "<h1>appareo</h1>"; \
 	        echo "<p>Sorry, documentation was generated without support for the appareo client.</p>" ; \
 	    fi ; } \
 	    && cat footer.html.part ; } > $@
 
 cave.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
+	    echo "<h1>cave</h1>"; \
 	    if test -f $(top_builddir)/src/clients/cave/cave.html-man-fragment ; then \
 	        cat $(top_builddir)/src/clients/cave/cave.html-man-fragment ; \
 	    elif test -f $(top_srcdir)/src/clients/cave/cave.html-man-fragment ; then \
 	        cat $(top_srcdir)/src/clients/cave/cave.html-man-fragment ; \
 	    else \
-	        echo "<h1>cave</h1>"; \
 	        echo "<p>Sorry, documentation was generated without support for the cave client.</p>" ; \
 	    fi ; } | sed \
 	        -e '/<h2>SEE ALSO<.h2>/,/<.div>/s#<span class="strong"><strong>\(.*\)</strong></span>(1)#<a href="\1.html">\1</a>#' \
@@ -137,24 +137,24 @@ cave.html : header.html.part footer.html.part
 
 $(CAVE_COMMANDS_HTML) : header.html.part footer.html.part
 	{ cat header.html.part && { \
+	    echo "<h1>cave `basename $@ .html | sed -e 's,cave-,,'`</h1>"; \
 	    if test -f $(top_builddir)/src/clients/cave/`basename $@ .html `.html-man-fragment ; then \
 	        cat $(top_builddir)/src/clients/cave/`basename $@ .html `.html-man-fragment ; \
 	    elif test -f $(top_srcdir)/src/clients/cave/`basename $@ .html `.html-man-fragment ; then \
 	        cat $(top_srcdir)/src/clients/cave/`basename $@ .html `.html-man-fragment ; \
 	    else \
-	        echo "<h1>cave</h1>"; \
 	        echo "<p>Sorry, documentation was generated without support for the cave client.</p>" ; \
 	    fi ; } \
 	    && cat footer.html.part ; } > $@
 
 instruo.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
+	    echo "<h1>instruo</h1>"; \
 	    if test -f $(top_builddir)/src/clients/instruo/instruo.html-man-fragment ; then \
 	        cat $(top_builddir)/src/clients/instruo/instruo.html-man-fragment ; \
 	    elif test -f $(top_srcdir)/src/clients/instruo/instruo.html-man-fragment ; then \
 	        cat $(top_srcdir)/src/clients/instruo/instruo.html-man-fragment ; \
 	    else \
-	        echo "<h1>instruo</h1>"; \
 	        echo "<p>Sorry, documentation was generated without support for the instruo client.</p>" ; \
 	    fi ; } \
 	    && cat footer.html.part ; } > $@
