@@ -121,8 +121,10 @@ const auto fs_mask_by_valueless = make_format_string_fetcher("display-resolution
 const auto fs_mask_by_repo_line = make_format_string_fetcher("display-resolution/mask_by_repo_line", 1)
     << param<'i'>() << param<'s'>() << "\\n";
 
-const auto fs_masked_by = make_format_string_fetcher("display-resolution/masked_by", 1)
-    << param<'i'>() << param<'c'>() << "Masked by " << c::normal() << param<'d'>() << "\\n";
+const auto fs_masked_by = make_format_string_fetcher("display-resolution/masked_by", 2)
+    << param<'i'>() << param<'c'>() << "Masked by " << c::normal() << param<'d'>()
+    << param_if<'t'>() << c::blue_or_pink() << " [" << param<'t'>() << "]" << c::normal() << param_endif<'t'>()
+    << "\\n";
 
 const auto fs_masked_by_explanation = make_format_string_fetcher("display-resolution/masked_by_explanation", 1)
     << param<'i'>() << param<'c'>() << "Masked by " << c::normal() << param<'d'>() << " (" << param<'x'>() << ")" << "\\n";

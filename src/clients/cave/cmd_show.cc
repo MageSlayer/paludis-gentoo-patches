@@ -1029,9 +1029,10 @@ namespace
             else
             {
                 out << fuc(
-                        (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
+                        (cmdline.a_raw_names.specified() ? fs_mask_value_raw() : fs_mask_value_human()),
                         fv<'s'>("Masked"),
                         fv<'v'>("by " + m.description()),
+                        fv<'t'>(""),
                         fv<'i'>(std::string(indent, ' ')),
                         fv<'b'>(""),
                         fv<'p'>("")
@@ -1042,9 +1043,10 @@ namespace
         void visit(const UnsupportedMask & m)
         {
             out << fuc(
-                    (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
+                    (cmdline.a_raw_names.specified() ? fs_mask_value_raw() : fs_mask_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : m.description()),
                     fv<'v'>(m.explanation()),
+                    fv<'t'>(""),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(""),
                     fv<'p'>("")
@@ -1054,9 +1056,10 @@ namespace
         void visit(const AssociationMask & m)
         {
             out << fuc(
-                    (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
+                    (cmdline.a_raw_names.specified() ? fs_mask_value_raw() : fs_mask_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : "by " + m.description()),
                     fv<'v'>(stringify(m.associated_package_spec())),
+                    fv<'t'>(""),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(""),
                     fv<'p'>("")
@@ -1066,9 +1069,10 @@ namespace
         void visit(const UserMask & m)
         {
             out << fuc(
-                    (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
+                    (cmdline.a_raw_names.specified() ? fs_mask_value_raw() : fs_mask_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : "by " + m.description()),
                     fv<'v'>(""),
+                    fv<'t'>(m.token()),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(""),
                     fv<'p'>("")
@@ -1078,9 +1082,10 @@ namespace
         void visit(const RepositoryMask & m)
         {
             out << fuc(
-                    (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
+                    (cmdline.a_raw_names.specified() ? fs_mask_value_raw() : fs_mask_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : "by " + m.description()),
                     fv<'v'>(stringify(m.mask_file())),
+                    fv<'t'>(m.token()),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(""),
                     fv<'p'>("")

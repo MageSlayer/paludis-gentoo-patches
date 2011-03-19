@@ -84,6 +84,22 @@ const auto fs_metadata_value_human = make_format_string_fetcher("show/metadata_v
     << param_if<'p'>() << "=" << param<'p'>() << param_endif<'p'>()
     << "%{column 30}" << param<'v'>() << "\\n";
 
+const auto fs_mask_value_raw = make_format_string_fetcher("show/mask_value_raw", 1)
+    << "    " << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>()
+    << param_if<'b'>() << c::bold_normal() << param_endif<'b'>() << param<'s'>() << c::normal()
+    << param_if<'p'>() << "=" << param<'p'>() << param_endif<'p'>()
+    << "%{column 30}" << param<'v'>()
+    << param_if<'t'>() << c::blue_or_pink() << " [" << param<'t'>() << "]" << c::normal() << param_endif<'t'>()
+    << "\\n";
+
+const auto fs_mask_value_human = make_format_string_fetcher("show/mask_value_human", 1)
+    << "    " << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>()
+    << param_if<'b'>() << c::bold_normal() << param_endif<'b'>() << param<'s'>() << c::normal()
+    << param_if<'p'>() << "=" << param<'p'>() << param_endif<'p'>()
+    << "%{column 30}" << param<'v'>()
+    << param_if<'t'>() << c::blue_or_pink() << " [" << param<'t'>() << "]" << c::normal() << param_endif<'t'>()
+    << "\\n";
+
 const auto fs_metadata_continued_value = make_format_string_fetcher("show/metadata_continued_value", 1)
     << "    " << "%{column 30}" << param<'i'>() << param<'i'>() << param<'v'>() << "\\n";
 
