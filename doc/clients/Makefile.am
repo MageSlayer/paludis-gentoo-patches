@@ -126,7 +126,9 @@ cave.html : header.html.part footer.html.part
 	    else \
 	        echo "<h1>cave</h1>"; \
 	        echo "<p>Sorry, documentation was generated without support for the cave client.</p>" ; \
-	    fi ; } | sed -e '/<h2>SEE ALSO<.h2>/,/<.div>/s#<span class="strong"><strong>\(.*\)</strong></span>(1)#<a href="\1.html">\1</a>#' \
+	    fi ; } | sed \
+	        -e '/<h2>SEE ALSO<.h2>/,/<.div>/s#<span class="strong"><strong>\(.*\)</strong></span>(1)#<a href="\1.html">\1</a>#' \
+	        -e '/<h2>CORE COMMANDS<.h2>/,/<h2>ENVIRONMENT<.h2>/s,^\([a-z-]\+\)$$,<a href="cave-\1.html">\1</a>,' \
 	    && cat footer.html.part ; } > $@
 
 $(CAVE_COMMANDS_HTML) : header.html.part footer.html.part
@@ -138,7 +140,7 @@ $(CAVE_COMMANDS_HTML) : header.html.part footer.html.part
 	    else \
 	        echo "<h1>cave</h1>"; \
 	        echo "<p>Sorry, documentation was generated without support for the cave client.</p>" ; \
-	    fi ; } | sed -e '/<h2>SEE ALSO<.h2>/,/<.div>/s#<span class="strong"><strong>\(.*\)</strong></span>(1)#<a href="\1.html">\1</a>#' \
+	    fi ; } \
 	    && cat footer.html.part ; } > $@
 
 instruo.html : header.html.part footer.html.part
