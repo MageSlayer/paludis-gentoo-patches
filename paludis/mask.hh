@@ -104,6 +104,14 @@ namespace paludis
         public Mask,
         public ImplementAcceptMethods<Mask, UserMask>
     {
+        public:
+            /**
+             * An associated token, for Environment::unmasked_by_user. Might be empty,
+             * but is probably "user".
+             *
+             * \since 0.60
+             */
+            virtual const std::string token() const;
     };
 
     /**

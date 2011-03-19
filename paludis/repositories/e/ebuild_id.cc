@@ -596,7 +596,7 @@ EbuildID::need_masks_added() const
         std::shared_ptr<const Mask> user_mask(_imp->environment->mask_for_user(shared_from_this(), false));
         if (user_mask)
         {
-            if (_imp->environment->unmasked_by_user(shared_from_this(), "user"))
+            if (_imp->environment->unmasked_by_user(shared_from_this(), get_mask_token(*user_mask)))
                 add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
                                 n::mask() = user_mask,

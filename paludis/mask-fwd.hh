@@ -42,6 +42,14 @@ namespace paludis
 
 #include <paludis/mask-se.hh>
 
+    /**
+     * Fetch the token associated with a Mask, or "" if there is
+     * no such token.
+     *
+     * \since 0.60
+     * \ingroup g_mask
+     */
+    const std::string get_mask_token(const Mask &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 }
 
 #endif

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,5 +29,48 @@ using namespace paludis;
 
 Mask::~Mask()
 {
+}
+
+const std::string
+UserMask::token() const
+{
+    return "user";
+}
+
+namespace
+{
+    struct TokenGetter
+    {
+        std::string visit(const UserMask & m) const
+        {
+            return m.token();
+        }
+
+        std::string visit(const RepositoryMask & m) const
+        {
+            return m.token();
+        }
+
+        std::string visit(const UnacceptedMask &) const
+        {
+            return "";
+        }
+
+        std::string visit(const UnsupportedMask &) const
+        {
+            return "";
+        }
+
+        std::string visit(const AssociationMask &) const
+        {
+            return "";
+        }
+    };
+}
+
+const std::string
+paludis::get_mask_token(const Mask & m)
+{
+    return m.accept_returning<std::string>(TokenGetter{});
 }
 
