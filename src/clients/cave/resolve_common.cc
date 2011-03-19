@@ -202,7 +202,7 @@ namespace
                 for (auto i(ids->begin()), i_end(ids->end()) ;
                         i != i_end ; ++i)
                 {
-                    auto dependents(collect_depped_upon(env.get(), *i, installed_ids, make_null_shared_ptr()));
+                    auto dependents(collect_dependents(env.get(), *i, installed_ids));
                     for (auto d(dependents->begin()), d_end(dependents->end()) ;
                             d != d_end ; ++d)
                     {

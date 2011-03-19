@@ -143,7 +143,7 @@ PrintDependentIDsCommand::run(
                 generator::All() |
                 installed_filter)]);
 
-    auto dependents(resolver::collect_depped_upon(env.get(), *ids->begin(), installed_ids, make_null_shared_ptr()));
+    auto dependents(resolver::collect_dependents(env.get(), *ids->begin(), installed_ids));
     for (auto i(dependents->begin()), i_end(dependents->end()) ;
             i != i_end ; ++i)
         cout << format_id(cmdline, *i);

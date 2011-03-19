@@ -23,6 +23,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
@@ -68,11 +69,12 @@ namespace
 
         return result;
     }
+
     template <typename C_>
     struct DependentChecker
     {
         const Environment * const env;
-        const std::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageID> id_for_specs;
         const std::shared_ptr<const C_> going_away;
         const std::shared_ptr<const C_> newly_available;
         const std::shared_ptr<const PackageIDSequence> not_changing_slots;
@@ -85,7 +87,7 @@ namespace
                 const std::shared_ptr<const C_> & n,
                 const std::shared_ptr<const PackageIDSequence> & s) :
             env(e),
-            id(i),
+            id_for_specs(i),
             going_away(g),
             newly_available(n),
             not_changing_slots(s),
@@ -109,9 +111,9 @@ namespace
                 if (s.spec()->slot_requirement_ptr() && visitor_cast<const SlotAnyUnlockedRequirement>(
                             *s.spec()->slot_requirement_ptr()))
                 {
-                    auto best_eventual_id(best_eventual(env, *s.spec(), id, newly_available));
+                    auto best_eventual_id(best_eventual(env, *s.spec(), id_for_specs, newly_available));
                     if (! best_eventual_id)
-                        best_eventual_id = best_eventual(env, *s.spec(), id, not_changing_slots);
+                        best_eventual_id = best_eventual(env, *s.spec(), id_for_specs, not_changing_slots);
                     if (best_eventual_id && best_eventual_id->slot_key())
                     {
                         PartiallyMadePackageDepSpec part_spec(*s.spec());
@@ -120,14 +122,14 @@ namespace
                     }
                 }
 
-                if (! match_package(*env, *spec, dependent_checker_id(*g), id, { }))
+                if (! match_package(*env, *spec, dependent_checker_id(*g), id_for_specs, { }))
                     continue;
 
                 bool any(false);
                 for (typename C_::ConstIterator n(newly_available->begin()), n_end(newly_available->end()) ;
                         n != n_end ; ++n)
                 {
-                    if (match_package(*env, *spec, dependent_checker_id(*n), id, { }))
+                    if (match_package(*env, *spec, dependent_checker_id(*n), id_for_specs, { }))
                     {
                         any = true;
                         break;
@@ -145,7 +147,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & s)
         {
-            if (s.spec()->condition_met(env, id))
+            if (s.spec()->condition_met(env, id_for_specs))
                 std::for_each(indirect_iterator(s.begin()), indirect_iterator(s.end()),
                         accept_visitor(*this));
         }
@@ -221,4 +223,41 @@ paludis::resolver::collect_depped_upon(
     return result;
 }
 
+const std::shared_ptr<const PackageIDSet>
+paludis::resolver::collect_dependents(
+        const Environment * const env,
+        const std::shared_ptr<const PackageID> & going_away,
+        const std::shared_ptr<const PackageIDSequence> & installed_ids)
+{
+    auto going_away_as_ids(std::make_shared<PackageIDSequence>());
+    going_away_as_ids->push_back(going_away);
+
+    auto result(std::make_shared<PackageIDSet>());
+
+    for (auto i(installed_ids->begin()), i_end(installed_ids->end()) ;
+            i != i_end ; ++i)
+    {
+        DependentChecker<PackageIDSequence> c(env, *i, going_away_as_ids,
+                std::make_shared<PackageIDSequence>(), std::make_shared<PackageIDSequence>());
+
+        if ((*i)->dependencies_key())
+            (*i)->dependencies_key()->value()->top()->accept(c);
+        else
+        {
+            if ((*i)->build_dependencies_key())
+                (*i)->build_dependencies_key()->value()->top()->accept(c);
+            if ((*i)->run_dependencies_key())
+                (*i)->run_dependencies_key()->value()->top()->accept(c);
+            if ((*i)->post_dependencies_key())
+                (*i)->post_dependencies_key()->value()->top()->accept(c);
+            if ((*i)->suggested_dependencies_key())
+                (*i)->suggested_dependencies_key()->value()->top()->accept(c);
+        }
+
+        if (! c.result->empty())
+            result->insert(*i);
+    }
+
+    return result;
+}
 
