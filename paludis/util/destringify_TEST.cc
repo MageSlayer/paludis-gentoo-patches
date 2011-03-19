@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006 Stephen Bennett
+ * Copyright (c) 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,117 +20,83 @@
 
 #include <paludis/util/destringify.hh>
 #include <paludis/util/stringify.hh>
-#include <string>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
-#include <cmath>
 
-using namespace test;
+#include <string>
+
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-/** \file
- * Test cases for destringify.hh
- *
- */
-
-namespace test_cases
+TEST(DestringifyInt, Works)
 {
-    /** \test
-     * Test destringify for integers.
-     *
-     */
-    struct DestringifyIntTests : TestCase
-    {
-        DestringifyIntTests() : TestCase("destringify int") { }
+    EXPECT_EQ(0, destringify<int>("0"));
+    EXPECT_EQ(1, destringify<int>("1"));
+    EXPECT_EQ(99, destringify<int>("99"));
+    EXPECT_EQ(-99, destringify<int>("-99"));
+    EXPECT_EQ(12345, destringify<int>(" 12345"));
+}
 
-        void run()
-        {
-            TEST_CHECK_EQUAL(destringify<int>("0"),     0);
-            TEST_CHECK_EQUAL(destringify<int>("1"),     1);
-            TEST_CHECK_EQUAL(destringify<int>("99"),    99);
-            TEST_CHECK_EQUAL(destringify<int>("-99"),   -99);
-            TEST_CHECK_EQUAL(destringify<int>(" 12345"), 12345);
-            TEST_CHECK_THROWS(destringify<int>(""), DestringifyError);
-            TEST_CHECK_THROWS(destringify<int>("x"), DestringifyError);
-            TEST_CHECK_THROWS(destringify<int>("10000000000000000000000000000000000000000000000"), DestringifyError);
-        }
-    } test_case_destringify_int;
+TEST(DestringifyInt, Throws)
+{
+    EXPECT_THROW(destringify<int>(""), DestringifyError);
+    EXPECT_THROW(destringify<int>("x"), DestringifyError);
+    EXPECT_THROW(destringify<int>("10000000000000000000000000000000000000000000000"), DestringifyError);
+}
 
-    /** \test
-     * Test destringify for floats.
-     *
-     */
-    struct DestringifyFloatTests : TestCase
-    {
-        DestringifyFloatTests() : TestCase("destringify float") { }
+TEST(DestringifyFloat, Works)
+{
+    EXPECT_FLOAT_EQ(0.0f, destringify<float>("0"));
+    EXPECT_FLOAT_EQ(0.0f, destringify<float>("0.0"));
+    EXPECT_FLOAT_EQ(0.1f, destringify<float>("0.1"));
+    EXPECT_FLOAT_EQ(-1.54f, destringify<float>("-1.54"));
+}
 
-        void run()
-        {
-            TEST_CHECK(std::fabs(destringify<float>("0") - 0.0f) < 0.01f);
-            TEST_CHECK(std::fabs(destringify<float>("0.0") - 0.0f) < 0.01f);
-            TEST_CHECK(std::fabs(destringify<float>("0.1") - 0.1f) < 0.01f);
-            TEST_CHECK(std::fabs(destringify<float>("-1.54") - -1.54f) < 0.01f);
-            TEST_CHECK_THROWS(destringify<float>("I am a fish"), DestringifyError);
-            TEST_CHECK_THROWS(destringify<float>(""), DestringifyError);
-        }
-    } test_case_destringify_float;
+TEST(DestringifyFloat, Throws)
+{
+    EXPECT_THROW(destringify<float>("I am a fish"), DestringifyError);
+    EXPECT_THROW(destringify<float>(""), DestringifyError);
+}
 
-    /** \test
-     * Test destringify for strings.
-     *
-     */
-    struct DestringifyStringTests : TestCase
-    {
-        DestringifyStringTests() : TestCase("destringify string") { }
+TEST(DestringifyString, Works)
+{
+    EXPECT_EQ("asdf", destringify<std::string>("asdf"));
+    EXPECT_EQ( "  a f     e b ", destringify<std::string>("  a f     e b "));
+}
 
-        void run()
-        {
-            TEST_CHECK_EQUAL(destringify<std::string>("asdf"),           "asdf");
-            TEST_CHECK_EQUAL(destringify<std::string>("  a f     e b "), "  a f     e b ");
-            TEST_CHECK_THROWS(destringify<std::string>(""), DestringifyError);
-        }
-    } test_case_destringify_string;
+TEST(DestringifyString, Throws)
+{
+    EXPECT_THROW(destringify<std::string>(""), DestringifyError);
+}
 
-    /** \test
-     * Test destringify for bool.
-     *
-     */
-    struct DestringifyBoolTests : TestCase
-    {
-        DestringifyBoolTests() : TestCase("destringify bool") { }
+TEST(DestringifyBool, Works)
+{
+    EXPECT_TRUE(destringify<bool>("true"));
+    EXPECT_TRUE(destringify<bool>("1"));
+    EXPECT_TRUE(destringify<bool>("5"));
 
-        void run()
-        {
-            TEST_CHECK( destringify<bool>("true"));
-            TEST_CHECK( destringify<bool>("1"));
-            TEST_CHECK( destringify<bool>("5"));
-            TEST_CHECK(!destringify<bool>("false"));
-            TEST_CHECK(!destringify<bool>("0"));
-            TEST_CHECK(!destringify<bool>("-1"));
-            TEST_CHECK_THROWS(destringify<bool>("flase"), DestringifyError);
-            TEST_CHECK_THROWS(destringify<bool>("432.2413"), DestringifyError);
-            TEST_CHECK_THROWS(destringify<bool>(""), DestringifyError);
-        }
-    } test_case_destringify_bool;
+    EXPECT_FALSE(destringify<bool>("false"));
+    EXPECT_FALSE(destringify<bool>("0"));
+    EXPECT_FALSE(destringify<bool>("-1"));
+}
 
-    /** \test
-     * Test destringify for char.
-     *
-     */
-    struct DestringifyCharTests : TestCase
-    {
-        DestringifyCharTests() : TestCase("destringify char") { }
+TEST(DestringifyBool, Throws)
+{
+    EXPECT_THROW(destringify<bool>("flase"), DestringifyError);
+    EXPECT_THROW(destringify<bool>("432.2413"), DestringifyError);
+    EXPECT_THROW(destringify<bool>(""), DestringifyError);
+}
 
-        void run()
-        {
-            TEST_CHECK_EQUAL(destringify<char>("x"), 'x');
-            TEST_CHECK_EQUAL(destringify<char>("0"), '0');
-            TEST_CHECK_THROWS(destringify<char>("aa"), DestringifyError);
-            TEST_CHECK_THROWS(destringify<char>("a a"), DestringifyError);
-            TEST_CHECK_THROWS(destringify<char>("11"), DestringifyError);
-            TEST_CHECK_THROWS(destringify<char>(""), DestringifyError);
-        }
-    } test_case_destringify_char;
+TEST(DestringifyChar, Works)
+{
+    EXPECT_EQ('x', destringify<char>("x"));
+    EXPECT_EQ('0', destringify<char>("0"));
+}
 
+TEST(DestringifyChar, Throws)
+{
+    EXPECT_THROW(destringify<char>("aa"), DestringifyError);
+    EXPECT_THROW(destringify<char>("a a"), DestringifyError);
+    EXPECT_THROW(destringify<char>("11"), DestringifyError);
+    EXPECT_THROW(destringify<char>(""), DestringifyError);
 }
 

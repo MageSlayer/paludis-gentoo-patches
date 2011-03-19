@@ -8,6 +8,7 @@ include $(top_srcdir)/misc/common-makefile.am
 define(`filelist', `')dnl
 define(`headerlist', `')dnl
 define(`testlist', `')dnl
+define(`gtestlist', `')dnl
 define(`testscriptlist', `')dnl
 define(`selist', `')dnl
 define(`secleanlist', `')dnl
@@ -19,6 +20,14 @@ $1_TEST_LDADD = \
 	$(top_builddir)/test/libtest.a \
 	libpaludisutil_@PALUDIS_PC_SLOT@.la
 $1_TEST_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+')dnl
+define(`addgtest', `define(`gtestlist', gtestlist `$1_TEST')dnl
+$1_TEST_SOURCES = $1_TEST.cc
+$1_TEST_LDADD = \
+	gtest_runner.o \
+	libpaludisutil_@PALUDIS_PC_SLOT@.la
+$1_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
+$1_TEST_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 ')dnl
 define(`addtestscript', `define(`testscriptlist', testscriptlist `$1_TEST_setup.sh $1_TEST_cleanup.sh')')dnl
 define(`addhh', `define(`filelist', filelist `$1.hh')define(`headerlist', headerlist `$1.hh')')dnl
@@ -44,6 +53,7 @@ ifelse(`$2', `cc', `addcc(`$1')', `')dnl
 ifelse(`$2', `impl', `addimpl(`$1')', `')dnl
 ifelse(`$2', `se', `addse(`$1')', `')dnl
 ifelse(`$2', `test', `addtest(`$1')', `')dnl
+ifelse(`$2', `gtest', `addgtest(`$1')', `')dnl
 ifelse(`$2', `testscript', `addtestscript(`$1')', `')')dnl
 define(`add', `addthis(`$1',`$2')addthis(`$1',`$3')addthis(`$1',`$4')dnl
 addthis(`$1',`$5')addthis(`$1',`$6')addthis(`$1',`$7')addthis(`$1',`$8')')dnl
@@ -62,6 +72,7 @@ DEFS=\
 EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 selist secleanlist \
 	testscriptlist \
 	test_extras.cc \
+	gtest_runner.cc \
 	echo_functions.bash.in
 SUBDIRS = .
 
@@ -69,7 +80,11 @@ libpaludisutil_@PALUDIS_PC_SLOT@_la_SOURCES = filelist
 libpaludisutil_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 $(PTHREAD_LIBS) $(RT_LIBS)
 libpaludisutil_@PALUDIS_PC_SLOT@_la_LIBADD = $(PTHREAD_LIBS) $(RT_LIBS)
 
+if HAVE_GTEST
+TESTS = testlist gtestlist
+else
 TESTS = testlist
+endif
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = testscriptlist

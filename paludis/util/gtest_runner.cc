@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2011 Ciaran McCreesh
+ * Copyright (c) 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,40 +17,11 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/util/enum_iterator.hh>
-
 #include <gtest/gtest.h>
 
-using namespace paludis;
-
-namespace
+int main(int argc, char * argv[])
 {
-    enum Numbers
-    {
-        one,
-        two,
-        three,
-        last_number
-    };
-}
-
-TEST(EnumIterator, Works)
-{
-    EnumIterator<Numbers> n, n_end(last_number);
-
-    EXPECT_TRUE(n != n_end);
-    EXPECT_EQ(one, *n);
-    ++n;
-
-    EXPECT_TRUE(n != n_end);
-    EXPECT_EQ(two, *n);
-    ++n;
-
-    EXPECT_TRUE(n != n_end);
-    EXPECT_EQ(three, *n);
-    ++n;
-
-    EXPECT_TRUE(n == n_end);
-    EXPECT_EQ(last_number, *n);
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
 

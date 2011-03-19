@@ -1580,6 +1580,34 @@ fi
 
 dnl }}}
 
+dnl {{{ gtest
+
+AC_MSG_CHECKING([whether to run tests that require Google Test])
+AC_ARG_ENABLE([gtest],
+	AS_HELP_STRING([--enable-gtest], [Run tests that require Google Test]),
+	[HAVE_GTEST=$enableval
+	 AC_MSG_RESULT([$enableval])],
+	[HAVE_GTEST=yes
+	 AC_MSG_RESULT([yes])])
+AC_SUBST([HAVE_GTEST])
+AM_CONDITIONAL([HAVE_GTEST], test "x$HAVE_HTMLTIDY" = "xyes")
+
+if test "x$HAVE_GTEST" = "xyes" ; then
+	AC_CHECK_PROG(HAVE_GTEST_CONFIG, [gtest-config], [yes], [no])
+	if test "x$HAVE_GTEST_CONFIG" = xno ; then
+		AC_MSG_ERROR([gtest-config from Google Test not found, but --disable-gtest was not used])
+	fi
+
+	GTESTDEPS_CXXFLAGS=`gtest-config --cxxflags`
+	GTESTDEPS_LDFLAGS=`gtest-config --ldflags`
+	GTESTDEPS_LIBS=`gtest-config --libs`
+	AC_SUBST(GTESTDEPS_CXXFLAGS)
+	AC_SUBST(GTESTDEPS_LDFLAGS)
+	AC_SUBST(GTESTDEPS_LIBS)
+fi
+
+dnl }}}
+
 dnl {{{ libxml2 check
 NEED_XML=$need_xml_check
 if test "x$need_xml_check" = "xyes" ; then
