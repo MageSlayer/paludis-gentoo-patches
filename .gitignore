@@ -506,6 +506,7 @@ paludis-*.*.*.tar.bz2
 /src/clients/instruo/instruo
 /src/clients/instruo/*.txt
 /src/clients/instruo/*.xml
+/src/clients/instruo/*.html-man-fragment
 /stamp-h1
 /test/test_fail_TEST
 /test/test_pass_TEST
