@@ -142,5 +142,34 @@ namespace test_cases
             TEST_CHECK_EQUAL(out, "s<a>[first:foo;second:bar baz;]EMPTY");
         }
     } elike_dep_parser_annotations_test;
+
+    struct ELikeDepParserCommentsTest : TestCase
+    {
+        ELikeDepParserCommentsTest() : TestCase("comments") { }
+
+        void run()
+        {
+            using namespace std::placeholders;
+
+            std::string in("# comment\na [[ first = foo second = [ bar baz ] ]] # comment"), out;
+            ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
+                        n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
+                        n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),
+                        n::on_any() = std::bind(&handler, std::ref(out), "any<", "", "", "", ""),
+                        n::on_arrow() = std::bind(&handler, std::ref(out), "a<", _1, ", ", _2, ">"),
+                        n::on_error() = std::bind(&handler, std::ref(out), "error<", _1, ">", "", ""),
+                        n::on_exactly_one() = std::bind(&handler, std::ref(out), "x<", "", "", "", ""),
+                        n::on_label() = std::bind(&handler, std::ref(out), "label<", _1, "", "", ""),
+                        n::on_no_annotations() = &do_nothing,
+                        n::on_pop() = std::bind(&handler, std::ref(out), ">", "", "", "", ""),
+                        n::on_should_be_empty() = std::bind(&handler, std::ref(out), "EMPTY", "", "", "", ""),
+                        n::on_string() = std::bind(&handler, std::ref(out), "s<", _1, ">", "", ""),
+                        n::on_use() = std::bind(&handler, std::ref(out), "use<", _1, ", ", "", ""),
+                        n::on_use_under_any() = &do_nothing
+                    ));
+            parse_elike_dependencies(in, callbacks, { edpo_allow_embedded_comments });
+            TEST_CHECK_EQUAL(out, "s<a>[first:foo;second:bar baz;]EMPTY");
+        }
+    } elike_dep_parser_comments_test;
 }
 

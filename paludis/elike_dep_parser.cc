@@ -23,6 +23,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/options.hh>
 #include <paludis/name.hh>
 
 using namespace paludis;
@@ -132,7 +133,9 @@ namespace
     }
 
     void
-    parse(SimpleParser & parser, const ELikeDepParserCallbacks & callbacks, const bool end_with_close_paren,
+    parse(SimpleParser & parser, const ELikeDepParserCallbacks & callbacks,
+            const ELikeDepParserOptions & options,
+            const bool end_with_close_paren,
             const bool child_of_any)
     {
         while (true)
@@ -153,7 +156,12 @@ namespace
                     error(parser, callbacks, "Expected space after '('");
 
                 callbacks.on_all()();
-                parse(parser, callbacks, true, false);
+                parse(parser, callbacks, options, true, false);
+            }
+            else if (options[edpo_allow_embedded_comments] && parser.consume(
+                        simple_parser::exact("#") & *simple_parser::any_except("\n")))
+            {
+                /* discard comment */
             }
             else if (parser.consume(+simple_parser::any_of(" \t\r\n")))
             {
@@ -189,7 +197,7 @@ namespace
                     error(parser, callbacks, "Expected space after '|| ('");
 
                 callbacks.on_any()();
-                parse(parser, callbacks, true, true);
+                parse(parser, callbacks, options, true, true);
             }
             else if (parser.consume(simple_parser::exact("^^")))
             {
@@ -203,7 +211,7 @@ namespace
                     error(parser, callbacks, "Expected space after '^^ ('");
 
                 callbacks.on_exactly_one()();
-                parse(parser, callbacks, true, true);
+                parse(parser, callbacks, options, true, true);
             }
             else if (parser.consume(+simple_parser::any_except(" \t\r\n") >> word))
             {
@@ -222,7 +230,7 @@ namespace
                         callbacks.on_use_under_any()();
 
                     callbacks.on_use()(word);
-                    parse(parser, callbacks, true, false);
+                    parse(parser, callbacks, options, true, false);
                 }
                 else if (':' == word.at(word.length() - 1))
                 {
@@ -257,12 +265,12 @@ namespace
 }
 
 void
-paludis::parse_elike_dependencies(const std::string & s, const ELikeDepParserCallbacks & callbacks, const ELikeDepParserOptions &)
+paludis::parse_elike_dependencies(const std::string & s, const ELikeDepParserCallbacks & callbacks, const ELikeDepParserOptions & options)
 {
     Context context("When parsing '" + s + "':");
 
     SimpleParser parser(s);
-    parse(parser, callbacks, false, false);
+    parse(parser, callbacks, options, false, false);
     callbacks.on_should_be_empty()();
 }
 
