@@ -261,6 +261,13 @@ namespace
         throw EDepParseError(s, "Label '" + f + "' not allowed here");
     }
 
+    void use_not_allowed_handler(const std::string & s, const std::string & f) PALUDIS_ATTRIBUTE((noreturn));
+
+    void use_not_allowed_handler(const std::string & s, const std::string & f)
+    {
+        throw EDepParseError(s, "Conditional '" + f + "' not allowed here");
+    }
+
     template <typename T_>
     void dependency_label_handler(
             const Environment * const env,
@@ -526,6 +533,56 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
             ));
 
     parse_elike_dependencies(s, callbacks, { });
+
+    for (auto b(stack.begin()->block_children().begin()), b_end(stack.begin()->block_children().end()) ;
+            b != b_end ; ++b)
+        add_synthetic_block_annotations(eapi, b->first, b->second);
+
+    return top;
+}
+
+std::shared_ptr<SetSpecTree>
+paludis::erepository::parse_commented_set(const std::string & s, const Environment * const, const EAPI & eapi)
+{
+    using namespace std::placeholders;
+
+    ParseStackTypes<SetSpecTree>::Stack stack;
+    std::shared_ptr<AllDepSpec> spec(std::make_shared<AllDepSpec>());
+    std::shared_ptr<DepSpec> thing_to_annotate(spec);
+    std::list<std::shared_ptr<DepSpec> > thing_to_star_annotate;
+    std::shared_ptr<SetSpecTree> top(std::make_shared<SetSpecTree>(spec));
+    stack.push_front(make_named_values<ParseStackTypes<SetSpecTree>::Item>(
+                n::block_children() = std::list<std::pair<std::shared_ptr<BlockDepSpec>, BlockFixOp> >(),
+                n::children() = std::list<std::shared_ptr<DepSpec> >(),
+                n::item() = top->top(),
+                n::spec() = spec
+            ));
+
+    ELikeDepParserCallbacks callbacks(
+            make_named_values<ELikeDepParserCallbacks>(
+                n::on_all() = std::bind(&any_all_handler<SetSpecTree, AllDepSpec>, std::ref(stack)),
+                n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), std::cref(thing_to_star_annotate), _1),
+                n::on_any() = std::bind(&any_not_allowed_handler, s),
+                n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_error() = std::bind(&error_handler, s, _1),
+                n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
+                n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
+                n::on_no_annotations() = &do_nothing,
+                n::on_pop() = std::bind(&pop_handler<SetSpecTree>, std::ref(stack),
+                    ParseStackTypes<SetSpecTree>::AnnotationsGoHere(std::bind(
+                            &set_thing_to_annotate, std::ref(thing_to_annotate), _1)),
+                    ParseStackTypes<SetSpecTree>::StarAnnotationsGoHere(std::bind(
+                            &set_thing_to_star_annotate, std::ref(thing_to_star_annotate), _1)),
+                    s),
+                n::on_should_be_empty() = std::bind(&should_be_empty_handler<SetSpecTree>, std::ref(stack), s),
+                n::on_string() = std::bind(&package_dep_spec_string_handler<SetSpecTree>, std::ref(stack),
+                    ParseStackTypes<SetSpecTree>::AnnotationsGoHere(std::bind(
+                            &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1, eapi),
+                n::on_use() = std::bind(&use_not_allowed_handler, s, _1),
+                n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
+            ));
+
+    parse_elike_dependencies(s, callbacks, { edpo_allow_embedded_comments });
 
     for (auto b(stack.begin()->block_children().begin()), b_end(stack.begin()->block_children().end()) ;
             b != b_end ; ++b)

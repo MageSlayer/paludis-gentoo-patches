@@ -19,17 +19,24 @@
 
 #include <paludis/repositories/e/exheres_mask_store.hh>
 #include <paludis/repositories/e/profile_file.hh>
-#include <paludis/repositories/e/e_repository_mask_file.hh>
 #include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/dep_parser.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/make_named_values.hh>
+#include <paludis/util/fs_stat.hh>
+
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/match_package.hh>
+#include <paludis/dep_spec_flattener.hh>
+#include <paludis/dep_spec_annotations.hh>
 
 #include <algorithm>
 #include <unordered_map>
@@ -78,6 +85,32 @@ ExheresMaskStore::~ExheresMaskStore()
 {
 }
 
+namespace
+{
+    std::string extract_annotation(const PackageDepSpec & s, const DepSpecAnnotationRole role)
+    {
+        if (! s.maybe_annotations())
+            return "";
+
+        auto a(s.maybe_annotations()->find(role));
+        if (a == s.maybe_annotations()->end())
+            return "";
+        else
+            return a->value();
+    }
+
+    std::shared_ptr<MaskInfo> make_mask_info(const PackageDepSpec & s, const FSPath & f)
+    {
+        auto result(std::make_shared<MaskInfo>(make_named_values<MaskInfo>(
+                        n::comment() = extract_annotation(s, dsar_general_description),
+                        n::mask_file() = f,
+                        n::token() = ""
+                        )));
+
+        return result;
+    }
+}
+
 void
 ExheresMaskStore::_populate()
 {
@@ -85,25 +118,31 @@ ExheresMaskStore::_populate()
 
     using namespace std::placeholders;
 
-    ProfileFile<MaskFile> repository_mask_file(_imp->eapi_for_file);
-    std::for_each(_imp->files->begin(), _imp->files->end(),
-            std::bind(&ProfileFile<MaskFile>::add_file, std::ref(repository_mask_file), _1));
-
-    for (ProfileFile<MaskFile>::ConstIterator
-            line(repository_mask_file.begin()), line_end(repository_mask_file.end()) ;
-            line != line_end ; ++line)
+    for (auto f(_imp->files->begin()), f_end(_imp->files->end()) ;
+            f != f_end ; ++f)
     {
+        if (! f->stat().exists())
+            continue;
+
+        SafeIFStream file(*f);
+        std::string file_text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+
         try
         {
-            auto a(parse_elike_package_dep_spec(
-                        line->second.first, line->first->supported()->package_dep_spec_parse_options(),
-                        line->first->supported()->version_spec_options()));
-            if (a.package_ptr())
-                _imp->repo_mask[*a.package_ptr()].push_back(std::make_pair(a, line->second.second));
-            else
-                Log::get_instance()->message("e.package_mask.bad_spec", ll_warning, lc_context)
-                    << "Loading package mask spec '" << line->second.first << "' failed because specification does not restrict to a "
-                    "unique package";
+            auto specs(parse_commented_set(file_text, _imp->env, *EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(*f))));
+            DepSpecFlattener<SetSpecTree, PackageDepSpec> flat_specs(_imp->env, make_null_shared_ptr());
+            specs->top()->accept(flat_specs);
+
+            for (auto s(flat_specs.begin()), s_end(flat_specs.end()) ;
+                    s != s_end ; ++s)
+            {
+                if ((*s)->package_ptr())
+                    _imp->repo_mask[*(*s)->package_ptr()].push_back(std::make_pair(**s, make_mask_info(**s, *f)));
+                else
+                    Log::get_instance()->message("e.package_mask.bad_spec", ll_warning, lc_context)
+                        << "Loading package mask spec '" << **s << "' failed because specification does not restrict to a "
+                        "unique package";
+            }
         }
         catch (const InternalError &)
         {
@@ -111,8 +150,8 @@ ExheresMaskStore::_populate()
         }
         catch (const Exception & e)
         {
-            Log::get_instance()->message("e.package_mask.bad_spec", ll_warning, lc_context) << "Loading package mask spec '"
-                << line->second.first << "' failed due to exception '" << e.message() << "' ("
+            Log::get_instance()->message("e.exheres_mask.bad", ll_warning, lc_context) << "Loading package mask file '"
+                << *f << "' failed due to exception '" << e.message() << "' ("
                 << e.what() << ")";
         }
     }
