@@ -99,13 +99,15 @@ index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 
 accerso.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
-	    if test -x $(top_builddir)/src/clients/accerso/man-accerso ; then \
-	        $(top_builddir)/src/clients/accerso/man-accerso --html ; \
+	    if test -f $(top_builddir)/src/clients/accerso/accerso.html-man-fragment ; then \
+	        cat $(top_builddir)/src/clients/accerso/accerso.html-man-fragment ; \
+	    elif test -f $(top_srcdir)/src/clients/accerso/accerso.html-man-fragment ; then \
+	        cat $(top_srcdir)/src/clients/accerso/accerso.html-man-fragment ; \
 	    else \
 	        echo "<h1>accerso</h1>"; \
 	        echo "<p>Sorry, documentation was generated without support for the accerso client.</p>" ; \
-	    fi ; } && \
-	    cat footer.html.part ; } > $@
+	    fi ; } \
+	    && cat footer.html.part ; } > $@
 
 appareo.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
