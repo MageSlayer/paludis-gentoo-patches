@@ -108,7 +108,7 @@ namespace paludis
 
             virtual const bool is_unimportant() const;
 
-            virtual bool sync(const std::string &, const std::shared_ptr<OutputManager> &) const;
+            virtual bool sync(const std::string &, const std::string &, const std::shared_ptr<OutputManager> &) const;
 
             /* Keys */
 

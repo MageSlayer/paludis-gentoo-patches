@@ -199,7 +199,7 @@ namespace
             {
                 const std::shared_ptr<Repository> repo(env->package_database()->fetch_repository(name));
 
-                if (! repo->sync(cmdline.a_suffix.argument(), output_manager))
+                if (! repo->sync(cmdline.a_suffix.argument(), "", output_manager))
                     skipped = true;
                 success = true;
             }

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -46,6 +46,7 @@ namespace paludis
         typedef Name<struct name_options> options;
         typedef Name<struct name_output_manager> output_manager;
         typedef Name<struct name_remote> remote;
+        typedef Name<struct name_revision> revision;
     }
 
     /**
@@ -75,8 +76,17 @@ namespace paludis
     struct SyncerParams
     {
         NamedValue<n::environment, const Environment *> environment;
+
         NamedValue<n::local, std::string> local;
+
         NamedValue<n::remote, std::string> remote;
+
+        /**
+         * Usually empty, and not supported by most syncers.
+         *
+         * \since 0.61
+         */
+        NamedValue<n::revision, std::string> revision;
     };
 
     /**
@@ -116,7 +126,7 @@ namespace paludis
         public Syncer
     {
         private:
-            std::string _local, _remote;
+            std::string _local, _remote, _revision;
             const Environment *_environment;
 
             std::string _syncer;

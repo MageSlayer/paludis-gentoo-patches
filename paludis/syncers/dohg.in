@@ -61,6 +61,11 @@ while [[ $# -gt 0 ]]; do
             exit 0
             ;;
 
+        --revision=*)
+            eerror "${0}: --revision unsupported"
+            exit 1
+            ;;
+
         --*)
             ewarn "${0}: unknown option '${1%%=*}'"
             ;;

@@ -264,6 +264,7 @@ UnwrittenRepository::some_ids_might_not_be_masked() const
 bool
 UnwrittenRepository::sync(
         const std::string & suffix,
+        const std::string & revision,
         const std::shared_ptr<OutputManager> & output_manager) const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
@@ -287,8 +288,10 @@ UnwrittenRepository::sync(
         DefaultSyncer syncer(make_named_values<SyncerParams>(
                     n::environment() = _imp->params.environment(),
                     n::local() = stringify(_imp->params.location()),
-                    n::remote() = *s
+                    n::remote() = *s,
+                    n::revision() = revision
                     ));
+
         SyncOptions opts(make_named_values<SyncOptions>(
                     n::filter_file() = FSPath("/dev/null"),
                     n::options() = sync_options,

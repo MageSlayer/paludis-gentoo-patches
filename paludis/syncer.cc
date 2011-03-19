@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2006 Stephen Klimaszewski
  * Copyright (c) 2007 David Leverton
  *
@@ -52,6 +52,7 @@ SyncFailedError::SyncFailedError(const std::string & msg) throw () :
 DefaultSyncer::DefaultSyncer(const SyncerParams & params) :
     _local(params.local()),
     _remote(params.remote()),
+    _revision(params.revision()),
     _environment(params.environment())
 {
     std::string::size_type p(_remote.find("://")), q(_remote.find(":"));
@@ -93,7 +94,11 @@ DefaultSyncer::sync(const SyncOptions & opts) const
     std::shared_ptr<const FSPathSequence> fetchers_dirs(_environment->fetchers_dirs());
     std::shared_ptr<const FSPathSequence> syncers_dirs(_environment->syncers_dirs());
 
-    Process process(ProcessCommand(stringify(_syncer) + " " + opts.options() + " '" + _local + "' '" + _remote + "'"));
+    std::string revision;
+    if (! _revision.empty())
+        revision = " --revision='" + _revision + "'";
+
+    Process process(ProcessCommand(stringify(_syncer) + " " + opts.options() + revision + " '" + _local + "' '" + _remote + "'"));
 
     process
         .setenv("PALUDIS_ACTION", "sync")

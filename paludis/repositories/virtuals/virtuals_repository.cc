@@ -462,6 +462,7 @@ VirtualsRepository::perform_hook(const Hook &, const std::shared_ptr<OutputManag
 bool
 VirtualsRepository::sync(
         const std::string &,
+        const std::string &,
         const std::shared_ptr<OutputManager> &) const
 {
     return false;

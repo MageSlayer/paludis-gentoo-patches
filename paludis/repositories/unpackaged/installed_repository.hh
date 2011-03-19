@@ -140,7 +140,7 @@ namespace paludis
             virtual HookResult perform_hook(const Hook & hook, const std::shared_ptr<OutputManager> &)
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool sync(const std::string &, const std::shared_ptr<OutputManager> &) const;
+            virtual bool sync(const std::string &, const std::string &, const std::shared_ptr<OutputManager> &) const;
     };
 }
 

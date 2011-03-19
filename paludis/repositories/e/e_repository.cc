@@ -697,6 +697,7 @@ ERepository::need_mirrors() const
 bool
 ERepository::sync(
         const std::string & suffix,
+        const std::string & revision,
         const std::shared_ptr<OutputManager> & output_manager) const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
@@ -720,8 +721,10 @@ ERepository::sync(
         DefaultSyncer syncer(make_named_values<SyncerParams>(
                     n::environment() = _imp->params.environment(),
                     n::local() = stringify(_imp->params.location()),
-                    n::remote() = *s
+                    n::remote() = *s,
+                    n::revision() = revision
                 ));
+
         SyncOptions opts(make_named_values<SyncOptions>(
                     n::filter_file() = _imp->layout->sync_filter_file(),
                     n::options() = sync_options,

@@ -259,7 +259,7 @@ RepositoryRepository::some_ids_might_not_be_masked() const
 }
 
 bool
-RepositoryRepository::sync(const std::string &, const std::shared_ptr<OutputManager> &) const
+RepositoryRepository::sync(const std::string &, const std::string &, const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }
@@ -477,7 +477,7 @@ RepositoryRepository::merge(const MergeParams & m)
         }
 
         m.output_manager()->stdout_stream() << "Syncing..." << std::endl;
-        _imp->params.environment()->repository_from_new_config_file(config_filename_file)->sync("", m.output_manager());
+        _imp->params.environment()->repository_from_new_config_file(config_filename_file)->sync("", "", m.output_manager());
 
         /* the repo we'd get before syncing is mostly unusable */
         const std::shared_ptr<Repository> newly_created_repo(

@@ -391,6 +391,7 @@ InstalledVirtualsRepository::populate_sets() const
 bool
 InstalledVirtualsRepository::sync(
         const std::string &,
+        const std::string &,
         const std::shared_ptr<OutputManager> &) const
 {
     return false;

@@ -90,6 +90,7 @@ namespace paludis
 
                 virtual bool sync(
                         const std::string &,
+                        const std::string &,
                         const std::shared_ptr<OutputManager> &) const;
 
                 ///\name For use by EInstalledRepositoryID

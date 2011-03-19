@@ -94,7 +94,7 @@ namespace paludis
                 virtual bool some_ids_might_not_be_masked() const;
                 virtual void invalidate();
 
-                virtual bool sync(const std::string &, const std::shared_ptr<OutputManager> &) const;
+                virtual bool sync(const std::string &, const std::string &, const std::shared_ptr<OutputManager> &) const;
 
                 ///\name RepositoryFactory functions
                 ///\{

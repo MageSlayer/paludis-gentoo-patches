@@ -247,7 +247,7 @@ GemcutterRepository::some_ids_might_not_be_masked() const
 }
 
 bool
-GemcutterRepository::sync(const std::string &, const std::shared_ptr<OutputManager> &) const
+GemcutterRepository::sync(const std::string &, const std::string &, const std::shared_ptr<OutputManager> &) const
 {
     return false;
 }
