@@ -47,7 +47,9 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                ExheresLayout(const ERepository * const, const FSPath &,
+                ExheresLayout(
+                        const Environment * const,
+                        const ERepository * const, const FSPath &,
                         const std::shared_ptr<const FSPathSequence> &);
 
                 virtual ~ExheresLayout();
@@ -128,6 +130,9 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual std::shared_ptr<MetadataValueKey<FSPath> > e_updates_location_key() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual std::shared_ptr<const MasksInfo> repository_masks(const std::shared_ptr<const PackageID> &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

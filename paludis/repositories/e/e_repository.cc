@@ -21,7 +21,6 @@
 #include <paludis/repositories/e/aa_visitor.hh>
 #include <paludis/repositories/e/e_key.hh>
 #include <paludis/repositories/e/e_repository.hh>
-#include <paludis/repositories/e/e_repository_mask_file.hh>
 #include <paludis/repositories/e/profile.hh>
 #include <paludis/repositories/e/profile_file.hh>
 #include <paludis/repositories/e/traditional_profile.hh>
@@ -43,7 +42,6 @@
 #include <paludis/repositories/e/check_userpriv.hh>
 #include <paludis/repositories/e/make_use.hh>
 #include <paludis/repositories/e/a_finder.hh>
-#include <paludis/repositories/e/repository_mask_store.hh>
 #include <paludis/repositories/e/file_suffixes.hh>
 
 #include <paludis/about.hh>
@@ -64,11 +62,9 @@
 #include <paludis/syncer.hh>
 
 #include <paludis/util/accept_visitor.hh>
-#include <paludis/util/active_object_ptr.hh>
 #include <paludis/util/cookie.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/create_iterator-impl.hh>
-#include <paludis/util/deferred_construction_ptr.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/extract_host_from_url.hh>
 #include <paludis/util/fs_stat.hh>
@@ -183,21 +179,6 @@ namespace
         return result;
     }
 
-    std::shared_ptr<RepositoryMaskStore> make_mask_store(
-            const Environment * const env,
-            const RepositoryName & repo_name,
-            const FetchRepositoryMaskFilesFunction & f,
-            const EAPIForFileFunction & e)
-    {
-        return std::make_shared<RepositoryMaskStore>(env, repo_name, f, e);
-    }
-
-    std::shared_ptr<const FSPathSequence> fetch_repository_mask_files(
-            const std::shared_ptr<const Layout> & layout)
-    {
-        return layout->repository_mask_files();
-    }
-
     bool is_arch_flag_func(const ERepository * const r, const UnprefixedChoiceName & p)
     {
         return r->arch_flags()->end() != r->arch_flags()->find(p);
@@ -241,8 +222,6 @@ namespace paludis
 
         mutable std::shared_ptr<ERepositorySets> sets_ptr;
         const std::shared_ptr<Layout> layout;
-
-        ActiveObjectPtr<DeferredConstructionPtr<std::shared_ptr<RepositoryMaskStore> > > repository_mask_store;
 
         mutable EAPIForFileMap eapi_for_file_map;
 
@@ -299,12 +278,8 @@ namespace paludis
         names_cache(std::make_shared<RepositoryNameCache>(p.names_cache(), r)),
         has_mirrors(false),
         sets_ptr(std::make_shared<ERepositorySets>(params.environment(), r, p)),
-        layout(LayoutFactory::get_instance()->create(params.layout(), r, params.location(), get_master_locations(
+        layout(LayoutFactory::get_instance()->create(params.layout(), params.environment(), r, params.location(), get_master_locations(
                         params.master_repositories()))),
-        repository_mask_store(DeferredConstructionPtr<std::shared_ptr<RepositoryMaskStore> > (
-                    std::bind(&make_mask_store, params.environment(), r->name(),
-                        FetchRepositoryMaskFilesFunction(std::bind(fetch_repository_mask_files, layout)),
-                        EAPIForFileFunction(std::bind(std::mem_fn(&ERepository::eapi_for_file), r, std::placeholders::_1))))),
         format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format",
                     mkt_significant, params.entry_format())),
         layout_key(std::make_shared<LiteralMetadataValueKey<std::string> >("layout", "layout",
@@ -634,12 +609,6 @@ std::shared_ptr<const PackageIDSequence>
 ERepository::package_ids(const QualifiedPackageName & n, const RepositoryContentMayExcludes &) const
 {
     return _imp->layout->package_ids(n);
-}
-
-std::shared_ptr<const MasksInfo>
-ERepository::repository_masks(const std::shared_ptr<const PackageID> & id) const
-{
-    return _imp->repository_mask_store->query(id);
 }
 
 const std::shared_ptr<const Set<UnprefixedChoiceName> >

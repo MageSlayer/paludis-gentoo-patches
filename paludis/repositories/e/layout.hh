@@ -30,7 +30,9 @@
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/repositories/e/use_desc.hh>
+#include <paludis/repositories/e/mask_info.hh>
 #include <paludis/metadata_key-fwd.hh>
+#include <paludis/environment-fwd.hh>
 #include <memory>
 
 namespace paludis
@@ -155,6 +157,9 @@ namespace paludis
 
                 virtual FSPath sync_filter_file() const;
 
+                virtual std::shared_ptr<const MasksInfo> repository_masks(const std::shared_ptr<const PackageID> &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
                 ///\}
         };
 
@@ -174,6 +179,7 @@ namespace paludis
             public:
                 const std::shared_ptr<Layout> create(
                         const std::string &,
+                        const Environment * const env,
                         const ERepository * const,
                         const FSPath &,
                         const std::shared_ptr<const FSPathSequence> &)

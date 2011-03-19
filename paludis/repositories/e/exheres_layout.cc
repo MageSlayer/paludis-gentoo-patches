@@ -21,10 +21,11 @@
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/file_suffixes.hh>
+#include <paludis/repositories/e/repository_mask_store.hh>
 
 #include <paludis/util/config_file.hh>
-#include <paludis/package_id.hh>
-#include <paludis/package_database.hh>
+#include <paludis/util/active_object_ptr.hh>
+#include <paludis/util/deferred_construction_ptr.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/log.hh>
@@ -41,8 +42,12 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_stat.hh>
+
 #include <paludis/choice.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/package_id.hh>
+#include <paludis/package_database.hh>
+
 #include <unordered_map>
 #include <functional>
 #include <algorithm>
@@ -54,6 +59,18 @@ using namespace paludis::erepository;
 typedef std::unordered_map<CategoryNamePart, bool, Hash<CategoryNamePart> > CategoryMap;
 typedef std::unordered_map<QualifiedPackageName, bool, Hash<QualifiedPackageName> > PackagesMap;
 typedef std::unordered_map<QualifiedPackageName, std::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> > IDMap;
+
+namespace
+{
+    std::shared_ptr<RepositoryMaskStore> make_mask_store(
+            const Environment * const env,
+            const RepositoryName & repo_name,
+            const std::shared_ptr<const FSPathSequence> & f,
+            const EAPIForFileFunction & e)
+    {
+        return std::make_shared<RepositoryMaskStore>(env, repo_name, f, e);
+    }
+}
 
 namespace paludis
 {
@@ -80,7 +97,9 @@ namespace paludis
         std::shared_ptr<FSPathSequence> info_packages_files;
         std::shared_ptr<UseDescFileInfoSequence> use_desc_files;
 
-        Imp(const ERepository * const n, const FSPath & t) :
+        ActiveObjectPtr<DeferredConstructionPtr<std::shared_ptr<RepositoryMaskStore> > > repository_mask_store;
+
+        Imp(const Environment * const env, const ERepository * const n, const FSPath & t) :
             repository(n),
             tree_root(t),
             has_category_names(false),
@@ -90,16 +109,19 @@ namespace paludis
             mirror_files(std::make_shared<FSPathSequence>()),
             info_variables_files(std::make_shared<FSPathSequence>()),
             info_packages_files(std::make_shared<FSPathSequence>()),
-            use_desc_files(std::make_shared<UseDescFileInfoSequence>())
+            use_desc_files(std::make_shared<UseDescFileInfoSequence>()),
+            repository_mask_store(DeferredConstructionPtr<std::shared_ptr<RepositoryMaskStore> > (
+                        std::bind(&make_mask_store, env, n->name(),
+                            repository_mask_files, EAPIForFileFunction(std::bind(std::mem_fn(&ERepository::eapi_for_file), n, std::placeholders::_1)))))
         {
         }
     };
 }
 
-ExheresLayout::ExheresLayout(const ERepository * const r, const FSPath & tree_root,
+ExheresLayout::ExheresLayout(const Environment * const e, const ERepository * const r, const FSPath & tree_root,
         const std::shared_ptr<const FSPathSequence> & f) :
     Layout(f),
-    _imp(r, tree_root)
+    _imp(e, r, tree_root)
 {
     if (master_repositories_locations())
     {
@@ -640,5 +662,11 @@ std::shared_ptr<MetadataValueKey<FSPath> >
 ExheresLayout::e_updates_location_key() const
 {
     return make_null_shared_ptr();
+}
+
+std::shared_ptr<const MasksInfo>
+ExheresLayout::repository_masks(const std::shared_ptr<const PackageID> & id) const
+{
+    return _imp->repository_mask_store->query(id);
 }
 

@@ -561,7 +561,7 @@ EbuildID::need_masks_added() const
     }
 
     {
-        auto repo_masks(e_repo->repository_masks(shared_from_this()));
+        auto repo_masks(e_repo->layout()->repository_masks(shared_from_this()));
 
         for (auto r(repo_masks->begin()), r_end(repo_masks->end()) ;
                 r != r_end ; ++r)

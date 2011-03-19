@@ -38,8 +38,6 @@ namespace paludis
 {
     namespace erepository
     {
-        typedef std::function<const std::shared_ptr<const FSPathSequence> & ()> FetchRepositoryMaskFilesFunction;
-
         class PALUDIS_VISIBLE RepositoryMaskStore
         {
             private:
@@ -51,7 +49,7 @@ namespace paludis
                 RepositoryMaskStore(
                         const Environment * const,
                         const RepositoryName &,
-                        const FetchRepositoryMaskFilesFunction &,
+                        const std::shared_ptr<const FSPathSequence> &,
                         const EAPIForFileFunction &);
 
                 ~RepositoryMaskStore();

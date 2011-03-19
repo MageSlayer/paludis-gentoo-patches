@@ -23,6 +23,7 @@
 
 #include <paludis/repositories/e/layout.hh>
 #include <paludis/util/pimp.hh>
+#include <paludis/environment-fwd.hh>
 
 namespace paludis
 {
@@ -48,7 +49,10 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                TraditionalLayout(const ERepository * const, const FSPath &,
+                TraditionalLayout(
+                        const Environment * const env,
+                        const ERepository * const,
+                        const FSPath &,
                         const std::shared_ptr<const FSPathSequence> &);
 
                 virtual ~TraditionalLayout();
@@ -133,6 +137,9 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual FSPath sync_filter_file() const;
+
+                virtual std::shared_ptr<const MasksInfo> repository_masks(const std::shared_ptr<const PackageID> &) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

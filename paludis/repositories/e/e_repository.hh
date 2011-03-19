@@ -159,8 +159,6 @@ namespace paludis
             const std::shared_ptr<const erepository::Layout> layout() const;
             const std::shared_ptr<const erepository::Profile> profile() const;
 
-            std::shared_ptr<const erepository::MasksInfo> repository_masks(const std::shared_ptr<const PackageID> &) const;
-
             void regenerate_cache() const;
 
             /* Keys */

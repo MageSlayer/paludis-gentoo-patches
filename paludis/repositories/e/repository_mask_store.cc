@@ -49,15 +49,15 @@ namespace paludis
     {
         const Environment * const env;
         RepositoryName repo_name;
-        FetchRepositoryMaskFilesFunction fetch_repository_mask_files;
+        const std::shared_ptr<const FSPathSequence> files;
         EAPIForFileFunction eapi_for_file;
 
         RepositoryMaskMap repo_mask;
 
-        Imp(const Environment * const e, const RepositoryName & r, const FetchRepositoryMaskFilesFunction & f, const EAPIForFileFunction & n) :
+        Imp(const Environment * const e, const RepositoryName & r, const std::shared_ptr<const FSPathSequence> & f, const EAPIForFileFunction & n) :
             env(e),
             repo_name(r),
-            fetch_repository_mask_files(f),
+            files(f),
             eapi_for_file(n)
         {
         }
@@ -67,7 +67,7 @@ namespace paludis
 RepositoryMaskStore::RepositoryMaskStore(
         const Environment * const e,
         const RepositoryName & r,
-        const FetchRepositoryMaskFilesFunction & f,
+        const std::shared_ptr<const FSPathSequence> & f,
         const EAPIForFileFunction & n) :
     _imp(e, r, f, n)
 {
@@ -85,9 +85,8 @@ RepositoryMaskStore::_populate()
 
     using namespace std::placeholders;
 
-    auto repository_mask_files(_imp->fetch_repository_mask_files());
     ProfileFile<MaskFile> repository_mask_file(_imp->eapi_for_file);
-    std::for_each(repository_mask_files->begin(), repository_mask_files->end(),
+    std::for_each(_imp->files->begin(), _imp->files->end(),
             std::bind(&ProfileFile<MaskFile>::add_file, std::ref(repository_mask_file), _1));
 
     for (ProfileFile<MaskFile>::ConstIterator
