@@ -118,6 +118,12 @@ paludis::erepository::parse_annotations(
                 role = dsar_general_note;
             else if (key == eapi.supported()->annotations()->general_lang())
                 role = dsar_general_lang;
+            else if (key == eapi.supported()->annotations()->general_author())
+                role = dsar_general_author;
+            else if (key == eapi.supported()->annotations()->general_date())
+                role = dsar_general_date;
+            else if (key == eapi.supported()->annotations()->general_token())
+                role = dsar_general_token;
             else if (key == eapi.supported()->ebuild_options()->bracket_merged_variables_annotation())
                 role = dsar_general_defined_in;
         }

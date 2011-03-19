@@ -126,9 +126,12 @@ namespace paludis
         typedef Name<struct name_flat_list_index> flat_list_index;
         typedef Name<struct name_fs_location_description> fs_location_description;
         typedef Name<struct name_fs_location_name> fs_location_name;
+        typedef Name<struct name_general_author> general_author;
+        typedef Name<struct name_general_date> general_date;
         typedef Name<struct name_general_description> general_description;
         typedef Name<struct name_general_lang> general_lang;
         typedef Name<struct name_general_note> general_note;
+        typedef Name<struct name_general_token> general_token;
         typedef Name<struct name_general_url> general_url;
         typedef Name<struct name_generated_from> generated_from;
         typedef Name<struct name_generated_time> generated_time;
@@ -479,9 +482,12 @@ namespace paludis
             NamedValue<n::blocker_resolution_uninstall_blocked_after, std::string> blocker_resolution_uninstall_blocked_after;
             NamedValue<n::blocker_resolution_uninstall_blocked_before, std::string> blocker_resolution_uninstall_blocked_before;
             NamedValue<n::blocker_resolution_upgrade_blocked_before, std::string> blocker_resolution_upgrade_blocked_before;
+            NamedValue<n::general_author, std::string> general_author;
+            NamedValue<n::general_date, std::string> general_date;
             NamedValue<n::general_description, std::string> general_description;
             NamedValue<n::general_lang, std::string> general_lang;
             NamedValue<n::general_note, std::string> general_note;
+            NamedValue<n::general_token, std::string> general_token;
             NamedValue<n::general_url, std::string> general_url;
             NamedValue<n::myoptions_number_selected, std::string> myoptions_number_selected;
             NamedValue<n::myoptions_number_selected_at_least_one, std::string> myoptions_number_selected_at_least_one;

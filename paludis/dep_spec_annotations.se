@@ -11,6 +11,9 @@ make_enum_DepSpecAnnotationRole()
     key dsar_general_url                      "A url"
     key dsar_general_note                     "A note"
     key dsar_general_lang                     "A language"
+    key dsar_general_date                     "A date"
+    key dsar_general_author                   "An author"
+    key dsar_general_token                    "A token"
     key dsar_general_defined_in               "Defined in"
 
     # update find_blocker_role_in_annotations when adding here
