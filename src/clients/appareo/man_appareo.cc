@@ -32,17 +32,6 @@ namespace
     struct ManCommandLine :
         paludis::args::ArgsHandler
     {
-        paludis::args::ArgsGroup group;
-        paludis::args::SwitchArg a_asciidoc;
-        paludis::args::SwitchArg a_html;
-
-        ManCommandLine() :
-            group(main_options_section(), "", ""),
-            a_asciidoc(&group, "asciidoc", '\0', "", false),
-            a_html(&group, "html", '\0', "", false)
-        {
-        }
-
         virtual std::string app_name() const
         {
             return "";
@@ -66,13 +55,7 @@ main(int argc, char * argv[])
     ManCommandLine cmdline;
     cmdline.run(argc, argv, "", "", "");
 
-    std::shared_ptr<paludis::args::DocWriter> w;
-    if (cmdline.a_asciidoc.specified())
-        w = std::make_shared<paludis::args::AsciidocWriter>(cout);
-    else if (cmdline.a_html.specified())
-        w = std::make_shared<paludis::args::HtmlWriter>(cout);
-    else
-        throw paludis::args::DoHelp("No format specified");
+    auto w(std::make_shared<paludis::args::AsciidocWriter>(cout));
 
     paludis::args::generate_doc(*w, CommandLine::get_instance());
 
