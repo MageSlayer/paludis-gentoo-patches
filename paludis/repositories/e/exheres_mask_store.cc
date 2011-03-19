@@ -99,12 +99,40 @@ namespace
             return a->value();
     }
 
+    std::string extract_comment(const PackageDepSpec & s)
+    {
+        const auto author(extract_annotation(s, dsar_general_author));
+        const auto description(extract_annotation(s, dsar_general_description));
+        const auto date(extract_annotation(s, dsar_general_date));
+
+        std::string result;
+
+        if (! description.empty())
+            result = description;
+
+        if (! author.empty())
+        {
+            if (! author.empty())
+                result.append(" ");
+            result.append("(" + author + ")");
+        }
+
+        if (! date.empty())
+        {
+            if (! result.empty())
+                result.append(", ");
+            result.append(date);
+        }
+
+        return result;
+    }
+
     std::shared_ptr<MaskInfo> make_mask_info(const PackageDepSpec & s, const FSPath & f)
     {
         auto result(std::make_shared<MaskInfo>(make_named_values<MaskInfo>(
-                        n::comment() = extract_annotation(s, dsar_general_description),
+                        n::comment() = extract_comment(s),
                         n::mask_file() = f,
-                        n::token() = ""
+                        n::token() = extract_annotation(s, dsar_general_token)
                         )));
 
         return result;
