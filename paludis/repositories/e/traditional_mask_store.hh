@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_REPOSITORY_MASK_STORE_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_REPOSITORY_MASK_STORE_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_TRADITIONAL_MASK_STORE_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_TRADITIONAL_MASK_STORE_HH 1
 
 #include <paludis/repositories/e/mask_info.hh>
 #include <paludis/repositories/e/eapi-fwd.hh>
@@ -38,21 +38,21 @@ namespace paludis
 {
     namespace erepository
     {
-        class PALUDIS_VISIBLE RepositoryMaskStore
+        class PALUDIS_VISIBLE TraditionalMaskStore
         {
             private:
-                Pimp<RepositoryMaskStore> _imp;
+                Pimp<TraditionalMaskStore> _imp;
 
                 void _populate();
 
             public:
-                RepositoryMaskStore(
+                TraditionalMaskStore(
                         const Environment * const,
                         const RepositoryName &,
                         const std::shared_ptr<const FSPathSequence> &,
                         const EAPIForFileFunction &);
 
-                ~RepositoryMaskStore();
+                ~TraditionalMaskStore();
 
                 const std::shared_ptr<const MasksInfo> query(const std::shared_ptr<const PackageID> & id) const;
         };

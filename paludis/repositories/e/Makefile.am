@@ -87,11 +87,11 @@ noinst_HEADERS = \
 	pipe_command_handler.hh \
 	profile.hh \
 	profile_file.hh \
-	repository_mask_store.hh \
 	required_use_verifier.hh \
 	source_uri_finder.hh \
 	spec_tree_pretty_printer.hh \
 	traditional_layout.hh \
+	traditional_mask_store.hh \
 	traditional_profile.hh \
 	use_desc.hh \
 	xml_things_handle.hh \
@@ -165,11 +165,11 @@ libpaludiserepository_la_SOURCES = \
 	profile.cc \
 	profile_file.cc \
 	registration.cc \
-	repository_mask_store.cc \
 	required_use_verifier.cc \
 	source_uri_finder.cc \
 	spec_tree_pretty_printer.cc \
 	traditional_layout.cc \
+	traditional_mask_store.cc \
 	traditional_profile.cc \
 	use_desc.cc \
 	xml_things_handle.cc \

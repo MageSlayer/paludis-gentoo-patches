@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/e/repository_mask_store.hh>
+#include <paludis/repositories/e/traditional_mask_store.hh>
 #include <paludis/repositories/e/profile_file.hh>
 #include <paludis/repositories/e/e_repository_mask_file.hh>
 #include <paludis/repositories/e/eapi.hh>
@@ -45,7 +45,7 @@ typedef std::unordered_map<QualifiedPackageName,
 namespace paludis
 {
     template <>
-    struct Imp<RepositoryMaskStore>
+    struct Imp<TraditionalMaskStore>
     {
         const Environment * const env;
         RepositoryName repo_name;
@@ -64,7 +64,7 @@ namespace paludis
     };
 }
 
-RepositoryMaskStore::RepositoryMaskStore(
+TraditionalMaskStore::TraditionalMaskStore(
         const Environment * const e,
         const RepositoryName & r,
         const std::shared_ptr<const FSPathSequence> & f,
@@ -74,12 +74,12 @@ RepositoryMaskStore::RepositoryMaskStore(
     _populate();
 }
 
-RepositoryMaskStore::~RepositoryMaskStore()
+TraditionalMaskStore::~TraditionalMaskStore()
 {
 }
 
 void
-RepositoryMaskStore::_populate()
+TraditionalMaskStore::_populate()
 {
     Context context("When loading repository masks for '" + stringify(_imp->repo_name) + "':");
 
@@ -119,7 +119,7 @@ RepositoryMaskStore::_populate()
 }
 
 const std::shared_ptr<const MasksInfo>
-RepositoryMaskStore::query(const std::shared_ptr<const PackageID> & id) const
+TraditionalMaskStore::query(const std::shared_ptr<const PackageID> & id) const
 {
     auto result(std::make_shared<MasksInfo>());
     auto r(_imp->repo_mask.find(id->name()));
