@@ -23,7 +23,6 @@
 #include <paludis/util/pool.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <unordered_map>
 #include <memory>
@@ -57,12 +56,6 @@ namespace paludis
         Imp() :
             reused(0)
         {
-        }
-
-        ~Imp()
-        {
-            Log::get_instance()->message("pool.reused_score", ll_debug, lc_no_context)
-                << PoolReuseScore<T_>::message(store.size(), reused);
         }
     };
 
