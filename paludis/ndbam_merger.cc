@@ -28,18 +28,21 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/enum_iterator.hh>
-#include <paludis/output_manager.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/env_var_names.hh>
+#include <paludis/util/md5.hh>
+
+#include <paludis/output_manager.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
-#include <paludis/util/md5.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/ndbam_merger.hh>
 #include <paludis/metadata_key.hh>
+
 #include <iomanip>
 #include <list>
 
@@ -76,7 +79,7 @@ NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
                 n::install_under() = p.install_under(),
                 n::maybe_output_manager() = p.output_manager(),
                 n::merged_entries() = p.merged_entries(),
-                n::no_chown() = ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty(),
+                n::no_chown() = ! getenv_with_default(env_vars::no_chown, "").empty(),
                 n::options() = p.options(),
                 n::root() = p.root()
                 )),
