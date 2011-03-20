@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 Fernando J. Pereda
+ * Copyright (c) 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,43 +19,28 @@
  */
 
 #include <paludis/util/damerau_levenshtein.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
-/** \file
- * Test cases for damerau_levenshtein.hh
- */
-
-namespace test_cases
+TEST(DamerauLevenshtein, Distance)
 {
-    /**
-     * \test Test DamerauLevenshtain methods
-     */
-    struct DamerauLevenshteinTest : TestCase
-    {
-        DamerauLevenshteinTest() : TestCase("Damerau-Levenshtein distance") {}
+    DamerauLevenshtein dl("foo");
 
-        void run()
-        {
-            DamerauLevenshtein dl("foo");
+    EXPECT_EQ(0u, dl.distance_with("foo"));
+    EXPECT_EQ(1u, dl.distance_with("foo1"));
+    EXPECT_EQ(1u, dl.distance_with("fo"));
+    EXPECT_EQ(1u, dl.distance_with("fao"));
+    EXPECT_EQ(1u, dl.distance_with("ofo"));
+    EXPECT_EQ(2u, dl.distance_with("fie"));
+    EXPECT_EQ(3u, dl.distance_with("ife"));
+    EXPECT_EQ(3u, dl.distance_with("bar"));
+    EXPECT_EQ(3u, dl.distance_with(""));
 
-            TEST_CHECK_EQUAL(dl.distance_with("foo"),  0u);
-            TEST_CHECK_EQUAL(dl.distance_with("foo1"), 1u);
-            TEST_CHECK_EQUAL(dl.distance_with("fo"),   1u);
-            TEST_CHECK_EQUAL(dl.distance_with("fao"),  1u);
-            TEST_CHECK_EQUAL(dl.distance_with("ofo"),  1u);
-            TEST_CHECK_EQUAL(dl.distance_with("fie"),  2u);
-            TEST_CHECK_EQUAL(dl.distance_with("ife"),  3u);
-            TEST_CHECK_EQUAL(dl.distance_with("bar"),  3u);
-            TEST_CHECK_EQUAL(dl.distance_with(""),     3u);
+    DamerauLevenshtein de("");
 
-            DamerauLevenshtein de("");
-
-            TEST_CHECK_EQUAL(de.distance_with("foo"),  3u);
-            TEST_CHECK_EQUAL(de.distance_with(""),     0u);
-        }
-    } test_damerau_levenshtein_test;
+    EXPECT_EQ(3u, de.distance_with("foo"));
+    EXPECT_EQ(0u, de.distance_with(""));
 }
+

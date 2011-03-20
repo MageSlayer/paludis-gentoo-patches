@@ -21,7 +21,7 @@ add(`config_file',                       `hh', `cc', `fwd', `se', `test', `tests
 add(`condition_variable',                `hh', `cc', `test')
 add(`cookie',                            `hh', `cc')
 add(`create_iterator',                   `hh', `fwd', `impl', `test')
-add(`damerau_levenshtein',               `hh', `cc', `test')
+add(`damerau_levenshtein',               `hh', `cc', `gtest')
 add(`destringify',                       `hh', `cc', `gtest')
 add(`deferred_construction_ptr',         `hh', `cc', `fwd', `gtest')
 add(`discard_output_stream',             `hh', `cc')
