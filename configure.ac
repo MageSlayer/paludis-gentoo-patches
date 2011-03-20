@@ -235,7 +235,7 @@ int main(int, char **)
 ])],
 [AC_MSG_RESULT([yes])],
 [AC_MSG_RESULT([no])
-AC_MSG_ERROR([Your compiler doesn't support __thread])])
+AC_MSG_ERROR([Your compiler does not support __thread])])
 
 AC_MSG_CHECKING([whether -pthread -lpthread gets us posix threads])
 save_CXXFLAGS=$CXXFLAGS
@@ -253,7 +253,7 @@ int main(int, char **)
 ])],
 [AC_MSG_RESULT([yes])],
 [AC_MSG_RESULT([no])
-AC_MSG_ERROR([don't know how to enable pthreads for your compiler])])
+AC_MSG_ERROR([do not know how to enable pthreads for your compiler])])
 CXXFLAGS=$save_CXXFLAGS
 LDFLAGS=$save_LDFLAGS
 PALUDIS_CXXFLAGS="$PALUDIS_CXXFLAGS -pthread"
@@ -494,7 +494,7 @@ void f()
 
 AC_MSG_CHECKING([whether -pedantic works if we use extern template])
 if test "x${cxx_compiler_icc}" = "xyes" ; then
-	AC_MSG_RESULT([no, icc doesn't do pedantic])
+	AC_MSG_RESULT([no, icc does not do pedantic])
 else
 	save_CXXFLAGS=$CXXFLAGS
 	CXXFLAGS="$CXXFLAGS -pedantic"
@@ -550,7 +550,7 @@ int main(int, char **)
 	[AC_MSG_RESULT([yes])],
 	[
 	 AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your C++ compiler doesn't compile C++ code])
+	 AC_MSG_ERROR([Your C++ compiler does not compile C++ code])
 	])
 dnl }}}
 
@@ -584,7 +584,7 @@ int main(int, char **)
 	[AC_MSG_RESULT([yes])],
 	[
 	 AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your std::numeric_limits either doesn't exist or hates me])
+	 AC_MSG_ERROR([Your std::numeric_limits is unusable])
 	])
 dnl }}}
 
@@ -682,11 +682,11 @@ int main(int, char **)
 }
 	 ])],
 	 [AC_MSG_RESULT([no])
-	  AC_MSG_ERROR([your compiler's static_assert is broken (try GCC 4.4+)])
+	  AC_MSG_ERROR([your compiler static_assert implementation is broken (try GCC 4.4+)])
 	 ],
 	 [AC_MSG_RESULT([yes])])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([your compiler doesn't do static_assert (try GCC 4.4+)])
+	 AC_MSG_ERROR([your compiler does not do static_assert (try GCC 4.4+)])
 	])
 dnl }}}
 
@@ -702,7 +702,7 @@ int main(int, char **)
 ])],
 	[AC_MSG_RESULT([std::unordered_map])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support unordered containers])])
+	 AC_MSG_ERROR([Your compiler does not support unordered containers])])
 dnl }}}
 
 dnl {{{ shared pointers
@@ -718,7 +718,7 @@ int main(int, char **)
 ])],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support shared pointers])])
+	 AC_MSG_ERROR([Your compiler does not support shared pointers])])
 dnl }}}
 
 dnl {{{ type traits
@@ -733,7 +733,7 @@ int main(int, char **)
 ])],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support type traits])])
+	 AC_MSG_ERROR([Your compiler does not support type traits])])
 dnl }}}
 
 dnl {{{ binders
@@ -760,7 +760,7 @@ int main(int, char **)
 ])],
 	[AC_MSG_RESULT([yes])],
 	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your compiler doesn't support functional])])
+	 AC_MSG_ERROR([Your compiler does not support functional])])
 dnl }}}
 
 dnl {{{ std::next
@@ -977,7 +977,7 @@ AM_CONDITIONAL([HAVE_HTMLTIDY], test "x$HAVE_HTMLTIDY" = "xyes")
 if test "x$HAVE_HTMLTIDY" = "xyes" ; then
 	AC_CHECK_PROG(HAVE_HTMLTIDY_WORKS, [tidy], [yes], [no])
 	if test "x$HAVE_HTMLTIDY_WORKS" = xno ; then
-		AC_MSG_ERROR([--enable-htmltidy was specified but 'tidy' doesn't work])
+		AC_MSG_ERROR([--enable-htmltidy was specified but 'tidy' does not work])
 	fi
 fi
 
@@ -1312,7 +1312,7 @@ int main() { boost::python::throw_error_already_set(); return 0; }
 			[BOOST_PYTHON_LIB="-lboost_python-mt"
 			AC_MSG_RESULT([$BOOST_PYTHON_LIB])],
 			[AC_MSG_RESULT([not found])
-			AC_MSG_ERROR([Can't work out how to link to boost.python. You may need to reinstall boost.python, especially \
+			AC_MSG_ERROR([Cannot work out how to link to boost.python. You may need to reinstall boost.python, especially \
 						  if you have upgraded Python since installing Boost.])])])
 	AC_SUBST(BOOST_PYTHON_LIB)
 	dnl Restore the C++ flags
