@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,15 +21,14 @@
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/thread.hh>
 #include <paludis/util/mutex.hh>
+
 #include <functional>
 #include <algorithm>
 #include <vector>
 #include <string>
 
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+#include <gtest/gtest.h>
 
-using namespace test;
 using namespace paludis;
 
 namespace
@@ -113,99 +112,61 @@ namespace
 
     int MyThreadedClass::instances = 0;
     Mutex MyThreadedClass::mutex;
+
+    static void thread_func(void * * const p) throw ()
+    {
+        *p = MyThreadedClass::get_instance();
+    }
 }
 
-namespace test_cases
+TEST(Singleton, Works)
 {
-    struct SingletonPatternTest : TestCase
+    ASSERT_EQ(0, MyClass::instances);
+    ASSERT_TRUE(0 != MyClass::get_instance());
+    ASSERT_EQ(1, MyClass::instances);
+    ASSERT_TRUE(MyClass::get_instance() == MyClass::get_instance());
+    ASSERT_TRUE(MyClass::get_instance()->s.empty());
+    MyClass::get_instance()->s = "foo";
+    ASSERT_EQ("foo", MyClass::get_instance()->s);
+}
+
+TEST(Singleton, Threaded)
+{
+    using namespace std::placeholders;
+    const int c = 100;
+
+    std::vector<void *> a(c, static_cast<void *>(0));
+    ASSERT_EQ(0, MyThreadedClass::instances);
+    ASSERT_TRUE(c == std::count(a.begin(), a.end(), static_cast<void *>(0)));
     {
-        SingletonPatternTest() : TestCase("singleton test") { }
+        std::vector<std::shared_ptr<Thread> > t(c);
+        for (int x(0) ; x < c ; ++x)
+            t[x] = std::make_shared<Thread>(std::bind(&thread_func, &a[x]));
+    }
+    ASSERT_EQ(1, MyThreadedClass::instances);
+    ASSERT_TRUE(0 == std::count(a.begin(), a.end(), static_cast<void *>(0)));
+    ASSERT_TRUE(c == std::count(a.begin(), a.end(), MyThreadedClass::get_instance()));
+}
 
-        bool repeatable() const
-        {
-            return false;
-        }
+TEST(Singleton, Delete)
+{
+    ASSERT_EQ(0, MyClassTwo::instances);
+    ASSERT_TRUE(0 != MyClassTwo::get_instance());
+    ASSERT_EQ(1, MyClassTwo::instances);
+    ASSERT_TRUE(MyClassTwo::get_instance() == MyClassTwo::get_instance());
+    ASSERT_TRUE(MyClassTwo::get_instance()->s.empty());
+    MyClassTwo::get_instance()->s = "foo";
+    ASSERT_EQ("foo", MyClassTwo::get_instance()->s);
+    MyClassTwo::destroy_instance();
+    ASSERT_EQ(MyClassTwo::instances, 0);
+    ASSERT_TRUE(0 != MyClassTwo::get_instance());
+    ASSERT_EQ(1, MyClassTwo::instances);
+    ASSERT_TRUE(MyClassTwo::get_instance()->s.empty());
+}
 
-        void run()
-        {
-            TEST_CHECK_EQUAL(MyClass::instances, 0);
-            TEST_CHECK(0 != MyClass::get_instance());
-            TEST_CHECK_EQUAL(MyClass::instances, 1);
-            TEST_CHECK(MyClass::get_instance() == MyClass::get_instance());
-            TEST_CHECK(MyClass::get_instance()->s.empty());
-            MyClass::get_instance()->s = "foo";
-            TEST_CHECK_EQUAL(MyClass::get_instance()->s, "foo");
-        }
-    } test_singleton_pattern;
-
-    struct SingletonThreadedTest : TestCase
-    {
-        SingletonThreadedTest() : TestCase("singleton threaded test") { }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-
-        static void thread_func(void * * const p) throw ()
-        {
-            *p = MyThreadedClass::get_instance();
-        }
-
-        void run()
-        {
-            using namespace std::placeholders;
-            const int c = 100;
-
-            std::vector<void *> a(c, static_cast<void *>(0));
-            TEST_CHECK_EQUAL(MyThreadedClass::instances, 0);
-            TEST_CHECK(c == std::count(a.begin(), a.end(), static_cast<void *>(0)));
-            {
-                std::vector<std::shared_ptr<Thread> > t(c);
-                for (int x(0) ; x < c ; ++x)
-                    t[x] = std::make_shared<Thread>(std::bind(&thread_func, &a[x]));
-            }
-            TEST_CHECK_EQUAL(MyThreadedClass::instances, 1);
-            TEST_CHECK(0 == std::count(a.begin(), a.end(), static_cast<void *>(0)));
-            TEST_CHECK(c == std::count(a.begin(), a.end(), MyThreadedClass::get_instance()));
-        }
-    } test_singleton_threaded;
-
-    struct SingletonPatternDeleteTest : TestCase
-    {
-        SingletonPatternDeleteTest() : TestCase("singleton delete test") { }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-
-        void run()
-        {
-            TEST_CHECK_EQUAL(MyClassTwo::instances, 0);
-            TEST_CHECK(0 != MyClassTwo::get_instance());
-            TEST_CHECK_EQUAL(MyClassTwo::instances, 1);
-            TEST_CHECK(MyClassTwo::get_instance() == MyClassTwo::get_instance());
-            TEST_CHECK(MyClassTwo::get_instance()->s.empty());
-            MyClassTwo::get_instance()->s = "foo";
-            TEST_CHECK_EQUAL(MyClassTwo::get_instance()->s, "foo");
-            MyClassTwo::destroy_instance();
-            TEST_CHECK_EQUAL(MyClassTwo::instances, 0);
-            TEST_CHECK(0 != MyClassTwo::get_instance());
-            TEST_CHECK_EQUAL(MyClassTwo::instances, 1);
-            TEST_CHECK(MyClassTwo::get_instance()->s.empty());
-        }
-    } test_singleton_pattern_delete;
-
-    struct SingletonPatternRecursiveTest : TestCase
-    {
-        SingletonPatternRecursiveTest() : TestCase("singleton recursive test") { }
-
-        void run()
-        {
-            TEST_CHECK_THROWS(MyRecursiveClass * PALUDIS_ATTRIBUTE((unused)) x =
-                    MyRecursiveClass::get_instance(), InternalError);
-        }
-    } test_singleton_pattern_recurse;
+TEST(Singleton, Recursive)
+{
+    ASSERT_THROW(MyRecursiveClass * PALUDIS_ATTRIBUTE((unused)) x =
+            MyRecursiveClass::get_instance(), InternalError);
 }
 
