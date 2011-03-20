@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,13 +19,13 @@
 
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/join.hh>
+
 #include <algorithm>
 #include <vector>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
 namespace
 {
@@ -46,24 +46,16 @@ namespace
     }
 }
 
-namespace test_cases
+TEST(CreateIterator, Works)
 {
-    struct CreateIteratorTest : TestCase
-    {
-        CreateIteratorTest() : TestCase("create iterator") { }
+    std::vector<int> x;
+    x.push_back(1);
+    x.push_back(2);
+    x.push_back(3);
 
-        void run()
-        {
-            std::vector<int> x;
-            x.push_back(1);
-            x.push_back(2);
-            x.push_back(3);
+    std::vector<Foo> y;
+    std::copy(x.begin(), x.end(), create_inserter<Foo>(std::back_inserter(y)));
 
-            std::vector<Foo> y;
-            std::copy(x.begin(), x.end(), create_inserter<Foo>(std::back_inserter(y)));
-
-            TEST_CHECK_EQUAL(join(y.begin(), y.end(), " "), "<1> <2> <3>");
-        }
-    } create_iterator_test;
+    EXPECT_EQ("<1> <2> <3>", join(y.begin(), y.end(), " "));
 }
 
