@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,19 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <list>
 #include <paludis/util/join.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
+#include <list>
 #include <vector>
 
-using namespace paludis;
-using namespace test;
+#include <gtest/gtest.h>
 
-/** \file
- * Test cases for join.hh .
- *
- */
+using namespace paludis;
 
 namespace
 {
@@ -39,104 +34,60 @@ namespace
     }
 }
 
-namespace test_cases
+TEST(Join, Vector)
 {
-    /**
-     * \test Test join on a vector.
-     *
-     */
-    struct JoinVectorTest : TestCase
-    {
-        JoinVectorTest() : TestCase("join vector") { }
+    std::vector<std::string> v;
+    v.push_back("one");
+    EXPECT_EQ("one", join(v.begin(), v.end(), "/"));
+    v.push_back("two");
+    EXPECT_EQ("one/two", join(v.begin(), v.end(), "/"));
+    v.push_back("three");
+    EXPECT_EQ("one/two/three", join(v.begin(), v.end(), "/"));
+}
 
-        void run()
-        {
-            std::vector<std::string> v;
-            v.push_back("one");
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/"), "one");
-            v.push_back("two");
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/"), "one/two");
-            v.push_back("three");
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/"), "one/two/three");
-        }
-    } test_join_vector;
+TEST(Join, List)
+{
+    std::list<std::string> v;
+    v.push_back("one");
+    EXPECT_EQ("one", join(v.begin(), v.end(), "/"));
+    v.push_back("two");
+    EXPECT_EQ("one/two", join(v.begin(), v.end(), "/"));
+    v.push_back("three");
+    EXPECT_EQ("one/two/three", join(v.begin(), v.end(), "/"));
+}
 
-    /**
-     * \test Test join on a list.
-     *
-     */
-    struct JoinListTest : TestCase
-    {
-        JoinListTest() : TestCase("join list") { }
+TEST(Join, IntList)
+{
+    std::list<int> v;
+    v.push_back(1);
+    EXPECT_EQ("1", join(v.begin(), v.end(), "/"));
+    v.push_back(2);
+    EXPECT_EQ("1/2", join(v.begin(), v.end(), "/"));
+    v.push_back(3);
+    EXPECT_EQ("1/2/3", join(v.begin(), v.end(), "/"));
+}
 
-        void run()
-        {
-            std::list<std::string> v;
-            v.push_back("one");
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/"), "one");
-            v.push_back("two");
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/"), "one/two");
-            v.push_back("three");
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/"), "one/two/three");
-        }
-    } test_join_list;
+TEST(Join, Empty)
+{
+    std::list<std::string> v;
+    EXPECT_EQ("", join(v.begin(), v.end(), ""));
+    EXPECT_EQ("", join(v.begin(), v.end(), "*"));
+    v.push_back("");
+    EXPECT_EQ("", join(v.begin(), v.end(), ""));
+    EXPECT_EQ("", join(v.begin(), v.end(), "*"));
+    v.push_back("");
+    EXPECT_EQ("", join(v.begin(), v.end(), ""));
+    EXPECT_EQ("*", join(v.begin(), v.end(), "*"));
+}
 
-    /**
-     * \test Test join on a list of ints.
-     *
-     */
-    struct JoinListIntTest : TestCase
-    {
-        JoinListIntTest() : TestCase("join list int") { }
-
-        void run()
-        {
-            std::list<int> v;
-            v.push_back(1);
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/"), "1");
-            v.push_back(2);
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/"), "1/2");
-            v.push_back(3);
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/"), "1/2/3");
-        }
-    } test_join_list_int;
-
-    /**
-     * \test Test join with empty things.
-     *
-     */
-    struct JoinEmptyTest : TestCase
-    {
-        JoinEmptyTest() : TestCase("join empty") { }
-
-        void run()
-        {
-            std::list<std::string> v;
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), ""), "");
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "*"), "");
-            v.push_back("");
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), ""), "");
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "*"), "");
-            v.push_back("");
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), ""), "");
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "*"), "*");
-        }
-    } test_join_empty;
-
-    struct JoinFunctionTest : TestCase
-    {
-        JoinFunctionTest() : TestCase("join function") { }
-
-        void run()
-        {
-            std::list<int> v;
-            v.push_back(1);
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/", &make_purdy), "<1>");
-            v.push_back(2);
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/", &make_purdy), "<1>/<2>");
-            v.push_back(3);
-            TEST_CHECK_EQUAL(join(v.begin(), v.end(), "/", &make_purdy), "<1>/<2>/<3>");
-        }
-    } test_join_function;
+TEST(Join, Function)
+{
+    std::list<int> v;
+    v.push_back(1);
+    EXPECT_EQ("<1>", join(v.begin(), v.end(), "/", &make_purdy));
+    v.push_back(2);
+    EXPECT_EQ("<1>/<2>", join(v.begin(), v.end(), "/", &make_purdy));
+    v.push_back(3);
+    EXPECT_EQ("<1>/<2>/<3>", join(v.begin(), v.end(), "/", &make_purdy));
 }
 
