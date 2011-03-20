@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006 Mark Loeser
+ * Copyright (c) 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,92 +19,48 @@
  */
 
 
-#include <algorithm>
 #include <paludis/util/strip.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
+#include <algorithm>
 #include <vector>
 
+#include <gtest/gtest.h>
+
 using namespace paludis;
-using namespace test;
 
-/** \file
- * Test cases for strip.hh.
- *
- */
-
-namespace test_cases
+TEST(StripLeadingString, Works)
 {
-    /**
-     * \test Test StripLeadingString.
-     *
-     */
-    struct StripLeadingStringTest : TestCase
-    {
-        StripLeadingStringTest() : TestCase("StripLeadingString") { }
+    EXPECT_TRUE("bar" == strip_leading_string("foobar", "foo"));
+    EXPECT_TRUE("fishbar" == strip_leading_string("fishbar", "foo"));
+    EXPECT_TRUE("" == strip_leading_string("foo", "foo"));
+    EXPECT_TRUE("fishfoobar" == strip_leading_string("fishfoobar", "foo"));
+    EXPECT_TRUE("blahfoo" == strip_leading_string("blahfoo", "foo"));
+}
 
-        void run()
-        {
-            TEST_CHECK("bar" == strip_leading_string("foobar", "foo"));
-            TEST_CHECK("fishbar" == strip_leading_string("fishbar", "foo"));
-            TEST_CHECK("" == strip_leading_string("foo", "foo"));
-            TEST_CHECK("fishfoobar" == strip_leading_string("fishfoobar", "foo"));
-            TEST_CHECK("blahfoo" == strip_leading_string("blahfoo", "foo"));
-        }
-    } test_strip_leading_string;
+TEST(StripLeading, Works)
+{
+    EXPECT_TRUE("bar" == strip_leading("foobar", "foo"));
+    EXPECT_TRUE("ishbar" == strip_leading("fishbar", "foo"));
+    EXPECT_TRUE("" == strip_leading("foo", "foo"));
+    EXPECT_TRUE("ishfoobar" == strip_leading("fishfoobar", "foo"));
+    EXPECT_TRUE("blahfoo" == strip_leading("blahfoo", "foo"));
+}
 
-    /**
-     * \test Test StripLeading.
-     *
-     */
-    struct StripLeadingTest : TestCase
-    {
-        StripLeadingTest() : TestCase("StripLeading") {}
+TEST(StripTrailingString, Works)
+{
+    EXPECT_TRUE("foobar" == strip_trailing_string("foobar", "foo"));
+    EXPECT_TRUE("fishbar" == strip_trailing_string("fishbar", "foo"));
+    EXPECT_TRUE("" == strip_trailing_string("foo", "foo"));
+    EXPECT_TRUE("fishfoobar" == strip_trailing_string("fishfoobar", "foo"));
+    EXPECT_TRUE("blah" == strip_trailing_string("blahfoo", "foo"));
+}
 
-        void run()
-        {
-            TEST_CHECK("bar" == strip_leading("foobar", "foo"));
-            TEST_CHECK("ishbar" == strip_leading("fishbar", "foo"));
-            TEST_CHECK("" == strip_leading("foo", "foo"));
-            TEST_CHECK("ishfoobar" == strip_leading("fishfoobar", "foo"));
-            TEST_CHECK("blahfoo" == strip_leading("blahfoo", "foo"));
-        }
-    } test_strip_leading;
-
-    /**
-     * \test Test StripTrailingString.
-     *
-     */
-    struct StripTrailingStringTest : TestCase
-    {
-        StripTrailingStringTest() : TestCase("StripTrailingString") { }
-
-        void run()
-        {
-            TEST_CHECK("foobar" == strip_trailing_string("foobar", "foo"));
-            TEST_CHECK("fishbar" == strip_trailing_string("fishbar", "foo"));
-            TEST_CHECK("" == strip_trailing_string("foo", "foo"));
-            TEST_CHECK("fishfoobar" == strip_trailing_string("fishfoobar", "foo"));
-            TEST_CHECK("blah" == strip_trailing_string("blahfoo", "foo"));
-        }
-    } test_strip_trailing_string;
-
-    /**
-     * \test Test StripTrailing.
-     *
-     */
-    struct StripTrailingTest : TestCase
-    {
-        StripTrailingTest() : TestCase("StripTrailing") {}
-
-        void run()
-        {
-            TEST_CHECK("foobar" == strip_trailing("foobar", "foo"));
-            TEST_CHECK("fishbar" == strip_trailing("fishbar", "foo"));
-            TEST_CHECK("" == strip_trailing("foo", "foo"));
-            TEST_CHECK("fishfoobar" == strip_trailing("fishfoobar", "foo"));
-            TEST_CHECK("blah" == strip_trailing("blahfoo", "foo"));
-        }
-    } test_strip_trailing;
+TEST(StripTrailing, Works)
+{
+    EXPECT_TRUE("foobar" == strip_trailing("foobar", "foo"));
+    EXPECT_TRUE("fishbar" == strip_trailing("fishbar", "foo"));
+    EXPECT_TRUE("" == strip_trailing("foo", "foo"));
+    EXPECT_TRUE("fishfoobar" == strip_trailing("fishfoobar", "foo"));
+    EXPECT_TRUE("blah" == strip_trailing("blahfoo", "foo"));
 }
 
