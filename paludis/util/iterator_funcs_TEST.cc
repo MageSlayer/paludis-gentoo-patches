@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2011 Ciaran McCreesh
  * Copyright (c) 2007 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -19,102 +19,80 @@
  */
 
 #include <paludis/util/iterator_funcs.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+
 #include <vector>
 #include <list>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-namespace test_cases
+TEST(Iterator, Next)
 {
-    struct IteratorNextTest : public TestCase
-    {
-        IteratorNextTest() : TestCase("iterator next()") { }
+    std::vector<int> v;
+    v.push_back(1);
+    v.push_back(2);
+    v.push_back(3);
+    std::vector<int>::iterator iter(v.begin());
 
-        void run()
-        {
-            std::vector<int> v;
-            v.push_back(1);
-            v.push_back(2);
-            v.push_back(3);
-            std::vector<int>::iterator iter(v.begin());
+    ASSERT_TRUE(*(next(iter)) == 2);
+    ASSERT_TRUE(next(next(next(iter))) == v.end());
+    ASSERT_TRUE(next(iter, 3) == v.end());
+    iter = next(iter);
+    ASSERT_TRUE(*(next(iter, 1)) == 3);
+    iter = next(iter);
+    ASSERT_TRUE(++iter == v.end());
+}
 
-            TEST_CHECK(*(next(iter)) == 2);
-            TEST_CHECK(next(next(next(iter))) == v.end());
-            TEST_CHECK(next(iter, 3) == v.end());
-            iter = next(iter);
-            TEST_CHECK(*(next(iter, 1)) == 3);
-            iter = next(iter);
-            TEST_CHECK(++iter == v.end());
-        }
-    } test_iterator_next;
+TEST(Iterator, Previous)
+{
+    std::vector<int> v;
+    v.push_back(1);
+    v.push_back(2);
+    std::vector<int>::iterator iter(v.end());
 
-    /**
-     * \test Test iterator_utilities previous()
-     *
-     */
-    struct IteratorpreviousTest : public TestCase
-    {
-        IteratorpreviousTest() : TestCase("iterator previous()") { }
+    ASSERT_TRUE(*(previous(iter)) == 2);
+    ASSERT_TRUE(previous(previous(iter)) == v.begin());
+    iter = previous(iter);
+    ASSERT_TRUE(--iter == v.begin());
+}
 
-        void run()
-        {
-            std::vector<int> v;
-            v.push_back(1);
-            v.push_back(2);
-            std::vector<int>::iterator iter(v.end());
+TEST(CappedDistance, Works)
+{
+    std::list<int> v;
+    EXPECT_EQ(0, capped_distance(v.begin(), v.end(), 0));
+    EXPECT_EQ(0, capped_distance(v.begin(), v.end(), 1));
+    EXPECT_EQ(0, capped_distance(v.begin(), v.end(), 3));
+    EXPECT_EQ(0, capped_distance(v.begin(), v.end(), 10));
 
-            TEST_CHECK(*(previous(iter)) == 2);
-            TEST_CHECK(previous(previous(iter)) == v.begin());
-            iter = previous(iter);
-            TEST_CHECK(--iter == v.begin());
-        }
-    } test_iterator_previous;
+    v.push_back(1);
+    EXPECT_EQ(0, capped_distance(v.begin(), v.end(), 0));
+    EXPECT_EQ(1, capped_distance(v.begin(), v.end(), 1));
+    EXPECT_EQ(1, capped_distance(v.begin(), v.end(), 3));
+    EXPECT_EQ(1, capped_distance(v.begin(), v.end(), 10));
 
-    struct CappedDistanceTest : TestCase
-    {
-        CappedDistanceTest() : TestCase("capped distance") { }
+    v.push_back(2);
+    EXPECT_EQ(0, capped_distance(v.begin(), v.end(), 0));
+    EXPECT_EQ(1, capped_distance(v.begin(), v.end(), 1));
+    EXPECT_EQ(2, capped_distance(v.begin(), v.end(), 3));
+    EXPECT_EQ(2, capped_distance(v.begin(), v.end(), 10));
 
-        void run()
-        {
-            std::list<int> v;
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 0), static_cast<std::size_t>(0));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 1), static_cast<std::size_t>(0));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 3), static_cast<std::size_t>(0));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 10), static_cast<std::size_t>(0));
+    v.push_back(3);
+    EXPECT_EQ(0, capped_distance(v.begin(), v.end(), 0));
+    EXPECT_EQ(1, capped_distance(v.begin(), v.end(), 1));
+    EXPECT_EQ(3, capped_distance(v.begin(), v.end(), 3));
+    EXPECT_EQ(3, capped_distance(v.begin(), v.end(), 10));
 
-            v.push_back(1);
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 0), static_cast<std::size_t>(0));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 1), static_cast<std::size_t>(1));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 3), static_cast<std::size_t>(1));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 10), static_cast<std::size_t>(1));
+    v.push_back(4);
+    EXPECT_EQ(0, capped_distance(v.begin(), v.end(), 0));
+    EXPECT_EQ(1, capped_distance(v.begin(), v.end(), 1));
+    EXPECT_EQ(3, capped_distance(v.begin(), v.end(), 3));
+    EXPECT_EQ(4, capped_distance(v.begin(), v.end(), 10));
 
-            v.push_back(2);
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 0), static_cast<std::size_t>(0));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 1), static_cast<std::size_t>(1));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 3), static_cast<std::size_t>(2));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 10), static_cast<std::size_t>(2));
-
-            v.push_back(3);
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 0), static_cast<std::size_t>(0));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 1), static_cast<std::size_t>(1));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 3), static_cast<std::size_t>(3));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 10), static_cast<std::size_t>(3));
-
-            v.push_back(4);
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 0), static_cast<std::size_t>(0));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 1), static_cast<std::size_t>(1));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 3), static_cast<std::size_t>(3));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 10), static_cast<std::size_t>(4));
-
-            v.push_back(5);
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 0), static_cast<std::size_t>(0));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 1), static_cast<std::size_t>(1));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 3), static_cast<std::size_t>(3));
-            TEST_CHECK_EQUAL(capped_distance(v.begin(), v.end(), 10), static_cast<std::size_t>(5));
-        }
-    } test_capped_distance;
+    v.push_back(5);
+    EXPECT_EQ(0, capped_distance(v.begin(), v.end(), 0));
+    EXPECT_EQ(1, capped_distance(v.begin(), v.end(), 1));
+    EXPECT_EQ(3, capped_distance(v.begin(), v.end(), 3));
+    EXPECT_EQ(5, capped_distance(v.begin(), v.end(), 10));
 }
 
