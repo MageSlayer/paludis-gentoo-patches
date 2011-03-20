@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 David Leverton
+ * Copyright (c) 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,49 +21,43 @@
 #include <paludis/util/realpath.hh>
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/fs_error.hh>
+#include <paludis/util/stringify.hh>
 
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+#include <gtest/gtest.h>
 
-using namespace test;
 using namespace paludis;
 
-namespace test_cases
+namespace
 {
-    struct RealpathWithCurrentAndRootTest : TestCase
+    FSPath resolve(const FSPath & symlink, const FSPath & root)
     {
-        RealpathWithCurrentAndRootTest() : TestCase("realpath_with_current_and_root") {}
+        return realpath_with_current_and_root(FSPath((root / symlink).readlink()), symlink.dirname(), root);
+    }
+}
 
-        FSPath resolve(const FSPath & symlink, const FSPath & root)
-        {
-            return realpath_with_current_and_root(FSPath((root / symlink).readlink()), symlink.dirname(), root);
-        }
+TEST(Realpath, CurrentAndRoot)
+{
+    FSPath root("realpath_TEST_dir");
 
-        void run()
-        {
-            FSPath root("realpath_TEST_dir");
+    EXPECT_EQ("/usr/lib64/libfoo.so.1", stringify(resolve(FSPath("/usr/lib64/libfoo.so"), root)));
+    EXPECT_EQ("/usr/lib64/libbar.so.1", stringify(resolve(FSPath("/usr/lib64/libbar.so"), root)));
+    EXPECT_EQ("/usr/lib64/libbaz.so.1", stringify(resolve(FSPath("/usr/lib64/libbaz.so"), root)));
+    EXPECT_EQ("/usr/lib64/libxyzzy.so.1", stringify(resolve(FSPath("/usr/lib64/libxyzzy.so"), root)));
+    EXPECT_EQ("/usr/lib64/libplugh.so.1", stringify(resolve(FSPath("/usr/lib64/libplugh.so"), root)));
+    EXPECT_EQ("/usr/lib64/libplover.so.1", stringify(resolve(FSPath("/usr/lib64/libplover.so"), root)));
+    EXPECT_EQ("/usr/lib64/libblast.so.1", stringify(resolve(FSPath("/usr/lib64/libblast.so"), root)));
+    EXPECT_EQ("/usr/lib64/libquux.so.1", stringify(resolve(FSPath("/usr/lib64/libquux.so"), root)));
+    EXPECT_EQ("/usr/lib64/libnarf.so.1", stringify(resolve(FSPath("/usr/lib64/libnarf.so"), root)));
+    EXPECT_EQ("/usr/lib64/libblech.so.1", stringify(resolve(FSPath("/usr/lib64/libblech.so"), root)));
+    EXPECT_EQ("/usr/lib64/libstab.so.1", stringify(resolve(FSPath("/usr/lib64/libstab.so"), root)));
+    EXPECT_EQ("/usr/lib64/libsnark.so.1", stringify(resolve(FSPath("/usr/lib64/libsnark.so"), root)));
+    EXPECT_EQ("/usr/lib32/libfool.so.1", stringify(resolve(FSPath("/usr/lib64/libfool.so"), root)));
+    EXPECT_EQ("/usr/lib64/barf/libbarf.so.1", stringify(resolve(FSPath("/usr/lib64/libbarf.so"), root)));
+    EXPECT_EQ("/usr/lib64/libblip.so.1.0.1", stringify(resolve(FSPath("/usr/lib64/libblip.so"), root)));
+    EXPECT_EQ("/usr/lib64/libpoing.so.1.0.1", stringify(resolve(FSPath("/usr/lib64/libpoing.so"), root)));
+    EXPECT_EQ("/usr/lib64/x/liby.so.1", stringify(resolve(FSPath("/usr/lib64/x/liby.so"), root)));
 
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libfoo.so"), root), "/usr/lib64/libfoo.so.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libbar.so"), root), "/usr/lib64/libbar.so.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libbaz.so"), root), "/usr/lib64/libbaz.so.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libxyzzy.so"), root), "/usr/lib64/libxyzzy.so.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libplugh.so"), root), "/usr/lib64/libplugh.so.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libplover.so"), root), "/usr/lib64/libplover.so.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libblast.so"), root), "/usr/lib64/libblast.so.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libquux.so"), root), "/usr/lib64/libquux.so.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libnarf.so"), root), "/usr/lib64/libnarf.so.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libblech.so"), root), "/usr/lib64/libblech.so.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libstab.so"), root), "/usr/lib64/libstab.so.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libsnark.so"), root), "/usr/lib64/libsnark.so.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libfool.so"), root), "/usr/lib32/libfool.so.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libbarf.so"), root), "/usr/lib64/barf/libbarf.so.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libblip.so"), root), "/usr/lib64/libblip.so.1.0.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/libpoing.so"), root), "/usr/lib64/libpoing.so.1.0.1");
-            TEST_CHECK_STRINGIFY_EQUAL(resolve(FSPath("/usr/lib64/x/liby.so"), root), "/usr/lib64/x/liby.so.1");
-
-            TEST_CHECK_THROWS(resolve(FSPath("/usr/lib64/libouch.so"), root), FSError);
-            TEST_CHECK_THROWS(resolve(FSPath("/usr/lib64/libping.so"), root), FSError);
-        }
-    } realpath_with_current_and_root_test;
+    EXPECT_THROW(resolve(FSPath("/usr/lib64/libouch.so"), root), FSError);
+    EXPECT_THROW(resolve(FSPath("/usr/lib64/libping.so"), root), FSError);
 }
 
