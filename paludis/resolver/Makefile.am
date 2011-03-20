@@ -217,7 +217,6 @@ resolver_TEST_blockers_SOURCES = resolver_TEST_blockers.cc
 
 resolver_TEST_blockers_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
@@ -230,7 +229,6 @@ resolver_TEST_cycles_SOURCES = resolver_TEST_cycles.cc
 
 resolver_TEST_cycles_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
@@ -243,7 +241,6 @@ resolver_TEST_virtuals_SOURCES = resolver_TEST_virtuals.cc
 
 resolver_TEST_virtuals_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
@@ -256,7 +253,6 @@ resolver_TEST_suggestions_SOURCES = resolver_TEST_suggestions.cc
 
 resolver_TEST_suggestions_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
@@ -269,7 +265,6 @@ resolver_TEST_serialisation_SOURCES = resolver_TEST_serialisation.cc
 
 resolver_TEST_serialisation_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
@@ -282,7 +277,6 @@ resolver_TEST_simple_SOURCES = resolver_TEST_simple.cc
 
 resolver_TEST_simple_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
@@ -295,7 +289,6 @@ resolver_TEST_any_SOURCES = resolver_TEST_any.cc
 
 resolver_TEST_any_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
@@ -308,7 +301,6 @@ resolver_TEST_errors_SOURCES = resolver_TEST_errors.cc
 
 resolver_TEST_errors_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
@@ -321,7 +313,6 @@ resolver_TEST_continue_on_failure_SOURCES = resolver_TEST_continue_on_failure.cc
 
 resolver_TEST_continue_on_failure_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
@@ -334,7 +325,6 @@ resolver_TEST_uninstalls_SOURCES = resolver_TEST_uninstalls.cc
 
 resolver_TEST_uninstalls_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
@@ -347,7 +337,6 @@ resolver_TEST_fetches_SOURCES = resolver_TEST_fetches.cc
 
 resolver_TEST_fetches_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
@@ -360,7 +349,6 @@ resolver_TEST_purges_SOURCES = resolver_TEST_purges.cc
 
 resolver_TEST_purges_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \

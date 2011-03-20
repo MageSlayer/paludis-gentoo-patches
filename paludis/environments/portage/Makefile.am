@@ -30,7 +30,6 @@ TESTS = portage_environment_TEST
 
 portage_environment_TEST_SOURCES = portage_environment_TEST.cc
 portage_environment_TEST_LDADD = \
-	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \

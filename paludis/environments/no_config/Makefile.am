@@ -35,7 +35,6 @@ check_SCRIPTS = no_config_environment_TEST_setup.sh no_config_environment_TEST_c
 no_config_environment_TEST_SOURCES = no_config_environment_TEST.cc
 
 no_config_environment_TEST_LDADD = \
-	$(top_builddir)/paludis/util/test_extras.o \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \

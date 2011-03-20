@@ -61,7 +61,6 @@ DEFS=\
 	-DLIBEXECDIR=\"$(libexecdir)\"
 EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 selist secleanlist \
 	testscriptlist \
-	test_extras.cc \
 	gtest_runner.cc \
 	echo_functions.bash.in
 SUBDIRS = .

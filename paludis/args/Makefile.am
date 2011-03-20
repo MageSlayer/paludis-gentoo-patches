@@ -53,7 +53,6 @@ lib_LTLIBRARIES = libpaludisargs_@PALUDIS_PC_SLOT@.la
 check_PROGRAMS = $(TESTS)
 
 test_ldadd = \
-	$(top_builddir)/paludis/util/test_extras.o \
 	libpaludisargs_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la
