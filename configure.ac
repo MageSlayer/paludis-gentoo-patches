@@ -1627,7 +1627,7 @@ AC_ARG_ENABLE([gtest],
 	[HAVE_GTEST=yes
 	 AC_MSG_RESULT([yes])])
 AC_SUBST([HAVE_GTEST])
-AM_CONDITIONAL([HAVE_GTEST], test "x$HAVE_HTMLTIDY" = "xyes")
+AM_CONDITIONAL([HAVE_GTEST], test "x$HAVE_GTEST" = "xyes")
 
 if test "x$HAVE_GTEST" = "xyes" ; then
 	AC_CHECK_PROG(HAVE_GTEST_CONFIG, [gtest-config], [yes], [no])
