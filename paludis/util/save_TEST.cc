@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,56 +18,42 @@
  */
 
 #include <paludis/util/save.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-namespace test_cases
+TEST(Save, Works)
 {
-    struct SaveTest : TestCase
+    std::string s("one");
+    EXPECT_EQ("one", s);
     {
-        SaveTest() : TestCase("save") { }
-
-        void run()
-        {
-            std::string s("one");
-            TEST_CHECK_EQUAL(s, "one");
-            {
-                Save<std::string> save_s(&s);
-                TEST_CHECK_EQUAL(s, "one");
-                s = "two";
-                TEST_CHECK_EQUAL(s, "two");
-            }
-            TEST_CHECK_EQUAL(s, "one");
-            {
-                Save<std::string> save_s(&s, "three");
-                TEST_CHECK_EQUAL(s, "three");
-                {
-                    Save<std::string> save_s_2(&s, "four");
-                    TEST_CHECK_EQUAL(s, "four");
-                }
-                TEST_CHECK_EQUAL(s, "three");
-            }
-            TEST_CHECK_EQUAL(s, "one");
-        }
-    } test_save;
-
-    struct RunOnDestructionTest : TestCase
+        Save<std::string> save_s(&s);
+        EXPECT_EQ("one", s);
+        s = "two";
+        EXPECT_EQ("two", s);
+    }
+    EXPECT_EQ("one", s);
     {
-        RunOnDestructionTest() : TestCase("run on destruction") { }
-
-        void run()
+        Save<std::string> save_s(&s, "three");
+        EXPECT_EQ("three", s);
         {
-            std::string s("one");
-            TEST_CHECK_EQUAL(s, "one");
-            {
-                RunOnDestruction save_s(std::bind(&std::string::clear, &s));
-                TEST_CHECK_EQUAL(s, "one");
-            }
-            TEST_CHECK_EQUAL(s, "");
+            Save<std::string> save_s_2(&s, "four");
+            EXPECT_EQ("four", s);
         }
-    } test_run_on_destruction;
+        EXPECT_EQ("three", s);
+    }
+    EXPECT_EQ("one", s);
+}
+
+TEST(RunOnDestruction, Works)
+{
+    std::string s("one");
+    EXPECT_EQ("one", s);
+    {
+        RunOnDestruction save_s(std::bind(&std::string::clear, &s));
+        EXPECT_EQ("one", s);
+    }
+    EXPECT_EQ("", s);
 }
 
