@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 David Leverton
+ * Copyright (c) 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,53 +19,46 @@
  */
 
 #include <paludis/broken_linkage_configuration.hh>
+
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
-
 #include <unistd.h>
 #include <cstdlib>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-namespace test_cases
+TEST(BrokenLinkageConfiguration, Works)
 {
-    struct ConfigurationTest : TestCase
-    {
-        ConfigurationTest() : TestCase("configuration") {}
+    setenv("SEARCH_DIRS", "/quuxlib", 1);
+    setenv("SEARCH_DIRS_MASK", "/quuxlib/quux", 1);
+    setenv("LD_LIBRARY_MASK", "libquux.so", 1);
 
-        void run()
-        {
-            setenv("SEARCH_DIRS", "/quuxlib", 1);
-            setenv("SEARCH_DIRS_MASK", "/quuxlib/quux", 1);
-            setenv("LD_LIBRARY_MASK", "libquux.so", 1);
+    BrokenLinkageConfiguration config(FSPath::cwd() / "broken_linkage_configuration_TEST_dir");
 
-            BrokenLinkageConfiguration config(FSPath::cwd() / "broken_linkage_configuration_TEST_dir");
+    ASSERT_EQ("/42 /alib /barbin /barlib/foo /bazbin /bin /blib /fhqwhgads1 /fhqwhgads2 /foobin /foolib/bar "
+            "/hwdp foobar /lib32 /lib64 /quuxlib /qwerty1 /qwerty2 /sbin /uiop1 /uiop2 /usr/bin /usr/lib* /usr/sbin",
+            join(config.begin_search_dirs(), config.end_search_dirs(), " "));
 
-            TEST_CHECK_EQUAL(join(config.begin_search_dirs(), config.end_search_dirs(), " "),
-                             "/42 /alib /barbin /barlib/foo /bazbin /bin /blib /fhqwhgads1 /fhqwhgads2 /foobin /foolib/bar /hwdp foobar /lib32 /lib64 /quuxlib /qwerty1 /qwerty2 /sbin /uiop1 /uiop2 /usr/bin /usr/lib* /usr/sbin");
-            TEST_CHECK_EQUAL(join(config.begin_ld_so_conf(), config.end_ld_so_conf(), " "),
-                             "/42 /barlib/foo /fhqwhgads1 /fhqwhgads2 /foolib/bar /lib /qwerty1 /qwerty2 /uiop1 /uiop2 /usr/lib hwdp foobar");
+    ASSERT_EQ("/42 /barlib/foo /fhqwhgads1 /fhqwhgads2 /foolib/bar /lib /qwerty1 /qwerty2 /uiop1 /uiop2 /usr/lib hwdp foobar",
+            join(config.begin_ld_so_conf(), config.end_ld_so_conf(), " "));
 
-            TEST_CHECK(config.dir_is_masked(FSPath("/meh")));
-            TEST_CHECK(config.dir_is_masked(FSPath("/quuxlib/quux")));
-            TEST_CHECK(! config.dir_is_masked(FSPath("/feh")));
-            TEST_CHECK(! config.dir_is_masked(FSPath("/opt/OpenOffice")));
-            TEST_CHECK(! config.dir_is_masked(FSPath("/usr/lib/openoffice")));
-            TEST_CHECK(! config.dir_is_masked(FSPath("/foo")));
+    EXPECT_TRUE(config.dir_is_masked(FSPath("/meh")));
+    EXPECT_TRUE(config.dir_is_masked(FSPath("/quuxlib/quux")));
+    EXPECT_TRUE(! config.dir_is_masked(FSPath("/feh")));
+    EXPECT_TRUE(! config.dir_is_masked(FSPath("/opt/OpenOffice")));
+    EXPECT_TRUE(! config.dir_is_masked(FSPath("/usr/lib/openoffice")));
+    EXPECT_TRUE(! config.dir_is_masked(FSPath("/foo")));
 
-            TEST_CHECK(config.lib_is_masked("libquux.so"));
-            TEST_CHECK(config.lib_is_masked("libxyzzy.so"));
-            TEST_CHECK(config.lib_is_masked("libodbcinst.so"));
-            TEST_CHECK(config.lib_is_masked("libodbc.so"));
-            TEST_CHECK(config.lib_is_masked("libjava.so"));
-            TEST_CHECK(config.lib_is_masked("libjvm.so"));
-            TEST_CHECK(! config.lib_is_masked("libfoo.so"));
-        }
-    } configuration_test;
+    EXPECT_TRUE(config.lib_is_masked("libquux.so"));
+    EXPECT_TRUE(config.lib_is_masked("libxyzzy.so"));
+    EXPECT_TRUE(config.lib_is_masked("libodbcinst.so"));
+    EXPECT_TRUE(config.lib_is_masked("libodbc.so"));
+    EXPECT_TRUE(config.lib_is_masked("libjava.so"));
+    EXPECT_TRUE(config.lib_is_masked("libjvm.so"));
+    EXPECT_TRUE(! config.lib_is_masked("libfoo.so"));
 }
 
