@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 David Leverton
+ * Copyright (c) 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,81 +22,68 @@
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/join.hh>
 
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+#include <gtest/gtest.h>
 
-using namespace test;
 using namespace paludis;
 
-namespace test_cases
+namespace
 {
-    struct WildcardExpanderGeneralTest : TestCase
+    std::string expand(const std::string & pattern)
     {
-        WildcardExpanderGeneralTest() : TestCase("WildcardExpander general") {}
+        return join(WildcardExpander(pattern, FSPath::cwd() / "wildcard_expander_TEST_dir"),
+                    WildcardExpander(), " ");
+    }
+}
 
-        std::string expand(const std::string & pattern)
-        {
-            return join(WildcardExpander(pattern, FSPath::cwd() / "wildcard_expander_TEST_dir"),
-                        WildcardExpander(), " ");
-        }
+TEST(WildcardExpander, Works)
+{
+    EXPECT_EQ("/xyz1zy /xyz22zy /xyzzy", expand("/xyz*zy"));
+    EXPECT_EQ("/plugh", expand("/plugh"));
+    EXPECT_EQ("/quux", expand("/quux"));
+    EXPECT_EQ("/quux*quux", expand("/quux*quux"));
+    EXPECT_EQ("/meh/1 /meh/2 /meh/3", expand("/meh/?"));
+    EXPECT_EQ("/foo* /foo123*", expand("/foo*\\*"));
+    EXPECT_EQ("/foo*", expand("/foo\\*"));
+}
 
-        void run()
-        {
-            TEST_CHECK_EQUAL(expand("/xyz*zy"), "/xyz1zy /xyz22zy /xyzzy");
-            TEST_CHECK_EQUAL(expand("/plugh"), "/plugh");
-            TEST_CHECK_EQUAL(expand("/quux"), "/quux");
-            TEST_CHECK_EQUAL(expand("/quux*quux"), "/quux*quux");
-            TEST_CHECK_EQUAL(expand("/meh/?"), "/meh/1 /meh/2 /meh/3");
-            TEST_CHECK_EQUAL(expand("/foo*\\*"), "/foo* /foo123*");
-            TEST_CHECK_EQUAL(expand("/foo\\*"), "/foo*");
-        }
-    } wildcard_expander_general_test;
+TEST(WildcardExpander, IteratorSanity)
+{
+    WildcardExpander it("/foo*bar", FSPath::cwd() / "wildcard_expander_TEST_dir");
+    ASSERT_TRUE(it == it);
+    ASSERT_TRUE(! (it != it));
+    ASSERT_TRUE(it != WildcardExpander());
+    EXPECT_EQ("/fooAbar", stringify(*it));
+    EXPECT_EQ(it->basename(), "fooAbar");
 
-    struct WildcardExpanderIteratorSanityTest : TestCase
-    {
-        WildcardExpanderIteratorSanityTest() : TestCase("WildcardExpander iterator sanity") {}
+    WildcardExpander it2(it);
+    ASSERT_TRUE(it == it2);
+    ASSERT_TRUE(! (it != it2));
+    ASSERT_TRUE(it2 != WildcardExpander());
+    EXPECT_EQ("/fooBbar", stringify(*++it2));
+    EXPECT_EQ("/fooBbar", stringify(*it2));
+    EXPECT_EQ(it2->basename(), "fooBbar");
+    ASSERT_TRUE(it != it2);
+    ASSERT_TRUE(! (it == it2));
+    ASSERT_TRUE(it2 != WildcardExpander());
 
-        void run()
-        {
-            WildcardExpander it("/foo*bar", FSPath::cwd() / "wildcard_expander_TEST_dir");
-            TEST_CHECK(it == it);
-            TEST_CHECK(! (it != it));
-            TEST_CHECK(it != WildcardExpander());
-            TEST_CHECK_STRINGIFY_EQUAL(*it, "/fooAbar");
-            TEST_CHECK_EQUAL(it->basename(), "fooAbar");
+    WildcardExpander it3(it2);
+    ASSERT_TRUE(it2 == it3++);
+    ASSERT_TRUE(it2 != it3);
+    ASSERT_TRUE(it3 != WildcardExpander());
+    EXPECT_EQ("/fooCbar", stringify(*it3));
+    EXPECT_EQ(it3->basename(), "fooCbar");
 
-            WildcardExpander it2(it);
-            TEST_CHECK(it == it2);
-            TEST_CHECK(! (it != it2));
-            TEST_CHECK(it2 != WildcardExpander());
-            TEST_CHECK_STRINGIFY_EQUAL(*++it2, "/fooBbar");
-            TEST_CHECK_STRINGIFY_EQUAL(*it2, "/fooBbar");
-            TEST_CHECK_EQUAL(it2->basename(), "fooBbar");
-            TEST_CHECK(it != it2);
-            TEST_CHECK(! (it == it2));
-            TEST_CHECK(it2 != WildcardExpander());
+    it3 = it2;
+    ASSERT_TRUE(it2 == it3);
+    EXPECT_EQ("/fooBbar", stringify(*it3));
+    EXPECT_EQ("/fooBbar", stringify(*it3++));
+    ASSERT_TRUE(it3 != WildcardExpander());
 
-            WildcardExpander it3(it2);
-            TEST_CHECK(it2 == it3++);
-            TEST_CHECK(it2 != it3);
-            TEST_CHECK(it3 != WildcardExpander());
-            TEST_CHECK_STRINGIFY_EQUAL(*it3, "/fooCbar");
-            TEST_CHECK_EQUAL(it3->basename(), "fooCbar");
+    ASSERT_TRUE(++it3 != WildcardExpander());
+    ASSERT_TRUE(++it3 != WildcardExpander());
+    ASSERT_TRUE(++it3 == WildcardExpander());
 
-            it3 = it2;
-            TEST_CHECK(it2 == it3);
-            TEST_CHECK_STRINGIFY_EQUAL(*it3, "/fooBbar");
-            TEST_CHECK_STRINGIFY_EQUAL(*it3++, "/fooBbar");
-            TEST_CHECK(it3 != WildcardExpander());
-
-            TEST_CHECK(++it3 != WildcardExpander());
-            TEST_CHECK(++it3 != WildcardExpander());
-            TEST_CHECK(++it3 == WildcardExpander());
-
-            TEST_CHECK_EQUAL(join(WildcardExpander("/foo*bar", FSPath::cwd() / "wildcard_expander_TEST_dir"),
-                                  WildcardExpander(), " "),
-                             "/fooAbar /fooBbar /fooCbar /fooDbar /fooEbar");
-        }
-    } wildcard_expander_iterator_sanity_test;
+    EXPECT_EQ("/fooAbar /fooBbar /fooCbar /fooDbar /fooEbar",
+            join(WildcardExpander("/foo*bar", FSPath::cwd() / "wildcard_expander_TEST_dir"), WildcardExpander(), " "));
 }
 
