@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,11 +18,11 @@
  */
 
 #include <paludis/util/thread.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+
 #include <time.h>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
 namespace
@@ -33,20 +33,12 @@ namespace
     }
 }
 
-namespace test_cases
+TEST(Thread, Works)
 {
-    struct ThreadTest : TestCase
+    bool x(false);
     {
-        ThreadTest() : TestCase("thread") { }
-
-        void run()
-        {
-            bool x(false);
-            {
-                Thread t(std::bind(&make_true, std::ref(x)));
-            }
-            TEST_CHECK(x);
-        }
-    } test_thread;
+        Thread t(std::bind(&make_true, std::ref(x)));
+    }
+    EXPECT_TRUE(x);
 }
 

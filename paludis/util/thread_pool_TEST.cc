@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,12 +18,12 @@
  */
 
 #include <paludis/util/thread_pool.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+
 #include <vector>
 #include <algorithm>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
 namespace
@@ -34,23 +34,15 @@ namespace
     }
 }
 
-namespace test_cases
+TEST(ThreadPool, Works)
 {
-    struct ThreadPoolTest : TestCase
+    const int n_threads = 10;
+    std::vector<int> t(n_threads, 0);
     {
-        ThreadPoolTest() : TestCase("thread pool") { }
-
-        void run()
-        {
-            const int n_threads = 10;
-            std::vector<int> t(n_threads, 0);
-            {
-                ThreadPool p;
-                for (int x(0) ; x < n_threads ; ++x)
-                    p.create_thread(std::bind(&make_one, std::ref(t[x])));
-            }
-            TEST_CHECK(n_threads == std::count(t.begin(), t.end(), 1));
-        }
-    } test_thread_pool;
+        ThreadPool p;
+        for (int x(0) ; x < n_threads ; ++x)
+            p.create_thread(std::bind(&make_one, std::ref(t[x])));
+    }
+    ASSERT_TRUE(n_threads == std::count(t.begin(), t.end(), 1));
 }
 
