@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,14 +21,15 @@
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/pipe.hh>
 #include <paludis/util/safe_ofstream.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+#include <paludis/util/stringify.hh>
+
 #include <sstream>
 #include <sys/types.h>
 #include <pwd.h>
 
+#include <gtest/gtest.h>
+
 using namespace paludis;
-using namespace test;
 
 namespace
 {
@@ -47,407 +48,285 @@ namespace
     }
 }
 
-namespace test_cases
+TEST(Process, True)
 {
-    struct TrueTest : TestCase
+    Process true_process(ProcessCommand({"true"}));
+    EXPECT_EQ(0, true_process.run().wait());
+}
+
+TEST(Process, False)
+{
+    Process false_process(ProcessCommand({"false"}));
+    EXPECT_EQ(1, false_process.run().wait());
+}
+
+TEST(Process, NoWait)
+{
+    Process true_process(ProcessCommand({"true"}));
+    EXPECT_THROW({ RunningProcessHandle handle(true_process.run()); }, ProcessError);
+}
+
+TEST(Process, TwoWait)
+{
+    Process true_process(ProcessCommand({"true"}));
+
+    RunningProcessHandle handle(true_process.run());
+    EXPECT_EQ(0, handle.wait());
+    EXPECT_THROW(int PALUDIS_ATTRIBUTE((unused)) x(handle.wait()), ProcessError);
+}
+
+TEST(Process, GrabStdout)
+{
+    std::stringstream stdout_stream;
+    Process echo_process(ProcessCommand({"echo", "monkey"}));
+    echo_process.capture_stdout(stdout_stream);
+
+    EXPECT_EQ(0, echo_process.run().wait());
+    EXPECT_EQ("monkey\n", stdout_stream.str());
+}
+
+TEST(Process, GrabStdoutSingleCommand)
+{
+    std::stringstream stdout_stream;
+    Process echo_process(ProcessCommand("echo giant space monkey"));
+    echo_process.capture_stdout(stdout_stream);
+
+    EXPECT_EQ(0, echo_process.run().wait());
+    EXPECT_EQ("giant space monkey\n", stdout_stream.str());
+}
+
+TEST(Process, GrabStderr)
+{
+    std::stringstream stderr_stream;
+    Process echo_process(ProcessCommand({"bash", "-c", "echo monkey 1>&2"}));
+    echo_process.capture_stderr(stderr_stream);
+
+    EXPECT_EQ(0, echo_process.run().wait());
+    EXPECT_EQ("monkey\n", stderr_stream.str());
+}
+
+TEST(Process, GrabStdoutStderr)
+{
+    std::stringstream stdout_stream, stderr_stream;
+    Process echo_process(ProcessCommand({"bash", "-c", "echo monkey 1>&2 ; echo chimp"}));
+    echo_process.capture_stdout(stdout_stream);
+    echo_process.capture_stderr(stderr_stream);
+
+    EXPECT_EQ(0, echo_process.run().wait());
+
+    EXPECT_EQ("chimp\n", stdout_stream.str());
+    EXPECT_EQ("monkey\n", stderr_stream.str());
+}
+
+TEST(Process, GrabStdoutLong)
+{
+    std::stringstream stdout_stream;
+    Process echo_process(ProcessCommand({"seq", "1", "100000"}));
+    echo_process.capture_stdout(stdout_stream);
+
+    EXPECT_EQ(0, echo_process.run().wait());
+
+    std::string s;
+    for (int x(1) ; x <= 100000 ; ++x)
     {
-        TrueTest() : TestCase("true") { }
+        ASSERT_TRUE(std::getline(stdout_stream, s));
+        ASSERT_EQ(stringify(x), s);
+    }
 
-        void run()
-        {
-            Process true_process(ProcessCommand({"true"}));
-            TEST_CHECK_EQUAL(true_process.run().wait(), 0);
-        }
-    } test_true;
+    ASSERT_TRUE(! std::getline(stdout_stream, s));
+}
 
-    struct FalseTest : TestCase
+TEST(Process, Setenv)
+{
+    std::stringstream stdout_stream;
+    Process printenv_process(ProcessCommand({"printenv", "monkey"}));
+    printenv_process.capture_stdout(stdout_stream);
+    printenv_process.setenv("monkey", "in space");
+
+    EXPECT_EQ(0, printenv_process.run().wait());
+    EXPECT_EQ("in space\n", stdout_stream.str());
+}
+
+TEST(Process, Chdir)
+{
+    std::stringstream stdout_stream;
+    Process pwd_process(ProcessCommand({"pwd"}));
+    pwd_process.capture_stdout(stdout_stream);
+    pwd_process.chdir(FSPath("/"));
+
+    EXPECT_EQ(0, pwd_process.run().wait());
+    EXPECT_EQ("/\n", stdout_stream.str());
+}
+
+TEST(Process, NoPty)
+{
+    std::stringstream stdout_stream, stderr_stream;
+    Process test_t_process(ProcessCommand({"test", "-t", "1", "-o", "-t", "2"}));
+    test_t_process.capture_stdout(stdout_stream);
+    test_t_process.capture_stderr(stderr_stream);
+    EXPECT_EQ(1, test_t_process.run().wait());
+}
+
+TEST(Process, Pty)
+{
+    std::stringstream stdout_stream, stderr_stream;
+    Process test_t_process(ProcessCommand({"test", "-t", "1", "-a", "-t", "2"}));
+    test_t_process.capture_stdout(stdout_stream);
+    test_t_process.capture_stderr(stderr_stream);
+    test_t_process.use_ptys();
+
+    EXPECT_EQ(0, test_t_process.run().wait());
+}
+
+TEST(Process, Setuid)
+{
+    if (0 != getuid())
+        return;
+
+    std::stringstream stdout_stream;
+    Process whoami_process(ProcessCommand({"bash", "-c", "whoami ; groups"}));
+    whoami_process.capture_stdout(stdout_stream);
+
+    struct passwd * nobody(getpwnam("nobody"));
+    if (nobody)
     {
-        FalseTest() : TestCase("false") { }
+        whoami_process.setuid_setgid(nobody->pw_uid, nobody->pw_gid);
+        EXPECT_EQ(0, whoami_process.run().wait());
+        EXPECT_EQ("nobody\nnobody\n", stdout_stream.str());
+    }
+}
 
-        void run()
-        {
-            Process false_process(ProcessCommand({"false"}));
-            TEST_CHECK_EQUAL(false_process.run().wait(), 1);
-        }
-    } test_false;
+TEST(Process, GrabFD)
+{
+    std::stringstream fd_stream;
+    Process echo_process(ProcessCommand({"bash", "-c", "echo monkey 1>&$MAGIC_FD"}));
+    echo_process.capture_output_to_fd(fd_stream, -1, "MAGIC_FD");
 
-    struct NoWaitTest : TestCase
+    EXPECT_EQ(0, echo_process.run().wait());
+    EXPECT_EQ("monkey\n", fd_stream.str());
+}
+
+TEST(Process, GrabFDFixed)
+{
+    std::stringstream fd_stream;
+    Process echo_process(ProcessCommand({"bash", "-c", "echo monkey 1>&5"}));
+    echo_process.capture_output_to_fd(fd_stream, 5, "");
+
+    EXPECT_EQ(0, echo_process.run().wait());
+    EXPECT_EQ("monkey\n", fd_stream.str());
+}
+
+TEST(Process, StdinFD)
+{
+    std::unique_ptr<Pipe> input_pipe(new Pipe(true));
+
+    std::stringstream stdout_stream;
+    Process cat_process(ProcessCommand({"rev"}));
+    cat_process.capture_stdout(stdout_stream);
+    cat_process.set_stdin_fd(input_pipe->read_fd());
+
+    RunningProcessHandle handle(cat_process.run());
+
     {
-        NoWaitTest() : TestCase("no wait") { }
-
-        void run()
         {
-            Process true_process(ProcessCommand({"true"}));
-            TEST_CHECK_THROWS({ RunningProcessHandle handle(true_process.run()); }, ProcessError);
+            SafeOFStream s(input_pipe->write_fd(), true);
+            s << "backwards" << std::endl;
         }
-    } test_no_wait;
 
-    struct TwoWaitTest : TestCase
+        ASSERT_TRUE(0 == ::close(input_pipe->write_fd()));
+        input_pipe->clear_write_fd();
+    }
+
+    EXPECT_EQ(0, handle.wait());
+    EXPECT_EQ("sdrawkcab\n", stdout_stream.str());
+}
+
+TEST(Process, PipeCommand)
+{
     {
-        TwoWaitTest() : TestCase("two wait") { }
+        Process one_two_process(ProcessCommand({ "bash", "process_TEST_dir/pipe_test.bash", "ONE", "TWO" }));
+        one_two_process.pipe_command_handler("PALUDIS_PIPE_COMMAND", &response_handler);
+        EXPECT_EQ(12, one_two_process.run().wait());
+    }
 
-        void run()
-        {
-            Process true_process(ProcessCommand({"true"}));
-
-            RunningProcessHandle handle(true_process.run());
-            TEST_CHECK_EQUAL(handle.wait(), 0);
-            TEST_CHECK_THROWS(int PALUDIS_ATTRIBUTE((unused)) x(handle.wait()), ProcessError);
-        }
-    } test_two_wait;
-
-    struct GrabStdoutTest : TestCase
     {
-        GrabStdoutTest() : TestCase("grab stdout") { }
-
-        void run()
-        {
-            std::stringstream stdout_stream;
-            Process echo_process(ProcessCommand({"echo", "monkey"}));
-            echo_process.capture_stdout(stdout_stream);
-
-            TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
-            TEST_CHECK_EQUAL(stdout_stream.str(), "monkey\n");
-        }
-    } test_grab_stdout;
-
-    struct GrabStdoutSingleCommandTest : TestCase
-    {
-        GrabStdoutSingleCommandTest() : TestCase("grab stdout single command") { }
-
-        void run()
-        {
-            std::stringstream stdout_stream;
-            Process echo_process(ProcessCommand("echo giant space monkey"));
-            echo_process.capture_stdout(stdout_stream);
-
-            TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
-            TEST_CHECK_EQUAL(stdout_stream.str(), "giant space monkey\n");
-        }
-    } test_grab_stdout_single_command;
-
-    struct GrabStderrTest : TestCase
-    {
-        GrabStderrTest() : TestCase("grab stderr") { }
-
-        void run()
-        {
-            std::stringstream stderr_stream;
-            Process echo_process(ProcessCommand({"bash", "-c", "echo monkey 1>&2"}));
-            echo_process.capture_stderr(stderr_stream);
-
-            TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
-            TEST_CHECK_EQUAL(stderr_stream.str(), "monkey\n");
-        }
-    } test_grab_stderr;
-
-    struct GrabStdoutStderrTest : TestCase
-    {
-        GrabStdoutStderrTest() : TestCase("grab stdout stderr") { }
-
-        void run()
-        {
-            std::stringstream stdout_stream, stderr_stream;
-            Process echo_process(ProcessCommand({"bash", "-c", "echo monkey 1>&2 ; echo chimp"}));
-            echo_process.capture_stdout(stdout_stream);
-            echo_process.capture_stderr(stderr_stream);
-
-            TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
-
-            TEST_CHECK_EQUAL(stdout_stream.str(), "chimp\n");
-            TEST_CHECK_EQUAL(stderr_stream.str(), "monkey\n");
-        }
-    } test_grab_stdout_stderr;
-
-    struct GrabStdoutLongTest : TestCase
-    {
-        GrabStdoutLongTest() : TestCase("grab stdout long") { }
-
-        void run()
-        {
-            std::stringstream stdout_stream;
-            Process echo_process(ProcessCommand({"seq", "1", "100000"}));
-            echo_process.capture_stdout(stdout_stream);
-
-            TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
-
-            std::string s;
-            for (int x(1) ; x <= 100000 ; ++x)
-            {
-                TEST_CHECK(std::getline(stdout_stream, s));
-                TEST_CHECK_STRINGIFY_EQUAL(s, stringify(x));
-            }
-
-            TEST_CHECK(! std::getline(stdout_stream, s));
-        }
-    } test_grab_stdout_long;
-
-    struct SetenvTest : TestCase
-    {
-        SetenvTest() : TestCase("setenv") { }
-
-        void run()
-        {
-            std::stringstream stdout_stream;
-            Process printenv_process(ProcessCommand({"printenv", "monkey"}));
-            printenv_process.capture_stdout(stdout_stream);
-            printenv_process.setenv("monkey", "in space");
-
-            TEST_CHECK_EQUAL(printenv_process.run().wait(), 0);
-            TEST_CHECK_EQUAL(stdout_stream.str(), "in space\n");
-        }
-    } test_setenv;
-
-    struct ChdirTest : TestCase
-    {
-        ChdirTest() : TestCase("chdir") { }
-
-        void run()
-        {
-            std::stringstream stdout_stream;
-            Process pwd_process(ProcessCommand({"pwd"}));
-            pwd_process.capture_stdout(stdout_stream);
-            pwd_process.chdir(FSPath("/"));
-
-            TEST_CHECK_EQUAL(pwd_process.run().wait(), 0);
-            TEST_CHECK_EQUAL(stdout_stream.str(), "/\n");
-        }
-    } test_chdir;
-
-    struct NoPtyTest : TestCase
-    {
-        NoPtyTest() : TestCase("no pty") { }
-
-        void run()
-        {
-            std::stringstream stdout_stream, stderr_stream;
-            Process test_t_process(ProcessCommand({"test", "-t", "1", "-o", "-t", "2"}));
-            test_t_process.capture_stdout(stdout_stream);
-            test_t_process.capture_stderr(stderr_stream);
-            TEST_CHECK_EQUAL(test_t_process.run().wait(), 1);
-        }
-    } test_no_pty;
-
-    struct PtyTest : TestCase
-    {
-        PtyTest() : TestCase("pty") { }
-
-        void run()
-        {
-            std::stringstream stdout_stream, stderr_stream;
-            Process test_t_process(ProcessCommand({"test", "-t", "1", "-a", "-t", "2"}));
-            test_t_process.capture_stdout(stdout_stream);
-            test_t_process.capture_stderr(stderr_stream);
-            test_t_process.use_ptys();
-
-            TEST_CHECK_EQUAL(test_t_process.run().wait(), 0);
-        }
-    } test_ptys;
-
-    struct SetuidTest : TestCase
-    {
-        SetuidTest() : TestCase("setuid") { }
-
-        void run()
-        {
-            if (0 != getuid())
-                return;
-
-            std::stringstream stdout_stream;
-            Process whoami_process(ProcessCommand({"bash", "-c", "whoami ; groups"}));
-            whoami_process.capture_stdout(stdout_stream);
-
-            struct passwd * nobody(getpwnam("nobody"));
-            if (nobody)
-            {
-                whoami_process.setuid_setgid(nobody->pw_uid, nobody->pw_gid);
-                TEST_CHECK_EQUAL(whoami_process.run().wait(), 0);
-                TEST_CHECK_EQUAL(stdout_stream.str(), "nobody\nnobody\n");
-            }
-        }
-    } test_setuid;
-
-    struct GrabFDTest : TestCase
-    {
-        GrabFDTest() : TestCase("grab fd") { }
-
-        void run()
-        {
-            std::stringstream fd_stream;
-            Process echo_process(ProcessCommand({"bash", "-c", "echo monkey 1>&$MAGIC_FD"}));
-            echo_process.capture_output_to_fd(fd_stream, -1, "MAGIC_FD");
-
-            TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
-            TEST_CHECK_EQUAL(fd_stream.str(), "monkey\n");
-        }
-    } test_grab_fd;
-
-    struct GrabFDFixedTest : TestCase
-    {
-        GrabFDFixedTest() : TestCase("grab fd fixed") { }
-
-        void run()
-        {
-            std::stringstream fd_stream;
-            Process echo_process(ProcessCommand({"bash", "-c", "echo monkey 1>&5"}));
-            echo_process.capture_output_to_fd(fd_stream, 5, "");
-
-            TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
-            TEST_CHECK_EQUAL(fd_stream.str(), "monkey\n");
-        }
-    } test_grab_fd_fixed;
-
-    struct StdinFDTest : TestCase
-    {
-        StdinFDTest() : TestCase("stdin fd") { }
-
-        void run()
-        {
-            std::unique_ptr<Pipe> input_pipe(new Pipe(true));
-
-            std::stringstream stdout_stream;
-            Process cat_process(ProcessCommand({"rev"}));
-            cat_process.capture_stdout(stdout_stream);
-            cat_process.set_stdin_fd(input_pipe->read_fd());
-
-            RunningProcessHandle handle(cat_process.run());
-
-            {
-                {
-                    SafeOFStream s(input_pipe->write_fd(), true);
-                    s << "backwards" << std::endl;
-                }
-                TEST_CHECK(0 == ::close(input_pipe->write_fd()));
-                input_pipe->clear_write_fd();
-            }
-
-            TEST_CHECK_EQUAL(handle.wait(), 0);
-            TEST_CHECK_EQUAL(stdout_stream.str(), "sdrawkcab\n");
-        }
-    } test_stdin_fd;
-
-    struct PipeCommandTest : TestCase
-    {
-        PipeCommandTest() : TestCase("pipe command") { }
-
-        void run()
-        {
-            {
-                Process one_two_process(ProcessCommand({ "bash", "process_TEST_dir/pipe_test.bash", "ONE", "TWO" }));
-                one_two_process.pipe_command_handler("PALUDIS_PIPE_COMMAND", &response_handler);
-                TEST_CHECK_EQUAL(one_two_process.run().wait(), 12);
-            }
-
-            {
-                Process three_four_process(ProcessCommand({ "bash", "process_TEST_dir/pipe_test.bash", "THREE", "FOUR" }));
-                three_four_process.pipe_command_handler("PALUDIS_PIPE_COMMAND", &response_handler);
-                TEST_CHECK_EQUAL(three_four_process.run().wait(), 34);
-            }
-        }
-    } test_pipe_command;
-
-    struct CapturedPipeCommandTest : TestCase
-    {
-        CapturedPipeCommandTest() : TestCase("captured pipe command") { }
-
-        void run()
-        {
-            std::stringstream stdout_stream;
-            Process one_two_three_process(ProcessCommand({ "bash", "process_TEST_dir/captured_pipe_test.bash", "ONE", "TWO", "THREE" }));
-            one_two_three_process.capture_stdout(stdout_stream);
-            one_two_three_process.pipe_command_handler("PALUDIS_PIPE_COMMAND", &response_handler);
-            TEST_CHECK_EQUAL(one_two_three_process.run().wait(), 13);
-
-            std::string line;
-            TEST_CHECK(std::getline(stdout_stream, line));
-            TEST_CHECK_EQUAL(line, "2");
-            TEST_CHECK(! std::getline(stdout_stream, line));
-        }
-    } test_captured_pipe_command;
-
-    struct PrefixStdoutTest : TestCase
-    {
-        PrefixStdoutTest() : TestCase("prefix stdout") { }
-
-        void run()
-        {
-            std::stringstream stdout_stream;
-            Process echo_process(ProcessCommand({ "bash", "-c", "echo monkey ; echo in ; echo space"}));
-            echo_process.capture_stdout(stdout_stream);
-            echo_process.prefix_stdout("prefix> ");
-
-            TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
-            TEST_CHECK_EQUAL(stdout_stream.str(), "prefix> monkey\nprefix> in\nprefix> space\n");
-        }
-    } test_prefix_stdout;
-
-    struct PrefixStderrTest : TestCase
-    {
-        PrefixStderrTest() : TestCase("prefix stderr") { }
-
-        void run()
-        {
-            std::stringstream stderr_stream;
-            Process echo_process(ProcessCommand({ "bash", "-c", "echo monkey 1>&2 ; echo in 1>&2 ; echo space 1>&2"}));
-            echo_process.capture_stderr(stderr_stream);
-            echo_process.prefix_stderr("prefix> ");
-
-            TEST_CHECK_EQUAL(echo_process.run().wait(), 0);
-            TEST_CHECK_EQUAL(stderr_stream.str(), "prefix> monkey\nprefix> in\nprefix> space\n");
-        }
-    } test_prefix_stderr;
-
-    struct ClearenvTest : TestCase
-    {
-        ClearenvTest() : TestCase("clearenv") { }
-
-        void run()
-        {
-            ::setenv("BANANAS", "IN PYJAMAS", 1);
-            std::stringstream stdout_stream;
-            Process printenv_process(ProcessCommand({"printenv", "BANANAS"}));
-            printenv_process.capture_stdout(stdout_stream);
-            printenv_process.clearenv();
-
-            TEST_CHECK_EQUAL(printenv_process.run().wait(), 1);
-            TEST_CHECK_EQUAL(stdout_stream.str(), "");
-        }
-    } test_clearenv;
-
-    struct SendFDTest : TestCase
-    {
-        SendFDTest() : TestCase("send fd") { }
-
-        void run()
-        {
-            std::stringstream stdout_stream, in_stream;
-            in_stream << "monkey" << std::endl;
-
-            Process cat_process(ProcessCommand({"bash", "-c", "cat <&$MAGIC_FD"}));
-            cat_process.send_input_to_fd(in_stream, -1, "MAGIC_FD");
-            cat_process.capture_stdout(stdout_stream);
-
-            TEST_CHECK_EQUAL(cat_process.run().wait(), 0);
-            TEST_CHECK_EQUAL(stdout_stream.str(), "monkey\n");
-        }
-    } test_send_fd;
-
-    struct SendFDFixedTest : TestCase
-    {
-        SendFDFixedTest() : TestCase("send fd fixed") { }
-
-        void run()
-        {
-            std::stringstream stdout_stream, in_stream;
-            in_stream << "monkey" << std::endl;
-
-            Process cat_process(ProcessCommand({"bash", "-c", "cat <&5"}));
-            cat_process.send_input_to_fd(in_stream, 5, "");
-            cat_process.capture_stdout(stdout_stream);
-
-            TEST_CHECK_EQUAL(cat_process.run().wait(), 0);
-            TEST_CHECK_EQUAL(stdout_stream.str(), "monkey\n");
-        }
-    } test_send_fd_fixed;
+        Process three_four_process(ProcessCommand({ "bash", "process_TEST_dir/pipe_test.bash", "THREE", "FOUR" }));
+        three_four_process.pipe_command_handler("PALUDIS_PIPE_COMMAND", &response_handler);
+        EXPECT_EQ(34, three_four_process.run().wait());
+    }
+}
+
+TEST(Process, CapturedPipeCommand)
+{
+    std::stringstream stdout_stream;
+    Process one_two_three_process(ProcessCommand({ "bash", "process_TEST_dir/captured_pipe_test.bash", "ONE", "TWO", "THREE" }));
+    one_two_three_process.capture_stdout(stdout_stream);
+    one_two_three_process.pipe_command_handler("PALUDIS_PIPE_COMMAND", &response_handler);
+    EXPECT_EQ(13, one_two_three_process.run().wait());
+
+    std::string line;
+    ASSERT_TRUE(std::getline(stdout_stream, line));
+    EXPECT_EQ("2", line);
+    ASSERT_TRUE(! std::getline(stdout_stream, line));
+}
+
+TEST(Process, PrefixStdout)
+{
+    std::stringstream stdout_stream;
+    Process echo_process(ProcessCommand({ "bash", "-c", "echo monkey ; echo in ; echo space"}));
+    echo_process.capture_stdout(stdout_stream);
+    echo_process.prefix_stdout("prefix> ");
+
+    EXPECT_EQ(0, echo_process.run().wait());
+    EXPECT_EQ("prefix> monkey\nprefix> in\nprefix> space\n", stdout_stream.str());
+}
+
+TEST(Process, PrefixStderr)
+{
+    std::stringstream stderr_stream;
+    Process echo_process(ProcessCommand({ "bash", "-c", "echo monkey 1>&2 ; echo in 1>&2 ; echo space 1>&2"}));
+    echo_process.capture_stderr(stderr_stream);
+    echo_process.prefix_stderr("prefix> ");
+
+    EXPECT_EQ(0, echo_process.run().wait());
+    EXPECT_EQ("prefix> monkey\nprefix> in\nprefix> space\n", stderr_stream.str());
+}
+
+TEST(Process, Clearenv)
+{
+    ::setenv("BANANAS", "IN PYJAMAS", 1);
+    std::stringstream stdout_stream;
+    Process printenv_process(ProcessCommand({"printenv", "BANANAS"}));
+    printenv_process.capture_stdout(stdout_stream);
+    printenv_process.clearenv();
+
+    EXPECT_EQ(1, printenv_process.run().wait());
+    EXPECT_EQ("", stdout_stream.str());
+}
+
+TEST(Process, SendFD)
+{
+    std::stringstream stdout_stream, in_stream;
+    in_stream << "monkey" << std::endl;
+
+    Process cat_process(ProcessCommand({"bash", "-c", "cat <&$MAGIC_FD"}));
+    cat_process.send_input_to_fd(in_stream, -1, "MAGIC_FD");
+    cat_process.capture_stdout(stdout_stream);
+
+    EXPECT_EQ(0, cat_process.run().wait());
+    EXPECT_EQ("monkey\n", stdout_stream.str());
+}
+
+TEST(Process, SendFDFixed)
+{
+    std::stringstream stdout_stream, in_stream;
+    in_stream << "monkey" << std::endl;
+
+    Process cat_process(ProcessCommand({"bash", "-c", "cat <&5"}));
+    cat_process.send_input_to_fd(in_stream, 5, "");
+    cat_process.capture_stdout(stdout_stream);
+
+    EXPECT_EQ(0, cat_process.run().wait());
+    EXPECT_EQ("monkey\n", stdout_stream.str());
 }
 
