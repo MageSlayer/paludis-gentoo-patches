@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,56 +18,40 @@
  */
 
 #include <paludis/util/tribool.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
-namespace test_cases
+TEST(Tribool, DefaultCtor)
 {
-    struct TriboolDefaultCtorTest : TestCase
-    {
-        TriboolDefaultCtorTest() : TestCase("default ctor") { }
+    Tribool b;
+    EXPECT_TRUE(b.is_false());
+    EXPECT_TRUE(! b.is_true());
+    EXPECT_TRUE(! b.is_indeterminate());
+}
 
-        void run()
-        {
-            Tribool b;
-            TEST_CHECK(b.is_false());
-            TEST_CHECK(! b.is_true());
-            TEST_CHECK(! b.is_indeterminate());
-        }
-    } test_default_ctor;
+TEST(Tribool, TrueCtor)
+{
+    Tribool b(true);
+    EXPECT_TRUE(! b.is_false());
+    EXPECT_TRUE(b.is_true());
+    EXPECT_TRUE(! b.is_indeterminate());
+}
 
-    struct TriboolBoolCtorTest : TestCase
-    {
-        TriboolBoolCtorTest() : TestCase("bool ctor") { }
+TEST(Tribool, FalseCtor)
+{
+    Tribool f(false);
+    EXPECT_TRUE(f.is_false());
+    EXPECT_TRUE(! f.is_true());
+    EXPECT_TRUE(! f.is_indeterminate());
+}
 
-        void run()
-        {
-            Tribool b(true);
-            TEST_CHECK(! b.is_false());
-            TEST_CHECK(b.is_true());
-            TEST_CHECK(! b.is_indeterminate());
-
-            Tribool f(false);
-            TEST_CHECK(f.is_false());
-            TEST_CHECK(! f.is_true());
-            TEST_CHECK(! f.is_indeterminate());
-        }
-    } test_bool_ctor;
-
-    struct TriboolIndetCtorTest : TestCase
-    {
-        TriboolIndetCtorTest() : TestCase("indet ctor") { }
-
-        void run()
-        {
-            Tribool b(indeterminate);
-            TEST_CHECK(! b.is_false());
-            TEST_CHECK(! b.is_true());
-            TEST_CHECK(b.is_indeterminate());
-        }
-    } test_indet_ctor;
+TEST(Tribool, IndetCtor)
+{
+    Tribool b(indeterminate);
+    EXPECT_TRUE(! b.is_false());
+    EXPECT_TRUE(! b.is_true());
+    EXPECT_TRUE(b.is_indeterminate());
 }
 
