@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,64 +20,55 @@
 #include <paludis/util/tail_output_stream.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
-namespace test_cases
+TEST(TailOutputStream, Works)
 {
-    struct TailOutputStreamTest : TestCase
+    TailOutputStream s(5);
+
     {
-        TailOutputStreamTest() : TestCase("tail output stream") { }
+        std::shared_ptr<const Sequence<std::string> > a(s.tail(false));
+        EXPECT_EQ("", join(a->begin(), a->end(), "/"));
+    }
 
-        void run()
-        {
-            TailOutputStream s(5);
+    s << "one" << std::endl;
 
-            {
-                std::shared_ptr<const Sequence<std::string> > a(s.tail(false));
-                TEST_CHECK_EQUAL(join(a->begin(), a->end(), "/"), "");
-            }
+    {
+        std::shared_ptr<const Sequence<std::string> > a(s.tail(false));
+        EXPECT_EQ("one", join(a->begin(), a->end(), "/"));
+    }
 
-            s << "one" << std::endl;
+    s << "two" << std::endl;
+    s << "three" << std::endl;
+    s << "four" << std::endl;
+    s << "five" << std::endl;
 
-            {
-                std::shared_ptr<const Sequence<std::string> > a(s.tail(false));
-                TEST_CHECK_EQUAL(join(a->begin(), a->end(), "/"), "one");
-            }
+    {
+        std::shared_ptr<const Sequence<std::string> > a(s.tail(false));
+        EXPECT_EQ("one/two/three/four/five", join(a->begin(), a->end(), "/"));
+    }
 
-            s << "two" << std::endl;
-            s << "three" << std::endl;
-            s << "four" << std::endl;
-            s << "five" << std::endl;
+    s << "six" << std::endl;
 
-            {
-                std::shared_ptr<const Sequence<std::string> > a(s.tail(false));
-                TEST_CHECK_EQUAL(join(a->begin(), a->end(), "/"), "one/two/three/four/five");
-            }
+    {
+        std::shared_ptr<const Sequence<std::string> > a(s.tail(true));
+        EXPECT_EQ("two/three/four/five/six", join(a->begin(), a->end(), "/"));
+    }
 
-            s << "six" << std::endl;
+    {
+        std::shared_ptr<const Sequence<std::string> > a(s.tail(false));
+        EXPECT_EQ("", join(a->begin(), a->end(), "/"));
+    }
 
-            {
-                std::shared_ptr<const Sequence<std::string> > a(s.tail(true));
-                TEST_CHECK_EQUAL(join(a->begin(), a->end(), "/"), "two/three/four/five/six");
-            }
+    s << "seven" << std::endl;
+    s << "eight" << std::endl;
 
-            {
-                std::shared_ptr<const Sequence<std::string> > a(s.tail(false));
-                TEST_CHECK_EQUAL(join(a->begin(), a->end(), "/"), "");
-            }
-
-            s << "seven" << std::endl;
-            s << "eight" << std::endl;
-
-            {
-                std::shared_ptr<const Sequence<std::string> > a(s.tail(false));
-                TEST_CHECK_EQUAL(join(a->begin(), a->end(), "/"), "seven/eight");
-            }
-        }
-    } test_tail_output_stream;
+    {
+        std::shared_ptr<const Sequence<std::string> > a(s.tail(false));
+        EXPECT_EQ("seven/eight", join(a->begin(), a->end(), "/"));
+    }
 }
 
