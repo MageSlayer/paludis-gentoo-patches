@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,46 +18,38 @@
  */
 
 #include <paludis/util/buffer_output_stream.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+
 #include <sstream>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-namespace test_cases
+TEST(BufferOutputStream, Works)
 {
-    struct BufferOutputStreamTest : TestCase
+    BufferOutputStream s;
+    EXPECT_TRUE(! s.anything_to_unbuffer());
+
+    std::stringstream t;
+
+    for (int n(0), n_end(1000) ; n != n_end ; ++n)
     {
-        BufferOutputStreamTest() : TestCase("buffer_output_stream") { }
+        s << n << std::endl;
+        t << n << std::endl;
+    }
 
-        void run()
-        {
-            BufferOutputStream s;
-            TEST_CHECK(! s.anything_to_unbuffer());
+    std::stringstream ss;
+    EXPECT_TRUE(s.anything_to_unbuffer());
+    s.unbuffer(ss);
+    EXPECT_TRUE(! s.anything_to_unbuffer());
 
-            std::stringstream t;
+    EXPECT_EQ(t.str(), ss.str());
 
-            for (int n(0), n_end(1000) ; n != n_end ; ++n)
-            {
-                s << n << std::endl;
-                t << n << std::endl;
-            }
-
-            std::stringstream ss;
-            TEST_CHECK(s.anything_to_unbuffer());
-            s.unbuffer(ss);
-            TEST_CHECK(! s.anything_to_unbuffer());
-
-            TEST_CHECK_EQUAL(ss.str(), t.str());
-
-            s << "foo" << std::endl;
-            std::stringstream sss;
-            TEST_CHECK(s.anything_to_unbuffer());
-            s.unbuffer(sss);
-            TEST_CHECK(! s.anything_to_unbuffer());
-            TEST_CHECK_EQUAL(sss.str(), "foo\n");
-        }
-    } test_buffer_output_stream;
+    s << "foo" << std::endl;
+    std::stringstream sss;
+    EXPECT_TRUE(s.anything_to_unbuffer());
+    s.unbuffer(sss);
+    EXPECT_TRUE(! s.anything_to_unbuffer());
+    EXPECT_EQ("foo\n", sss.str());
 }
 
