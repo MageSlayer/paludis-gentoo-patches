@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007 Ciaran McCreesh
+ * Copyright (c) 2007, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,9 +17,6 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
-
 #include <paludis/util/graph.hh>
 #include <paludis/util/graph-impl.hh>
 #include <paludis/util/join.hh>
@@ -27,87 +24,80 @@
 
 #include <list>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-namespace test_cases
+TEST(Graph, Directed)
 {
-    struct TestDirectedGraph : TestCase
-    {
-        TestDirectedGraph() : TestCase("directed graph") { }
+    DirectedGraph<std::string, int> g;
 
-        void run()
+    EXPECT_TRUE(! g.has_node("a"));
+    EXPECT_TRUE(! g.has_node("b"));
+    EXPECT_TRUE(! g.has_node("c"));
+    EXPECT_TRUE(! g.has_node("d"));
+    EXPECT_TRUE(! g.has_node("e"));
+    EXPECT_TRUE(! g.has_node("f"));
+    EXPECT_TRUE(! g.has_node("x"));
+
+    g.add_node("a");
+    g.add_node("b");
+    g.add_node("c");
+    g.add_node("d");
+    g.add_node("e");
+    g.add_node("f");
+
+    EXPECT_TRUE(g.has_node("a"));
+    EXPECT_TRUE(g.has_node("b"));
+    EXPECT_TRUE(g.has_node("c"));
+    EXPECT_TRUE(g.has_node("d"));
+    EXPECT_TRUE(g.has_node("e"));
+    EXPECT_TRUE(g.has_node("f"));
+    EXPECT_TRUE(! g.has_node("x"));
+
+    g.add_node("y");
+    EXPECT_TRUE(g.has_node("y"));
+    g.delete_node("y");
+    EXPECT_TRUE(! g.has_node("y"));
+
+    g.add_edge("a", "b", 1);
+    g.add_edge("b", "c", 2);
+    g.add_edge("c", "e", 3);
+    g.add_edge("b", "d", 4);
+    g.add_edge("d", "e", 5);
+    g.add_edge("d", "f", 6);
+
+    for (char mc('a') ; mc < 'g' ; ++mc)
+        for (char nc('a') ; nc < 'g' ; ++nc)
         {
-            DirectedGraph<std::string, int> g;
+            std::string m(stringify(mc)), n(stringify(nc));
 
-            TEST_CHECK(! g.has_node("a"));
-            TEST_CHECK(! g.has_node("b"));
-            TEST_CHECK(! g.has_node("c"));
-            TEST_CHECK(! g.has_node("d"));
-            TEST_CHECK(! g.has_node("e"));
-            TEST_CHECK(! g.has_node("f"));
-            TEST_CHECK(! g.has_node("x"));
-
-            g.add_node("a");
-            g.add_node("b");
-            g.add_node("c");
-            g.add_node("d");
-            g.add_node("e");
-            g.add_node("f");
-
-            TEST_CHECK(g.has_node("a"));
-            TEST_CHECK(g.has_node("b"));
-            TEST_CHECK(g.has_node("c"));
-            TEST_CHECK(g.has_node("d"));
-            TEST_CHECK(g.has_node("e"));
-            TEST_CHECK(g.has_node("f"));
-            TEST_CHECK(! g.has_node("x"));
-
-            g.add_node("y");
-            TEST_CHECK(g.has_node("y"));
-            g.delete_node("y");
-            TEST_CHECK(! g.has_node("y"));
-
-            g.add_edge("a", "b", 1);
-            g.add_edge("b", "c", 2);
-            g.add_edge("c", "e", 3);
-            g.add_edge("b", "d", 4);
-            g.add_edge("d", "e", 5);
-            g.add_edge("d", "f", 6);
-
-            for (char mc('a') ; mc < 'g' ; ++mc)
-                for (char nc('a') ; nc < 'g' ; ++nc)
-                {
-                    std::string m(stringify(mc)), n(stringify(nc));
-
-                    if (g.has_edge(m, n))
-                    {
-                        TEST_CHECK(! g.has_edge(n, m));
-                        TEST_CHECK(g.has_outgoing_edges(m));
-                        TEST_CHECK(0 != g.fetch_edge(m, n));
-                    }
-                    else
-                        TEST_CHECK_THROWS(g.fetch_edge(m, n), NoSuchGraphEdgeError);
-                }
-
-            std::list<std::string> t;
-            g.topological_sort(std::back_inserter(t));
-
-            TEST_CHECK_EQUAL(join(t.begin(), t.end(), " "), "e c f d b a");
-
-            g.add_edge("e", "b", 7);
-            TEST_CHECK_THROWS(g.topological_sort(std::back_inserter(t)), NoGraphTopologicalOrderExistsError);
-
-            try
+            if (g.has_edge(m, n))
             {
-                g.topological_sort(std::back_inserter(t));
-                TEST_CHECK(false);
+                EXPECT_TRUE(! g.has_edge(n, m));
+                EXPECT_TRUE(g.has_outgoing_edges(m));
+                EXPECT_TRUE(0 != g.fetch_edge(m, n));
             }
-            catch (const NoGraphTopologicalOrderExistsError & e)
-            {
-                TEST_CHECK_EQUAL(join(e.remaining_nodes()->begin(), e.remaining_nodes()->end(), " "), "a b c d e");
-            }
+            else
+                EXPECT_THROW(g.fetch_edge(m, n), NoSuchGraphEdgeError);
         }
-    } test_directed_graph;
+
+    std::list<std::string> t;
+    g.topological_sort(std::back_inserter(t));
+
+    EXPECT_EQ("e c f d b a", join(t.begin(), t.end(), " "));
+
+    g.add_edge("e", "b", 7);
+    EXPECT_THROW(g.topological_sort(std::back_inserter(t)), NoGraphTopologicalOrderExistsError);
+
+    try
+    {
+        g.topological_sort(std::back_inserter(t));
+        FAIL();
+    }
+    catch (const NoGraphTopologicalOrderExistsError & e)
+    {
+        EXPECT_EQ("a b c d e", join(e.remaining_nodes()->begin(), e.remaining_nodes()->end(), " "));
+    }
 }
 

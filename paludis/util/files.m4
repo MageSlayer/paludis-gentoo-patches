@@ -41,7 +41,7 @@ add(`fs_iterator',                       `hh', `cc', `fwd', `se', `test', `tests
 add(`fs_error',                          `hh', `cc')
 add(`fs_path',                           `hh', `cc', `fwd', `se', `test', `testscript')
 add(`fs_stat',                           `hh', `cc', `fwd', `test', `testscript')
-add(`graph',                             `hh', `cc', `fwd', `impl', `test')
+add(`graph',                             `hh', `cc', `fwd', `impl', `gtest')
 add(`hashes',                            `hh', `cc', `gtest')
 add(`iterator_funcs',                    `hh', `test')
 add(`indirect_iterator',                 `hh', `fwd', `impl', `gtest')
