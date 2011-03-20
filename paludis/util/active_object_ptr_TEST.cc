@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,49 +18,27 @@
  */
 
 #include <paludis/util/active_object_ptr.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
-#include <test/test_concepts.hh>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
-namespace test_cases
+TEST(ActiveObjectPtr, Dereference)
 {
-    typedef ActiveObjectPtr<int *> ActiveIntPtr;
-    TESTCASE_SEMIREGULAR(ActiveIntPtr, ActiveIntPtr(new int(10)));
+    ActiveObjectPtr<std::string *> p(new std::string("monkey"));
+    EXPECT_EQ(6u, p->length());
 
-    typedef ActiveObjectPtr<std::shared_ptr<int> > ActiveSharedIntPtr;
-    TESTCASE_SEMIREGULAR(ActiveSharedIntPtr, ActiveSharedIntPtr(std::make_shared<int>(10)));
+    ActiveObjectPtr<std::shared_ptr<std::string> > q(std::make_shared<std::string>("chimp"));
+    EXPECT_EQ(5u, q->length());
+}
 
-    struct TestDereference : TestCase
-    {
-        TestDereference() : TestCase("dereference") { }
+TEST(ActiveObjectPtr, Value)
+{
+    ActiveObjectPtr<std::string *> p(new std::string("monkey"));
+    EXPECT_EQ(6u, p.value()->length());
 
-        void run()
-        {
-            ActiveObjectPtr<std::string *> p(new std::string("monkey"));
-            TEST_CHECK_EQUAL(p->length(), 6u);
-
-            ActiveObjectPtr<std::shared_ptr<std::string> > q(
-                    std::make_shared<std::string>("chimp"));
-            TEST_CHECK_EQUAL(q->length(), 5u);
-        }
-    } test_dereference;
-
-    struct TestValue : TestCase
-    {
-        TestValue() : TestCase("value") { }
-
-        void run()
-        {
-            ActiveObjectPtr<std::string *> p(new std::string("monkey"));
-            TEST_CHECK_EQUAL(p.value()->length(), 6u);
-
-            ActiveObjectPtr<std::shared_ptr<std::string> > q(
-                    std::make_shared<std::string>("chimp"));
-            TEST_CHECK_EQUAL(q.value()->length(), 5u);
-        }
-    } test_value;
+    ActiveObjectPtr<std::shared_ptr<std::string> > q(
+            std::make_shared<std::string>("chimp"));
+    EXPECT_EQ(5u, q.value()->length());
 }
 

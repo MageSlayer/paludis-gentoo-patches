@@ -10,7 +10,7 @@ dnl on this file at present...
 
 add(`accept_visitor',                    `hh')
 add(`action_queue',                      `hh', `cc', `gtest')
-add(`active_object_ptr',                 `hh', `cc', `fwd', `test')
+add(`active_object_ptr',                 `hh', `cc', `fwd', `gtest')
 add(`attributes',                        `hh')
 add(`buffer_output_stream',              `hh', `cc', `fwd', `test')
 add(`byte_swap',                         `hh', `test')
