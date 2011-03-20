@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2006 Mark Loeser
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -21,132 +21,100 @@
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/fs_error.hh>
 #include <paludis/util/timestamp.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+#include <paludis/util/stringify.hh>
+
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
 #include <pwd.h>
 #include <ctime>
 
+#include <gtest/gtest.h>
+
 using namespace paludis;
-using namespace test;
 
-namespace test_cases
+TEST(FSPath, Manipulation)
 {
-    struct FSPathManipulationTest : TestCase
-    {
-        FSPathManipulationTest() : TestCase("construction and manipulation") { }
+    FSPath f("/foo/bar");
+    FSPath c(f);
+    EXPECT_EQ(FSPath("/foo/bar"), f);
+    EXPECT_EQ(FSPath("/foo/bar"), c);
+    f = FSPath("/baz");
+    EXPECT_EQ(FSPath("/baz"), f);
+    EXPECT_EQ(FSPath("/foo/bar"), c);
+    c /= "moo";
+    EXPECT_EQ(FSPath("/baz"), f);
+    EXPECT_EQ(FSPath("/foo/bar/moo"), c);
+    f = c / f;
+    EXPECT_EQ(FSPath("/foo/bar/moo/baz"), f);
+    EXPECT_EQ(FSPath("/foo/bar/moo"), c);
 
-        void run()
-        {
-            FSPath f("/foo/bar");
-            FSPath c(f);
-            TEST_CHECK_EQUAL(f, FSPath("/foo/bar"));
-            TEST_CHECK_EQUAL(c, FSPath("/foo/bar"));
-            f = FSPath("/baz");
-            TEST_CHECK_EQUAL(f, FSPath("/baz"));
-            TEST_CHECK_EQUAL(c, FSPath("/foo/bar"));
-            c /= "moo";
-            TEST_CHECK_EQUAL(f, FSPath("/baz"));
-            TEST_CHECK_EQUAL(c, FSPath("/foo/bar/moo"));
-            f = c / f;
-            TEST_CHECK_EQUAL(f, FSPath("/foo/bar/moo/baz"));
-            TEST_CHECK_EQUAL(c, FSPath("/foo/bar/moo"));
+    f = FSPath::cwd();
 
-            f = FSPath::cwd();
+    EXPECT_EQ(f, f / FSPath("/"));
+}
 
-            TEST_CHECK_EQUAL(f, f / FSPath("/"));
-        }
-    } test_fs_path_manipulation;
+TEST(FSPath, Realpath)
+{
+    FSPath f("fs_path_TEST_dir/symlink_to_dir_a/file_in_a");
+    FSPath r(f.realpath());
+    std::string g("fs_path_TEST_dir/dir_a/file_in_a");
+    EXPECT_EQ(g, stringify(r).substr(stringify(r).length() - g.length()));
+}
 
-    struct FSPathRealpathTest : TestCase
-    {
-        FSPathRealpathTest() : TestCase("realpath") { }
+TEST(FSPath, Symlink)
+{
+    FSPath f("fs_path_TEST_dir/new_sym");
+    EXPECT_TRUE(f.symlink("the_target"));
+    EXPECT_EQ("the_target", f.readlink());
+    f.unlink();
+}
 
-        void run()
-        {
-            FSPath f("fs_path_TEST_dir/symlink_to_dir_a/file_in_a");
-            FSPath r(f.realpath());
-            std::string g("fs_path_TEST_dir/dir_a/file_in_a");
-            TEST_CHECK_EQUAL(stringify(r).substr(stringify(r).length() - g.length()), g);
-        }
-    } test_fs_path_realpath;
+TEST(FSPath, BaseDirName)
+{
+    FSPath a("/foo/bar");
+    FSPath b("/moo/went/the/cow");
+    FSPath c("/");
+    FSPath d(".");
+    FSPath e("..");
 
-    struct FSPathSymlink : TestCase
-    {
-        FSPathSymlink() : TestCase("symlink") {}
+    EXPECT_TRUE(a.basename() == "bar");
+    EXPECT_TRUE(stringify(a.dirname()) == "/foo");
+    EXPECT_TRUE(b.basename() == "cow");
+    EXPECT_TRUE(stringify(b.dirname()) == "/moo/went/the");
+    EXPECT_TRUE(c.basename() == "/");
+    EXPECT_TRUE(stringify(c.dirname()) == "/");
+    EXPECT_TRUE(d.basename() == ".");
+    EXPECT_TRUE(stringify(d.dirname()) == ".");
+    EXPECT_TRUE(e.basename() == "..");
+    EXPECT_TRUE(stringify(e.dirname()) == "..");
+}
 
-        void run()
-        {
-            FSPath f("fs_path_TEST_dir/new_sym");
-            TEST_CHECK(f.symlink("the_target"));
-            TEST_CHECK_EQUAL(f.readlink(), "the_target");
-            f.unlink();
-        }
-    } test_fs_symlink;
+TEST(FSPath, StripLeading)
+{
+    FSPath root1("/stairway/to/heaven/");
+    FSPath root2("");
+    FSPath root3("/");
 
-    struct FSPathBaseDirName : TestCase
-    {
-        FSPathBaseDirName() : TestCase("basename and dirname") {}
+    FSPath a(root1);
+    FSPath b(root1 / "usr" / "share");
+    FSPath c(root2 / "my" / "directory");
+    FSPath d(root3 / "my" / "directory");
 
-        void run()
-        {
-            FSPath a("/foo/bar");
-            FSPath b("/moo/went/the/cow");
-            FSPath c("/");
-            FSPath d(".");
-            FSPath e("..");
+    EXPECT_TRUE(stringify(a.strip_leading(root1)) == "/");
+    EXPECT_TRUE(stringify(b.strip_leading(root1)) == "/usr/share");
+    EXPECT_TRUE(stringify(c.strip_leading(root2)) == "/my/directory");
+    EXPECT_TRUE(stringify(d.strip_leading(root3)) == "/my/directory");
+}
 
-            TEST_CHECK(a.basename() == "bar");
-            TEST_CHECK(stringify(a.dirname()) == "/foo");
-            TEST_CHECK(b.basename() == "cow");
-            TEST_CHECK(stringify(b.dirname()) == "/moo/went/the");
-            TEST_CHECK(c.basename() == "/");
-            TEST_CHECK(stringify(c.dirname()) == "/");
-            TEST_CHECK(d.basename() == ".");
-            TEST_CHECK(stringify(d.dirname()) == ".");
-            TEST_CHECK(e.basename() == "..");
-            TEST_CHECK(stringify(e.dirname()) == "..");
-        }
-    } test_fs_path_dir_base_name;
+TEST(FSPath, OStream)
+{
+    std::string n("fs_path_TEST_dir/no_perms");
+    std::ostringstream s;
+    FSPath a(n);
 
-    struct FSPathStripLeading : TestCase
-    {
-        FSPathStripLeading() : TestCase("strip_leading") {}
+    s << a;
 
-        void run()
-        {
-            FSPath root1("/stairway/to/heaven/");
-            FSPath root2("");
-            FSPath root3("/");
-
-            FSPath a(root1);
-            FSPath b(root1 / "usr" / "share");
-            FSPath c(root2 / "my" / "directory");
-            FSPath d(root3 / "my" / "directory");
-
-            TEST_CHECK(stringify(a.strip_leading(root1)) == "/");
-            TEST_CHECK(stringify(b.strip_leading(root1)) == "/usr/share");
-            TEST_CHECK(stringify(c.strip_leading(root2)) == "/my/directory");
-            TEST_CHECK(stringify(d.strip_leading(root3)) == "/my/directory");
-        }
-    } test_fs_path_strip_leading;
-
-    struct FSPathToOstreamOperator : TestCase
-    {
-        FSPathToOstreamOperator() : TestCase("operator<<") {}
-
-        void run()
-        {
-            std::string n("fs_path_TEST_dir/no_perms");
-            std::ostringstream s;
-            FSPath a(n);
-
-            s << a;
-
-            TEST_CHECK_EQUAL(s.str(), n);
-        }
-    } test_fs_path_to_ostream_operator;
+    EXPECT_EQ(n, s.str());
 }
 
