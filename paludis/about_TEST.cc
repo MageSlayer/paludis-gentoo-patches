@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,66 +18,35 @@
  */
 
 #include <paludis/about.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
 
-using namespace test;
-using namespace paludis;
+#include <gtest/gtest.h>
 
-/**
- * \file
- * Test cases for about.hh .
- *
- */
-
-namespace test_cases
+TEST(About, Version)
 {
-    /**
-     * \test Version tests.
-     *
-     */
-    struct VersionTest : TestCase
-    {
-        VersionTest() : TestCase("about test") { }
+    EXPECT_TRUE(PALUDIS_VERSION_MAJOR >= 0);
+    EXPECT_TRUE(PALUDIS_VERSION_MAJOR <= 9);
 
-        void run()
-        {
-            TEST_CHECK(PALUDIS_VERSION_MAJOR >= 0);
-            TEST_CHECK(PALUDIS_VERSION_MAJOR <= 9);
+    EXPECT_TRUE(PALUDIS_VERSION_MINOR >= 0);
+    EXPECT_TRUE(PALUDIS_VERSION_MINOR <= 99);
 
-            TEST_CHECK(PALUDIS_VERSION_MINOR >= 0);
-            TEST_CHECK(PALUDIS_VERSION_MINOR <= 99);
+    EXPECT_TRUE(PALUDIS_VERSION_MICRO >= 0);
+    EXPECT_TRUE(PALUDIS_VERSION_MICRO <= 99);
 
-            TEST_CHECK(PALUDIS_VERSION_MICRO >= 0);
-            TEST_CHECK(PALUDIS_VERSION_MICRO <= 99);
+    EXPECT_TRUE(PALUDIS_VERSION >= 0);
+    EXPECT_TRUE(PALUDIS_VERSION <= 99999);
+    EXPECT_EQ(PALUDIS_VERSION, 10000 * PALUDIS_VERSION_MAJOR + 100 * PALUDIS_VERSION_MINOR + PALUDIS_VERSION_MICRO);
 
-            TEST_CHECK(PALUDIS_VERSION >= 0);
-            TEST_CHECK(PALUDIS_VERSION <= 99999);
-            TEST_CHECK_EQUAL(PALUDIS_VERSION, 10000 * PALUDIS_VERSION_MAJOR +
-                    100 * PALUDIS_VERSION_MINOR + PALUDIS_VERSION_MICRO);
+    EXPECT_TRUE(std::string(PALUDIS_GIT_HEAD) != "i am a fish");
+}
 
-            TEST_CHECK(std::string(PALUDIS_GIT_HEAD) != "i am a fish");
-        }
-    } test_case_about;
+TEST(About, BuildInfo)
+{
+    EXPECT_TRUE(! std::string(PALUDIS_BUILD_CXX).empty());
+    EXPECT_TRUE(! std::string(PALUDIS_BUILD_CXXFLAGS).empty());
+    EXPECT_TRUE(std::string(PALUDIS_BUILD_LDFLAGS) != "i am a fish");
 
-    /**
-     * \test Build info tests.
-     *
-     */
-    struct BuildInfoTest : TestCase
-    {
-        BuildInfoTest() : TestCase("build info test") { }
-
-        void run()
-        {
-            TEST_CHECK(! std::string(PALUDIS_BUILD_CXX).empty());
-            TEST_CHECK(! std::string(PALUDIS_BUILD_CXXFLAGS).empty());
-            TEST_CHECK(std::string(PALUDIS_BUILD_LDFLAGS) != "i am a fish");
-
-            TEST_CHECK(! std::string(PALUDIS_BUILD_USER).empty());
-            TEST_CHECK(! std::string(PALUDIS_BUILD_HOST).empty());
-            TEST_CHECK(! std::string(PALUDIS_BUILD_DATE).empty());
-        }
-    } test_case_build_info;
+    EXPECT_TRUE(! std::string(PALUDIS_BUILD_USER).empty());
+    EXPECT_TRUE(! std::string(PALUDIS_BUILD_HOST).empty());
+    EXPECT_TRUE(! std::string(PALUDIS_BUILD_DATE).empty());
 }
 

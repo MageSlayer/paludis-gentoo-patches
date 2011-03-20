@@ -8,7 +8,7 @@ dnl the base filename with no extension; later parameters can be `hh', `cc',
 dnl `test', `impl', `testscript'. Note that there isn't much error checking done
 dnl on this file at present...
 
-add(`about',                                       `hh', `test')
+add(`about',                                       `hh', `gtest')
 add(`about_metadata',                              `hh', `cc', `fwd')
 add(`action',                                      `hh', `cc', `fwd', `se')
 add(`action_names',                                `hh', `cc', `fwd')
