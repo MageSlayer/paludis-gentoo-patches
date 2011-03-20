@@ -73,7 +73,11 @@ gemcutter_json_things_parse_all_gems(
     Context context("When parsing '" + stringify(path) + "':");
 
     json_error_t error;
+#if JANSSON_MAJOR_VERSION >= 2
+    json_t * root(json_load_file(stringify(path).c_str(), 0, &error));
+#else
     json_t * root(json_load_file(stringify(path).c_str(), &error));
+#endif
 
     if (! root)
         throw JSONError("Couldn't load '" + stringify(path) + "': jansson said: " + error.text);
