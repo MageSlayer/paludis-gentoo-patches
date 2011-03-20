@@ -96,5 +96,5 @@ add(`visitor_cast',                      `hh', `cc', `fwd')
 add(`wildcard_expander',                 `hh', `cc', `test', `testscript')
 add(`wrapped_forward_iterator',          `hh', `fwd', `impl', `test')
 add(`wrapped_output_iterator',           `hh', `fwd', `impl')
-add(`wrapped_value',                     `hh', `fwd', `impl', `test')
+add(`wrapped_value',                     `hh', `fwd', `impl', `gtest')
 

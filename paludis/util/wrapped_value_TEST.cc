@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,11 +18,11 @@
  */
 
 #include <paludis/util/wrapped_value-impl.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
 #include <string>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
 namespace
@@ -75,33 +75,27 @@ namespace paludis
     };
 }
 
-namespace test_cases
+TEST(Dormouse, Works)
 {
-    struct DormouseTest : TestCase
-    {
-        DormouseTest() : TestCase("dormouse tests") { }
+    Dormouse dormouse("glis glis");
+    ASSERT_EQ("glis glis", dormouse.value());
 
-        void run()
-        {
-            Dormouse dormouse("glis glis");
-            TEST_CHECK_EQUAL(dormouse.value(), "glis glis");
-            dormouse = Dormouse("muscardinus avellanarius");
-            TEST_CHECK_EQUAL(dormouse.value(), "muscardinus avellanarius");
-            TEST_CHECK_THROWS(dormouse = Dormouse("mesocricetus auratus"), NotADormouseError);
-        }
-    } test_dormouse;
+    dormouse = Dormouse("muscardinus avellanarius");
+    ASSERT_EQ( "muscardinus avellanarius", dormouse.value());
+}
 
-    struct CheeseTest : TestCase
-    {
-        CheeseTest() : TestCase("cheese tests") { }
+TEST(Dormouse, Throws)
+{
+    Dormouse dormouse("glis glis");
+    ASSERT_THROW(dormouse = Dormouse("mesocricetus auratus"), NotADormouseError);
+}
 
-        void run()
-        {
-            Cheese cheese("stilton", false);
-            TEST_CHECK_THROWS(cheese = Cheese("camembert", true), NoCheeseError);
-            cheese = Cheese("camembert", false);
-            TEST_CHECK_EQUAL(cheese.value(), "camembert");
-        }
-    } test_cheese;
+TEST(Cheese, Works)
+{
+    Cheese cheese("stilton", false);
+    ASSERT_THROW(cheese = Cheese("camembert", true), NoCheeseError);
+
+    cheese = Cheese("camembert", false);
+    ASSERT_EQ("camembert", cheese.value());
 }
 
