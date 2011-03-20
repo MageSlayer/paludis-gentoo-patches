@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006 Mark Loeser
+ * Copyright (c) 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,71 +18,43 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <algorithm>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/options.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
+#include <algorithm>
 #include <vector>
 
-/** \file
- * Test cases for IsFileWithExtension.
- *
- */
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
-namespace test_cases
+TEST(IsFileWithExtension, Works)
 {
-    /**
-     * \test Test IsFileWithExtension.
-     *
-     */
-    struct IsFileWithExtensionTest : TestCase
-    {
-        IsFileWithExtensionTest() : TestCase("is file with extension") { }
+    FSPath c("teh.foo");
+    FSPath d("is_file_with_extension_TEST_file.goat");
 
-        void run()
-        {
-            FSPath c("teh.foo");
-            FSPath d("is_file_with_extension_TEST_file.goat");
+    ASSERT_TRUE(d.stat().exists());
 
-            TEST_CHECK(d.stat().exists());
+    EXPECT_TRUE(! is_file_with_extension(c, "foo", { }));
+    EXPECT_TRUE(! is_file_with_extension(d, "foo", { }));
+    EXPECT_TRUE(! is_file_with_extension(c, "goat", { }));
+    EXPECT_TRUE(is_file_with_extension(d, "goat", { }));
 
-            TEST_CHECK(! is_file_with_extension(c, "foo", { }));
-            TEST_CHECK(! is_file_with_extension(d, "foo", { }));
-            TEST_CHECK(! is_file_with_extension(c, "goat", { }));
-            TEST_CHECK(is_file_with_extension(d, "goat", { }));
+}
 
-        }
-    } test_is_file_with_extension;
+TEST(IsFileWithPrefixExtension, Works)
+{
+    FSPath d("teh.foo");
+    FSPath e("is_file_with_extension_TEST_file.goat");
 
-    /**
-     * \test Test IsFileWithExtension with a prefix.
-     *
-     */
-    struct IsFileWithExtensionPrefixTest : TestCase
-    {
-        IsFileWithExtensionPrefixTest() : TestCase("is file with extension (with prefix)") { }
+    ASSERT_TRUE(e.stat().exists());
 
-        void run()
-        {
-            FSPath d("teh.foo");
-            FSPath e("is_file_with_extension_TEST_file.goat");
-
-            TEST_CHECK(e.stat().exists());
-
-            TEST_CHECK(! is_file_with_prefix_extension(d, "teh", "foo", { }));
-            TEST_CHECK(! is_file_with_prefix_extension(e, "teh", "foo", { }));
-            TEST_CHECK(! is_file_with_prefix_extension(d, "is", "goat", { }));
-            TEST_CHECK(is_file_with_prefix_extension(e, "is", "goat", { }));
-            TEST_CHECK(! is_file_with_prefix_extension(e, "with", "goat", { }));
-        }
-    } test_is_file_with_extension_prefix;
-
-
+    EXPECT_TRUE(! is_file_with_prefix_extension(d, "teh", "foo", { }));
+    EXPECT_TRUE(! is_file_with_prefix_extension(e, "teh", "foo", { }));
+    EXPECT_TRUE(! is_file_with_prefix_extension(d, "is", "goat", { }));
+    EXPECT_TRUE(is_file_with_prefix_extension(e, "is", "goat", { }));
+    EXPECT_TRUE(! is_file_with_prefix_extension(e, "with", "goat", { }));
 }
 
