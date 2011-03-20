@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,102 +17,79 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "options.hh"
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+#include <paludis/util/options.hh>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-enum MyOption { mo_one, mo_two, mo_three, mo_four, mo_five, mo_six, mo_seven, mo_eight, mo_nine, mo_ten, last_mo };
-typedef Options<MyOption> MyOptions;
-
-namespace test_cases
+namespace
 {
-    struct OptionsTest : TestCase
-    {
-        OptionsTest() : TestCase("options") { }
+    enum MyOption { mo_one, mo_two, mo_three, mo_four, mo_five, mo_six, mo_seven, mo_eight, mo_nine, mo_ten, last_mo };
+    typedef Options<MyOption> MyOptions;
+}
 
-        void run()
-        {
-            MyOptions options, second;
+TEST(Options, Works)
+{
+    MyOptions options, second;
 
-            TEST_CHECK(! options.any());
+    EXPECT_TRUE(! options.any());
 
-            for (MyOption o(static_cast<MyOption>(0)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 1))
-            {
-                TestMessageSuffix so("o:" + stringify(o));
-                TEST_CHECK(! options[o]);
-            }
+    for (MyOption o(static_cast<MyOption>(0)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 1))
+        EXPECT_TRUE(! options[o]);
 
-            for (MyOption o(static_cast<MyOption>(0)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 2))
-                options = options + o;
+    for (MyOption o(static_cast<MyOption>(0)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 2))
+        options = options + o;
 
-            TEST_CHECK(options.any());
+    EXPECT_TRUE(options.any());
 
-            for (MyOption o(static_cast<MyOption>(0)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 2))
-            {
-                TestMessageSuffix so("o:" + stringify(o));
-                TEST_CHECK(options[o]);
-            }
+    for (MyOption o(static_cast<MyOption>(0)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 2))
+        EXPECT_TRUE(options[o]);
 
-            for (MyOption o(static_cast<MyOption>(1)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 2))
-            {
-                TestMessageSuffix so("o:" + stringify(o));
-                TEST_CHECK(! options[o]);
-            }
+    for (MyOption o(static_cast<MyOption>(1)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 2))
+        EXPECT_TRUE(! options[o]);
 
-            for (MyOption o(static_cast<MyOption>(0)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 1))
-                second += o;
+    for (MyOption o(static_cast<MyOption>(0)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 1))
+        second += o;
 
-            options |= second;
+    options |= second;
 
-            for (MyOption o(static_cast<MyOption>(0)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 1))
-            {
-                TestMessageSuffix so("o:" + stringify(o));
-                TEST_CHECK(options[o]);
-            }
+    for (MyOption o(static_cast<MyOption>(0)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 1))
+        EXPECT_TRUE(options[o]);
 
-            for (MyOption o(static_cast<MyOption>(1)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 2))
-                options -= o;
+    for (MyOption o(static_cast<MyOption>(1)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 2))
+        options -= o;
 
-            TEST_CHECK(options.any());
+    EXPECT_TRUE(options.any());
 
-            for (MyOption o(static_cast<MyOption>(0)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 2))
-                options = options - o;
+    for (MyOption o(static_cast<MyOption>(0)) ; o < last_mo ; o = static_cast<MyOption>(static_cast<long>(o) + 2))
+        options = options - o;
 
-            TEST_CHECK(! options.any());
+    EXPECT_TRUE(! options.any());
 
-            second = { mo_three, mo_eight };
-            options |= second;
-            options += mo_seven;
-            TEST_CHECK(options.any());
-            options.subtract(second);
-            TEST_CHECK(options.any());
-            options -= mo_seven;
-            TEST_CHECK(! options.any());
-            TEST_CHECK(options.highest_bit() >= static_cast<int>(last_mo));
-        }
-    } test_options;
+    second = { mo_three, mo_eight };
+    options |= second;
+    options += mo_seven;
+    EXPECT_TRUE(options.any());
+    options.subtract(second);
+    EXPECT_TRUE(options.any());
+    options -= mo_seven;
+    EXPECT_TRUE(! options.any());
+    EXPECT_TRUE(options.highest_bit() >= static_cast<int>(last_mo));
+}
 
-    struct OptionsInitialiserTest : TestCase
-    {
-        OptionsInitialiserTest() : TestCase("options initialiser") { }
+TEST(Options, Initialiser)
+{
+    MyOptions a({});
+    EXPECT_TRUE(! a.any());
 
-        void run()
-        {
-            MyOptions a({});
-            TEST_CHECK(! a.any());
-
-            MyOptions b({ mo_two, mo_four, mo_six });
-            TEST_CHECK(! b[mo_one]);
-            TEST_CHECK(b[mo_two]);
-            TEST_CHECK(! b[mo_three]);
-            TEST_CHECK(b[mo_four]);
-            TEST_CHECK(! b[mo_five]);
-            TEST_CHECK(b[mo_six]);
-            TEST_CHECK(! b[mo_seven]);
-        }
-    } test_options_initialiser;
+    MyOptions b({ mo_two, mo_four, mo_six });
+    EXPECT_TRUE(! b[mo_one]);
+    EXPECT_TRUE(b[mo_two]);
+    EXPECT_TRUE(! b[mo_three]);
+    EXPECT_TRUE(b[mo_four]);
+    EXPECT_TRUE(! b[mo_five]);
+    EXPECT_TRUE(b[mo_six]);
+    EXPECT_TRUE(! b[mo_seven]);
 }
 
