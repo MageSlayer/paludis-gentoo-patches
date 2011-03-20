@@ -19,62 +19,50 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/version_requirements.hh>
+#include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
-#include <paludis/version_requirements.hh>
-#include <paludis/environments/test/test_environment.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+#include <paludis/util/stringify.hh>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
-namespace test_cases
+TEST(FetchableURIDepSpec, Works)
 {
-    struct FetchableURIDepSpecTest : TestCase
-    {
-        FetchableURIDepSpecTest() : TestCase("fetchable uri dep spec") { }
+    FetchableURIDepSpec a("foo");
+    EXPECT_EQ("foo", a.original_url());
+    EXPECT_EQ("", a.renamed_url_suffix());
+    EXPECT_EQ("foo", a.filename());
 
-        void run()
-        {
-            FetchableURIDepSpec a("foo");
-            TEST_CHECK_EQUAL(a.original_url(), "foo");
-            TEST_CHECK_EQUAL(a.renamed_url_suffix(), "");
-            TEST_CHECK_EQUAL(a.filename(), "foo");
+    FetchableURIDepSpec b("fnord -> bar");
+    EXPECT_EQ("fnord", b.original_url());
+    EXPECT_EQ("bar", b.renamed_url_suffix());
+    EXPECT_EQ("bar", b.filename());
 
-            FetchableURIDepSpec b("fnord -> bar");
-            TEST_CHECK_EQUAL(b.original_url(), "fnord");
-            TEST_CHECK_EQUAL(b.renamed_url_suffix(), "bar");
-            TEST_CHECK_EQUAL(b.filename(), "bar");
+    FetchableURIDepSpec c("http://example.com/download/baz");
+    EXPECT_EQ("baz", c.filename());
+}
 
-            FetchableURIDepSpec c("http://example.com/download/baz");
-            TEST_CHECK_EQUAL(c.filename(), "baz");
-        }
-    } test_fetchable_uri_dep_spec;
+TEST(DepSpec, Clone)
+{
+    TestEnvironment env;
+    PackageDepSpec a(parse_user_package_dep_spec("cat/pkg:1::repo[=1|>3.2][foo]",
+                &env, { }));
 
-    struct DepSpecCloneTest : TestCase
-    {
-        DepSpecCloneTest() : TestCase("dep spec clone") { }
+    std::shared_ptr<PackageDepSpec> b(std::static_pointer_cast<PackageDepSpec>(a.clone()));
+    EXPECT_EQ(stringify(a), stringify(*b));
 
-        void run()
-        {
-            TestEnvironment env;
-            PackageDepSpec a(parse_user_package_dep_spec("cat/pkg:1::repo[=1|>3.2][foo]",
-                        &env, { }));
+    std::shared_ptr<PackageDepSpec> c(std::static_pointer_cast<PackageDepSpec>(a.clone()));
+    EXPECT_EQ(stringify(a), stringify(*c));
 
-            std::shared_ptr<PackageDepSpec> b(std::static_pointer_cast<PackageDepSpec>(a.clone()));
-            TEST_CHECK_STRINGIFY_EQUAL(a, *b);
-
-            std::shared_ptr<PackageDepSpec> c(std::static_pointer_cast<PackageDepSpec>(a.clone()));
-            TEST_CHECK_STRINGIFY_EQUAL(a, *c);
-
-            BlockDepSpec d("!" + stringify(*c), *c);
-            std::shared_ptr<BlockDepSpec> e(std::static_pointer_cast<BlockDepSpec>(d.clone()));
-            TEST_CHECK_STRINGIFY_EQUAL(d.blocking(), e->blocking());
-        }
-    } test_dep_spec_clone;
+    BlockDepSpec d("!" + stringify(*c), *c);
+    std::shared_ptr<BlockDepSpec> e(std::static_pointer_cast<BlockDepSpec>(d.clone()));
+    EXPECT_EQ(stringify(d.blocking()), stringify(e->blocking()));
 }
 
