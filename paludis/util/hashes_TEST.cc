@@ -18,34 +18,26 @@
  */
 
 #include <paludis/util/hashes.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+
 #include <set>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-namespace test_cases
+TEST(Hashes, Tuple)
 {
-    struct HashTupleTest : TestCase
-    {
-        HashTupleTest() : TestCase("hash tuple") { }
+    std::set<std::size_t> hashes;
 
-        void run()
-        {
-            std::set<std::size_t> hashes;
+    for (int x(1) ; x < 20 ; ++x)
+        ASSERT_TRUE(hashes.insert(Hash<std::tuple<int> >()(std::make_tuple(x))).second);
 
-            for (int x(1) ; x < 20 ; ++x)
-                TEST_CHECK(hashes.insert(Hash<std::tuple<int> >()(std::make_tuple(x))).second);
+    for (int x(1) ; x < 20 ; ++x)
+        for (int y(1) ; y < 20 ; ++y)
+            ASSERT_TRUE(hashes.insert(Hash<std::tuple<int, int> >()(std::make_tuple(x, y))).second);
 
-            for (int x(1) ; x < 20 ; ++x)
-                for (int y(1) ; y < 20 ; ++y)
-                    TEST_CHECK(hashes.insert(Hash<std::tuple<int, int> >()(std::make_tuple(x, y))).second);
-
-            for (int x(1) ; x < 20 ; ++x)
-                for (int y(1) ; y < 20 ; ++y)
-                    TEST_CHECK(hashes.insert(Hash<std::tuple<int, int, int> >()(std::make_tuple(x, y, 42))).second);
-        }
-    } test_hash_tuple;
+    for (int x(1) ; x < 20 ; ++x)
+        for (int y(1) ; y < 20 ; ++y)
+            ASSERT_TRUE(hashes.insert(Hash<std::tuple<int, int, int> >()(std::make_tuple(x, y, 42))).second);
 }
 
