@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,106 +18,53 @@
  */
 
 #include <paludis/util/stringify.hh>
-#include <string>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
 
-using namespace test;
+#include <string>
+
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-/** \file
- * Test cases for stringify.hh .
- *
- */
-
-namespace test_cases
+TEST(StringifyInt, Works)
 {
-    /** \test
-     * Test stringify on int.
-     *
-     */
-    struct StringifyIntTests : TestCase
-    {
-        StringifyIntTests() : TestCase("stringify int") { }
+    ASSERT_EQ("0", stringify(0));
+    ASSERT_EQ("1", stringify(1));
+    ASSERT_EQ("99", stringify(99));
+    ASSERT_EQ("-99", stringify(-99));
+    ASSERT_EQ("12345", stringify(12345));
+}
 
-        void run()
-        {
-            TEST_CHECK_EQUAL(stringify(0),     "0");
-            TEST_CHECK_EQUAL(stringify(1),     "1");
-            TEST_CHECK_EQUAL(stringify(99),    "99");
-            TEST_CHECK_EQUAL(stringify(-99),   "-99");
-            TEST_CHECK_EQUAL(stringify(12345), "12345");
-        }
-    } test_case_stringify_int;
+TEST(StringifyCharStar, Works)
+{
+    ASSERT_EQ(std::string("moo"), stringify("moo"));
+    ASSERT_EQ(std::string(""), stringify(""));
+    ASSERT_TRUE(stringify("").empty());
+    ASSERT_EQ(std::string("  quack quack  "), stringify("  quack quack  "));
+}
 
-    /** \test
-     * Test stringify on char *.
-     *
-     */
-    struct StringifyCharStarTests : TestCase
-    {
-        StringifyCharStarTests() : TestCase("stringify char *") { }
+TEST(StringifyString, Works)
+{
+    ASSERT_EQ(std::string("moo"), stringify(std::string("moo")));
+    ASSERT_EQ(std::string(""), stringify(std::string("")));
+    ASSERT_TRUE(stringify(std::string("")).empty());
+    ASSERT_EQ(std::string("  quack quack  "), stringify(std::string("  quack quack  ")));
+}
 
-        void run()
-        {
-            TEST_CHECK_EQUAL(stringify("moo"), std::string("moo"));
-            TEST_CHECK_EQUAL(stringify(""), std::string(""));
-            TEST_CHECK(stringify("").empty());
-            TEST_CHECK_EQUAL(stringify("  quack quack  "), std::string("  quack quack  "));
-        }
-    } test_case_stringify_char_star;
+TEST(StringifyChar, Works)
+{
+    char c('a');
+    ASSERT_EQ(std::string("a"), stringify(c));
 
-    /** \test
-     * Test stringify on std::string.
-     *
-     */
-    struct StringifyStringTests : TestCase
-    {
-        StringifyStringTests() : TestCase("stringify string") { }
+    unsigned char u('a');
+    ASSERT_EQ(std::string("a"), stringify(u));
 
-        void run()
-        {
-            TEST_CHECK_EQUAL(stringify(std::string("moo")), std::string("moo"));
-            TEST_CHECK_EQUAL(stringify(std::string("")), std::string(""));
-            TEST_CHECK(stringify(std::string("")).empty());
-            TEST_CHECK_EQUAL(stringify(std::string("  quack quack  ")), std::string("  quack quack  "));
-        }
-    } test_case_stringify_string;
+    signed char s('a');
+    ASSERT_EQ(std::string("a"), stringify(s));
+}
 
-    /** \test
-     * Test stringify on char.
-     *
-     */
-    struct StringifyCharTests : TestCase
-    {
-        StringifyCharTests() : TestCase("stringify char") { }
-
-        void run()
-        {
-            char c('a');
-            TEST_CHECK_EQUAL(stringify(c), std::string("a"));
-
-            unsigned char u('a');
-            TEST_CHECK_EQUAL(stringify(u), std::string("a"));
-
-            signed char s('a');
-            TEST_CHECK_EQUAL(stringify(s), std::string("a"));
-        }
-    } test_case_stringify_char;
-
-    /** \test
-     * Test stringify on bool.
-     *
-     */
-    struct StringifyBoolTests : TestCase
-    {
-        StringifyBoolTests() : TestCase("stringify bool") { }
-
-        void run()
-        {
-            TEST_CHECK_EQUAL(stringify(true), std::string("true"));
-            TEST_CHECK_EQUAL(stringify(false), std::string("false"));
-        }
-    } test_case_stringify_bool;
+TEST(StringifyBool, Works)
+{
+    ASSERT_EQ(std::string("true"), stringify(true));
+    ASSERT_EQ(std::string("false"), stringify(false));
 }
 
