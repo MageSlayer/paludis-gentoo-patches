@@ -44,11 +44,13 @@ _cave()
     'info:Display a summary of configuration and package information'
     'manage-search-index:Manages a search index for use by cave search'
     'match:Determine whether a particular package version has certain properties'
+    'mirror:Fetches files for a set of IDs'
     'owner:Shows package IDs owning a given file'
     'perform:Perform an action upon a package'
     'print-best-version:Prints the best installed version matching a particular spec'
     'print-categories:Prints a list of known categories'
     'print-commands:Prints a list of known cave commands'
+    'print-dependent-ids:Prints a list of installed IDs that are dependent upon another installed ID'
     'print-environment-metadata:Prints environment metadata'
     'print-id-actions:Prints ID actions'
     'print-id-contents:Prints the contents of a package ID'
@@ -323,6 +325,14 @@ _cave_cmd_match()
     '(--enabled-only -e --no-enabled-only)'{--enabled-only,-e,--no-enabled-only}'[Only search enabled parts of conditional dependency spec trees]'
 }
 
+(( ${+functions[_cave_cmd_mirror]} )) ||
+_cave_cmd_mirror()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--matching -m)'{--matching,-m}'[Consider only IDs matching this spec]'
+}
+
 (( ${+functions[_cave_cmd_owner]} )) ||
 _cave_cmd_owner()
 {
@@ -429,6 +439,14 @@ _cave_cmd_print-commands()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '(--all -a)'{--all,-a}'[Print all available commands]'
+}
+
+(( ${+functions[_cave_cmd_print-dependent-ids]} )) ||
+_cave_cmd_print-dependent-ids()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--format -f)'{--format,-f}'[Select the output format]:output format: '
 }
 
 (( ${+functions[_cave_cmd_print-environment-metadata]} )) ||
@@ -657,9 +675,11 @@ _cave_resolve_arguments=(
     '*'{--purge,-P}'[Purge packages matching the given specification, if they will no longer be used after a resolution]:Spec: ' \
     '(--no-override-masks --no-no-override-masks)'{--no-override-masks,--no-no-override-masks}'[If otherwise unable to make a decision, unless this option is specified the resolver will try packages that are weakly masked too]' \
     '(--no-override-flags --no-no-override-flags)'{--no-override-flags,--no-no-override-flags}'[If otherwise unable to make a decision, unless this option is specified the resolver will try selecting packages using different options to the ones specified in the user'\''s configuration]' \
+    '*--no-restarts-for[Do not restart if the problematic package has the specified package name]:Spec: ' \
     '*'{--uninstalls-may-break,-u}'[Permit uninstalls that might break packages matching the specified specification]:Spec: ' \
     '*'{--remove-if-dependent,-r}'[Remove dependent packages that might be broken by other changes if those packages match the specified specification]:Spec: ' \
     '*'{--less-restrictive-remove-blockers,-l}'[Use less restrictive blockers for packages matching the supplied specification if that package is to be removed by --remove-if-dependent]:Spec: ' \
+    '*--reinstall-dependents-of[Force any installed package that is dependent upon any installed package matching the supplied spec to be reinstalled]:Spec: ' \
     '(--keep-targets -K)'{--keep-targets,-K}'[Select whether to keep target packages]:When:((auto a never n if-transient t if-same s if-same-version v if-possible p))' \
     '(--keep -k)'{--keep,-k}'[Select whether to keep installed packages that are not targets]:When:((never n if-transient t if-same s if-same-version v if-possible p))' \
     '(--reinstall-scm -R)'{--reinstall-scm,-R}'[Select whether to reinstall SCM packages that would otherwise be kept]:When:((always a daily d weekly w never n))' \
@@ -667,7 +687,7 @@ _cave_resolve_arguments=(
     '*'{--without,-W}'[Keep installed packages with the supplied package name if possible]:Spec: ' \
     '(--target-slots -S)'{--target-slots,-S}'[Which slots to consider for targets]:Which:((best-or-installed x installed-or-best i all a best b))' \
     '(--slots -s)'{--slots,-s}'[Which slots to consider for packages that are not targets]:Which:((best-or-installed x installed-or-best i all a best b))' \
-    '(--follow-installed-build-dependencies --no-follow-installed-build-dependencies -D)'{--follow-installed-build-dependencies,--no-follow-installed-build-dependencies,-D}'[Follow build dependencies for installed packages]' \
+    '(--follow-installed-build-dependencies --no-follow-installed-build-dependencies -B)'{--follow-installed-build-dependencies,--no-follow-installed-build-dependencies,-B}'[Follow build dependencies for installed packages]' \
     '(--no-follow-installed-dependencies --no-no-follow-installed-dependencies -n)'{--no-follow-installed-dependencies,--no-no-follow-installed-dependencies,-n}'[Ignore dependencies for installed packages]' \
     '*'{--no-dependencies-from,-0}'[Ignore dependencies (not blockers) from packages matching the supplied specification]:Spec: ' \
     '*'{--no-blockers-from,-!}'[Ignore blockers from packages matching the supplied specification]:Spec: ' \
