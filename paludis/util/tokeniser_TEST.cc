@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,138 +17,123 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <iterator>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
+#include <iterator>
 #include <vector>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-namespace test_cases
+TEST(Tokeniser, AnyOfDefaultDelim)
 {
-    struct TestTokeniserAD : TestCase
-    {
-        TestTokeniserAD() : TestCase("Tokeniser<AnyOfTag, DelimiterTag(default)>") { }
+    const std::string delims(",.+");
 
-        void run()
-        {
-            const std::string delims(",.+");
+    std::vector<std::string> tokens;
 
-            std::vector<std::string> tokens;
+    ASSERT_TRUE(tokens.empty());
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>("one,two...+...three...", delims, "", std::back_inserter(tokens));
+    ASSERT_EQ(std::size_t(3), tokens.size());
+    EXPECT_EQ("one", tokens.at(0));
+    EXPECT_EQ("two", tokens.at(1));
+    EXPECT_EQ("three", tokens.at(2));
+    tokens.clear();
 
-            TEST_CHECK(tokens.empty());
-            tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>("one,two...+...three...", delims, "", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), std::size_t(3));
-            TEST_CHECK_EQUAL(tokens.at(0), "one");
-            TEST_CHECK_EQUAL(tokens.at(1), "two");
-            TEST_CHECK_EQUAL(tokens.at(2), "three");
-            tokens.clear();
+    ASSERT_TRUE(tokens.empty());
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>("...one,two...+...three", delims, "", std::back_inserter(tokens));
+    ASSERT_EQ(std::size_t(3), tokens.size());
+    EXPECT_EQ("one", tokens.at(0));
+    EXPECT_EQ("two", tokens.at(1));
+    EXPECT_EQ("three", tokens.at(2));
+    tokens.clear();
 
-            TEST_CHECK(tokens.empty());
-            tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>("...one,two...+...three", delims, "", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), std::size_t(3));
-            TEST_CHECK_EQUAL(tokens.at(0), "one");
-            TEST_CHECK_EQUAL(tokens.at(1), "two");
-            TEST_CHECK_EQUAL(tokens.at(2), "three");
-            tokens.clear();
+    ASSERT_TRUE(tokens.empty());
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>("one", delims, "", std::back_inserter(tokens));
+    ASSERT_EQ(std::size_t(1), tokens.size());
+    EXPECT_EQ("one", tokens.at(0));
+    tokens.clear();
 
-            TEST_CHECK(tokens.empty());
-            tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>("one", delims, "", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), std::size_t(1));
-            TEST_CHECK_EQUAL(tokens.at(0), "one");
-            tokens.clear();
+    ASSERT_TRUE(tokens.empty());
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(".+.,.", delims, "", std::back_inserter(tokens));
+    ASSERT_EQ(std::size_t(0), tokens.size());
+    tokens.clear();
 
-            TEST_CHECK(tokens.empty());
-            tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(".+.,.", delims, "", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), std::size_t(0));
-            tokens.clear();
+    ASSERT_TRUE(tokens.empty());
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>("", delims, "", std::back_inserter(tokens));
+    ASSERT_EQ(std::size_t(0), tokens.size());
+    tokens.clear();
+}
 
-            TEST_CHECK(tokens.empty());
-            tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>("", delims, "", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), std::size_t(0));
-            tokens.clear();
-        }
-    } test_tokeniser_ad;
+TEST(Tokeniser, AnyOfBoundary)
+{
+    const std::string delims(",.+");
 
-    struct TestTokeniserAB : TestCase
-    {
-        TestTokeniserAB() : TestCase("Tokeniser<AnyOfTag, BoundaryTag>") { }
+    std::vector<std::string> tokens;
 
-        void run()
-        {
-            const std::string delims(",.+");
+    ASSERT_TRUE(tokens.empty());
+    tokenise<delim_kind::AnyOfTag, delim_mode::BoundaryTag>("one,two...+...three...", delims, "", std::back_inserter(tokens));
+    ASSERT_EQ(std::size_t(6), tokens.size());
+    EXPECT_EQ("one", tokens.at(0));
+    EXPECT_EQ(",", tokens.at(1));
+    EXPECT_EQ("two", tokens.at(2));
+    EXPECT_EQ("...+...", tokens.at(3));
+    EXPECT_EQ("three", tokens.at(4));
+    EXPECT_EQ("...", tokens.at(5));
+    tokens.clear();
 
-            std::vector<std::string> tokens;
+    ASSERT_TRUE(tokens.empty());
+    tokenise<delim_kind::AnyOfTag, delim_mode::BoundaryTag>("...one,two...+...three", delims, "", std::back_inserter(tokens));
+    ASSERT_EQ(std::size_t(6), tokens.size());
+    EXPECT_EQ("...", tokens.at(0));
+    EXPECT_EQ("one", tokens.at(1));
+    EXPECT_EQ(",", tokens.at(2));
+    EXPECT_EQ("two", tokens.at(3));
+    EXPECT_EQ("...+...", tokens.at(4));
+    EXPECT_EQ("three", tokens.at(5));
+    tokens.clear();
 
-            TEST_CHECK(tokens.empty());
-            tokenise<delim_kind::AnyOfTag, delim_mode::BoundaryTag>("one,two...+...three...", delims, "", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), std::size_t(6));
-            TEST_CHECK_EQUAL(tokens.at(0), "one");
-            TEST_CHECK_EQUAL(tokens.at(1), ",");
-            TEST_CHECK_EQUAL(tokens.at(2), "two");
-            TEST_CHECK_EQUAL(tokens.at(3), "...+...");
-            TEST_CHECK_EQUAL(tokens.at(4), "three");
-            TEST_CHECK_EQUAL(tokens.at(5), "...");
-            tokens.clear();
+    ASSERT_TRUE(tokens.empty());
+    tokenise<delim_kind::AnyOfTag, delim_mode::BoundaryTag>("one", delims, "", std::back_inserter(tokens));
+    ASSERT_EQ(std::size_t(1), tokens.size());
+    EXPECT_EQ("one", tokens.at(0));
+    tokens.clear();
 
-            TEST_CHECK(tokens.empty());
-            tokenise<delim_kind::AnyOfTag, delim_mode::BoundaryTag>("...one,two...+...three", delims, "", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), std::size_t(6));
-            TEST_CHECK_EQUAL(tokens.at(0), "...");
-            TEST_CHECK_EQUAL(tokens.at(1), "one");
-            TEST_CHECK_EQUAL(tokens.at(2), ",");
-            TEST_CHECK_EQUAL(tokens.at(3), "two");
-            TEST_CHECK_EQUAL(tokens.at(4), "...+...");
-            TEST_CHECK_EQUAL(tokens.at(5), "three");
-            tokens.clear();
+    ASSERT_TRUE(tokens.empty());
+    tokenise<delim_kind::AnyOfTag, delim_mode::BoundaryTag>(".+.,.", delims, "", std::back_inserter(tokens));
+    ASSERT_EQ(std::size_t(1), tokens.size());
+    EXPECT_EQ(".+.,.", tokens.at(0));
+    tokens.clear();
 
-            TEST_CHECK(tokens.empty());
-            tokenise<delim_kind::AnyOfTag, delim_mode::BoundaryTag>("one", delims, "", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), std::size_t(1));
-            TEST_CHECK_EQUAL(tokens.at(0), "one");
-            tokens.clear();
+    ASSERT_TRUE(tokens.empty());
+    tokenise<delim_kind::AnyOfTag, delim_mode::BoundaryTag>("", delims, "", std::back_inserter(tokens));
+    ASSERT_EQ(std::size_t(0), tokens.size());
+    tokens.clear();
+}
 
-            TEST_CHECK(tokens.empty());
-            tokenise<delim_kind::AnyOfTag, delim_mode::BoundaryTag>(".+.,.", delims, "", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), std::size_t(1));
-            TEST_CHECK_EQUAL(tokens.at(0), ".+.,.");
-            tokens.clear();
+TEST(QuotedWhitespaceTokeniser, Works)
+{
+    std::vector<std::string> v1;
+    tokenise_whitespace_quoted("one \"two three\" four 'five six' seven '' eight", std::back_inserter(v1));
+    ASSERT_EQ(7u, v1.size());
+    EXPECT_EQ("one", v1.at(0));
+    EXPECT_EQ("two three", v1.at(1));
+    EXPECT_EQ("four", v1.at(2));
+    EXPECT_EQ("five six", v1.at(3));
+    EXPECT_EQ("seven", v1.at(4));
+    EXPECT_EQ("", v1.at(5));
+    EXPECT_EQ("eight", v1.at(6));
+}
 
-            TEST_CHECK(tokens.empty());
-            tokenise<delim_kind::AnyOfTag, delim_mode::BoundaryTag>("", delims, "", std::back_inserter(tokens));
-            TEST_CHECK_EQUAL(tokens.size(), std::size_t(0));
-            tokens.clear();
-        }
-    } test_tokeniser_ab;
-
-    struct QuotedWhitespaceTokeniserTest : TestCase
-    {
-        QuotedWhitespaceTokeniserTest() : TestCase("quoted whitespace tokeniser") { }
-
-        void run()
-        {
-            std::vector<std::string> v1;
-            tokenise_whitespace_quoted("one \"two three\" four 'five six' seven '' eight", std::back_inserter(v1));
-            TestMessageSuffix s(join(v1.begin(), v1.end(), "#"));
-            TEST_CHECK_EQUAL(v1.size(), 7u);
-            TEST_CHECK_EQUAL(v1.at(0), "one");
-            TEST_CHECK_EQUAL(v1.at(1), "two three");
-            TEST_CHECK_EQUAL(v1.at(2), "four");
-            TEST_CHECK_EQUAL(v1.at(3), "five six");
-            TEST_CHECK_EQUAL(v1.at(4), "seven");
-            TEST_CHECK_EQUAL(v1.at(5), "");
-            TEST_CHECK_EQUAL(v1.at(6), "eight");
-
-            TEST_CHECK_THROWS(tokenise_whitespace_quoted("one \"two three", std::back_inserter(v1)), TokeniserError);
-            TEST_CHECK_THROWS(tokenise_whitespace_quoted("one tw\"o\" three", std::back_inserter(v1)), TokeniserError);
-            TEST_CHECK_THROWS(tokenise_whitespace_quoted("one tw\"o", std::back_inserter(v1)), TokeniserError);
-            TEST_CHECK_THROWS(tokenise_whitespace_quoted("one tw\"o\"three", std::back_inserter(v1)), TokeniserError);
-            TEST_CHECK_THROWS(tokenise_whitespace_quoted("one \"two\"three\"", std::back_inserter(v1)), TokeniserError);
-            TEST_CHECK_THROWS(tokenise_whitespace_quoted("one \"two\"\"three\"", std::back_inserter(v1)), TokeniserError);
-        }
-    } test_quoted_whitespace_tokeniser;
+TEST(QuotedWhitespaceTokeniser, Throws)
+{
+    std::vector<std::string> v1;
+    EXPECT_THROW(tokenise_whitespace_quoted("one \"two three", std::back_inserter(v1)), TokeniserError);
+    EXPECT_THROW(tokenise_whitespace_quoted("one tw\"o\" three", std::back_inserter(v1)), TokeniserError);
+    EXPECT_THROW(tokenise_whitespace_quoted("one tw\"o", std::back_inserter(v1)), TokeniserError);
+    EXPECT_THROW(tokenise_whitespace_quoted("one tw\"o\"three", std::back_inserter(v1)), TokeniserError);
+    EXPECT_THROW(tokenise_whitespace_quoted("one \"two\"three\"", std::back_inserter(v1)), TokeniserError);
+    EXPECT_THROW(tokenise_whitespace_quoted("one \"two\"\"three\"", std::back_inserter(v1)), TokeniserError);
 }
 
