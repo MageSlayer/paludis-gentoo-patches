@@ -82,7 +82,6 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/process.hh>
-#include <paludis/util/random.hh>
 #include <paludis/util/rmd160.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
@@ -98,6 +97,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 
+#include <random>
 #include <functional>
 #include <unordered_map>
 #include <map>
@@ -105,6 +105,7 @@
 #include <algorithm>
 #include <vector>
 #include <list>
+#include <ctime>
 
 #include <strings.h>
 #include <ctype.h>
@@ -644,6 +645,19 @@ ERepository::arch_flags() const
     return _imp->arch_flags;
 }
 
+namespace
+{
+    struct Randomator
+    {
+        std::mt19937 & rand;
+
+        int operator() (int n)
+        {
+            return rand() % n;
+        }
+    };
+}
+
 void
 ERepository::need_mirrors() const
 {
@@ -666,8 +680,8 @@ ERepository::need_mirrors() const
                     if (! ee.empty())
                     {
                         /* pick up to five random mirrors only */
-                        static Random r;
-                        std::random_shuffle(next(ee.begin()), ee.end(), r);
+                        std::mt19937 random(std::time(0));
+                        std::random_shuffle(next(ee.begin()), ee.end(), Randomator{random});
                         if (ee.size() > 6)
                             ee.resize(6);
 

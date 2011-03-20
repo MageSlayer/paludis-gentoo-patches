@@ -783,6 +783,43 @@ int main(int, char **)
 	])
 dnl }}}
 
+dnl {{{ std::random
+random_is_tr1=
+AC_MSG_CHECKING([for c++0x-compliant <random>])
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+#include <random>
+#include <ctime>
+int main(int, char **)
+{
+	std::mt19937 rand(std::time(0));
+	std::uniform_int_distribution<int> dist(0, 9);
+	return dist(rand);
+}
+])],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_CHECKING([for tr1-compliant <random>])
+	 AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+#include <random>
+#include <ctime>
+int main(int, char **)
+{
+	std::mt19937 rand(std::time(0));
+	std::uniform_int<int> dist(0, 9);
+	return dist(rand);
+}
+	 ])],
+	  [AC_MSG_RESULT([yes])
+	   random_is_tr1=yes],
+	  [AC_MSG_RESULT([no])
+	   AC_MSG_ERROR([Your compiler does not support <random>])])
+	])
+
+if test x$random_is_tr1 = xyes ; then
+	PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_RANDOM_IS_TR1=1"
+fi
+dnl }}}
+
 dnl {{{ c++0x default and deleted functions
 AC_MSG_CHECKING([for c++0x default and deleted functions])
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([
