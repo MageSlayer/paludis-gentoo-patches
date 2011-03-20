@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006 Mark Loeser
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,72 +22,58 @@
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/fs_error.hh>
 #include <paludis/util/options.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
-namespace test_cases
+TEST(FSIterator, Manipulation)
 {
-    struct FSIteratorManipulationTest : TestCase
-    {
-        FSIteratorManipulationTest() : TestCase("construction and manipulation") { }
+    EXPECT_THROW(FSIterator(FSPath("/i/dont/exist/"), { }), FSError);
 
-        void run()
-        {
-            TEST_CHECK_THROWS(FSIterator(FSPath("/i/dont/exist/"), { }), FSError);
+    FSIterator iter(FSPath("fs_iterator_TEST_dir"), { });
+    FSIterator iter1(iter);
+    ASSERT_TRUE(iter == iter1);
+    ASSERT_TRUE(!(iter != iter1));
+}
 
-            FSIterator iter(FSPath("fs_iterator_TEST_dir"), { });
-            FSIterator iter1(iter);
-            TEST_CHECK(iter == iter1);
-            TEST_CHECK(!(iter != iter1));
-        }
-    } test_fs_iterator_manipulation;
+TEST(FSIterator, Iterate)
+{
+    FSIterator iter(FSPath("fs_iterator_TEST_dir"), { });
+    FSIterator iter1(FSPath("fs_iterator_TEST_dir"), { });
+    FSIterator iter2(FSPath("fs_iterator_TEST_dir"), { fsio_include_dotfiles });
+    FSIterator iter3(FSPath("fs_iterator_TEST_dir"), { fsio_inode_sort });
 
-    struct FSIteratorIterateTest : TestCase
-    {
-        FSIteratorIterateTest() : TestCase("iterate") {}
+    ASSERT_TRUE(iter != FSIterator());
+    ASSERT_TRUE(FSIterator() != iter);
 
-        void run()
-        {
-            FSIterator iter(FSPath("fs_iterator_TEST_dir"), { });
-            FSIterator iter1(FSPath("fs_iterator_TEST_dir"), { });
-            FSIterator iter2(FSPath("fs_iterator_TEST_dir"), { fsio_include_dotfiles });
-            FSIterator iter3(FSPath("fs_iterator_TEST_dir"), { fsio_inode_sort });
+    EXPECT_EQ("file1", iter->basename());
+    ASSERT_TRUE(++iter != FSIterator());
+    EXPECT_EQ("file2", iter->basename());
+    ASSERT_TRUE(++iter != FSIterator());
+    EXPECT_EQ("file4", iter->basename());
+    ASSERT_TRUE(++iter == FSIterator());
+    ASSERT_TRUE(FSIterator() == iter);
 
-            TEST_CHECK(iter != FSIterator());
-            TEST_CHECK(FSIterator() != iter);
+    while (iter1 != FSIterator())
+        ++iter1;
+    ASSERT_TRUE(iter1 == FSIterator());
+    ASSERT_TRUE(iter == iter1);
 
-            TEST_CHECK_EQUAL(iter->basename(), "file1");
-            TEST_CHECK(++iter != FSIterator());
-            TEST_CHECK_EQUAL(iter->basename(), "file2");
-            TEST_CHECK(++iter != FSIterator());
-            TEST_CHECK_EQUAL(iter->basename(), "file4");
-            TEST_CHECK(++iter == FSIterator());
-            TEST_CHECK(FSIterator() == iter);
+    EXPECT_EQ(".file3", iter2->basename());
+    ASSERT_TRUE(++iter2 != FSIterator());
+    EXPECT_EQ("file1", iter2->basename());
+    ASSERT_TRUE(++iter2 != FSIterator());
+    EXPECT_EQ("file2", iter2->basename());
+    ASSERT_TRUE(++iter2 != FSIterator());
+    EXPECT_EQ("file4", iter2->basename());
+    ASSERT_TRUE(++iter2 == FSIterator());
+    ASSERT_TRUE(FSIterator() == iter2);
+    ASSERT_TRUE(iter2 == FSIterator());
 
-            while (iter1 != FSIterator())
-                ++iter1;
-            TEST_CHECK(iter1 == FSIterator());
-            TEST_CHECK(iter == iter1);
+    ASSERT_TRUE(iter1 == iter2);
+    ASSERT_TRUE(iter2 == iter1);
 
-            TEST_CHECK_EQUAL(iter2->basename(), ".file3");
-            TEST_CHECK(++iter2 != FSIterator());
-            TEST_CHECK_EQUAL(iter2->basename(), "file1");
-            TEST_CHECK(++iter2 != FSIterator());
-            TEST_CHECK_EQUAL(iter2->basename(), "file2");
-            TEST_CHECK(++iter2 != FSIterator());
-            TEST_CHECK_EQUAL(iter2->basename(), "file4");
-            TEST_CHECK(++iter2 == FSIterator());
-            TEST_CHECK(FSIterator() == iter2);
-            TEST_CHECK(iter2 == FSIterator());
-
-            TEST_CHECK(iter1 == iter2);
-            TEST_CHECK(iter2 == iter1);
-
-            TEST_CHECK_EQUAL(std::distance(iter3, FSIterator()), 3);
-        }
-    } test_fs_iterator_iterate;
+    EXPECT_EQ(3, std::distance(iter3, FSIterator()));
 }
 
