@@ -261,6 +261,35 @@ namespace
 
     /*
      * call-seq:
+     *     overridden_masks -> Array
+     *
+     * Our overridden masks.
+     */
+    VALUE
+    package_id_overridden_masks(VALUE self)
+    {
+        std::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageID>, self_ptr);
+        VALUE result(rb_ary_new());
+        try
+        {
+            for (PackageID::OverriddenMasksConstIterator it((*self_ptr)->begin_overridden_masks()),
+                    it_end((*self_ptr)->end_overridden_masks()); it_end != it; ++it)
+            {
+                rb_ary_push(result, overridden_mask_to_value(*it));
+            }
+            return result;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
+        return Qnil;
+    }
+
+    /*
+     * call-seq:
      *     breaks_portage -> [:reason, :reason, ...]
      *
      *  Do we break Portage, and if so, why?
@@ -488,6 +517,7 @@ namespace
         rb_define_method(c_package_id, "each_metadata", RUBY_FUNC_CAST(&package_id_each_metadata), 0);
 
         rb_define_method(c_package_id, "masks", RUBY_FUNC_CAST(&package_id_masks), 0);
+        rb_define_method(c_package_id, "overridden_masks", RUBY_FUNC_CAST(&package_id_overridden_masks), 0);
         rb_define_method(c_package_id, "masked?", RUBY_FUNC_CAST((&PackageIDBool<&PackageID::masked>::fetch)), 0);
         rb_define_method(c_package_id, "breaks_portage", RUBY_FUNC_CAST(&package_id_breaks_portage), 0);
 

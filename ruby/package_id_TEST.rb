@@ -27,7 +27,7 @@ module Paludis
     module TestStuff
         def env
             unless @env
-                @env = NoConfigEnvironment.new("package_id_TEST_dir/testrepo/", '/var/empty')
+                @env = EnvironmentFactory.instance.create("no-config:repository-dir=package_id_TEST_dir/testrepo/:write-cache=/var/empty:accept-unstable=true")
             end
             @env
         end
@@ -113,7 +113,7 @@ module Paludis
                 :keywords_key => MetadataKeywordNameSetKey, :choices_key => MetadataChoicesKey,
                 :short_description_key => MetadataStringKey, :long_description_key => MetadataStringKey,
                 :contents_key => MetadataContentsKey, :installed_time_key => MetadataTimeKey,
-                :from_repositories_key => Array, :masks => Array
+                :from_repositories_key => Array, :masks => Array, :overridden_masks => Array
             }.each_pair do | method, type |
 
                 assert_respond_to pid_testrepo, method
@@ -183,6 +183,15 @@ module Paludis
             assert_kind_of RepositoryMask, mask
         end
 
+        def test_overridden_masks
+            masks = pid_testrepo.overridden_masks
+            assert_equal 1, masks.length
+            mask = masks.first
+            assert_kind_of OverriddenMask, mask
+            assert_kind_of UnacceptedMask, mask.mask
+            assert_equal MaskOverrideReason::AcceptedUnstable, mask.override_reason
+        end
+
         def test_hash
             a = pid_testrepo
             b = pid_testrepo
@@ -239,7 +248,7 @@ module Paludis
         def test_keywords_key
             assert_kind_of MetadataKeywordNameSetKey, pid_testrepo.keywords_key
             assert_kind_of Array, pid_testrepo.keywords_key.value
-            assert_equal ['test'], pid_testrepo.keywords_key.value
+            assert_equal ['~test'], pid_testrepo.keywords_key.value
         end
 
         def test_build_dependencies_key

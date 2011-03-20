@@ -33,6 +33,8 @@ namespace
     static VALUE c_repository_mask;
     static VALUE c_unsupported_mask;
     static VALUE c_association_mask;
+    static VALUE c_overridden_mask;
+    static VALUE c_mask_override_reason;
 
     struct V
     {
@@ -170,6 +172,30 @@ namespace
         return package_dep_spec_to_value((cast_ptr)->associated_package_spec());
     }
 
+    /*
+     * call-seq:
+     *     mask -> Mask
+     */
+    VALUE
+    overridden_mask_mask(VALUE self)
+    {
+        std::shared_ptr<const OverriddenMask> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const OverriddenMask>, ptr);
+        return mask_to_value((*ptr)->mask());
+    }
+
+    /*
+     * call-seq:
+     *     override_reason -> MaskOverrideReason
+     */
+    VALUE
+    overridden_mask_override_reason(VALUE self)
+    {
+        std::shared_ptr<const OverriddenMask> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const OverriddenMask>, ptr);
+        return INT2FIX((*ptr)->override_reason());
+    }
+
 
     void do_register_mask()
     {
@@ -237,6 +263,27 @@ namespace
          */
         c_association_mask = rb_define_class_under(paludis_module(), "AssociationMask", c_mask);
         rb_define_method(c_association_mask, "associated_package_spec", RUBY_FUNC_CAST(&association_mask_associated_package), 0);
+
+        /*
+         * Document-class: Paludis::OverriddenMask
+         *
+         * An OverriddenMask holds a Mask and an explanation of why it has been overridden.
+         */
+        c_overridden_mask = rb_define_class_under(paludis_module(), "OverriddenMask", rb_cObject);
+        rb_define_method(c_overridden_mask, "mask", RUBY_FUNC_CAST(&overridden_mask_mask), 0);
+        rb_define_method(c_overridden_mask, "override_reason", RUBY_FUNC_CAST(&overridden_mask_override_reason), 0);
+
+        /*
+         * Document-module: Paludis::MaskOverrideReason
+         *
+         * The reason an OverriddenMask is overridden.
+         */
+        c_mask_override_reason = rb_define_module_under(paludis_module(), "MaskOverrideReason");
+        for (MaskOverrideReason r(static_cast<MaskOverrideReason>(0)), r_end(last_mro) ; r != r_end ;
+                r = static_cast<MaskOverrideReason>(static_cast<int>(r) + 1))
+            rb_define_const(c_mask_override_reason, value_case_to_RubyCase(stringify(r)).c_str(), INT2FIX(r));
+
+        // cc_enum_special<paludis/mask.hh, MaskOverrideReason, c_mask_override_reason>
     }
 }
 
@@ -253,6 +300,13 @@ paludis::ruby::mask_to_value(std::shared_ptr<const Mask> m)
     {
         exception_to_ruby_exception(e);
     }
+}
+
+VALUE
+paludis::ruby::overridden_mask_to_value(std::shared_ptr<const OverriddenMask> m)
+{
+    return Data_Wrap_Struct(c_overridden_mask, 0, &Common<std::shared_ptr<const OverriddenMask> >::free,
+            new std::shared_ptr<const OverriddenMask>(m));
 }
 
 RegisterRubyClass::Register paludis_ruby_register_mask PALUDIS_ATTRIBUTE((used))

@@ -100,6 +100,7 @@ namespace paludis
         VALUE uri_label_to_value(const std::shared_ptr<const URILabel> &);
         VALUE dependencies_label_to_value(const std::shared_ptr<const DependenciesLabel> &);
         VALUE mask_to_value(std::shared_ptr<const Mask>);
+        VALUE overridden_mask_to_value(std::shared_ptr<const OverriddenMask>);
         VALUE choices_to_value(const std::shared_ptr<const Choices> & c);
         VALUE choice_to_value(const std::shared_ptr<const Choice> & c);
         VALUE choice_value_to_value(const std::shared_ptr<const ChoiceValue> & c);
