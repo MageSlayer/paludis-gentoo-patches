@@ -20,11 +20,10 @@
 #include <paludis/util/pool-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
 namespace
 {
@@ -51,52 +50,39 @@ namespace
     };
 }
 
-namespace test_cases
+TEST(Pool, Monkey)
 {
-    struct PoolMonkeyTest : TestCase
-    {
-        PoolMonkeyTest() : TestCase("pool monkey test") { }
+    auto a(Pool<Monkey>::get_instance()->create(std::string("alexander")));
+    auto b(Pool<Monkey>::get_instance()->create(std::string("gunther")));
+    auto c(Pool<Monkey>::get_instance()->create(std::string("alexander")));
 
-        void run()
-        {
-            auto a(Pool<Monkey>::get_instance()->create(std::string("alexander")));
-            auto b(Pool<Monkey>::get_instance()->create(std::string("gunther")));
-            auto c(Pool<Monkey>::get_instance()->create(std::string("alexander")));
+    EXPECT_TRUE(a->name == "alexander");
+    EXPECT_TRUE(b->name == "gunther");
+    EXPECT_TRUE(c->name == "alexander");
 
-            TEST_CHECK(a->name == "alexander");
-            TEST_CHECK(b->name == "gunther");
-            TEST_CHECK(c->name == "alexander");
+    EXPECT_TRUE(a == c);
+}
 
-            TEST_CHECK(a == c);
-        }
-    } test_pool_monkey;
+TEST(Pool, Weasel)
+{
+    auto a(Pool<Weasel>::get_instance()->create(std::string("william"), 8));
+    auto b(Pool<Weasel>::get_instance()->create(std::string("tony"), 5));
+    auto c(Pool<Weasel>::get_instance()->create(std::string("william"), 8));
+    auto d(Pool<Weasel>::get_instance()->create(std::string("tony"), 10));
 
-    struct PoolWeaselTest : TestCase
-    {
-        PoolWeaselTest() : TestCase("pool weasel test") { }
+    EXPECT_TRUE(a->name == "william");
+    EXPECT_TRUE(a->viciousness == 8);
 
-        void run()
-        {
-            auto a(Pool<Weasel>::get_instance()->create(std::string("william"), 8));
-            auto b(Pool<Weasel>::get_instance()->create(std::string("tony"), 5));
-            auto c(Pool<Weasel>::get_instance()->create(std::string("william"), 8));
-            auto d(Pool<Weasel>::get_instance()->create(std::string("tony"), 10));
+    EXPECT_TRUE(b->name == "tony");
+    EXPECT_TRUE(b->viciousness == 5);
 
-            TEST_CHECK(a->name == "william");
-            TEST_CHECK(a->viciousness == 8);
+    EXPECT_TRUE(c->name == "william");
+    EXPECT_TRUE(c->viciousness == 8);
 
-            TEST_CHECK(b->name == "tony");
-            TEST_CHECK(b->viciousness == 5);
+    EXPECT_TRUE(d->name == "tony");
+    EXPECT_TRUE(d->viciousness == 10);
 
-            TEST_CHECK(c->name == "william");
-            TEST_CHECK(c->viciousness == 8);
-
-            TEST_CHECK(d->name == "tony");
-            TEST_CHECK(d->viciousness == 10);
-
-            TEST_CHECK(a == c);
-            TEST_CHECK(b != d);
-        }
-    } test_pool_weasel;
+    EXPECT_TRUE(a == c);
+    EXPECT_TRUE(b != d);
 }
 
