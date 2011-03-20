@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2009, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,12 +20,12 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/iterator_funcs.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+
 #include <vector>
 #include <list>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
 namespace paludis
@@ -37,23 +37,15 @@ namespace paludis
     };
 }
 
-namespace test_cases
+TEST(WrappedForwardIterator, Works)
 {
-    struct WrappedForwardIteratorTest : TestCase
-    {
-        WrappedForwardIteratorTest() : TestCase("wrapped_forward_iterator") { }
+    std::list<int> l;
+    l.push_back(1);
+    l.push_back(2);
+    l.push_back(3);
 
-        void run()
-        {
-            std::list<int> l;
-            l.push_back(1);
-            l.push_back(2);
-            l.push_back(3);
-
-            typedef WrappedForwardIterator<void, int> I;
-            TEST_CHECK_EQUAL(join(I(l.begin()), I(l.end()), ", "), "1, 2, 3");
-            TEST_CHECK(I(l.begin()).underlying_iterator<std::list<int>::iterator>() == l.begin());
-        }
-    } test_wrapped_forward_iterator;
+    typedef WrappedForwardIterator<void, int> I;
+    ASSERT_EQ("1, 2, 3", join(I(l.begin()), I(l.end()), ", "));
+    ASSERT_TRUE(I(l.begin()).underlying_iterator<std::list<int>::iterator>() == l.begin());
 }
 
