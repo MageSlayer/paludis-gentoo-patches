@@ -27,6 +27,7 @@
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/env_var_names.hh>
 
 #include <iostream>
 #include <functional>
@@ -917,7 +918,7 @@ Process::sandbox()
 
     if (can_use_sandbox)
     {
-        if (! getenv_with_default("PALUDIS_DO_NOTHING_SANDBOXY", "").empty())
+        if (! getenv_with_default(env_vars::do_nothing_sandboxy, "").empty())
             Log::get_instance()->message("util.system.nothing_sandboxy", ll_debug, lc_no_context)
                 << "PALUDIS_DO_NOTHING_SANDBOXY is set, not using sandbox";
         else if (! getenv_with_default("SANDBOX_ACTIVE", "").empty())
@@ -941,7 +942,7 @@ Process::sydbox()
 
     if (can_use_sydbox)
     {
-        if (! getenv_with_default("PALUDIS_DO_NOTHING_SANDBOXY", "").empty())
+        if (! getenv_with_default(env_vars::do_nothing_sandboxy, "").empty())
             Log::get_instance()->message("util.system.nothing_sandboxy", ll_debug, lc_no_context)
                 << "PALUDIS_DO_NOTHING_SANDBOXY is set, not using sydbox";
         else if (! getenv_with_default("SYDBOX_ACTIVE", "").empty())

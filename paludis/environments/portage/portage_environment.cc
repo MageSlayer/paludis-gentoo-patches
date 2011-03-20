@@ -41,6 +41,7 @@
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_error.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/env_var_names.hh>
 
 #include <paludis/standard_output_manager.hh>
 #include <paludis/hooker.hh>
@@ -162,7 +163,7 @@ namespace paludis
         {
             if (! done_hooks)
             {
-                if (getenv_with_default("PALUDIS_NO_GLOBAL_HOOKS", "").empty())
+                if (getenv_with_default(env_vars::no_global_hooks, "").empty())
                     add_one_hook(FSPath(LIBEXECDIR) / "paludis" / "hooks");
 
                 done_hooks = true;
@@ -744,8 +745,8 @@ std::shared_ptr<const FSPathSequence>
 PortageEnvironment::bashrc_files() const
 {
     std::shared_ptr<FSPathSequence> result(std::make_shared<FSPathSequence>());
-    if (! getenv_with_default("PALUDIS_PORTAGE_BASHRC", "").empty())
-        result->push_back(FSPath(getenv_with_default("PALUDIS_PORTAGE_BASHRC", "")).realpath());
+    if (! getenv_with_default(env_vars::portage_bashrc, "").empty())
+        result->push_back(FSPath(getenv_with_default(env_vars::portage_bashrc, "")).realpath());
     else
         result->push_back(FSPath(LIBEXECDIR) / "paludis" / "environments" / "portage" / "bashrc");
     result->push_back(_imp->conf_dir / "make.globals");

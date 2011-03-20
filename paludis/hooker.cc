@@ -18,11 +18,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "hooker.hh"
-#include "config.h"
+#include <paludis/hooker.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_database.hh>
+#include <paludis/about.hh>
+#include <paludis/output_manager.hh>
+#include <paludis/metadata_key.hh>
+
 #include <paludis/util/log.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/system.hh>
@@ -38,14 +41,14 @@
 #include <paludis/util/process.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_stat.hh>
-#include <paludis/about.hh>
-#include <paludis/output_manager.hh>
-#include <paludis/metadata_key.hh>
+#include <paludis/util/env_var_names.hh>
 
 #include <list>
 #include <iterator>
 #include <dlfcn.h>
 #include <stdint.h>
+
+#include "config.h"
 
 using namespace paludis;
 
@@ -173,7 +176,7 @@ BashHookFile::run(
         .setenv("HOOK", hook.name())
         .setenv("HOOK_FILE", stringify(file_name()))
         .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
         .setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
         .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
         .setenv("PALUDIS_COMMAND", _env->paludis_command());
@@ -227,7 +230,7 @@ FancyHookFile::run(const Hook & hook,
     Log::get_instance()->message("hook.fancy.starting", ll_debug, lc_no_context) << "Starting hook script '"
         << file_name() << "' for '" << hook.name() << "'";
 
-    Process process(ProcessCommand({ "sh", "-c", getenv_with_default("PALUDIS_HOOKER_DIR", LIBEXECDIR "/paludis") +
+    Process process(ProcessCommand({ "sh", "-c", getenv_with_default(env_vars::hooker_dir, LIBEXECDIR "/paludis") +
                 "/hooker.bash '" + stringify(file_name()) + "' 'hook_run_" + stringify(hook.name()) + "'" }));
 
     process
@@ -235,7 +238,7 @@ FancyHookFile::run(const Hook & hook,
         .setenv("HOOK", hook.name())
         .setenv("HOOK_FILE", stringify(file_name()))
         .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
         .setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
         .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
         .setenv("PALUDIS_COMMAND", _env->paludis_command());
@@ -289,14 +292,14 @@ FancyHookFile::auto_hook_names() const
     Log::get_instance()->message("hook.fancy.starting", ll_debug, lc_no_context) << "Starting hook script '" <<
         file_name() << "' for auto hook names";
 
-    Process process(ProcessCommand({ "sh", "-c", getenv_with_default("PALUDIS_HOOKER_DIR", LIBEXECDIR "/paludis") +
+    Process process(ProcessCommand({ "sh", "-c", getenv_with_default(env_vars::hooker_dir, LIBEXECDIR "/paludis") +
             "/hooker.bash '" + stringify(file_name()) + "' 'hook_auto_names'" }));
 
     process
         .setenv("ROOT", stringify(_env->preferred_root_key()->value()))
         .setenv("HOOK_FILE", stringify(file_name()))
         .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
         .setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
         .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
         .setenv("PALUDIS_COMMAND", _env->paludis_command());
@@ -346,7 +349,7 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
     Log::get_instance()->message("hook.fancy.starting_dependencies", ll_debug, lc_no_context)
         << "Starting hook script '" << file_name() << "' for dependencies of '" << hook.name() << "'";
 
-    Process process(ProcessCommand({ "sh", "-c", getenv_with_default("PALUDIS_HOOKER_DIR", LIBEXECDIR "/paludis") +
+    Process process(ProcessCommand({ "sh", "-c", getenv_with_default(env_vars::hooker_dir, LIBEXECDIR "/paludis") +
             "/hooker.bash '" + stringify(file_name()) + "' 'hook_" + (depend ? "depend" : "after") + "_" +
             stringify(hook.name()) + "'" }));
 
@@ -355,7 +358,7 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
         .setenv("HOOK", hook.name())
         .setenv("HOOK_FILE", stringify(file_name()))
         .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
         .setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
         .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
         .setenv("PALUDIS_COMMAND", _env->paludis_command());
@@ -582,7 +585,7 @@ Hooker::_find_hooks(const Hook & hook) const
 {
     std::map<std::string, std::shared_ptr<HookFile> > hook_files;
     std::set<std::string> ignore_hooks;
-    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(getenv_with_default("PALUDIS_IGNORE_HOOKS_NAMED", ""),
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(getenv_with_default(env_vars::ignore_hooks_named, ""),
             ":", "", std::inserter(ignore_hooks, ignore_hooks.begin()));
 
     {

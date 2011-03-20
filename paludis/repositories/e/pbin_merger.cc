@@ -18,12 +18,15 @@
  */
 
 #include <paludis/repositories/e/pbin_merger.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/env_var_names.hh>
+
 #include <paludis/hook.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -71,7 +74,7 @@ PbinMerger::PbinMerger(const PbinMergerParams & p) :
                 n::install_under() = FSPath("/"),
                 n::maybe_output_manager() = p.output_manager(),
                 n::merged_entries() = p.merged_entries(),
-                n::no_chown() = ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty(),
+                n::no_chown() = ! getenv_with_default(env_vars::no_chown, "").empty(),
                 n::options() = p.options(),
                 n::root() = p.root(),
                 n::tar_file() = p.tar_file()

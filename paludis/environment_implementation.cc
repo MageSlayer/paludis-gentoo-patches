@@ -21,6 +21,11 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_database.hh>
+#include <paludis/hook.hh>
+#include <paludis/distribution.hh>
+#include <paludis/selection.hh>
+#include <paludis/selection_cache.hh>
+
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/set.hh>
@@ -32,13 +37,12 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
-#include <paludis/hook.hh>
-#include <paludis/distribution.hh>
-#include <paludis/selection.hh>
-#include <paludis/selection_cache.hh>
+#include <paludis/util/env_var_names.hh>
+
 #include <algorithm>
 #include <map>
 #include <list>
+
 #include "config.h"
 
 using namespace paludis;
@@ -152,7 +156,7 @@ std::shared_ptr<const FSPathSequence>
 EnvironmentImplementation::fetchers_dirs() const
 {
     std::shared_ptr<FSPathSequence> result(std::make_shared<FSPathSequence>());
-    std::string fetchers_dir(getenv_with_default("PALUDIS_FETCHERS_DIR", ""));
+    std::string fetchers_dir(getenv_with_default(env_vars::fetchers_dir, ""));
     if (fetchers_dir.empty())
     {
         result->push_back(FSPath(DATADIR "/paludis/fetchers"));
@@ -166,7 +170,7 @@ EnvironmentImplementation::fetchers_dirs() const
 std::string
 EnvironmentImplementation::distribution() const
 {
-    static const std::string result(getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION));
+    static const std::string result(getenv_with_default(env_vars::distribution, DEFAULT_DISTRIBUTION));
     return result;
 }
 

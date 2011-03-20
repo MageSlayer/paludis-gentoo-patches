@@ -19,8 +19,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "syncer.hh"
+#include <paludis/syncer.hh>
 #include <paludis/environment.hh>
+
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
@@ -28,8 +29,11 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/env_var_names.hh>
 #include <paludis/util/sequence.hh>
+
 #include <paludis/output_manager.hh>
+
 #include <list>
 
 using namespace paludis;
@@ -105,7 +109,7 @@ DefaultSyncer::sync(const SyncOptions & opts) const
         .setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
         .setenv("PALUDIS_FETCHERS_DIRS", join(fetchers_dirs->begin(), fetchers_dirs->end(), " "))
         .setenv("PALUDIS_SYNCERS_DIRS", join(syncers_dirs->begin(), syncers_dirs->end(), " "))
-        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
         .setenv("PALUDIS_SYNC_FILTER_FILE", stringify(opts.filter_file()))
         .capture_stderr(opts.output_manager()->stderr_stream())
         .capture_stdout(opts.output_manager()->stdout_stream())

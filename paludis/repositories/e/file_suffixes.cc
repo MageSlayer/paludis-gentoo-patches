@@ -18,6 +18,7 @@
  */
 
 #include <paludis/repositories/e/file_suffixes.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/config_file.hh>
@@ -25,6 +26,8 @@
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/env_var_names.hh>
+
 #include <paludis/name.hh>
 
 using namespace paludis;
@@ -38,7 +41,7 @@ namespace paludis
         KeyValueConfigFile file;
 
         Imp() :
-            file(FSPath(getenv_with_default("PALUDIS_SUFFIXES_FILE", DATADIR "/paludis/ebuild_entries_suffixes.conf")),
+            file(FSPath(getenv_with_default(env_vars::suffixes_file, DATADIR "/paludis/ebuild_entries_suffixes.conf")),
                     { }, &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation)
         {
         }

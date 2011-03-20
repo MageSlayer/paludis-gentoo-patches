@@ -39,6 +39,7 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/set.hh>
+#include <paludis/util/env_var_names.hh>
 
 #include <paludis/about.hh>
 #include <paludis/environment.hh>
@@ -118,7 +119,8 @@ EbuildCommand::operator() ()
 {
     Context context("When running an ebuild command on '" + stringify(*params.package_id()) + "':");
 
-    Process process(ProcessCommand(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") + "/ebuild.bash '" + ebuild_file() + "' " + commands()));
+    Process process(ProcessCommand(getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis") + "/ebuild.bash '"
+                + ebuild_file() + "' " + commands()));
 
     if (! params.package_id()->eapi()->supported())
         throw InternalError(PALUDIS_HERE, "Tried to run EbuildCommand on an unsupported EAPI");
@@ -136,7 +138,7 @@ EbuildCommand::operator() ()
         if (params.package_id()->eapi()->supported()->userpriv_cannot_use_root())
         {
             if (0 == params.environment()->reduced_uid() || 0 == params.environment()->reduced_gid())
-                if (getenv_with_default("PALUDIS_BYPASS_USERPRIV_CHECKS", "").empty())
+                if (getenv_with_default(env_vars::bypass_userpriv_checks, "").empty())
                     throw ActionFailedError("Need to be able to use non-0 user and group for userpriv for '" +
                             stringify(*params.package_id()) + "'");
         }
@@ -177,7 +179,7 @@ EbuildCommand::operator() ()
         .setenv("PALUDIS_REDUCED_GID", stringify(params.environment()->reduced_gid()))
         .setenv("PALUDIS_REDUCED_UID", stringify(params.environment()->reduced_uid()))
         .setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
         .setenv("PALUDIS_UTILITY_PATH_SUFFIXES",
                 params.package_id()->eapi()->supported()->ebuild_options()->utility_path_suffixes())
         .setenv("PALUDIS_EBUILD_MODULE_SUFFIXES",
@@ -1008,7 +1010,7 @@ WriteVDBEntryCommand::operator() ()
 {
     using namespace std::placeholders;
 
-    std::string ebuild_cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
+    std::string ebuild_cmd(getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis") +
             "/write_vdb_entry.bash '" +
             stringify(params.output_directory()) + "' '" +
             stringify(params.environment_file()) + "'");
@@ -1034,7 +1036,7 @@ WriteVDBEntryCommand::operator() ()
         .setenv("PALUDIS_SYNCERS_DIRS", join(syncers_dirs->begin(), syncers_dirs->end(), " "))
         .setenv("PALUDIS_COMMAND", params.environment()->paludis_command())
         .setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
         .setenv("PALUDIS_VDB_FROM_ENV_VARIABLES",
                 params.package_id()->eapi()->supported()->ebuild_options()->vdb_from_env_variables())
         .setenv("PALUDIS_VDB_FROM_ENV_UNLESS_EMPTY_VARIABLES",
@@ -1092,7 +1094,7 @@ VDBPostMergeUnmergeCommand::operator() ()
     if (! getenv_with_default("PALUDIS_NO_GLOBAL_HOOKS", "").empty())
         return;
 
-    Process process(ProcessCommand({ getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") + "/utils/wrapped_ldconfig",
+    Process process(ProcessCommand({ getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis") + "/utils/wrapped_ldconfig",
                 stringify(params.root()) }));
 
     if (0 != process.run().wait())
@@ -1252,7 +1254,7 @@ WriteBinaryEbuildCommand::operator() ()
         throw ActionFailedError("Don't know how to write binary ebuilds using EAPI 'pbin-1+" +
                 params.package_id()->eapi()->exported_name());
 
-    std::string ebuild_cmd(getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis") +
+    std::string ebuild_cmd(getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis") +
             "/write_binary_ebuild.bash '" +
             stringify(params.binary_ebuild_location()) + "' '" +
             stringify(params.binary_distdir() / params.binary_dist_base()) + "' '" +
@@ -1281,7 +1283,7 @@ WriteBinaryEbuildCommand::operator() ()
         .setenv("PALUDIS_SYNCERS_DIRS", join(syncers_dirs->begin(), syncers_dirs->end(), " "))
         .setenv("PALUDIS_COMMAND", params.environment()->paludis_command())
         .setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
         .setenv("PALUDIS_BINARY_FROM_ENV_VARIABLES",
                 params.package_id()->eapi()->supported()->ebuild_options()->binary_from_env_variables())
         .setenv("PALUDIS_F_FUNCTION_PREFIX",

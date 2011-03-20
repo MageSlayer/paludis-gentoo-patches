@@ -28,7 +28,6 @@
 #include <paludis/environments/paludis/world.hh>
 #include <paludis/environments/paludis/suggestions_conf.hh>
 
-#include <paludis/util/config_file.hh>
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>
 #include <paludis/set_file.hh>
@@ -40,6 +39,7 @@
 #include <paludis/repository_factory.hh>
 #include <paludis/standard_output_manager.hh>
 
+#include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/system.hh>
@@ -58,6 +58,7 @@
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_error.hh>
+#include <paludis/util/env_var_names.hh>
 
 #include <functional>
 #include <algorithm>
@@ -136,7 +137,7 @@ namespace paludis
             if (! done_hooks)
             {
                 add_one_hook(c / "hooks", true);
-                if (getenv_with_default("PALUDIS_NO_GLOBAL_HOOKS", "").empty())
+                if (getenv_with_default(env_vars::no_global_hooks, "").empty())
                 {
                     add_one_hook(FSPath(LIBEXECDIR) / "paludis" / "hooks", false);
                     add_one_hook(FSPath(DATADIR) / "paludis" / "hooks", true);
@@ -255,7 +256,7 @@ PaludisEnvironment::fetchers_dirs() const
 
     result->push_back(FSPath(_imp->config->config_dir()) / "fetchers");
 
-    if (getenv_with_default("PALUDIS_NO_GLOBAL_FETCHERS", "").empty())
+    if (getenv_with_default(env_vars::no_global_fetchers, "").empty())
     {
         std::shared_ptr<const FSPathSequence> r(EnvironmentImplementation::fetchers_dirs());
         std::copy(r->begin(), r->end(), result->back_inserter());
@@ -271,7 +272,7 @@ PaludisEnvironment::syncers_dirs() const
 
     result->push_back(FSPath(_imp->config->config_dir()) / "syncers");
 
-    if (getenv_with_default("PALUDIS_NO_GLOBAL_SYNCERS", "").empty())
+    if (getenv_with_default(env_vars::no_global_syncers, "").empty())
     {
         std::shared_ptr<const FSPathSequence> r(EnvironmentImplementation::syncers_dirs());
         std::copy(r->begin(), r->end(), result->back_inserter());
@@ -546,7 +547,7 @@ PaludisEnvironment::populate_sets() const
     std::list<FSPath> sets_dirs;
 
     sets_dirs.push_back(FSPath(_imp->config->config_dir()) / "sets");
-    if (getenv_with_default("PALUDIS_NO_GLOBAL_SETS", "").empty())
+    if (getenv_with_default(env_vars::no_global_sets, "").empty())
     {
         sets_dirs.push_back(FSPath(LIBEXECDIR) / "paludis" / "sets");
         sets_dirs.push_back(FSPath(DATADIR) / "paludis" / "sets");

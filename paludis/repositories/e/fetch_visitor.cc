@@ -22,12 +22,16 @@
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
+
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/about.hh>
+#include <paludis/output_manager.hh>
+#include <paludis/package_database.hh>
+
 #include <paludis/util/system.hh>
 #include <paludis/util/process.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -38,8 +42,8 @@
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/fs_stat.hh>
-#include <paludis/output_manager.hh>
-#include <paludis/package_database.hh>
+#include <paludis/util/env_var_names.hh>
+
 #include <algorithm>
 #include <list>
 
@@ -240,7 +244,7 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
                     .setenv("PALUDIS_REDUCED_GID", stringify(_imp->env->reduced_gid()))
                     .setenv("PALUDIS_REDUCED_UID", stringify(_imp->env->reduced_uid()))
                     .setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-                    .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"));
+                    .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"));
 
                 if (_imp->safe_resume)
                     fetch_process

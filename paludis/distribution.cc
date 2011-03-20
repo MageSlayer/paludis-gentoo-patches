@@ -18,6 +18,7 @@
  */
 
 #include <paludis/distribution-impl.hh>
+
 #include <paludis/util/config_file.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/hashes.hh>
@@ -29,6 +30,8 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/fs_iterator.hh>
+#include <paludis/util/env_var_names.hh>
+
 #include <unordered_map>
 
 using namespace paludis;
@@ -53,7 +56,7 @@ namespace paludis
         {
             Context c("When loading distribution data:");
 
-            for (FSIterator d(FSPath(getenv_with_default("PALUDIS_DISTRIBUTIONS_DIR", DATADIR "/paludis/distributions")), { }), d_end ;
+            for (FSIterator d(FSPath(getenv_with_default(env_vars::distributions_dir, DATADIR "/paludis/distributions")), { }), d_end ;
                     d != d_end ; ++d)
             {
                 if (! is_file_with_extension(*d, ".conf", { }))

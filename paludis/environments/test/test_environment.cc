@@ -18,6 +18,7 @@
  */
 
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -28,6 +29,8 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/env_var_names.hh>
+
 #include <paludis/standard_output_manager.hh>
 #include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
@@ -35,6 +38,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/choice.hh>
 #include <paludis/literal_metadata_key.hh>
+
 #include <functional>
 #include <unordered_map>
 #include <string>
@@ -139,13 +143,13 @@ TestEnvironment::fetch_package_id(const QualifiedPackageName & q,
 uid_t
 TestEnvironment::reduced_uid() const
 {
-    return destringify<int>(getenv_with_default("PALUDIS_REDUCED_UID", stringify(getuid())));
+    return destringify<int>(getenv_with_default(env_vars::reduced_uid, stringify(getuid())));
 }
 
 gid_t
 TestEnvironment::reduced_gid() const
 {
-    return destringify<int>(getenv_with_default("PALUDIS_REDUCED_GID", stringify(getgid())));
+    return destringify<int>(getenv_with_default(env_vars::reduced_gid, stringify(getgid())));
 }
 
 std::shared_ptr<const MirrorsSequence>

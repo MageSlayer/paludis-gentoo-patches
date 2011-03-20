@@ -18,6 +18,7 @@
  */
 
 #include <paludis/set_file.hh>
+
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -29,6 +30,8 @@
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/process.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/env_var_names.hh>
+
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/selection.hh>
@@ -37,6 +40,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/metadata_key.hh>
+
 #include <list>
 #include <vector>
 #include <algorithm>
@@ -531,7 +535,7 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
         .setenv("ROOT", _p.environment() ? stringify(_p.environment()->preferred_root_key()->value()) : "/")
         .setenv("SET", stringify(_p.file_name()))
         .setenv("SET_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
         .setenv("PALUDIS_COMMAND", _p.environment() ? _p.environment()->paludis_command() : "")
         .prefix_stderr(_p.file_name().basename() + "> ")
         .capture_stdout(s);

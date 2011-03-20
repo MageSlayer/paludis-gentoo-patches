@@ -17,7 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "bashable_conf.hh"
+#include <paludis/environments/paludis/bashable_conf.hh>
+
 #include <paludis/util/config_file.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/stringify.hh>
@@ -28,6 +29,8 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/fs_path.hh>
+#include <paludis/util/env_var_names.hh>
+
 #include <functional>
 
 using namespace paludis;
@@ -58,7 +61,7 @@ paludis::paludis_environment::make_bashable_conf(const FSPath & f, const LineCon
         Process process(ProcessCommand({ "bash", stringify(f) }));
         process
             .setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-            .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+            .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
             .prefix_stderr(f.basename() + "> ")
             .capture_stdout(s);
         int exit_status(process.run().wait());
@@ -92,7 +95,7 @@ paludis::paludis_environment::make_bashable_kv_conf(const FSPath & f,
         Process process(ProcessCommand({ "bash", stringify(f) }));
         process
             .setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-            .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+            .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
             .prefix_stderr(f.basename() + "> ")
             .capture_stdout(s);
         for (Map<std::string, std::string>::ConstIterator i(predefined_variables->begin()),

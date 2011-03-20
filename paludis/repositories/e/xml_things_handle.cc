@@ -18,15 +18,20 @@
  */
 
 #include <paludis/repositories/e/xml_things_handle.hh>
-#include <paludis/about.hh>
+
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/system.hh>
-#include "config.h"
+#include <paludis/util/env_var_names.hh>
+
+#include <paludis/about.hh>
+
 #include <dlfcn.h>
 #include <stdint.h>
+
+#include "config.h"
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -58,7 +63,7 @@ namespace paludis
             cleanup(0)
         {
 #if ENABLE_XML
-            if (! getenv_with_default("PALUDIS_NO_XML", "").empty())
+            if (! getenv_with_default(env_vars::no_xml, "").empty())
                 return;
 
             paludis_handle = ::dlopen(("libpaludis_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,11 +18,14 @@
  */
 
 #include <paludis/repositories/e/check_userpriv.hh>
+
 #include <paludis/util/exception.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/env_var_names.hh>
+
 #include <paludis/environment.hh>
 
 using namespace paludis;
@@ -33,7 +36,7 @@ paludis::erepository::check_userpriv(const FSPath & f, const Environment * env, 
 {
     Context c("When checking permissions on '" + stringify(f) + "' for userpriv:");
 
-    if (! getenv_with_default("PALUDIS_BYPASS_USERPRIV_CHECKS", "").empty())
+    if (! getenv_with_default(env_vars::bypass_userpriv_checks, "").empty())
         return false;
 
     FSStat f_stat(f);

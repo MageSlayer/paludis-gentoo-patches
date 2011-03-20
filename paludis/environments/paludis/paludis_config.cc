@@ -51,6 +51,7 @@
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_error.hh>
+#include <paludis/util/env_var_names.hh>
 
 #include <paludis/distribution.hh>
 #include <paludis/repository_factory.hh>
@@ -225,7 +226,7 @@ namespace paludis
         suggestions_conf(std::make_shared<SuggestionsConf>(e)),
         has_general_conf(false),
         accept_all_breaks_portage(false),
-        reduced_username(getenv_with_default("PALUDIS_REDUCED_USERNAME", "paludisbuild")),
+        reduced_username(getenv_with_default(env_vars::reduced_username, "paludisbuild")),
         commandline_environment(std::make_shared<Map<std::string, std::string>>())
     {
     }
@@ -268,7 +269,7 @@ namespace paludis
             Process process(ProcessCommand({ "bash", stringify(FSPath(config_dir) / "general.bash") }));
             process
                 .setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-                .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
                 .prefix_stderr("general.bash> ")
                 .capture_stdout(s);
             int exit_status(process.run().wait());
@@ -308,7 +309,7 @@ namespace paludis
             Process process(ProcessCommand({ "bash", stringify(FSPath(config_dir) / "environment.bash") }));
             process
                 .setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-                .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+                .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
                 .prefix_stderr("general.bash> ")
                 .capture_stdout(s);
             int exit_status(process.run().wait());
@@ -417,7 +418,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         }
     }
 
-    _imp->local_config_dir = FSPath(getenv_with_default("PALUDIS_HOME", getenv_or_error("HOME"))) /
+    _imp->local_config_dir = FSPath(getenv_with_default(env_vars::home, getenv_or_error("HOME"))) /
             (".paludis" + local_config_suffix);
     FSPath old_config_dir(_imp->local_config_dir);
 
@@ -700,7 +701,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         std::list<FSPath> files;
         files.push_back(_imp->local_config_dir / (dist->output_filename_part() + ".conf"));
         files.push_back(_imp->local_config_dir / (dist->output_filename_part() + ".bash"));
-        files.push_back(FSPath(getenv_with_default("PALUDIS_DEFAULT_OUTPUT_CONF",
+        files.push_back(FSPath(getenv_with_default(env_vars::default_output_conf,
                         SHAREDIR "/paludis/environments/paludis/default_output.conf")));
         if ((_imp->local_config_dir / (dist->output_filename_part() + ".conf.d")).stat().exists())
         {
@@ -931,7 +932,7 @@ PaludisConfig::repo_func_from_file(const FSPath & repo_file)
         Process process(ProcessCommand({ "bash", stringify(_imp->local_config_dir / (dist->repository_defaults_filename_part() + ".bash")) + "'" }));
         process
             .setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-            .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+            .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
             .prefix_stderr(dist->repository_defaults_filename_part() + ".bash> ")
             .capture_stdout(s);
         int exit_status(process.run().wait());
@@ -953,7 +954,7 @@ PaludisConfig::repo_func_from_file(const FSPath & repo_file)
         Process process(ProcessCommand({ "bash", stringify(repo_file) }));
         process
             .setenv("PALUDIS_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
-            .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"))
+            .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
             .prefix_stderr(repo_file.basename() + "> ")
             .capture_stdout(s);
         int exit_status(process.run().wait());
@@ -1164,7 +1165,7 @@ PaludisConfig::distribution() const
     _imp->need_general_conf();
 
     if (_imp->distribution.empty())
-        _imp->distribution = getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION);
+        _imp->distribution = getenv_with_default(env_vars::distribution, DEFAULT_DISTRIBUTION);
 
     return _imp->distribution;
 }

@@ -18,8 +18,10 @@
  */
 
 #include <paludis/repositories/e/eapi.hh>
+
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
+
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/strip.hh>
@@ -35,6 +37,8 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/fs_iterator.hh>
+#include <paludis/util/env_var_names.hh>
+
 #include <unordered_map>
 #include <map>
 #include <vector>
@@ -370,7 +374,7 @@ namespace paludis
         {
             Context c("When loading EAPI data:");
 
-            for (FSIterator d(FSPath(getenv_with_default("PALUDIS_EAPIS_DIR", DATADIR "/paludis/eapis")), { fsio_inode_sort }), d_end ;
+            for (FSIterator d(FSPath(getenv_with_default(env_vars::eapis_dir, DATADIR "/paludis/eapis")), { fsio_inode_sort }), d_end ;
                     d != d_end ; ++d)
             {
                 if (! is_file_with_extension(*d, ".conf", { }))

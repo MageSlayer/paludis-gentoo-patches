@@ -21,14 +21,17 @@
 
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
+
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/repository.hh>
+
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/process.hh>
 #include <paludis/util/system.hh>
+#include <paludis/util/env_var_names.hh>
 
 #include <cstdlib>
 #include <iostream>
@@ -105,7 +108,8 @@ SyncProtocolOptionsCommand::run(
     Process process(ProcessCommand({stringify(syncer), "--help"}));
     process
         .setenv("PALUDIS_FETCHERS_DIRS", join(syncer_dirs->begin(), syncer_dirs->end(), " "))
-        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default("PALUDIS_EBUILD_DIR", LIBEXECDIR "/paludis"));
+        .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"));
+
     if (0 != process.run().wait())
         Log::get_instance()->message("paludis.syncer_help.failure", ll_warning, lc_context)
             << "Syncer help command '" << syncer << " --help' failed";

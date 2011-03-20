@@ -17,7 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "vdb_merger.hh"
+#include <paludis/repositories/e/vdb_merger.hh>
+
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/system.hh>
@@ -31,15 +32,19 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/util/timestamp.hh>
-#include <paludis/output_manager.hh>
+#include <paludis/util/env_var_names.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/env_var_names.hh>
+
+#include <paludis/output_manager.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
 #include <paludis/util/md5.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
+
 #include <iomanip>
 #include <list>
 
@@ -89,7 +94,7 @@ VDBMerger::VDBMerger(const VDBMergerParams & p) :
                 n::install_under() = FSPath("/"),
                 n::maybe_output_manager() = p.output_manager(),
                 n::merged_entries() = p.merged_entries(),
-                n::no_chown() = ! getenv_with_default("PALUDIS_NO_CHOWN", "").empty(),
+                n::no_chown() = ! getenv_with_default(env_vars::no_chown, "").empty(),
                 n::options() = p.options(),
                 n::root() = p.root()
             )),

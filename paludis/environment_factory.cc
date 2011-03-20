@@ -18,6 +18,7 @@
  */
 
 #include <paludis/environment_factory.hh>
+
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/system.hh>
@@ -26,10 +27,14 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/env_var_names.hh>
+
 #include <paludis/distribution.hh>
 #include <paludis/about.hh>
+
 #include <unordered_map>
 #include <list>
+
 #include "config.h"
 
 using namespace paludis;
@@ -101,7 +106,7 @@ EnvironmentFactory::create(const std::string & s) const
 
     if (key.empty())
         key = (*DistributionData::get_instance()->distribution_from_string(
-                getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION))).default_environment();
+                getenv_with_default(env_vars::distribution, DEFAULT_DISTRIBUTION))).default_environment();
 
     try
     {
@@ -114,7 +119,7 @@ EnvironmentFactory::create(const std::string & s) const
     catch (const FallBackToAnotherFormatError &)
     {
         std::string f((*DistributionData::get_instance()->distribution_from_string(
-                    getenv_with_default("PALUDIS_DISTRIBUTION", DEFAULT_DISTRIBUTION))).fallback_environment());
+                    getenv_with_default(env_vars::distribution, DEFAULT_DISTRIBUTION))).fallback_environment());
         if (s.empty() && ! f.empty())
         {
             Keys::const_iterator i(_imp->keys.find(f));
