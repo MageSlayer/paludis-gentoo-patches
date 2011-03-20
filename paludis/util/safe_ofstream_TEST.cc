@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,131 +19,66 @@
 
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/fs_path.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+
 #include <unistd.h>
 #include <sys/types.h>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-namespace test_cases
+TEST(SafeOFStream, New)
 {
-    struct NewTest : TestCase
+    SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "new", -1, false);
+    ASSERT_TRUE(s);
+    s << "foo";
+    ASSERT_TRUE(s);
+}
+
+TEST(SafeOFStream, Existing)
+{
+    SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing", -1, false);
+    ASSERT_TRUE(s);
+    s << "foo";
+    ASSERT_TRUE(s);
+}
+
+TEST(SafeOFStream, ExistingSym)
+{
+    SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_sym", -1, false);
+    ASSERT_TRUE(s);
+    s << "foo";
+    ASSERT_TRUE(s);
+}
+
+TEST(SafeOFStream, ExistingDir)
+{
+    EXPECT_THROW(SafeOFStream(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_dir", -1, false), SafeOFStreamError);
+}
+
+TEST(SafeOFStream, ExistingPerm)
+{
+    if (0 != getuid())
     {
-        NewTest() : TestCase("new file") { }
+        EXPECT_THROW(SafeOFStream(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_perm", -1, false), SafeOFStreamError);
+    }
+}
 
-        void run()
-        {
-            SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "new", -1, false);
-            TEST_CHECK(s);
-            s << "foo";
-            TEST_CHECK(s);
-        }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-    } test_new;
-
-    struct ExistingTest : TestCase
+TEST(SafeOFStream, WriteFailure)
+{
+    bool threw(false);
+    try
     {
-        ExistingTest() : TestCase("existing file") { }
-
-        void run()
-        {
-            SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing", -1, false);
-            TEST_CHECK(s);
-            s << "foo";
-            TEST_CHECK(s);
-        }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-    } test_existing;
-
-    struct ExistingSymTest : TestCase
+        SafeOFStream s(FSPath("/dev/full"), -1, false);
+        ASSERT_TRUE(s);
+        s << "foo";
+        ASSERT_TRUE(! s);
+    }
+    catch (const SafeOFStreamError &)
     {
-        ExistingSymTest() : TestCase("existing sym") { }
+        threw = true;
+    }
 
-        void run()
-        {
-            SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_sym", -1, false);
-            TEST_CHECK(s);
-            s << "foo";
-            TEST_CHECK(s);
-        }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-    } test_existing_sym;
-
-    struct ExistingDirTest : TestCase
-    {
-        ExistingDirTest() : TestCase("existing dir") { }
-
-        void run()
-        {
-            TEST_CHECK_THROWS(SafeOFStream(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_dir", -1, false), SafeOFStreamError);
-        }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-    } test_existing_dir;
-
-    struct ExistingPermTest : TestCase
-    {
-        ExistingPermTest() : TestCase("existing unwriteable file") { }
-
-        void run()
-        {
-            TEST_CHECK_THROWS(SafeOFStream(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_perm", -1, false), SafeOFStreamError);
-        }
-
-        bool skip() const
-        {
-            return 0 == getuid();
-        }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-    } test_existing_perm;
-
-    struct WriteFailTest : TestCase
-    {
-        WriteFailTest() : TestCase("write fail") { }
-
-        void run()
-        {
-            bool threw(false);
-            try
-            {
-                SafeOFStream s(FSPath("/dev/full"), -1, false);
-                TEST_CHECK(s);
-                s << "foo";
-                TEST_CHECK(! s);
-            }
-            catch (const SafeOFStreamError &)
-            {
-                threw = true;
-            }
-
-            TEST_CHECK(threw);
-        }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-    } test_existing_write_fail;
+    ASSERT_TRUE(threw);
 }
 
