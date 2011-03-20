@@ -9,7 +9,7 @@ dnl `test', `impl', `testscript'. Note that there isn't much error checking done
 dnl on this file at present...
 
 add(`accept_visitor',                    `hh')
-add(`action_queue',                      `hh', `cc', `test')
+add(`action_queue',                      `hh', `cc', `gtest')
 add(`active_object_ptr',                 `hh', `cc', `fwd', `test')
 add(`attributes',                        `hh')
 add(`buffer_output_stream',              `hh', `cc', `fwd', `test')
