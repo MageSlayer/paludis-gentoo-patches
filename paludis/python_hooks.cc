@@ -13,6 +13,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/env_var_names.hh>
 
 #include <set>
 
@@ -111,7 +112,7 @@ PyHookFile::PyHookFile(const FSPath & f, const bool r, const Environment * const
             _format_exception = traceback_namespace["format_exception"];
 
             bp::exec_file(
-                    (getenv_with_default("PALUDIS_PYTHON_DIR", PYTHONINSTALLDIR)
+                    (getenv_with_default(env_vars::python_dir, PYTHONINSTALLDIR)
                      + "/paludis_output_wrapper.py").c_str(),
                     _output_wrapper_namespace, _output_wrapper_namespace);
             bp::import("paludis");
