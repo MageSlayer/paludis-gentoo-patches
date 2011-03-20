@@ -38,19 +38,19 @@ TEST(EnumIterator, Works)
 {
     EnumIterator<Numbers> n, n_end(last_number);
 
-    EXPECT_TRUE(n != n_end);
+    ASSERT_TRUE(n != n_end);
     EXPECT_EQ(one, *n);
     ++n;
 
-    EXPECT_TRUE(n != n_end);
+    ASSERT_TRUE(n != n_end);
     EXPECT_EQ(two, *n);
     ++n;
 
-    EXPECT_TRUE(n != n_end);
+    ASSERT_TRUE(n != n_end);
     EXPECT_EQ(three, *n);
     ++n;
 
-    EXPECT_TRUE(n == n_end);
+    ASSERT_TRUE(n == n_end);
     EXPECT_EQ(last_number, *n);
 }
 
