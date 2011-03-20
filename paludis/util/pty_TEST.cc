@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,22 +18,14 @@
  */
 
 #include <paludis/util/pty.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
-namespace test_cases
+TEST(Pty, Works)
 {
-    struct PtyTest : TestCase
-    {
-        PtyTest() : TestCase("ptys") { }
-
-        void run()
-        {
-            Pty pty;
-        }
-    } test_pty;
+    Pty pty;
+    SUCCEED();
 }
 
