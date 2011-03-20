@@ -7,20 +7,11 @@ include $(top_srcdir)/misc/common-makefile.am
 
 define(`filelist', `')dnl
 define(`headerlist', `')dnl
-define(`testlist', `')dnl
 define(`gtestlist', `')dnl
 define(`testscriptlist', `')dnl
 define(`selist', `')dnl
 define(`secleanlist', `')dnl
 define(`seheaderlist', `')dnl
-define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
-$1_TEST_SOURCES = $1_TEST.cc
-$1_TEST_LDADD = \
-	test_extras.o \
-	$(top_builddir)/test/libtest.a \
-	libpaludisutil_@PALUDIS_PC_SLOT@.la
-$1_TEST_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
-')dnl
 define(`addgtest', `define(`gtestlist', gtestlist `$1_TEST')dnl
 $1_TEST_SOURCES = $1_TEST.cc
 $1_TEST_LDADD = \
@@ -52,7 +43,6 @@ ifelse(`$2', `hhx', `addhhx(`$1')', `')dnl
 ifelse(`$2', `cc', `addcc(`$1')', `')dnl
 ifelse(`$2', `impl', `addimpl(`$1')', `')dnl
 ifelse(`$2', `se', `addse(`$1')', `')dnl
-ifelse(`$2', `test', `addtest(`$1')', `')dnl
 ifelse(`$2', `gtest', `addgtest(`$1')', `')dnl
 ifelse(`$2', `testscript', `addtestscript(`$1')', `')')dnl
 define(`add', `addthis(`$1',`$2')addthis(`$1',`$3')addthis(`$1',`$4')dnl
@@ -81,9 +71,7 @@ libpaludisutil_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT
 libpaludisutil_@PALUDIS_PC_SLOT@_la_LIBADD = $(PTHREAD_LIBS) $(RT_LIBS)
 
 if HAVE_GTEST
-TESTS = testlist gtestlist
-else
-TESTS = testlist
+TESTS = gtestlist
 endif
 
 check_PROGRAMS = $(TESTS)
