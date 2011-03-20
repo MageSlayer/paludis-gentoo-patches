@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,58 +20,43 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/thread_pool.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
-#include <functional>
 
+#include <functional>
 #include <cctype>
 #include <sched.h>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-namespace test_cases
+TEST(GetenvWithDefault, Works)
 {
-    struct GetenvWithDefaultTest : TestCase
-    {
-        GetenvWithDefaultTest() : TestCase("getenv_with_default") { }
+    EXPECT_TRUE(! getenv_with_default("HOME", "!").empty());
+    EXPECT_EQ('/', getenv_with_default("HOME", "!").at(0));
+    EXPECT_EQ("moo", getenv_with_default("THEREISNOSUCHVARIABLE", "moo"));
+}
 
-        void run()
-        {
-            TEST_CHECK(! getenv_with_default("HOME", "!").empty());
-            TEST_CHECK_EQUAL(getenv_with_default("HOME", "!").at(0), '/');
-            TEST_CHECK_EQUAL(getenv_with_default("THEREISNOSUCHVARIABLE", "moo"), "moo");
-        }
-    } test_getenv_with_default;
+TEST(GetenvOrError, Works)
+{
+    EXPECT_TRUE(! getenv_or_error("HOME").empty());
+}
 
-    struct GetenvOrErrorTest : TestCase
-    {
-        GetenvOrErrorTest() : TestCase("getenv_or_error") { }
+TEST(GetenvError, Throws)
+{
+    EXPECT_THROW(getenv_or_error("THEREISNOSUCHVARIABLE"), GetenvError);
+}
 
-        void run()
-        {
-            TEST_CHECK(! getenv_or_error("HOME").empty());
-            TEST_CHECK_THROWS(getenv_or_error("THEREISNOSUCHVARIABLE"), GetenvError);
-        }
-    } test_getenv_or_error;
-
-    struct KernelVersionTest : TestCase
-    {
-        KernelVersionTest() : TestCase("kernel version") { }
-
-        void run()
-        {
-            TEST_CHECK(! kernel_version().empty());
+TEST(KernelVersion, Works)
+{
+    EXPECT_TRUE(! kernel_version().empty());
 #ifdef linux
-            TEST_CHECK('2' == kernel_version().at(0));
-            TEST_CHECK('.' == kernel_version().at(1));
+    EXPECT_TRUE('2' == kernel_version().at(0));
+    EXPECT_TRUE('.' == kernel_version().at(1));
 #elif defined(__FreeBSD__)
-            TEST_CHECK(isdigit(kernel_version().at(0)));
-            TEST_CHECK('.' == kernel_version().at(1));
+    EXPECT_TRUE(isdigit(kernel_version().at(0)));
+    EXPECT_TRUE('.' == kernel_version().at(1));
 #else
 #  error You need to write a sanity test for kernel_version() for your platform.
 #endif
-        }
-    } test_kernel_version;
 }
 
