@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,23 +18,14 @@
  */
 
 #include <paludis/util/return_literal_function.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
-namespace test_cases
+TEST(ReturnLiteralFunction, Int)
 {
-    struct ReturnLiteralFunctionTest : TestCase
-    {
-        ReturnLiteralFunctionTest() : TestCase("return literal") { }
-
-        void run()
-        {
-            const std::function<int ()> f = return_literal_function(3);
-            TEST_CHECK_EQUAL(f(), 3);
-        }
-    } test_return_literal_function;
+    const std::function<int ()> f = return_literal_function(3);
+    EXPECT_EQ(3, f());
 }
 
