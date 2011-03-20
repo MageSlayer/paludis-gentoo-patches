@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009 Ciaran McCreesh
+ * Copyright (c) 2009, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,11 +19,12 @@
 
 #include <paludis/util/string_list_stream.hh>
 #include <paludis/util/thread.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+#include <paludis/util/stringify.hh>
+
 #include <functional>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
 namespace
@@ -40,52 +41,38 @@ namespace
     }
 }
 
-namespace test_cases
+TEST(StringListStream, Works)
 {
-    struct StringListStreamTest : TestCase
+    StringListStream s;
+    s << "foo" << std::endl << "bar" << std::endl << "baz" << std::endl;
+    s.nothing_more_to_write();
+
+    std::string l;
+
+    ASSERT_TRUE(std::getline(s, l));
+    EXPECT_EQ("foo", l);
+
+    ASSERT_TRUE(std::getline(s, l));
+    EXPECT_EQ("bar", l);
+
+    ASSERT_TRUE(std::getline(s, l));
+    EXPECT_EQ("baz", l);
+
+    ASSERT_TRUE(! std::getline(s, l));
+}
+
+TEST(StringListStream, Threads)
+{
+    StringListStream s;
+    Thread t(std::bind(&write_to, std::ref(s)));
+
+    std::string l;
+    for (int n(0) ; n < 100 ; ++n)
     {
-        StringListStreamTest() : TestCase("string list stream") { }
+        ASSERT_TRUE(std::getline(s, l));
+        EXPECT_EQ(stringify(n), l);
+    }
 
-        void run()
-        {
-            StringListStream s;
-            s << "foo" << std::endl << "bar" << std::endl << "baz" << std::endl;
-            s.nothing_more_to_write();
-
-            std::string l;
-
-            TEST_CHECK(std::getline(s, l));
-            TEST_CHECK_EQUAL(l, "foo");
-
-            TEST_CHECK(std::getline(s, l));
-            TEST_CHECK_EQUAL(l, "bar");
-
-            TEST_CHECK(std::getline(s, l));
-            TEST_CHECK_EQUAL(l, "baz");
-
-            TEST_CHECK(! std::getline(s, l));
-        }
-    } test_string_list_stream;
-
-    struct StringListStreamThreadsTest : TestCase
-    {
-        StringListStreamThreadsTest() : TestCase("string list stream threads") { }
-
-        void run()
-        {
-            StringListStream s;
-            Thread t(std::bind(&write_to, std::ref(s)));
-
-            std::string l;
-            for (int n(0) ; n < 100 ; ++n)
-            {
-                TestMessageSuffix sx(stringify(n));
-                TEST_CHECK(std::getline(s, l));
-                TEST_CHECK_EQUAL(l, stringify(n));
-            }
-
-            TEST_CHECK(! std::getline(s, l));
-        }
-    } test_string_list_stream_thread;
+    ASSERT_TRUE(! std::getline(s, l));
 }
 
