@@ -53,13 +53,14 @@ lib_LTLIBRARIES = libpaludisargs_@PALUDIS_PC_SLOT@.la
 check_PROGRAMS = $(TESTS)
 
 test_ldadd = \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	libpaludisargs_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la
 
 args_TEST_SOURCES = args_TEST.cc
 args_TEST_LDADD = $(test_ldadd)
-args_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+args_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
+args_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
 args_handler-se.hh : args_handler.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/args_handler.se > $@ ; then rm -f $@ ; exit 1 ; fi

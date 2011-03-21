@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,61 +19,57 @@
 
 #include <paludis/args/args.hh>
 #include <paludis/args/args_error.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
 #include <algorithm>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
 using namespace paludis::args;
-using namespace test;
 
-/** \file
- * Test cases for paludis::args things.
- *
- */
-
-#ifndef DOXYGEN
-
-struct CommandLine : public ArgsHandler
+namespace
 {
-    ArgsGroup group_one;
-    SwitchArg arg_foo;
-    SwitchArg arg_bar;
-    SwitchArg arg_dummy;
-    SwitchArg arg_removed;
-
-    ArgsGroup group_two;
-    SwitchArg arg_baz;
-    AliasArg arg_other_baz;
-    StringArg arg_something;
-    StringArg arg_monkey;
-    AliasArg arg_other_monkey;
-    IntegerArg arg_somenum;
-    EnumArg arg_enum;
-    SwitchArg arg_spider;
-
-    ArgsGroup group_three;
-    EnumArg arg_other_enum;
-    StringSetArg arg_stringset;
-
-    CommandLine();
-    ~CommandLine();
-
-    std::string app_name() const
+    struct CommandLine : public ArgsHandler
     {
-        return "args_TEST";
-    }
+        ArgsGroup group_one;
+        SwitchArg arg_foo;
+        SwitchArg arg_bar;
+        SwitchArg arg_dummy;
+        SwitchArg arg_removed;
 
-    std::string app_synopsis() const
-    {
-        return "tests for args";
-    }
+        ArgsGroup group_two;
+        SwitchArg arg_baz;
+        AliasArg arg_other_baz;
+        StringArg arg_something;
+        StringArg arg_monkey;
+        AliasArg arg_other_monkey;
+        IntegerArg arg_somenum;
+        EnumArg arg_enum;
+        SwitchArg arg_spider;
 
-    std::string app_description() const
-    {
-        return "Tests args";
-    }
-};
+        ArgsGroup group_three;
+        EnumArg arg_other_enum;
+        StringSetArg arg_stringset;
+
+        CommandLine();
+        ~CommandLine();
+
+        std::string app_name() const
+        {
+            return "args_TEST";
+        }
+
+        std::string app_synopsis() const
+        {
+            return "tests for args";
+        }
+
+        std::string app_description() const
+        {
+            return "Tests args";
+        }
+    };
+}
 
 CommandLine::CommandLine() :
     group_one(main_options_section(), "Group one", "Description of group one"),
@@ -103,151 +99,96 @@ CommandLine::~CommandLine()
 {
 }
 
-#endif
-
-namespace test_cases
+TEST(Args, Simple)
 {
-    /**
-     * \test Simple args tests.
-     *
-     */
-    struct ArgsTestSimple : TestCase
-    {
-        ArgsTestSimple() : TestCase("simple") { }
+    const char * args[] = { "program-name", "--other-monkey", "chimp", "--other-baz", "--spider", "--no-spider",
+        "-fsne", "blah", "7", "three", "--", "--dummy", "one", "two" };
+    CommandLine c1;
+    c1.run(14, args, "", "", "");
+    EXPECT_TRUE(c1.arg_foo.specified());
+    EXPECT_TRUE(! c1.arg_bar.specified());
+    EXPECT_TRUE(c1.arg_baz.specified());
+    EXPECT_TRUE(c1.arg_other_baz.specified());
+    EXPECT_TRUE(c1.arg_something.specified());
+    EXPECT_TRUE(c1.arg_something.argument() == "blah");
+    EXPECT_TRUE(c1.arg_somenum.specified());
+    EXPECT_TRUE(c1.arg_somenum.argument() == 7);
+    EXPECT_TRUE(c1.arg_enum.specified());
+    EXPECT_TRUE(c1.arg_enum.argument() == "three");
+    EXPECT_TRUE(! c1.arg_dummy.specified());
+    EXPECT_TRUE(! c1.arg_other_enum.specified());
+    EXPECT_TRUE(c1.arg_other_enum.argument() == "b");
+    EXPECT_TRUE(c1.arg_monkey.specified());
+    EXPECT_TRUE(c1.arg_monkey.argument() == "chimp");
+    EXPECT_TRUE(! c1.arg_spider.specified());
 
-        void run()
-        {
-            const char * args[] = { "program-name", "--other-monkey", "chimp", "--other-baz", "--spider", "--no-spider",
-                "-fsne", "blah", "7", "three", "--", "--dummy", "one", "two" };
-            CommandLine c1;
-            c1.run(14, args, "", "", "");
-            TEST_CHECK(c1.arg_foo.specified());
-            TEST_CHECK(! c1.arg_bar.specified());
-            TEST_CHECK(c1.arg_baz.specified());
-            TEST_CHECK(c1.arg_other_baz.specified());
-            TEST_CHECK(c1.arg_something.specified());
-            TEST_CHECK(c1.arg_something.argument() == "blah");
-            TEST_CHECK(c1.arg_somenum.specified());
-            TEST_CHECK(c1.arg_somenum.argument() == 7);
-            TEST_CHECK(c1.arg_enum.specified());
-            TEST_CHECK(c1.arg_enum.argument() == "three");
-            TEST_CHECK(! c1.arg_dummy.specified());
-            TEST_CHECK(! c1.arg_other_enum.specified());
-            TEST_CHECK(c1.arg_other_enum.argument() == "b");
-            TEST_CHECK(c1.arg_monkey.specified());
-            TEST_CHECK(c1.arg_monkey.argument() == "chimp");
-            TEST_CHECK(! c1.arg_spider.specified());
+    ASSERT_EQ(3, std::distance(c1.begin_parameters(), c1.end_parameters()));
+    EXPECT_EQ("--dummy", *c1.begin_parameters());
+    EXPECT_EQ("one", *++c1.begin_parameters());
+    EXPECT_EQ("two", *++(++(c1.begin_parameters())));
+}
 
-            TEST_CHECK_EQUAL(std::distance(c1.begin_parameters(), c1.end_parameters()), 3);
-            TEST_CHECK_EQUAL(*c1.begin_parameters(), "--dummy");
-            TEST_CHECK_EQUAL(*++c1.begin_parameters(), "one");
-            TEST_CHECK_EQUAL(*++(++(c1.begin_parameters())), "two");
-        }
-    } test_args_simple;
+TEST(Args, MissingParameters)
+{
+    const char *args[] = { "program-name", "-e" };
+    CommandLine c1;
+    EXPECT_THROW(c1.run(2, args, "", "", ""), MissingValue);
+}
 
-    /**
-     * \test Missing parameters tests.
-     *
-     */
-    struct ArgsTestNoParam : TestCase
-    {
-        ArgsTestNoParam() : TestCase("Missing parameters") { }
+TEST(Args, NoNo)
+{
+    const char *args[] = { "program-name", "--no-num" };
+    CommandLine c1;
+    EXPECT_THROW(c1.run(2, args, "", "", ""), BadArgument);
+}
 
-        void run()
-        {
-            const char *args[] = { "program-name", "-e" };
-            CommandLine c1;
-            TEST_CHECK_THROWS(c1.run(2, args, "", "", ""), MissingValue);
-        }
-    } test_args_no_param;
+TEST(Args, Removed)
+{
+    const char *args1[] = { "program-name", "--removed" };
+    const char *args2[] = { "program-name", "-r" };
+    CommandLine c1;
+    c1.run(2, args1, "", "", "");
+    EXPECT_TRUE(true);
+    c1.run(2, args2, "", "", "");
+    EXPECT_TRUE(true);
+    c1.arg_removed.remove();
+    EXPECT_THROW(c1.run(2, args1, "", "", ""), BadArgument);
+    EXPECT_THROW(c1.run(2, args2, "", "", ""), BadArgument);
+}
 
-    struct ArgsTestNoNo : TestCase
-    {
-        ArgsTestNoNo() : TestCase("No --no-") { }
+TEST(Args, Defaults)
+{
+    const char *args1[] = { "program-name", "--enum", "three" };
+    const char *args2[] = { "program-name" };
+    CommandLine c1, c2, c3, c4;
+    c2.arg_enum.set_default_arg("one");
+    c4.arg_enum.set_default_arg("one");
 
-        void run()
-        {
-            const char *args[] = { "program-name", "--no-num" };
-            CommandLine c1;
-            TEST_CHECK_THROWS(c1.run(2, args, "", "", ""), BadArgument);
-        }
-    } test_args_no_no;
+    c1.run(3, args1, "", "", "");
+    c2.run(3, args1, "", "", "");
+    c1.run(1, args2, "", "", "");
+    c2.run(1, args2, "", "", "");
 
-    /**
-     * \test Removed arguments tests.
-     *
-     */
-    struct ArgsTestRemovedArg : TestCase
-    {
-        ArgsTestRemovedArg() : TestCase("Removed arguments") { }
+    EXPECT_TRUE(c1.arg_enum.specified());
+    EXPECT_TRUE(c2.arg_enum.specified());
+    EXPECT_TRUE(! c3.arg_enum.specified());
+    EXPECT_TRUE(! c4.arg_enum.specified());
 
-        void run()
-        {
-            const char *args1[] = { "program-name", "--removed" };
-            const char *args2[] = { "program-name", "-r" };
-            CommandLine c1;
-            c1.run(2, args1, "", "", "");
-            TEST_CHECK(true);
-            c1.run(2, args2, "", "", "");
-            TEST_CHECK(true);
-            c1.arg_removed.remove();
-            TEST_CHECK_THROWS(c1.run(2, args1, "", "", ""), BadArgument);
-            TEST_CHECK_THROWS(c1.run(2, args2, "", "", ""), BadArgument);
-        }
-    } test_args_removed_arg;
+    EXPECT_EQ("three", c1.arg_enum.argument());
+    EXPECT_EQ("three", c2.arg_enum.argument());
+    EXPECT_EQ("two", c3.arg_enum.argument());
+    EXPECT_EQ("one", c4.arg_enum.argument());
+}
 
-    /**
-     * \test Default arguments tests.
-     *
-     */
-    struct ArgsTestDefaultArg : TestCase
-    {
-        ArgsTestDefaultArg() : TestCase("Default arguments") { }
-
-        void run()
-        {
-            const char *args1[] = { "program-name", "--enum", "three" };
-            const char *args2[] = { "program-name" };
-            CommandLine c1, c2, c3, c4;
-            c2.arg_enum.set_default_arg("one");
-            c4.arg_enum.set_default_arg("one");
-
-            c1.run(3, args1, "", "", "");
-            c2.run(3, args1, "", "", "");
-            c1.run(1, args2, "", "", "");
-            c2.run(1, args2, "", "", "");
-
-            TEST_CHECK(c1.arg_enum.specified());
-            TEST_CHECK(c2.arg_enum.specified());
-            TEST_CHECK(! c3.arg_enum.specified());
-            TEST_CHECK(! c4.arg_enum.specified());
-
-            TEST_CHECK_EQUAL(c1.arg_enum.argument(), "three");
-            TEST_CHECK_EQUAL(c2.arg_enum.argument(), "three");
-            TEST_CHECK_EQUAL(c3.arg_enum.argument(), "two");
-            TEST_CHECK_EQUAL(c4.arg_enum.argument(), "one");
-        }
-    } test_args_default_arg;
-
-    /**
-     * \test String tests.
-     *
-     */
-    struct ArgsTestStringSet : TestCase
-    {
-        ArgsTestStringSet() : TestCase("StringSet") { }
-
-        void run()
-        {
-            const char *args[] = { "program-name", "--stringset", "one", "-t", "two", "-t", "three", "fnord" };
-            CommandLine c1;
-            c1.run(8, args, "", "", "");
-            TEST_CHECK(c1.arg_stringset.specified());
-            TEST_CHECK(std::find(c1.arg_stringset.begin_args(), c1.arg_stringset.end_args(), "one") != c1.arg_stringset.end_args());
-            TEST_CHECK(std::find(c1.arg_stringset.begin_args(), c1.arg_stringset.end_args(), "two") != c1.arg_stringset.end_args());
-            TEST_CHECK(std::find(c1.arg_stringset.begin_args(), c1.arg_stringset.end_args(), "three") != c1.arg_stringset.end_args());
-            TEST_CHECK(std::find(c1.arg_stringset.begin_args(), c1.arg_stringset.end_args(), "fnord") == c1.arg_stringset.end_args());
-        }
-    } test_args_string_set;
+TEST(Args, StringSet)
+{
+    const char *args[] = { "program-name", "--stringset", "one", "-t", "two", "-t", "three", "fnord" };
+    CommandLine c1;
+    c1.run(8, args, "", "", "");
+    EXPECT_TRUE(c1.arg_stringset.specified());
+    EXPECT_TRUE(std::find(c1.arg_stringset.begin_args(), c1.arg_stringset.end_args(), "one") != c1.arg_stringset.end_args());
+    EXPECT_TRUE(std::find(c1.arg_stringset.begin_args(), c1.arg_stringset.end_args(), "two") != c1.arg_stringset.end_args());
+    EXPECT_TRUE(std::find(c1.arg_stringset.begin_args(), c1.arg_stringset.end_args(), "three") != c1.arg_stringset.end_args());
+    EXPECT_TRUE(std::find(c1.arg_stringset.begin_args(), c1.arg_stringset.end_args(), "fnord") == c1.arg_stringset.end_args());
 }
 
