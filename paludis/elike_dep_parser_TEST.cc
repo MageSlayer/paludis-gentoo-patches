@@ -18,15 +18,15 @@
  */
 
 #include <paludis/elike_dep_parser.hh>
+
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
 namespace
 {
@@ -54,122 +54,99 @@ namespace
     }
 }
 
-namespace test_cases
+TEST(ELikeDepParser, Basic)
 {
-    struct ELikeDepParserBasicTest : TestCase
-    {
-        ELikeDepParserBasicTest() : TestCase("basic") { }
+    using namespace std::placeholders;
 
-        void run()
-        {
-            using namespace std::placeholders;
+    std::string in("|| ( a b ( c d e ) )"), out;
+    ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
+                n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
+                n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),
+                n::on_any() = std::bind(&handler, std::ref(out), "any<", "", "", "", ""),
+                n::on_arrow() = std::bind(&handler, std::ref(out), "a<", _1, ", ", _2, ">"),
+                n::on_error() = std::bind(&handler, std::ref(out), "error<", _1, ">", "", ""),
+                n::on_exactly_one() = std::bind(&handler, std::ref(out), "x<", "", "", "", ""),
+                n::on_label() = std::bind(&handler, std::ref(out), "label<", _1, "", "", ""),
+                n::on_no_annotations() = &do_nothing,
+                n::on_pop() = std::bind(&handler, std::ref(out), ">", "", "", "", ""),
+                n::on_should_be_empty() = std::bind(&handler, std::ref(out), "EMPTY", "", "", "", ""),
+                n::on_string() = std::bind(&handler, std::ref(out), "s<", _1, ">", "", ""),
+                n::on_use() = std::bind(&handler, std::ref(out), "use<", _1, ", ", "", ""),
+                n::on_use_under_any() = &do_nothing
+                ));
+    parse_elike_dependencies(in, callbacks, { });
+    EXPECT_EQ("any<s<a>s<b>all<s<c>s<d>s<e>>>EMPTY", out);
+}
 
-            std::string in("|| ( a b ( c d e ) )"), out;
-            ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
-                        n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
-                        n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),
-                        n::on_any() = std::bind(&handler, std::ref(out), "any<", "", "", "", ""),
-                        n::on_arrow() = std::bind(&handler, std::ref(out), "a<", _1, ", ", _2, ">"),
-                        n::on_error() = std::bind(&handler, std::ref(out), "error<", _1, ">", "", ""),
-                        n::on_exactly_one() = std::bind(&handler, std::ref(out), "x<", "", "", "", ""),
-                        n::on_label() = std::bind(&handler, std::ref(out), "label<", _1, "", "", ""),
-                        n::on_no_annotations() = &do_nothing,
-                        n::on_pop() = std::bind(&handler, std::ref(out), ">", "", "", "", ""),
-                        n::on_should_be_empty() = std::bind(&handler, std::ref(out), "EMPTY", "", "", "", ""),
-                        n::on_string() = std::bind(&handler, std::ref(out), "s<", _1, ">", "", ""),
-                        n::on_use() = std::bind(&handler, std::ref(out), "use<", _1, ", ", "", ""),
-                        n::on_use_under_any() = &do_nothing
-                        ));
-            parse_elike_dependencies(in, callbacks, { });
-            TEST_CHECK_EQUAL(out, "any<s<a>s<b>all<s<c>s<d>s<e>>>EMPTY");
-        }
-    } elike_dep_parser_basic_test;
+TEST(ELikeDepParser, Empty)
+{
+    using namespace std::placeholders;
 
-    struct ELikeDepParserEmptyBlocksTest : TestCase
-    {
-        ELikeDepParserEmptyBlocksTest() : TestCase("empty blocks") { }
+    std::string in("( ( ) )"), out;
+    ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
+                n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
+                n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),
+                n::on_any() = std::bind(&handler, std::ref(out), "any<", "", "", "", ""),
+                n::on_arrow() = std::bind(&handler, std::ref(out), "a<", _1, ", ", _2, ">"),
+                n::on_error() = std::bind(&handler, std::ref(out), "error<", _1, ">", "", ""),
+                n::on_exactly_one() = std::bind(&handler, std::ref(out), "x<", "", "", "", ""),
+                n::on_label() = std::bind(&handler, std::ref(out), "label<", _1, "", "", ""),
+                n::on_no_annotations() = &do_nothing,
+                n::on_pop() = std::bind(&handler, std::ref(out), ">", "", "", "", ""),
+                n::on_should_be_empty() = std::bind(&handler, std::ref(out), "EMPTY", "", "", "", ""),
+                n::on_string() = std::bind(&handler, std::ref(out), "s<", _1, ">", "", ""),
+                n::on_use() = std::bind(&handler, std::ref(out), "use<", _1, ", ", "", ""),
+                n::on_use_under_any() = &do_nothing
+                ));
+    parse_elike_dependencies(in, callbacks, { });
+    EXPECT_EQ("all<all<>>EMPTY", out);
+}
 
-        void run()
-        {
-            using namespace std::placeholders;
+TEST(ELikeDepParser, Annotations)
+{
+    using namespace std::placeholders;
 
-            std::string in("( ( ) )"), out;
-            ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
-                        n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
-                        n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),
-                        n::on_any() = std::bind(&handler, std::ref(out), "any<", "", "", "", ""),
-                        n::on_arrow() = std::bind(&handler, std::ref(out), "a<", _1, ", ", _2, ">"),
-                        n::on_error() = std::bind(&handler, std::ref(out), "error<", _1, ">", "", ""),
-                        n::on_exactly_one() = std::bind(&handler, std::ref(out), "x<", "", "", "", ""),
-                        n::on_label() = std::bind(&handler, std::ref(out), "label<", _1, "", "", ""),
-                        n::on_no_annotations() = &do_nothing,
-                        n::on_pop() = std::bind(&handler, std::ref(out), ">", "", "", "", ""),
-                        n::on_should_be_empty() = std::bind(&handler, std::ref(out), "EMPTY", "", "", "", ""),
-                        n::on_string() = std::bind(&handler, std::ref(out), "s<", _1, ">", "", ""),
-                        n::on_use() = std::bind(&handler, std::ref(out), "use<", _1, ", ", "", ""),
-                        n::on_use_under_any() = &do_nothing
-                    ));
-            parse_elike_dependencies(in, callbacks, { });
-            TEST_CHECK_EQUAL(out, "all<all<>>EMPTY");
-        }
-    } elike_dep_parser_test_empty_blocks;
+    std::string in("a [[ first = foo second = [ bar baz ] ]]"), out;
+    ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
+                n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
+                n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),
+                n::on_any() = std::bind(&handler, std::ref(out), "any<", "", "", "", ""),
+                n::on_arrow() = std::bind(&handler, std::ref(out), "a<", _1, ", ", _2, ">"),
+                n::on_error() = std::bind(&handler, std::ref(out), "error<", _1, ">", "", ""),
+                n::on_exactly_one() = std::bind(&handler, std::ref(out), "x<", "", "", "", ""),
+                n::on_label() = std::bind(&handler, std::ref(out), "label<", _1, "", "", ""),
+                n::on_no_annotations() = &do_nothing,
+                n::on_pop() = std::bind(&handler, std::ref(out), ">", "", "", "", ""),
+                n::on_should_be_empty() = std::bind(&handler, std::ref(out), "EMPTY", "", "", "", ""),
+                n::on_string() = std::bind(&handler, std::ref(out), "s<", _1, ">", "", ""),
+                n::on_use() = std::bind(&handler, std::ref(out), "use<", _1, ", ", "", ""),
+                n::on_use_under_any() = &do_nothing
+                ));
+    parse_elike_dependencies(in, callbacks, { });
+    EXPECT_EQ("s<a>[first:foo;second:bar baz;]EMPTY", out);
+}
 
-    struct ELikeDepParserAnnotationsTest : TestCase
-    {
-        ELikeDepParserAnnotationsTest() : TestCase("annotations") { }
+TEST(ELikeDepParser, Comments)
+{
+    using namespace std::placeholders;
 
-        void run()
-        {
-            using namespace std::placeholders;
-
-            std::string in("a [[ first = foo second = [ bar baz ] ]]"), out;
-            ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
-                        n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
-                        n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),
-                        n::on_any() = std::bind(&handler, std::ref(out), "any<", "", "", "", ""),
-                        n::on_arrow() = std::bind(&handler, std::ref(out), "a<", _1, ", ", _2, ">"),
-                        n::on_error() = std::bind(&handler, std::ref(out), "error<", _1, ">", "", ""),
-                        n::on_exactly_one() = std::bind(&handler, std::ref(out), "x<", "", "", "", ""),
-                        n::on_label() = std::bind(&handler, std::ref(out), "label<", _1, "", "", ""),
-                        n::on_no_annotations() = &do_nothing,
-                        n::on_pop() = std::bind(&handler, std::ref(out), ">", "", "", "", ""),
-                        n::on_should_be_empty() = std::bind(&handler, std::ref(out), "EMPTY", "", "", "", ""),
-                        n::on_string() = std::bind(&handler, std::ref(out), "s<", _1, ">", "", ""),
-                        n::on_use() = std::bind(&handler, std::ref(out), "use<", _1, ", ", "", ""),
-                        n::on_use_under_any() = &do_nothing
-                    ));
-            parse_elike_dependencies(in, callbacks, { });
-            TEST_CHECK_EQUAL(out, "s<a>[first:foo;second:bar baz;]EMPTY");
-        }
-    } elike_dep_parser_annotations_test;
-
-    struct ELikeDepParserCommentsTest : TestCase
-    {
-        ELikeDepParserCommentsTest() : TestCase("comments") { }
-
-        void run()
-        {
-            using namespace std::placeholders;
-
-            std::string in("# comment\na [[ first = foo second = [ bar baz ] ]] # comment"), out;
-            ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
-                        n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
-                        n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),
-                        n::on_any() = std::bind(&handler, std::ref(out), "any<", "", "", "", ""),
-                        n::on_arrow() = std::bind(&handler, std::ref(out), "a<", _1, ", ", _2, ">"),
-                        n::on_error() = std::bind(&handler, std::ref(out), "error<", _1, ">", "", ""),
-                        n::on_exactly_one() = std::bind(&handler, std::ref(out), "x<", "", "", "", ""),
-                        n::on_label() = std::bind(&handler, std::ref(out), "label<", _1, "", "", ""),
-                        n::on_no_annotations() = &do_nothing,
-                        n::on_pop() = std::bind(&handler, std::ref(out), ">", "", "", "", ""),
-                        n::on_should_be_empty() = std::bind(&handler, std::ref(out), "EMPTY", "", "", "", ""),
-                        n::on_string() = std::bind(&handler, std::ref(out), "s<", _1, ">", "", ""),
-                        n::on_use() = std::bind(&handler, std::ref(out), "use<", _1, ", ", "", ""),
-                        n::on_use_under_any() = &do_nothing
-                    ));
-            parse_elike_dependencies(in, callbacks, { edpo_allow_embedded_comments });
-            TEST_CHECK_EQUAL(out, "s<a>[first:foo;second:bar baz;]EMPTY");
-        }
-    } elike_dep_parser_comments_test;
+    std::string in("# comment\na [[ first = foo second = [ bar baz ] ]] # comment"), out;
+    ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
+                n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
+                n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),
+                n::on_any() = std::bind(&handler, std::ref(out), "any<", "", "", "", ""),
+                n::on_arrow() = std::bind(&handler, std::ref(out), "a<", _1, ", ", _2, ">"),
+                n::on_error() = std::bind(&handler, std::ref(out), "error<", _1, ">", "", ""),
+                n::on_exactly_one() = std::bind(&handler, std::ref(out), "x<", "", "", "", ""),
+                n::on_label() = std::bind(&handler, std::ref(out), "label<", _1, "", "", ""),
+                n::on_no_annotations() = &do_nothing,
+                n::on_pop() = std::bind(&handler, std::ref(out), ">", "", "", "", ""),
+                n::on_should_be_empty() = std::bind(&handler, std::ref(out), "EMPTY", "", "", "", ""),
+                n::on_string() = std::bind(&handler, std::ref(out), "s<", _1, ">", "", ""),
+                n::on_use() = std::bind(&handler, std::ref(out), "use<", _1, ", ", "", ""),
+                n::on_use_under_any() = &do_nothing
+                ));
+    parse_elike_dependencies(in, callbacks, { edpo_allow_embedded_comments });
+    EXPECT_EQ("s<a>[first:foo;second:bar baz;]EMPTY", out);
 }
 
