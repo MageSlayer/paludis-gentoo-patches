@@ -35,10 +35,12 @@ check_SCRIPTS = no_config_environment_TEST_setup.sh no_config_environment_TEST_c
 no_config_environment_TEST_SOURCES = no_config_environment_TEST.cc
 
 no_config_environment_TEST_LDADD = \
-	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
+
+no_config_environment_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
 no_config_environment_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
