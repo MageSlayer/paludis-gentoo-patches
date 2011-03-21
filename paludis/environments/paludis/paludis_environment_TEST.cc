@@ -17,13 +17,15 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "paludis_environment.hh"
-#include "paludis_config.hh"
+#include <paludis/environments/paludis/paludis_environment.hh>
+#include <paludis/environments/paludis/paludis_config.hh>
+
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+
 #include <paludis/package_id.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
@@ -32,12 +34,11 @@
 #include <paludis/selection.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/choice.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+
 #include <cstdlib>
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
 namespace
 {
@@ -50,156 +51,128 @@ namespace
     }
 }
 
-namespace test_cases
+TEST(PaludisEnvironment, Use)
 {
-    struct TestPaludisEnvironmentUse : TestCase
-    {
-        TestPaludisEnvironmentUse() : TestCase("use") { }
+    setenv("PALUDIS_HOME", stringify(FSPath::cwd() / "paludis_environment_TEST_dir" / "home1").c_str(), 1);
+    unsetenv("PALUDIS_SKIP_CONFIG");
 
-        void run()
-        {
-            setenv("PALUDIS_HOME", stringify(FSPath::cwd() / "paludis_environment_TEST_dir" / "home1").c_str(), 1);
-            unsetenv("PALUDIS_SKIP_CONFIG");
+    std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
+    const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
+                generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
+                            env.get(), { })), make_null_shared_ptr(), { }))]->begin());
+    const std::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
+                generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
+                            env.get(), { })), make_null_shared_ptr(), { }))]->begin());
 
-            std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
-            const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
-                        generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    env.get(), { })), make_null_shared_ptr(), { }))]->begin());
-            const std::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
-                        generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
-                                    env.get(), { })), make_null_shared_ptr(), { }))]->begin());
+    EXPECT_TRUE(get_use("foo", one));
+    EXPECT_TRUE(! get_use("foofoo", one));
+    EXPECT_TRUE(get_use("moo", one));
+    EXPECT_TRUE(get_use("quoted-name", one));
 
-            TEST_CHECK(get_use("foo", one));
-            TEST_CHECK(! get_use("foofoo", one));
-            TEST_CHECK(get_use("moo", one));
-            TEST_CHECK(get_use("quoted-name", one));
+    EXPECT_TRUE(get_use("more_exp_one", one));
+    EXPECT_TRUE(get_use("exp_two", one));
+    EXPECT_TRUE(get_use("exp_one", one));
+    EXPECT_TRUE(get_use("third_exp_one", one));
+    EXPECT_TRUE(! get_use("third_exp_two", one));
 
-            TEST_CHECK(get_use("more_exp_one", one));
-            TEST_CHECK(get_use("exp_two", one));
-            TEST_CHECK(get_use("exp_one", one));
-            TEST_CHECK(get_use("third_exp_one", one));
-            TEST_CHECK(! get_use("third_exp_two", one));
+    EXPECT_TRUE(get_use("third_exp_one", three));
+    EXPECT_TRUE(get_use("third_exp_two", three));
+}
 
-            TEST_CHECK(get_use("third_exp_one", three));
-            TEST_CHECK(get_use("third_exp_two", three));
-        }
-    } paludis_environment_use_test;
+TEST(PaludisEnvironment, KnownUse)
+{
+    setenv("PALUDIS_HOME", stringify(FSPath::cwd() / "paludis_environment_TEST_dir" / "home5").c_str(), 1);
+    unsetenv("PALUDIS_SKIP_CONFIG");
 
-    struct TestPaludisEnvironmentKnownUse : TestCase
-    {
-        TestPaludisEnvironmentKnownUse() : TestCase("known use") { }
+    std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
 
-        void run()
-        {
-            setenv("PALUDIS_HOME", stringify(FSPath::cwd() / "paludis_environment_TEST_dir" / "home5").c_str(), 1);
-            unsetenv("PALUDIS_SKIP_CONFIG");
+    const std::shared_ptr<const PackageID> id1(*(*env)[selection::RequireExactlyOne(generator::Matches(
+                    PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
+                            env.get(), { })), make_null_shared_ptr(), { }))]->begin());
+    std::shared_ptr<const Choice> foo_cards;
+    for (Choices::ConstIterator c(id1->choices_key()->value()->begin()), c_end(id1->choices_key()->value()->end()) ;
+            c != c_end ; ++c)
+        if ((*c)->raw_name() == "FOO_CARDS")
+            foo_cards = *c;
+    if (! foo_cards)
+        throw InternalError(PALUDIS_HERE, "oops");
+    std::shared_ptr<const Set<UnprefixedChoiceName> > k1(env->known_choice_value_names(id1, foo_cards));
+    EXPECT_EQ("one three two", join(k1->begin(), k1->end(), " "));
+}
 
-            std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
+TEST(PaludisEnvironment, UseMinusStar)
+{
+    setenv("PALUDIS_HOME", stringify(FSPath::cwd() / "paludis_environment_TEST_dir" / "home2").c_str(), 1);
+    unsetenv("PALUDIS_SKIP_CONFIG");
 
-            const std::shared_ptr<const PackageID> id1(*(*env)[selection::RequireExactlyOne(generator::Matches(
-                            PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    env.get(), { })), make_null_shared_ptr(), { }))]->begin());
-            std::shared_ptr<const Choice> foo_cards;
-            for (Choices::ConstIterator c(id1->choices_key()->value()->begin()), c_end(id1->choices_key()->value()->end()) ;
-                    c != c_end ; ++c)
-                if ((*c)->raw_name() == "FOO_CARDS")
-                    foo_cards = *c;
-            if (! foo_cards)
-                throw InternalError(PALUDIS_HERE, "oops");
-            std::shared_ptr<const Set<UnprefixedChoiceName> > k1(env->known_choice_value_names(id1, foo_cards));
-            TEST_CHECK_EQUAL(join(k1->begin(), k1->end(), " "), "one three two");
-        }
-    } paludis_environment_use_test_known;
+    std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
 
-    struct TestPaludisEnvironmentUseMinusStar : TestCase
-    {
-        TestPaludisEnvironmentUseMinusStar() : TestCase("use -*") { }
+    const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
+                generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
+                            env.get(), { })), make_null_shared_ptr(), { }))]->begin());
+    const std::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
+                generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
+                            env.get(), { })), make_null_shared_ptr(), { }))]->begin());
 
-        void run()
-        {
-            setenv("PALUDIS_HOME", stringify(FSPath::cwd() / "paludis_environment_TEST_dir" / "home2").c_str(), 1);
-            unsetenv("PALUDIS_SKIP_CONFIG");
+    EXPECT_TRUE(get_use("foo", one));
+    EXPECT_TRUE(! get_use("foofoo", one));
+    EXPECT_TRUE(! get_use("moo", one));
 
-            std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
+    EXPECT_TRUE(get_use("more_exp_one", one));
+    EXPECT_TRUE(get_use("exp_two", one));
+    EXPECT_TRUE(! get_use("exp_one", one));
+    EXPECT_TRUE(get_use("third_exp_one", one));
+    EXPECT_TRUE(! get_use("third_exp_two", one));
 
-            const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
-                        generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    env.get(), { })), make_null_shared_ptr(), { }))]->begin());
-            const std::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
-                        generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
-                                    env.get(), { })), make_null_shared_ptr(), { }))]->begin());
+    EXPECT_TRUE(! get_use("third_exp_one", three));
+    EXPECT_TRUE(get_use("third_exp_two", three));
+}
 
-            TEST_CHECK(get_use("foo", one));
-            TEST_CHECK(! get_use("foofoo", one));
-            TEST_CHECK(! get_use("moo", one));
+TEST(PaludisEnvironment, UseMinusPartialStar)
+{
+    setenv("PALUDIS_HOME", stringify(FSPath::cwd() / "paludis_environment_TEST_dir" / "home3").c_str(), 1);
+    unsetenv("PALUDIS_SKIP_CONFIG");
 
-            TEST_CHECK(get_use("more_exp_one", one));
-            TEST_CHECK(get_use("exp_two", one));
-            TEST_CHECK(! get_use("exp_one", one));
-            TEST_CHECK(get_use("third_exp_one", one));
-            TEST_CHECK(! get_use("third_exp_two", one));
+    std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
 
-            TEST_CHECK(! get_use("third_exp_one", three));
-            TEST_CHECK(get_use("third_exp_two", three));
-        }
-    } paludis_environment_use_test_minus_star;
+    const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
+                generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
+                            env.get(), { })), make_null_shared_ptr(), { }))]->begin());
+    const std::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
+                generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
+                            env.get(), { })), make_null_shared_ptr(), { }))]->begin());
 
-    struct TestPaludisEnvironmentUseMinusPartialStar : TestCase
-    {
-        TestPaludisEnvironmentUseMinusPartialStar() : TestCase("use -* partial") { }
+    EXPECT_TRUE(get_use("foo", one));
+    EXPECT_TRUE(! get_use("foofoo", one));
+    EXPECT_TRUE(get_use("moo", one));
 
-        void run()
-        {
-            setenv("PALUDIS_HOME", stringify(FSPath::cwd() / "paludis_environment_TEST_dir" / "home3").c_str(), 1);
-            unsetenv("PALUDIS_SKIP_CONFIG");
+    EXPECT_TRUE(get_use("more_exp_one", one));
+    EXPECT_TRUE(get_use("exp_two", one));
+    EXPECT_TRUE(! get_use("exp_one", one));
+    EXPECT_TRUE(get_use("third_exp_one", one));
+    EXPECT_TRUE(! get_use("third_exp_two", one));
 
-            std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
+    EXPECT_TRUE(! get_use("third_exp_one", three));
+    EXPECT_TRUE(get_use("third_exp_two", three));
+}
 
-            const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
-                        generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    env.get(), { })), make_null_shared_ptr(), { }))]->begin());
-            const std::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
-                        generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
-                                    env.get(), { })), make_null_shared_ptr(), { }))]->begin());
+TEST(PaludisEnvironment, Repositories)
+{
+    setenv("PALUDIS_HOME", stringify(FSPath::cwd() / "paludis_environment_TEST_dir" / "home4").c_str(), 1);
+    unsetenv("PALUDIS_SKIP_CONFIG");
 
-            TEST_CHECK(get_use("foo", one));
-            TEST_CHECK(! get_use("foofoo", one));
-            TEST_CHECK(get_use("moo", one));
+    std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
 
-            TEST_CHECK(get_use("more_exp_one", one));
-            TEST_CHECK(get_use("exp_two", one));
-            TEST_CHECK(! get_use("exp_one", one));
-            TEST_CHECK(get_use("third_exp_one", one));
-            TEST_CHECK(! get_use("third_exp_two", one));
+    EXPECT_TRUE(bool(env->package_database()->fetch_repository(RepositoryName("first"))));
+    EXPECT_TRUE(bool(env->package_database()->fetch_repository(RepositoryName("second"))));
+    EXPECT_TRUE(bool(env->package_database()->fetch_repository(RepositoryName("third"))));
+    EXPECT_TRUE(bool(env->package_database()->fetch_repository(RepositoryName("fourth"))));
+    EXPECT_TRUE(bool(env->package_database()->fetch_repository(RepositoryName("fifth"))));
 
-            TEST_CHECK(! get_use("third_exp_one", three));
-            TEST_CHECK(get_use("third_exp_two", three));
-        }
-    } paludis_environment_use_test_minus_star_partial;
-
-    struct TestPaludisEnvironmentRepositories : TestCase
-    {
-        TestPaludisEnvironmentRepositories() : TestCase("repositories") { }
-
-        void run()
-        {
-            setenv("PALUDIS_HOME", stringify(FSPath::cwd() / "paludis_environment_TEST_dir" / "home4").c_str(), 1);
-            unsetenv("PALUDIS_SKIP_CONFIG");
-
-            std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
-
-            TEST_CHECK(bool(env->package_database()->fetch_repository(RepositoryName("first"))));
-            TEST_CHECK(bool(env->package_database()->fetch_repository(RepositoryName("second"))));
-            TEST_CHECK(bool(env->package_database()->fetch_repository(RepositoryName("third"))));
-            TEST_CHECK(bool(env->package_database()->fetch_repository(RepositoryName("fourth"))));
-            TEST_CHECK(bool(env->package_database()->fetch_repository(RepositoryName("fifth"))));
-
-            TEST_CHECK(env->package_database()->more_important_than(RepositoryName("first"), RepositoryName("second")));
-            TEST_CHECK(env->package_database()->more_important_than(RepositoryName("second"), RepositoryName("third")));
-            TEST_CHECK(env->package_database()->more_important_than(RepositoryName("fourth"), RepositoryName("third")));
-            TEST_CHECK(env->package_database()->more_important_than(RepositoryName("fourth"), RepositoryName("fifth")));
-            TEST_CHECK(env->package_database()->more_important_than(RepositoryName("second"), RepositoryName("fifth")));
-        }
-    } paludis_environment_repositories;
+    EXPECT_TRUE(env->package_database()->more_important_than(RepositoryName("first"), RepositoryName("second")));
+    EXPECT_TRUE(env->package_database()->more_important_than(RepositoryName("second"), RepositoryName("third")));
+    EXPECT_TRUE(env->package_database()->more_important_than(RepositoryName("fourth"), RepositoryName("third")));
+    EXPECT_TRUE(env->package_database()->more_important_than(RepositoryName("fourth"), RepositoryName("fifth")));
+    EXPECT_TRUE(env->package_database()->more_important_than(RepositoryName("second"), RepositoryName("fifth")));
 }
 

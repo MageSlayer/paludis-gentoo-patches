@@ -68,22 +68,26 @@ check_SCRIPTS = \
 paludis_environment_TEST_SOURCES = paludis_environment_TEST.cc
 
 paludis_environment_TEST_LDADD = \
-	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 paludis_environment_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+paludis_environment_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
+
 world_TEST_SOURCES = world_TEST.cc
 
 world_TEST_LDADD = \
-	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
 world_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
+world_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
 logdir = @HACKED_LOG_DIR@
 

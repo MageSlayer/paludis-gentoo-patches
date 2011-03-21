@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,43 +19,38 @@
 
 #include <paludis/environments/paludis/world.hh>
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/options.hh>
+
 #include <paludis/partially_made_package_dep_spec.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+
 #include <iterator>
 #include <cstdlib>
 
+#include <gtest/gtest.h>
+
 using namespace paludis;
-using namespace test;
 
-namespace test_cases
+TEST(World, Updates)
 {
-    struct TestWorldUpdates : TestCase
+    std::shared_ptr<FSPath> w(std::make_shared<FSPath>(FSPath::cwd() / "world_TEST_dir" / "world"));
+
     {
-        TestWorldUpdates() : TestCase("world updates") { }
+        TestEnvironment env;
+        paludis_environment::World world(&env, w);
+        world.update_config_files_for_package_move(make_package_dep_spec({ })
+                .package(QualifiedPackageName("cat/before")),
+                QualifiedPackageName("cat/after"));
+    }
 
-        void run()
-        {
-            std::shared_ptr<FSPath> w(std::make_shared<FSPath>(FSPath::cwd() / "world_TEST_dir" / "world"));
-
-            {
-                TestEnvironment env;
-                paludis_environment::World world(&env, w);
-                world.update_config_files_for_package_move(make_package_dep_spec({ })
-                        .package(QualifiedPackageName("cat/before")),
-                        QualifiedPackageName("cat/after"));
-            }
-
-            SafeIFStream f(*w);
-            std::string ff((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-            TEST_CHECK_EQUAL(ff,
-                    "cat/unchanged\n"
-                    "cat/alsounchanged\n"
-                    "cat/after\n"
-                    );
-        }
-    } world_updates_test;
+    SafeIFStream f(*w);
+    std::string ff((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+    EXPECT_EQ(
+            "cat/unchanged\n"
+            "cat/alsounchanged\n"
+            "cat/after\n",
+            ff
+            );
 }
 
