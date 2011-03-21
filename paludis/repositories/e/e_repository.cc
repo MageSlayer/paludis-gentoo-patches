@@ -681,7 +681,8 @@ ERepository::need_mirrors() const
                     {
                         /* pick up to five random mirrors only */
                         std::mt19937 random(std::time(0));
-                        std::random_shuffle(next(ee.begin()), ee.end(), Randomator{random});
+                        Randomator randomator{random};
+                        std::random_shuffle(next(ee.begin()), ee.end(), randomator);
                         if (ee.size() > 6)
                             ee.resize(6);
 
