@@ -39,7 +39,7 @@ add(`elike_dep_parser',                            `hh', `cc', `fwd', `gtest', `
 add(`elike_conditional_dep_spec',                  `hh', `cc', `fwd')
 add(`elike_package_dep_spec',                      `hh', `cc', `fwd', `se')
 add(`elike_slot_requirement',                      `hh', `cc', `fwd')
-add(`elike_use_requirement',                       `hh', `cc', `fwd', `se', `test')
+add(`elike_use_requirement',                       `hh', `cc', `fwd', `se', `gtest')
 add(`environment',                                 `hh', `fwd', `cc')
 add(`environment_factory',                         `hh', `fwd', `cc')
 add(`environment_implementation',                  `hh', `cc')
