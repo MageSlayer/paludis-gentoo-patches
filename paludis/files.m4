@@ -106,5 +106,5 @@ add(`unmerger',                                    `hh', `cc')
 add(`user_dep_spec',                               `hh', `cc', `se', `fwd', `test')
 add(`version_operator',                            `hh', `cc', `fwd', `se', `test')
 add(`version_requirements',                        `hh', `cc', `fwd')
-add(`version_spec',                                `hh', `cc', `se', `fwd', `test')
+add(`version_spec',                                `hh', `cc', `se', `fwd', `gtest')
 
