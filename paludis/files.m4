@@ -96,7 +96,7 @@ add(`set_file',                                    `hh', `cc', `se', `test', `te
 add(`slot_requirement',                            `hh', `fwd', `cc')
 add(`spec_tree',                                   `hh', `fwd', `cc')
 add(`standard_output_manager',                     `hh', `cc', `fwd')
-add(`stripper',                                    `hh', `cc', `fwd', `test', `testscript')
+add(`stripper',                                    `hh', `cc', `fwd', `gtest', `testscript')
 add(`syncer',                                      `hh', `cc')
 add(`tar_merger',                                  `hh', `cc', `fwd', `gtest', `testscript', `se')
 add(`tee_output_manager',                          `hh', `cc', `fwd')

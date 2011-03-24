@@ -18,13 +18,14 @@
  */
 
 #include <paludis/stripper.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/make_named_values.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
 namespace
@@ -60,30 +61,17 @@ namespace
     };
 }
 
-namespace test_cases
+TEST(Stripper, Works)
 {
-    struct StripperTest : TestCase
-    {
-        StripperTest() : TestCase("stripper") { }
+    TestStripper s(make_named_values<StripperOptions>(
+                n::compress_splits() = false,
+                n::debug_dir() = FSPath("stripper_TEST_dir/image").realpath() / "usr" / "lib" / "debug",
+                n::image_dir() = FSPath("stripper_TEST_dir/image").realpath(),
+                n::split() = true,
+                n::strip() = true
+            ));
+    s.strip();
 
-        void run()
-        {
-            TestStripper s(make_named_values<StripperOptions>(
-                        n::compress_splits() = false,
-                        n::debug_dir() = FSPath("stripper_TEST_dir/image").realpath() / "usr" / "lib" / "debug",
-                        n::image_dir() = FSPath("stripper_TEST_dir/image").realpath(),
-                        n::split() = true,
-                        n::strip() = true
-                    ));
-            s.strip();
-
-            TEST_CHECK(FSPath("stripper_TEST_dir/image/usr/lib/debug/usr/bin/stripper_TEST_binary.debug").stat().is_regular_file());
-        }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-    } test_stripper;
+    ASSERT_TRUE(FSPath("stripper_TEST_dir/image/usr/lib/debug/usr/bin/stripper_TEST_binary.debug").stat().is_regular_file());
 }
 
