@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,95 +18,60 @@
  */
 
 #include <paludis/version_operator.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+#include <paludis/util/stringify.hh>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-/** \file
- * Test cases for version_operator.hh.
- *
- */
-
-namespace test_cases
+TEST(VersionOperator, Comparisons)
 {
-    /**
-     * \test Test VersionOperator creation and assignment.
-     *
-     */
-    struct VersionOperatorTest : TestCase
-    {
-        VersionOperatorTest() : TestCase("version operator") { }
+    VersionOperator v1(vo_greater);
+    VersionOperator v2(vo_less_equal);
+    EXPECT_TRUE(v1 != v2);
+    EXPECT_TRUE(v1 == vo_greater);
+    EXPECT_TRUE(v1 != vo_less_equal);
+    EXPECT_TRUE(v2 == vo_less_equal);
+    EXPECT_TRUE(v2 != vo_greater);
 
-        void run()
-        {
-            VersionOperator v1(vo_greater);
-            VersionOperator v2(vo_less_equal);
-            TEST_CHECK(v1 != v2);
-            TEST_CHECK(v1 == vo_greater);
-            TEST_CHECK(v1 != vo_less_equal);
-            TEST_CHECK(v2 == vo_less_equal);
-            TEST_CHECK(v2 != vo_greater);
+    VersionOperator v3(v1);
+    EXPECT_TRUE(v1 == vo_greater);
+    EXPECT_TRUE(v3 == vo_greater);
+    EXPECT_TRUE(v1 == v3);
 
-            VersionOperator v3(v1);
-            TEST_CHECK(v1 == vo_greater);
-            TEST_CHECK(v3 == vo_greater);
-            TEST_CHECK(v1 == v3);
+    v3 = v2;
+    EXPECT_TRUE(v1 != v3);
+    EXPECT_TRUE(v1 != v2);
+    EXPECT_TRUE(v2 == v3);
+    EXPECT_TRUE(v1 == vo_greater);
+    EXPECT_TRUE(v2 == vo_less_equal);
+    EXPECT_TRUE(v3 == vo_less_equal);
+}
 
-            v3 = v2;
-            TEST_CHECK(v1 != v3);
-            TEST_CHECK(v1 != v2);
-            TEST_CHECK(v2 == v3);
-            TEST_CHECK(v1 == vo_greater);
-            TEST_CHECK(v2 == vo_less_equal);
-            TEST_CHECK(v3 == vo_less_equal);
-        }
-    } test_version_operator;
+TEST(VersionOperator, FromString)
+{
+    VersionOperator v1(">");
+    VersionOperator v2("<=");
+    EXPECT_TRUE(v1 != v2);
+    EXPECT_TRUE(v1 == vo_greater);
+    EXPECT_TRUE(v1 != vo_less_equal);
+    EXPECT_TRUE(v2 == vo_less_equal);
+    EXPECT_TRUE(v2 != vo_greater);
 
-    /**
-     * \test Test VersionOperator creation and assignment from a string.
-     *
-     */
-    struct VersionOperatorFromStringTest : TestCase
-    {
-        VersionOperatorFromStringTest() : TestCase("version operator from string") { }
+    EXPECT_EQ(VersionOperator("<"),  VersionOperator(vo_less));
+    EXPECT_EQ(VersionOperator("<="), VersionOperator(vo_less_equal));
+    EXPECT_EQ(VersionOperator("="),  VersionOperator(vo_equal));
+    EXPECT_EQ(VersionOperator("~"),  VersionOperator(vo_tilde));
+    EXPECT_EQ(VersionOperator(">"),  VersionOperator(vo_greater));
+    EXPECT_EQ(VersionOperator(">="), VersionOperator(vo_greater_equal));
+    EXPECT_EQ(VersionOperator("~>"), VersionOperator(vo_tilde_greater));
+}
 
-        void run()
-        {
-            VersionOperator v1(">");
-            VersionOperator v2("<=");
-            TEST_CHECK(v1 != v2);
-            TEST_CHECK(v1 == vo_greater);
-            TEST_CHECK(v1 != vo_less_equal);
-            TEST_CHECK(v2 == vo_less_equal);
-            TEST_CHECK(v2 != vo_greater);
-
-            TEST_CHECK_EQUAL(VersionOperator("<"),  VersionOperator(vo_less));
-            TEST_CHECK_EQUAL(VersionOperator("<="), VersionOperator(vo_less_equal));
-            TEST_CHECK_EQUAL(VersionOperator("="),  VersionOperator(vo_equal));
-            TEST_CHECK_EQUAL(VersionOperator("~"),  VersionOperator(vo_tilde));
-            TEST_CHECK_EQUAL(VersionOperator(">"),  VersionOperator(vo_greater));
-            TEST_CHECK_EQUAL(VersionOperator(">="), VersionOperator(vo_greater_equal));
-            TEST_CHECK_EQUAL(VersionOperator("~>"), VersionOperator(vo_tilde_greater));
-        }
-    } test_version_operator_from_string;
-
-    /**
-     * \test Test VersionOperator stringification.
-     *
-     */
-    struct VersionOperatorToStringTest : TestCase
-    {
-        VersionOperatorToStringTest() : TestCase("version operator to string") { }
-
-        void run()
-        {
-            TEST_CHECK_EQUAL(stringify(VersionOperator(vo_greater)), ">");
-            TEST_CHECK_EQUAL(stringify(VersionOperator(vo_equal)), "=");
-            TEST_CHECK_EQUAL(stringify(VersionOperator(vo_tilde)), "~");
-            TEST_CHECK_EQUAL(stringify(VersionOperator(vo_tilde_greater)), "~>");
-        }
-    } test_version_operator_to_string;
+TEST(VersionOperator, Stringify)
+{
+    EXPECT_EQ(">", stringify(VersionOperator(vo_greater)));
+    EXPECT_EQ("=", stringify(VersionOperator(vo_equal)));
+    EXPECT_EQ("~", stringify(VersionOperator(vo_tilde)));
+    EXPECT_EQ("~>", stringify(VersionOperator(vo_tilde_greater)));
 }
 
