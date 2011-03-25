@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,43 +18,37 @@
  */
 
 #include <paludis/repositories/accounts/accounts_repository.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/sequence.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
+
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_database.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
 #include <memory>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
 using namespace paludis::accounts_repository;
-using namespace test;
 
-namespace test_cases
+TEST(AccountsRepository, Creation)
 {
-    struct AccountsRepositoryCreationTest : TestCase
-    {
-        AccountsRepositoryCreationTest() : TestCase("creation") { }
-
-        void run()
-        {
-            TestEnvironment env;
-            std::shared_ptr<AccountsRepository> repo(std::make_shared<AccountsRepository>(
-                        make_named_values<AccountsRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("accounts")
-                        )));
-            env.package_database()->add_repository(1, repo);
-            TEST_CHECK_STRINGIFY_EQUAL(repo->name(), "accounts");
-        }
-    } test_creation;
+    TestEnvironment env;
+    std::shared_ptr<AccountsRepository> repo(std::make_shared<AccountsRepository>(
+                make_named_values<AccountsRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("accounts")
+                )));
+    env.package_database()->add_repository(1, repo);
+    EXPECT_EQ("accounts", stringify(repo->name()));
 }
-
