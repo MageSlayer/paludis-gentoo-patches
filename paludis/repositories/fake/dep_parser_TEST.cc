@@ -18,16 +18,19 @@
  */
 
 #include <paludis/repositories/fake/dep_parser.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+#include <paludis/util/stringify.hh>
+
 #include <sstream>
 #include <algorithm>
 
+#include <gtest/gtest.h>
+
 using namespace paludis;
-using namespace test;
 
 namespace
 {
@@ -78,21 +81,13 @@ namespace
     };
 }
 
-namespace test_cases
+TEST(DepParser, Works)
 {
-    struct DepParserTest : TestCase
-    {
-        DepParserTest() : TestCase("dep parser") { }
+    TestEnvironment env;
+    std::shared_ptr<DependencySpecTree> d(fakerepository::parse_depend("( ( a/a b/b ) )", &env));
 
-        void run()
-        {
-            TestEnvironment env;
-            std::shared_ptr<DependencySpecTree> d(fakerepository::parse_depend("( ( a/a b/b ) )", &env));
-
-            QuickPrinter p;
-            d->top()->accept(p);
-            TEST_CHECK_EQUAL(p.str.str(), "all<all<all<p<a/a>p<b/b>>>>");
-        }
-    } dep_parser_test;
+    QuickPrinter p;
+    d->top()->accept(p);
+    EXPECT_EQ("all<all<all<p<a/a>p<b/b>>>>", p.str.str());
 }
 

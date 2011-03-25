@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,32 +17,25 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/make_named_values.hh>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-namespace test_cases
+TEST(FakeInstalledRepository, Works)
 {
-    struct FakeInstalledRepositoryTest : TestCase
-    {
-        FakeInstalledRepositoryTest() : TestCase("fake installed repository") { }
-
-        void run()
-        {
-            TestEnvironment env;
-            std::shared_ptr<const FakeInstalledRepository> r(std::make_shared<FakeInstalledRepository>(
-                        make_named_values<FakeInstalledRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("fake"),
-                            n::suitable_destination() = true,
-                            n::supports_uninstall() = true
-                            )));
-        }
-    } test_fake_installed_repository;
+    TestEnvironment env;
+    std::shared_ptr<const FakeInstalledRepository> r(std::make_shared<FakeInstalledRepository>(
+                make_named_values<FakeInstalledRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("fake"),
+                    n::suitable_destination() = true,
+                    n::supports_uninstall() = true
+                    )));
 }
 

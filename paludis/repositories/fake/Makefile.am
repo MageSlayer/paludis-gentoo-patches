@@ -14,35 +14,41 @@ EXTRA_DIST = \
 	fake_installed_repository_TEST.cc \
 	dep_parser_TEST.cc
 
+fake_repository_TEST_SOURCES = \
+	fake_repository_TEST.cc
+
 fake_repository_TEST_LDADD = \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la
 
 fake_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
-fake_installed_repository_TEST_LDADD = \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a
-
-fake_installed_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
-
-dep_parser_TEST_LDADD = \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a
-
-dep_parser_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
-
-fake_repository_TEST_SOURCES = \
-	fake_repository_TEST.cc
+fake_repository_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
 fake_installed_repository_TEST_SOURCES = \
 	fake_installed_repository_TEST.cc
 
+fake_installed_repository_TEST_LDADD = \
+	$(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la
+
+fake_installed_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
+fake_installed_repository_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
+
 dep_parser_TEST_SOURCES = \
 	dep_parser_TEST.cc
+
+dep_parser_TEST_LDADD = \
+	$(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la
+
+dep_parser_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
+dep_parser_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
 noinst_LTLIBRARIES = libpaludisfakerepository.la
 
