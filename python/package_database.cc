@@ -72,11 +72,6 @@ void expose_package_database()
          bp::no_init
         )
 
-        .add_property("favourite_repository", &PackageDatabase::favourite_repository,
-                "[ro] RepositoryName\n"
-                "Name of our 'favourite' repository"
-                )
-
         .def("fetch_repository", fetch_repository_ptr, bp::with_custodian_and_ward_postcall<0, 1>(),
                 "fetch_repository(RepositoryName) -> Repository\n"
                 "Fetch a named repository."

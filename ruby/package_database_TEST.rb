@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009, 2011 Ciaran McCreesh
 # Copyright (c) 2007 Richard Brown
 #
 # This file is part of the Paludis package manager. Paludis is free software;
@@ -32,16 +32,6 @@ module Paludis
             assert_raise NoMethodError do
                 p = PackageDatabase.new
             end
-        end
-    end
-
-    class TestCase_PackageDatabaseFavouriteRepository < Test::Unit::TestCase
-        def env
-            @env or @env = EnvironmentFactory.instance.create("")
-        end
-
-        def test_package_database_favourite_repository
-            assert_equal "testrepo", env.package_database.favourite_repository
         end
     end
 

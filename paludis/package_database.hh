@@ -265,17 +265,6 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Fetch the name of our 'favourite' repository (if a repository's
-             * name matches this when doing a graphical display, the repository
-             * name part may be omitted).
-             *
-             * Note that this is the repository with the <i>lowest</i> importance
-             * that is not a virtuals or installed_virtuals repository.
-             */
-            RepositoryName favourite_repository() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
              * Disambiguate a package name.  If a filter is specified,
              * limit the potential results to packages that match.
              *

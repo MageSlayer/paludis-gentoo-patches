@@ -394,17 +394,6 @@ PackageDatabase::has_repository_named(const RepositoryName & n) const
     return false;
 }
 
-RepositoryName
-PackageDatabase::favourite_repository() const
-{
-    for (RepositoryConstIterator r(begin_repositories()), r_end(end_repositories()) ;
-            r != r_end ; ++r)
-        if ((*r)->can_be_favourite_repository())
-            return (*r)->name();
-
-    return RepositoryName("unnamed");
-}
-
 bool
 PackageDatabase::more_important_than(const RepositoryName & lhs,
         const RepositoryName & rhs) const

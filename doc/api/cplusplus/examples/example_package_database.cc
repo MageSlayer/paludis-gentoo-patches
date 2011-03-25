@@ -48,11 +48,6 @@ int main(int argc, char * argv[])
                 (repo->format_key() ? repo->format_key()->value() : "") << "'" << endl;
         }
 
-        /* Our favourite repository is the least important non-special (e.g.
-         * virtual) installable repository. Some clients use this as a hint to
-         * not display a ::repository suffix for things from this repository. */
-        cout << "Our favourite repository is '" << env->package_database()->favourite_repository() << "'" << endl;
-
         /* Users often expect to be able to refer to a package by its name part
          * only (e.g. 'foo' rather than 'app-misc/foo'). This has to be
          * disambiguated as follows: */

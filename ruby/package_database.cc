@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,27 +30,6 @@ using namespace paludis::ruby;
 namespace
 {
     static VALUE c_package_database;
-
-    /*
-     * call-seq:
-     *     favourite_repository -> String
-     *
-     * Fetch the name of our 'favourite' repository
-     */
-    VALUE
-    package_database_favourite_repository(VALUE self)
-    {
-        try
-        {
-            std::shared_ptr<PackageDatabase> * self_ptr;
-            Data_Get_Struct(self, std::shared_ptr<PackageDatabase>, self_ptr);
-            return rb_str_new2(stringify((*self_ptr)->favourite_repository()).c_str());
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
 
     /*
      * call-seq:
@@ -218,7 +197,6 @@ namespace
          */
         c_package_database = rb_define_class_under(paludis_module(), "PackageDatabase", rb_cObject);
         rb_funcall(c_package_database, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_package_database, "favourite_repository", RUBY_FUNC_CAST(&package_database_favourite_repository), 0);
         rb_define_method(c_package_database, "fetch_unique_qualified_package_name",
                 RUBY_FUNC_CAST(&package_database_fetch_unique_qualified_package_name), -1);
         rb_define_method(c_package_database, "repositories",

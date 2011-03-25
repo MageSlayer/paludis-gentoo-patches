@@ -35,10 +35,6 @@ class TestCase_PackageDatabase(unittest.TestCase):
     def test_01_create_error(self):
         self.assertRaises(Exception, PackageDatabase)
 
-    def test_02_favourite_repo(self):
-        self.get_db()
-        self.assertEqual(str(self.db.favourite_repository), "testrepo")
-
     def test_03_fech_unique_qpn(self):
         self.get_db()
         self.assertEqual(str(QualifiedPackageName("foo/bar")), str(self.db.fetch_unique_qualified_package_name("bar")))

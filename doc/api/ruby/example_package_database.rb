@@ -23,8 +23,6 @@ if env.package_database.has_repository_named?('gentoo')
         (repo.format_key ? repo.format_key.value : '') + "'"
 end
 
-puts "Our favourite repository is '#{env.package_database.favourite_repository}'"
-
 begin
     name = env.package_database.fetch_unique_qualified_package_name('git')
     puts "The only package named 'git' is '#{name}'"
