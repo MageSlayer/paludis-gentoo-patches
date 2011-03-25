@@ -103,7 +103,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -265,7 +264,6 @@ namespace test_cases
             FSPath root(FSPath::cwd() / "e_repository_TEST_4_dir" / "root");
 
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -332,7 +330,6 @@ namespace test_cases
             FSPath root(FSPath::cwd() / "e_repository_TEST_4_dir" / "root");
 
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -438,7 +435,6 @@ namespace test_cases
             FSPath root(FSPath::cwd() / "e_repository_TEST_4_dir" / "root");
 
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");

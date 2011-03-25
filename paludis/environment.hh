@@ -327,17 +327,6 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
-             * Return the command used to launch paludis (the client).
-             */
-            virtual std::string paludis_command() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Change the command used to launch paludis (the client).
-             */
-            virtual void set_paludis_command(const std::string &) = 0;
-
-            /**
              * User id to use when reduced privs are permissible.
              */
             virtual uid_t reduced_uid() const = 0;

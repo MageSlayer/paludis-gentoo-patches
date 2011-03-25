@@ -109,12 +109,6 @@ class TestCase_04_Environment_subclassingd(unittest.TestCase):
         def hook_dirs(self):
             return ["/path"]
 
-        def paludis_command(self):
-            return "paludis"
-
-        def set_paludis_command(self, s):
-            pass
-
         def reduced_uid(self):
             return 0
 

@@ -73,8 +73,6 @@ namespace paludis
         std::shared_ptr<Repository> master_repo;
         std::list<std::shared_ptr<Repository> > extra_repos;
 
-        std::string paludis_command;
-
         std::shared_ptr<PackageDatabase> package_database;
 
         std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
@@ -158,7 +156,6 @@ Imp<NoConfigEnvironment>::Imp(
     write_cache(p.write_cache()),
     accept_unstable(p.accept_unstable()),
     is_vdb(is_vdb_repository(p.repository_dir(), p.repository_type())),
-    paludis_command("false"),
     package_database(std::make_shared<PackageDatabase>(env)),
     format_key(std::make_shared<LiteralMetadataValueKey<std::string>>("format", "Format", mkt_significant, "no_config")),
     repository_dir_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("repository_dir", "Repository dir",
@@ -421,18 +418,6 @@ std::shared_ptr<const PackageDatabase>
 NoConfigEnvironment::package_database() const
 {
     return _imp->package_database;
-}
-
-std::string
-NoConfigEnvironment::paludis_command() const
-{
-    return _imp->paludis_command;
-}
-
-void
-NoConfigEnvironment::set_paludis_command(const std::string & s)
-{
-    _imp->paludis_command = s;
 }
 
 bool

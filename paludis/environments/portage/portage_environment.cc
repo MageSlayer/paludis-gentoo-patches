@@ -86,7 +86,6 @@ namespace paludis
     struct Imp<PortageEnvironment>
     {
         const FSPath conf_dir;
-        std::string paludis_command;
 
         std::shared_ptr<KeyValueConfigFile> vars;
 
@@ -123,7 +122,6 @@ namespace paludis
 
         Imp(Environment * const e, const std::string & s) :
             conf_dir(FSPath(s.empty() ? "/" : s) / SYSCONFDIR),
-            paludis_command("paludis"),
             ignore_all_breaks_portage(false),
             done_hooks(false),
             overlay_importance(10),
@@ -605,18 +603,6 @@ PortageEnvironment::value_for_choice_parameter(
         const UnprefixedChoiceName &) const
 {
     return "";
-}
-
-std::string
-PortageEnvironment::paludis_command() const
-{
-    return _imp->paludis_command;
-}
-
-void
-PortageEnvironment::set_paludis_command(const std::string & s)
-{
-    _imp->paludis_command = s;
 }
 
 namespace

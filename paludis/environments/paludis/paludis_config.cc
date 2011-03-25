@@ -170,7 +170,6 @@ namespace paludis
     {
         PaludisEnvironment * const env;
 
-        std::string paludis_command;
         std::string root;
         std::string system_root;
         std::string config_dir;
@@ -212,7 +211,6 @@ namespace paludis
 
     Imp<PaludisConfig>::Imp(PaludisEnvironment * e) :
         env(e),
-        paludis_command("paludis"),
         config_dir("(unset)"),
         bashrc_files(std::make_shared<FSPathSequence>()),
         local_config_dir("/"),

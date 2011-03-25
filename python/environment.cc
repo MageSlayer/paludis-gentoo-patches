@@ -190,27 +190,6 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "hook_dirs");
         }
 
-        virtual std::string paludis_command() const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
-        {
-            Lock l(get_mutex());
-
-            if (bp::override f = get_override("paludis_command"))
-                return f();
-            else
-                throw PythonMethodNotImplemented("EnvironmentImplementation", "paludis_command");
-        }
-
-        virtual void set_paludis_command(const std::string & s)
-        {
-            Lock l(get_mutex());
-
-            if (bp::override f = get_override("set_paludis_command"))
-                f(s);
-            else
-                throw PythonMethodNotImplemented("EnvironmentImplementation", "set_paludis_command");
-        }
-
         virtual uid_t reduced_uid() const
         {
             Lock l(get_mutex());
@@ -615,16 +594,6 @@ void expose_environment()
         .def("hook_dirs", bp::pure_virtual(&EnvImp::hook_dirs),
                 "hook_dirs() -> list of paths\n"
                 "Return directories to search for hooks."
-            )
-
-        .def("paludis_command", bp::pure_virtual(&EnvImp::paludis_command),
-                "paludis_command() -> str\n"
-                "Return the command used to launch paludis (the client)."
-            )
-
-        .def("set_paludis_command", bp::pure_virtual(&EnvImp::set_paludis_command),
-                "set_paludis_command(str)\n"
-                "Change the command used to launch paludis (the client)."
             )
 
         .def("reduced_uid", bp::pure_virtual(&EnvImp::reduced_uid),

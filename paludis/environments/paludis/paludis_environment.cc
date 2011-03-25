@@ -79,7 +79,6 @@ namespace paludis
         mutable std::list<std::pair<FSPath, bool> > hook_dirs;
 
         std::shared_ptr<PaludisConfig> config;
-        std::string paludis_command;
 
         std::shared_ptr<PackageDatabase> package_database;
 
@@ -95,7 +94,6 @@ namespace paludis
         Imp(PaludisEnvironment * const e, std::shared_ptr<PaludisConfig> c) :
             done_hooks(false),
             config(c),
-            paludis_command("paludis"),
             package_database(std::make_shared<PackageDatabase>(e)),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string>>("format", "Format", mkt_significant, "paludis")),
             config_location_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("conf_dir", "Config dir", mkt_normal,
@@ -202,18 +200,6 @@ std::shared_ptr<const FSPathSequence>
 PaludisEnvironment::bashrc_files() const
 {
     return _imp->config->bashrc_files();
-}
-
-std::string
-PaludisEnvironment::paludis_command() const
-{
-    return _imp->paludis_command;
-}
-
-void
-PaludisEnvironment::set_paludis_command(const std::string & s)
-{
-    _imp->paludis_command = s;
 }
 
 HookResult

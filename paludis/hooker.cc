@@ -178,8 +178,7 @@ BashHookFile::run(
         .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
         .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
         .setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
-        .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
-        .setenv("PALUDIS_COMMAND", _env->paludis_command());
+        .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()));
 
     if (hook.output_dest == hod_stdout && _run_prefixed)
         process
@@ -240,8 +239,7 @@ FancyHookFile::run(const Hook & hook,
         .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
         .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
         .setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
-        .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
-        .setenv("PALUDIS_COMMAND", _env->paludis_command());
+        .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()));
 
     if (hook.output_dest == hod_stdout && _run_prefixed)
         process
@@ -301,8 +299,7 @@ FancyHookFile::auto_hook_names() const
         .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
         .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
         .setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
-        .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
-        .setenv("PALUDIS_COMMAND", _env->paludis_command());
+        .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()));
 
     int exit_status(0);
     std::string output("");
@@ -360,8 +357,7 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
         .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
         .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
         .setenv("PALUDIS_REDUCED_GID", stringify(_env->reduced_gid()))
-        .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()))
-        .setenv("PALUDIS_COMMAND", _env->paludis_command());
+        .setenv("PALUDIS_REDUCED_UID", stringify(_env->reduced_uid()));
 
     process.prefix_stderr(strip_trailing_string(file_name().basename(), ".bash") + "> ");
 

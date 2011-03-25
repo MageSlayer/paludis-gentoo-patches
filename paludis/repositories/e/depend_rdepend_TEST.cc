@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -103,7 +103,6 @@ namespace
 #endif
 
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
 
             FSPath root(FSPath::cwd() / "depend_rdepend_TEST_dir" / "root");
 

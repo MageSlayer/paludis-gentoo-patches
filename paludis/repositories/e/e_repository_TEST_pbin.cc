@@ -109,7 +109,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             FSPath root(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "root");
 
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());

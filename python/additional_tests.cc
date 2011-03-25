@@ -74,10 +74,6 @@ namespace environment
 
         e.hook_dirs();
 
-        e.paludis_command();
-
-        e.set_paludis_command("paludis");
-
         e.reduced_uid();
 
         e.reduced_gid();

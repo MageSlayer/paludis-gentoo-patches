@@ -54,7 +54,6 @@ namespace paludis
     struct Imp<TestEnvironment>
     {
         std::shared_ptr<PackageDatabase> package_database;
-        std::string paludis_command;
         std::unordered_map<std::string, Tribool> override_want_choice_enabled;
         FSPath root;
         Sets sets;
@@ -63,7 +62,6 @@ namespace paludis
 
         Imp(Environment * const e, const FSPath & r) :
             package_database(std::make_shared<PackageDatabase>(e)),
-            paludis_command(""),
             root(r),
             preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "Root", mkt_normal, root)),
             system_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("system_root", "System Root", mkt_normal, FSPath("/")))
@@ -112,18 +110,6 @@ std::shared_ptr<const PackageDatabase>
 TestEnvironment::package_database() const
 {
     return _imp->package_database;
-}
-
-std::string
-TestEnvironment::paludis_command() const
-{
-    return _imp->paludis_command;
-}
-
-void
-TestEnvironment::set_paludis_command(const std::string & s)
-{
-    _imp->paludis_command = s;
 }
 
 const std::shared_ptr<const PackageID>

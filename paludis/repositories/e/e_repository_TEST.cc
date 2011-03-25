@@ -99,7 +99,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -119,7 +118,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -139,7 +137,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -159,7 +156,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -188,7 +184,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -219,7 +214,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -256,7 +250,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -297,7 +290,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -347,7 +339,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -380,7 +371,6 @@ namespace test_cases
             using namespace std::placeholders;
 
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -426,7 +416,6 @@ namespace test_cases
             using namespace std::placeholders;
 
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -479,7 +468,6 @@ namespace test_cases
                 TestMessageSuffix opass_suffix("opass=" + stringify(opass), true);
 
                 TestEnvironment env;
-                env.set_paludis_command("/bin/false");
                 std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
                 keys->insert("format", "e");
                 keys->insert("names_cache", "/var/empty");
@@ -561,7 +549,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -605,7 +592,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -685,7 +671,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
 
             std::shared_ptr<Map<std::string, std::string> > keys18(std::make_shared<Map<std::string, std::string>>());
             keys18->insert("format", "e");
@@ -742,7 +727,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -777,7 +761,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -819,7 +802,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -867,7 +849,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -913,7 +894,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "exheres");
             keys->insert("names_cache", "/var/empty");
@@ -1026,7 +1006,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");

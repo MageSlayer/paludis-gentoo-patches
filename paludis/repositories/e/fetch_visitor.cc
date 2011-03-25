@@ -240,7 +240,6 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
                     .setenv("PALUDIS_HOOK_DIRS", join(hook_dirs->begin(), hook_dirs->end(), " "))
                     .setenv("PALUDIS_FETCHERS_DIRS", join(fetchers_dirs->begin(), fetchers_dirs->end(), " "))
                     .setenv("PALUDIS_SYNCERS_DIRS", join(syncers_dirs->begin(), syncers_dirs->end(), " "))
-                    .setenv("PALUDIS_COMMAND", _imp->env->paludis_command())
                     .setenv("PALUDIS_REDUCED_GID", stringify(_imp->env->reduced_gid()))
                     .setenv("PALUDIS_REDUCED_UID", stringify(_imp->env->reduced_uid()))
                     .setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))

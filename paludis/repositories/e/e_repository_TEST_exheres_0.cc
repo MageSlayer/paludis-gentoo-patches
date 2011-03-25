@@ -107,7 +107,6 @@ namespace test_cases
             ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "", 1);
 #endif
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");

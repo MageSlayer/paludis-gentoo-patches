@@ -97,7 +97,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
@@ -117,7 +116,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
@@ -140,7 +138,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
@@ -210,7 +207,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
@@ -275,7 +271,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");
@@ -406,7 +401,6 @@ namespace test_cases
         void run()
         {
             TestEnvironment env(FSPath(stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "root")).realpath());
-            env.set_paludis_command("/bin/false");
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");
             keys->insert("names_cache", "/var/empty");

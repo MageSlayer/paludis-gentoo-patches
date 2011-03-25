@@ -108,7 +108,6 @@ namespace test_cases
 #endif
 
             TestEnvironment env;
-            env.set_paludis_command("/bin/false");
 
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "e");

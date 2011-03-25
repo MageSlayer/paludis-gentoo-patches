@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -98,10 +98,6 @@ int main(int argc, char * argv[])
         Log::get_instance()->set_program_name(argv[0]);
         Log::get_instance()->set_log_level(cmdline.a_log_level.option());
         std::shared_ptr<Environment> env(EnvironmentFactory::get_instance()->create(cmdline.a_environment.argument()));
-
-        env->set_paludis_command(std::string(BINDIR"/paludis")
-               + " --" + cmdline.a_log_level.long_name() + " " + cmdline.a_log_level.argument()
-               + " --" + cmdline.a_environment.long_name() + " " + (cmdline.a_environment.argument().empty() ? ":" : cmdline.a_environment.argument()));
 
         std::shared_ptr<Sequence<std::string> > seq(std::make_shared<Sequence<std::string>>());
         std::copy(next(cmdline.begin_parameters()), cmdline.end_parameters(), seq->back_inserter());

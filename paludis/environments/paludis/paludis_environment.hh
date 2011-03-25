@@ -100,11 +100,6 @@ namespace paludis
                     const std::shared_ptr<OutputManager> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::string paludis_command() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual void set_paludis_command(const std::string &);
-
             virtual std::shared_ptr<PackageDatabase> package_database()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
