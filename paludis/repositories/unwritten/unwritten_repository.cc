@@ -118,12 +118,6 @@ UnwrittenRepository::is_unimportant() const
     return true;
 }
 
-bool
-UnwrittenRepository::can_be_favourite_repository() const
-{
-    return false;
-}
-
 void
 UnwrittenRepository::_add_metadata_keys()
 {

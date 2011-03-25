@@ -288,13 +288,6 @@ namespace paludis
             const RepositoryName name() const PALUDIS_ATTRIBUTE((nothrow))
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            /**
-             * Are we allowed to be favourite repository?
-             *
-             * Clients may show packages from the favourite repository without the ::repository suffix.
-             */
-            virtual bool can_be_favourite_repository() const;
-
             ///\}
 
             ///\name Specific metadata keys

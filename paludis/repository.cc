@@ -205,12 +205,6 @@ RepositoryManifestInterface::~RepositoryManifestInterface()
 {
 }
 
-bool
-Repository::can_be_favourite_repository() const
-{
-    return some_ids_might_support_action(SupportsActionTest<InstallAction>());
-}
-
 std::shared_ptr<const CategoryNamePartSet>
 Repository::unimportant_category_names(const RepositoryContentMayExcludes &) const
 {

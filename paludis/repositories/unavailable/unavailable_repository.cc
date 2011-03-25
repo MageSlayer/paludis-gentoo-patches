@@ -118,12 +118,6 @@ UnavailableRepository::~UnavailableRepository()
 {
 }
 
-bool
-UnavailableRepository::can_be_favourite_repository() const
-{
-    return false;
-}
-
 const bool
 UnavailableRepository::is_unimportant() const
 {

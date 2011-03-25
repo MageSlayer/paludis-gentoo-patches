@@ -232,12 +232,6 @@ InstalledVirtualsRepository::perform_hook(const Hook & hook, const std::shared_p
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
-bool
-InstalledVirtualsRepository::can_be_favourite_repository() const
-{
-    return false;
-}
-
 const bool
 InstalledVirtualsRepository::is_unimportant() const
 {

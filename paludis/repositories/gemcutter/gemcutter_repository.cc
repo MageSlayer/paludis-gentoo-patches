@@ -100,12 +100,6 @@ GemcutterRepository::~GemcutterRepository()
 {
 }
 
-bool
-GemcutterRepository::can_be_favourite_repository() const
-{
-    return false;
-}
-
 const bool
 GemcutterRepository::is_unimportant() const
 {

@@ -78,8 +78,6 @@ namespace paludis
 
             virtual void invalidate();
 
-            virtual bool can_be_favourite_repository() const;
-
             virtual const bool is_unimportant() const;
 
             HookResult perform_hook(const Hook &, const std::shared_ptr<OutputManager> &)

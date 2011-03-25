@@ -110,12 +110,6 @@ RepositoryRepository::~RepositoryRepository()
 {
 }
 
-bool
-RepositoryRepository::can_be_favourite_repository() const
-{
-    return false;
-}
-
 const bool
 RepositoryRepository::is_unimportant() const
 {

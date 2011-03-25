@@ -327,12 +327,6 @@ VirtualsRepository::make_virtual_package_id(
     return std::make_shared<virtuals::VirtualsPackageID>(_imp->env, name(), virtual_name, provider, true);
 }
 
-bool
-VirtualsRepository::can_be_favourite_repository() const
-{
-    return false;
-}
-
 const bool
 VirtualsRepository::is_unimportant() const
 {
