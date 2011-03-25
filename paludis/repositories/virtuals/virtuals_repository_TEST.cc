@@ -17,164 +17,149 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
-
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
+
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/package_database.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
+#include <paludis/user_dep_spec.hh>
+
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/user_dep_spec.hh>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-namespace test_cases
+TEST(VirtualsRepository, Works)
 {
-    struct VirtualsRepositoryTest : TestCase
-    {
-        VirtualsRepositoryTest() : TestCase("virtuals repository") { }
+    TestEnvironment env;
+    std::shared_ptr<VirtualsRepository> virtuals(std::make_shared<VirtualsRepository>(&env));
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    std::shared_ptr<FakeInstalledRepository> installed(std::make_shared<FakeInstalledRepository>(
+                make_named_values<FakeInstalledRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("installed"),
+                    n::suitable_destination() = true,
+                    n::supports_uninstall() = true
+                    )));
 
-        void run()
-        {
-            TestEnvironment env;
-            std::shared_ptr<VirtualsRepository> virtuals(std::make_shared<VirtualsRepository>(&env));
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            std::shared_ptr<FakeInstalledRepository> installed(std::make_shared<FakeInstalledRepository>(
-                        make_named_values<FakeInstalledRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("installed"),
-                            n::suitable_destination() = true,
-                            n::supports_uninstall() = true
-                            )));
+    ASSERT_TRUE(repo->virtuals_interface());
 
-            TEST_CHECK(repo->virtuals_interface());
+    env.package_database()->add_repository(2, virtuals);
+    env.package_database()->add_repository(3, repo);
+    env.package_database()->add_repository(4, installed);
 
-            env.package_database()->add_repository(2, virtuals);
-            env.package_database()->add_repository(3, repo);
-            env.package_database()->add_repository(4, installed);
+    repo->add_version("cat", "pkg", "1")->provide_key()->set_from_string("virtual/pkg");
+    repo->add_version("cat", "pkg", "2")->provide_key()->set_from_string("virtual/pkg");
+    repo->add_virtual_package(QualifiedPackageName("virtual/pkg"), std::make_shared<PackageDepSpec>(
+                    parse_user_package_dep_spec(">=cat/pkg-2", &env, { })));
 
-            repo->add_version("cat", "pkg", "1")->provide_key()->set_from_string("virtual/pkg");
-            repo->add_version("cat", "pkg", "2")->provide_key()->set_from_string("virtual/pkg");
-            repo->add_virtual_package(QualifiedPackageName("virtual/pkg"), std::make_shared<PackageDepSpec>(
-                            parse_user_package_dep_spec(">=cat/pkg-2", &env, { })));
+    ASSERT_TRUE(bool(repo->virtual_packages()));
+    ASSERT_EQ(1, std::distance(repo->virtual_packages()->begin(), repo->virtual_packages()->end()));
 
-            TEST_CHECK(bool(repo->virtual_packages()));
-            TEST_CHECK_EQUAL(std::distance(repo->virtual_packages()->begin(), repo->virtual_packages()->end()), 1);
+    EXPECT_TRUE(virtuals->has_category_named(CategoryNamePart("virtual"), { }));
+    EXPECT_TRUE(virtuals->has_package_named(QualifiedPackageName("virtual/pkg"), { }));
 
-            TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual"), { }));
-            TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg"), { }));
+    std::shared_ptr<const PackageIDSequence> r(env[selection::AllVersionsSorted(generator::All())]);
+    ASSERT_EQ("cat/pkg-1:0::repo | cat/pkg-2:0::repo | virtual/pkg-2::virtuals (virtual for cat/pkg-2:0::repo)",
+            join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "));
+}
 
-            std::shared_ptr<const PackageIDSequence> r(env[selection::AllVersionsSorted(generator::All())]);
-            TEST_CHECK_STRINGIFY_EQUAL(join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "),
-                    "cat/pkg-1:0::repo | cat/pkg-2:0::repo | virtual/pkg-2::virtuals (virtual for cat/pkg-2:0::repo)");
-        }
-    } test_virtuals_repository;
+TEST(VirtualsRepository, Duplicates)
+{
+    TestEnvironment env;
+    std::shared_ptr<VirtualsRepository> virtuals(std::make_shared<VirtualsRepository>(&env));
+    const std::shared_ptr<FakeRepository> repo1(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo1")
+                    )));
+    const std::shared_ptr<FakeRepository> repo2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo2")
+                    )));
+    std::shared_ptr<FakeInstalledRepository> installed(std::make_shared<FakeInstalledRepository>(
+                make_named_values<FakeInstalledRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("installed"),
+                    n::suitable_destination() = true,
+                    n::supports_uninstall() = true
+                    )));
 
-    struct VirtualsRepositoryDuplicatesTest : TestCase
-    {
-        VirtualsRepositoryDuplicatesTest() : TestCase("virtuals repository duplicates") { }
+    env.package_database()->add_repository(2, virtuals);
+    env.package_database()->add_repository(3, repo1);
+    env.package_database()->add_repository(4, repo2);
+    env.package_database()->add_repository(5, installed);
 
-        void run()
-        {
-            TestEnvironment env;
-            std::shared_ptr<VirtualsRepository> virtuals(std::make_shared<VirtualsRepository>(&env));
-            const std::shared_ptr<FakeRepository> repo1(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo1")
-                            )));
-            const std::shared_ptr<FakeRepository> repo2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo2")
-                            )));
-            std::shared_ptr<FakeInstalledRepository> installed(std::make_shared<FakeInstalledRepository>(
-                        make_named_values<FakeInstalledRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("installed"),
-                            n::suitable_destination() = true,
-                            n::supports_uninstall() = true
-                            )));
+    repo1->add_version("cat", "pkg", "1")->provide_key()->set_from_string("virtual/pkg");
+    repo1->add_version("cat", "pkg", "2")->provide_key()->set_from_string("virtual/pkg");
+    repo1->add_virtual_package(QualifiedPackageName("virtual/pkg"), std::make_shared<PackageDepSpec>(
+                parse_user_package_dep_spec(">=cat/pkg-2", &env, { })));
+    repo1->add_virtual_package(QualifiedPackageName("virtual/foo"), std::make_shared<PackageDepSpec>(
+                parse_user_package_dep_spec(">=cat/pkg-2", &env, { })));
 
-            env.package_database()->add_repository(2, virtuals);
-            env.package_database()->add_repository(3, repo1);
-            env.package_database()->add_repository(4, repo2);
-            env.package_database()->add_repository(5, installed);
+    repo2->add_virtual_package(QualifiedPackageName("virtual/pkg"), std::make_shared<PackageDepSpec>(
+                parse_user_package_dep_spec(">=cat/pkg-2", &env, { })));
+    repo2->add_virtual_package(QualifiedPackageName("virtual/foo"), std::make_shared<PackageDepSpec>(
+                parse_user_package_dep_spec("<=cat/pkg-1", &env, { })));
 
-            repo1->add_version("cat", "pkg", "1")->provide_key()->set_from_string("virtual/pkg");
-            repo1->add_version("cat", "pkg", "2")->provide_key()->set_from_string("virtual/pkg");
-            repo1->add_virtual_package(QualifiedPackageName("virtual/pkg"), std::make_shared<PackageDepSpec>(
-                        parse_user_package_dep_spec(">=cat/pkg-2", &env, { })));
-            repo1->add_virtual_package(QualifiedPackageName("virtual/foo"), std::make_shared<PackageDepSpec>(
-                        parse_user_package_dep_spec(">=cat/pkg-2", &env, { })));
+    EXPECT_TRUE(virtuals->has_category_named(CategoryNamePart("virtual"), { }));
+    EXPECT_TRUE(virtuals->has_package_named(QualifiedPackageName("virtual/pkg"), { }));
 
-            repo2->add_virtual_package(QualifiedPackageName("virtual/pkg"), std::make_shared<PackageDepSpec>(
-                        parse_user_package_dep_spec(">=cat/pkg-2", &env, { })));
-            repo2->add_virtual_package(QualifiedPackageName("virtual/foo"), std::make_shared<PackageDepSpec>(
-                        parse_user_package_dep_spec("<=cat/pkg-1", &env, { })));
+    std::shared_ptr<const PackageIDSequence> r(env[selection::AllVersionsSorted(generator::All())]);
+    ASSERT_EQ("cat/pkg-1:0::repo1 | cat/pkg-2:0::repo1 | "
+            "virtual/foo-1::virtuals (virtual for cat/pkg-1:0::repo1) | "
+            "virtual/foo-2::virtuals (virtual for cat/pkg-2:0::repo1) | "
+            "virtual/pkg-2::virtuals (virtual for cat/pkg-2:0::repo1)",
+            join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "));
+}
 
-            TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual"), { }));
-            TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg"), { }));
+TEST(VirtualsRepository, Recursion)
+{
+    TestEnvironment env;
+    std::shared_ptr<VirtualsRepository> virtuals(std::make_shared<VirtualsRepository>(&env));
+    const std::shared_ptr<FakeRepository> repo1(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo1")
+                    )));
+    const std::shared_ptr<FakeRepository> repo2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo2")
+                    )));
 
-            std::shared_ptr<const PackageIDSequence> r(env[selection::AllVersionsSorted(generator::All())]);
-            TEST_CHECK_STRINGIFY_EQUAL(join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "),
-                    "cat/pkg-1:0::repo1 | cat/pkg-2:0::repo1 | "
-                    "virtual/foo-1::virtuals (virtual for cat/pkg-1:0::repo1) | "
-                    "virtual/foo-2::virtuals (virtual for cat/pkg-2:0::repo1) | "
-                    "virtual/pkg-2::virtuals (virtual for cat/pkg-2:0::repo1)");
-        }
-    } test_virtuals_repository_duplicates;
+    env.package_database()->add_repository(2, repo1);
+    env.package_database()->add_repository(3, repo2);
+    env.package_database()->add_repository(4, virtuals);
 
-    struct VirtualsRepositoryRecursionTest : TestCase
-    {
-        VirtualsRepositoryRecursionTest() : TestCase("virtuals repository recursion") { }
+    repo1->add_version("virtual", "gkp", "1")->provide_key()->set_from_string("virtual/pkg");
+    repo1->add_virtual_package(QualifiedPackageName("virtual/pkg"), std::make_shared<PackageDepSpec>(
+                parse_user_package_dep_spec("virtual/gkp", &env, { })));
 
-        void run()
-        {
-            TestEnvironment env;
-            std::shared_ptr<VirtualsRepository> virtuals(std::make_shared<VirtualsRepository>(&env));
-            const std::shared_ptr<FakeRepository> repo1(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo1")
-                            )));
-            const std::shared_ptr<FakeRepository> repo2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo2")
-                            )));
+    repo2->add_version("virtual", "pkg", "2")->provide_key()->set_from_string("virtual/pkg");
+    repo2->add_virtual_package(QualifiedPackageName("virtual/pkg"), std::make_shared<PackageDepSpec>(
+                parse_user_package_dep_spec("virtual/pkg", &env, { })));
 
-            env.package_database()->add_repository(2, repo1);
-            env.package_database()->add_repository(3, repo2);
-            env.package_database()->add_repository(4, virtuals);
+    EXPECT_TRUE(virtuals->has_category_named(CategoryNamePart("virtual"), { }));
+    EXPECT_TRUE(virtuals->has_package_named(QualifiedPackageName("virtual/pkg"), { }));
 
-            repo1->add_version("virtual", "gkp", "1")->provide_key()->set_from_string("virtual/pkg");
-            repo1->add_virtual_package(QualifiedPackageName("virtual/pkg"), std::make_shared<PackageDepSpec>(
-                        parse_user_package_dep_spec("virtual/gkp", &env, { })));
-
-            repo2->add_version("virtual", "pkg", "2")->provide_key()->set_from_string("virtual/pkg");
-            repo2->add_virtual_package(QualifiedPackageName("virtual/pkg"), std::make_shared<PackageDepSpec>(
-                        parse_user_package_dep_spec("virtual/pkg", &env, { })));
-
-            TEST_CHECK(virtuals->has_category_named(CategoryNamePart("virtual"), { }));
-            TEST_CHECK(virtuals->has_package_named(QualifiedPackageName("virtual/pkg"), { }));
-
-            std::shared_ptr<const PackageIDSequence> r(env[selection::AllVersionsSorted(generator::All())]);
-            TEST_CHECK_STRINGIFY_EQUAL(join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "),
-                    "virtual/gkp-1:0::repo1 | virtual/pkg-1::virtuals (virtual for virtual/gkp-1:0::repo1) | "
-                    "virtual/pkg-2:0::repo2 | virtual/pkg-2::virtuals (virtual for virtual/pkg-2:0::repo2)");
-        }
-    } test_virtuals_repository_recursion;
+    std::shared_ptr<const PackageIDSequence> r(env[selection::AllVersionsSorted(generator::All())]);
+    ASSERT_EQ(
+            "virtual/gkp-1:0::repo1 | virtual/pkg-1::virtuals (virtual for virtual/gkp-1:0::repo1) | "
+            "virtual/pkg-2:0::repo2 | virtual/pkg-2::virtuals (virtual for virtual/pkg-2:0::repo2)",
+            join(indirect_iterator(r->begin()), indirect_iterator(r->end()), " | "));
 }
 
