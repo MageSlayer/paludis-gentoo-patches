@@ -20,515 +20,384 @@
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 #include <paludis/repositories/e/eapi.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
-#include <paludis/unformatted_pretty_printer.hh>
-#include <paludis/util/make_named_values.hh>
-#include <sstream>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
 
-using namespace test;
+#include <paludis/unformatted_pretty_printer.hh>
+
+#include <paludis/util/make_named_values.hh>
+#include <paludis/util/stringify.hh>
+
+#include <sstream>
+
+#include <gtest/gtest.h>
+
 using namespace paludis;
 using namespace paludis::erepository;
 
-/** \file
- * Test cases for DepParser.
- *
- */
-
-namespace test_cases
+TEST(Depparser, Empty)
 {
-    /**
-     * \test Test DepParser with an empty input.
-     *
-     */
-    struct DepParserEmptyTest : TestCase
-    {
-        DepParserEmptyTest() : TestCase("empty") { }
+    TestEnvironment env;
+    std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-        void run()
-        {
-            TestEnvironment env;
-            std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+    UnformattedPrettyPrinter ff;
+    SpecTreePrettyPrinter d(ff, { });
+    parse_depend("",
+            &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
+    EXPECT_EQ("", stringify(d));
+}
 
-            UnformattedPrettyPrinter ff;
-            SpecTreePrettyPrinter d(ff, { });
-            parse_depend("",
-                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
-            TEST_CHECK_EQUAL(stringify(d), "");
-        }
-    } test_dep_spec_parser_empty;
+TEST(DepParser, Blank)
+{
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-    /**
-     * \test Test DepParser with a blank input.
-     *
-     */
-    struct DepParserBlankTest : TestCase
-    {
-        DepParserBlankTest() : TestCase("blank") { }
+    UnformattedPrettyPrinter ff;
+    SpecTreePrettyPrinter d(ff, { });
+    parse_depend("   \n   \t",
+            &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
+    EXPECT_EQ("", stringify(d));
+}
 
-        void run()
-        {
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+TEST(DepParser, Package)
+{
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-            UnformattedPrettyPrinter ff;
-            SpecTreePrettyPrinter d(ff, { });
-            parse_depend("   \n   \t",
-                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
-            TEST_CHECK_EQUAL(stringify(d), "");
-        }
-    } test_dep_spec_parser_blank;
+    UnformattedPrettyPrinter ff;
+    SpecTreePrettyPrinter d(ff, { });
+    parse_depend("app-editors/vim",
+            &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
+    EXPECT_EQ("app-editors/vim", stringify(d));
+}
 
-    /**
-     * \test Test DepParser with a package.
-     *
-     */
-    struct DepParserPackageTest : TestCase
-    {
-        DepParserPackageTest() : TestCase("package") { }
+TEST(DepParser, DecoratedPackage)
+{
+    UnformattedPrettyPrinter ff;
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-        void run()
-        {
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+    SpecTreePrettyPrinter d1(ff, { });
+    parse_depend(">=app-editors/vim-6.4_alpha",
+            &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d1);
+    EXPECT_EQ(">=app-editors/vim-6.4_alpha", stringify(d1));
 
-            UnformattedPrettyPrinter ff;
-            SpecTreePrettyPrinter d(ff, { });
-            parse_depend("app-editors/vim",
-                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
-            TEST_CHECK_EQUAL(stringify(d), "app-editors/vim");
-        }
-    } test_dep_spec_parser_package;
+    SpecTreePrettyPrinter d2(ff, { });
+    parse_depend("=app-editors/vim-6.4_alpha-r1",
+            &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d2);
+    EXPECT_EQ("=app-editors/vim-6.4_alpha-r1", stringify(d2));
 
-    /**
-     * \test Test DepParser with a decorated package.
-     *
-     */
-    struct DepParserDecoratedPackageTest : TestCase
-    {
-        DepParserDecoratedPackageTest() : TestCase("decorated package") { }
+    SpecTreePrettyPrinter d3(ff, { });
+    parse_depend(">=app-editors/vim-6.4_alpha:one",
+            &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d3);
+    EXPECT_EQ(">=app-editors/vim-6.4_alpha:one", stringify(d3));
+}
 
-        void run()
-        {
-            UnformattedPrettyPrinter ff;
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+TEST(DepParser, PackageSequence)
+{
+    UnformattedPrettyPrinter ff;
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-            SpecTreePrettyPrinter d1(ff, { });
-            parse_depend(">=app-editors/vim-6.4_alpha",
-                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d1);
-            TEST_CHECK_EQUAL(stringify(d1), ">=app-editors/vim-6.4_alpha");
+    SpecTreePrettyPrinter d(ff, { });
+    parse_depend("app-editors/vim app-misc/hilite   \nsys-apps/findutils",
+            &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
+    EXPECT_EQ("app-editors/vim app-misc/hilite sys-apps/findutils", stringify(d));
+}
 
-            SpecTreePrettyPrinter d2(ff, { });
-            parse_depend("=app-editors/vim-6.4_alpha-r1",
-                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d2);
-            TEST_CHECK_EQUAL(stringify(d2), "=app-editors/vim-6.4_alpha-r1");
+TEST(DepParser, Any)
+{
+    UnformattedPrettyPrinter ff;
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-            SpecTreePrettyPrinter d3(ff, { });
-            parse_depend(">=app-editors/vim-6.4_alpha:one",
-                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d3);
-            TEST_CHECK_EQUAL(stringify(d3), ">=app-editors/vim-6.4_alpha:one");
-        }
-    } test_dep_spec_parser_decorated_package;
+    SpecTreePrettyPrinter d(ff, { });
+    parse_depend("|| ( one/one two/two )",
+            &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
+    EXPECT_EQ("|| ( one/one two/two )", stringify(d));
+}
 
-    /**
-     * \test Test DepParser with a sequence of packages.
-     *
-     */
-    struct DepParserPackagesTest : TestCase
-    {
-        DepParserPackagesTest() : TestCase("packages") { }
+TEST(DepParser, AnyUse)
+{
+    UnformattedPrettyPrinter ff;
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-        void run()
-        {
-            UnformattedPrettyPrinter ff;
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+    SpecTreePrettyPrinter d(ff, { });
+    parse_depend("|| ( one/one foo? ( two/two ) )",
+            &env, *EAPIData::get_instance()->eapi_from_string("0"), false)->top()->accept(d);
+    EXPECT_EQ("|| ( one/one foo? ( two/two ) )", stringify(d));
 
-            SpecTreePrettyPrinter d(ff, { });
-            parse_depend("app-editors/vim app-misc/hilite   \nsys-apps/findutils",
-                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
-            TEST_CHECK_EQUAL(stringify(d), "app-editors/vim app-misc/hilite sys-apps/findutils");
-        }
-    } test_dep_spec_parser_packages;
+    EXPECT_THROW(parse_depend("|| ( one/one foo? ( two/two ) )",
+            &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
 
-    struct DepParserAnyTest : TestCase
-    {
-        DepParserAnyTest() : TestCase("any") { }
+    SpecTreePrettyPrinter e(ff, { });
+    parse_depend("|| ( one/one ( foo? ( two/two ) ) )",
+            &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(e);
+    EXPECT_EQ("|| ( one/one ( foo? ( two/two ) ) )", stringify(e));
+}
 
-        void run()
-        {
-            UnformattedPrettyPrinter ff;
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+TEST(DepParser, All)
+{
+    UnformattedPrettyPrinter ff;
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-            SpecTreePrettyPrinter d(ff, { });
-            parse_depend("|| ( one/one two/two )",
-                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
-            TEST_CHECK_EQUAL(stringify(d), "|| ( one/one two/two )");
-        }
-    } test_dep_spec_parser_any;
+    SpecTreePrettyPrinter d(ff, { });
+    parse_depend(" ( one/one two/two )    ",
+            &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
+    EXPECT_EQ("one/one two/two", stringify(d));
+}
 
-    struct DepParserAnyUseTest : TestCase
-    {
-        DepParserAnyUseTest() : TestCase("any use") { }
+TEST(DepParser, Use)
+{
+    UnformattedPrettyPrinter ff;
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-        void run()
-        {
-            UnformattedPrettyPrinter ff;
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+    SpecTreePrettyPrinter d(ff, { });
+    parse_depend("foo? ( one/one )", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
+    EXPECT_EQ("foo? ( one/one )", stringify(d));
+}
 
-            SpecTreePrettyPrinter d(ff, { });
-            parse_depend("|| ( one/one foo? ( two/two ) )",
-                    &env, *EAPIData::get_instance()->eapi_from_string("0"), false)->top()->accept(d);
-            TEST_CHECK_EQUAL(stringify(d), "|| ( one/one foo? ( two/two ) )");
+TEST(DepParser, InverseUse)
+{
+    UnformattedPrettyPrinter ff;
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-            TEST_CHECK_THROWS(parse_depend("|| ( one/one foo? ( two/two ) )",
-                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    SpecTreePrettyPrinter d(ff, { });
+    parse_depend("!foo? ( one/one )", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
+    EXPECT_EQ("!foo? ( one/one )", stringify(d));
+}
 
-            SpecTreePrettyPrinter e(ff, { });
-            parse_depend("|| ( one/one ( foo? ( two/two ) ) )",
-                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(e);
-            TEST_CHECK_EQUAL(stringify(e), "|| ( one/one ( foo? ( two/two ) ) )");
-        }
-    } test_dep_spec_parser_any_use;
+TEST(DepParser, URI)
+{
+    UnformattedPrettyPrinter ff;
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-    /**
-     * \test Test DepParser with an all group.
-     *
-     */
-    struct DepParserAllTest : TestCase
-    {
-        DepParserAllTest() : TestCase("all") { }
+    SpecTreePrettyPrinter d(ff, { ppo_multiline_allowed });
+    parse_fetchable_uri("a\n->\tb", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
+    EXPECT_EQ("a -> b\n", stringify(d));
 
-        void run()
-        {
-            UnformattedPrettyPrinter ff;
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+    SpecTreePrettyPrinter e(ff, { ppo_multiline_allowed });
+    parse_fetchable_uri("a-> b", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(e);
+    EXPECT_EQ("a->\nb\n", stringify(e));
 
-            SpecTreePrettyPrinter d(ff, { });
-            parse_depend(" ( one/one two/two )    ",
-                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
-            TEST_CHECK_EQUAL(stringify(d), "one/one two/two");
-        }
-    } test_dep_spec_parser_all;
+    EXPECT_THROW(parse_fetchable_uri("a -> b",
+                &env, *EAPIData::get_instance()->eapi_from_string("0"), false)->top()->accept(d), Exception);
+}
 
-    /**
-     * \test Test DepParser with a use group.
-     *
-     */
-    struct DepParserUseTest : TestCase
-    {
-        DepParserUseTest() : TestCase("use") { }
+TEST(DepParser, NestingErrors)
+{
+    UnformattedPrettyPrinter ff;
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-        void run()
-        {
-            UnformattedPrettyPrinter ff;
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+    SpecTreePrettyPrinter d(ff, { });
+    EXPECT_THROW(parse_depend("!foo? ( one/one",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_depend("!foo? ( one/one ) )",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_depend("( ( ( ) )",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_depend("( ( ( ) ) ) )",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_depend(")",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+}
 
-            SpecTreePrettyPrinter d(ff, { });
-            parse_depend("foo? ( one/one )", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
-            TEST_CHECK_EQUAL(stringify(d), "foo? ( one/one )");
-        }
-    } test_dep_spec_parser_use;
+TEST(DepParser, WeirdErrors)
+{
+    UnformattedPrettyPrinter ff;
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-    /**
-     * \test Test DepParser with an inverse use group.
-     *
-     */
-    struct DepParserInvUseTest : TestCase
-    {
-        DepParserInvUseTest() : TestCase("!use") { }
+    SpecTreePrettyPrinter d(ff, { });
+    EXPECT_THROW(parse_depend("||",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_depend("|| ",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_depend("foo?",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_depend("!? ( )",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_depend("!foo? ||",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_depend("(((",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_depend(")",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_depend("(foo/bar)",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_license("a -> b",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
 
-        void run()
-        {
-            UnformattedPrettyPrinter ff;
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+    EXPECT_THROW(parse_fetchable_uri("( -> )",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_fetchable_uri("( -> )",
+                &env, *EAPIData::get_instance()->eapi_from_string("0"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_fetchable_uri("foo? -> bar",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_fetchable_uri("a ->",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_fetchable_uri("a -> ( )",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_fetchable_uri("a -> )",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+    EXPECT_THROW(parse_fetchable_uri("a -> || ( )",
+                &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
+}
 
-            SpecTreePrettyPrinter d(ff, { });
-            parse_depend("!foo? ( one/one )", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
-            TEST_CHECK_EQUAL(stringify(d), "!foo? ( one/one )");
-        }
-    } test_dep_spec_parser_inv_use;
+TEST(DepParser, Labels)
+{
+    UnformattedPrettyPrinter ff;
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-    struct DepParserURITest : TestCase
-    {
-        DepParserURITest() : TestCase("uri") { }
+    SpecTreePrettyPrinter d(ff, { });
+    parse_depend("build: one/one",
+            &env, *EAPIData::get_instance()->eapi_from_string("exheres-0"), false)->top()->accept(d);
+    EXPECT_EQ("build: one/one", stringify(d));
+    EXPECT_THROW(parse_depend("build: one/one",
+                &env, *EAPIData::get_instance()->eapi_from_string("0"), false)->top()->accept(d), EDepParseError);
+}
 
-        void run()
-        {
-            UnformattedPrettyPrinter ff;
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+TEST(DepParser, Exheres0URILables)
+{
+    UnformattedPrettyPrinter ff;
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-            SpecTreePrettyPrinter d(ff, { ppo_multiline_allowed });
-            parse_fetchable_uri("a\n->\tb", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
-            TEST_CHECK_EQUAL(stringify(d), "a -> b\n");
+    SpecTreePrettyPrinter d(ff, { });
+    parse_fetchable_uri("http://foo/bar manual: two",
+            &env, *EAPIData::get_instance()->eapi_from_string("exheres-0"), false)->top()->accept(d);
+    EXPECT_EQ("http://foo/bar manual: two", stringify(d));
+    EXPECT_THROW(parse_fetchable_uri("http://foo/bar monkey: two",
+                &env, *EAPIData::get_instance()->eapi_from_string("exheres-0"), false)->top()->accept(d), EDepParseError);
+}
 
-            SpecTreePrettyPrinter e(ff, { ppo_multiline_allowed });
-            parse_fetchable_uri("a-> b", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(e);
-            TEST_CHECK_EQUAL(stringify(e), "a->\nb\n");
+TEST(DepParser, Annotations)
+{
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-            TEST_CHECK_THROWS(parse_fetchable_uri("a -> b",
-                        &env, *EAPIData::get_instance()->eapi_from_string("0"), false)->top()->accept(d), Exception);
-        }
-    } test_dep_spec_parser_uri;
+    UnformattedPrettyPrinter ff;
+    SpecTreePrettyPrinter d(ff, { });
+    parse_depend("cat/first [[ foo = bar bar = baz ]] cat/second cat/third [[ moo = oink ]]",
+            &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
+    EXPECT_EQ("cat/first [[ bar = [ baz ] foo = [ bar ] ]] cat/second cat/third [[ moo = [ oink ] ]]", stringify(d));
 
-    /**
-     * \test Test DepParser nesting errors.
-     *
-     */
-    struct DepParserBadNestingTest : TestCase
-    {
-        DepParserBadNestingTest() : TestCase("bad nesting") { }
+    SpecTreePrettyPrinter e(ff, { });
+    parse_depend("bar? ( foo? ( cat/first [[ for = first ]] ) [[ for = foo ]] baz? ( ) [[ for = baz ]] ) [[ for = bar ]]",
+            &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(e);
+    EXPECT_EQ("bar? ( foo? ( cat/first [[ for = [ first ] ]] ) "
+            "[[ for = [ foo ] ]] baz? ( ) [[ for = [ baz ] ]] ) [[ for = [ bar ] ]]", stringify(e));
+}
 
-        void run()
-        {
-            UnformattedPrettyPrinter ff;
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+TEST(DepParser, StarAnnotations)
+{
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-            SpecTreePrettyPrinter d(ff, { });
-            TEST_CHECK_THROWS(parse_depend("!foo? ( one/one",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_depend("!foo? ( one/one ) )",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_depend("( ( ( ) )",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_depend("( ( ( ) ) ) )",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_depend(")",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-        }
-    } test_dep_spec_parser_bad_nesting;
+    UnformattedPrettyPrinter ff;
+    SpecTreePrettyPrinter d(ff, { ppo_include_special_annotations });
+    parse_depend("cat/outer1 ( cat/mid1 ( cat/inner1 cat/inner2 ) [[ *note = [ first-inner ] ]] cat/mid2 ( cat/inner3 cat/inner4 ) "
+            "[[ *note = [ second-inner ] ]] cat/mid3 ) [[ *description = [ mid ] ]] cat/outer2",
+            &env, *EAPIData::get_instance()->eapi_from_string("exheres-0"), false)->top()->accept(d);
 
-    /**
-     * \test Test DepParser weird errors.
-     *
-     */
-    struct DepParserBadValuesTest : TestCase
-    {
-        DepParserBadValuesTest() : TestCase("bad values") { }
-
-        void run()
-        {
-            UnformattedPrettyPrinter ff;
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
-
-            SpecTreePrettyPrinter d(ff, { });
-            TEST_CHECK_THROWS(parse_depend("||",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_depend("|| ",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_depend("foo?",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_depend("!? ( )",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_depend("!foo? ||",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_depend("(((",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_depend(")",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_depend("(foo/bar)",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_license("a -> b",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-
-            TEST_CHECK_THROWS(parse_fetchable_uri("( -> )",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_fetchable_uri("( -> )",
-                        &env, *EAPIData::get_instance()->eapi_from_string("0"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_fetchable_uri("foo? -> bar",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_fetchable_uri("a ->",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_fetchable_uri("a -> ( )",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_fetchable_uri("a -> )",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-            TEST_CHECK_THROWS(parse_fetchable_uri("a -> || ( )",
-                        &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d), Exception);
-        }
-    } test_dep_spec_parser_bad_values;
-
-    /**
-     * \test Test DepParser label handling
-     */
-    struct DepParserLabelsTest : TestCase
-    {
-        DepParserLabelsTest() : TestCase("label handling") { }
-
-        void run()
-        {
-            UnformattedPrettyPrinter ff;
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
-
-            SpecTreePrettyPrinter d(ff, { });
-            parse_depend("build: one/one",
-                    &env, *EAPIData::get_instance()->eapi_from_string("exheres-0"), false)->top()->accept(d);
-            TEST_CHECK_EQUAL(stringify(d), "build: one/one");
-            TEST_CHECK_THROWS(parse_depend("build: one/one",
-                        &env, *EAPIData::get_instance()->eapi_from_string("0"), false)->top()->accept(d), EDepParseError);
-        }
-    } test_dep_spec_parser_labels;
-
-    struct DepParserExheres0URILabelsTest : TestCase
-    {
-        DepParserExheres0URILabelsTest() : TestCase("exheres-0 uri label handling") { }
-
-        void run()
-        {
-            UnformattedPrettyPrinter ff;
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
-
-            SpecTreePrettyPrinter d(ff, { });
-            parse_fetchable_uri("http://foo/bar manual: two",
-                    &env, *EAPIData::get_instance()->eapi_from_string("exheres-0"), false)->top()->accept(d);
-            TEST_CHECK_EQUAL(stringify(d), "http://foo/bar manual: two");
-            TEST_CHECK_THROWS(parse_fetchable_uri("http://foo/bar monkey: two",
-                        &env, *EAPIData::get_instance()->eapi_from_string("exheres-0"), false)->top()->accept(d), EDepParseError);
-        }
-    } test_dep_spec_parser_exheres_0_uri_labels;
-
-    struct AnnotationsTest : TestCase
-    {
-        AnnotationsTest() : TestCase("annotations") { }
-
-        void run()
-        {
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
-
-            UnformattedPrettyPrinter ff;
-            SpecTreePrettyPrinter d(ff, { });
-            parse_depend("cat/first [[ foo = bar bar = baz ]] cat/second cat/third [[ moo = oink ]]",
-                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(d);
-            TEST_CHECK_EQUAL(stringify(d), "cat/first [[ bar = [ baz ] foo = [ bar ] ]] cat/second cat/third [[ moo = [ oink ] ]]");
-
-            SpecTreePrettyPrinter e(ff, { });
-            parse_depend("bar? ( foo? ( cat/first [[ for = first ]] ) [[ for = foo ]] baz? ( ) [[ for = baz ]] ) [[ for = bar ]]",
-                    &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(e);
-            TEST_CHECK_EQUAL(stringify(e), "bar? ( foo? ( cat/first [[ for = [ first ] ]] ) "
-                    "[[ for = [ foo ] ]] baz? ( ) [[ for = [ baz ] ]] ) [[ for = [ bar ] ]]");
-        }
-    } test_annotations;
-
-    struct StarAnnotationsTest : TestCase
-    {
-        StarAnnotationsTest() : TestCase("*annotations") { }
-
-        void run()
-        {
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
-
-            UnformattedPrettyPrinter ff;
-            SpecTreePrettyPrinter d(ff, { ppo_include_special_annotations });
-            parse_depend("cat/outer1 ( cat/mid1 ( cat/inner1 cat/inner2 ) [[ *note = [ first-inner ] ]] cat/mid2 ( cat/inner3 cat/inner4 ) "
-                    "[[ *note = [ second-inner ] ]] cat/mid3 ) [[ *description = [ mid ] ]] cat/outer2",
-                    &env, *EAPIData::get_instance()->eapi_from_string("exheres-0"), false)->top()->accept(d);
-
-            TEST_CHECK_EQUAL(stringify(d), "cat/outer1 ( cat/mid1 [[ description = [ mid ] ]] ( cat/inner1 [[ note = [ first-inner ] description = [ mid ] ]] "
-                    "cat/inner2 [[ note = [ first-inner ] description = [ mid ] ]] ) [[ *note = [ first-inner ] ]] cat/mid2 [[ description = [ mid ] ]] "
-                    "( cat/inner3 [[ note = [ second-inner ] description = [ mid ] ]] cat/inner4 [[ note = [ second-inner ] description = [ mid ] ]] ) "
-                    "[[ *note = [ second-inner ] ]] cat/mid3 [[ description = [ mid ] ]] ) [[ *description = [ mid ] ]] cat/outer2");
-        }
-    } test_star_annotations;
+    EXPECT_EQ("cat/outer1 ( cat/mid1 [[ description = [ mid ] ]] ( cat/inner1 [[ note = [ first-inner ] description = [ mid ] ]] "
+            "cat/inner2 [[ note = [ first-inner ] description = [ mid ] ]] ) [[ *note = [ first-inner ] ]] cat/mid2 [[ description = [ mid ] ]] "
+            "( cat/inner3 [[ note = [ second-inner ] description = [ mid ] ]] cat/inner4 [[ note = [ second-inner ] description = [ mid ] ]] ) "
+            "[[ *note = [ second-inner ] ]] cat/mid3 [[ description = [ mid ] ]] ) [[ *description = [ mid ] ]] cat/outer2", stringify(d));
 }
 
