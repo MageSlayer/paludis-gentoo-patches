@@ -18,15 +18,17 @@
  */
 
 #include <paludis/repositories/e/source_uri_finder.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/repositories/fake/fake_repository.hh>
+
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 using namespace paludis::erepository;
 
@@ -44,83 +46,70 @@ namespace
     }
 }
 
-namespace test_cases
+TEST(SourceURIFinder, Works)
 {
-    struct SourceURIFinderTest : TestCase
-    {
-        SourceURIFinderTest() : TestCase("source uri finder") { }
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
 
-        void run()
-        {
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
+    SourceURIFinder f(&env, repo.get(), "http://example.com/path/input", "output", "monkey",
+            get_mirrors_fn);
+    URIMirrorsThenListedLabel label("mirrors-then-listed");
+    label.accept(f);
 
-            SourceURIFinder f(&env, repo.get(), "http://example.com/path/input", "output", "monkey",
-                    get_mirrors_fn);
-            URIMirrorsThenListedLabel label("mirrors-then-listed");
-            label.accept(f);
+    SourceURIFinder::ConstIterator i(f.begin());
 
-            SourceURIFinder::ConstIterator i(f.begin());
+    ASSERT_TRUE(i != f.end());
+    EXPECT_EQ("http://example.com/path/input", i->first);
+    EXPECT_EQ("output", i->second);
 
-            TEST_CHECK(i != f.end());
-            TEST_CHECK_EQUAL(i->first, "http://example.com/path/input");
-            TEST_CHECK_EQUAL(i->second, "output");
+    ++i;
 
-            ++i;
+    ASSERT_TRUE(i == f.end());
+}
 
-            TEST_CHECK(i == f.end());
-        }
-    } test_source_uri_finder;
+TEST(SourceURIFinder, Mirrors)
+{
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
 
-    struct SourceURIMirrorFinderTest : TestCase
-    {
-        SourceURIMirrorFinderTest() : TestCase("source uri mirror finder") { }
+    SourceURIFinder f(&env, repo.get(), "mirror://example/path/input", "output", "repo", get_mirrors_fn);
+    URIMirrorsThenListedLabel label("mirrors-then-listed");
+    label.accept(f);
 
-        void run()
-        {
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
+    SourceURIFinder::ConstIterator i(f.begin());
 
-            SourceURIFinder f(&env, repo.get(), "mirror://example/path/input", "output", "repo", get_mirrors_fn);
-            URIMirrorsThenListedLabel label("mirrors-then-listed");
-            label.accept(f);
+    ASSERT_TRUE(i != f.end());
+    EXPECT_EQ("http://fake-repo/fake-repo/output", i->first);
+    EXPECT_EQ("output", i->second);
 
-            SourceURIFinder::ConstIterator i(f.begin());
+    ++i;
 
-            TEST_CHECK(i != f.end());
-            TEST_CHECK_EQUAL(i->first, "http://fake-repo/fake-repo/output");
-            TEST_CHECK_EQUAL(i->second, "output");
+    ASSERT_TRUE(i != f.end());
+    EXPECT_EQ("http://example-mirror-1/example-mirror-1/path/input", i->first);
+    EXPECT_EQ("output", i->second);
 
-            ++i;
+    ++i;
 
-            TEST_CHECK(i != f.end());
-            TEST_CHECK_EQUAL(i->first, "http://example-mirror-1/example-mirror-1/path/input");
-            TEST_CHECK_EQUAL(i->second, "output");
+    ASSERT_TRUE(i != f.end());
+    EXPECT_EQ("http://example-mirror-2/example-mirror-2/path/input", i->first);
+    EXPECT_EQ("output", i->second);
 
-            ++i;
+    ++i;
 
-            TEST_CHECK(i != f.end());
-            TEST_CHECK_EQUAL(i->first, "http://example-mirror-2/example-mirror-2/path/input");
-            TEST_CHECK_EQUAL(i->second, "output");
+    ASSERT_TRUE(i != f.end());
+    EXPECT_EQ("http://fake-example/fake-example/path/input", i->first);
+    EXPECT_EQ("output", i->second);
 
-            ++i;
+    ++i;
 
-            TEST_CHECK(i != f.end());
-            TEST_CHECK_EQUAL(i->first, "http://fake-example/fake-example/path/input");
-            TEST_CHECK_EQUAL(i->second, "output");
-
-            ++i;
-
-            TEST_CHECK(i == f.end());
-        }
-    } test_source_uri_mirror_finder;
+    ASSERT_TRUE(i == f.end());
 }
 
