@@ -110,6 +110,30 @@ namespace paludis
 
             virtual void remove_selection_cache(
                     const std::shared_ptr<const SelectionCache> &);
+
+            virtual void add_repository(int importance, const std::shared_ptr<Repository> &);
+
+            virtual const std::shared_ptr<const Repository> fetch_repository(const RepositoryName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::shared_ptr<Repository> fetch_repository(const RepositoryName &)
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool has_repository_named(const RepositoryName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual QualifiedPackageName fetch_unique_qualified_package_name(
+                    const PackageNamePart &, const Filter &, const bool disambiguate) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual bool more_important_than(const RepositoryName &, const RepositoryName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual RepositoryConstIterator begin_repositories() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual RepositoryConstIterator end_repositories() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE DuplicateSetError :

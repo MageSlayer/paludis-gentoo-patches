@@ -33,7 +33,7 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/member_iterator-impl.hh>
-#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
@@ -109,6 +109,12 @@ namespace
 
 namespace paludis
 {
+    template <>
+    struct WrappedForwardIteratorTraits<Environment::RepositoryConstIteratorTag>
+    {
+        typedef PackageDatabase::RepositoryConstIterator UnderlyingIterator;
+    };
+
     template <>
     struct Imp<EnvironmentImplementation>
     {
@@ -358,8 +364,59 @@ EnvironmentImplementation::set_always_exists(const SetName & s) const
         add_set(s, SetName(stringify(s) + "::default"), make_empty_set, true);
 }
 
+void
+EnvironmentImplementation::add_repository(int importance, const std::shared_ptr<Repository> & repository)
+{
+    package_database()->add_repository(importance, repository);
+}
+
+const std::shared_ptr<const Repository>
+EnvironmentImplementation::fetch_repository(const RepositoryName & name) const
+{
+    return package_database()->fetch_repository(name);
+}
+
+const std::shared_ptr<Repository>
+EnvironmentImplementation::fetch_repository(const RepositoryName & name)
+{
+    return package_database()->fetch_repository(name);
+}
+
+bool
+EnvironmentImplementation::has_repository_named(const RepositoryName & name) const
+{
+    return package_database()->has_repository_named(name);
+}
+
+QualifiedPackageName
+EnvironmentImplementation::fetch_unique_qualified_package_name(const PackageNamePart & name,
+        const Filter & filter, const bool disambiguate) const
+{
+    return package_database()->fetch_unique_qualified_package_name(name, filter, disambiguate);
+}
+
+bool
+EnvironmentImplementation::more_important_than(const RepositoryName & a, const RepositoryName & b) const
+{
+    return package_database()->more_important_than(a, b);
+}
+
+EnvironmentImplementation::RepositoryConstIterator
+EnvironmentImplementation::begin_repositories() const
+{
+    return package_database()->begin_repositories();
+}
+
+EnvironmentImplementation::RepositoryConstIterator
+EnvironmentImplementation::end_repositories() const
+{
+    return package_database()->end_repositories();
+}
+
 DuplicateSetError::DuplicateSetError(const SetName & s) throw () :
     Exception("A set named '" + stringify(s) + "' already exists")
 {
 }
+
+template class WrappedForwardIterator<Environment::RepositoryConstIteratorTag, const std::shared_ptr<Repository> >;
 

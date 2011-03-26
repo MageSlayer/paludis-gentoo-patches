@@ -40,6 +40,7 @@
 #include <paludis/choice-fwd.hh>
 #include <paludis/create_output_manager_info-fwd.hh>
 #include <paludis/notifier_callback-fwd.hh>
+#include <paludis/filter-fwd.hh>
 
 /** \file
  * Declarations for the Environment class.
@@ -76,6 +77,9 @@ namespace paludis
     class PALUDIS_VISIBLE Environment :
         public MetadataKeyHolder
     {
+        private:
+            static const Filter & all_filter() PALUDIS_ATTRIBUTE((warn_unused_result));
+
         public:
             ///\name Basic operations
             ///\{
@@ -535,6 +539,83 @@ namespace paludis
              * \since 0.40
              */
             virtual void trigger_notifier_callback(const NotifierCallbackEvent &) const = 0;
+
+            ///\}
+
+            ///\name Repositories
+            ///\{
+
+            /**
+             * Add a repository.
+             *
+             * \since 0.61 is in Environment rather than PackageDatabase
+             *
+             * \exception DuplicateRepositoryError if a Repository with the
+             * same name as the new Repository already exists in our
+             * collection.
+             */
+            virtual void add_repository(int importance, const std::shared_ptr<Repository> &) = 0;
+
+            /**
+             * Fetch a named repository.
+             *
+             * \since 0.61 is in Environment rather than PackageDatabase
+             */
+            virtual const std::shared_ptr<const Repository> fetch_repository(const RepositoryName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Fetch a named repository.
+             *
+             * \since 0.61 is in Environment rather than PackageDatabase
+             */
+            virtual const std::shared_ptr<Repository> fetch_repository(const RepositoryName &)
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Do we have a named repository?
+             *
+             * \since 0.61 is in Environment rather than PackageDatabase
+             */
+            virtual bool has_repository_named(const RepositoryName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Disambiguate a package name.  If a filter is specified,
+             * limit the potential results to packages that match.
+             *
+             * \throw AmbiguousPackageNameError if there is no unambiguous
+             * disambiguation. If disambiguate is set to false, the
+             * exception will be always thrown in presence of ambiguity.
+             * \since 0.56 takes the disambiguate flag.
+             *
+             * \since 0.61 is in Environment rather than PackageDatabase
+             */
+            virtual QualifiedPackageName fetch_unique_qualified_package_name(
+                    const PackageNamePart &, const Filter & = all_filter(), const bool disambiguate = true) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Return true if the first repository is more important than the second.
+             *
+             * \since 0.61 is in Environment rather than PackageDatabase
+             */
+            virtual bool more_important_than(const RepositoryName &, const RepositoryName &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            ///\}
+
+            ///\name Iterate over our repositories
+            ///\{
+
+            struct RepositoryConstIteratorTag;
+            typedef WrappedForwardIterator<RepositoryConstIteratorTag, const std::shared_ptr<Repository> > RepositoryConstIterator;
+
+            virtual RepositoryConstIterator begin_repositories() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            virtual RepositoryConstIterator end_repositories() const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
     };
