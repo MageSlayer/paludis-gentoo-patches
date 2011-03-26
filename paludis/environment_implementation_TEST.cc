@@ -18,17 +18,19 @@
  */
 
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
+
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/stringify.hh>
 
-#include <paludis/package_database.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/filter.hh>
 
@@ -36,7 +38,7 @@
 
 using namespace paludis;
 
-TEST(PackageDatabase, Repositories)
+TEST(EnvironmentImplementation, Repositories)
 {
     TestEnvironment e;
 
@@ -102,7 +104,7 @@ namespace
     };
 }
 
-TEST(PackageDatabase, Disambiguation)
+TEST(EnvironmentImplementation, Disambiguation)
 {
     TestEnvironment e;
 

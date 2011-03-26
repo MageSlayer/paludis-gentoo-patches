@@ -20,12 +20,15 @@
 #include <paludis/environment_implementation.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/distribution.hh>
 #include <paludis/selection.hh>
 #include <paludis/selection_cache.hh>
-#include <paludis/package_database.hh>
+#include <paludis/repository.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
@@ -39,10 +42,15 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/env_var_names.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/set-impl.hh>
 
 #include <algorithm>
 #include <map>
 #include <list>
+#include <set>
 
 #include "config.h"
 
@@ -113,23 +121,24 @@ namespace paludis
     template <>
     struct WrappedForwardIteratorTraits<Environment::RepositoryConstIteratorTag>
     {
-        typedef PackageDatabase::RepositoryConstIterator UnderlyingIterator;
+        typedef std::list<std::shared_ptr<Repository> >::const_iterator UnderlyingIterator;
     };
 
     template <>
     struct Imp<EnvironmentImplementation>
     {
-        std::shared_ptr<PackageDatabase> package_database;
         std::map<unsigned, NotifierCallbackFunction> notifier_callbacks;
         std::list<std::shared_ptr<const SelectionCache> > selection_caches;
+
+        std::list<std::shared_ptr<Repository> > repositories;
+        std::multimap<int, std::list<std::shared_ptr<Repository> >::iterator> repository_importances;
 
         mutable Mutex sets_mutex;
         mutable bool loaded_sets;
         mutable std::shared_ptr<SetNameSet> set_names;
         mutable SetsStore sets;
 
-        Imp(const std::shared_ptr<PackageDatabase> & d) :
-            package_database(d),
+        Imp() :
             loaded_sets(false)
         {
         }
@@ -137,7 +146,7 @@ namespace paludis
 }
 
 EnvironmentImplementation::EnvironmentImplementation() :
-    _imp(std::shared_ptr<PackageDatabase>(new PackageDatabase(this)))
+    _imp()
 {
 }
 
@@ -369,50 +378,261 @@ EnvironmentImplementation::set_always_exists(const SetName & s) const
 void
 EnvironmentImplementation::add_repository(int importance, const std::shared_ptr<Repository> & repository)
 {
-    _imp->package_database->add_repository(importance, repository);
+    Context c("When adding a repository named '" + stringify(repository->name()) + "':");
+
+    for (IndirectIterator<RepositoryConstIterator> r_c(begin_repositories()), r_end(end_repositories()) ;
+            r_c != r_end ; ++r_c)
+        if (r_c->name() == repository->name())
+            throw DuplicateRepositoryError(stringify(repository->name()));
+
+    std::list<std::shared_ptr<Repository> >::iterator q(_imp->repositories.end());
+    for (std::multimap<int, std::list<std::shared_ptr<Repository> >::iterator>::iterator
+            p(_imp->repository_importances.begin()), p_end(_imp->repository_importances.end()) ;
+            p != p_end ; ++p)
+        if (p->first > importance)
+        {
+            q = p->second;
+            break;
+        }
+
+    _imp->repository_importances.insert(std::make_pair(importance, _imp->repositories.insert(q, repository)));
 }
 
 const std::shared_ptr<const Repository>
 EnvironmentImplementation::fetch_repository(const RepositoryName & name) const
 {
-    return _imp->package_database->fetch_repository(name);
+    for (RepositoryConstIterator r(begin_repositories()), r_end(end_repositories()) ;
+            r != r_end ; ++r)
+        if ((*r)->name() == name)
+            return *r;
+
+    throw NoSuchRepositoryError(name);
 }
 
 const std::shared_ptr<Repository>
 EnvironmentImplementation::fetch_repository(const RepositoryName & name)
 {
-    return _imp->package_database->fetch_repository(name);
+    for (RepositoryConstIterator r(begin_repositories()), r_end(end_repositories()) ;
+            r != r_end ; ++r)
+        if ((*r)->name() == name)
+            return *r;
+
+    throw NoSuchRepositoryError(name);
 }
 
 bool
 EnvironmentImplementation::has_repository_named(const RepositoryName & name) const
 {
-    return _imp->package_database->has_repository_named(name);
+    for (RepositoryConstIterator r(begin_repositories()), r_end(end_repositories()) ;
+            r != r_end ; ++r)
+        if ((*r)->name() == name)
+            return true;
+
+    return false;
+}
+
+namespace
+{
+    typedef std::map<const QualifiedPackageName, std::pair<bool, bool> > QPNIMap;
+
+    struct CategoryRepositoryNamePairComparator
+    {
+        bool operator() (const std::pair<CategoryNamePart, RepositoryName> & a,
+                         const std::pair<CategoryNamePart, RepositoryName> & b) const
+        {
+            if (a.first != b.first)
+                return a.first < b.first;
+            return a.second < b.second;
+        }
+    };
+
+    struct IsInstalled
+    {
+        const Environment * const _env;
+
+        IsInstalled(const Environment * e) :
+            _env(e)
+        {
+        }
+
+        typedef QualifiedPackageName argument_type;
+        typedef bool result_type;
+
+        bool operator() (const QualifiedPackageName & qpn) const
+        {
+            return ! (*_env)[selection::SomeArbitraryVersion(generator::Package(qpn) |
+                    filter::InstalledAtRoot(_env->preferred_root_key()->value()))]->empty();
+        }
+    };
+
+    struct IsImportant
+    {
+        typedef QualifiedPackageName argument_type;
+        typedef bool result_type;
+
+        const std::shared_ptr<QPNIMap> _map;
+
+        IsImportant(const std::shared_ptr<QPNIMap> & m) :
+            _map(m)
+        {
+        }
+
+        bool operator() (const QualifiedPackageName & qpn) const
+        {
+            return _map->find(qpn)->second.first;
+        }
+    };
+
+    struct IsInUnimportantRepo
+    {
+        typedef QualifiedPackageName argument_type;
+        typedef bool result_type;
+
+        const std::shared_ptr<QPNIMap> _map;
+
+        IsInUnimportantRepo(const std::shared_ptr<QPNIMap> & m) :
+            _map(m)
+        {
+        }
+
+        bool operator() (const QualifiedPackageName & qpn) const
+        {
+            return ! _map->find(qpn)->second.second;
+        }
+    };
 }
 
 QualifiedPackageName
-EnvironmentImplementation::fetch_unique_qualified_package_name(const PackageNamePart & name,
-        const Filter & filter, const bool disambiguate) const
+EnvironmentImplementation::fetch_unique_qualified_package_name(const PackageNamePart & p,
+        const Filter & f, const bool disambiguate) const
 {
-    return _imp->package_database->fetch_unique_qualified_package_name(name, filter, disambiguate);
+    Context context("When disambiguating package name '" + stringify(p) + "':");
+
+    // Map matching QualifiedPackageNames with a pair of flags specifying
+    // respectively that at least one repository containing the package thinks
+    // the category is important and that the package is in a repository
+    // that reports it is important itself
+    std::shared_ptr<QPNIMap> result(new QPNIMap);
+    std::set<std::pair<CategoryNamePart, RepositoryName>, CategoryRepositoryNamePairComparator> checked;
+
+    std::shared_ptr<const PackageIDSequence> pkgs((*this)[selection::AllVersionsUnsorted(
+                generator::Matches(make_package_dep_spec({ }).package_name_part(p), make_null_shared_ptr(), { }) | f)]);
+
+    for (IndirectIterator<PackageIDSequence::ConstIterator> it(pkgs->begin()),
+             it_end(pkgs->end()); it_end != it; ++it)
+    {
+        Context local_context("When checking category '" + stringify(it->name().category()) + "' in repository '" +
+                stringify(it->repository_name()) + "':");
+
+        if (! checked.insert(std::make_pair(it->name().category(), it->repository_name())).second)
+            continue;
+
+        auto repo(fetch_repository(it->repository_name()));
+        std::shared_ptr<const CategoryNamePartSet> unimportant_cats(repo->unimportant_category_names({ }));
+        bool is_important(unimportant_cats->end() == unimportant_cats->find(it->name().category()));
+        bool is_in_important_repo(! repo->is_unimportant());
+        QPNIMap::iterator i(result->insert(std::make_pair(it->name(), std::make_pair(is_important, is_in_important_repo))).first);
+        i->second.first = i->second.first || is_important;
+        i->second.second = i->second.second || is_in_important_repo;
+    }
+
+    if (result->empty())
+        throw NoSuchPackageError(stringify(p));
+    if (result->size() > 1)
+    {
+        using namespace std::placeholders;
+
+        std::list<QualifiedPackageName> qpns;
+
+        do
+        {
+            const IsImportant is_important(result);
+            const IsInstalled is_installed(this);
+            const IsInUnimportantRepo is_in_unimportant_repo(result);
+
+            std::remove_copy_if(first_iterator(result->begin()), first_iterator(result->end()),
+                    std::front_inserter(qpns),
+                    std::bind(std::logical_and<bool>(),
+                        std::bind(std::not1(is_important), _1),
+                        std::bind(std::not1(is_installed), _1)));
+
+            if (! qpns.empty() && next(qpns.begin()) == qpns.end())
+                break;
+
+            qpns.remove_if(std::bind(is_in_unimportant_repo, _1));
+
+            if (! qpns.empty() && next(qpns.begin()) == qpns.end())
+                break;
+
+            qpns.remove_if(std::bind(std::logical_and<bool>(),
+                        std::bind(is_important, _1),
+                        std::bind(std::not1(is_installed), _1)));
+
+            if (! qpns.empty() && next(qpns.begin()) == qpns.end())
+                break;
+
+            qpns.remove_if(std::bind(std::logical_and<bool>(),
+                        std::bind(std::not1(is_important), _1),
+                        std::bind(is_installed, _1)));
+
+            if (! qpns.empty() && next(qpns.begin()) == qpns.end())
+                break;
+
+            auto candidates(std::make_shared<Sequence<std::string> >());
+            std::transform(first_iterator(result->begin()), first_iterator(result->end()), candidates->back_inserter(),
+                    &stringify<QualifiedPackageName>);
+            throw AmbiguousPackageNameError(stringify(p), candidates);
+        } while (false);
+
+        if (! disambiguate)
+        {
+            auto candidates(std::make_shared<Sequence<std::string> >());
+            std::transform(first_iterator(result->begin()), first_iterator(result->end()), candidates->back_inserter(),
+                    &stringify<QualifiedPackageName>);
+            throw AmbiguousPackageNameError(stringify(p), candidates);
+        }
+
+        Log::get_instance()->message("environment.ambiguous_name", ll_warning, lc_context)
+            << "Package name '" << p << "' is ambiguous, assuming you meant '" << *qpns.begin()
+            << "' (candidates were '"
+            << join(first_iterator(result->begin()), first_iterator(result->end()), "', '") << "')";
+
+        return *qpns.begin();
+    }
+    else
+        return result->begin()->first;
 }
 
 bool
-EnvironmentImplementation::more_important_than(const RepositoryName & a, const RepositoryName & b) const
+EnvironmentImplementation::more_important_than(const RepositoryName & lhs, const RepositoryName & rhs) const
 {
-    return _imp->package_database->more_important_than(a, b);
+    std::map<std::string, int> rank;
+    int x(0);
+    for (auto r(begin_repositories()), r_end(end_repositories()) ;
+            r != r_end ; ++r)
+        rank.insert(std::make_pair(stringify((*r)->name()), ++x));
+
+    std::map<std::string, int>::const_iterator l(rank.find(stringify(lhs)));
+    if (l == rank.end())
+        throw InternalError(PALUDIS_HERE, "lhs.repository '" + stringify(lhs) + "' not in rank");
+
+    std::map<std::string, int>::const_iterator r(rank.find(stringify(rhs)));
+    if (r == rank.end())
+        throw InternalError(PALUDIS_HERE, "rhs.repository '" + stringify(rhs) + "' not in rank");
+
+    return l->second > r->second;
 }
 
 EnvironmentImplementation::RepositoryConstIterator
 EnvironmentImplementation::begin_repositories() const
 {
-    return _imp->package_database->begin_repositories();
+    return RepositoryConstIterator(_imp->repositories.begin());
 }
 
 EnvironmentImplementation::RepositoryConstIterator
 EnvironmentImplementation::end_repositories() const
 {
-    return _imp->package_database->end_repositories();
+    return RepositoryConstIterator(_imp->repositories.end());
 }
 
 DuplicateSetError::DuplicateSetError(const SetName & s) throw () :
