@@ -316,12 +316,14 @@ e_repository_TEST_symlink_rewriting_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @P
 vdb_repository_TEST_SOURCES = vdb_repository_TEST.cc
 
 vdb_repository_TEST_LDADD = \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+			    $(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 vdb_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
+vdb_repository_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
 vdb_repository_TEST_eapis_SOURCES = vdb_repository_TEST_eapis.cc
 
