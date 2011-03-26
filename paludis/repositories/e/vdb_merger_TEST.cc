@@ -3,6 +3,7 @@
 /*
  * Copyright (c) 2007 Piotr Jaroszyński
  * Copyright (c) 2007 David Leverton
+ * Copyright (c) 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,19 +19,22 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "vdb_merger.hh"
+#include <paludis/repositories/e/vdb_merger.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/repositories/fake/fake_repository.hh>
+
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/fs_stat.hh>
+
 #include <paludis/standard_output_manager.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
 namespace
 {
@@ -58,198 +62,149 @@ namespace
             }
     };
 
-    class VDBMergerTest :
-        public TestCase
+    static std::string file_contents(const FSPath & f)
     {
-        public:
+        if (! f.stat().is_regular_file())
+            return "";
 
-            FSPath root_dir;
-            std::string target;
-            TestEnvironment env;
-            VDBMergerNoDisplay merger;
+        try
+        {
+            SafeIFStream stream(f);
 
-            bool repeatable() const
-            {
-                return false;
-            }
+            std::string contents;
+            stream >> contents;
+            return contents;
+        }
+        catch (const SafeIFStreamError &)
+        {
+            return "";
+        }
+    }
 
-        protected:
+    struct VDBMergerTest :
+        testing::TestWithParam<std::string>
+    {
+        TestEnvironment env;
+        std::string target;
+        FSPath root_dir;
+        std::shared_ptr<VDBMergerNoDisplay> merger;
 
-            VDBMergerTest(const std::string & what) :
-                TestCase("merge '" + what + "' test"),
-                root_dir(FSPath::cwd() / "vdb_merger_TEST_dir" / what / "root"),
-                target(what),
-                merger(make_named_values<VDBMergerParams>(
-                            n::config_protect() = "/protected_file /protected_dir",
-                            n::config_protect_mask() = "/protected_dir/unprotected_file /protected_dir/unprotected_dir",
-                            n::contents_file() = FSPath::cwd() / "vdb_merger_TEST_dir/CONTENTS" / what,
-                            n::environment() = &env,
-                            n::fix_mtimes_before() = Timestamp(0, 0),
-                            n::image() = FSPath::cwd() / "vdb_merger_TEST_dir" / what / "image",
-                            n::merged_entries() = std::make_shared<FSPathSet>(),
-                            n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
-                            n::output_manager() = std::make_shared<StandardOutputManager>(),
-                            n::package_id() = std::shared_ptr<PackageID>(),
-                            n::root() = root_dir
-                        ))
-            {
-            }
+        VDBMergerTest() :
+            root_dir("/")
+        {
+        }
+
+        void SetUp()
+        {
+            target = GetParam();
+            root_dir = FSPath::cwd() / "vdb_merger_TEST_dir" / target / "root";
+            merger = std::make_shared<VDBMergerNoDisplay>(make_named_values<VDBMergerParams>(
+                        n::config_protect() = "/protected_file /protected_dir",
+                        n::config_protect_mask() = "/protected_dir/unprotected_file /protected_dir/unprotected_dir",
+                        n::contents_file() = FSPath::cwd() / "vdb_merger_TEST_dir/CONTENTS" / target,
+                        n::environment() = &env,
+                        n::fix_mtimes_before() = Timestamp(0, 0),
+                        n::image() = FSPath::cwd() / "vdb_merger_TEST_dir" / target / "image",
+                        n::merged_entries() = std::make_shared<FSPathSet>(),
+                        n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
+                        n::output_manager() = std::make_shared<StandardOutputManager>(),
+                        n::package_id() = std::shared_ptr<PackageID>(),
+                        n::root() = root_dir
+                        ));
+        }
+
+        void TearDown()
+        {
+            merger.reset();
+        }
     };
 }
 
-namespace test_cases
+struct VDBMergerTestConfigProtect : VDBMergerTest { };
+
+TEST_P(VDBMergerTestConfigProtect, ConfigProtect)
 {
-    struct VDBMergerTestConfigProtect : VDBMergerTest
-    {
-        VDBMergerTestConfigProtect() : VDBMergerTest("config_protect") { }
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_file"));
+    EXPECT_TRUE(! (root_dir / "._cfg0000_protected_file").stat().exists());
+    EXPECT_EQ("bar", file_contents(root_dir / "unprotected_file"));
+    EXPECT_TRUE(! (root_dir / "._cfg0000_unprotected_file").stat().exists());
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_file_not_really"));
+    EXPECT_TRUE(! (root_dir / "._cfg0000_protected_file_not_really").stat().exists());
 
-        static std::string file_contents(const FSPath & f)
-        {
-            if (! f.stat().is_regular_file())
-                return "";
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_dir/protected_file"));
+    EXPECT_TRUE(! (root_dir / "protected_dir/._cfg0000_protected_file").stat().exists());
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_dir/unprotected_file"));
+    EXPECT_TRUE(! (root_dir / "protected_dir/._cfg0000_unprotected_file").stat().exists());
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_dir/unprotected_file_not_really"));
+    EXPECT_TRUE(! (root_dir / "protected_dir/._cfg0000_unprotected_file_not_really").stat().exists());
 
-            try
-            {
-                SafeIFStream stream(f);
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_dir/protected_file_already_needs_update"));
+    EXPECT_EQ("baz", file_contents(root_dir / "protected_dir/._cfg0000_protected_file_already_needs_update"));
+    EXPECT_TRUE(! (root_dir / "protected_dir/._cfg0001_protected_file_already_needs_update").stat().exists());
+    EXPECT_EQ("foo", file_contents(root_dir / "protected_dir/unchanged_protected_file"));
+    EXPECT_TRUE(! (root_dir / "protected_dir/._cfg0000_unchanged_protected_file").stat().exists());
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_dir/protected_file_same_as_existing_update"));
+    EXPECT_EQ("foo", file_contents(root_dir / "protected_dir/._cfg0000_protected_file_same_as_existing_update"));
+    EXPECT_TRUE(! (root_dir / "protected_dir/._cfg0001_protected_file_same_as_existing_update").stat().exists());
 
-                std::string contents;
-                stream >> contents;
-                return contents;
-            }
-            catch (const SafeIFStreamError &)
-            {
-                return "";
-            }
-        }
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_dir/unprotected_dir/unprotected_file"));
+    EXPECT_TRUE(! (root_dir / "protected_dir/unprotected_dir/._cfg0000_unprotected_file").stat().exists());
 
-        void run()
-        {
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_file"), "bar");
-            TEST_CHECK(! (root_dir / "._cfg0000_protected_file").stat().exists());
-            TEST_CHECK_EQUAL(file_contents(root_dir / "unprotected_file"), "bar");
-            TEST_CHECK(! (root_dir / "._cfg0000_unprotected_file").stat().exists());
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_file_not_really"), "bar");
-            TEST_CHECK(! (root_dir / "._cfg0000_protected_file_not_really").stat().exists());
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_dir/unprotected_dir_not_really/protected_file"));
+    EXPECT_TRUE(! (root_dir / "protected_dir/unprotected_dir_not_really/._cfg0000_protected_file").stat().exists());
 
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/protected_file"), "bar");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_protected_file").stat().exists());
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_file"), "bar");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_unprotected_file").stat().exists());
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_file_not_really"), "bar");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_unprotected_file_not_really").stat().exists());
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_dir_not_really/unprotected_file"));
+    EXPECT_TRUE(! (root_dir / "protected_dir_not_really/._cfg0000_unprotected_file").stat().exists());
 
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/protected_file_already_needs_update"), "bar");
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/._cfg0000_protected_file_already_needs_update"), "baz");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0001_protected_file_already_needs_update").stat().exists());
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unchanged_protected_file"), "foo");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_unchanged_protected_file").stat().exists());
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/protected_file_same_as_existing_update"), "bar");
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/._cfg0000_protected_file_same_as_existing_update"), "foo");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0001_protected_file_same_as_existing_update").stat().exists());
+    merger->merge();
 
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_dir/unprotected_file"), "bar");
-            TEST_CHECK(! (root_dir / "protected_dir/unprotected_dir/._cfg0000_unprotected_file").stat().exists());
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_file"));
+    EXPECT_EQ("foo", file_contents(root_dir / "._cfg0000_protected_file"));
+    EXPECT_EQ("foo", file_contents(root_dir / "unprotected_file"));
+    EXPECT_TRUE(! (root_dir / "._cfg0000_unprotected_file").stat().exists());
+    EXPECT_EQ("foo", file_contents(root_dir / "protected_file_not_really"));
+    EXPECT_TRUE(! (root_dir / "._cfg0000_protected_file_not_really").stat().exists());
 
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_dir_not_really/protected_file"), "bar");
-            TEST_CHECK(! (root_dir / "protected_dir/unprotected_dir_not_really/._cfg0000_protected_file").stat().exists());
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_dir/protected_file"));
+    EXPECT_EQ("foo", file_contents(root_dir / "protected_dir/._cfg0000_protected_file"));
+    EXPECT_EQ("foo", file_contents(root_dir / "protected_dir/unprotected_file"));
+    EXPECT_TRUE(! (root_dir / "protected_dir/._cfg0000_unprotected_file").stat().exists());
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_dir/unprotected_file_not_really"));
+    EXPECT_EQ("foo", file_contents(root_dir / "protected_dir/._cfg0000_unprotected_file_not_really"));
 
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir_not_really/unprotected_file"), "bar");
-            TEST_CHECK(! (root_dir / "protected_dir_not_really/._cfg0000_unprotected_file").stat().exists());
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_dir/protected_file_already_needs_update"));
+    EXPECT_EQ("baz", file_contents(root_dir / "protected_dir/._cfg0000_protected_file_already_needs_update"));
+    EXPECT_EQ("foo", file_contents(root_dir / "protected_dir/._cfg0001_protected_file_already_needs_update"));
+    EXPECT_EQ("foo", file_contents(root_dir / "protected_dir/unchanged_protected_file"));
+    EXPECT_TRUE(! (root_dir / "protected_dir/._cfg0000_unchanged_protected_file").stat().exists());
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_dir/protected_file_same_as_existing_update"));
+    EXPECT_EQ("foo", file_contents(root_dir / "protected_dir/._cfg0000_protected_file_same_as_existing_update"));
+    EXPECT_TRUE(! (root_dir / "protected_dir/._cfg0001_protected_file_same_as_existing_update").stat().exists());
 
-            merger.merge();
+    EXPECT_EQ("foo", file_contents(root_dir / "protected_dir/unprotected_dir/unprotected_file"));
+    EXPECT_TRUE(! (root_dir / "protected_dir/unprotected_dir/._cfg0000_unprotected_file").stat().exists());
 
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_file"), "bar");
-            TEST_CHECK_EQUAL(file_contents(root_dir / "._cfg0000_protected_file"), "foo");
-            TEST_CHECK_EQUAL(file_contents(root_dir / "unprotected_file"), "foo");
-            TEST_CHECK(! (root_dir / "._cfg0000_unprotected_file").stat().exists());
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_file_not_really"), "foo");
-            TEST_CHECK(! (root_dir / "._cfg0000_protected_file_not_really").stat().exists());
+    EXPECT_EQ("bar", file_contents(root_dir / "protected_dir/unprotected_dir_not_really/protected_file"));
+    EXPECT_EQ("foo", file_contents(root_dir / "protected_dir/unprotected_dir_not_really/._cfg0000_protected_file"));
 
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/protected_file"), "bar");
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/._cfg0000_protected_file"), "foo");
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_file"), "foo");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_unprotected_file").stat().exists());
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_file_not_really"), "bar");
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/._cfg0000_unprotected_file_not_really"), "foo");
-
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/protected_file_already_needs_update"), "bar");
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/._cfg0000_protected_file_already_needs_update"), "baz");
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/._cfg0001_protected_file_already_needs_update"), "foo");
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unchanged_protected_file"), "foo");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0000_unchanged_protected_file").stat().exists());
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/protected_file_same_as_existing_update"), "bar");
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/._cfg0000_protected_file_same_as_existing_update"), "foo");
-            TEST_CHECK(! (root_dir / "protected_dir/._cfg0001_protected_file_same_as_existing_update").stat().exists());
-
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_dir/unprotected_file"), "foo");
-            TEST_CHECK(! (root_dir / "protected_dir/unprotected_dir/._cfg0000_unprotected_file").stat().exists());
-
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_dir_not_really/protected_file"), "bar");
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir/unprotected_dir_not_really/._cfg0000_protected_file"), "foo");
-
-            TEST_CHECK_EQUAL(file_contents(root_dir / "protected_dir_not_really/unprotected_file"), "foo");
-            TEST_CHECK(! (root_dir / "protected_dir_not_really/._cfg0000_unprotected_file").stat().exists());
-        }
-    } test_vdb_merger_config_protect;
-
-    struct VDBMergerTestFileNewline : VDBMergerTest
-    {
-        VDBMergerTestFileNewline() : VDBMergerTest("file_newline") { }
-
-        void run()
-        {
-            TEST_CHECK_THROWS(merger.check(), FSMergerError);
-        }
-    } test_vdb_merger_file_newline;
-
-    struct VDBMergerTestDirNewline : VDBMergerTest
-    {
-        VDBMergerTestDirNewline() : VDBMergerTest("dir_newline") { }
-
-        void run()
-        {
-            TEST_CHECK_THROWS(merger.check(), FSMergerError);
-        }
-    } test_vdb_merger_dir_newline;
-
-    struct VDBMergerTestSymNewline : VDBMergerTest
-    {
-        VDBMergerTestSymNewline() : VDBMergerTest("sym_newline") { }
-
-        void run()
-        {
-            TEST_CHECK_THROWS(merger.check(), FSMergerError);
-        }
-    } test_vdb_merger_sym_newline;
-
-    struct VDBMergerTestSymTargetNewline : VDBMergerTest
-    {
-        VDBMergerTestSymTargetNewline() : VDBMergerTest("sym_target_newline") { }
-
-        void run()
-        {
-            TEST_CHECK_THROWS(merger.check(), FSMergerError);
-        }
-    } test_vdb_merger_sym_target_newline;
-
-    struct VDBMergerTestSymArrow : VDBMergerTest
-    {
-        VDBMergerTestSymArrow() : VDBMergerTest("sym_arrow") { }
-
-        void run()
-        {
-            TEST_CHECK_THROWS(merger.check(), FSMergerError);
-        }
-    } test_vdb_merger_sym_arrow;
-
-    struct VDBMergerTestSymArrow2 : VDBMergerTest
-    {
-        VDBMergerTestSymArrow2() : VDBMergerTest("sym_arrow2") { }
-
-        void run()
-        {
-            TEST_CHECK_THROWS(merger.check(), FSMergerError);
-        }
-    } test_vdb_merger_sym_arrow2;
+    EXPECT_EQ("foo", file_contents(root_dir / "protected_dir_not_really/unprotected_file"));
+    EXPECT_TRUE(! (root_dir / "protected_dir_not_really/._cfg0000_unprotected_file").stat().exists());
 }
+
+INSTANTIATE_TEST_CASE_P(ConfigProtect, VDBMergerTestConfigProtect, testing::Values(std::string("config_protect")));
+
+struct VDBMergerErrorTest : VDBMergerTest { };
+
+TEST_P(VDBMergerErrorTest, Error)
+{
+    EXPECT_THROW(merger->check(), FSMergerError);
+}
+
+INSTANTIATE_TEST_CASE_P(Errors, VDBMergerErrorTest, testing::Values(
+            std::string("dir_newline"),
+            std::string("sym_newline"),
+            std::string("sym_target_newline"),
+            std::string("sym_arrow"),
+            std::string("sym_arrow2")
+            ));
 
