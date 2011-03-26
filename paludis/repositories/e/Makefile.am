@@ -470,12 +470,14 @@ fix_locked_dependencies_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 ebuild_flat_metadata_cache_TEST_SOURCES = ebuild_flat_metadata_cache_TEST.cc
 
 ebuild_flat_metadata_cache_TEST_LDADD = \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 ebuild_flat_metadata_cache_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
+ebuild_flat_metadata_cache_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
 EXTRA_DIST = \
 	aa_visitor_TEST.cc \
