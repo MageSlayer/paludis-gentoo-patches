@@ -22,9 +22,12 @@
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
+
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
@@ -32,8 +35,10 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
-#include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/stringify.hh>
+
+#include <paludis/standard_output_manager.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
@@ -44,15 +49,15 @@
 #include <paludis/selection.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
 #include <functional>
 #include <set>
 #include <string>
 
 #include "config.h"
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
 namespace
@@ -82,125 +87,116 @@ namespace
     {
         return wp_yes;
     }
-}
 
-namespace test_cases
-{
-    struct ERepositoryInstallEAPIPBinTest : TestCase
+    struct ERepositoryInstallEAPIPBinTest :
+        testing::TestWithParam<std::string>
     {
-        const std::string base_eapi;
+        std::string base_eapi;
 
-        ERepositoryInstallEAPIPBinTest(const std::string & b) :
-            TestCase("install_eapi_pbin_1+" + b),
-            base_eapi(b)
+        void SetUp()
         {
+            base_eapi = GetParam();
         }
-
-        unsigned max_run_time() const
-        {
-            return 3000;
-        }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-
-        void run()
-        {
-            TestEnvironment env;
-            FSPath root(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "root");
-
-            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-            keys->insert("format", "e");
-            keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("repo" + base_eapi)));
-            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("repo" + base_eapi + "/profiles/profile")));
-            keys->insert("layout", "traditional");
-            keys->insert("eapi_when_unknown", "0");
-            keys->insert("eapi_when_unspecified", "0");
-            keys->insert("profile_eapi", "0");
-            keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
-            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "build"));
-            keys->insert("root", stringify(root));
-            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::bind(from_keys, keys, std::placeholders::_1)));
-            env.add_repository(1, repo);
-
-            std::shared_ptr<Map<std::string, std::string> > b_keys(std::make_shared<Map<std::string, std::string>>());
-            b_keys->insert("format", "e");
-            b_keys->insert("names_cache", "/var/empty");
-            b_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("binrepo" + base_eapi)));
-            b_keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("binrepo" + base_eapi + "/profiles/profile")));
-            b_keys->insert("layout", "traditional");
-            b_keys->insert("eapi_when_unknown", "0");
-            b_keys->insert("eapi_when_unspecified", "0");
-            b_keys->insert("profile_eapi", "0");
-            b_keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
-            b_keys->insert("binary_distdir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
-            b_keys->insert("binary_keywords_filter", "test");
-            b_keys->insert("binary_destination", "true");
-            b_keys->insert("master_repository", "repo" + base_eapi);
-            b_keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "build"));
-            b_keys->insert("root", stringify(root));
-            std::shared_ptr<Repository> b_repo(ERepository::repository_factory_create(&env,
-                        std::bind(from_keys, b_keys, std::placeholders::_1)));
-            env.add_repository(2, b_repo);
-
-            std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
-            v_keys->insert("format", "vdb");
-            v_keys->insert("names_cache", "/var/empty");
-            v_keys->insert("provides_cache", "/var/empty");
-            v_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "vdb"));
-            v_keys->insert("root", stringify(root));
-            std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
-                        std::bind(from_keys, keys, std::placeholders::_1)));
-            env.add_repository(1, v_repo);
-
-            {
-                InstallAction bin_action(make_named_values<InstallActionOptions>(
-                            n::destination() = b_repo,
-                            n::make_output_manager() = &make_standard_output_manager,
-                            n::perform_uninstall() = &cannot_uninstall,
-                            n::replacing() = std::make_shared<PackageIDSequence>(),
-                            n::want_phase() = &want_all_phases
-                            ));
-
-                TestMessageSuffix suffix("prefix", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/simple-1",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(), base_eapi);
-                id->perform_action(bin_action);
-            }
-
-            TEST_CHECK(! (root / ("installed-" + base_eapi)).stat().exists());
-            b_repo->invalidate();
-
-            {
-                InstallAction install_action(make_named_values<InstallActionOptions>(
-                            n::destination() = v_repo,
-                            n::make_output_manager() = &make_standard_output_manager,
-                            n::perform_uninstall() = &cannot_uninstall,
-                            n::replacing() = std::make_shared<PackageIDSequence>(),
-                            n::want_phase() = &want_all_phases
-                            ));
-
-                TestMessageSuffix suffix("prefix", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/simple-1::binrepo" + base_eapi,
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_EQUAL(visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value(),
-                        "pbin-1+" + base_eapi);
-                id->perform_action(install_action);
-            }
-
-            TEST_CHECK((root / ("installed-" + base_eapi)).stat().exists());
-        }
-    } test_e_repository_install_eapi_pbin_0("0"), test_e_repository_install_eapi_pbin_1("1"),
-      test_e_repository_install_eapi_pbin_2("2"), test_e_repository_install_eapi_pbin_3("3"),
-      test_e_repository_install_eapi_pbin_4("4"), test_e_repository_install_eapi_pbin_exheres_0("exheres-0");
+    };
 }
+
+TEST_P(ERepositoryInstallEAPIPBinTest, Works)
+{
+    TestEnvironment env;
+    FSPath root(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "root");
+
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("repo" + base_eapi)));
+    keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("repo" + base_eapi + "/profiles/profile")));
+    keys->insert("layout", "traditional");
+    keys->insert("eapi_when_unknown", "0");
+    keys->insert("eapi_when_unspecified", "0");
+    keys->insert("profile_eapi", "0");
+    keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "build"));
+    keys->insert("root", stringify(root));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
+
+    std::shared_ptr<Map<std::string, std::string> > b_keys(std::make_shared<Map<std::string, std::string>>());
+    b_keys->insert("format", "e");
+    b_keys->insert("names_cache", "/var/empty");
+    b_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("binrepo" + base_eapi)));
+    b_keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("binrepo" + base_eapi + "/profiles/profile")));
+    b_keys->insert("layout", "traditional");
+    b_keys->insert("eapi_when_unknown", "0");
+    b_keys->insert("eapi_when_unspecified", "0");
+    b_keys->insert("profile_eapi", "0");
+    b_keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
+    b_keys->insert("binary_distdir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
+    b_keys->insert("binary_keywords_filter", "test");
+    b_keys->insert("binary_destination", "true");
+    b_keys->insert("master_repository", "repo" + base_eapi);
+    b_keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "build"));
+    b_keys->insert("root", stringify(root));
+    std::shared_ptr<Repository> b_repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, b_keys, std::placeholders::_1)));
+    env.add_repository(2, b_repo);
+
+    std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
+    v_keys->insert("format", "vdb");
+    v_keys->insert("names_cache", "/var/empty");
+    v_keys->insert("provides_cache", "/var/empty");
+    v_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "vdb"));
+    v_keys->insert("root", stringify(root));
+    std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, v_repo);
+
+    {
+        InstallAction bin_action(make_named_values<InstallActionOptions>(
+                    n::destination() = b_repo,
+                    n::make_output_manager() = &make_standard_output_manager,
+                    n::perform_uninstall() = &cannot_uninstall,
+                    n::replacing() = std::make_shared<PackageIDSequence>(),
+                    n::want_phase() = &want_all_phases
+                    ));
+
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/simple-1",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ(base_eapi, visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        id->perform_action(bin_action);
+    }
+
+    EXPECT_TRUE(! (root / ("installed-" + base_eapi)).stat().exists());
+    b_repo->invalidate();
+
+    {
+        InstallAction install_action(make_named_values<InstallActionOptions>(
+                    n::destination() = v_repo,
+                    n::make_output_manager() = &make_standard_output_manager,
+                    n::perform_uninstall() = &cannot_uninstall,
+                    n::replacing() = std::make_shared<PackageIDSequence>(),
+                    n::want_phase() = &want_all_phases
+                    ));
+
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/simple-1::binrepo" + base_eapi,
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("pbin-1+" + base_eapi, visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        id->perform_action(install_action);
+    }
+
+    EXPECT_TRUE((root / ("installed-" + base_eapi)).stat().exists());
+}
+
+INSTANTIATE_TEST_CASE_P(Works, ERepositoryInstallEAPIPBinTest, testing::Values(
+            std::string("0"),
+            std::string("1"),
+            std::string("2"),
+            std::string("3"),
+            std::string("4"),
+            std::string("exheres-0")
+            ));
 
