@@ -434,12 +434,14 @@ aa_visitor_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 fetch_visitor_TEST_SOURCES = fetch_visitor_TEST.cc
 
 fetch_visitor_TEST_LDADD = \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 fetch_visitor_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
+fetch_visitor_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
 source_uri_finder_TEST_SOURCES = source_uri_finder_TEST.cc
 

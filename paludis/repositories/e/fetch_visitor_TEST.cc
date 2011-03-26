@@ -20,25 +20,30 @@
 #include <paludis/repositories/e/fetch_visitor.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
+
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
-#include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/stringify.hh>
+
+#include <paludis/standard_output_manager.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
+
 #include <iterator>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 using namespace paludis::erepository;
 
@@ -56,45 +61,32 @@ namespace
     }
 }
 
-namespace test_cases
+TEST(FetchVisitor, Works)
 {
-    struct FetchVisitorTest : TestCase
-    {
-        FetchVisitorTest() : TestCase("fetch visitor") { }
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-        void run()
-        {
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+    ASSERT_TRUE(FSPath("fetch_visitor_TEST_dir/in/input1").stat().exists());
+    ASSERT_TRUE(! FSPath("fetch_visitor_TEST_dir/out/input1").stat().exists());
 
-            TEST_CHECK(FSPath("fetch_visitor_TEST_dir/in/input1").stat().exists());
-            TEST_CHECK(! FSPath("fetch_visitor_TEST_dir/out/input1").stat().exists());
+    const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("exheres-0"));
+    FetchVisitor v(&env, *env[selection::RequireExactlyOne(
+                generator::Matches(parse_user_package_dep_spec("=cat/pkg-1",
+                        &env, { }), make_null_shared_ptr(), { }))]->begin(),
+            *eapi, FSPath("fetch_visitor_TEST_dir/out"),
+            false, false, "test", std::make_shared<URIListedThenMirrorsLabel>("listed-then-mirrors"), false,
+            std::make_shared<StandardOutputManager>(), get_mirrors_fn);
+    parse_fetchable_uri("file:///" + stringify(FSPath("fetch_visitor_TEST_dir/in/input1").realpath()), &env, *eapi, false)->top()->accept(v);
 
-            const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("exheres-0"));
-            FetchVisitor v(&env, *env[selection::RequireExactlyOne(
-                        generator::Matches(parse_user_package_dep_spec("=cat/pkg-1",
-                                &env, { }), make_null_shared_ptr(), { }))]->begin(),
-                    *eapi, FSPath("fetch_visitor_TEST_dir/out"),
-                    false, false, "test", std::make_shared<URIListedThenMirrorsLabel>("listed-then-mirrors"), false,
-                    std::make_shared<StandardOutputManager>(), get_mirrors_fn);
-            parse_fetchable_uri("file:///" + stringify(FSPath("fetch_visitor_TEST_dir/in/input1").realpath()), &env, *eapi, false)->top()->accept(v);
-
-            TEST_CHECK(FSPath("fetch_visitor_TEST_dir/out/input1").stat().is_regular_file());
-            SafeIFStream f(FSPath("fetch_visitor_TEST_dir/out/input1"));
-            TEST_CHECK(f);
-            std::string s((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
-            TEST_CHECK_EQUAL(s, "contents of one\n");
-        }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-    } test_fetch_visitor;
+    ASSERT_TRUE(FSPath("fetch_visitor_TEST_dir/out/input1").stat().is_regular_file());
+    SafeIFStream f(FSPath("fetch_visitor_TEST_dir/out/input1"));
+    ASSERT_TRUE(f);
+    std::string s((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
+    EXPECT_EQ("contents of one\n", s);
 }
 
