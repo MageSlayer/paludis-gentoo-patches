@@ -22,17 +22,22 @@
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
+
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
-#include <paludis/standard_output_manager.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/util/safe_ifstream.hh>
+
+#include <paludis/standard_output_manager.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
@@ -43,15 +48,15 @@
 #include <paludis/selection.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
 #include <functional>
 #include <set>
 #include <string>
 
 #include "config.h"
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
 namespace
@@ -83,571 +88,498 @@ namespace
     }
 }
 
-namespace test_cases
+TEST(ERepository, InstallExheres0)
 {
-    struct ERepositoryInstallExheres0Test : TestCase
-    {
-        ERepositoryInstallExheres0Test() : TestCase("install_exheres_0") { }
-
-        unsigned max_run_time() const
-        {
-            return 3000;
-        }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-
-        void run()
-        {
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-            ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "yes", 1);
+    ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "yes", 1);
 #else
-            ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "", 1);
+    ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "", 1);
 #endif
-            TestEnvironment env;
-            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-            keys->insert("format", "e");
-            keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_exheres_0_dir" / "repo"));
-            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_exheres_0_dir" / "repo/profiles/profile"));
-            keys->insert("layout", "exheres");
-            keys->insert("eapi_when_unknown", "exheres-0");
-            keys->insert("eapi_when_unspecified", "exheres-0");
-            keys->insert("profile_eapi_when_unspecified", "exheres-0");
-            keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_exheres_0_dir" / "distdir"));
-            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_exheres_0_dir" / "build"));
-            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::bind(from_keys, keys, std::placeholders::_1)));
-            env.add_repository(1, repo);
+    TestEnvironment env;
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_exheres_0_dir" / "repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_exheres_0_dir" / "repo/profiles/profile"));
+    keys->insert("layout", "exheres");
+    keys->insert("eapi_when_unknown", "exheres-0");
+    keys->insert("eapi_when_unspecified", "exheres-0");
+    keys->insert("profile_eapi_when_unspecified", "exheres-0");
+    keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_exheres_0_dir" / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_exheres_0_dir" / "build"));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
 
-            std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
-                        make_named_values<FakeInstalledRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("installed"),
-                            n::suitable_destination() = true,
-                            n::supports_uninstall() = true
-                            )));
-            installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
-            installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
-            env.add_repository(2, installed_repo);
+    std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
+                make_named_values<FakeInstalledRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("installed"),
+                    n::suitable_destination() = true,
+                    n::supports_uninstall() = true
+                    )));
+    installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
+    installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
+    env.add_repository(2, installed_repo);
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-            std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
-            iv_keys->insert("root", "/");
-            iv_keys->insert("format", "installed_virtuals");
-            env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
-                        std::bind(from_keys, iv_keys, std::placeholders::_1)));
-            std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
-            v_keys->insert("format", "virtuals");
-            env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
-                        std::bind(from_keys, v_keys, std::placeholders::_1)));
+    std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
+    iv_keys->insert("root", "/");
+    iv_keys->insert("format", "installed_virtuals");
+    env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
+                std::bind(from_keys, iv_keys, std::placeholders::_1)));
+    std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
+    v_keys->insert("format", "virtuals");
+    env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
+                std::bind(from_keys, v_keys, std::placeholders::_1)));
 #endif
 
-            InstallAction action(make_named_values<InstallActionOptions>(
-                        n::destination() = installed_repo,
-                        n::make_output_manager() = &make_standard_output_manager,
-                        n::perform_uninstall() = &cannot_uninstall,
-                        n::replacing() = std::make_shared<PackageIDSequence>(),
-                        n::want_phase() = &want_all_phases
-                    ));
+    InstallAction action(make_named_values<InstallActionOptions>(
+                n::destination() = installed_repo,
+                n::make_output_manager() = &make_standard_output_manager,
+                n::perform_uninstall() = &cannot_uninstall,
+                n::replacing() = std::make_shared<PackageIDSequence>(),
+                n::want_phase() = &want_all_phases
+            ));
 
-            {
-                TestMessageSuffix suffix("in-ebuild die", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/in-ebuild-die",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/in-ebuild-die",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("in-subshell die", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/in-subshell-die",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/in-subshell-die",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("success", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/success",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/success",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("expatch success", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/expatch-success",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/expatch-success",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("expatch success-dir", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/expatch-success-dir",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/expatch-success-dir",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("expatch die", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/expatch-die",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/expatch-die",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("expatch unrecognised", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/expatch-unrecognised",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/expatch-unrecognised",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("nonfatal expatch fail", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-expatch-fail",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-expatch-fail",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("nonfatal expatch die", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-expatch-die",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-expatch-die",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("unpack die", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/unpack-die",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/unpack-die",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("nonfatal unpack fail", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-unpack-fail",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-unpack-fail",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("nonfatal unpack die", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-unpack-die",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-unpack-die",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("econf fail", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/econf-fail",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/econf-fail",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("nonfatal econf", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-econf",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-econf",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("nonfatal econf die", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-econf-die",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-econf-die",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("emake fail", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/emake-fail",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/emake-fail",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("nonfatal emake", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-emake",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-emake",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("nonfatal emake die", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-emake-die",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-emake-die",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("einstall fail", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/einstall-fail",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/einstall-fail",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("nonfatal einstall", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-einstall",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-einstall",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("nonfatal einstall die", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-einstall-die",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-einstall-die",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("keepdir success", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/keepdir-success",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/keepdir-success",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("keepdir fail", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/keepdir-fail",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/keepdir-fail",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("nonfatal keepdir", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-keepdir",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-keepdir",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("nonfatal keepdir die", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-keepdir-die",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-keepdir-die",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("dobin success", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/dobin-success",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/dobin-success",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("dobin fail", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/dobin-fail",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/dobin-fail",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("nonfatal dobin success", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-dobin-success",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-dobin-success",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("nonfatal dobin fail", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-dobin-fail",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-dobin-fail",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("nonfatal dobin die", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-dobin-die",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-dobin-die",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("herebin success", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/herebin-success",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/herebin-success",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("herebin fail", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/herebin-fail",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/herebin-fail",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("hereconfd success", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/hereconfd-success",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/hereconfd-success",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("hereconfd fail", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/hereconfd-fail",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/hereconfd-fail",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("hereenvd success", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/hereenvd-success",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/hereenvd-success",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("hereenvd fail", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/hereenvd-fail",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/hereenvd-fail",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("hereinitd success", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/hereinitd-success",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/hereinitd-success",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("hereinitd fail", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/hereinitd-fail",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/hereinitd-fail",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("hereins success", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/hereins-success",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/hereins-success",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("hereins fail", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/hereins-fail",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/hereins-fail",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("heresbin success", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/heresbin-success",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/heresbin-success",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("heresbin fail", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("cat/heresbin-fail",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("cat/heresbin-fail",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("best version", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/best-version-0",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/best-version-0",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("has version", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/has-version-0",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/has-version-0",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("match", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/match-0",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/match-0",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("econf phase", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/econf-phase-0",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/econf-phase-0",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("econf vars", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/econf-vars-0",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/econf-vars-0",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("expand vars", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/expand-vars-0",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/expand-vars-0",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("doman success", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/doman-success-0",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/doman-success-0",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("doman nofatal", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/doman-nonfatal-0",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/doman-nonfatal-0",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("doman failure", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/doman-failure-0",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/doman-failure-0",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("change globals", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/change-globals-0",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/change-globals-0",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("install", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/install-0",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                id->perform_action(action);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/install-0",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 
-            {
-                TestMessageSuffix suffix("install s", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/install-s-0",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/install-s-0",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 
-            {
-                TestMessageSuffix suffix("global optionq", true);
-                const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                                PackageDepSpec(parse_user_package_dep_spec("=cat/global-optionq-1",
-                                        &env, { })), make_null_shared_ptr(), { }))]->last());
-                TEST_CHECK(bool(id));
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
-            }
-        }
-    } test_e_repository_install_exheres_0;
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/global-optionq-1",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 }
 
