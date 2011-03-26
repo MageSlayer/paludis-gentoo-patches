@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 Piotr Jaroszyński
+ * Copyright (c) 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,26 +20,30 @@
 
 #include <paludis/repositories/e/vdb_unmerger.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/repositories/fake/fake_repository.hh>
+
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+
 #include <paludis/standard_output_manager.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
 #include <algorithm>
 
+#include <gtest/gtest.h>
+
 using namespace paludis;
-using namespace test;
 
 namespace
 {
@@ -82,405 +87,150 @@ namespace
         return result;
     }
 
-    class VDBUnmergerTest :
-        public TestCase
+    struct VDBUnmergerTest :
+        testing::TestWithParam<std::string>
     {
-        public:
-            const std::string what;
-            FSPath root_dir;
-            std::string target;
-            TestEnvironment env;
-            std::shared_ptr<Repository> repo;
-            std::shared_ptr<VDBUnmergerNoDisplay> unmerger;
+        std::string what;
+        FSPath root_dir;
+        std::string target;
+        TestEnvironment env;
+        std::shared_ptr<Repository> repo;
+        std::shared_ptr<VDBUnmergerNoDisplay> unmerger;
 
-            bool repeatable() const
-            {
-                return false;
-            }
+        VDBUnmergerTest() :
+            root_dir("vdb_unmerger_TEST_dir/root")
+        {
+        }
 
-        protected:
-            VDBUnmergerTest(const std::string & w) :
-                TestCase("unmerge '" + w + "' test"),
-                what(w),
-                root_dir("vdb_unmerger_TEST_dir/root"),
-                target(w)
-            {
-            }
+        void SetUp()
+        {
+            what = GetParam();
+            target = what;
 
-            virtual void main_run() = 0;
+            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+            keys->insert("format", "vdb");
+            keys->insert("names_cache", "/var/empty");
+            keys->insert("provides_cache", "/var/empty");
+            keys->insert("location", stringify(FSPath::cwd() / "vdb_unmerger_TEST_dir" / "repo"));
+            keys->insert("builddir", stringify(FSPath::cwd() / "vdb_unmerger_TEST_dir" / "build"));
+            repo = VDBRepository::repository_factory_create(&env, std::bind(from_keys, keys, std::placeholders::_1));
+            env.add_repository(0, repo);
 
-        public:
-            void run()
-            {
-                std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-                keys->insert("format", "vdb");
-                keys->insert("names_cache", "/var/empty");
-                keys->insert("provides_cache", "/var/empty");
-                keys->insert("location", stringify(FSPath::cwd() / "vdb_unmerger_TEST_dir" / "repo"));
-                keys->insert("builddir", stringify(FSPath::cwd() / "vdb_unmerger_TEST_dir" / "build"));
-                repo = VDBRepository::repository_factory_create(&env, std::bind(from_keys, keys, std::placeholders::_1));
-                env.add_repository(0, repo);
-
-                unmerger = std::make_shared<VDBUnmergerNoDisplay>(make_named_values<VDBUnmergerOptions>(
-                                n::config_protect() = "/protected_file /protected_dir",
-                                n::config_protect_mask() = "/protected_dir/unprotected_file /protected_dir/unprotected_dir",
-                                n::environment() = &env,
-                                n::ignore() = &ignore_nothing,
-                                n::output_manager() = std::make_shared<StandardOutputManager>(),
-                                n::package_id() = *env[selection::RequireExactlyOne(generator::Matches(
-                                            parse_user_package_dep_spec("cat/" + fix(what), &env, { }), make_null_shared_ptr(), { }))]->begin(),
-                                n::root() = root_dir
-                                ));
-
-                main_run();
-            }
+            unmerger = std::make_shared<VDBUnmergerNoDisplay>(make_named_values<VDBUnmergerOptions>(
+                            n::config_protect() = "/protected_file /protected_dir",
+                            n::config_protect_mask() = "/protected_dir/unprotected_file /protected_dir/unprotected_dir",
+                            n::environment() = &env,
+                            n::ignore() = &ignore_nothing,
+                            n::output_manager() = std::make_shared<StandardOutputManager>(),
+                            n::package_id() = *env[selection::RequireExactlyOne(generator::Matches(
+                                        parse_user_package_dep_spec("cat/" + fix(what), &env, { }), make_null_shared_ptr(), { }))]->begin(),
+                            n::root() = root_dir
+                            ));
+        }
     };
 }
 
-namespace test_cases
+struct VDBUnmergerTestRemovesAll : VDBUnmergerTest
 {
-    struct VDBUnmergerTestFileOk : VDBUnmergerTest
-    {
-        VDBUnmergerTestFileOk() : VDBUnmergerTest("file_ok") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_regular_file());
-
-            unmerger->unmerge();
-
-            TEST_CHECK(! (root_dir / target).stat().exists());
-        }
-    } test_vdb_unmerger_file_ok;
-
-    struct VDBUnmergerTestFileWithSpaces : VDBUnmergerTest
-    {
-        VDBUnmergerTestFileWithSpaces() : VDBUnmergerTest("file_ with spaces") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_regular_file());
-
-            unmerger->unmerge();
-
-            TEST_CHECK(! (root_dir / target).stat().exists());
-        }
-    } test_vdb_unmerger_file_with_spaces;
-
-    struct VDBUnmergerTestFileWithLotsOfSpaces : VDBUnmergerTest
-    {
-        VDBUnmergerTestFileWithLotsOfSpaces() : VDBUnmergerTest("file_ with lots  of   spaces") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_regular_file());
-
-            unmerger->unmerge();
-
-            TEST_CHECK(! (root_dir / target).stat().exists());
-        }
-    } test_vdb_unmerger_file_with_lots_of_spaces;
-
-    struct VDBUnmergerTestFileWithTrailingSpace : VDBUnmergerTest
-    {
-        VDBUnmergerTestFileWithTrailingSpace() : VDBUnmergerTest("file_ with trailing  space\t ") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_regular_file());
-
-            unmerger->unmerge();
-
-            TEST_CHECK(! (root_dir / target).stat().exists());
-        }
-    } test_vdb_unmerger_file_with_trailing_space;
-
-    struct VDBUnmergerTestFileBadType : VDBUnmergerTest
-    {
-        VDBUnmergerTestFileBadType() : VDBUnmergerTest("file_bad_type") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_directory());
-
-            unmerger->unmerge();
-
-            TEST_CHECK((root_dir / target).stat().is_directory());
-        }
-    } test_vdb_unmerger_file_bad_type;
-
-    struct VDBUnmergerTestFileBadMd5sum : VDBUnmergerTest
-    {
-        VDBUnmergerTestFileBadMd5sum() : VDBUnmergerTest("file_bad_md5sum") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_regular_file());
-
-            unmerger->unmerge();
-
-            TEST_CHECK((root_dir / target).stat().is_regular_file());
-        }
-    } test_vdb_unmerger_file_bad_md5sum;
-
-    struct VDBUnmergerTestFileBadMtime : VDBUnmergerTest
-    {
-        VDBUnmergerTestFileBadMtime() : VDBUnmergerTest("file_bad_mtime") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_regular_file());
-
-            unmerger->unmerge();
-
-            TEST_CHECK((root_dir / target).stat().is_regular_file());
-        }
-    } test_vdb_unmerger_file_bad_mtime;
-
-    struct VDBUnmergerTestFileReplacesDirectory : VDBUnmergerTest
-    {
-        VDBUnmergerTestFileReplacesDirectory() : VDBUnmergerTest("file_replaces_dir") { }
-
-        void main_run()
-        {
-            unmerger->unmerge();
-        }
-    } test_vdb_unmerger_file_replaces_directory;
-
-    struct VDBUnmergerTestDirOk : VDBUnmergerTest
-    {
-        VDBUnmergerTestDirOk() : VDBUnmergerTest("dir_ok") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_directory());
-
-            unmerger->unmerge();
-
-            TEST_CHECK(! (root_dir / target).stat().exists());
-        }
-    } test_vdb_unmerger_dir_ok;
-
-    struct VDBUnmergerTestDirWithSpaces : VDBUnmergerTest
-    {
-        VDBUnmergerTestDirWithSpaces() : VDBUnmergerTest("dir_ with spaces") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_directory());
-
-            unmerger->unmerge();
-
-            TEST_CHECK(! (root_dir / target).stat().exists());
-        }
-    } test_vdb_unmerger_dir_with_spaces;
-
-    struct VDBUnmergerTestDirWithLotsOfSpaces : VDBUnmergerTest
-    {
-        VDBUnmergerTestDirWithLotsOfSpaces() : VDBUnmergerTest("dir_ with lots  of   spaces") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_directory());
-
-            unmerger->unmerge();
-
-            TEST_CHECK(! (root_dir / target).stat().exists());
-        }
-    } test_vdb_unmerger_dir_with_lots_of_spaces;
-
-    struct VDBUnmergerTestDirBadType : VDBUnmergerTest
-    {
-        VDBUnmergerTestDirBadType() : VDBUnmergerTest("dir_bad_type") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_regular_file());
-
-            unmerger->unmerge();
-
-            TEST_CHECK((root_dir / target).stat().is_regular_file());
-        }
-    } test_vdb_unmerger_dir_bad_type;
-
-    struct VDBUnmergerTestDirNotEmpty : VDBUnmergerTest
-    {
-        VDBUnmergerTestDirNotEmpty() : VDBUnmergerTest("dir_not_empty") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_directory());
-
-            unmerger->unmerge();
-
-            TEST_CHECK((root_dir / target).stat().is_directory());
-        }
-    } test_vdb_unmerger_dir_not_empty;
-
-    struct VDBUnmergerTestSymOk : VDBUnmergerTest
-    {
-        VDBUnmergerTestSymOk() : VDBUnmergerTest("sym_ok") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_symlink());
-
-            unmerger->unmerge();
-
-            TEST_CHECK(! (root_dir / target).stat().exists());
-        }
-    } test_vdb_unmerger_sym_ok;
-
-    struct VDBUnmergerTestSymWithSpaces : VDBUnmergerTest
-    {
-        VDBUnmergerTestSymWithSpaces() : VDBUnmergerTest("sym_ with spaces") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_symlink());
-
-            unmerger->unmerge();
-
-            TEST_CHECK(! (root_dir / target).stat().exists());
-        }
-    } test_vdb_unmerger_sym_with_spaces;
-
-    struct VDBUnmergerTestSymWithLotsOfSpaces : VDBUnmergerTest
-    {
-        VDBUnmergerTestSymWithLotsOfSpaces() : VDBUnmergerTest("sym_ with lots  of   spaces") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_symlink());
-
-            unmerger->unmerge();
-
-            TEST_CHECK(! (root_dir / target).stat().exists());
-        }
-    } test_vdb_unmerger_sym_with_lots_of_spaces;
-
-    struct VDBUnmergerTestSymWithManyArrows : VDBUnmergerTest
-    {
-        VDBUnmergerTestSymWithManyArrows() : VDBUnmergerTest("sym with many arrows") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_symlink());
-
-            unmerger->unmerge();
-
-            TEST_CHECK(! (root_dir / target).stat().exists());
-        }
-    } test_vdb_unmerger_sym_with_many_arrows;
-
-    struct VDBUnmergerTestSymBadType : VDBUnmergerTest
-    {
-        VDBUnmergerTestSymBadType() : VDBUnmergerTest("sym_bad_type") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_regular_file());
-
-            unmerger->unmerge();
-
-            TEST_CHECK((root_dir / target).stat().is_regular_file());
-        }
-    } test_vdb_unmerger_sym_bad_type;
-
-    struct VDBUnmergerTestSymBadDst : VDBUnmergerTest
-    {
-        VDBUnmergerTestSymBadDst() : VDBUnmergerTest("sym_bad_dst") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_symlink());
-            TEST_CHECK(! (root_dir / "sym_dst_bad").stat().exists());
-
-            unmerger->unmerge();
-
-            TEST_CHECK((root_dir / target).stat().is_symlink());
-        }
-    } test_vdb_unmerger_sym_bad_dst;
-
-    struct VDBUnmergerTestSymBadMtime : VDBUnmergerTest
-    {
-        VDBUnmergerTestSymBadMtime() : VDBUnmergerTest("sym_bad_mtime") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_symlink());
-
-            unmerger->unmerge();
-
-            TEST_CHECK((root_dir / target).stat().is_symlink());
-
-        }
-    } test_vdb_unmerger_sym_bad_mtime;
-
-    struct VDBUnmergerTestSymBadEntry1 : VDBUnmergerTest
-    {
-        VDBUnmergerTestSymBadEntry1() : VDBUnmergerTest("sym_bad_entry_1") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_symlink());
-
-            unmerger->unmerge();
-
-            TEST_CHECK((root_dir / target).stat().is_symlink());
-        }
-    } test_vdb_unmerger_sym_bad_entry_1;
-
-    struct VDBUnmergerTestSymBadEntry2 : VDBUnmergerTest
-    {
-        VDBUnmergerTestSymBadEntry2() : VDBUnmergerTest("sym_bad_entry_2") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / target).stat().is_symlink());
-
-            unmerger->unmerge();
-
-            TEST_CHECK((root_dir / target).stat().is_symlink());
-        }
-    } test_vdb_unmerger_sym_bad_entry_2;
-
-    struct VDBUnmergerTestConfigProtect : VDBUnmergerTest
-    {
-        VDBUnmergerTestConfigProtect() : VDBUnmergerTest("config_protect") { }
-
-        void main_run()
-        {
-            TEST_CHECK((root_dir / "protected_file").stat().is_regular_file());
-            TEST_CHECK((root_dir / "unprotected_file").stat().is_regular_file());
-            TEST_CHECK((root_dir / "protected_file_not_really").stat().is_regular_file());
-
-            TEST_CHECK((root_dir / "protected_dir/protected_file").stat().is_regular_file());
-            TEST_CHECK((root_dir / "protected_dir/unprotected_file").stat().is_regular_file());
-            TEST_CHECK((root_dir / "protected_dir/unprotected_file_not_really").stat().is_regular_file());
-
-            TEST_CHECK((root_dir / "protected_dir/unprotected_dir/unprotected_file").stat().is_regular_file());
-
-            TEST_CHECK((root_dir / "protected_dir/unprotected_dir_not_really/protected_file").stat().is_regular_file());
-
-            TEST_CHECK((root_dir / "protected_dir_not_really/unprotected_file").stat().is_regular_file());
-
-            unmerger->unmerge();
-
-            TEST_CHECK((root_dir / "protected_file").stat().exists());
-            TEST_CHECK(! (root_dir / "unprotected_file").stat().exists());
-            TEST_CHECK(! (root_dir / "protected_file_not_really").stat().exists());
-
-            TEST_CHECK((root_dir / "protected_dir/protected_file").stat().exists());
-            TEST_CHECK(! (root_dir / "protected_dir/unprotected_file").stat().exists());
-            TEST_CHECK((root_dir / "protected_dir/unprotected_file_not_really").stat().exists());
-
-            TEST_CHECK(! (root_dir / "protected_dir/unprotected_dir/unprotected_file").stat().exists());
-
-            TEST_CHECK((root_dir / "protected_dir/unprotected_dir_not_really/protected_file").stat().exists());
-
-            TEST_CHECK(! (root_dir / "protected_dir_not_really/unprotected_file").stat().exists());
-        }
-    } test_vdb_unmerger_config_protect;
+};
+
+TEST_P(VDBUnmergerTestRemovesAll, RemovesAll)
+{
+    ASSERT_TRUE((root_dir / target).stat().exists());
+    unmerger->unmerge();
+    ASSERT_TRUE(! (root_dir / target).stat().exists());
 }
+
+INSTANTIATE_TEST_CASE_P(RemovesAll, VDBUnmergerTestRemovesAll, testing::Values(
+            std::string("file_ok"),
+            std::string("file_ with spaces"),
+            std::string("file_ with lots  of   spaces"),
+            std::string("file_ with trailing  space\t "),
+            std::string("dir_ok"),
+            std::string("dir_ with spaces"),
+            std::string("dir_ with lots  of   spaces"),
+            std::string("sym_ok"),
+            std::string("sym_ with spaces"),
+            std::string("sym_ with lots  of   spaces"),
+            std::string("sym with many arrows")
+            ));
+
+struct VDBUnmergerTestRemaining : VDBUnmergerTest
+{
+};
+
+TEST_P(VDBUnmergerTestRemaining, Remaining)
+{
+    ASSERT_TRUE((root_dir / target).stat().exists());
+    unmerger->unmerge();
+    ASSERT_TRUE((root_dir / target).stat().exists());
+}
+
+INSTANTIATE_TEST_CASE_P(Remaining, VDBUnmergerTestRemaining, testing::Values(
+            std::string("file_bad_type"),
+            std::string("file_bad_md5sum"),
+            std::string("file_bad_mtime"),
+            std::string("dir_bad_type"),
+            std::string("dir_not_empty"),
+            std::string("sym_bad_type"),
+            std::string("sym_bad_dst"),
+            std::string("sym_bad_mtime"),
+            std::string("sym_bad_entry_1"),
+            std::string("sym_bad_entry_2")
+            ));
+
+struct VDBUnmergerTestSucceeds : VDBUnmergerTest
+{
+};
+
+TEST_P(VDBUnmergerTestSucceeds, Succeeds)
+{
+    ASSERT_TRUE((root_dir / target).stat().exists());
+    unmerger->unmerge();
+}
+
+INSTANTIATE_TEST_CASE_P(Succeeds, VDBUnmergerTestSucceeds, testing::Values(
+            std::string("file_replaces_dir")
+            ));
+
+struct VDBUnmergerTestConfigProtect : VDBUnmergerTest
+{
+};
+
+TEST_P(VDBUnmergerTestConfigProtect, Works)
+{
+    EXPECT_TRUE((root_dir / "protected_file").stat().is_regular_file());
+    EXPECT_TRUE((root_dir / "unprotected_file").stat().is_regular_file());
+    EXPECT_TRUE((root_dir / "protected_file_not_really").stat().is_regular_file());
+
+    EXPECT_TRUE((root_dir / "protected_dir/protected_file").stat().is_regular_file());
+    EXPECT_TRUE((root_dir / "protected_dir/unprotected_file").stat().is_regular_file());
+    EXPECT_TRUE((root_dir / "protected_dir/unprotected_file_not_really").stat().is_regular_file());
+
+    EXPECT_TRUE((root_dir / "protected_dir/unprotected_dir/unprotected_file").stat().is_regular_file());
+
+    EXPECT_TRUE((root_dir / "protected_dir/unprotected_dir_not_really/protected_file").stat().is_regular_file());
+
+    EXPECT_TRUE((root_dir / "protected_dir_not_really/unprotected_file").stat().is_regular_file());
+
+    unmerger->unmerge();
+
+    EXPECT_TRUE((root_dir / "protected_file").stat().exists());
+    EXPECT_TRUE(! (root_dir / "unprotected_file").stat().exists());
+    EXPECT_TRUE(! (root_dir / "protected_file_not_really").stat().exists());
+
+    EXPECT_TRUE((root_dir / "protected_dir/protected_file").stat().exists());
+    EXPECT_TRUE(! (root_dir / "protected_dir/unprotected_file").stat().exists());
+    EXPECT_TRUE((root_dir / "protected_dir/unprotected_file_not_really").stat().exists());
+
+    EXPECT_TRUE(! (root_dir / "protected_dir/unprotected_dir/unprotected_file").stat().exists());
+
+    EXPECT_TRUE((root_dir / "protected_dir/unprotected_dir_not_really/protected_file").stat().exists());
+
+    EXPECT_TRUE(! (root_dir / "protected_dir_not_really/unprotected_file").stat().exists());
+}
+
+INSTANTIATE_TEST_CASE_P(Succeeds, VDBUnmergerTestConfigProtect, testing::Values(
+            std::string("config_protect")
+            ));
 
