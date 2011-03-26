@@ -26,13 +26,15 @@
 #include <paludis/repository.hh>
 #include <paludis/selection-fwd.hh>
 #include <paludis/filter-fwd.hh>
+#include <paludis/version_spec.hh>
+#include <paludis/contents.hh>
+#include <paludis/environment.hh>
+
 #include <paludis/util/exception.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/version_spec.hh>
-#include <paludis/contents.hh>
 
 #include <iosfwd>
 
@@ -49,169 +51,6 @@
 namespace paludis
 {
     /**
-     * A PackageDatabaseError is an error that occurs when performing some
-     * operation upon a PackageDatabase.
-     *
-     * \ingroup g_exceptions
-     * \ingroup g_package_database
-     */
-    class PALUDIS_VISIBLE PackageDatabaseError :
-        public Exception
-    {
-        protected:
-            /**
-             * Constructor.
-             */
-            PackageDatabaseError(const std::string & message) throw ();
-    };
-
-    /**
-     * A PackageDatabaseLookupError descendent is thrown if an error occurs
-     * when looking for something in a PackageDatabase.
-     *
-     * \ingroup g_exceptions
-     * \ingroup g_package_database
-     */
-    class PALUDIS_VISIBLE PackageDatabaseLookupError :
-        public PackageDatabaseError
-    {
-        protected:
-            /**
-             * Constructor.
-             */
-            PackageDatabaseLookupError(const std::string & message) throw ();
-    };
-
-    /**
-     * Thrown if a PackageDatabase query results in more than one matching
-     * Package.
-     *
-     * \ingroup g_exceptions
-     * \ingroup g_package_database
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE AmbiguousPackageNameError :
-        public PackageDatabaseLookupError
-    {
-        private:
-            struct NameData;
-            NameData * const _name_data;
-
-            std::string _name;
-
-        public:
-            ///\name Basic operations
-            ///\{
-
-            template <typename I_>
-            AmbiguousPackageNameError(const std::string & name,
-                    I_ begin, const I_ end) throw ();
-
-            AmbiguousPackageNameError(const AmbiguousPackageNameError &);
-
-            virtual ~AmbiguousPackageNameError() throw ();
-
-            ///\}
-
-            /**
-             * The name of the package.
-             */
-            const std::string & name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            ///\name Iterate over possible matches
-            ///\{
-
-            struct OptionsConstIteratorTag;
-            typedef WrappedForwardIterator<OptionsConstIteratorTag,
-                    const std::string> OptionsConstIterator;
-
-            OptionsConstIterator begin_options() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            OptionsConstIterator end_options() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            ///\}
-    };
-
-    /**
-     * Thrown if a Repository with the same name as an existing member is added
-     * to a PackageDatabase.
-     *
-     * \ingroup g_exceptions
-     * \ingroup g_package_database
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE DuplicateRepositoryError :
-        public PackageDatabaseError
-    {
-        public:
-            /**
-             * Constructor.
-             */
-            DuplicateRepositoryError(const std::string & name) throw ();
-    };
-
-    /**
-     * Thrown if there is no Package in a PackageDatabase with the given
-     * name.
-     *
-     * \ingroup g_exceptions
-     * \ingroup g_package_database
-     */
-    class PALUDIS_VISIBLE NoSuchPackageError :
-        public PackageDatabaseLookupError
-    {
-        private:
-            std::string _name;
-
-        public:
-            ///\name Basic operations
-            ///\{
-
-            NoSuchPackageError(const std::string & name) throw ();
-
-            virtual ~NoSuchPackageError() throw ()
-            {
-            }
-
-            ///\}
-
-            /**
-             * Name of the package.
-             */
-            const std::string & name() const
-            {
-                return _name;
-            }
-    };
-
-    /**
-     * Thrown if there is no Repository in a RepositoryDatabase with the given
-     * name.
-     *
-     * \ingroup g_exceptions
-     * \ingroup g_package_database
-     */
-    class PALUDIS_VISIBLE NoSuchRepositoryError : public PackageDatabaseLookupError
-    {
-        private:
-            const RepositoryName _name;
-
-        public:
-            ///\name Basic operations
-            ///\{
-
-            NoSuchRepositoryError(const RepositoryName &) throw ();
-
-            ~NoSuchRepositoryError() throw ();
-
-            ///\}
-
-            /**
-             * The name of our repository.
-             */
-            RepositoryName name() const;
-    };
-
-    /**
      * A PackageDatabase, which is owned by an Environment, contains a number of
      * Repository instances and supports various querying methods.
      *
@@ -219,18 +58,22 @@ namespace paludis
      */
     class PALUDIS_VISIBLE PackageDatabase
     {
+        friend class EnvironmentImplementation;
+        friend class WrappedForwardIteratorTraits<Environment::RepositoryConstIteratorTag>;
+
         private:
             Pimp<PackageDatabase> _imp;
 
             static const Filter & all_filter() PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
+            ~PackageDatabase();
+
+        protected:
             ///\name Basic operations
             ///\{
 
             explicit PackageDatabase(const Environment * const);
-
-            ~PackageDatabase();
 
             PackageDatabase(const PackageDatabase &) = delete;
             PackageDatabase & operator= (const PackageDatabase &) = delete;
@@ -299,7 +142,6 @@ namespace paludis
     };
 
     extern template class WrappedForwardIterator<PackageDatabase::RepositoryConstIteratorTag, const std::shared_ptr<Repository> >;
-    extern template class WrappedForwardIterator<AmbiguousPackageNameError::OptionsConstIteratorTag, const std::string>;
 }
 
 #endif

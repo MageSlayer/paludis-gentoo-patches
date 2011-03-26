@@ -32,7 +32,6 @@
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <functional>
 #include <unordered_map>
 #include <algorithm>
@@ -84,8 +83,7 @@ RepositoryRepositoryStore::~RepositoryRepositoryStore()
 void
 RepositoryRepositoryStore::_populate()
 {
-    for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
-            r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
+    for (auto r(_imp->env->begin_repositories()), r_end(_imp->env->end_repositories()) ; r != r_end ; ++r)
         _populate_one((*r)->name());
 }
 

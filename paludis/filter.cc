@@ -23,15 +23,17 @@
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
-#include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/match_package.hh>
+#include <paludis/repository.hh>
+#include <paludis/action_names.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/action_names.hh>
+#include <paludis/util/stringify.hh>
 
 using namespace paludis;
 
@@ -141,7 +143,7 @@ namespace
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
             {
-                if (env->package_database()->fetch_repository(*r)->some_ids_might_support_action(SupportsActionTest<A_>()))
+                if (env->fetch_repository(*r)->some_ids_might_support_action(SupportsActionTest<A_>()))
                     result->insert(*r);
             }
 
@@ -187,7 +189,7 @@ namespace
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
             {
-                if (env->package_database()->fetch_repository(*r)->some_ids_might_not_be_masked())
+                if (env->fetch_repository(*r)->some_ids_might_not_be_masked())
                     result->insert(*r);
             }
 
@@ -240,7 +242,7 @@ namespace
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
             {
-                const std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
+                const std::shared_ptr<const Repository> repo(env->fetch_repository(*r));
                 if (repo->installed_root_key() && (equal == (root == repo->installed_root_key()->value())))
                     result->insert(*r);
             }

@@ -39,9 +39,9 @@
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/visitor_cast.hh>
+#include <paludis/util/join.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
-#include <paludis/package_database.hh>
 
 #include <paludis/resolver/resolver_test.hh>
 #include <test/test_runner.hh>

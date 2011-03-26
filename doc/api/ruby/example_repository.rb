@@ -16,7 +16,7 @@ exit_status = 0
 env = EnvironmentFactory.instance.create(ExampleCommandLine.instance.environment)
 
 # For each repository
-env.package_database.repositories do |repo|
+env.repositories do |repo|
     # A repository is identified by its name.
     puts repo.name + ':'
 
@@ -33,7 +33,7 @@ env.package_database.repositories do |repo|
 
     # Repositories support various methods for querying categories,
     # packages, IDs and so on. These methods are used by
-    # PackageDatabase::query, but are also sometimes of direct use to
+    # Environment::[], but are also sometimes of direct use to
     # clients.
     puts "    Number of categories: ".ljust(31) + repo.category_names.length.to_s
     puts "    IDs for sys-apps/paludis: ".ljust(31) + repo.package_ids('sys-apps/paludis').join(' ')

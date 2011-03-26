@@ -39,8 +39,7 @@ int main(int argc, char * argv[])
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* For each repository... */
-        for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
-                r_end(env->package_database()->end_repositories()) ;
+        for (auto r(env->begin_repositories()), r_end(env->end_repositories()) ;
                 r != r_end ; ++r)
         {
             /* A repository is identified by its name. */

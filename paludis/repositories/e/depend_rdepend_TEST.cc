@@ -26,7 +26,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/repository.hh>
-#include <paludis/package_database.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/action.hh>
 #include <paludis/selection.hh>
@@ -120,7 +119,7 @@ namespace
             keys->insert("root", stringify(root));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
             v_keys->insert("format", "vdb");
@@ -130,17 +129,17 @@ namespace
             v_keys->insert("root", stringify(root));
             std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, v_repo);
+            env.add_repository(1, v_repo);
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
             std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
             iv_keys->insert("root", "/");
             iv_keys->insert("format", "installed_virtuals");
-            env.package_database()->add_repository(-2, RepositoryFactory::get_instance()->create(&env,
+            env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
                         std::bind(from_keys, iv_keys, std::placeholders::_1)));
             std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
             v_keys->insert("format", "virtuals");
-            env.package_database()->add_repository(-2, RepositoryFactory::get_instance()->create(&env,
+            env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
                         std::bind(from_keys, v_keys, std::placeholders::_1)));
 #endif
 

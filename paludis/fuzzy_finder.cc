@@ -18,11 +18,6 @@
  */
 
 #include <paludis/fuzzy_finder.hh>
-#include <paludis/util/pimp-impl.hh>
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/damerau_levenshtein.hh>
-#include <paludis/util/options.hh>
-#include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
 #include <paludis/package_id.hh>
@@ -33,8 +28,15 @@
 #include <paludis/filter_handler.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
+
+#include <paludis/util/pimp-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/damerau_levenshtein.hh>
+#include <paludis/util/options.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/sequence-impl.hh>
+
 #include <list>
 #include <algorithm>
 #include <set>
@@ -202,15 +204,14 @@ FuzzyRepositoriesFinder::FuzzyRepositoriesFinder(const Environment & e, const st
     if (0 != name.compare(0, 2, std::string("x-")))
     {
         RepositoryName xname(std::string("x-" + name));
-        if (e.package_database()->has_repository_named(xname))
+        if (e.has_repository_named(xname))
         {
             _imp->candidates.push_back(xname);
             return;
         }
     }
 
-    for (PackageDatabase::RepositoryConstIterator r(e.package_database()->begin_repositories()),
-            r_end(e.package_database()->end_repositories()) ; r != r_end ; ++r)
+    for (auto r(e.begin_repositories()), r_end(e.end_repositories()) ; r != r_end ; ++r)
         if (distance_calculator.distance_with(tolower_0_cost(stringify((*r)->name()))) <= threshold)
             _imp->candidates.push_back((*r)->name());
 }

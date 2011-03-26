@@ -28,12 +28,15 @@
 #include <paludis/repositories/e/can_skip_phase.hh>
 #include <paludis/repositories/e/e_stripper.hh>
 #include <paludis/repositories/e/ebuild.hh>
+
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/log.hh>
+#include <paludis/util/join.hh>
+
 #include <paludis/action.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/metadata_key.hh>

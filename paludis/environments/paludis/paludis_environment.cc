@@ -59,6 +59,7 @@
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_error.hh>
 #include <paludis/util/env_var_names.hh>
+#include <paludis/util/join.hh>
 
 #include <functional>
 #include <algorithm>
@@ -80,8 +81,6 @@ namespace paludis
 
         std::shared_ptr<PaludisConfig> config;
 
-        std::shared_ptr<PackageDatabase> package_database;
-
         mutable Mutex sets_mutex;
         mutable std::map<SetName, std::shared_ptr<const SetSpecTree> > sets;
 
@@ -91,10 +90,9 @@ namespace paludis
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > preferred_root_key;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > system_root_key;
 
-        Imp(PaludisEnvironment * const e, std::shared_ptr<PaludisConfig> c) :
+        Imp(std::shared_ptr<PaludisConfig> c) :
             done_hooks(false),
             config(c),
-            package_database(std::make_shared<PackageDatabase>(e)),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string>>("format", "Format", mkt_significant, "paludis")),
             config_location_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("conf_dir", "Config dir", mkt_normal,
                         FSPath(config->config_dir()))),
@@ -148,13 +146,13 @@ namespace paludis
 }
 
 PaludisEnvironment::PaludisEnvironment(const std::string & s) :
-    _imp(this, std::shared_ptr<PaludisConfig>(std::make_shared<PaludisConfig>(this, s)))
+    _imp(std::shared_ptr<PaludisConfig>(std::make_shared<PaludisConfig>(this, s)))
 {
     Context context("When loading paludis environment:");
 
     for (PaludisConfig::RepositoryConstIterator r(_imp->config->begin_repositories()),
             r_end(_imp->config->end_repositories()) ; r != r_end ; ++r)
-        _imp->package_database->add_repository(
+        add_repository(
                 RepositoryFactory::get_instance()->importance(this, *r),
                 RepositoryFactory::get_instance()->create(this, *r));
 
@@ -321,18 +319,6 @@ std::string
 PaludisEnvironment::config_dir() const
 {
     return _imp->config->config_dir();
-}
-
-std::shared_ptr<PackageDatabase>
-PaludisEnvironment::package_database()
-{
-    return _imp->package_database;
-}
-
-std::shared_ptr<const PackageDatabase>
-PaludisEnvironment::package_database() const
-{
-    return _imp->package_database;
 }
 
 std::string

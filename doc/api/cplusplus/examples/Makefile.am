@@ -22,7 +22,6 @@ noinst_PROGRAMS = \
 	example_mask \
 	example_repository \
 	example_match_package \
-	example_package_database \
 	example_selection \
 	example_version_operator \
 	example_version_spec \
@@ -111,12 +110,6 @@ example_match_package_LDADD = \
 
 example_selection_SOURCES = example_selection.cc
 example_selection_LDADD = \
-	libpaludisexamples.a \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la
-
-example_package_database_SOURCES = example_package_database.cc
-example_package_database_LDADD = \
 	libpaludisexamples.a \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la

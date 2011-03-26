@@ -146,7 +146,7 @@ if ARGV.empty?
     end
 end
 
-repositories = $env.package_database.repositories
+repositories = $env.repositories
 
 begin
     req = Net::HTTP::Get.new($laymanglobal_url.request_uri)

@@ -38,7 +38,6 @@ IF_PYTHON_TESTS = \
 	mask_TEST.py \
 	metadata_key_TEST.py \
 	name_TEST.py \
-	package_database_TEST.py \
 	package_id_TEST.py \
 	repository_TEST.py \
 	selection_TEST.py \
@@ -70,7 +69,6 @@ IF_PYTHON_SOURCES = \
 	name.cc \
 	nice_names-nn.hh nice_names-nn.cc \
 	log.cc \
-	package_database.cc \
 	package_id.cc \
 	repository.cc \
 	selection.cc \
@@ -89,7 +87,6 @@ EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	mask_TEST_setup.sh mask_TEST_cleanup.sh \
 	metadata_key_TEST_setup.sh metadata_key_TEST_cleanup.sh \
 	nice_names.nn \
-	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
 	package_id_TEST_setup.sh package_id_TEST_cleanup.sh \
 	repository_TEST_setup.sh repository_TEST_cleanup.sh \
 	paludis_output_wrapper.py

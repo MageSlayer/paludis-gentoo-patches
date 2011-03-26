@@ -915,7 +915,7 @@ namespace
      * GotASetNotAPackageDepSpec exception if the string is a set name and :no_disambiguation
      * to disallow disambiguation (require an explicit category). The Filter, if
      * provided, is used to restrict disambiguation as per
-     * PackageDatabase#fetch_unique_qualified_package_name.
+     * Environment#fetch_unique_qualified_package_name.
      *
      */
     VALUE paludis_parse_user_dep_spec(int argc, VALUE * argv, VALUE)

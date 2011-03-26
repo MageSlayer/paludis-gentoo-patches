@@ -102,7 +102,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/package_database.hh>
 #include <paludis/filter.hh>
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>
@@ -689,7 +688,7 @@ namespace
         if (std::string::npos != s.find('/'))
             return QualifiedPackageName(s);
         else
-            return env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(s));
+            return env->fetch_unique_qualified_package_name(PackageNamePart(s));
     }
 
     struct AllowPretend

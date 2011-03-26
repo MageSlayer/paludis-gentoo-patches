@@ -37,7 +37,6 @@
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
-#include <paludis/package_database.hh>
 
 #include <paludis/resolver/resolver_test.hh>
 #include <test/test_runner.hh>

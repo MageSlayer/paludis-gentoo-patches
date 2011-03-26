@@ -18,13 +18,15 @@
  */
 
 #include <paludis/generator_handler.hh>
+#include <paludis/name.hh>
+#include <paludis/environment.hh>
+#include <paludis/repository.hh>
+
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/name.hh>
-#include <paludis/environment.hh>
-#include <paludis/package_database.hh>
+
 #include <functional>
 #include <algorithm>
 
@@ -41,7 +43,7 @@ AllGeneratorHandlerBase::repositories(
 {
     using namespace std::placeholders;
     std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
-    std::transform(env->package_database()->begin_repositories(), env->package_database()->end_repositories(),
+    std::transform(env->begin_repositories(), env->end_repositories(),
             result->inserter(), std::bind(&Repository::name, _1));
     return result;
 }
@@ -57,7 +59,7 @@ AllGeneratorHandlerBase::categories(
     for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
             r != r_end ; ++r)
     {
-        std::shared_ptr<const CategoryNamePartSet> cats(env->package_database()->fetch_repository(*r)->category_names(may_exclude));
+        std::shared_ptr<const CategoryNamePartSet> cats(env->fetch_repository(*r)->category_names(may_exclude));
         std::copy(cats->begin(), cats->end(), result->inserter());
     }
 
@@ -80,7 +82,7 @@ AllGeneratorHandlerBase::packages(
                 c != c_end ; ++c)
         {
             std::shared_ptr<const QualifiedPackageNameSet> pkgs(
-                    env->package_database()->fetch_repository(*r)->package_names(*c, may_exclude));
+                    env->fetch_repository(*r)->package_names(*c, may_exclude));
             std::copy(pkgs->begin(), pkgs->end(), result->inserter());
         }
     }
@@ -103,8 +105,7 @@ AllGeneratorHandlerBase::ids(
         for (QualifiedPackageNameSet::ConstIterator q(qpns->begin()), q_end(qpns->end()) ;
                 q != q_end ; ++q)
         {
-            std::shared_ptr<const PackageIDSequence> i(
-                    env->package_database()->fetch_repository(*r)->package_ids(*q, may_exclude));
+            std::shared_ptr<const PackageIDSequence> i(env->fetch_repository(*r)->package_ids(*q, may_exclude));
             std::copy(i->begin(), i->end(), result->inserter());
         }
     }

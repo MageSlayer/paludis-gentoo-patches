@@ -32,12 +32,13 @@
 #include <paludis/util/env_var_names.hh>
 
 #include <paludis/standard_output_manager.hh>
-#include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/hook.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/choice.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/repository.hh>
+
 
 #include <functional>
 #include <unordered_map>
@@ -53,15 +54,13 @@ namespace paludis
     template<>
     struct Imp<TestEnvironment>
     {
-        std::shared_ptr<PackageDatabase> package_database;
         std::unordered_map<std::string, Tribool> override_want_choice_enabled;
         FSPath root;
         Sets sets;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > preferred_root_key;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > system_root_key;
 
-        Imp(Environment * const e, const FSPath & r) :
-            package_database(std::make_shared<PackageDatabase>(e)),
+        Imp(const FSPath & r) :
             root(r),
             preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "Root", mkt_normal, root)),
             system_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("system_root", "System Root", mkt_normal, FSPath("/")))
@@ -71,14 +70,14 @@ namespace paludis
 }
 
 TestEnvironment::TestEnvironment() :
-    _imp(this, FSPath("/"))
+    _imp(FSPath("/"))
 {
     add_metadata_key(_imp->preferred_root_key);
     add_metadata_key(_imp->system_root_key);
 }
 
 TestEnvironment::TestEnvironment(const FSPath & r) :
-    _imp(this, r)
+    _imp(r)
 {
     add_metadata_key(_imp->preferred_root_key);
     add_metadata_key(_imp->system_root_key);
@@ -100,25 +99,13 @@ TestEnvironment::accept_license(const std::string &, const std::shared_ptr<const
     return true;
 }
 
-std::shared_ptr<PackageDatabase>
-TestEnvironment::package_database()
-{
-    return _imp->package_database;
-}
-
-std::shared_ptr<const PackageDatabase>
-TestEnvironment::package_database() const
-{
-    return _imp->package_database;
-}
-
 const std::shared_ptr<const PackageID>
 TestEnvironment::fetch_package_id(const QualifiedPackageName & q,
         const VersionSpec & v, const RepositoryName & r) const
 {
     using namespace std::placeholders;
 
-    std::shared_ptr<const PackageIDSequence> ids(package_database()->fetch_repository(r)->package_ids(q, { }));
+    std::shared_ptr<const PackageIDSequence> ids(fetch_repository(r)->package_ids(q, { }));
     for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
             i != i_end ; ++i)
         if (v == (*i)->version())

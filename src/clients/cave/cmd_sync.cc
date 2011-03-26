@@ -21,7 +21,6 @@
 #include "exceptions.hh"
 #include "colours.hh"
 #include "format_user_config.hh"
-#include <paludis/package_database.hh>
 #include <paludis/util/action_queue.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/named_value.hh>
@@ -32,6 +31,8 @@
 #include <paludis/util/executor.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/join.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/repository.hh>
@@ -139,7 +140,7 @@ namespace
             if (cmdline.a_sequential.specified())
                 return "";
 
-            const std::shared_ptr<const Repository> r(env->package_database()->fetch_repository(name));
+            const std::shared_ptr<const Repository> r(env->fetch_repository(name));
             if (r->sync_host_key() && r->sync_host_key()->value()->end() != r->sync_host_key()->value()->find(cmdline.a_suffix.argument()))
                 return r->sync_host_key()->value()->find(cmdline.a_suffix.argument())->second;
             else
@@ -172,7 +173,7 @@ namespace
                             make_null_shared_ptr()).max_exit_status())
                     throw SyncFailedError("Sync aborted by hook");
 
-                const std::shared_ptr<Repository> repo(env->package_database()->fetch_repository(name));
+                const std::shared_ptr<Repository> repo(env->fetch_repository(name));
                 CreateOutputManagerForRepositorySyncInfo info(repo->name(),
                         cmdline.a_sequential.specified() ? oe_exclusive : oe_with_others,
                         ClientOutputFeatures() + cof_summary_at_end);
@@ -200,7 +201,7 @@ namespace
 
             try
             {
-                const std::shared_ptr<Repository> repo(env->package_database()->fetch_repository(name));
+                const std::shared_ptr<Repository> repo(env->fetch_repository(name));
 
                 if (! repo->sync(cmdline.a_suffix.argument(), cmdline.a_revision.argument(), output_manager))
                     skipped = true;
@@ -375,13 +376,12 @@ SyncCommand::run(
                 p != p_end ; ++p)
         {
             RepositoryName n(*p);
-            if (! env->package_database()->has_repository_named(n))
+            if (! env->has_repository_named(n))
                 throw NothingMatching(*p);
             repos.insert(n);
         }
     else
-        for (PackageDatabase::RepositoryConstIterator p(env->package_database()->begin_repositories()),
-                p_end(env->package_database()->end_repositories()) ;
+        for (auto p(env->begin_repositories()), p_end(env->end_repositories()) ;
                 p != p_end ; ++p)
             repos.insert((*p)->name());
 
@@ -399,8 +399,7 @@ SyncCommand::run(
 
     retcode |= sync_these(env, cmdline, repos);
 
-    for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
-            r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
+    for (auto r(env->begin_repositories()), r_end(env->end_repositories()) ; r != r_end ; ++r)
     {
         (*r)->invalidate();
         (*r)->purge_invalid_cache();

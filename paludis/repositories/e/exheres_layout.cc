@@ -46,7 +46,6 @@
 #include <paludis/choice.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/package_id.hh>
-#include <paludis/package_database.hh>
 
 #include <unordered_map>
 #include <functional>

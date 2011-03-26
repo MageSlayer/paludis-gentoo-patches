@@ -14,7 +14,6 @@ Some classes you may find useful:
 
 - paludis::Environment, which is usually created using paludis::EnvironmentFactory
 - paludis::PackageID, which you can get from your paludis::Environment by using a paludis::Selection
-- paludis::PackageDatabase
 - paludis::Repository and the associated interface classes
 
 */

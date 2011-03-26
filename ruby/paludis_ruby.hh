@@ -80,7 +80,6 @@ namespace paludis
 
         /* constructors */
 
-        VALUE package_database_to_value(std::shared_ptr<PackageDatabase>);
         VALUE repository_to_value(std::shared_ptr<Repository>);
         VALUE version_spec_to_value(const VersionSpec &);
         VALUE package_id_to_value(std::shared_ptr<const PackageID>);

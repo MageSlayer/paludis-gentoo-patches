@@ -59,7 +59,6 @@ paludis-*.*.*.tar.bz2
 /doc/api/cplusplus/examples/example_match_package
 /doc/api/cplusplus/examples/example_metadata_key
 /doc/api/cplusplus/examples/example_name
-/doc/api/cplusplus/examples/example_package_database
 /doc/api/cplusplus/examples/example_package_id
 /doc/api/cplusplus/examples/example_repository
 /doc/api/cplusplus/examples/example_selection

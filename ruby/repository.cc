@@ -615,7 +615,7 @@ namespace
         /*
          * Document-class: Paludis::Repository
          *
-         * A Repository provides a representation of a physical repository to a PackageDatabase.
+         * A Repository provides a representation of a physical repository to an Environment.
          */
         c_repository = rb_define_class_under(paludis_module(), "Repository", rb_cObject);
         rb_funcall(c_repository, rb_intern("private_class_method"), 1, rb_str_new2("new"));

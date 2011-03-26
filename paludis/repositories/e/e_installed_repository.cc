@@ -24,6 +24,7 @@
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/ebuild.hh>
 #include <paludis/repositories/e/e_repository.hh>
+
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
@@ -39,6 +40,8 @@
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/process.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/join.hh>
+
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -139,7 +142,7 @@ EInstalledRepository::some_ids_might_not_be_masked() const
 bool
 EInstalledRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
-    auto repo(_imp->params.environment()->package_database()->fetch_repository(id->repository_name()));
+    auto repo(_imp->params.environment()->fetch_repository(id->repository_name()));
     std::string f(repo->format_key() ? repo->format_key()->value() : "");
     return f == "e" || f == "ebuild" || f == "exheres" || f == "portage";
 }
@@ -311,10 +314,10 @@ EInstalledRepository::perform_info(
                     o != o_end ; ++o)
             {
                 RepositoryName rn(*o);
-                if (_imp->params.environment()->package_database()->has_repository_named(rn))
+                if (_imp->params.environment()->has_repository_named(rn))
                 {
                     const std::shared_ptr<const Repository> r(
-                            _imp->params.environment()->package_database()->fetch_repository(rn));
+                            _imp->params.environment()->fetch_repository(rn));
                     Repository::MetadataConstIterator m(r->find_metadata("info_vars"));
                     if (r->end_metadata() != m)
                     {
@@ -333,9 +336,7 @@ EInstalledRepository::perform_info(
         /* try to find an info_vars file from any repo */
         if (! i)
         {
-            for (PackageDatabase::RepositoryConstIterator
-                    r(_imp->params.environment()->package_database()->begin_repositories()),
-                    r_end(_imp->params.environment()->package_database()->end_repositories()) ;
+            for (auto r(_imp->params.environment()->begin_repositories()), r_end(_imp->params.environment()->end_repositories()) ;
                     r != r_end ; ++r)
             {
                 Repository::MetadataConstIterator m((*r)->find_metadata("info_vars"));

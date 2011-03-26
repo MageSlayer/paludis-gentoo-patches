@@ -51,10 +51,6 @@ class TestCase_01_Environments(unittest.TestCase):
     def test_03_subclass(self):
         self.assert_(isinstance(NoConfigEnvironment(repo), Environment))
 
-    def test_06_package_database(self):
-        self.assert_(isinstance(self.e.package_database, PackageDatabase))
-        self.assert_(isinstance(self.nce.package_database, PackageDatabase))
-
     def test_07_sets(self):
         self.assert_(isinstance(self.e.set("everything"), AllDepSpec))
         self.assert_(isinstance(self.nce.set("everything"), AllDepSpec))
@@ -73,9 +69,28 @@ class TestCase_01_Environments(unittest.TestCase):
     def test_12_config_dir(self):
         self.assert_(isinstance(self.e.config_dir, str))
 
+    def test_23_fech_unique_qpn(self):
+        self.assertEqual(str(QualifiedPackageName("foo/bar")), str(self.e.fetch_unique_qualified_package_name("bar")))
+        self.assertEqual(str(QualifiedPackageName("foo/bar")), str(self.e.fetch_unique_qualified_package_name("bar",
+            Filter.SupportsInstallAction())))
+
+    def test_24_exceptions(self):
+        self.assertRaises(NoSuchPackageError, self.e.fetch_unique_qualified_package_name, "baz")
+        self.assertRaises(NoSuchPackageError, self.e.fetch_unique_qualified_package_name, "foobarbaz")
+        self.assertRaises(NoSuchPackageError, self.e.fetch_unique_qualified_package_name, "bar",
+                Filter.SupportsUninstallAction())
+
+    def test_26_repositories(self):
+        if os.environ.get("PALUDIS_ENABLE_VIRTUALS_REPOSITORY") == "yes":
+            self.assert_(self.e.more_important_than("testrepo", "virtuals"))
+            self.assert_(not self.e.more_important_than("virtuals", "testrepo"))
+            self.assertRaises(NoSuchRepositoryError, self.e.fetch_repository, "blah")
+
+            self.assertEqual(len(list(self.e.repositories)), 3)
+
 class TestCase_03_TestEnvironment(unittest.TestCase):
     def test_01_create(self):
-        env = TestEnvironment()
+        e = TestEnvironment()
 
 class TestCase_04_Environment_subclassingd(unittest.TestCase):
     class SubEnv(EnvironmentImplementation):

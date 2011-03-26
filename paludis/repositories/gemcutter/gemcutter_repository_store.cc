@@ -34,7 +34,6 @@
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <functional>
 #include <unordered_map>
 #include <algorithm>

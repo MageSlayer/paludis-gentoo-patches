@@ -18,7 +18,6 @@
  */
 
 #include <paludis/repository_name_cache.hh>
-#include <paludis/package_database.hh>
 
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -39,7 +38,7 @@ TEST(RepositoryNameCache, Empty)
                     n::environment() = &env,
                     n::name() = RepositoryName("repo")
                     )));
-    env.package_database()->add_repository(10, repo);
+    env.add_repository(10, repo);
 
     RepositoryNameCache cache(FSPath("/var/empty"), repo.get());
     EXPECT_TRUE(! cache.usable());
@@ -52,7 +51,7 @@ TEST(RepositoryNameCache, NotGenerated)
                     n::environment() = &env,
                     n::name() = RepositoryName("repo")
                     )));
-    env.package_database()->add_repository(10, repo);
+    env.add_repository(10, repo);
 
     RepositoryNameCache cache(FSPath("repository_name_cache_TEST_dir/not_generated"), repo.get());
     EXPECT_TRUE(cache.usable());
@@ -67,7 +66,7 @@ TEST(RepositoryNameCache, NotExisting)
                     n::environment() = &env,
                     n::name() = RepositoryName("repo")
                     )));
-    env.package_database()->add_repository(10, repo);
+    env.add_repository(10, repo);
 
     RepositoryNameCache cache(FSPath("repository_name_cache_TEST_dir/not_existing"), repo.get());
     EXPECT_TRUE(cache.usable());
@@ -82,7 +81,7 @@ TEST(RepositoryNameCache, OldFormat)
                     n::environment() = &env,
                     n::name() = RepositoryName("repo")
                     )));
-    env.package_database()->add_repository(10, repo);
+    env.add_repository(10, repo);
 
     RepositoryNameCache cache(FSPath("repository_name_cache_TEST_dir/old_format"), repo.get());
     EXPECT_TRUE(cache.usable());
@@ -97,7 +96,7 @@ TEST(RepositoryNameCache, BadRepo)
                     n::environment() = &env,
                     n::name() = RepositoryName("repo")
                     )));
-    env.package_database()->add_repository(10, repo);
+    env.add_repository(10, repo);
 
     RepositoryNameCache cache(FSPath("repository_name_cache_TEST_dir/bad_repo"), repo.get());
     EXPECT_TRUE(cache.usable());
@@ -112,7 +111,7 @@ TEST(RepositoryNameCache, Good)
                     n::environment() = &env,
                     n::name() = RepositoryName("repo")
                     )));
-    env.package_database()->add_repository(10, repo);
+    env.add_repository(10, repo);
 
     RepositoryNameCache cache(FSPath("repository_name_cache_TEST_dir/good_repo"), repo.get());
     EXPECT_TRUE(cache.usable());
@@ -135,7 +134,7 @@ TEST(RepositoryNameCache, Generate)
                     n::environment() = &env,
                     n::name() = RepositoryName("repo")
                     )));
-    env.package_database()->add_repository(10, repo);
+    env.add_repository(10, repo);
 
     RepositoryNameCache cache(FSPath("repository_name_cache_TEST_dir/generated"), repo.get());
     repo->add_package(QualifiedPackageName("bar/foo"));

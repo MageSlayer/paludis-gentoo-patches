@@ -28,7 +28,6 @@
 #include <paludis/generator.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/name.hh>
-#include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/repository.hh>
 #include <paludis/selection.hh>

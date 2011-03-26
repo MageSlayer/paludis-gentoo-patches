@@ -35,6 +35,7 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/join.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 #include <iterator>
@@ -73,7 +74,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-1",
@@ -100,7 +101,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-stale-1",
@@ -128,7 +129,7 @@ namespace test_cases
             keys->insert("eapi_when_unknown", "1");
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-guessed-eapi-1",
@@ -155,7 +156,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-1",
@@ -185,7 +186,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-stale-1",
@@ -212,7 +213,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-wrong-1",
@@ -239,7 +240,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-gone-1",
@@ -266,7 +267,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-detection-1",
@@ -293,7 +294,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-1",
@@ -321,7 +322,7 @@ namespace test_cases
             keys->insert("eapi_when_unknown", "1");
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-guessed-eapi-1",
@@ -348,7 +349,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-guessed-eapi-extension-1",
@@ -375,7 +376,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-guessed-eapi-1",
@@ -402,7 +403,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-empty-1",
@@ -430,7 +431,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-stale-1",
@@ -457,7 +458,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-mtime-1",
@@ -484,7 +485,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-mtime-stale-1",
@@ -511,7 +512,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-bad-mtime-1",
@@ -538,7 +539,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-eapi-1",
@@ -565,7 +566,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-duplicate-key-1",
@@ -592,7 +593,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-1",
@@ -622,7 +623,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-stale-1",
@@ -649,7 +650,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-wrong-1",
@@ -675,7 +676,7 @@ namespace test_cases
             keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-gone-1",
@@ -702,7 +703,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-1",
@@ -732,7 +733,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-nonstandard-1",
@@ -762,7 +763,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-stale-1",
@@ -789,7 +790,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-wrong-1",
@@ -816,7 +817,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-gone-1",
@@ -843,7 +844,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-truncated-1",
@@ -877,7 +878,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-bad-mtime-1",
@@ -904,7 +905,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-spaces-1",
@@ -932,7 +933,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-1",
@@ -963,7 +964,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-percat-1",
@@ -994,7 +995,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-stale-1",
@@ -1022,7 +1023,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-wrong-1",
@@ -1050,7 +1051,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-gone-1",
@@ -1078,7 +1079,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-truncated-1",
@@ -1113,7 +1114,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-bad-mtime-1",
@@ -1141,7 +1142,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-spaces-1",
@@ -1175,7 +1176,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/write-1",
@@ -1210,7 +1211,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/write-eapi1-1",
@@ -1247,7 +1248,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/write-eclasses-1",
@@ -1283,7 +1284,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/write-exlibs-1",

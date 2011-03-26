@@ -47,7 +47,6 @@ BOOST_PYTHON_MODULE(paludis)
     expose_match_package();
     expose_package_id();
     expose_action();
-    expose_package_database();
     expose_repository();
     expose_filtered_generator();
     expose_generator();

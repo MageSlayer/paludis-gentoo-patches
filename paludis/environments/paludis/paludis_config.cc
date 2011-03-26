@@ -52,6 +52,8 @@
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_error.hh>
 #include <paludis/util/env_var_names.hh>
+#include <paludis/util/options.hh>
+#include <paludis/util/join.hh>
 
 #include <paludis/distribution.hh>
 #include <paludis/repository_factory.hh>

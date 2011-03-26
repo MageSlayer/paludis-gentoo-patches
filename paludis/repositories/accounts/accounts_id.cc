@@ -38,7 +38,6 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
-#include <paludis/package_database.hh>
 #include <paludis/action.hh>
 #include <paludis/user_dep_spec.hh>
 #include <algorithm>
@@ -561,7 +560,7 @@ AccountsID::perform_action(Action & action) const
             i != i_end ; ++i)
     {
         Context local_context("When cleaning '" + stringify(**i) + "':");
-        auto repo(_imp->env->package_database()->fetch_repository((*i)->repository_name()));
+        auto repo(_imp->env->fetch_repository((*i)->repository_name()));
         if (repo->format_key() && repo->format_key()->value() == "installed-accounts"
                 && (*i)->name() == name())
             continue;

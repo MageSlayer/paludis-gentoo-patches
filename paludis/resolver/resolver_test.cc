@@ -38,9 +38,9 @@
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/visitor_cast.hh>
+#include <paludis/util/join.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repository_factory.hh>
-#include <paludis/package_database.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
@@ -138,7 +138,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     keys->insert("builddir", stringify(FSPath::cwd() / ("resolver_TEST_" + t + "_dir") / "build"));
     repo = RepositoryFactory::get_instance()->create(&env,
             std::bind(from_keys, keys, std::placeholders::_1));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
 
     keys = std::make_shared<Map<std::string, std::string>>();
     keys->insert("format", "vdb");
@@ -148,7 +148,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
     keys->insert("builddir", stringify(FSPath::cwd() / ("resolver_TEST_" + t + "_dir") / "build"));
     inst_repo = RepositoryFactory::get_instance()->create(&env,
             std::bind(from_keys, keys, std::placeholders::_1));
-    env.package_database()->add_repository(1, inst_repo);
+    env.add_repository(1, inst_repo);
 
     fake_inst_repo = std::make_shared<FakeInstalledRepository>(
                 make_named_values<FakeInstalledRepositoryParams>(
@@ -157,11 +157,11 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
                     n::suitable_destination() = true,
                     n::supports_uninstall() = true
                     ));
-    env.package_database()->add_repository(1, fake_inst_repo);
+    env.add_repository(1, fake_inst_repo);
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
-    env.package_database()->add_repository(0, RepositoryFactory::get_instance()->create(&env, virtuals_repo_keys));
-    env.package_database()->add_repository(0, RepositoryFactory::get_instance()->create(&env, installed_virtuals_repo_keys));
+    env.add_repository(0, RepositoryFactory::get_instance()->create(&env, virtuals_repo_keys));
+    env.add_repository(0, RepositoryFactory::get_instance()->create(&env, installed_virtuals_repo_keys));
 #endif
 
     interest_in_spec_helper.set_follow_installed_dependencies(true);

@@ -18,6 +18,7 @@
  */
 
 #include <paludis/environments/no_config/no_config_environment.hh>
+
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -37,13 +38,16 @@
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
+#include <paludis/util/join.hh>
+
 #include <paludis/standard_output_manager.hh>
 #include <paludis/distribution.hh>
-#include <paludis/package_database.hh>
 #include <paludis/hook.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
+#include <paludis/repository.hh>
+
 #include <unordered_map>
 #include <functional>
 #include <algorithm>
@@ -73,14 +77,12 @@ namespace paludis
         std::shared_ptr<Repository> master_repo;
         std::list<std::shared_ptr<Repository> > extra_repos;
 
-        std::shared_ptr<PackageDatabase> package_database;
-
         std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > repository_dir_key;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > preferred_root_key;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > system_root_key;
 
-        Imp(NoConfigEnvironment * const env, const no_config_environment::Params & params);
+        Imp(const no_config_environment::Params & params);
         void initialise(NoConfigEnvironment * const env);
     };
 
@@ -149,14 +151,12 @@ namespace
     }
 }
 
-Imp<NoConfigEnvironment>::Imp(
-        NoConfigEnvironment * const env, const no_config_environment::Params & p) :
+Imp<NoConfigEnvironment>::Imp(const no_config_environment::Params & p) :
     params(p),
     top_level_dir(p.repository_dir()),
     write_cache(p.write_cache()),
     accept_unstable(p.accept_unstable()),
     is_vdb(is_vdb_repository(p.repository_dir(), p.repository_type())),
-    package_database(std::make_shared<PackageDatabase>(env)),
     format_key(std::make_shared<LiteralMetadataValueKey<std::string>>("format", "Format", mkt_significant, "no_config")),
     repository_dir_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("repository_dir", "Repository dir",
                 mkt_normal, p.repository_dir())),
@@ -291,15 +291,15 @@ Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
                 if (repo->name() == main_repository_name)
                 {
                     main_repo = repo;
-                    package_database->add_repository(3, repo);
+                    env->add_repository(3, repo);
                 }
                 else if (stringify(repo->name()) == params.master_repository_name())
                 {
                     master_repo = repo;
-                    package_database->add_repository(2, repo);
+                    env->add_repository(2, repo);
                 }
                 else
-                    package_database->add_repository(1, repo);
+                    env->add_repository(1, repo);
             }
         }
         catch (const NoGraphTopologicalOrderExistsError & x)
@@ -319,7 +319,7 @@ Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
         v_keys->insert("format", "virtuals");
         if ((*DistributionData::get_instance()->distribution_from_string(env->distribution())).support_old_style_virtuals())
-            package_database->add_repository(-2, RepositoryFactory::get_instance()->create(env,
+            env->add_repository(-2, RepositoryFactory::get_instance()->create(env,
                         std::bind(from_keys, v_keys, std::placeholders::_1)));
 #endif
     }
@@ -336,7 +336,7 @@ Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         keys->insert("provides_cache", "/var/empty");
         keys->insert("location", stringify(top_level_dir.realpath()));
 
-        package_database->add_repository(1, RepositoryFactory::get_instance()->create(env,
+        env->add_repository(1, RepositoryFactory::get_instance()->create(env,
                     std::bind(from_keys, keys, std::placeholders::_1)));
 
         std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
@@ -345,14 +345,14 @@ Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
         if ((*DistributionData::get_instance()->distribution_from_string(env->distribution())).support_old_style_virtuals())
-            package_database->add_repository(-2, RepositoryFactory::get_instance()->create(env,
+            env->add_repository(-2, RepositoryFactory::get_instance()->create(env,
                         std::bind(from_keys, iv_keys, std::placeholders::_1)));
 #endif
     }
 }
 
 NoConfigEnvironment::NoConfigEnvironment(const no_config_environment::Params & params) :
-    _imp(this, params)
+    _imp(params)
 {
     _imp->initialise(this);
 
@@ -406,18 +406,6 @@ std::shared_ptr<const Repository>
 NoConfigEnvironment::master_repository() const
 {
     return _imp->master_repo;
-}
-
-std::shared_ptr<PackageDatabase>
-NoConfigEnvironment::package_database()
-{
-    return _imp->package_database;
-}
-
-std::shared_ptr<const PackageDatabase>
-NoConfigEnvironment::package_database() const
-{
-    return _imp->package_database;
 }
 
 bool

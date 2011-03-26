@@ -21,7 +21,6 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 #include <paludis/environments/test/test_environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
@@ -30,6 +29,7 @@
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/join.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
@@ -40,6 +40,7 @@
 #include <paludis/action.hh>
 #include <paludis/choice.hh>
 #include <paludis/unformatted_pretty_printer.hh>
+#include <paludis/contents.hh>
 
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
@@ -146,7 +147,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> e1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
@@ -216,7 +217,7 @@ namespace test_cases
             keys->insert("world", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "world-no-match-no-eol"));
             std::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const PackageID> e1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
@@ -285,7 +286,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("vdb_repository_TEST_dir/root").realpath()));
             std::shared_ptr<Repository> repo1(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo1);
+            env.add_repository(1, repo1);
 
             keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "e");
@@ -301,7 +302,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("vdb_repository_TEST_dir/root").realpath()));
             std::shared_ptr<Repository> repo2(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(2, repo2);
+            env.add_repository(2, repo2);
 
             keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
@@ -312,7 +313,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("vdb_repository_TEST_dir/root").realpath()));
             std::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(0, vdb_repo);
+            env.add_repository(0, vdb_repo);
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         n::destination() = vdb_repo,
@@ -415,7 +416,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("vdb_repository_TEST_dir/root").realpath()));
             std::shared_ptr<Repository> repo1(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo1);
+            env.add_repository(1, repo1);
 
             keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
@@ -426,7 +427,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("vdb_repository_TEST_dir/root").realpath()));
             std::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(0, vdb_repo);
+            env.add_repository(0, vdb_repo);
 
             TEST_CHECK(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"), { })->empty());
 

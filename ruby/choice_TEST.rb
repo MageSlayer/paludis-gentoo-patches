@@ -2,7 +2,7 @@
 # vim: set sw=4 sts=4 et tw=80 :
 
 #
-# Copyright (c) 2008 Ciaran McCreesh
+# Copyright (c) 2008, 2011 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,7 +33,7 @@ module Paludis
         end
 
         def pid
-            env.package_database.fetch_repository("testrepo").package_ids("foo/bar").first
+            env.fetch_repository("testrepo").package_ids("foo/bar").first
         end
 
         def choices

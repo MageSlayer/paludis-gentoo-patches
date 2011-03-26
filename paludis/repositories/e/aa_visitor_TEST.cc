@@ -25,7 +25,6 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
-#include <paludis/package_database.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 
@@ -45,7 +44,7 @@ namespace test_cases
             std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &env,
                             n::name() = RepositoryName("repo"))));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             AAVisitor p1;

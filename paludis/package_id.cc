@@ -19,6 +19,11 @@
 
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/name.hh>
+#include <paludis/version_spec.hh>
+#include <paludis/repository.hh>
+#include <paludis/environment.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/sequence-impl.hh>
@@ -29,10 +34,7 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/name.hh>
-#include <paludis/version_spec.hh>
-#include <paludis/repository.hh>
-#include <paludis/package_database.hh>
+
 #include <functional>
 #include <unordered_map>
 #include <list>
@@ -170,12 +172,11 @@ namespace paludis
     };
 }
 
-PackageIDComparator::PackageIDComparator(const PackageDatabase * const db) :
+PackageIDComparator::PackageIDComparator(const Environment * const e) :
     _imp()
 {
     unsigned c(0);
-    for (PackageDatabase::RepositoryConstIterator r(db->begin_repositories()),
-            r_end(db->end_repositories()) ; r != r_end ; ++r)
+    for (auto r(e->begin_repositories()), r_end(e->end_repositories()) ; r != r_end ; ++r)
         _imp->m.insert(std::make_pair((*r)->name(), ++c));
 }
 

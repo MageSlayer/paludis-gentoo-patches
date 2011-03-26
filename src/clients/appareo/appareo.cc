@@ -39,7 +39,7 @@
 #include <paludis/filter.hh>
 #include <paludis/util/set.hh>
 #include <paludis/filtered_generator.hh>
-#include <paludis/package_database.hh>
+#include <paludis/repository.hh>
 #include <algorithm>
 #include <functional>
 #include <iostream>
@@ -255,7 +255,7 @@ main(int argc, char *argv[])
                     n::write_cache() = CommandLine::get_instance()->a_write_cache_dir.argument()
                     ));
 
-            IDMap results(PackageIDComparator(env.package_database().get()));
+            IDMap results{PackageIDComparator(&env)};
 
             unsigned success(0), total(0);
 

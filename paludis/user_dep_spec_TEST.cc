@@ -19,7 +19,6 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/package_database.hh>
 #include <paludis/match_package.hh>
 #include <paludis/version_requirements.hh>
 
@@ -31,6 +30,8 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/join.hh>
 
 #include <paludis/environments/test/test_environment.hh>
 
@@ -326,8 +327,8 @@ TEST_F(UserDepSpecTest, Disambiguation)
                     n::suitable_destination() = true,
                     n::supports_uninstall() = true
                     )));
-    env.package_database()->add_repository(1, fake);
-    env.package_database()->add_repository(2, fake_inst);
+    env.add_repository(1, fake);
+    env.add_repository(2, fake_inst);
     fake->add_version("cat", "pkg1", "1");
     fake->add_version("cat", "pkg2", "1");
     fake->add_version("dog", "pkg2", "1");
@@ -377,7 +378,7 @@ TEST(UserPackageDepSpec, Sets)
     std::shared_ptr<FakeRepository> fake(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                     n::environment() = &env,
                     n::name() = RepositoryName("fake"))));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
     fake->add_version("cat", "world", "1");
     fake->add_version("cat", "moon", "1");
 
@@ -405,7 +406,7 @@ TEST_F(UserDepSpecTest, Keys)
     std::shared_ptr<FakeRepository> fake(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                     n::environment() = &env,
                     n::name() = RepositoryName("fake"))));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
 
     std::shared_ptr<FakePackageID> pkg1(fake->add_version("cat", "pkg1", "1"));
     pkg1->keywords_key()->set_from_string("~a ~b");

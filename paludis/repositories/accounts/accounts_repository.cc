@@ -39,7 +39,6 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/hook.hh>
 #include <paludis/common_sets.hh>
-#include <paludis/package_database.hh>
 
 using namespace paludis;
 using namespace paludis::accounts_repository;
@@ -397,7 +396,7 @@ bool
 AccountsRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
     auto env(_imp->params_if_installed ? _imp->params_if_installed->environment() : _imp->params_if_not_installed->environment());
-    auto repo(env->package_database()->fetch_repository(id->repository_name()));
+    auto repo(env->fetch_repository(id->repository_name()));
     std::string f(repo->format_key() ? repo->format_key()->value() : "");
     return _imp->handler_if_installed && f == "accounts";
 }

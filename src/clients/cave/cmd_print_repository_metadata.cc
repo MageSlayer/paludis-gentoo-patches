@@ -28,7 +28,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/package_database.hh>
+#include <paludis/repository.hh>
 #include <iostream>
 #include <algorithm>
 
@@ -133,7 +133,7 @@ PrintRepositoryMetadataCommand::run(
         throw args::DoHelp("print-repository-metadata takes exactly one parameter");
 
     RepositoryName name(*cmdline.begin_parameters());
-    const std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(name));
+    const std::shared_ptr<const Repository> repo(env->fetch_repository(name));
 
     for (Repository::MetadataConstIterator m(repo->begin_metadata()), m_end(repo->end_metadata()) ;
             m != m_end ; ++m)

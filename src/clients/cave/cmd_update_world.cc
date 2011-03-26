@@ -25,8 +25,8 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/filter.hh>
@@ -126,7 +126,7 @@ UpdateWorldCommand::run(
             QualifiedPackageName q("x/x");
 
             if (std::string::npos == p->find('/'))
-                q = env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(*p));
+                q = env->fetch_unique_qualified_package_name(PackageNamePart(*p));
             else
                 q = QualifiedPackageName(*p);
 

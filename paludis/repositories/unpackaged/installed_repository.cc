@@ -47,7 +47,6 @@
 #include <paludis/selection.hh>
 #include <paludis/hook.hh>
 #include <paludis/common_sets.hh>
-#include <paludis/package_database.hh>
 #include <paludis/unformatted_pretty_printer.hh>
 #include <sstream>
 #include <sys/time.h>
@@ -273,7 +272,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     if (! is_suitable_destination_for(m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
-    auto repo(_imp->params.environment()->package_database()->fetch_repository(m.package_id()->repository_name()));
+    auto repo(_imp->params.environment()->fetch_repository(m.package_id()->repository_name()));
     FSPath install_under("/");
     {
         Repository::MetadataConstIterator k(repo->find_metadata("install_under"));
@@ -402,7 +401,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 bool
 InstalledUnpackagedRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
-    auto repo(_imp->params.environment()->package_database()->fetch_repository(id->repository_name()));
+    auto repo(_imp->params.environment()->fetch_repository(id->repository_name()));
     std::string f(repo->format_key() ? repo->format_key()->value() : "");
     return f == "unpackaged";
 }

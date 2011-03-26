@@ -129,36 +129,6 @@ module Paludis
         end
     end
 
-    class TestCase_EnvironmentPackageDatabase < Test::Unit::TestCase
-        def env
-            @env or @env = EnvironmentFactory.instance.create("")
-        end
-
-        def db
-            env.package_database
-        end
-
-        def test_package_database
-            assert_kind_of PackageDatabase, db
-            assert_equal "testrepo", db.fetch_repository("testrepo").name
-        end
-    end
-
-    class TestCase_NoConfigEnvironmentPackageDatabase < Test::Unit::TestCase
-        def env
-            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
-        end
-
-        def db
-            env.package_database
-        end
-
-        def test_package_database
-            assert_kind_of PackageDatabase, db
-            assert_equal "testrepo", db.fetch_repository("testrepo").name
-        end
-    end
-
     class TestCase_EnvironmentPackageSet < Test::Unit::TestCase
         def env
             @env or @env = EnvironmentFactory.instance.create("")
@@ -262,10 +232,6 @@ module Paludis
             @env or @env = EnvironmentFactory.instance.create("")
         end
 
-        def db
-            return env.package_database
-        end
-
         def pda
             Paludis::parse_user_package_dep_spec('=foo/bar-1.0', env, [])
         end
@@ -280,7 +246,7 @@ module Paludis
             end
         end
 
-        def test_package_database_query
+        def test_environment_query
             a = env[Selection::AllVersionsSorted.new(Generator::Matches.new(pda, nil, []))]
             assert_kind_of Array, a
             assert_equal 1, a.length
@@ -381,6 +347,95 @@ module Paludis
     class TestCase_TestEnvironment < Test::Unit::TestCase
         def test_create
             x = TestEnvironment.new()
+        end
+    end
+
+    class TestCase_EnvironmentFetchUniqueQualifiedPackageName < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentFactory.instance.create("")
+        end
+
+        def test_environment_fetch_unique_qualified_package_name
+            assert_equal "foo/bar", env.fetch_unique_qualified_package_name("bar")
+            assert_equal "foo/bar", env.fetch_unique_qualified_package_name("bar", Filter::SupportsAction.new(InstallAction))
+        end
+
+        def test_error
+            assert_raise NoSuchPackageError do
+                env.fetch_unique_qualified_package_name('foobarbaz')
+            end
+            assert_raise NoSuchPackageError do
+                env.fetch_unique_qualified_package_name('bar', Filter::SupportsAction.new(ConfigAction))
+            end
+        end
+
+        def test_bad
+            assert_raise ArgumentError do
+                env.fetch_unique_qualified_package_name
+            end
+            assert_raise ArgumentError do
+                env.fetch_unique_qualified_package_name(1, 2, 3)
+            end
+            assert_raise TypeError do
+                env.fetch_unique_qualified_package_name([])
+            end
+            assert_raise TypeError do
+                env.fetch_unique_qualified_package_name('bar', 123)
+            end
+        end
+    end
+
+    class TestCase_EnvironmentRepositories < Test::Unit::TestCase
+        def env
+            @env or @env = EnvironmentFactory.instance.create("")
+        end
+
+        def test_repositories
+            if ENV["PALUDIS_ENABLE_VIRTUALS_REPOSITORY"] == "yes" then
+                assert_equal 3, env.repositories.length
+            else
+                assert_equal 1, env.repositories.length
+            end
+
+            a = env.repositories.find_all do | repo |
+                repo.name == "testrepo"
+            end
+            assert_equal 1, a.length
+
+            a = env.repositories.find_all do | repo |
+                repo.name == "foorepo"
+            end
+            assert a.empty?
+
+            assert_equal nil, env.repositories {|repo| assert_kind_of Repository, repo}
+        end
+
+        def test_fetch_repository
+            assert_equal "testrepo", env.fetch_repository("testrepo").name
+
+            assert_raise Paludis::NoSuchRepositoryError do
+                env.fetch_repository("barrepo")
+            end
+        end
+
+        def test_more_important_than
+            if ENV["PALUDIS_ENABLE_VIRTUALS_REPOSITORY"] == "yes" then
+                assert env.more_important_than('testrepo', 'virtuals')
+                assert ! env.more_important_than('virtuals', 'testrepo')
+            elsif ENV["PALUDIS_ENABLE_VIRTUALS_REPOSITORY"] == "no" then
+            else
+                throw "oops"
+            end
+        end
+
+        def test_has_repository_named?
+            assert env.has_repository_named?('testrepo')
+            if ENV["PALUDIS_ENABLE_VIRTUALS_REPOSITORY"] == "yes" then
+                assert env.has_repository_named?('virtuals')
+            else
+                assert ! env.has_repository_named?('virtuals')
+            end
+            assert ! env.has_repository_named?('foobarbaz')
         end
     end
 end

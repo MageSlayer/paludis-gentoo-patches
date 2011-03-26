@@ -26,6 +26,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/join.hh>
 #include <paludis/unformatted_pretty_printer.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -63,7 +64,7 @@ namespace test_cases
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const SetNameSet> sets_list(env.set_names());
             TEST_CHECK_EQUAL(join(sets_list->begin(), sets_list->end(), " "), "everything insecurity "
@@ -99,8 +100,8 @@ namespace test_cases
                             n::supports_uninstall() = true
                             )));
             installed->add_version("cat-two", "bar", "1.5");
-            env.package_database()->add_repository(0, installed);
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(0, installed);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const SetSpecTree> set1(env.set(SetName("set1::test-repo-1")));
             TEST_CHECK(bool(set1));
@@ -131,7 +132,7 @@ namespace test_cases
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<const SetSpecTree> insecurity(env.set(SetName("insecurity::test-repo-1")));
             UnformattedPrettyPrinter ff;
@@ -162,7 +163,7 @@ namespace test_cases
             keys->insert("profiles", "e_repository_sets_TEST_dir/repo1/profiles/profile");
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<FakeInstalledRepository> installed(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
                             n::environment() = &env,
@@ -175,7 +176,7 @@ namespace test_cases
             installed->add_version("cat-three", "baz", "1.0");
             installed->add_version("cat-four", "xyzzy", "1.1.0")->set_slot(SlotName("1"));
             installed->add_version("cat-four", "xyzzy", "2.0.1")->set_slot(SlotName("2"));
-            env.package_database()->add_repository(0, installed);
+            env.add_repository(0, installed);
 
             std::shared_ptr<const SetSpecTree> security(env.set(SetName("security::test-repo-1")));
             UnformattedPrettyPrinter ff;

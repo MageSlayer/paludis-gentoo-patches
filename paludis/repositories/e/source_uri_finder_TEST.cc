@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,7 +23,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/package_database.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 
@@ -58,7 +57,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             SourceURIFinder f(&env, repo.get(), "http://example.com/path/input", "output", "monkey",
                     get_mirrors_fn);
@@ -88,7 +87,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             SourceURIFinder f(&env, repo.get(), "mirror://example/path/input", "output", "repo", get_mirrors_fn);
             URIMirrorsThenListedLabel label("mirrors-then-listed");

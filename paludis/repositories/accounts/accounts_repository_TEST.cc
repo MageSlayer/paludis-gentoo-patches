@@ -32,7 +32,6 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/package_id.hh>
-#include <paludis/package_database.hh>
 
 #include <memory>
 
@@ -49,6 +48,6 @@ TEST(AccountsRepository, Creation)
                     n::environment() = &env,
                     n::name() = RepositoryName("accounts")
                 )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
     EXPECT_EQ("accounts", stringify(repo->name()));
 }

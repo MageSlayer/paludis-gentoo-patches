@@ -19,8 +19,7 @@
 
 #include <paludis/repositories/unpackaged/installed_id.hh>
 #include <paludis/repositories/unpackaged/installed_repository.hh>
-#include <paludis/ndbam.hh>
-#include <paludis/ndbam_unmerger.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/stringify.hh>
@@ -35,10 +34,13 @@
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/join.hh>
+
+#include <paludis/ndbam.hh>
+#include <paludis/ndbam_unmerger.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/package_database.hh>
 #include <paludis/contents.hh>
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
@@ -50,6 +52,7 @@
 #include <paludis/always_enabled_dependency_label.hh>
 #include <paludis/pretty_printer.hh>
 #include <paludis/call_pretty_printer.hh>
+
 #include <functional>
 
 using namespace paludis;
@@ -825,7 +828,7 @@ InstalledUnpackagedID::uninstall(const bool replace,
 {
     Context context("When uninstalling '" + stringify(*this) + "':");
 
-    auto repo(_imp->env->package_database()->fetch_repository(repository_name()));
+    auto repo(_imp->env->fetch_repository(repository_name()));
     bool last((! replace) && (! if_for_install_id));
     if (last)
     {

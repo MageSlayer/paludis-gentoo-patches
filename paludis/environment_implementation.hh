@@ -123,7 +123,7 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual QualifiedPackageName fetch_unique_qualified_package_name(
-                    const PackageNamePart &, const Filter &, const bool disambiguate) const
+                    const PackageNamePart &, const Filter & = all_filter(), const bool disambiguate = true) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool more_important_than(const RepositoryName &, const RepositoryName &) const

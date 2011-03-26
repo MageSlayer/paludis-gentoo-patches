@@ -22,7 +22,6 @@
 
 #include <paludis/environments/test/test_environment.hh>
 
-#include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
 #include <paludis/metadata_key.hh>
@@ -85,7 +84,7 @@ TEST(UnpackagedRepository, Members)
                     n::strip() = indeterminate,
                     n::version() = VersionSpec("1.0", { })
                     )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
 
     const std::shared_ptr<const PackageIDSequence> ids(
             env[selection::AllVersionsSorted(generator::All())]);
@@ -111,7 +110,7 @@ TEST(UnpackagedRepository, Metadata)
                     n::strip() = indeterminate,
                     n::version() = VersionSpec("1.0", { })
                 )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
 
     const std::shared_ptr<const PackageID> id(
             *env[selection::RequireExactlyOne(generator::All())]->begin());
@@ -143,7 +142,7 @@ TEST(UnpackagedRepository, Masks)
                     n::strip() = indeterminate,
                     n::version() = VersionSpec("1.0", { })
                 )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
 
     const std::shared_ptr<const PackageID> id(
             *env[selection::RequireExactlyOne(generator::All())]->begin());
@@ -170,7 +169,7 @@ TEST(UnpackagedRepository, Actions)
                     n::strip() = indeterminate,
                     n::version() = VersionSpec("1.0", { })
                 )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
 
     EXPECT_TRUE(repo->some_ids_might_support_action(SupportsActionTest<InstallAction>()));
     EXPECT_TRUE(! repo->some_ids_might_support_action(SupportsActionTest<ConfigAction>()));
@@ -208,7 +207,7 @@ TEST(UnpackagedRepository, Install)
                     n::strip() = indeterminate,
                     n::version() = VersionSpec("1.0", { })
                 )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
 
     std::shared_ptr<Repository> installed_repo(std::make_shared<InstalledUnpackagedRepository>(
                 RepositoryName("installed-unpackaged"),
@@ -217,7 +216,7 @@ TEST(UnpackagedRepository, Install)
                     n::location() = FSPath("unpackaged_repository_TEST_dir/installed"),
                     n::root() = FSPath("unpackaged_repository_TEST_dir/root")
                 )));
-    env.package_database()->add_repository(0, installed_repo);
+    env.add_repository(0, installed_repo);
 
     EXPECT_TRUE(! FSPath("unpackaged_repository_TEST_dir/root/first").stat().is_regular_file());
 
@@ -256,7 +255,7 @@ TEST(UnpackagedRepository, InstallUnder)
                     n::strip() = indeterminate,
                     n::version() = VersionSpec("1.0", { })
                     )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
 
     std::shared_ptr<Repository> installed_repo(std::make_shared<InstalledUnpackagedRepository>(
                 RepositoryName("installed-unpackaged"),
@@ -265,7 +264,7 @@ TEST(UnpackagedRepository, InstallUnder)
                     n::location() = FSPath("unpackaged_repository_TEST_dir/under_installed"),
                     n::root() = FSPath("unpackaged_repository_TEST_dir/under_root")
                 )));
-    env.package_database()->add_repository(0, installed_repo);
+    env.add_repository(0, installed_repo);
 
     EXPECT_TRUE(! FSPath("unpackaged_repository_TEST_dir/under_root/magic/pixie/first").stat().is_regular_file());
 

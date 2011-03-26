@@ -28,7 +28,6 @@
 #include <paludis/about.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/action.hh>
-#include <paludis/package_database.hh>
 #include <ruby.h>
 #include <list>
 #include <ctype.h>
@@ -56,8 +55,6 @@ namespace
     static VALUE c_package_name_part_error;
     static VALUE c_bad_version_spec_error;
     static VALUE c_package_dep_spec_error;
-    static VALUE c_package_database_error;
-    static VALUE c_package_database_lookup_error;
     static VALUE c_ambiguous_package_name_error;
     static VALUE c_no_such_package_error;
     static VALUE c_no_such_repository_error;
@@ -204,10 +201,6 @@ void paludis::ruby::exception_to_ruby_exception(const std::exception & ee)
         rb_raise(c_no_such_package_error, dynamic_cast<const paludis::NoSuchPackageError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::NoSuchRepositoryError *>(&ee))
         rb_raise(c_no_such_repository_error, dynamic_cast<const paludis::NoSuchRepositoryError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::PackageDatabaseLookupError *>(&ee))
-        rb_raise(c_package_database_lookup_error, dynamic_cast<const paludis::PackageDatabaseLookupError *>(&ee)->message().c_str());
-    else if (0 != dynamic_cast<const paludis::PackageDatabaseError *>(&ee))
-        rb_raise(c_package_database_error, dynamic_cast<const paludis::PackageDatabaseError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::ConfigFileError *>(&ee))
         rb_raise(c_config_file_error, dynamic_cast<const paludis::ConfigFileError *>(&ee)->message().c_str());
     else if (0 != dynamic_cast<const paludis::ConfigurationError *>(&ee))
@@ -315,10 +308,8 @@ void PALUDIS_VISIBLE paludis::ruby::init()
     c_package_name_part_error = rb_define_class_under(c_paludis_module, "PackageNamePartError", c_name_error);
     c_bad_version_spec_error = rb_define_class_under(c_paludis_module, "BadVersionSpecError", c_name_error);
     c_package_dep_spec_error = rb_define_class_under(c_paludis_module, "PackageDepSpecError", rb_eRuntimeError);
-    c_package_database_error = rb_define_class_under(c_paludis_module, "PackageDatabaseError", rb_eRuntimeError);
-    c_package_database_lookup_error = rb_define_class_under(c_paludis_module, "PackageDatabaseLookupError", c_package_database_error);
-    c_no_such_package_error = rb_define_class_under(c_paludis_module, "NoSuchPackageError", c_package_database_lookup_error);
-    c_no_such_repository_error = rb_define_class_under(c_paludis_module, "NoSuchRepositoryError", c_package_database_lookup_error);
+    c_no_such_package_error = rb_define_class_under(c_paludis_module, "NoSuchPackageError", rb_eRuntimeError);
+    c_no_such_repository_error = rb_define_class_under(c_paludis_module, "NoSuchRepositoryError", rb_eRuntimeError);
     c_configuration_error = rb_define_class_under(c_paludis_module, "ConfigurationError", rb_eRuntimeError);
     c_config_file_error = rb_define_class_under(c_paludis_module, "ConfigFileError", c_configuration_error);
 
@@ -335,9 +326,9 @@ void PALUDIS_VISIBLE paludis::ruby::init()
     /*
      * Document-class: Paludis::AmbiguousPackageNameError
      *
-     * Thrown if a PackageDatabase query results in more than one matching Package.
+     * Thrown if an Environment query results in more than one matching Package.
      */
-    c_ambiguous_package_name_error = rb_define_class_under(c_paludis_module, "AmbiguousPackageNameError", c_package_database_lookup_error);
+    c_ambiguous_package_name_error = rb_define_class_under(c_paludis_module, "AmbiguousPackageNameError", rb_eRuntimeError);
     rb_define_method(c_ambiguous_package_name_error, "initialize", RUBY_FUNC_CAST(&ambiguous_package_name_error_init), -1);
     rb_define_method(c_ambiguous_package_name_error, "options", RUBY_FUNC_CAST(&ambiguous_package_name_error_failures), 0);
 

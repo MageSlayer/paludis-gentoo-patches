@@ -34,7 +34,6 @@
 #include <paludis/filter.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/package_database.hh>
 
 #include <memory>
 
@@ -62,7 +61,7 @@ TEST(UnwrittenRepository, Creation)
                     n::sync() = std::make_shared<Map<std::string, std::string> >(),
                     n::sync_options() = std::make_shared<Map<std::string, std::string> >()
                 )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
     EXPECT_EQ("unwritten", stringify(repo->name()));
 }
 
@@ -77,7 +76,7 @@ TEST(UnwrittenRepository, Contents)
                     n::sync() = std::make_shared<Map<std::string, std::string> >(),
                     n::sync_options() = std::make_shared<Map<std::string, std::string> >()
                 )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
     EXPECT_EQ("unwritten", stringify(repo->name()));
 
     std::shared_ptr<const PackageIDSequence> contents(

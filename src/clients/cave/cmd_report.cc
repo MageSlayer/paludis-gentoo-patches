@@ -27,7 +27,6 @@
 
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/filter.hh>
@@ -50,6 +49,8 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/join.hh>
 
 #include <paludis/resolver/collect_purges.hh>
 #include <paludis/resolver/collect_installed.hh>

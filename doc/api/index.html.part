@@ -135,13 +135,6 @@ how concepts map on to different language bindings.</p>
         <td>How to use name classes</td>
     </tr>
     <tr>
-        <td>example_package_database</td>
-        <td><a href="cplusplus/examples.html">C++</a></td>
-        <td><a href="ruby/example_package_database.html">Ruby</a></td>
-        <td></td>
-        <td>How to use PackageDatabase</td>
-    </tr>
-    <tr>
         <td>example_package_id</td>
         <td><a href="cplusplus/examples.html">C++</a></td>
         <td><a href="ruby/example_package_id.html">Ruby</a></td>

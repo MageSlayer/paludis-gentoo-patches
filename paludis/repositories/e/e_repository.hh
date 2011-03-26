@@ -21,7 +21,6 @@
 #define PALUDIS_GUARD_PALUDIS_E_REPOSITORY_HH 1
 
 #include <paludis/repository.hh>
-#include <paludis/package_database.hh>
 #include <paludis/mask-fwd.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/repositories/e/e_repository_params.hh>

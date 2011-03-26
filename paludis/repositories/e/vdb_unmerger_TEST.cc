@@ -29,7 +29,6 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/package_database.hh>
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/filtered_generator.hh>
@@ -120,7 +119,7 @@ namespace
                 keys->insert("location", stringify(FSPath::cwd() / "vdb_unmerger_TEST_dir" / "repo"));
                 keys->insert("builddir", stringify(FSPath::cwd() / "vdb_unmerger_TEST_dir" / "build"));
                 repo = VDBRepository::repository_factory_create(&env, std::bind(from_keys, keys, std::placeholders::_1));
-                env.package_database()->add_repository(0, repo);
+                env.add_repository(0, repo);
 
                 unmerger = std::make_shared<VDBUnmergerNoDisplay>(make_named_values<VDBUnmergerOptions>(
                                 n::config_protect() = "/protected_file /protected_dir",

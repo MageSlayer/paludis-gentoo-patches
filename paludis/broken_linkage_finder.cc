@@ -36,11 +36,11 @@
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_error.hh>
+#include <paludis/util/join.hh>
 
 #include <paludis/contents.hh>
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>

@@ -38,7 +38,6 @@
 #include <paludis/version_spec.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <functional>
 #include <unordered_map>
 #include <algorithm>
@@ -108,7 +107,7 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
 
     UnavailableRepositoryFile file(f);
 
-    bool has_repo(env->package_database()->has_repository_named(RepositoryName(file.repo_name())));
+    bool has_repo(env->has_repository_named(RepositoryName(file.repo_name())));
 
     if (! _imp->seen_repo_names.insert(file.repo_name()).second)
     {

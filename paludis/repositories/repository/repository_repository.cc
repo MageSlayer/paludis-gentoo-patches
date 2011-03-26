@@ -38,7 +38,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <list>
 
 using namespace paludis;
@@ -336,7 +335,7 @@ RepositoryRepository::sync_host_key() const
 bool
 RepositoryRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
-    auto repo(_imp->params.environment()->package_database()->fetch_repository(id->repository_name()));
+    auto repo(_imp->params.environment()->fetch_repository(id->repository_name()));
     std::string f(repo->format_key() ? repo->format_key()->value() : "");
     return f == "unavailable";
 }

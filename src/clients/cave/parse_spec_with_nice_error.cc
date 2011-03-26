@@ -19,7 +19,7 @@
 
 #include "parse_spec_with_nice_error.hh"
 #include "exceptions.hh"
-#include <paludis/package_database.hh>
+#include <paludis/environment.hh>
 
 using namespace paludis;
 using namespace cave;

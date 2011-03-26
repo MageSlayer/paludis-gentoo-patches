@@ -24,9 +24,10 @@
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
+
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/stringify.hh>
 
 #include <iostream>
 #include <set>
@@ -116,8 +117,8 @@ FixCacheCommand::run(
     if (cmdline.a_installable.specified())
     {
         all = false;
-        for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
-                r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories());
+        for (IndirectIterator<Environment::RepositoryConstIterator, const Repository>
+                r(env->begin_repositories()), r_end(env->end_repositories());
                 r != r_end; ++r)
             if (! r->installed_root_key())
                 repository_names.insert(r->name());
@@ -126,16 +127,16 @@ FixCacheCommand::run(
     if (cmdline.a_installed.specified())
     {
         all = false;
-        for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
-                r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories());
+        for (IndirectIterator<Environment::RepositoryConstIterator, const Repository>
+                r(env->begin_repositories()), r_end(env->end_repositories());
                 r != r_end; ++r)
             if (r->installed_root_key())
                 repository_names.insert(r->name());
     }
 
     if (all)
-        for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
-                r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories());
+        for (IndirectIterator<Environment::RepositoryConstIterator, const Repository>
+                r(env->begin_repositories()), r_end(env->end_repositories());
                 r != r_end; ++r)
             repository_names.insert(r->name());
 
@@ -143,7 +144,7 @@ FixCacheCommand::run(
             r != r_end; ++r)
     {
         cout << fuc(fs_fixing(), fv<'s'>(stringify(*r)));
-        const std::shared_ptr<Repository> repo(env->package_database()->fetch_repository(*r));
+        const std::shared_ptr<Repository> repo(env->fetch_repository(*r));
         repo->regenerate_cache();
     }
 

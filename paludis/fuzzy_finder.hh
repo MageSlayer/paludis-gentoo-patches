@@ -30,7 +30,7 @@
 /** \file
  * Declarations for paludis::FuzzyCandidatesFinder and paludis::FuzzyRepositoriesFinder
  *
- * \ingroup g_package_database
+ * \ingroup g_environment
  */
 
 namespace paludis
@@ -38,7 +38,7 @@ namespace paludis
     /**
      * Object to find package names to a given name
      *
-     * \ingroup g_package_database
+     * \ingroup g_environment
      */
     class PALUDIS_VISIBLE FuzzyCandidatesFinder
     {
@@ -70,7 +70,7 @@ namespace paludis
     /**
      * Object to find repositories similar to a given name
      *
-     * \ingroup g_package_database
+     * \ingroup g_environment
      */
     class PALUDIS_VISIBLE FuzzyRepositoriesFinder
     {

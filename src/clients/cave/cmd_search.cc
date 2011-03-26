@@ -28,7 +28,6 @@
 
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/filter.hh>
@@ -49,6 +48,7 @@
 #include <paludis/util/mutex.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
 
 #include <cstdlib>
 #include <iostream>

@@ -25,12 +25,12 @@
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/package_database.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/join.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <test/test_concepts.hh>
@@ -58,7 +58,7 @@ namespace test_cases
             r1->add_version("r1c1", "r1c1p2", "2");
             r1->add_version("rac1", "rac1pa", "1");
             r1->add_version("rac1", "rac1pa", "2");
-            env.package_database()->add_repository(11, r1);
+            env.add_repository(11, r1);
             TEST_CHECK(true);
 
             std::shared_ptr<FakeRepository> r2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
@@ -66,7 +66,7 @@ namespace test_cases
                             n::name() = RepositoryName("repo2"))));
             r2->add_version("rac1", "rac1pa", "1");
             r2->add_version("rac1", "rac1pa", "3");
-            env.package_database()->add_repository(10, r2);
+            env.add_repository(10, r2);
             TEST_CHECK(true);
 
             PackageDepSpec d1(parse_user_package_dep_spec("r1c1/r1c1p1", &env, { }));
@@ -125,7 +125,7 @@ namespace test_cases
             r1->add_version("cat", "pkg", "2")->set_slot(SlotName("c"));
             r1->add_version("cat", "pkg", "3")->set_slot(SlotName("c"));
             r1->add_version("cat", "pkg", "4")->set_slot(SlotName("a"));
-            env.package_database()->add_repository(10, r1);
+            env.add_repository(10, r1);
             TEST_CHECK(true);
 
             std::shared_ptr<FakeRepository> r2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
@@ -133,7 +133,7 @@ namespace test_cases
                             n::name() = RepositoryName("repo2"))));
             r2->add_version("cat", "pkg", "1")->set_slot(SlotName("a"));
             r2->add_version("cat", "pkg", "3")->set_slot(SlotName("b"));
-            env.package_database()->add_repository(5, r2);
+            env.add_repository(5, r2);
             TEST_CHECK(true);
 
             PackageDepSpec d(parse_user_package_dep_spec("cat/pkg", &env, { }));
@@ -158,7 +158,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo3"))));
             r3->add_version("cat", "other", "1")->set_slot(SlotName("a"));
-            env.package_database()->add_repository(5, r3);
+            env.add_repository(5, r3);
             TEST_CHECK(true);
 
             PackageDepSpec c(parse_user_package_dep_spec("cat/*", &env, { updso_allow_wildcards }));

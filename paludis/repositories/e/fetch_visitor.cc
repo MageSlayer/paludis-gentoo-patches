@@ -30,7 +30,6 @@
 #include <paludis/repository.hh>
 #include <paludis/about.hh>
 #include <paludis/output_manager.hh>
-#include <paludis/package_database.hh>
 
 #include <paludis/util/system.hh>
 #include <paludis/util/process.hh>
@@ -163,7 +162,7 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
     if (! *_imp->labels.begin())
         throw ActionFailedError("No fetch action label available");
 
-    auto repo(_imp->env->package_database()->fetch_repository(_imp->id->repository_name()));
+    auto repo(_imp->env->fetch_repository(_imp->id->repository_name()));
     SourceURIFinder source_uri_finder(_imp->env, repo.get(),
             node.spec()->original_url(), node.spec()->filename(), _imp->mirrors_name, _imp->get_mirrors_fn);
     (*_imp->labels.begin())->accept(source_uri_finder);

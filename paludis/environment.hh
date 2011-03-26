@@ -21,11 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_ENVIRONMENT_HH 1
 
 #include <paludis/environment-fwd.hh>
-#include <paludis/util/options-fwd.hh>
-#include <paludis/util/tribool-fwd.hh>
-#include <paludis/util/visitor.hh>
+
 #include <paludis/output_manager-fwd.hh>
-#include <paludis/util/pimp.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/hook-fwd.hh>
 #include <paludis/repository-fwd.hh>
@@ -33,7 +30,6 @@
 #include <paludis/spec_tree-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/mask-fwd.hh>
-#include <paludis/package_database-fwd.hh>
 #include <paludis/selection-fwd.hh>
 #include <paludis/selection_cache-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
@@ -41,6 +37,12 @@
 #include <paludis/create_output_manager_info-fwd.hh>
 #include <paludis/notifier_callback-fwd.hh>
 #include <paludis/filter-fwd.hh>
+
+#include <paludis/util/options-fwd.hh>
+#include <paludis/util/tribool-fwd.hh>
+#include <paludis/util/visitor.hh>
+#include <paludis/util/pimp.hh>
+#include <paludis/util/sequence-fwd.hh>
 
 /** \file
  * Declarations for the Environment class.
@@ -55,12 +57,134 @@
 namespace paludis
 {
     /**
+     * Thrown if a query results in more than one matching package.
+     *
+     * \ingroup g_exceptions
+     * \ingroup g_environment
+     */
+    class PALUDIS_VISIBLE AmbiguousPackageNameError :
+        public Exception
+    {
+        private:
+            struct NameData;
+            NameData * const _name_data;
+
+            std::string _name;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            AmbiguousPackageNameError(const std::string & name, const std::shared_ptr<const Sequence<std::string> > &) throw ();
+
+            AmbiguousPackageNameError(const AmbiguousPackageNameError &);
+
+            virtual ~AmbiguousPackageNameError() throw ();
+
+            ///\}
+
+            /**
+             * The name of the package.
+             */
+            const std::string & name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\name Iterate over possible matches
+            ///\{
+
+            struct OptionsConstIteratorTag;
+            typedef WrappedForwardIterator<OptionsConstIteratorTag, const std::string> OptionsConstIterator;
+
+            OptionsConstIterator begin_options() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            OptionsConstIterator end_options() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            ///\}
+    };
+
+    /**
+     * Thrown if a Repository with the same name as an existing member is added
+     * to an Environment.
+     *
+     * \ingroup g_exceptions
+     * \ingroup g_environment
+     */
+    class PALUDIS_VISIBLE DuplicateRepositoryError :
+        public Exception
+    {
+        public:
+            /**
+             * Constructor.
+             */
+            DuplicateRepositoryError(const std::string & name) throw ();
+    };
+
+    /**
+     * Thrown if there is no Package with the given name.
+     *
+     * \ingroup g_exceptions
+     * \ingroup g_environment
+     */
+    class PALUDIS_VISIBLE NoSuchPackageError :
+        public Exception
+    {
+        private:
+            std::string _name;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            NoSuchPackageError(const std::string & name) throw ();
+
+            virtual ~NoSuchPackageError() throw ()
+            {
+            }
+
+            ///\}
+
+            /**
+             * Name of the package.
+             */
+            const std::string & name() const
+            {
+                return _name;
+            }
+    };
+
+    /**
+     * Thrown if there is no Repository in a RepositoryDatabase with the given
+     * name.
+     *
+     * \ingroup g_exceptions
+     * \ingroup g_environment
+     */
+    class PALUDIS_VISIBLE NoSuchRepositoryError :
+        public Exception
+    {
+        private:
+            const RepositoryName _name;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            NoSuchRepositoryError(const RepositoryName &) throw ();
+
+            ~NoSuchRepositoryError() throw ();
+
+            ///\}
+
+            /**
+             * The name of our repository.
+             */
+            RepositoryName name() const;
+    };
+
+    /**
      * Represents a working environment, which contains an available packages
      * database and provides various methods for querying package visibility
      * and options.
      *
-     * Contains a PackageDatabase, which in turn contains a number of Repository
-     * instances.
+     * Holds a number of Repository instances.
      *
      * Environment itself is purely an interface class. Actual Environment
      * implementations usually descend from EnvironmentImplementation, which
@@ -69,15 +193,15 @@ namespace paludis
      * application.
      *
      * \ingroup g_environment
-     * \see PackageDatabase
      * \see EnvironmentFactory
      * \see EnvironmentImplementation
+     * \see Repository
      * \nosubgrouping
      */
     class PALUDIS_VISIBLE Environment :
         public MetadataKeyHolder
     {
-        private:
+        protected:
             static const Filter & all_filter() PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
@@ -251,15 +375,6 @@ namespace paludis
 
             ///\}
 
-            ///\name Database-related functions
-            ///\{
-
-            virtual std::shared_ptr<PackageDatabase> package_database()
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            virtual std::shared_ptr<const PackageDatabase> package_database() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
             /**
              * Select some packages.
              */
@@ -289,7 +404,7 @@ namespace paludis
             /**
              * Create a repository from a particular file.
              *
-             * Does not add the repository to the PackageDatabase.
+             * Does not add the repository to the Environment.
              *
              * This allows RepositoryRepository to add a repo config file, then
              * sync that repo. If you aren't RepositoryRepository you shouldn't
@@ -622,7 +737,8 @@ namespace paludis
 
     extern template class Pimp<CreateOutputManagerForRepositorySyncInfo>;
     extern template class Pimp<CreateOutputManagerForPackageIDActionInfo>;
-
+    extern template class WrappedForwardIterator<Environment::RepositoryConstIteratorTag, const std::shared_ptr<Repository> >;
+    extern template class WrappedForwardIterator<AmbiguousPackageNameError::OptionsConstIteratorTag, const std::string>;
 }
 
 #endif

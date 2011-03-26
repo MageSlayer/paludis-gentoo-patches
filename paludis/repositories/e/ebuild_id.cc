@@ -67,6 +67,7 @@
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/join.hh>
 
 #include <set>
 #include <iterator>
@@ -207,7 +208,7 @@ namespace
     {
         if (! g.empty())
             return g;
-        auto repo(env->package_database()->fetch_repository(repo_name));
+        auto repo(env->fetch_repository(repo_name));
         auto e_repo(std::static_pointer_cast<const ERepository>(repo));
         return e_repo->params().eapi_when_unknown();
     }
@@ -242,7 +243,7 @@ EbuildID::need_keys_added() const
 
     add_metadata_key(_imp->fs_location);
 
-    auto repo(_imp->environment->package_database()->fetch_repository(repository_name()));
+    auto repo(_imp->environment->fetch_repository(repository_name()));
     auto e_repo(std::static_pointer_cast<const ERepository>(repo));
     FSPath cache_file(e_repo->params().cache());
     cache_file /= stringify(name().category());
@@ -526,7 +527,7 @@ EbuildID::need_masks_added() const
         return;
     }
 
-    auto repo(_imp->environment->package_database()->fetch_repository(_imp->repository_name));
+    auto repo(_imp->environment->fetch_repository(_imp->repository_name));
     auto e_repo(std::static_pointer_cast<const ERepository>(repo));
 
     if (keywords_key())
@@ -1230,7 +1231,7 @@ namespace
 
         void visit(InstallAction & a)
         {
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             auto e_repo(std::static_pointer_cast<const ERepository>(repo));
             do_install_action(
                     env,
@@ -1241,7 +1242,7 @@ namespace
 
         void visit(FetchAction & a)
         {
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             auto e_repo(std::static_pointer_cast<const ERepository>(repo));
             do_fetch_action(
                     env,
@@ -1252,7 +1253,7 @@ namespace
 
         void visit(PretendFetchAction & a)
         {
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             auto e_repo(std::static_pointer_cast<const ERepository>(repo));
             do_pretend_fetch_action(
                     env,
@@ -1263,7 +1264,7 @@ namespace
 
         void visit(PretendAction & action)
         {
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             auto e_repo(std::static_pointer_cast<const ERepository>(repo));
             if (! do_pretend_action(
                         env,
@@ -1275,7 +1276,7 @@ namespace
 
         void visit(InfoAction & action)
         {
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             auto e_repo(std::static_pointer_cast<const ERepository>(repo));
             do_info_action(
                     env,
@@ -1428,7 +1429,7 @@ EbuildID::make_choice_value(
     if (! eapi()->supported())
         throw InternalError(PALUDIS_HERE, "Unsupported EAPI");
 
-    auto repo(_imp->environment->package_database()->fetch_repository(repository_name()));
+    auto repo(_imp->environment->fetch_repository(repository_name()));
     auto e_repo(std::static_pointer_cast<const ERepository>(repo));
 
     std::string name_with_prefix_s;
@@ -1625,7 +1626,7 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
 void
 EbuildID::purge_invalid_cache() const
 {
-    auto repo(_imp->environment->package_database()->fetch_repository(repository_name()));
+    auto repo(_imp->environment->fetch_repository(repository_name()));
     auto e_repo(std::static_pointer_cast<const ERepository>(repo));
 
     FSPath write_cache_file(e_repo->params().write_cache());

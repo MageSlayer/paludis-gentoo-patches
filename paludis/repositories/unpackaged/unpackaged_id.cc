@@ -20,6 +20,7 @@
 #include <paludis/repositories/unpackaged/unpackaged_id.hh>
 #include <paludis/repositories/unpackaged/unpackaged_key.hh>
 #include <paludis/repositories/unpackaged/unpackaged_stripper.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/visitor_cast.hh>
@@ -30,10 +31,11 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/singleton-impl.hh>
+#include <paludis/util/timestamp.hh>
+
 #include <paludis/output_manager.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
@@ -42,6 +44,7 @@
 #include <paludis/elike_choices.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/always_enabled_dependency_label.hh>
+#include <paludis/repository.hh>
 
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;

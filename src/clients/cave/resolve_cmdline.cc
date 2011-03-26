@@ -21,7 +21,6 @@
 #include <paludis/args/do_help.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/log.hh>
 #include <paludis/repository_factory.hh>
@@ -450,7 +449,7 @@ ResolveCommandLineImportOptions::apply(const std::shared_ptr<Environment> & env)
 
     std::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env.get(),
                 std::bind(from_keys, keys, std::placeholders::_1)));
-    env->package_database()->add_repository(10, repo);
+    env->add_repository(10, repo);
 }
 
 void

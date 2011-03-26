@@ -25,6 +25,8 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/join.hh>
 
 #include <paludis/package_id.hh>
 #include <paludis/user_dep_spec.hh>
@@ -163,16 +165,16 @@ TEST(PaludisEnvironment, Repositories)
 
     std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
 
-    EXPECT_TRUE(bool(env->package_database()->fetch_repository(RepositoryName("first"))));
-    EXPECT_TRUE(bool(env->package_database()->fetch_repository(RepositoryName("second"))));
-    EXPECT_TRUE(bool(env->package_database()->fetch_repository(RepositoryName("third"))));
-    EXPECT_TRUE(bool(env->package_database()->fetch_repository(RepositoryName("fourth"))));
-    EXPECT_TRUE(bool(env->package_database()->fetch_repository(RepositoryName("fifth"))));
+    EXPECT_TRUE(bool(env->fetch_repository(RepositoryName("first"))));
+    EXPECT_TRUE(bool(env->fetch_repository(RepositoryName("second"))));
+    EXPECT_TRUE(bool(env->fetch_repository(RepositoryName("third"))));
+    EXPECT_TRUE(bool(env->fetch_repository(RepositoryName("fourth"))));
+    EXPECT_TRUE(bool(env->fetch_repository(RepositoryName("fifth"))));
 
-    EXPECT_TRUE(env->package_database()->more_important_than(RepositoryName("first"), RepositoryName("second")));
-    EXPECT_TRUE(env->package_database()->more_important_than(RepositoryName("second"), RepositoryName("third")));
-    EXPECT_TRUE(env->package_database()->more_important_than(RepositoryName("fourth"), RepositoryName("third")));
-    EXPECT_TRUE(env->package_database()->more_important_than(RepositoryName("fourth"), RepositoryName("fifth")));
-    EXPECT_TRUE(env->package_database()->more_important_than(RepositoryName("second"), RepositoryName("fifth")));
+    EXPECT_TRUE(env->more_important_than(RepositoryName("first"), RepositoryName("second")));
+    EXPECT_TRUE(env->more_important_than(RepositoryName("second"), RepositoryName("third")));
+    EXPECT_TRUE(env->more_important_than(RepositoryName("fourth"), RepositoryName("third")));
+    EXPECT_TRUE(env->more_important_than(RepositoryName("fourth"), RepositoryName("fifth")));
+    EXPECT_TRUE(env->more_important_than(RepositoryName("second"), RepositoryName("fifth")));
 }
 

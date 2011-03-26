@@ -32,10 +32,10 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
 
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>

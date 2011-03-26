@@ -24,6 +24,7 @@
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
+
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/exception.hh>
@@ -37,10 +38,10 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/save.hh>
+
 #include <paludis/output_manager.hh>
 #include <paludis/package_id.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -49,6 +50,9 @@
 #include <paludis/choice.hh>
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/unformatted_pretty_printer.hh>
+#include <paludis/version_spec.hh>
+#include <paludis/repository.hh>
+
 #include <vector>
 #include <limits>
 #include <sstream>
@@ -432,9 +436,9 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             }
             else
             {
-                if (! environment->package_database()->has_repository_named(RepositoryName("installed")))
+                if (! environment->has_repository_named(RepositoryName("installed")))
                     return "Eno installed repository available";
-                std::shared_ptr<const Repository> repo(environment->package_database()->fetch_repository(RepositoryName("installed")));
+                std::shared_ptr<const Repository> repo(environment->fetch_repository(RepositoryName("installed")));
                 Repository::MetadataConstIterator key(repo->find_metadata("location"));
                 if (repo->end_metadata() == key)
                     return "Einstalled repository has no location key";

@@ -20,13 +20,15 @@
 
 #include <paludis/ndbam_unmerger.hh>
 #include <paludis/ndbam.hh>
+#include <paludis/contents.hh>
+#include <paludis/environment.hh>
+#include <paludis/hook.hh>
+#include <paludis/package_id.hh>
+#include <paludis/output_manager.hh>
+#include <paludis/metadata_key.hh>
 
 #include <paludis/util/destringify.hh>
 #include <paludis/util/md5.hh>
-#include <paludis/environment.hh>
-#include <paludis/hook.hh>
-#include <paludis/package_database.hh>
-#include <paludis/package_id.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -41,8 +43,7 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
-#include <paludis/output_manager.hh>
-#include <paludis/metadata_key.hh>
+
 #include <functional>
 #include <list>
 #include <map>

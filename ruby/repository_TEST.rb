@@ -38,11 +38,11 @@ module Paludis
 
     module RepositoryTestCase
         def installed_repo
-            env.package_database.fetch_repository "installed"
+            env.fetch_repository "installed"
         end
 
         def repo
-            env.package_database.fetch_repository "testrepo"
+            env.fetch_repository "testrepo"
         end
 
         def env

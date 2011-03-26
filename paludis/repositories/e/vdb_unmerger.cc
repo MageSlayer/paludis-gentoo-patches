@@ -18,16 +18,12 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "vdb_unmerger.hh"
-#include "vdb_contents_tokeniser.hh"
+#include <paludis/repositories/e/vdb_unmerger.hh>
+#include <paludis/repositories/e/vdb_contents_tokeniser.hh>
 
 #include <paludis/util/destringify.hh>
 #include <paludis/util/md5.hh>
-#include <paludis/environment.hh>
-#include <paludis/hook.hh>
-#include <paludis/package_database.hh>
-#include <paludis/package_id.hh>
-#include <paludis/metadata_key.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/log.hh>
@@ -41,8 +37,13 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
+
+#include <paludis/environment.hh>
+#include <paludis/hook.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/contents.hh>
 #include <paludis/output_manager.hh>
-#include <paludis/util/safe_ifstream.hh>
 
 #include <list>
 #include <map>

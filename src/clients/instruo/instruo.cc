@@ -44,8 +44,8 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/environments/no_config/no_config_environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/repository.hh>
 #include <algorithm>
 #include <functional>
 #include <iostream>
@@ -349,7 +349,7 @@ main(int argc, char *argv[])
 
         std::shared_ptr<PackageIDSequence> ids(env[selection::AllVersionsSorted(
                     generator::InRepository(env.main_repository()->name()))]);
-        Results results(env.package_database().get());
+        Results results((PackageIDComparator(&env)));
         unsigned success(0), total(0);
         CategoryNamePart old_cat("OLDCAT");
         Mutex mutex;

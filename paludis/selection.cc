@@ -188,7 +188,7 @@ namespace
                     s->insert(*q);
                     std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, s, may_excludes)));
                     if (! i->empty())
-                        result->push_back(*std::max_element(i->begin(), i->end(), PackageIDComparator(env->package_database().get())));
+                        result->push_back(*std::max_element(i->begin(), i->end(), PackageIDComparator(env)));
                 }
 
                 return result;
@@ -230,7 +230,7 @@ namespace
 
                 std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p, may_excludes)));
                 std::copy(i->begin(), i->end(), result->back_inserter());
-                result->sort(PackageIDComparator(env->package_database().get()));
+                result->sort(PackageIDComparator(env));
 
                 return result;
             }
@@ -323,7 +323,7 @@ namespace
                     m->second->push_back(*i);
                 }
 
-                PackageIDComparator comparator(env->package_database().get());
+                PackageIDComparator comparator(env);
                 for (SlotMap::iterator i(by_slot.begin()), i_end(by_slot.end()) ;
                         i != i_end ; ++i)
                     i->second->sort(comparator);
@@ -390,7 +390,7 @@ namespace
                     m->second->push_back(*i);
                 }
 
-                PackageIDComparator comparator(env->package_database().get());
+                PackageIDComparator comparator(env);
                 for (SlotMap::iterator i(by_slot.begin()), i_end(by_slot.end()) ;
                         i != i_end ; ++i)
                     i->second->sort(comparator);

@@ -117,7 +117,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath(stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root")).realpath()));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
@@ -128,7 +128,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath(stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root")).realpath()));
             std::shared_ptr<Repository> installed_repo(VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, installed_repo);
+            env.add_repository(1, installed_repo);
 
             InstallAction action(make_named_values<InstallActionOptions>(
                         n::destination() = installed_repo,

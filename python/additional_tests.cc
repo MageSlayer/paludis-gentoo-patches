@@ -28,7 +28,6 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/environment.hh>
 #include <paludis/environments/test/test_environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/mask.hh>
@@ -50,7 +49,7 @@ namespace environment
                         n::environment() = &e,
                         n::name() = RepositoryName("fakerepo"))));
         std::shared_ptr<PackageID> pid(repo->add_version("cat", "pkg", "1.0"));
-        e.package_database()->add_repository(0, repo);
+        e.add_repository(0, repo);
 
         bool PALUDIS_ATTRIBUTE((unused)) b2(e.accept_license("l", pid));
 
@@ -63,8 +62,6 @@ namespace environment
         e.mask_for_user(pid, false);
 
         bool PALUDIS_ATTRIBUTE((unused)) b4(e.unmasked_by_user(pid, ""));
-
-        e.package_database();
 
         e.bashrc_files();
 

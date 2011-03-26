@@ -24,7 +24,6 @@
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/util/set.hh>
@@ -33,6 +32,7 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/stringify.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>

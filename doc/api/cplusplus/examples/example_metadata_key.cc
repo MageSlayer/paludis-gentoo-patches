@@ -275,8 +275,7 @@ int main(int argc, char * argv[])
         }
 
         /* And for each repository: */
-        for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
-                r_end(env->package_database()->end_repositories()) ;
+        for (auto r(env->begin_repositories()), r_end(env->end_repositories()) ;
                 r != r_end ; ++r)
         {
             cout << (*r)->name() << ":" << endl;

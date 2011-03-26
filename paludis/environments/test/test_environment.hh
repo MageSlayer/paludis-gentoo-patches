@@ -60,12 +60,6 @@ namespace paludis
 
             ///\}
 
-            virtual std::shared_ptr<PackageDatabase> package_database()
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::shared_ptr<const PackageDatabase> package_database() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             /**
              * Convenience way of getting a package id.
              */

@@ -140,7 +140,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("exndbam_repository_TEST_dir/root").realpath()));
             std::shared_ptr<Repository> repo1(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo1);
+            env.add_repository(1, repo1);
 
             keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "exndbam");
@@ -149,7 +149,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("exndbam_repository_TEST_dir/root").realpath()));
             std::shared_ptr<Repository> exndbam_repo(ExndbamRepository::ExndbamRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(0, exndbam_repo);
+            env.add_repository(0, exndbam_repo);
 
             TEST_CHECK(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg"), { })->empty());
 

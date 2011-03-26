@@ -21,7 +21,6 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 #include <paludis/environments/test/test_environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
@@ -149,7 +148,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("vdb_repository_TEST_cache_dir/root").realpath()));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
@@ -160,7 +159,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("vdb_repository_TEST_cache_dir/root").realpath()));
             std::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(0, vdb_repo);
+            env.add_repository(0, vdb_repo);
 
             UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
                         n::config_protect() = "",
@@ -393,7 +392,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("vdb_repository_TEST_cache_dir/root").realpath()));
             std::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(0, vdb_repo);
+            env.add_repository(0, vdb_repo);
 
             TEST_CHECK(! provides_cache.stat().exists());
 
@@ -514,7 +513,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("vdb_repository_TEST_cache_dir/root").realpath()));
             std::shared_ptr<Repository> repo1(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo1);
+            env.add_repository(1, repo1);
 
             keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "e");
@@ -530,7 +529,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("vdb_repository_TEST_cache_dir/root").realpath()));
             std::shared_ptr<Repository> repo2(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(2, repo2);
+            env.add_repository(2, repo2);
 
             keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
@@ -541,7 +540,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("vdb_repository_TEST_cache_dir/root").realpath()));
             std::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(0, vdb_repo);
+            env.add_repository(0, vdb_repo);
 
             UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
                         n::config_protect() = "",

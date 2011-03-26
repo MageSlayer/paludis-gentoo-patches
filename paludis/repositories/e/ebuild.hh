@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,10 +23,18 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/process-fwd.hh>
-#include <paludis/package_database.hh>
+#include <paludis/util/named_value.hh>
+#include <paludis/util/fs_path.hh>
+
 #include <paludis/action-fwd.hh>
 #include <paludis/fs_merger-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
+#include <paludis/repository-fwd.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/merger.hh>
+
 #include <string>
+#include <memory>
 
 /** \file
  * Declarations for the EbuildCommand classes.

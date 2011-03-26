@@ -18,6 +18,9 @@
  */
 
 #include <paludis/resolver/destination_utils.hh>
+
+#include <paludis/util/stringify.hh>
+
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/filtered_generator.hh>
@@ -25,7 +28,7 @@
 #include <paludis/generator_handler.hh>
 #include <paludis/filter.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
+#include <paludis/repository.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -65,8 +68,7 @@ namespace
         {
             using namespace std::placeholders;
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
-            for (auto r(env->package_database()->begin_repositories()),
-                    r_end(env->package_database()->end_repositories()) ;
+            for (auto r(env->begin_repositories()), r_end(env->end_repositories()) ;
                     r != r_end ; ++r)
                 if (! (*r)->installed_root_key())
                     if ((*r)->destination_interface())

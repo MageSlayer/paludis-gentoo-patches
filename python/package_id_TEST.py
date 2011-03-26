@@ -32,11 +32,11 @@ class TestCase_01_PackageID(unittest.TestCase):
     def setUp(self):
         self.e = NoConfigEnvironment(repo_path, "/var/empty")
         self.ie = NoConfigEnvironment(irepo_path)
-        self.pid = iter(self.e.package_database.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
+        self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
         if os.environ.get("PALUDIS_ENABLE_VIRTUALS_REPOSITORY") == "yes":
-            self.vpid = iter(self.e.package_database.fetch_repository("virtuals").package_ids("virtual/bar", [])).next()
-        self.ipid = iter(self.ie.package_database.fetch_repository("installed").package_ids("cat-one/pkg-one", [])).next()
-        self.mpid = iter(self.e.package_database.fetch_repository("testrepo").package_ids("cat/masked", [])).next()
+            self.vpid = iter(self.e.fetch_repository("virtuals").package_ids("virtual/bar", [])).next()
+        self.ipid = iter(self.ie.fetch_repository("installed").package_ids("cat-one/pkg-one", [])).next()
+        self.mpid = iter(self.e.fetch_repository("testrepo").package_ids("cat/masked", [])).next()
 
     def test_01_get(self):
         pass

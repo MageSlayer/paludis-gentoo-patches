@@ -26,7 +26,6 @@
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
@@ -44,6 +43,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -542,7 +542,7 @@ PerformCommand::run(
         if (! cmdline.a_destination.specified())
             throw args::DoHelp("--destination must be specified for an install");
 
-        const std::shared_ptr<Repository> destination(env->package_database()->fetch_repository(
+        const std::shared_ptr<Repository> destination(env->fetch_repository(
                     RepositoryName(cmdline.a_destination.argument())));
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
@@ -568,7 +568,7 @@ PerformCommand::run(
         if (! cmdline.a_destination.specified())
             throw args::DoHelp("--destination must be specified for a pretend");
 
-        const std::shared_ptr<Repository> destination(env->package_database()->fetch_repository(
+        const std::shared_ptr<Repository> destination(env->fetch_repository(
                     RepositoryName(cmdline.a_destination.argument())));
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);

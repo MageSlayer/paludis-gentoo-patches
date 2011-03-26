@@ -22,7 +22,6 @@
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -94,8 +93,8 @@ PrintRepositoriesCommand::run(
 
     std::set<RepositoryName> repository_names;
 
-    for (IndirectIterator<PackageDatabase::RepositoryConstIterator, const Repository>
-            r(env->package_database()->begin_repositories()), r_end(env->package_database()->end_repositories());
+    for (IndirectIterator<Environment::RepositoryConstIterator, const Repository>
+            r(env->begin_repositories()), r_end(env->end_repositories());
             r != r_end; ++r)
     {
         if (cmdline.a_repository_format.specified())

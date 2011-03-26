@@ -22,9 +22,9 @@
 
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
-#include <paludis/package_database.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
@@ -35,6 +35,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
 
 #include <functional>
 #include <unordered_map>
@@ -137,8 +138,8 @@ InstalledVirtualsRepository::need_ids() const
     /* Populate our _imp->entries. We need to iterate over each repository in
      * our env's package database, see if it has a provides interface, and if it
      * does create an entry for each provided package. */
-    for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
-            r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
+    for (auto r(_imp->env->begin_repositories()),
+            r_end(_imp->env->end_repositories()) ; r != r_end ; ++r)
     {
         if (! (**r).provides_interface())
             continue;
@@ -353,7 +354,7 @@ InstalledVirtualsRepository::repository_factory_dependencies(
 bool
 InstalledVirtualsRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
-    auto repo(_imp->env->package_database()->fetch_repository(id->repository_name()));
+    auto repo(_imp->env->fetch_repository(id->repository_name()));
     std::string f(repo->format_key() ? repo->format_key()->value() : "");
     return f == "virtuals";
 

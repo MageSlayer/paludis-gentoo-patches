@@ -122,7 +122,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_0_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
@@ -133,17 +133,17 @@ namespace test_cases
                             )));
             installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
             installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
-            env.package_database()->add_repository(2, installed_repo);
+            env.add_repository(2, installed_repo);
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
             std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
             iv_keys->insert("root", "/");
             iv_keys->insert("format", "installed_virtuals");
-            env.package_database()->add_repository(-2, RepositoryFactory::get_instance()->create(&env,
+            env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
                         std::bind(from_keys, iv_keys, std::placeholders::_1)));
             std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
             v_keys->insert("format", "virtuals");
-            env.package_database()->add_repository(-2, RepositoryFactory::get_instance()->create(&env,
+            env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
                         std::bind(from_keys, v_keys, std::placeholders::_1)));
 #endif
 

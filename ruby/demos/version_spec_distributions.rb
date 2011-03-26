@@ -130,7 +130,7 @@ end
 
 distribution = Distribution.new
 env = Paludis::NoConfigEnvironment.new repository_dir, write_cache_dir, master_repository_dir
-env.package_database.repositories.each do | repo |
+env.repositories.each do | repo |
     distribution.add_repository repo
 end
 if output_image

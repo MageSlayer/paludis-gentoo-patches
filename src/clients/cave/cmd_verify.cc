@@ -34,8 +34,8 @@
 #include <paludis/util/md5.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
@@ -47,6 +47,7 @@
 #include <paludis/hook.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/output_manager_from_environment.hh>
+#include <paludis/contents.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>

@@ -29,7 +29,6 @@
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/filter.hh>
@@ -44,12 +43,16 @@
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/join.hh>
 #include <paludis/action.hh>
 #include <paludis/about_metadata.hh>
+#include <paludis/contents.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
 #include <set>
+#include <sstream>
 
 #include "command_command_line.hh"
 
@@ -408,8 +411,7 @@ InfoCommand::run(
     do_about(cmdline, env);
     do_env(cmdline, env);
 
-    for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
-            r_end(env->package_database()->end_repositories()) ;
+    for (auto r(env->begin_repositories()), r_end(env->end_repositories()) ;
             r != r_end ; ++r)
         do_one_repository(cmdline, env, *r);
 

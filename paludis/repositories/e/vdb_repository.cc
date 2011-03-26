@@ -40,7 +40,6 @@
 #include <paludis/hook.hh>
 #include <paludis/match_package.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/repositories/e/ebuild.hh>
 #include <paludis/repository_name_cache.hh>
@@ -78,6 +77,7 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
+#include <paludis/util/join.hh>
 
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/create_iterator-impl.hh>
@@ -1360,8 +1360,8 @@ VDBRepository::perform_updates()
     std::cout << std::endl << "Checking for updates (package moves etc):" << std::endl;
 
     std::map<FSPath, std::time_t, FSPathComparator> update_timestamps;
-    for (PackageDatabase::RepositoryConstIterator r(_imp->params.environment()->package_database()->begin_repositories()),
-            r_end(_imp->params.environment()->package_database()->end_repositories()) ;
+    for (auto r(_imp->params.environment()->begin_repositories()),
+            r_end(_imp->params.environment()->end_repositories()) ;
             r != r_end ; ++r)
     {
         Context context_2("When performing updates from '" + stringify((*r)->name()) + "':");

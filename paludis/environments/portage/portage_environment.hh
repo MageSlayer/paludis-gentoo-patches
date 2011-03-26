@@ -129,12 +129,6 @@ namespace paludis
                     const std::shared_ptr<OutputManager> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<PackageDatabase> package_database()
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::shared_ptr<const PackageDatabase> package_database() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual bool accept_license(const std::string &, const std::shared_ptr<const PackageID> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 

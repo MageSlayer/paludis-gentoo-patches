@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "portage_environment.hh"
+#include <paludis/environments/portage/portage_environment.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
@@ -42,13 +42,13 @@
 #include <paludis/util/fs_error.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/env_var_names.hh>
+#include <paludis/util/join.hh>
 
 #include <paludis/standard_output_manager.hh>
 #include <paludis/hooker.hh>
 #include <paludis/hook.hh>
 #include <paludis/mask.hh>
 #include <paludis/match_package.hh>
-#include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/set_file.hh>
@@ -109,8 +109,6 @@ namespace paludis
 
         int overlay_importance;
 
-        std::shared_ptr<PackageDatabase> package_database;
-
         const FSPath world_file;
         mutable Mutex world_mutex;
 
@@ -120,12 +118,11 @@ namespace paludis
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > preferred_root_key;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > system_root_key;
 
-        Imp(Environment * const e, const std::string & s) :
+        Imp(const std::string & s) :
             conf_dir(FSPath(s.empty() ? "/" : s) / SYSCONFDIR),
             ignore_all_breaks_portage(false),
             done_hooks(false),
             overlay_importance(10),
-            package_database(std::make_shared<PackageDatabase>(e)),
             world_file(s + "/var/lib/portage/world"),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string>>("format", "Format", mkt_significant, "portage")),
             config_location_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("conf_dir", "Config dir", mkt_normal,
@@ -230,7 +227,7 @@ namespace
 }
 
 PortageEnvironment::PortageEnvironment(const std::string & s) :
-    _imp(this, s)
+    _imp(s)
 {
     using namespace std::placeholders;
 
@@ -470,8 +467,7 @@ PortageEnvironment::_add_virtuals_repository()
 #ifdef ENABLE_VIRTUALS_REPOSITORY
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "virtuals");
-    package_database()->add_repository(-2,
-            RepositoryFactory::get_instance()->create(this, std::bind(from_keys, keys, std::placeholders::_1)));
+    add_repository(-2, RepositoryFactory::get_instance()->create(this, std::bind(from_keys, keys, std::placeholders::_1)));
 #endif
 }
 
@@ -482,8 +478,7 @@ PortageEnvironment::_add_installed_virtuals_repository()
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("root", stringify(preferred_root_key()->value()));
     keys->insert("format", "installed_virtuals");
-    package_database()->add_repository(-1,
-            RepositoryFactory::get_instance()->create(this, std::bind(from_keys, keys, std::placeholders::_1)));
+    add_repository(-1, RepositoryFactory::get_instance()->create(this, std::bind(from_keys, keys, std::placeholders::_1)));
 #endif
 }
 
@@ -514,8 +509,7 @@ PortageEnvironment::_add_ebuild_repository(const FSPath & portdir, const std::st
         builddir.append("/portage");
     keys->insert("builddir", builddir);
 
-    package_database()->add_repository(importance,
-            RepositoryFactory::get_instance()->create(this, std::bind(from_keys, keys, std::placeholders::_1)));
+    add_repository(importance, RepositoryFactory::get_instance()->create(this, std::bind(from_keys, keys, std::placeholders::_1)));
 }
 
 void
@@ -540,8 +534,7 @@ PortageEnvironment::_add_vdb_repository()
     if (! builddir.empty())
         builddir.append("/portage");
     keys->insert("builddir", builddir);
-    package_database()->add_repository(1,
-            RepositoryFactory::get_instance()->create(this, std::bind(from_keys, keys, std::placeholders::_1)));
+    add_repository(1, RepositoryFactory::get_instance()->create(this, std::bind(from_keys, keys, std::placeholders::_1)));
 }
 
 PortageEnvironment::~PortageEnvironment()
@@ -738,18 +731,6 @@ PortageEnvironment::bashrc_files() const
     result->push_back(_imp->conf_dir / "make.globals");
     result->push_back(_imp->conf_dir / "make.conf");
     return result;
-}
-
-std::shared_ptr<PackageDatabase>
-PortageEnvironment::package_database()
-{
-    return _imp->package_database;
-}
-
-std::shared_ptr<const PackageDatabase>
-PortageEnvironment::package_database() const
-{
-    return _imp->package_database;
 }
 
 std::shared_ptr<const MirrorsSequence>

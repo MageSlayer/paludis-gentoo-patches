@@ -31,7 +31,6 @@
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/name.hh>
-#include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/repository.hh>
 #include <paludis/selection.hh>
@@ -165,7 +164,7 @@ PrintUnusedDistfilesCommand::run(
             c != c_end ; ++c)
         selections.push_back(selection::AllVersionsUnsorted(generator::InRepository(RepositoryName(*c))));
 
-    std::set<std::shared_ptr<const PackageID>, PackageIDComparator> already_done((PackageIDComparator(env->package_database().get())));
+    std::set<std::shared_ptr<const PackageID>, PackageIDComparator> already_done((PackageIDComparator(env.get())));
     for (auto s(selections.begin()), s_end(selections.end()) ;
             s != s_end ; ++s)
     {
@@ -191,9 +190,8 @@ PrintUnusedDistfilesCommand::run(
 
     std::set<FSPath, FSPathComparator> distdirs;
 
-    const std::shared_ptr<const PackageDatabase> pkgdb(env->package_database());
-    for (auto repo(pkgdb->begin_repositories()), end(pkgdb->end_repositories()) ;
-        repo != end ; ++repo)
+    for (auto repo(env->begin_repositories()), end(env->end_repositories()) ;
+            repo != end ; ++repo)
     {
         auto distdir_metadata((*repo)->find_metadata("distdir"));
         if (distdir_metadata != (*repo)->end_metadata())

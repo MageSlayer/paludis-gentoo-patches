@@ -21,10 +21,10 @@
 #include <paludis/hooker.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
-#include <paludis/package_database.hh>
 #include <paludis/about.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/repository.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/is_file_with_extension.hh>
@@ -746,15 +746,15 @@ Hooker::perform_hook(
         switch (hook.output_dest)
         {
             case hod_stdout:
-                for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
-                        r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
+                for (auto r(_imp->env->begin_repositories()),
+                        r_end(_imp->env->end_repositories()) ; r != r_end ; ++r)
                     result.max_exit_status() = std::max(result.max_exit_status(),
                             ((*r)->perform_hook(hook, optional_output_manager)).max_exit_status());
                 continue;
 
             case hod_grab:
-                for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
-                        r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
+                for (auto r(_imp->env->begin_repositories()),
+                        r_end(_imp->env->end_repositories()) ; r != r_end ; ++r)
                 {
                     HookResult tmp((*r)->perform_hook(hook, optional_output_manager));
                     if (tmp.max_exit_status() > result.max_exit_status())

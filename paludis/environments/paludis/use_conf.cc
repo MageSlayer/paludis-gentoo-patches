@@ -20,9 +20,12 @@
 #include <paludis/environments/paludis/use_conf.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/bashable_conf.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/stringify.hh>
+
 #include <paludis/paludislike_options_conf.hh>
 #include <paludis/choice.hh>
 

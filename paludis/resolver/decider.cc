@@ -57,7 +57,6 @@
 #include <paludis/notifier_callback.hh>
 #include <paludis/repository.hh>
 #include <paludis/filtered_generator.hh>
-#include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>

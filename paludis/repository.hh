@@ -247,8 +247,8 @@ namespace paludis
     };
 
     /**
-     * A Repository provides a representation of a physical repository to a
-     * PackageDatabase.
+     * A Repository provides a representation of a physical repository to an
+     * Environment.
      *
      * \ingroup g_repository
      * \nosubgrouping

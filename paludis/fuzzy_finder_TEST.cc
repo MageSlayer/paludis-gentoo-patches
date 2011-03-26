@@ -25,7 +25,6 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/package_database.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
 
@@ -50,13 +49,13 @@ namespace test_cases
             r1->add_version("other-cat", "foo", "1");
             r1->add_version("some-cat", "bar", "1");
             r1->add_version("some-cat", "one-two-three", "1");
-            e.package_database()->add_repository(1, r1);
+            e.add_repository(1, r1);
 
             const std::shared_ptr<FakeRepository> r2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                             n::environment() = &e,
                             n::name() = RepositoryName("r2")
                             )));
-            e.package_database()->add_repository(2, r2);
+            e.add_repository(2, r2);
 
             FuzzyCandidatesFinder f1(e, std::string("some-cat/one-two-thee"), filter::All());
             TEST_CHECK_EQUAL(std::distance(f1.begin(), f1.end()), 1);
@@ -86,21 +85,20 @@ namespace test_cases
         void run()
         {
             TestEnvironment e;
-            PackageDatabase & p(*e.package_database());
 
-            p.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+            e.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                                 n::environment() = &e,
                                 n::name() = RepositoryName("my-main-repository")))));
-            p.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+            e.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                                 n::environment() = &e,
                                 n::name() = RepositoryName("x-new-repository")))));
-            p.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+            e.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                                 n::environment() = &e,
                                 n::name() = RepositoryName("bar-overlay")))));
-            p.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+            e.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                                 n::environment() = &e,
                                 n::name() = RepositoryName("baz-overlay")))));
-            p.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+            e.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
                                 n::environment() = &e,
                                 n::name() = RepositoryName("sunrise")))));
 

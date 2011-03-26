@@ -26,7 +26,6 @@
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/package_database.hh>
 #include <paludis/unformatted_pretty_printer.hh>
 #include <test/test_framework.hh>
 #include <test/test_runner.hh>
@@ -48,7 +47,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
@@ -58,7 +57,7 @@ namespace test_cases
                             n::suitable_destination() = true,
                             n::supports_uninstall() = true
                             )));
-            env.package_database()->add_repository(2, installed_repo);
+            env.add_repository(2, installed_repo);
             installed_repo->add_version("cat", "installed", "1")->set_slot(SlotName("monkey"));
 
             std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"));

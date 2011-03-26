@@ -22,7 +22,6 @@
 
 #include <paludis/environments/test/test_environment.hh>
 
-#include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
 #include <paludis/user_dep_spec.hh>
@@ -32,6 +31,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/standard_output_manager.hh>
+#include <paludis/contents.hh>
 
 #include <paludis/util/sequence.hh>
 #include <paludis/util/join.hh>
@@ -108,7 +108,7 @@ TEST(InstalledRepository, Content)
                     n::location() = FSPath("installed_repository_TEST_dir/repo1"),
                     n::root() = FSPath("installed_repository_TEST_dir/root")
                 )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
 
     const std::shared_ptr<const PackageIDSequence> ids(
             env[selection::AllVersionsSorted(generator::All())]);
@@ -126,7 +126,7 @@ TEST(InstalledRepository, Metadata)
                     n::location() = FSPath("installed_repository_TEST_dir/repo1"),
                     n::root() = FSPath("installed_repository_TEST_dir/root")
                 )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
                 generator::Matches(parse_user_package_dep_spec("cat-one/foo:0",
@@ -173,7 +173,7 @@ TEST(InstalledRepository, Masks)
                     n::location() = FSPath("installed_repository_TEST_dir/repo1"),
                     n::root() = FSPath("installed_repository_TEST_dir/root")
                 )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
                 generator::Matches(parse_user_package_dep_spec("cat-one/foo:0",
@@ -198,7 +198,7 @@ TEST(InstalledRepository, Actions)
                     n::location() = FSPath("installed_repository_TEST_dir/repo1"),
                     n::root() = FSPath("installed_repository_TEST_dir/root")
                 )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
 
     EXPECT_TRUE(! repo->some_ids_might_support_action(SupportsActionTest<InstallAction>()));
     EXPECT_TRUE(! repo->some_ids_might_support_action(SupportsActionTest<ConfigAction>()));
@@ -228,7 +228,7 @@ TEST(InstalledRepository, UninstallLast)
                     n::location() = FSPath("installed_repository_TEST_dir/repo2"),
                     n::root() = FSPath("installed_repository_TEST_dir/root2")
                 )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
 
     const std::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(generator::All())]);
     EXPECT_EQ("cat-one/foo-1.2.3:fred::installed-unpackaged",
@@ -275,7 +275,7 @@ TEST(InstalledRepository, UninstallNotLast)
                     n::location() = FSPath("installed_repository_TEST_dir/repo3"),
                     n::root() = FSPath("installed_repository_TEST_dir/root3")
                 )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
 
     const std::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(generator::All())]);
     EXPECT_EQ("cat-one/foo-1.2.3:fred::installed-unpackaged cat-one/foo-3.2.1:barney::installed-unpackaged",
@@ -318,7 +318,7 @@ TEST(InstalledRepository, MultipleOps)
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
                         n::root() = FSPath("installed_repository_TEST_dir/root4")
                     )));
-        env.package_database()->add_repository(1, repo);
+        env.add_repository(1, repo);
 
         const std::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(generator::All())]);
         EXPECT_EQ("", join(indirect_iterator(pre_ids->begin()), indirect_iterator(pre_ids->end()), " "));
@@ -335,7 +335,7 @@ TEST(InstalledRepository, MultipleOps)
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
                         n::root() = FSPath("installed_repository_TEST_dir/root4")
                     )));
-        env.package_database()->add_repository(0, repo);
+        env.add_repository(0, repo);
 
         std::shared_ptr<Repository> source_repo(std::make_shared<UnpackagedRepository>(
                     RepositoryName("unpackaged"),
@@ -353,7 +353,7 @@ TEST(InstalledRepository, MultipleOps)
                         n::strip() = indeterminate,
                         n::version() = VersionSpec("1.0", { })
                     )));
-        env.package_database()->add_repository(1, source_repo);
+        env.add_repository(1, source_repo);
 
         {
             const std::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(
@@ -393,7 +393,7 @@ TEST(InstalledRepository, MultipleOps)
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
                         n::root() = FSPath("installed_repository_TEST_dir/root4")
                     )));
-        env.package_database()->add_repository(0, repo);
+        env.add_repository(0, repo);
 
         std::shared_ptr<Repository> source_repo(std::make_shared<UnpackagedRepository>(
                     RepositoryName("unpackaged"),
@@ -411,7 +411,7 @@ TEST(InstalledRepository, MultipleOps)
                         n::strip() = indeterminate,
                         n::version() = VersionSpec("1.0", { })
                         )));
-        env.package_database()->add_repository(1, source_repo);
+        env.add_repository(1, source_repo);
 
         {
             const std::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(
@@ -453,7 +453,7 @@ TEST(InstalledRepository, MultipleOps)
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
                         n::root() = FSPath("installed_repository_TEST_dir/root4")
                     )));
-        env.package_database()->add_repository(0, repo);
+        env.add_repository(0, repo);
 
         std::shared_ptr<Repository> source_repo(std::make_shared<UnpackagedRepository>(
                     RepositoryName("unpackaged"),
@@ -471,7 +471,7 @@ TEST(InstalledRepository, MultipleOps)
                         n::strip() = indeterminate,
                         n::version() = VersionSpec("1.0", { })
                     )));
-        env.package_database()->add_repository(1, source_repo);
+        env.add_repository(1, source_repo);
 
         {
             const std::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(
@@ -513,7 +513,7 @@ TEST(InstalledRepository, MultipleOps)
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
                         n::root() = FSPath("installed_repository_TEST_dir/root4")
                     )));
-        env.package_database()->add_repository(0, repo);
+        env.add_repository(0, repo);
 
         {
             const std::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(
@@ -557,7 +557,7 @@ TEST(InstalledRepository, MultipleOps)
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
                         n::root() = FSPath("installed_repository_TEST_dir/root4")
                     )));
-        env.package_database()->add_repository(0, repo);
+        env.add_repository(0, repo);
 
         {
             const std::shared_ptr<const PackageIDSequence> pre_ids(env[selection::AllVersionsSorted(

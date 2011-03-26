@@ -73,6 +73,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/iterator_funcs.hh>
+#include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
@@ -926,7 +927,7 @@ ERepository::params() const
 bool
 ERepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
-    auto repo(_imp->params.environment()->package_database()->fetch_repository(id->repository_name()));
+    auto repo(_imp->params.environment()->fetch_repository(id->repository_name()));
     std::string f(repo->format_key() ? repo->format_key()->value() : "");
     if (f == "e")
         return static_cast<const ERepositoryID &>(*id).eapi()->supported()->can_be_pbin();
@@ -1214,7 +1215,7 @@ ERepository::repository_factory_create(
 
         RepositoryName master_repository_name(f("master_repository"));
         std::shared_ptr<Repository> master_repository_uncasted(
-                env->package_database()->fetch_repository(master_repository_name));
+                env->fetch_repository(master_repository_name));
 
         std::string format("unknown");
         if (master_repository_uncasted->format_key())
@@ -1248,7 +1249,7 @@ ERepository::repository_factory_create(
             try
             {
                 std::shared_ptr<Repository> master_repository_uncasted(
-                        env->package_database()->fetch_repository(master_repository_name));
+                        env->fetch_repository(master_repository_name));
 
                 std::string format("unknown");
                 if (master_repository_uncasted->format_key())

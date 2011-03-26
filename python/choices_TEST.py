@@ -32,7 +32,7 @@ Log.instance.log_level = LogLevel.WARNING
 class TestCase_01_Choices(unittest.TestCase):
     def setUp(self):
         self.e = NoConfigEnvironment(repo_path, "/var/empty")
-        self.pid = iter(self.e.package_database.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
+        self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
         self.choices = self.pid.find_metadata("PALUDIS_CHOICES").value()
 
     def test_01_choices(self):
@@ -58,7 +58,7 @@ class TestCase_01_Choices(unittest.TestCase):
 class TestCase_02_Choice(unittest.TestCase):
     def setUp(self):
         self.e = NoConfigEnvironment(repo_path, "/var/empty")
-        self.pid = iter(self.e.package_database.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
+        self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
         self.choices = self.pid.find_metadata("PALUDIS_CHOICES").value()
         self.use = None
         self.linguas = None
@@ -107,7 +107,7 @@ class TestCase_02_Choice(unittest.TestCase):
 class TestCase_03_ChoiceValue(unittest.TestCase):
     def setUp(self):
         self.e = NoConfigEnvironment(repo_path, "/var/empty")
-        self.pid = iter(self.e.package_database.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
+        self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
         self.choices = self.pid.find_metadata("PALUDIS_CHOICES").value()
         self.use_testflag = self.choices.find_by_name_with_prefix("testflag")
         self.linguas_en = self.choices.find_by_name_with_prefix("linguas_en")

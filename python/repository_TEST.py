@@ -34,12 +34,11 @@ Log.instance.log_level = LogLevel.WARNING
 
 class TestCase_01_Repository(unittest.TestCase):
     def setUp(self):
-        global e, nce, db, repo, irepo
+        global e, nce, repo, irepo
         e = EnvironmentFactory.instance.create("")
         nce = NoConfigEnvironment(repo_path)
-        db = e.package_database
-        repo = db.fetch_repository("testrepo")
-        irepo = db.fetch_repository("installed")
+        repo = e.fetch_repository("testrepo")
+        irepo = e.fetch_repository("installed")
 
     def test_01_fetch(self):
         self.assert_(isinstance(repo, Repository))
@@ -101,12 +100,11 @@ class TestCase_01_Repository(unittest.TestCase):
 
 class TestCase_02_RepositoryInterfaces(unittest.TestCase):
     def setUp(self):
-        global e, nce, db, repo, irepo
+        global e, nce, repo, irepo
         e = EnvironmentFactory.instance.create("")
         nce = NoConfigEnvironment(repo_path)
-        db = e.package_database
-        repo = db.fetch_repository("testrepo")
-        irepo = db.fetch_repository("installed")
+        repo = e.fetch_repository("testrepo")
+        irepo = e.fetch_repository("installed")
 
     def test_06_environment_variable_interface(self):
         evi = repo.environment_variable_interface

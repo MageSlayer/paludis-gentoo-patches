@@ -21,7 +21,6 @@
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/filtered_generator.hh>
-#include <paludis/package_database.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
@@ -32,6 +31,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/join.hh>
 #include <test/test_runner.hh>
 #include <test/test_framework.hh>
 #include <test/test_concepts.hh>
@@ -69,9 +69,9 @@ namespace test_cases
                             n::supports_uninstall() = true
                             )))
         {
-            env.package_database()->add_repository(1, repo1);
-            env.package_database()->add_repository(10, repo2);
-            env.package_database()->add_repository(0, inst_repo1);
+            env.add_repository(1, repo1);
+            env.add_repository(10, repo2);
+            env.add_repository(0, inst_repo1);
 
             repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", { }));
             repo1->add_version(CategoryNamePart("cat") + PackageNamePart("b"), VersionSpec("2", { }));

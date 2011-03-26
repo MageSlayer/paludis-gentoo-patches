@@ -28,7 +28,6 @@ IF_RUBY_TESTS = \
 	filtered_generator_TEST.rb \
 	generator_TEST.rb \
 	log_TEST.rb \
-	package_database_TEST.rb \
 	package_id_TEST.rb \
 	paludis_ruby_TEST.rb \
 	qualified_package_name_TEST.rb \
@@ -51,7 +50,6 @@ IF_RUBY_SOURCES = \
 	metadata_key.cc \
 	name.cc \
 	nice_names-nn.hh nice_names-nn.cc \
-	package_database.cc \
 	package_id.cc \
 	paludis_ruby.cc paludis_ruby.hh \
 	qualified_package_name.cc \
@@ -69,7 +67,6 @@ EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	environment_TEST_setup.sh environment_TEST_cleanup.sh \
 	generator_TEST_setup.sh generator_TEST_cleanup.sh \
 	nice_names.nn \
-	package_database_TEST_setup.sh package_database_TEST_cleanup.sh \
 	package_id_TEST_setup.sh package_id_TEST_cleanup.sh \
 	paludis_ruby_TEST_setup.sh paludis_ruby_TEST_cleanup.sh \
 	repository_TEST_setup.sh repository_TEST_cleanup.sh \

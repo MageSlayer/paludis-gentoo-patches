@@ -124,7 +124,7 @@ void expose_repository()
     bp::class_<RepositoryWrapper, std::shared_ptr<Repository>, boost::noncopyable>
         (
          "Repository",
-         "A Repository provides a representation of a physical repository to a PackageDatabase.",
+         "A Repository provides a representation of a physical repository to an Environment.",
          bp::no_init
         )
 
@@ -167,7 +167,7 @@ void expose_repository()
                 "some_ids_might_support_action(SupportsActionTestBase) -> bool\n"
                 "Might some of our IDs support a particular action?\n\n"
 
-                "Used to optimise PackageDatabase::query. If a repository doesn't\n"
+                "Used to optimise Environment::[]. If a repository doesn't\n"
                 "support, say, InstallAction, a query can skip searching it\n"
                 "entirely when looking for installable packages."
             )

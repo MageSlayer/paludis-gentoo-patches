@@ -46,7 +46,6 @@
 #include <paludis/choice.hh>
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/package_database.hh>
 #include <paludis/always_enabled_dependency_label.hh>
 #include <paludis/elike_blocker.hh>
 #include <map>

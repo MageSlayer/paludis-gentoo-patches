@@ -78,8 +78,8 @@
 #include <paludis/selection.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
-#include <paludis/package_database.hh>
 #include <paludis/elike_blocker.hh>
+#include <paludis/repository.hh>
 
 #include <set>
 #include <iterator>
@@ -943,7 +943,7 @@ namespace
 
                 case x1_post:
                     done_action(env, action_string, ensequence(install_item.origin_id_spec()), install_item.replacing_specs(), 0 == retcode);
-                    env->package_database()->fetch_repository(install_item.destination_repository_name())->invalidate();
+                    env->fetch_repository(install_item.destination_repository_name())->invalidate();
                     break;
             }
 

@@ -25,7 +25,6 @@
 
 #include <paludis/environments/test/test_environment.hh>
 
-#include <paludis/package_database.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
@@ -37,6 +36,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/join.hh>
 
 #include <gtest/gtest.h>
 
@@ -60,9 +60,9 @@ TEST(VirtualsRepository, Works)
 
     ASSERT_TRUE(repo->virtuals_interface());
 
-    env.package_database()->add_repository(2, virtuals);
-    env.package_database()->add_repository(3, repo);
-    env.package_database()->add_repository(4, installed);
+    env.add_repository(2, virtuals);
+    env.add_repository(3, repo);
+    env.add_repository(4, installed);
 
     repo->add_version("cat", "pkg", "1")->provide_key()->set_from_string("virtual/pkg");
     repo->add_version("cat", "pkg", "2")->provide_key()->set_from_string("virtual/pkg");
@@ -100,10 +100,10 @@ TEST(VirtualsRepository, Duplicates)
                     n::supports_uninstall() = true
                     )));
 
-    env.package_database()->add_repository(2, virtuals);
-    env.package_database()->add_repository(3, repo1);
-    env.package_database()->add_repository(4, repo2);
-    env.package_database()->add_repository(5, installed);
+    env.add_repository(2, virtuals);
+    env.add_repository(3, repo1);
+    env.add_repository(4, repo2);
+    env.add_repository(5, installed);
 
     repo1->add_version("cat", "pkg", "1")->provide_key()->set_from_string("virtual/pkg");
     repo1->add_version("cat", "pkg", "2")->provide_key()->set_from_string("virtual/pkg");
@@ -141,9 +141,9 @@ TEST(VirtualsRepository, Recursion)
                     n::name() = RepositoryName("repo2")
                     )));
 
-    env.package_database()->add_repository(2, repo1);
-    env.package_database()->add_repository(3, repo2);
-    env.package_database()->add_repository(4, virtuals);
+    env.add_repository(2, repo1);
+    env.add_repository(3, repo2);
+    env.add_repository(4, virtuals);
 
     repo1->add_version("virtual", "gkp", "1")->provide_key()->set_from_string("virtual/pkg");
     repo1->add_virtual_package(QualifiedPackageName("virtual/pkg"), std::make_shared<PackageDepSpec>(

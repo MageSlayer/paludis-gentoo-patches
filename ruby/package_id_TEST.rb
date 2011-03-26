@@ -40,15 +40,15 @@ module Paludis
         end
 
         def pid_testrepo
-            env.package_database.fetch_repository("testrepo").package_ids("foo/bar").first
+            env.fetch_repository("testrepo").package_ids("foo/bar").first
         end
 
         def pid_bad
-            env.package_database.fetch_repository("testrepo").package_ids("bad/pkg").first
+            env.fetch_repository("testrepo").package_ids("bad/pkg").first
         end
 
         def pid_installed
-            env_vdb.package_database.fetch_repository("installed").package_ids("cat-one/pkg-one").first
+            env_vdb.fetch_repository("installed").package_ids("cat-one/pkg-one").first
         end
     end
 

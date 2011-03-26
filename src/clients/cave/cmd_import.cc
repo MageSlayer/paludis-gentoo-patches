@@ -37,7 +37,6 @@
 #include <paludis/repository.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/repository_factory.hh>
-#include <paludis/package_database.hh>
 #include <paludis/unformatted_pretty_printer.hh>
 
 #include <iostream>
@@ -224,7 +223,7 @@ ImportCommand::run(
         for (PackageIDSequence::ConstIterator i(old_ids->begin()), i_end(old_ids->end()) ;
                 i != i_end ; ++i)
         {
-            auto repo(env->package_database()->fetch_repository((*i)->repository_name()));
+            auto repo(env->fetch_repository((*i)->repository_name()));
             if (! repo->format_key())
                 continue;
             if (repo->format_key()->value() != "installed_unpackaged")
@@ -291,7 +290,7 @@ ImportCommand::run(
     keys->insert("preserve_work", preserve_work);
     std::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env.get(),
                 std::bind(from_keys, keys, std::placeholders::_1)));
-    env->package_database()->add_repository(10, repo);
+    env->add_repository(10, repo);
     std::shared_ptr<const PackageIDSequence> ids(repo->package_ids(package, { }));
     if (1 != std::distance(ids->begin(), ids->end()))
         throw InternalError(PALUDIS_HERE, "ids is '" + join(indirect_iterator(ids->begin()), indirect_iterator(

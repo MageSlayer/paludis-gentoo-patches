@@ -54,102 +54,10 @@ using namespace paludis;
 namespace paludis
 {
     template <>
-    struct WrappedForwardIteratorTraits<AmbiguousPackageNameError::OptionsConstIteratorTag>
-    {
-        typedef std::list<std::string>::const_iterator UnderlyingIterator;
-    };
-
-    template <>
     struct WrappedForwardIteratorTraits<PackageDatabase::RepositoryConstIteratorTag>
     {
         typedef std::list<std::shared_ptr<Repository> >::const_iterator UnderlyingIterator;
     };
-}
-
-PackageDatabaseError::PackageDatabaseError(const std::string & our_message) throw () :
-    Exception(our_message)
-{
-}
-
-PackageDatabaseLookupError::PackageDatabaseLookupError(const std::string & our_message) throw () :
-    PackageDatabaseError(our_message)
-{
-}
-
-DuplicateRepositoryError::DuplicateRepositoryError(const std::string & name) throw () :
-    PackageDatabaseError("A repository named '" + name + "' already exists")
-{
-}
-
-NoSuchPackageError::NoSuchPackageError(const std::string & our_name) throw () :
-    PackageDatabaseLookupError("Could not find '" + our_name + "'"),
-    _name(our_name)
-{
-}
-
-NoSuchRepositoryError::NoSuchRepositoryError(const RepositoryName & n) throw () :
-    PackageDatabaseLookupError("Could not find repository '" + stringify(n) + "'"),
-    _name(n)
-{
-}
-
-NoSuchRepositoryError::~NoSuchRepositoryError() throw ()
-{
-}
-
-RepositoryName
-NoSuchRepositoryError::name() const
-{
-    return _name;
-}
-
-struct AmbiguousPackageNameError::NameData
-{
-    std::string name;
-    std::list<std::string> names;
-};
-
-template <typename I_>
-AmbiguousPackageNameError::AmbiguousPackageNameError(const std::string & our_name,
-        I_ begin, const I_ end) throw () :
-    PackageDatabaseLookupError("Ambiguous package name '" + our_name + "' (candidates are " +
-            join(begin, end, ", ") + ")"),
-    _name_data(new NameData)
-{
-    _name_data->name = our_name;
-    std::transform(begin, end, std::back_inserter(_name_data->names),
-            &stringify<typename std::iterator_traits<I_>::value_type>);
-}
-
-AmbiguousPackageNameError::AmbiguousPackageNameError(const AmbiguousPackageNameError & other) :
-    PackageDatabaseLookupError(other),
-    _name_data(new NameData)
-{
-    _name_data->name = other._name_data->name;
-    _name_data->names = other._name_data->names;
-}
-
-AmbiguousPackageNameError::~AmbiguousPackageNameError() throw ()
-{
-    delete _name_data;
-}
-
-AmbiguousPackageNameError::OptionsConstIterator
-AmbiguousPackageNameError::begin_options() const
-{
-    return OptionsConstIterator(_name_data->names.begin());
-}
-
-AmbiguousPackageNameError::OptionsConstIterator
-AmbiguousPackageNameError::end_options() const
-{
-    return OptionsConstIterator(_name_data->names.end());
-}
-
-const std::string &
-AmbiguousPackageNameError::name() const
-{
-    return _name_data->name;
 }
 
 namespace paludis
@@ -342,13 +250,19 @@ PackageDatabase::fetch_unique_qualified_package_name(const PackageNamePart & p, 
             if (! qpns.empty() && next(qpns.begin()) == qpns.end())
                 break;
 
-            throw AmbiguousPackageNameError(stringify(p), first_iterator(result->begin()),
-                    first_iterator(result->end()));
+            auto candidates(std::make_shared<Sequence<std::string> >());
+            std::transform(first_iterator(result->begin()), first_iterator(result->end()), candidates->back_inserter(),
+                    &stringify<QualifiedPackageName>);
+            throw AmbiguousPackageNameError(stringify(p), candidates);
         } while (false);
 
         if (! disambiguate)
-            throw AmbiguousPackageNameError(stringify(p), first_iterator(result->begin()),
-                      first_iterator(result->end()));
+        {
+            auto candidates(std::make_shared<Sequence<std::string> >());
+            std::transform(first_iterator(result->begin()), first_iterator(result->end()), candidates->back_inserter(),
+                    &stringify<QualifiedPackageName>);
+            throw AmbiguousPackageNameError(stringify(p), candidates);
+        }
 
         Log::get_instance()->message("package_database.ambiguous_name", ll_warning, lc_context)
             << "Package name '" << p << "' is ambiguous, assuming you meant '" << *qpns.begin()
@@ -434,6 +348,5 @@ PackageDatabase::all_filter()
     return result;
 }
 
-template class WrappedForwardIterator<AmbiguousPackageNameError::OptionsConstIteratorTag, const std::string>;
 template class WrappedForwardIterator<PackageDatabase::RepositoryConstIteratorTag, const std::shared_ptr<Repository> >;
 

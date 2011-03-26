@@ -29,7 +29,6 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
-#include <paludis/package_database.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
@@ -70,7 +69,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             TEST_CHECK(FSPath("fetch_visitor_TEST_dir/in/input1").stat().exists());

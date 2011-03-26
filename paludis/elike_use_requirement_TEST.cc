@@ -20,7 +20,6 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/elike_use_requirement.hh>
-#include <paludis/package_database.hh>
 #include <paludis/choice.hh>
 #include <paludis/additional_package_dep_spec_requirement.hh>
 
@@ -65,7 +64,7 @@ TEST(ELikeUseRequirements, Simple)
                     n::environment() = &env,
                     n::name() = RepositoryName("repo")
                     )));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "pkg1", "1"));
     set_conditionals(id, "enabled disabled");
 
@@ -101,7 +100,7 @@ TEST(ELikeUseRequirements, Portage)
                     n::environment() = &env,
                     n::name() = RepositoryName("repo")
                     )));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "pkg1", "1"));
     set_conditionals(id, "enabled disabled");
 
@@ -137,7 +136,7 @@ TEST(ELikeUseRequirements, Multiple)
                     n::environment() = &env,
                     n::name() = RepositoryName("fake")
                     )));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "pkg1", "1"));
     set_conditionals(id, "enabled disabled");
 
@@ -179,7 +178,7 @@ TEST(ELikeUseRequirements, Complex)
                     n::environment() = &env,
                     n::name() = RepositoryName("fake")
                     )));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
     set_conditionals(id, "pkgname");
     std::shared_ptr<FakePackageID> id2(fake->add_version("cat", "disabled", "1"));
@@ -277,7 +276,7 @@ TEST(ELikeUseRequirements, ComplexPortage)
                     n::environment() = &env,
                     n::name() = RepositoryName("fake")
                     )));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
     set_conditionals(id, "pkgname");
     std::shared_ptr<FakePackageID> id2(fake->add_version("cat", "disabled", "1"));
@@ -347,7 +346,7 @@ TEST(ELikeUseRequirements, Both)
                     n::environment() = &env,
                     n::name() = RepositoryName("fake")
                     )));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
     set_conditionals(id, "pkgname");
     std::shared_ptr<FakePackageID> id2(fake->add_version("cat", "disabled", "1"));
@@ -473,7 +472,7 @@ TEST(ELikeUseRequirements, Malformed)
                     n::environment() = &env,
                     n::name() = RepositoryName("fake")
                     )));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
     set_conditionals(id, "pkgname");
 
@@ -498,7 +497,7 @@ TEST(ELikeUseRequirements, MalformedPortage)
                     n::environment() = &env,
                     n::name() = RepositoryName("fake")
                     )));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
     set_conditionals(id, "pkgname");
 
@@ -527,7 +526,7 @@ TEST(ELikeUseRequirements, MalformedBoth)
                     n::environment() = &env,
                     n::name() = RepositoryName("fake")
                     )));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
     set_conditionals(id, "pkgname");
 
@@ -551,7 +550,7 @@ TEST(ELikeUseRequirements, ComplexNonStrict)
                     n::environment() = &env,
                     n::name() = RepositoryName("fake")
                     )));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
     set_conditionals(id, "pkgname");
     std::shared_ptr<FakePackageID> id2(fake->add_version("cat", "disabled", "1"));
@@ -677,7 +676,7 @@ TEST(ELikeUseRequirements, PortageNonStrict)
                     n::environment() = &env,
                     n::name() = RepositoryName("fake")
                     )));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
     set_conditionals(id, "pkgname");
     std::shared_ptr<FakePackageID> id2(fake->add_version("cat", "disabled", "1"));
@@ -803,7 +802,7 @@ TEST(ELikeUseRequirements, Defaults)
                     n::environment() = &env,
                     n::name() = RepositoryName("fake")
                     )));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "pkg1", "1"));
     set_conditionals(id, "enabled disabled");
 
@@ -839,7 +838,7 @@ TEST(ELikeUseRequirements, PrefixStar)
                     n::environment() = &env,
                     n::name() = RepositoryName("fake")
                     )));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "pkg1", "1"));
     set_conditionals(id, "foo:enabled foo:disabled");
 
@@ -861,7 +860,7 @@ TEST(ELikeUseRequirements, QuestionDefaults)
                     n::environment() = &env,
                     n::name() = RepositoryName("fake")
                     )));
-    env.package_database()->add_repository(1, fake);
+    env.add_repository(1, fake);
 
     std::shared_ptr<FakePackageID> id1(fake->add_version("cat", "pkg1", "1"));
     set_conditionals(id1, "foo:enabled foo:disabled");

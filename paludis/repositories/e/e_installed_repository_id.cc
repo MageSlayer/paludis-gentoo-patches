@@ -50,7 +50,6 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/elike_choices.hh>
-#include <paludis/package_database.hh>
 #include <paludis/always_enabled_dependency_label.hh>
 
 #include <iterator>
@@ -972,19 +971,19 @@ namespace
 
         void visit(const UninstallAction & a)
         {
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             std::static_pointer_cast<const EInstalledRepository>(repo)->perform_uninstall(id, a);
         }
 
         void visit(const ConfigAction & a)
         {
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             std::static_pointer_cast<const EInstalledRepository>(repo)->perform_config(id, a);
         }
 
         void visit(const InfoAction & a)
         {
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             std::static_pointer_cast<const EInstalledRepository>(repo)->perform_info(id, a);
         }
 

@@ -57,8 +57,6 @@
 
 namespace paludis
 {
-    class PackageDatabase;
-
     /**
      * A PackageID represents a unique package version in a particular
      * Repository.
@@ -458,8 +456,8 @@ namespace paludis
     /**
      * A comparison functor that provides a less-than comparison on PackageID
      * instances according to, in order, their name, their version, their
-     * repository's importance according to the supplied PackageDatabase,
-     * and PackageID::arbitrary_less_than_comparison.
+     * repository's importance according to the supplied Environment,
+     * and Environment::arbitrary_less_than_comparison.
      *
      * \ingroup g_package_id
      * \since 0.26
@@ -481,7 +479,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            PackageIDComparator(const PackageDatabase * const);
+            PackageIDComparator(const Environment * const);
             PackageIDComparator(const PackageIDComparator &);
             ~PackageIDComparator();
 

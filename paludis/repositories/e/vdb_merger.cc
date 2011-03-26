@@ -36,14 +36,14 @@
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/env_var_names.hh>
+#include <paludis/util/md5.hh>
 
 #include <paludis/output_manager.hh>
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
-#include <paludis/util/md5.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/version_spec.hh>
 
 #include <iomanip>
 #include <list>

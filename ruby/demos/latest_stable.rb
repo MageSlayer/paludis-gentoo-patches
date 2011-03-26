@@ -100,7 +100,7 @@ def check_one_package(env, search_keywords, repo, pkg)
     end
 end
 
-env.package_database.repositories.each do |repo|
+env.repositories.each do |repo|
     next if repo.virtuals_interface.nil?
     repo.category_names.each do |cat|
         repo.package_names(cat).each do |pkg|

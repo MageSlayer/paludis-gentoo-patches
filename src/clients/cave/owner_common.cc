@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2008 Alexander Færøy
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,13 +27,13 @@
 #include <paludis/generator.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/name.hh>
-#include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/repository.hh>
 #include <paludis/selection.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/stringify.hh>
 #include <algorithm>
 #include <functional>
 

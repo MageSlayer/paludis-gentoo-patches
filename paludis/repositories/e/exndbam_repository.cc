@@ -24,6 +24,7 @@
 #include <paludis/repositories/e/eapi_phase.hh>
 #include <paludis/repositories/e/extra_distribution_data.hh>
 #include <paludis/repositories/e/can_skip_phase.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/sequence.hh>
@@ -37,6 +38,8 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
+#include <paludis/util/join.hh>
+
 #include <paludis/output_manager.hh>
 #include <paludis/distribution.hh>
 #include <paludis/environment.hh>
@@ -47,6 +50,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
 #include <paludis/literal_metadata_key.hh>
+
 #include <functional>
 
 using namespace paludis;

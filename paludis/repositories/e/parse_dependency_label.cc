@@ -20,17 +20,20 @@
 #include <paludis/repositories/e/parse_dependency_label.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/eapi.hh>
+
 #include <paludis/util/log.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/singleton-impl.hh>
+
 #include <paludis/dep_label.hh>
 #include <paludis/choice.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/always_enabled_dependency_label.hh>
+#include <paludis/repository.hh>
+
 #include <map>
 #include <set>
 
@@ -45,7 +48,7 @@ namespace
             const std::string label,
             const ChoiceNameWithPrefix n)
     {
-        auto repo(env->package_database()->fetch_repository(id->repository_name()));
+        auto repo(env->fetch_repository(id->repository_name()));
         if (repo->installed_root_key())
             return false;
 

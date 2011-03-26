@@ -21,21 +21,26 @@
 #include <python/exception.hh>
 #include <python/iterable.hh>
 
-#include <paludis/environment.hh>
-#include <paludis/environment_factory.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/paludis_config.hh>
+
 #include <paludis/environments/no_config/no_config_environment.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/hook.hh>
 #include <paludis/package_id.hh>
 #include <paludis/selection.hh>
 #include <paludis/spec_tree.hh>
+#include <paludis/filter.hh>
+#include <paludis/standard_output_manager.hh>
+#include <paludis/environment.hh>
+#include <paludis/environment_factory.hh>
+
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
-#include <paludis/standard_output_manager.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -45,12 +50,8 @@ class EnvironmentImplementationWrapper :
     public EnvironmentImplementation,
     public bp::wrapper<EnvironmentImplementation>
 {
-    private:
-        std::shared_ptr<PackageDatabase> _db;
-
     public:
-        EnvironmentImplementationWrapper() :
-            _db(std::make_shared<PackageDatabase>(this))
+        EnvironmentImplementationWrapper()
         {
         }
 
@@ -117,18 +118,6 @@ class EnvironmentImplementationWrapper :
                 return f(p, s);
             else
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "unmasked_by_user");
-        }
-
-        virtual std::shared_ptr<PackageDatabase> package_database()
-            PALUDIS_ATTRIBUTE((warn_unused_result))
-        {
-            return _db;
-        }
-
-        virtual std::shared_ptr<const PackageDatabase> package_database() const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
-        {
-            return _db;
         }
 
         virtual std::shared_ptr<const FSPathSequence> bashrc_files() const
@@ -429,7 +418,15 @@ class EnvironmentImplementationWrapper :
         {
             throw PythonMethodNotImplemented("EnvironmentImplementation", "update_config_files_for_package_move");
         }
+
+        virtual QualifiedPackageName fetch_unique_qualified_package_name(
+                const PackageNamePart &, const Filter & = all_filter(), const bool disambiguate = true) const
+        {
+            throw PythonMethodNotImplemented("EnvironmentImplementation", "fetch_unique_qualified_package_name");
+        }
 };
+
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(fetch_unique_qualified_package_name_overloads, fetch_unique_qualified_package_name, 1, 3)
 
 struct NoConfigEnvironmentWrapper :
     NoConfigEnvironment
@@ -495,11 +492,11 @@ void expose_environment()
             )
         ;
 
+    const std::shared_ptr<Repository> (Environment::* fetch_repository_ptr)(const RepositoryName &) = &Environment::fetch_repository;
+
     /**
      * Environment
      */
-    std::shared_ptr<PackageDatabase> (Environment::* package_database)() =
-        &Environment::package_database;
     bp::class_<Environment, std::shared_ptr<Environment>, boost::noncopyable>
         (
          "Environment",
@@ -507,11 +504,6 @@ void expose_environment()
          "and provides various methods for querying package visibility and options.",
          bp::no_init
         )
-        .add_property("package_database", bp::make_function(package_database,
-                    bp::with_custodian_and_ward_postcall<0, 1>()),
-                "[ro] PackageDatabase\n"
-                "Our package database."
-                )
 
         .def("set", &Environment::set,
                 "set(SetName) -> DepSpec\n"
@@ -527,6 +519,30 @@ void expose_environment()
                 "[selection] -> list of PackageID\n"
                 "Return PackageID instances matching a given selection."
             )
+
+        .def("fetch_repository", fetch_repository_ptr, bp::with_custodian_and_ward_postcall<0, 1>(),
+                "fetch_repository(RepositoryName) -> Repository\n"
+                "Fetch a named repository."
+            )
+
+        .def("fetch_unique_qualified_package_name", &Environment::fetch_unique_qualified_package_name,
+             fetch_unique_qualified_package_name_overloads(
+                "fetch_unique_qualified_package_name(PackageNamePart[, Filter[, bool]]) -> QualifiedPackageName\n"
+                "Disambiguate a package name.  If a filter is specified, "
+                "limit the potential results to packages that match."
+                )
+            )
+
+        .def("more_important_than", &Environment::more_important_than,
+                "more_important_than(RepositoryName, RepositoryName) -> bool\n"
+                "Return true if the first repository is more important than the second."
+            )
+
+        .add_property("repositories",
+                bp::range(&Environment::begin_repositories, &Environment::end_repositories),
+                "[ro] Iterable of Repository\n"
+                "Our repositories"
+                )
         ;
 
     /**
@@ -534,6 +550,7 @@ void expose_environment()
      */
     typedef EnvironmentImplementation EnvImp;
     typedef EnvironmentImplementationWrapper EnvImpW;
+
     bp::class_<EnvironmentImplementationWrapper, std::shared_ptr<EnvironmentImplementationWrapper>,
             bp::bases<Environment>, boost::noncopyable>
         (
@@ -631,6 +648,31 @@ void expose_environment()
                 "[selection] -> list of PackageID\n"
                 "Return PackageID instances matching a given selection."
             )
+
+        .def("fetch_repository", fetch_repository_ptr, bp::with_custodian_and_ward_postcall<0, 1>(),
+                "fetch_repository(RepositoryName) -> Repository\n"
+                "Fetch a named repository."
+            )
+
+        .def("fetch_unique_qualified_package_name", &EnvImpW::fetch_unique_qualified_package_name,
+             fetch_unique_qualified_package_name_overloads(
+                "fetch_unique_qualified_package_name(PackageNamePart[, Filter[, bool]]) -> QualifiedPackageName\n"
+                "Disambiguate a package name.  If a filter is specified, "
+                "limit the potential results to packages that match."
+                )
+            )
+
+        .def("more_important_than", &EnvImpW::more_important_than,
+                "more_important_than(RepositoryName, RepositoryName) -> bool\n"
+                "Return true if the first repository is more important than the second."
+            )
+
+        .add_property("repositories",
+                bp::range(&EnvImpW::begin_repositories, &EnvImpW::end_repositories),
+                "[ro] Iterable of Repository\n"
+                "Our repositories"
+                )
+        ;
         ;
 
     /**
@@ -688,5 +730,21 @@ void expose_environment()
          "control all the options rather than reading them from configuration files.",
          bp::init<>("__init__()")
         );
+
+    ExceptionRegister::get_instance()->add_exception<DuplicateRepositoryError>
+        ("DuplicateRepositoryError", "BaseException",
+         "Thrown if a Repository with the same name as an existing member is added to an Environment.");
+
+    ExceptionRegister::get_instance()->add_exception<AmbiguousPackageNameError>
+        ("AmbiguousPackageNameError", "BaseException",
+         "Thrown if an Environment query results in more than one matching Package.");
+
+    ExceptionRegister::get_instance()->add_exception<NoSuchPackageError>
+        ("NoSuchPackageError", "BaseException",
+         "Thrown if there is no Package in an Environment with the given name.");
+
+    ExceptionRegister::get_instance()->add_exception<NoSuchRepositoryError>
+        ("NoSuchRepositoryError", "BaseException",
+         "Thrown if there is no Repository in a RepositoryDatabase with the given name.");
 }
 

@@ -125,7 +125,7 @@ namespace test_cases
             keys->insert("root", stringify(root));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<Map<std::string, std::string> > b_keys(std::make_shared<Map<std::string, std::string>>());
             b_keys->insert("format", "e");
@@ -145,7 +145,7 @@ namespace test_cases
             b_keys->insert("root", stringify(root));
             std::shared_ptr<Repository> b_repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, b_keys, std::placeholders::_1)));
-            env.package_database()->add_repository(2, b_repo);
+            env.add_repository(2, b_repo);
 
             std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
             v_keys->insert("format", "vdb");
@@ -155,7 +155,7 @@ namespace test_cases
             v_keys->insert("root", stringify(root));
             std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, v_repo);
+            env.add_repository(1, v_repo);
 
             {
                 InstallAction bin_action(make_named_values<InstallActionOptions>(

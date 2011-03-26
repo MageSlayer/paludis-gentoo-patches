@@ -22,7 +22,6 @@
 
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
-#include <paludis/package_database.hh>
 #include <paludis/action.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/selection.hh>
@@ -151,8 +150,7 @@ VirtualsRepository::need_names() const
     Log::get_instance()->message("virtuals.need_names", ll_debug, lc_context) << "VirtualsRepository need_names";
 
     /* Determine our virtual name -> package mappings. */
-    for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
-            r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
+    for (auto r(_imp->env->begin_repositories()), r_end(_imp->env->end_repositories()) ; r != r_end ; ++r)
     {
         if (! (**r).provides_interface())
             continue;
@@ -170,8 +168,7 @@ VirtualsRepository::need_names() const
 
     std::vector<std::pair<QualifiedPackageName, std::shared_ptr<const PackageDepSpec> > > new_names;
 
-    for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
-            r_end(_imp->env->package_database()->end_repositories()) ; r != r_end ; ++r)
+    for (auto r(_imp->env->begin_repositories()), r_end(_imp->env->end_repositories()) ; r != r_end ; ++r)
     {
         if (! (**r).virtuals_interface())
             continue;

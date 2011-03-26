@@ -36,7 +36,6 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
-#include <paludis/package_database.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/selection.hh>
@@ -387,7 +386,7 @@ namespace
         void visit(const InstallAction & a)
         {
             SupportsActionTest<InstallAction> t;
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
@@ -395,7 +394,7 @@ namespace
         void visit(const UninstallAction & a)
         {
             SupportsActionTest<UninstallAction> t;
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
@@ -403,7 +402,7 @@ namespace
         void visit(const ConfigAction & a)
         {
             SupportsActionTest<ConfigAction> t;
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
@@ -411,7 +410,7 @@ namespace
         void visit(const FetchAction & a)
         {
             SupportsActionTest<FetchAction> t;
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
@@ -419,7 +418,7 @@ namespace
         void visit(const InfoAction & a)
         {
             SupportsActionTest<InfoAction> t;
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
@@ -427,7 +426,7 @@ namespace
         void visit(const PretendAction & a)
         {
             SupportsActionTest<PretendAction> t;
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
@@ -435,7 +434,7 @@ namespace
         void visit(const PretendFetchAction & a)
         {
             SupportsActionTest<PretendFetchAction> t;
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
@@ -452,7 +451,7 @@ VirtualsPackageID::perform_action(Action & a) const
 bool
 VirtualsPackageID::supports_action(const SupportsActionTestBase & b) const
 {
-    auto repo(_imp->env->package_database()->fetch_repository(repository_name()));
+    auto repo(_imp->env->fetch_repository(repository_name()));
     return repo->some_ids_might_support_action(b);
 }
 

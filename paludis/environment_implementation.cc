@@ -25,6 +25,7 @@
 #include <paludis/distribution.hh>
 #include <paludis/selection.hh>
 #include <paludis/selection_cache.hh>
+#include <paludis/package_database.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
@@ -118,6 +119,7 @@ namespace paludis
     template <>
     struct Imp<EnvironmentImplementation>
     {
+        std::shared_ptr<PackageDatabase> package_database;
         std::map<unsigned, NotifierCallbackFunction> notifier_callbacks;
         std::list<std::shared_ptr<const SelectionCache> > selection_caches;
 
@@ -126,7 +128,8 @@ namespace paludis
         mutable std::shared_ptr<SetNameSet> set_names;
         mutable SetsStore sets;
 
-        Imp() :
+        Imp(const std::shared_ptr<PackageDatabase> & d) :
+            package_database(d),
             loaded_sets(false)
         {
         }
@@ -134,7 +137,7 @@ namespace paludis
 }
 
 EnvironmentImplementation::EnvironmentImplementation() :
-    _imp()
+    _imp(std::shared_ptr<PackageDatabase>(new PackageDatabase(this)))
 {
 }
 
@@ -292,8 +295,7 @@ EnvironmentImplementation::_need_sets() const
     if (_imp->loaded_sets)
         return;
 
-    for (PackageDatabase::RepositoryConstIterator r(package_database()->begin_repositories()),
-            r_end(package_database()->end_repositories()) ;
+    for (auto r(begin_repositories()), r_end(end_repositories()) ;
             r != r_end ; ++r)
         (*r)->populate_sets();
 
@@ -367,50 +369,50 @@ EnvironmentImplementation::set_always_exists(const SetName & s) const
 void
 EnvironmentImplementation::add_repository(int importance, const std::shared_ptr<Repository> & repository)
 {
-    package_database()->add_repository(importance, repository);
+    _imp->package_database->add_repository(importance, repository);
 }
 
 const std::shared_ptr<const Repository>
 EnvironmentImplementation::fetch_repository(const RepositoryName & name) const
 {
-    return package_database()->fetch_repository(name);
+    return _imp->package_database->fetch_repository(name);
 }
 
 const std::shared_ptr<Repository>
 EnvironmentImplementation::fetch_repository(const RepositoryName & name)
 {
-    return package_database()->fetch_repository(name);
+    return _imp->package_database->fetch_repository(name);
 }
 
 bool
 EnvironmentImplementation::has_repository_named(const RepositoryName & name) const
 {
-    return package_database()->has_repository_named(name);
+    return _imp->package_database->has_repository_named(name);
 }
 
 QualifiedPackageName
 EnvironmentImplementation::fetch_unique_qualified_package_name(const PackageNamePart & name,
         const Filter & filter, const bool disambiguate) const
 {
-    return package_database()->fetch_unique_qualified_package_name(name, filter, disambiguate);
+    return _imp->package_database->fetch_unique_qualified_package_name(name, filter, disambiguate);
 }
 
 bool
 EnvironmentImplementation::more_important_than(const RepositoryName & a, const RepositoryName & b) const
 {
-    return package_database()->more_important_than(a, b);
+    return _imp->package_database->more_important_than(a, b);
 }
 
 EnvironmentImplementation::RepositoryConstIterator
 EnvironmentImplementation::begin_repositories() const
 {
-    return package_database()->begin_repositories();
+    return _imp->package_database->begin_repositories();
 }
 
 EnvironmentImplementation::RepositoryConstIterator
 EnvironmentImplementation::end_repositories() const
 {
-    return package_database()->end_repositories();
+    return _imp->package_database->end_repositories();
 }
 
 DuplicateSetError::DuplicateSetError(const SetName & s) throw () :

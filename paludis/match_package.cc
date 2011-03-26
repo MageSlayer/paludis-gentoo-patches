@@ -22,20 +22,20 @@
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/version_requirements.hh>
-#include <paludis/package_database.hh>
 #include <paludis/package_id.hh>
 #include <paludis/slot_requirement.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/util/set.hh>
-#include <paludis/util/options.hh>
-#include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/sequence.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/additional_package_dep_spec_requirement.hh>
 
+#include <paludis/util/set.hh>
+#include <paludis/util/options.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
 
 #include <functional>
 #include <algorithm>
@@ -141,7 +141,7 @@ paludis::match_package_with_maybe_changes(
 
     if (spec.installed_at_path_ptr())
     {
-        auto repo(env.package_database()->fetch_repository(id->repository_name()));
+        auto repo(env.fetch_repository(id->repository_name()));
         if (! repo->installed_root_key())
             return false;
         if (repo->installed_root_key()->value() != *spec.installed_at_path_ptr())
@@ -156,7 +156,7 @@ paludis::match_package_with_maybe_changes(
             if (id->masked())
                 return false;
 
-        const std::shared_ptr<const Repository> dest(env.package_database()->fetch_repository(
+        const std::shared_ptr<const Repository> dest(env.fetch_repository(
                     spec.installable_to_repository_ptr()->repository()));
         if (! dest->destination_interface())
             return false;
@@ -173,8 +173,7 @@ paludis::match_package_with_maybe_changes(
                 return false;
 
         bool ok(false);
-        for (PackageDatabase::RepositoryConstIterator d(env.package_database()->begin_repositories()),
-                d_end(env.package_database()->end_repositories()) ;
+        for (auto d(env.begin_repositories()), d_end(env.end_repositories()) ;
                 d != d_end ; ++d)
         {
             if (! (*d)->destination_interface())

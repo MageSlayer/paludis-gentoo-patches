@@ -40,7 +40,5 @@ TEST(NoConfigEnvironment, Construction)
                 n::repository_type() = no_config_environment::ncer_auto,
                 n::write_cache() = FSPath("/var/empty")
             ));
-
-    EXPECT_TRUE(bool(e.package_database()));
 }
 

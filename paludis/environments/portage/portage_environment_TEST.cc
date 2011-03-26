@@ -28,7 +28,6 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/package_id.hh>
-#include <paludis/package_database.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
 #include <paludis/user_dep_spec.hh>

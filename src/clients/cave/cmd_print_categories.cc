@@ -22,10 +22,10 @@
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/stringify.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -95,8 +95,7 @@ PrintCategoriesCommand::run(
         throw args::DoHelp("print-categories takes no parameters");
 
     std::set<CategoryNamePart> categories;
-    for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
-            r_end(env->package_database()->end_repositories()) ;
+    for (auto r(env->begin_repositories()), r_end(env->end_repositories()) ;
             r != r_end ; ++r)
     {
         if (cmdline.a_repository.specified())

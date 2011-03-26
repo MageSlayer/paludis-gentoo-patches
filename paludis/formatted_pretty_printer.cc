@@ -18,15 +18,17 @@
  */
 
 #include <paludis/formatted_pretty_printer.hh>
-#include <paludis/util/pimp-impl.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
+#include <paludis/repository.hh>
+
+#include <paludis/util/pimp-impl.hh>
+#include <paludis/util/stringify.hh>
 
 using namespace paludis;
 
@@ -172,7 +174,7 @@ FormattedPrettyPrinter::prettify(const std::shared_ptr<const PackageID> & v) con
 {
     if (_imp->env)
     {
-        auto repo(_imp->env->package_database()->fetch_repository(v->repository_name()));
+        auto repo(_imp->env->fetch_repository(v->repository_name()));
         if (repo->installed_root_key())
             return format_installed(stringify(*v));
         else if (! v->masked())

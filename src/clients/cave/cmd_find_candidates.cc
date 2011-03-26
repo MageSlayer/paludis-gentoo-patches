@@ -25,7 +25,6 @@
 
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
@@ -44,6 +43,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
 
 #include <cstdlib>
 #include <iostream>
@@ -212,8 +212,8 @@ FindCandidatesCommand::run_hosted(
         step("Searching repositories");
 
         RepositoryNames repository_names;
-        for (PackageDatabase::RepositoryConstIterator r(env->package_database()->begin_repositories()),
-                r_end(env->package_database()->end_repositories()) ; r != r_end ; ++r)
+        for (Environment::RepositoryConstIterator r(env->begin_repositories()),
+                r_end(env->end_repositories()) ; r != r_end ; ++r)
             repository_names.insert((*r)->name());
 
         step("Searching categories");
@@ -222,7 +222,7 @@ FindCandidatesCommand::run_hosted(
         for (RepositoryNames::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
                 r != r_end ; ++r)
         {
-            const std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
+            const std::shared_ptr<const Repository> repo(env->fetch_repository(*r));
             const std::shared_ptr<const CategoryNamePartSet> cats(repo->category_names({ }));
             std::copy(cats->begin(), cats->end(), std::inserter(category_names, category_names.end()));
         }
@@ -233,7 +233,7 @@ FindCandidatesCommand::run_hosted(
         for (RepositoryNames::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
                 r != r_end ; ++r)
         {
-            const std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(*r));
+            const std::shared_ptr<const Repository> repo(env->fetch_repository(*r));
             for (CategoryNames::const_iterator c(category_names.begin()), c_end(category_names.end()) ;
                     c != c_end ; ++c)
             {

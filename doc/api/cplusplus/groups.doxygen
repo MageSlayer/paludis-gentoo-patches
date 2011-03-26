@@ -177,18 +177,6 @@ using namespace paludis;
  * - \ref example_repository.cc "example_repository.cc"
  */
 
-/** \defgroup g_package_database Package Database
- *
- * \ingroup g_paludis
- *
- * A PackageDatabase, which is owned by an Environment, contains a number of
- * Repository instances.
- *
- * \section Examples
- *
- * - \ref example_package_database.cc "example_package_database.cc"
- */
-
 /** \defgroup g_names Names and Versions
  *
  * \ingroup g_paludis

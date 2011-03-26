@@ -25,7 +25,6 @@
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -33,6 +32,7 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/resolver/collect_depped_upon.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>

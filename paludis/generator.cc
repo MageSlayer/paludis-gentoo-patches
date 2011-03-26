@@ -24,17 +24,20 @@
 #include <paludis/action_names.hh>
 #include <paludis/action.hh>
 #include <paludis/match_package.hh>
+#include <paludis/package_dep_spec_properties.hh>
+#include <paludis/environment.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/repository.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/package_dep_spec_properties.hh>
-#include <paludis/environment.hh>
-#include <paludis/package_database.hh>
-#include <paludis/package_id.hh>
-#include <paludis/metadata_key.hh>
+#include <paludis/util/stringify.hh>
+
 #include <algorithm>
 #include <functional>
 
@@ -142,7 +145,7 @@ namespace
         {
             using namespace std::placeholders;
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
-            if (env->package_database()->has_repository_named(name))
+            if (env->has_repository_named(name))
                 result->insert(name);
             return result;
         }
@@ -177,8 +180,7 @@ namespace
                 for (QualifiedPackageNameSet::ConstIterator q(qpns->begin()), q_end(qpns->end()) ;
                         q != q_end ; ++q)
                 {
-                    std::shared_ptr<const PackageIDSequence> id(
-                            env->package_database()->fetch_repository(*r)->package_ids(*q, x));
+                    std::shared_ptr<const PackageIDSequence> id(env->fetch_repository(*r)->package_ids(*q, x));
                     for (PackageIDSequence::ConstIterator i(id->begin()), i_end(id->end()) ;
                             i != i_end ; ++i)
                         if ((*i)->from_repositories_key() && ((*i)->from_repositories_key()->value()->end() !=
@@ -216,7 +218,7 @@ namespace
 
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
-                if (env->package_database()->fetch_repository(*r)->has_category_named(name, x))
+                if (env->fetch_repository(*r)->has_category_named(name, x))
                 {
                     result->insert(name);
                     break;
@@ -251,7 +253,7 @@ namespace
 
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                     r != r_end ; ++r)
-                if (env->package_database()->fetch_repository(*r)->has_category_named(name.category(), x))
+                if (env->fetch_repository(*r)->has_category_named(name.category(), x))
                 {
                     result->insert(name.category());
                     break;
@@ -271,7 +273,7 @@ namespace
                     r != r_end ; ++r)
                 for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
                         c != c_end ; ++c)
-                    if (env->package_database()->fetch_repository(*r)->has_package_named(name, x))
+                    if (env->fetch_repository(*r)->has_package_named(name, x))
                         result->insert(name);
 
             return result;
@@ -321,11 +323,11 @@ namespace
 
             if (spec.in_repository_ptr())
             {
-                if (env->package_database()->has_repository_named(*spec.in_repository_ptr()))
+                if (env->has_repository_named(*spec.in_repository_ptr()))
                 {
                     if (spec.installed_at_path_ptr())
                     {
-                        std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(
+                        std::shared_ptr<const Repository> repo(env->fetch_repository(
                                     *spec.in_repository_ptr()));
                         if (! repo->installed_root_key())
                             return result;
@@ -340,8 +342,8 @@ namespace
             {
                 if (spec.installed_at_path_ptr())
                 {
-                    for (PackageDatabase::RepositoryConstIterator i(env->package_database()->begin_repositories()),
-                            i_end(env->package_database()->end_repositories()) ; i != i_end ; ++i)
+                    for (auto i(env->begin_repositories()),
+                            i_end(env->end_repositories()) ; i != i_end ; ++i)
                     {
                         if (! (*i)->installed_root_key())
                             continue;
@@ -369,7 +371,7 @@ namespace
                 std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
-                    if (env->package_database()->fetch_repository(*r)->has_category_named(*spec.category_name_part_ptr(), x))
+                    if (env->fetch_repository(*r)->has_category_named(*spec.category_name_part_ptr(), x))
                     {
                         result->insert(*spec.category_name_part_ptr());
                         break;
@@ -384,7 +386,7 @@ namespace
                         r != r_end ; ++r)
                 {
                     std::shared_ptr<const CategoryNamePartSet> cats(
-                        env->package_database()->fetch_repository(*r)
+                        env->fetch_repository(*r)
                         ->category_names_containing_package(*spec.package_name_part_ptr(), x));
                     std::copy(cats->begin(), cats->end(), result->inserter());
                 }
@@ -396,7 +398,7 @@ namespace
                 std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
-                    if (env->package_database()->fetch_repository(*r)->has_category_named(spec.package_ptr()->category(), x))
+                    if (env->fetch_repository(*r)->has_category_named(spec.package_ptr()->category(), x))
                     {
                         result->insert(spec.package_ptr()->category());
                         break;
@@ -421,7 +423,7 @@ namespace
                         r != r_end ; ++r)
                     for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
                             c != c_end ; ++c)
-                        if (env->package_database()->fetch_repository(*r)->has_package_named(*c + *spec.package_name_part_ptr(), x))
+                        if (env->fetch_repository(*r)->has_package_named(*c + *spec.package_name_part_ptr(), x))
                             result->insert(*c + *spec.package_name_part_ptr());
 
                 return result;
@@ -431,7 +433,7 @@ namespace
                 std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
-                    if (env->package_database()->fetch_repository(*r)->has_package_named(*spec.package_ptr(), x))
+                    if (env->fetch_repository(*r)->has_package_named(*spec.package_ptr(), x))
                     {
                         result->insert(*spec.package_ptr());
                         break;
@@ -458,7 +460,7 @@ namespace
                         q != q_end ; ++q)
                 {
                     std::shared_ptr<const PackageIDSequence> id(
-                            env->package_database()->fetch_repository(*r)->package_ids(*q, x));
+                            env->fetch_repository(*r)->package_ids(*q, x));
                     for (PackageIDSequence::ConstIterator i(id->begin()), i_end(id->end()) ;
                             i != i_end ; ++i)
                         if (match_package(*env, spec, *i, from_id, options))
@@ -680,8 +682,8 @@ namespace
                 const RepositoryContentMayExcludes &) const
         {
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
-            for (PackageDatabase::RepositoryConstIterator i(env->package_database()->begin_repositories()),
-                    i_end(env->package_database()->end_repositories()) ; i != i_end ; ++i)
+            for (auto i(env->begin_repositories()),
+                    i_end(env->end_repositories()) ; i != i_end ; ++i)
                 if ((*i)->some_ids_might_support_action(SupportsActionTest<A_>()))
                     result->insert((*i)->name());
 

@@ -34,7 +34,6 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/package_id.hh>
-#include <paludis/package_database.hh>
 
 #include <memory>
 
@@ -54,7 +53,7 @@ TEST(UnavailableRepository, Creation)
                     n::sync() = std::make_shared<Map<std::string, std::string> >(),
                     n::sync_options() = std::make_shared<Map<std::string, std::string> >()
                 )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
     EXPECT_EQ("unavailable", stringify(repo->name()));
 }
 
@@ -69,7 +68,7 @@ TEST(UnavailableRepository, Contents)
                     n::sync() = std::make_shared<Map<std::string, std::string> >(),
                     n::sync_options() = std::make_shared<Map<std::string, std::string> >()
                 )));
-    env.package_database()->add_repository(1, repo);
+    env.add_repository(1, repo);
     EXPECT_EQ("unavailable", stringify(repo->name()));
 
     std::shared_ptr<const PackageIDSequence> contents(
@@ -95,7 +94,7 @@ TEST(UnavailableRepository, Contents)
                     n::environment() = &env,
                     n::name() = RepositoryName("bar")
                     )));
-    env.package_database()->add_repository(2, hide_bar);
+    env.add_repository(2, hide_bar);
     repo->invalidate();
 
     std::shared_ptr<const PackageIDSequence> contents_without_bar(

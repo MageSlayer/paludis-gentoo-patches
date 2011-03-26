@@ -511,7 +511,7 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
         id->set_eapi(s);
     else
     {
-        auto repo(params.environment()->package_database()->fetch_repository(id->repository_name()));
+        auto repo(params.environment()->fetch_repository(id->repository_name()));
         auto e_repo(std::static_pointer_cast<const ERepository>(repo));
         id->set_eapi(e_repo->params().eapi_when_unspecified());
     }

@@ -29,11 +29,9 @@
 #include <paludis/filter_handler.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/generator.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;

@@ -23,7 +23,6 @@
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
-#include <paludis/package_database.hh>
 #include <paludis/unformatted_pretty_printer.hh>
 #include <paludis/util/make_named_values.hh>
 #include <sstream>
@@ -56,7 +55,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             UnformattedPrettyPrinter ff;
@@ -82,7 +81,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             UnformattedPrettyPrinter ff;
@@ -108,7 +107,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             UnformattedPrettyPrinter ff;
@@ -135,7 +134,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             SpecTreePrettyPrinter d1(ff, { });
@@ -171,7 +170,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             SpecTreePrettyPrinter d(ff, { });
@@ -193,7 +192,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             SpecTreePrettyPrinter d(ff, { });
@@ -215,7 +214,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             SpecTreePrettyPrinter d(ff, { });
@@ -249,7 +248,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             SpecTreePrettyPrinter d(ff, { });
@@ -275,7 +274,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             SpecTreePrettyPrinter d(ff, { });
@@ -300,7 +299,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             SpecTreePrettyPrinter d(ff, { });
@@ -321,7 +320,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             SpecTreePrettyPrinter d(ff, { ppo_multiline_allowed });
@@ -353,7 +352,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             SpecTreePrettyPrinter d(ff, { });
@@ -386,7 +385,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             SpecTreePrettyPrinter d(ff, { });
@@ -441,7 +440,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             SpecTreePrettyPrinter d(ff, { });
@@ -465,7 +464,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             SpecTreePrettyPrinter d(ff, { });
@@ -488,7 +487,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             UnformattedPrettyPrinter ff;
@@ -516,7 +515,7 @@ namespace test_cases
                             n::environment() = &env,
                             n::name() = RepositoryName("repo")
                             )));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
             UnformattedPrettyPrinter ff;

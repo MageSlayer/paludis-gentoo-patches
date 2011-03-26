@@ -24,12 +24,14 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_requirements.hh>
-#include <paludis/package_database.hh>
 #include <paludis/filter.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/contents.hh>
+#include <paludis/repository.hh>
+
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
@@ -42,6 +44,8 @@
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/join.hh>
+
 #include <algorithm>
 
 using namespace paludis;
@@ -77,7 +81,7 @@ namespace
         {
             if (options[updso_no_disambiguation])
                 throw PackageDepSpecError("Need an explicit category specified");
-            result.package(env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(s),
+            result.package(env->fetch_unique_qualified_package_name(PackageNamePart(s),
                 filter::And(filter, filter::Matches(result, make_null_shared_ptr(), { }))));
         }
     }
@@ -794,7 +798,7 @@ UserKeyRequirement::requirement_met(
 
     const MetadataKey * key(0);
 
-    auto repo(env->package_database()->fetch_repository(id->repository_name()));
+    auto repo(env->fetch_repository(id->repository_name()));
     if (0 == _imp->key.compare(0, 3, "::$"))
     {
         if (_imp->key == "::$format")

@@ -20,7 +20,6 @@
 #ifndef PALUDIS_GUARD_PALUDIS_DEFAULT_ENVIRONMENT_HH
 #define PALUDIS_GUARD_PALUDIS_DEFAULT_ENVIRONMENT_HH 1
 
-#include <paludis/package_database.hh>
 #include <paludis/environment_implementation.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/name-fwd.hh>
@@ -98,12 +97,6 @@ namespace paludis
             virtual HookResult perform_hook(
                     const Hook &,
                     const std::shared_ptr<OutputManager> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::shared_ptr<PackageDatabase> package_database()
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual std::shared_ptr<const PackageDatabase> package_database() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual std::string distribution() const

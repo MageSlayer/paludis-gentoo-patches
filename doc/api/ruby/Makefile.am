@@ -24,7 +24,6 @@ examples = \
 	example_contents.rb \
 	example_dep_tree.rb \
 	example_environment.rb \
-	example_package_database.rb \
 	example_package_id.rb \
 	example_mask.rb \
 	example_match_package.rb \

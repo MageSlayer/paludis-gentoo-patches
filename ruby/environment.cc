@@ -67,25 +67,6 @@ namespace
 
     /*
      * call-seq:
-     *     package_database -> PackageDatabase
-     *
-     * Fetch our PackageDatabase.
-     */
-    VALUE
-    environment_package_database(VALUE self)
-    {
-        try
-        {
-            return package_database_to_value(value_to_environment(self)->package_database());
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
      *     set(set_name) -> DepSpec
      *
      * Fetch a named package set as a DepSpec.
@@ -439,6 +420,164 @@ namespace
         }
     }
 
+    /*
+     * call-seq:
+     *     fetch_unique_qualified_package_name(package_name) -> QualifiedPackageName
+     *     fetch_unique_qualified_package_name(package_name, filter) -> QualifiedPackageName
+     *
+     * Disambiguate a package name.  If a filter is specified, limit
+     * the potential results to packages that match.
+     */
+    VALUE
+    environment_fetch_unique_qualified_package_name(int argc, VALUE *argv, VALUE self)
+    {
+        try
+        {
+            if (1 == argc || 2 == argc)
+            {
+                std::shared_ptr<Environment> * self_ptr;
+                Data_Get_Struct(self, std::shared_ptr<Environment>, self_ptr);
+                return qualified_package_name_to_value((*self_ptr)->fetch_unique_qualified_package_name(
+                                PackageNamePart(StringValuePtr(argv[0])), 2 == argc ? value_to_filter(argv[1]) : filter::All()));
+            }
+            else
+                rb_raise(rb_eArgError, "fetch_unique_qualified_package_name expects one or two arguments, but got %d",argc);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     repositories -> Array
+     *     repositories {|repository| block } -> Nil
+     *
+     *  Returns all the repositories in the package database, either as an Array, or as
+     *  the parameters to a block.
+     */
+    VALUE
+    environment_repositories(VALUE self)
+    {
+        try
+        {
+            std::shared_ptr<Environment> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<Environment>, self_ptr);
+
+            if (rb_block_given_p())
+            {
+                for (Environment::RepositoryConstIterator r((*self_ptr)->begin_repositories()),
+                        r_end((*self_ptr)->end_repositories()) ; r != r_end ; ++r)
+                    rb_yield(repository_to_value(*r));
+                return Qnil;
+            }
+            VALUE result(rb_ary_new());
+            for (Environment::RepositoryConstIterator r((*self_ptr)->begin_repositories()),
+                    r_end((*self_ptr)->end_repositories()) ; r != r_end ; ++r)
+                rb_ary_push(result, repository_to_value(*r));
+
+            return result;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     fetch_repository(repository_name) -> Repository
+     *
+     *  Fetch a named repository.
+     */
+    VALUE
+    environment_fetch_repository(VALUE self, VALUE name)
+    {
+        try
+        {
+            std::shared_ptr<Environment> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<Environment>, self_ptr);
+
+            return repository_to_value((*self_ptr)->fetch_repository(RepositoryName(StringValuePtr(name))));
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     more_important_than(repository_name_a, repository_name_b) -> bool
+     *
+     * True if repository_name_a is more important than repository_name_b .
+     */
+    VALUE
+    environment_more_important_than(VALUE self, VALUE name1, VALUE name2)
+    {
+        try
+        {
+            std::shared_ptr<Environment> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<Environment>, self_ptr);
+
+            return (*self_ptr)->more_important_than(RepositoryName(StringValuePtr(name1)),
+                    RepositoryName(StringValuePtr(name2))) ? Qtrue : Qfalse;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     has_repository_named?(repository_name) -> true or false
+     *
+     *  Do we have a named repository?
+     */
+    VALUE
+    environment_has_repository_named(VALUE self, VALUE name)
+    {
+        try
+        {
+            std::shared_ptr<Environment> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<Environment>, self_ptr);
+
+            return ((*self_ptr)->has_repository_named(RepositoryName(StringValuePtr(name)))) ? true : false;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     add_repository(importance, repository) -> nil
+     *
+     *  Add a repository.
+     */
+    VALUE
+    environment_add_repository(VALUE self, VALUE importance, VALUE repo_v)
+    {
+        try
+        {
+            std::shared_ptr<Environment> * self_ptr;
+            Data_Get_Struct(self, std::shared_ptr<Environment>, self_ptr);
+
+            std::shared_ptr<Repository> repo(value_to_repository(repo_v));
+
+            (*self_ptr)->add_repository(NUM2INT(importance), repo);
+            return Qnil;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
+
+
     void do_register_environment()
     {
         rb_require("singleton");
@@ -451,7 +590,6 @@ namespace
          */
         c_environment = rb_define_class_under(paludis_module(), "Environment", rb_cObject);
         rb_funcall(c_environment, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_environment, "package_database", RUBY_FUNC_CAST(&environment_package_database), 0);
         rb_define_method(c_environment, "set", RUBY_FUNC_CAST(&environment_set), 1);
         rb_define_method(c_environment, "distribution", RUBY_FUNC_CAST(&environment_distribution), 0);
         rb_define_method(c_environment, "accept_license", RUBY_FUNC_CAST(&environment_accept_license), 2);
@@ -464,6 +602,18 @@ namespace
                 RUBY_FUNC_CAST((&EnvironmentKey<MetadataValueKey<FSPath>, &Environment::config_location_key>::fetch)), 0);
         rb_define_method(c_environment, "preferred_root_key",
                 RUBY_FUNC_CAST((&EnvironmentKey<MetadataValueKey<FSPath>, &Environment::preferred_root_key>::fetch)), 0);
+        rb_define_method(c_environment, "fetch_unique_qualified_package_name",
+                RUBY_FUNC_CAST(&environment_fetch_unique_qualified_package_name), -1);
+        rb_define_method(c_environment, "repositories",
+                RUBY_FUNC_CAST(&environment_repositories), 0);
+        rb_define_method(c_environment, "fetch_repository",
+                RUBY_FUNC_CAST(&environment_fetch_repository), 1);
+        rb_define_method(c_environment, "more_important_than",
+                RUBY_FUNC_CAST(&environment_more_important_than), 2);
+        rb_define_method(c_environment, "has_repository_named?",
+                RUBY_FUNC_CAST(&environment_has_repository_named), 1);
+        rb_define_method(c_environment, "add_repository",
+                RUBY_FUNC_CAST(&environment_add_repository), 2);
 
         /*
          * Document-class: Paludis::PaludisEnvironment

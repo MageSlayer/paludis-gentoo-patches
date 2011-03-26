@@ -32,7 +32,6 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/package_dep_spec_collection.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 
 using namespace paludis;
@@ -74,8 +73,7 @@ FindRepositoryForHelper::operator() (
 {
     std::shared_ptr<const Repository> result;
 
-    for (auto r(_imp->env->package_database()->begin_repositories()),
-            r_end(_imp->env->package_database()->end_repositories()) ;
+    for (auto r(_imp->env->begin_repositories()), r_end(_imp->env->end_repositories()) ;
             r != r_end ; ++r)
     {
         switch (resolution->resolvent().destination_type())

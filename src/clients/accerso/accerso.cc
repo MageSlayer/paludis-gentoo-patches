@@ -38,8 +38,8 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
-#include <paludis/package_database.hh>
 #include <paludis/output_manager_from_environment.hh>
+#include <paludis/repository.hh>
 #include <cstdlib>
 #include <functional>
 #include <iostream>
@@ -135,8 +135,7 @@ main(int argc, char *argv[])
 
             std::shared_ptr<const PackageIDSequence> ids(env[selection::AllVersionsSorted(
                         generator::InRepository(env.main_repository()->name()))]);
-            std::multimap<std::shared_ptr<const PackageID>, std::string, PackageIDComparator> results(
-                    PackageIDComparator(env.package_database().get()));
+            std::multimap<std::shared_ptr<const PackageID>, std::string, PackageIDComparator> results{PackageIDComparator(&env)};
             unsigned success(0), total(0);
 
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;

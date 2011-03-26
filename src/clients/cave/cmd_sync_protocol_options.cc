@@ -23,7 +23,6 @@
 #include <paludis/args/do_help.hh>
 
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 
 #include <paludis/util/fs_iterator.hh>
@@ -32,6 +31,7 @@
 #include <paludis/util/process.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/env_var_names.hh>
+#include <paludis/util/join.hh>
 
 #include <cstdlib>
 #include <iostream>

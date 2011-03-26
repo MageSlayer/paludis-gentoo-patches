@@ -379,7 +379,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
@@ -424,7 +424,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
@@ -477,7 +477,7 @@ namespace test_cases
                 keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
                 std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                             std::bind(from_keys, keys, std::placeholders::_1)));
-                env.package_database()->add_repository(1, repo);
+                env.add_repository(1, repo);
 
                 for (int pass = 1 ; pass <= 3 ; ++pass)
                 {
@@ -557,7 +557,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
@@ -600,7 +600,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<ERepository> repo(std::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
                             std::bind(from_keys, keys, std::placeholders::_1))));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
@@ -680,7 +680,7 @@ namespace test_cases
             keys18->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo18(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys18, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo18);
+            env.add_repository(1, repo18);
 
             std::shared_ptr<Map<std::string, std::string> > keys19(std::make_shared<Map<std::string, std::string>>());
             keys19->insert("format", "e");
@@ -690,7 +690,7 @@ namespace test_cases
             keys19->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo19(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys19, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo19);
+            env.add_repository(1, repo19);
 
             TEST_CHECK((*env[selection::RequireExactlyOne(generator::Matches(
                                 PackageDepSpec(parse_user_package_dep_spec("=category/package-1::test-repo-18",
@@ -735,7 +735,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             for (int pass = 1 ; pass <= 2 ; ++pass)
             {
@@ -769,7 +769,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<ERepository> repo(std::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
                             std::bind(from_keys, keys, std::placeholders::_1))));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             bool has_one(false), has_two(false);
             int count(0);
@@ -810,7 +810,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<ERepository> repo(std::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
                             std::bind(from_keys, keys, std::placeholders::_1))));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             bool has_one(false), has_two(false), has_three(false);
             int count(0);
@@ -857,7 +857,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<ERepository> repo(std::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
                             std::bind(from_keys, keys, std::placeholders::_1))));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
             repo->make_manifest(QualifiedPackageName("category/package"));
 
             std::multiset<std::string> made_manifest, reference_manifest;
@@ -907,7 +907,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             FetchAction action(make_named_values<FetchActionOptions>(
                         n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),
@@ -1014,7 +1014,7 @@ namespace test_cases
             keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
             std::shared_ptr<ERepository> repo(std::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
                             std::bind(from_keys, keys, std::placeholders::_1))));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             FetchAction action(make_named_values<FetchActionOptions>(
                         n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),

@@ -127,7 +127,7 @@ namespace
             keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_replacing_dir" / "build"));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
                         make_named_values<FakeInstalledRepositoryParams>(
@@ -139,7 +139,7 @@ namespace
             installed_repo->add_version("cat", replacing_pkg_name, "1")->set_slot(SlotName("1"));
             installed_repo->add_version("cat", replacing_pkg_name, "2")->set_slot(SlotName("2"));
             installed_repo->add_version("cat", replacing_pkg_name, "3")->set_slot(SlotName("3"));
-            env.package_database()->add_repository(2, installed_repo);
+            env.add_repository(2, installed_repo);
 
             const std::shared_ptr<const PackageIDSequence> rlist(env[selection::AllVersionsSorted(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec(replacing, &env, { })),

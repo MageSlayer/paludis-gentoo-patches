@@ -21,7 +21,6 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 #include <paludis/environments/test/test_environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
@@ -127,7 +126,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("vdb_repository_TEST_eapis_dir/root").realpath()));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
@@ -138,7 +137,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("vdb_repository_TEST_eapis_dir/root").realpath()));
             std::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(0, vdb_repo);
+            env.add_repository(0, vdb_repo);
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         n::destination() = vdb_repo,
@@ -256,7 +255,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("vdb_repository_TEST_eapis_dir/root").realpath()));
             std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(1, repo);
+            env.add_repository(1, repo);
 
             keys = std::make_shared<Map<std::string, std::string>>();
             keys->insert("format", "vdb");
@@ -267,7 +266,7 @@ namespace test_cases
             keys->insert("root", stringify(FSPath("vdb_repository_TEST_eapis_dir/root").realpath()));
             std::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
                         std::bind(from_keys, keys, std::placeholders::_1)));
-            env.package_database()->add_repository(0, vdb_repo);
+            env.add_repository(0, vdb_repo);
 
             InstallAction install_action(make_named_values<InstallActionOptions>(
                         n::destination() = vdb_repo,

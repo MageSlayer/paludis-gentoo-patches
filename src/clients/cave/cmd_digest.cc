@@ -31,10 +31,10 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
 
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
@@ -118,7 +118,7 @@ DigestCommand::run(
     RepositoryName repo(*next(cmdline.begin_parameters()));
     Filter repo_filter(filter::Matches(make_package_dep_spec({ }).in_repository(repo), make_null_shared_ptr(), { }));
     QualifiedPackageName pkg(std::string::npos == cmdline.begin_parameters()->find('/') ?
-            env->package_database()->fetch_unique_qualified_package_name(PackageNamePart(*cmdline.begin_parameters()), repo_filter) :
+            env->fetch_unique_qualified_package_name(PackageNamePart(*cmdline.begin_parameters()), repo_filter) :
             QualifiedPackageName(*cmdline.begin_parameters()));
 
     auto ids((*env)[selection::AllVersionsSorted(generator::Package(pkg) & generator::InRepository(repo))]);
@@ -153,7 +153,7 @@ DigestCommand::run(
         cout << endl;
     }
 
-    auto r(env->package_database()->fetch_repository(repo));
+    auto r(env->fetch_repository(repo));
     if (r->manifest_interface())
     {
         cout << "Making manifest..." << endl;

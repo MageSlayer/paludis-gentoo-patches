@@ -32,7 +32,6 @@
 #include <paludis/selection.hh>
 #include <paludis/package_id.hh>
 #include <paludis/repository.hh>
-#include <paludis/package_database.hh>
 #include <iostream>
 #include <cstdlib>
 
@@ -99,7 +98,7 @@ namespace
             const PrintIDEnvironmentVariableCommandLine & cmdline
             )
     {
-        auto repo(env->package_database()->fetch_repository(id->repository_name()));
+        auto repo(env->fetch_repository(id->repository_name()));
 
         if (0 != repo->environment_variable_interface())
         {

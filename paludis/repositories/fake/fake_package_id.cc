@@ -20,6 +20,7 @@
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/repositories/fake/fake_repository_base.hh>
 #include <paludis/repositories/fake/dep_parser.hh>
+
 #include <paludis/name.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
@@ -28,10 +29,10 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/choice.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/package_database.hh>
 #include <paludis/always_enabled_dependency_label.hh>
 #include <paludis/pretty_printer.hh>
 #include <paludis/call_pretty_printer.hh>
+
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -48,6 +49,8 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/singleton-impl.hh>
+#include <paludis/util/join.hh>
+
 #include <map>
 #include <list>
 #include <sstream>
@@ -982,7 +985,7 @@ FakePackageID::extra_hash_value() const
 bool
 FakePackageID::supports_action(const SupportsActionTestBase & b) const
 {
-    auto repo(_imp->env->package_database()->fetch_repository(repository_name()));
+    auto repo(_imp->env->fetch_repository(repository_name()));
     return repo->some_ids_might_support_action(b);
 }
 
@@ -1103,7 +1106,7 @@ namespace
         void visit(const InstallAction & a)
         {
             SupportsActionTest<InstallAction> t;
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
@@ -1111,7 +1114,7 @@ namespace
         void visit(const UninstallAction & a)
         {
             SupportsActionTest<UninstallAction> t;
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
@@ -1119,7 +1122,7 @@ namespace
         void visit(const FetchAction & a)
         {
             SupportsActionTest<FetchAction> t;
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
@@ -1127,7 +1130,7 @@ namespace
         void visit(const ConfigAction & a)
         {
             SupportsActionTest<ConfigAction> t;
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
@@ -1135,7 +1138,7 @@ namespace
         void visit(const InfoAction & a)
         {
             SupportsActionTest<InfoAction> t;
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
@@ -1143,7 +1146,7 @@ namespace
         void visit(const PretendAction & a)
         {
             SupportsActionTest<PretendAction> t;
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }
@@ -1151,7 +1154,7 @@ namespace
         void visit(const PretendFetchAction & a)
         {
             SupportsActionTest<PretendFetchAction> t;
-            auto repo(env->package_database()->fetch_repository(id->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             if (! repo->some_ids_might_support_action(t))
                 throw ActionFailedError("Unsupported action: " + a.simple_name());
         }

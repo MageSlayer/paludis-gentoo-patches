@@ -22,6 +22,7 @@
 #include <paludis/environments/paludis/paludis_config.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/extra_distribution_data.hh>
+
 #include <paludis/util/log.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/tokeniser.hh>
@@ -37,6 +38,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/simple_parser.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+
 #include <paludis/user_dep_spec.hh>
 #include <paludis/create_output_manager_info.hh>
 #include <paludis/package_id.hh>
@@ -45,6 +47,8 @@
 #include <paludis/output_manager_factory.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/distribution.hh>
+#include <paludis/version_spec.hh>
+
 #include <list>
 #include <vector>
 #include <map>

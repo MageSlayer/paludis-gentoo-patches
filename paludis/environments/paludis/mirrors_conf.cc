@@ -17,11 +17,13 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "mirrors_conf.hh"
-#include <paludis/environment.hh>
-#include <paludis/name.hh>
+#include <paludis/environments/paludis/mirrors_conf.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/bashable_conf.hh>
+
+#include <paludis/environment.hh>
+#include <paludis/name.hh>
+
 #include <paludis/util/log.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/tokeniser.hh>
@@ -30,6 +32,9 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/hashes.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/options.hh>
+
 #include <functional>
 #include <unordered_map>
 #include <algorithm>

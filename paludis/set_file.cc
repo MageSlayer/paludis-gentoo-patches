@@ -33,7 +33,6 @@
 #include <paludis/util/env_var_names.hh>
 
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>

@@ -26,7 +26,6 @@
 
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
@@ -49,6 +48,7 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/stringify.hh>
 
 #include <cstdlib>
 #include <iostream>

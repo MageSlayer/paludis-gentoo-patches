@@ -28,7 +28,6 @@
 #include <paludis/elike_slot_requirement.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/repository.hh>
-#include <paludis/package_database.hh>
 #include <paludis/environment.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
@@ -80,8 +79,7 @@ FindReplacingHelper::operator() (
 
     if (repo->installed_root_key())
     {
-        for (PackageDatabase::RepositoryConstIterator r(_imp->env->package_database()->begin_repositories()),
-                r_end(_imp->env->package_database()->end_repositories()) ;
+        for (auto r(_imp->env->begin_repositories()), r_end(_imp->env->end_repositories()) ;
                 r != r_end ; ++r)
             if ((*r)->installed_root_key() &&
                     (*r)->installed_root_key()->value() == repo->installed_root_key()->value())

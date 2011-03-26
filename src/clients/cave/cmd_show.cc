@@ -29,7 +29,6 @@
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_database.hh>
 #include <paludis/repository.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/filter.hh>
@@ -46,12 +45,15 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/join.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
 #include <paludis/choice.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/mask_utils.hh>
 #include <paludis/permitted_choice_value_parameter_values.hh>
+#include <paludis/contents.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -1107,7 +1109,7 @@ namespace
     {
         cout << fuc(fs_repository_heading(), fv<'s'>(stringify(s)));
 
-        const std::shared_ptr<const Repository> repo(env->package_database()->fetch_repository(s));
+        const std::shared_ptr<const Repository> repo(env->fetch_repository(s));
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(repo->begin_metadata(), repo->end_metadata());
         for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
@@ -1172,7 +1174,7 @@ namespace
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
-            auto repo(env->package_database()->fetch_repository((*i)->repository_name()));
+            auto repo(env->fetch_repository((*i)->repository_name()));
             if (repo->installed_root_key())
                 all_installed->push_back(*i);
             else
@@ -1228,7 +1230,7 @@ namespace
                     header_out << " ";
                 need_space = true;
 
-                auto repo(env->package_database()->fetch_repository((*i)->repository_name()));
+                auto repo(env->fetch_repository((*i)->repository_name()));
                 if (repo->installed_root_key())
                     header_out << fuc(fs_package_version_installed(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))));
                 else
@@ -1406,7 +1408,7 @@ ShowCommand::run(
                 try
                 {
                     RepositoryName repo_name(*p);
-                    if (env->package_database()->has_repository_named(repo_name))
+                    if (env->has_repository_named(repo_name))
                     {
                         do_one_repository(cmdline, env, basic_ppos, repo_name);
                         continue;
