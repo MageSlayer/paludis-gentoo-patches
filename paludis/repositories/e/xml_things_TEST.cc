@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,76 +18,63 @@
  */
 
 #include <paludis/repositories/e/glsa.hh>
+
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
-namespace test_cases
+TEST(GLSA, GLSA12345678)
 {
-    struct GLSA123456_78Test : TestCase
-    {
-        GLSA123456_78Test() : TestCase("glsa 123456-78") { }
+    std::shared_ptr<GLSA> glsa(GLSA::create_from_xml_file("xml_things_TEST_dir/glsa-123456-78.xml"));
+    ASSERT_TRUE(bool(glsa));
 
-        void run()
-        {
-            std::shared_ptr<GLSA> glsa(GLSA::create_from_xml_file("xml_things_TEST_dir/glsa-123456-78.xml"));
-            TEST_CHECK(bool(glsa));
+    EXPECT_EQ("123456-78", glsa->id());
+    EXPECT_EQ("Kittens: Too Adorable", glsa->title());
 
-            TEST_CHECK_EQUAL("123456-78", glsa->id());
-            TEST_CHECK_EQUAL("Kittens: Too Adorable", glsa->title());
+    EXPECT_EQ(1, std::distance(glsa->begin_packages(), glsa->end_packages()));
+    EXPECT_EQ("animal-feline/kitten", stringify(glsa->begin_packages()->name()));
+    EXPECT_EQ(0, std::distance(glsa->begin_packages()->begin_archs(),
+                glsa->begin_packages()->end_archs()));
 
-            TEST_CHECK_STRINGIFY_EQUAL("1", std::distance(glsa->begin_packages(), glsa->end_packages()));
-            TEST_CHECK_STRINGIFY_EQUAL("animal-feline/kitten", glsa->begin_packages()->name());
-            TEST_CHECK_STRINGIFY_EQUAL("0", std::distance(glsa->begin_packages()->begin_archs(),
-                        glsa->begin_packages()->end_archs()));
+    EXPECT_EQ(1, std::distance(glsa->begin_packages()->begin_unaffected(),
+                glsa->begin_packages()->end_unaffected()));
+    EXPECT_EQ("ge", glsa->begin_packages()->begin_unaffected()->op());
+    EXPECT_EQ("1.23", glsa->begin_packages()->begin_unaffected()->version());
 
-            TEST_CHECK_STRINGIFY_EQUAL("1", std::distance(glsa->begin_packages()->begin_unaffected(),
-                        glsa->begin_packages()->end_unaffected()));
-            TEST_CHECK_STRINGIFY_EQUAL("ge", glsa->begin_packages()->begin_unaffected()->op());
-            TEST_CHECK_STRINGIFY_EQUAL("1.23", glsa->begin_packages()->begin_unaffected()->version());
+    EXPECT_EQ(1, std::distance(glsa->begin_packages(), glsa->end_packages()));
+    EXPECT_EQ(1, std::distance(glsa->begin_packages()->begin_vulnerable(),
+                glsa->begin_packages()->end_vulnerable()));
+    EXPECT_EQ("lt", glsa->begin_packages()->begin_vulnerable()->op());
+    EXPECT_EQ("1.22", glsa->begin_packages()->begin_vulnerable()->version());
+}
 
-            TEST_CHECK_STRINGIFY_EQUAL("1", std::distance(glsa->begin_packages(), glsa->end_packages()));
-            TEST_CHECK_STRINGIFY_EQUAL("1", std::distance(glsa->begin_packages()->begin_vulnerable(),
-                        glsa->begin_packages()->end_vulnerable()));
-            TEST_CHECK_STRINGIFY_EQUAL("lt", glsa->begin_packages()->begin_vulnerable()->op());
-            TEST_CHECK_STRINGIFY_EQUAL("1.22", glsa->begin_packages()->begin_vulnerable()->version());
-        }
-    } glsa_test_123456_78;
+TEST(GLSA, GLSA98765432)
+{
+    std::shared_ptr<GLSA> glsa(GLSA::create_from_xml_file("xml_things_TEST_dir/glsa-987654-32.xml"));
+    ASSERT_TRUE(bool(glsa));
 
-    struct GLSA987654_32Test : TestCase
-    {
-        GLSA987654_32Test() : TestCase("glsa 987654-32") { }
+    EXPECT_EQ("987654-32", glsa->id());
+    EXPECT_EQ("Python: Retarded", glsa->title());
 
-        void run()
-        {
-            std::shared_ptr<GLSA> glsa(GLSA::create_from_xml_file("xml_things_TEST_dir/glsa-987654-32.xml"));
-            TEST_CHECK(bool(glsa));
+    EXPECT_EQ(1, std::distance(glsa->begin_packages(), glsa->end_packages()));
+    EXPECT_EQ("dev-lang/python", stringify(glsa->begin_packages()->name()));
+    EXPECT_EQ(3, std::distance(glsa->begin_packages()->begin_archs(),
+                glsa->begin_packages()->end_archs()));
+    EXPECT_EQ("mips,sparc,x86", join(glsa->begin_packages()->begin_archs(),
+                glsa->begin_packages()->end_archs(), ","));
 
-            TEST_CHECK_EQUAL("987654-32", glsa->id());
-            TEST_CHECK_EQUAL("Python: Retarded", glsa->title());
+    EXPECT_EQ(1, std::distance(glsa->begin_packages()->begin_unaffected(),
+                glsa->begin_packages()->end_unaffected()));
+    EXPECT_EQ("ge", glsa->begin_packages()->begin_unaffected()->op());
+    EXPECT_EQ("12.34", glsa->begin_packages()->begin_unaffected()->version());
 
-            TEST_CHECK_STRINGIFY_EQUAL("1", std::distance(glsa->begin_packages(), glsa->end_packages()));
-            TEST_CHECK_STRINGIFY_EQUAL("dev-lang/python", glsa->begin_packages()->name());
-            TEST_CHECK_STRINGIFY_EQUAL("3", std::distance(glsa->begin_packages()->begin_archs(),
-                        glsa->begin_packages()->end_archs()));
-            TEST_CHECK_STRINGIFY_EQUAL("mips,sparc,x86", join(glsa->begin_packages()->begin_archs(),
-                        glsa->begin_packages()->end_archs(), ","));
-
-            TEST_CHECK_STRINGIFY_EQUAL("1", std::distance(glsa->begin_packages()->begin_unaffected(),
-                        glsa->begin_packages()->end_unaffected()));
-            TEST_CHECK_STRINGIFY_EQUAL("ge", glsa->begin_packages()->begin_unaffected()->op());
-            TEST_CHECK_STRINGIFY_EQUAL("12.34", glsa->begin_packages()->begin_unaffected()->version());
-
-            TEST_CHECK_STRINGIFY_EQUAL("1", std::distance(glsa->begin_packages(), glsa->end_packages()));
-            TEST_CHECK_STRINGIFY_EQUAL("1", std::distance(glsa->begin_packages()->begin_vulnerable(),
-                        glsa->begin_packages()->end_vulnerable()));
-            TEST_CHECK_STRINGIFY_EQUAL("lt", glsa->begin_packages()->begin_vulnerable()->op());
-            TEST_CHECK_STRINGIFY_EQUAL("12.34", glsa->begin_packages()->begin_vulnerable()->version());
-        }
-    } glsa_test_987654_32;
+    EXPECT_EQ(1, std::distance(glsa->begin_packages(), glsa->end_packages()));
+    EXPECT_EQ(1, std::distance(glsa->begin_packages()->begin_vulnerable(),
+                glsa->begin_packages()->end_vulnerable()));
+    EXPECT_EQ("lt", glsa->begin_packages()->begin_vulnerable()->op());
+    EXPECT_EQ("12.34", glsa->begin_packages()->begin_vulnerable()->version());
 }
 
