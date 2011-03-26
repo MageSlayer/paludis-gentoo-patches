@@ -22,15 +22,20 @@
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
+
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
+
 #include <paludis/output_manager.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/package_id.hh>
@@ -43,15 +48,15 @@
 #include <paludis/selection.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
 #include <functional>
 #include <set>
 #include <string>
 
 #include "config.h"
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
 namespace
@@ -82,122 +87,100 @@ namespace
         return wp_yes;
     }
 
-    struct PhasesTest : TestCase
+    struct TestInfo
     {
-        const std::string test;
-        const bool expect_pass;
-        const bool expect_expensive_test;
+        std::string test;
+        bool expect_pass;
+        bool expect_expensive_test;
+        bool enable_expensive_tests;
+    };
 
-        PhasesTest(const std::string & s, const bool p, const bool t) :
-            TestCase("ever " + s),
-            test(s),
-            expect_pass(p),
-            expect_expensive_test(t)
+    struct PhasesTest :
+        testing::TestWithParam<TestInfo>
+    {
+        TestInfo info;
+
+        void SetUp()
         {
-        }
-
-        unsigned max_run_time() const
-        {
-            return 3000;
-        }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-
-        virtual void extra_settings(TestEnvironment &)
-        {
-        }
-
-        void run()
-        {
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-            ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "yes", 1);
-#else
-            ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "", 1);
-#endif
-            TestEnvironment env;
-            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-            keys->insert("format", "e");
-            keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_phases_dir" / "repo1"));
-            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_phases_dir" / "repo1/profiles/profile"));
-            keys->insert("layout", "exheres");
-            keys->insert("eapi_when_unknown", "exheres-0");
-            keys->insert("eapi_when_unspecified", "exheres-0");
-            keys->insert("profile_eapi", "exheres-0");
-            keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_phases_dir" / "distdir"));
-            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_phases_dir" / "build"));
-            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::bind(from_keys, keys, std::placeholders::_1)));
-            env.add_repository(1, repo);
-
-            std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
-                        make_named_values<FakeInstalledRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("installed"),
-                            n::suitable_destination() = true,
-                            n::supports_uninstall() = true
-                            )));
-            installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
-            installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
-            env.add_repository(2, installed_repo);
-
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-            std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
-            iv_keys->insert("root", "/");
-            iv_keys->insert("format", "installed_virtuals");
-            env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
-                        std::bind(from_keys, iv_keys, std::placeholders::_1)));
-            std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
-            v_keys->insert("format", "virtuals");
-            env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
-                        std::bind(from_keys, v_keys, std::placeholders::_1)));
-#endif
-
-            extra_settings(env);
-
-            InstallAction action(make_named_values<InstallActionOptions>(
-                        n::destination() = installed_repo,
-                        n::make_output_manager() = &make_standard_output_manager,
-                        n::perform_uninstall() = &cannot_uninstall,
-                        n::replacing() = std::make_shared<PackageIDSequence>(),
-                        n::want_phase() = &want_all_phases
-                    ));
-
-            const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                            PackageDepSpec(parse_user_package_dep_spec("cat/" + test,
-                                    &env, { })), make_null_shared_ptr(), { }))]->last());
-            TEST_CHECK(bool(id));
-            TEST_CHECK_EQUAL(!! id->choices_key()->value()->find_by_name_with_prefix(
-                        ChoiceNameWithPrefix("build_options:expensive_tests")), expect_expensive_test);
-
-            if (expect_pass)
-                id->perform_action(action);
-            else
-                TEST_CHECK_THROWS(id->perform_action(action), ActionFailedError);
+            info = GetParam();
         }
     };
 }
 
-namespace test_cases
+TEST_P(PhasesTest, Works)
 {
-    PhasesTest test_no("no-expensive-test", true, false);
-    PhasesTest test_pass("expensive-test", true, true);
-    PhasesTest test_fail("expensive-test-fail", true, true);
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+    ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "yes", 1);
+#else
+    ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "", 1);
+#endif
+    TestEnvironment env;
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_phases_dir" / "repo1"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_phases_dir" / "repo1/profiles/profile"));
+    keys->insert("layout", "exheres");
+    keys->insert("eapi_when_unknown", "exheres-0");
+    keys->insert("eapi_when_unspecified", "exheres-0");
+    keys->insert("profile_eapi", "exheres-0");
+    keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_phases_dir" / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_phases_dir" / "build"));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
 
-    struct TestFailEnabled : PhasesTest
-    {
-        TestFailEnabled() :
-            PhasesTest("expensive-test-fail", false, true)
-        {
-        }
+    std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
+                make_named_values<FakeInstalledRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("installed"),
+                    n::suitable_destination() = true,
+                    n::supports_uninstall() = true
+                    )));
+    installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
+    installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
+    env.add_repository(2, installed_repo);
 
-        void extra_settings(TestEnvironment & env)
-        {
-            env.set_want_choice_enabled(ChoicePrefixName("build_options"), UnprefixedChoiceName("expensive_tests"), true);
-        }
-    } test_fail_enabled;
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+    std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
+    iv_keys->insert("root", "/");
+    iv_keys->insert("format", "installed_virtuals");
+    env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
+                std::bind(from_keys, iv_keys, std::placeholders::_1)));
+    std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
+    v_keys->insert("format", "virtuals");
+    env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
+                std::bind(from_keys, v_keys, std::placeholders::_1)));
+#endif
+
+    if (info.enable_expensive_tests)
+        env.set_want_choice_enabled(ChoicePrefixName("build_options"), UnprefixedChoiceName("expensive_tests"), true);
+
+    InstallAction action(make_named_values<InstallActionOptions>(
+                n::destination() = installed_repo,
+                n::make_output_manager() = &make_standard_output_manager,
+                n::perform_uninstall() = &cannot_uninstall,
+                n::replacing() = std::make_shared<PackageIDSequence>(),
+                n::want_phase() = &want_all_phases
+            ));
+
+    const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                    PackageDepSpec(parse_user_package_dep_spec("cat/" + info.test,
+                            &env, { })), make_null_shared_ptr(), { }))]->last());
+    ASSERT_TRUE(bool(id));
+    EXPECT_EQ(info.expect_expensive_test, !! id->choices_key()->value()->find_by_name_with_prefix(
+                ChoiceNameWithPrefix("build_options:expensive_tests")));
+
+    if (info.expect_pass)
+        id->perform_action(action);
+    else
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
 }
+
+INSTANTIATE_TEST_CASE_P(Works, PhasesTest, testing::Values(
+            TestInfo{"no-expensive-test", true, false, false},
+            TestInfo{"expensive-test", true, true, false},
+            TestInfo{"expensive-test-fail", true, true, false},
+            TestInfo{"expensive-test-fail", false, true, true}
+            ));
 
