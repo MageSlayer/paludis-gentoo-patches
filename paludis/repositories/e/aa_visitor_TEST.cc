@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2007 Mike Kelly
+ * Copyright (c) 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,40 +18,34 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "aa_visitor.hh"
-#include "dep_parser.hh"
+#include <paludis/repositories/e/aa_visitor.hh>
+#include <paludis/repositories/e/dep_parser.hh>
+#include <paludis/repositories/e/eapi.hh>
+
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/repositories/e/eapi.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 using namespace paludis::erepository;
 
-namespace test_cases
+TEST(AAVisitor, Works)
 {
-    struct AAVisitorTest : TestCase
-    {
-        AAVisitorTest() : TestCase("aa visitor") { }
+    TestEnvironment env;
+    std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo"))));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-        void run()
-        {
-            TestEnvironment env;
-            std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo"))));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
-
-            AAVisitor p1;
-            parse_fetchable_uri("( a -> b c x? ( d e ) )", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(p1);
-            TEST_CHECK_EQUAL(join(p1.begin(), p1.end(), " "), "b c d e");
-        }
-    } test_aa_visitor;
+    AAVisitor p1;
+    parse_fetchable_uri("( a -> b c x? ( d e ) )", &env, *EAPIData::get_instance()->eapi_from_string("paludis-1"), false)->top()->accept(p1);
+    EXPECT_EQ("b c d e", join(p1.begin(), p1.end(), " "));
 }
 
