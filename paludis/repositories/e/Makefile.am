@@ -194,9 +194,9 @@ e_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO
 depend_rdepend_TEST_SOURCES = depend_rdepend_TEST.cc
 
 depend_rdepend_TEST_LDADD = \
-			    $(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 depend_rdepend_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
@@ -316,9 +316,9 @@ e_repository_TEST_symlink_rewriting_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @P
 vdb_repository_TEST_SOURCES = vdb_repository_TEST.cc
 
 vdb_repository_TEST_LDADD = \
-			    $(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 vdb_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
@@ -358,9 +358,9 @@ exndbam_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFL
 vdb_merger_TEST_SOURCES = vdb_merger_TEST.cc
 
 vdb_merger_TEST_LDADD = \
-			$(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 vdb_merger_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
@@ -370,9 +370,9 @@ vdb_merger_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 vdb_unmerger_TEST_SOURCES = vdb_unmerger_TEST.cc
 
 vdb_unmerger_TEST_LDADD = \
-			  $(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 vdb_unmerger_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
@@ -402,9 +402,9 @@ dep_parser_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 aa_visitor_TEST_SOURCES = aa_visitor_TEST.cc
 
 aa_visitor_TEST_LDADD = \
-			$(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 aa_visitor_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
@@ -424,9 +424,9 @@ fetch_visitor_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 source_uri_finder_TEST_SOURCES = source_uri_finder_TEST.cc
 
 source_uri_finder_TEST_LDADD = \
-			       $(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 source_uri_finder_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
@@ -436,9 +436,9 @@ source_uri_finder_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 fix_locked_dependencies_TEST_SOURCES = fix_locked_dependencies_TEST.cc
 
 fix_locked_dependencies_TEST_LDADD = \
-				     $(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 fix_locked_dependencies_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
@@ -606,10 +606,9 @@ GLSA_TESTS = xml_things_TEST
 xml_things_TEST_SOURCES = xml_things_TEST.cc
 
 xml_things_TEST_LDADD = \
-			$(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/test/libtest.a \
 	$(DYNAMIC_LD_LIBS)
 
 xml_things_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
