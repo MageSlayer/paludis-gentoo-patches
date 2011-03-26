@@ -99,20 +99,6 @@ TestEnvironment::accept_license(const std::string &, const std::shared_ptr<const
     return true;
 }
 
-const std::shared_ptr<const PackageID>
-TestEnvironment::fetch_package_id(const QualifiedPackageName & q,
-        const VersionSpec & v, const RepositoryName & r) const
-{
-    using namespace std::placeholders;
-
-    std::shared_ptr<const PackageIDSequence> ids(fetch_repository(r)->package_ids(q, { }));
-    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-            i != i_end ; ++i)
-        if (v == (*i)->version())
-            return *i;
-    throw NoSuchPackageError(stringify(q) + "-" + stringify(v) + "::" + stringify(r));
-}
-
 uid_t
 TestEnvironment::reduced_uid() const
 {

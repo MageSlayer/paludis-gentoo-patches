@@ -60,12 +60,6 @@ namespace paludis
 
             ///\}
 
-            /**
-             * Convenience way of getting a package id.
-             */
-            const std::shared_ptr<const PackageID> fetch_package_id(const QualifiedPackageName &,
-                    const VersionSpec &, const RepositoryName &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual bool accept_license(const std::string &, const std::shared_ptr<const PackageID> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
