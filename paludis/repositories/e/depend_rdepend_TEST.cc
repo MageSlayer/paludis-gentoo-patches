@@ -19,11 +19,15 @@
 
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/stringify.hh>
+
 #include <paludis/repository_factory.hh>
 #include <paludis/repository.hh>
 #include <paludis/standard_output_manager.hh>
@@ -34,10 +38,9 @@
 #include <paludis/filter.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/unformatted_pretty_printer.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
 namespace
@@ -67,162 +70,154 @@ namespace
     {
         return wp_yes;
     }
-}
 
-namespace
-{
-    struct DependRdependTest : TestCase
+    struct TestParams
     {
-        const std::string eapi;
-        const bool special;
+        std::string eapi;
+        bool special;
+    };
 
-        DependRdependTest(const std::string & e, bool s) :
-            TestCase("RDEPEND=DEPEND EAPI " + e),
-            eapi(e),
-            special(s)
+    struct DependRdependTest :
+        testing::TestWithParam<TestParams>
+    {
+        std::string eapi;
+        bool special;
+
+        void SetUp()
         {
-        }
-
-        unsigned max_run_time() const
-        {
-            return 3000;
-        }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-
-        void run()
-        {
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-            ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "yes", 1);
-#else
-            ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "", 1);
-#endif
-
-            TestEnvironment env;
-
-            FSPath root(FSPath::cwd() / "depend_rdepend_TEST_dir" / "root");
-
-            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-            keys->insert("format", "e");
-            keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "repo"));
-            keys->insert("profiles", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "repo/profiles/profile"));
-            keys->insert("layout", "traditional");
-            keys->insert("eapi_when_unknown", "0");
-            keys->insert("eapi_when_unspecified", "0");
-            keys->insert("profile_eapi", "0");
-            keys->insert("distdir", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "distdir"));
-            keys->insert("builddir", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "build"));
-            keys->insert("root", stringify(root));
-            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::bind(from_keys, keys, std::placeholders::_1)));
-            env.add_repository(1, repo);
-
-            std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
-            v_keys->insert("format", "vdb");
-            v_keys->insert("names_cache", "/var/empty");
-            v_keys->insert("provides_cache", "/var/empty");
-            v_keys->insert("location", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "vdb"));
-            v_keys->insert("root", stringify(root));
-            std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
-                        std::bind(from_keys, keys, std::placeholders::_1)));
-            env.add_repository(1, v_repo);
-
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-            std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
-            iv_keys->insert("root", "/");
-            iv_keys->insert("format", "installed_virtuals");
-            env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
-                        std::bind(from_keys, iv_keys, std::placeholders::_1)));
-            std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
-            v_keys->insert("format", "virtuals");
-            env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
-                        std::bind(from_keys, v_keys, std::placeholders::_1)));
-#endif
-
-            InstallAction action(make_named_values<InstallActionOptions>(
-                        n::destination() = v_repo,
-                        n::make_output_manager() = &make_standard_output_manager,
-                        n::perform_uninstall() = &cannot_uninstall,
-                        n::replacing() = std::make_shared<PackageIDSequence>(),
-                        n::want_phase() = &want_all_phases
-                    ));
-
-            {
-                std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Package(
-                                QualifiedPackageName("cat/eapi" + eapi + "donly")))]->begin());
-
-                TEST_CHECK_EQUAL(id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/depend");
-                if (special)
-                    TEST_CHECK_EQUAL(id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/depend");
-                else
-                    TEST_CHECK_EQUAL(id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "");
-
-                id->perform_action(action);
-
-                v_repo->invalidate();
-
-                std::shared_ptr<const PackageID> v_id(*env[selection::RequireExactlyOne(generator::Package(
-                                QualifiedPackageName("cat/eapi" + eapi + "donly")) |
-                            filter::InstalledAtRoot(root))]->begin());
-
-                TEST_CHECK_EQUAL(v_id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/depend");
-                if (special)
-                    TEST_CHECK_EQUAL(v_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/depend");
-                else
-                    TEST_CHECK_EQUAL(v_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "");
-            }
-
-            {
-                std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Package(
-                                QualifiedPackageName("cat/eapi" + eapi + "ronly")))]->begin());
-
-                TEST_CHECK_EQUAL(id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "");
-                TEST_CHECK_EQUAL(id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/rdepend");
-
-                id->perform_action(action);
-
-                v_repo->invalidate();
-
-                std::shared_ptr<const PackageID> v_id(*env[selection::RequireExactlyOne(generator::Package(
-                                QualifiedPackageName("cat/eapi" + eapi + "ronly")) |
-                            filter::InstalledAtRoot(root))]->begin());
-
-                TEST_CHECK_EQUAL(v_id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "");
-                TEST_CHECK_EQUAL(v_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/rdepend");
-            }
-
-            {
-                std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Package(
-                                QualifiedPackageName("cat/eapi" + eapi + "both")))]->begin());
-
-                TEST_CHECK_EQUAL(id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/depend");
-                TEST_CHECK_EQUAL(id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/rdepend");
-
-                id->perform_action(action);
-
-                v_repo->invalidate();
-
-                std::shared_ptr<const PackageID> v_id(*env[selection::RequireExactlyOne(generator::Package(
-                                QualifiedPackageName("cat/eapi" + eapi + "both")) |
-                            filter::InstalledAtRoot(root))]->begin());
-
-                TEST_CHECK_EQUAL(v_id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/depend");
-                TEST_CHECK_EQUAL(v_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }), "the/rdepend");
-            }
+            eapi = GetParam().eapi;
+            special = GetParam().special;
         }
     };
 }
 
-namespace test_cases
+TEST_P(DependRdependTest, Works)
 {
-    DependRdependTest eapi_0("0", true);
-    DependRdependTest eapi_1("1", true);
-    DependRdependTest eapi_2("2", true);
-    DependRdependTest eapi_3("3", true);
-    DependRdependTest eapi_4("4", false);
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+    ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "yes", 1);
+#else
+    ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "", 1);
+#endif
+
+    TestEnvironment env;
+
+    FSPath root(FSPath::cwd() / "depend_rdepend_TEST_dir" / "root");
+
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "repo/profiles/profile"));
+    keys->insert("layout", "traditional");
+    keys->insert("eapi_when_unknown", "0");
+    keys->insert("eapi_when_unspecified", "0");
+    keys->insert("profile_eapi", "0");
+    keys->insert("distdir", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "build"));
+    keys->insert("root", stringify(root));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
+
+    std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
+    v_keys->insert("format", "vdb");
+    v_keys->insert("names_cache", "/var/empty");
+    v_keys->insert("provides_cache", "/var/empty");
+    v_keys->insert("location", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "vdb"));
+    v_keys->insert("root", stringify(root));
+    std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, v_repo);
+
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+    std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
+    iv_keys->insert("root", "/");
+    iv_keys->insert("format", "installed_virtuals");
+    env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
+                std::bind(from_keys, iv_keys, std::placeholders::_1)));
+    std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
+    v_keys->insert("format", "virtuals");
+    env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
+                std::bind(from_keys, v_keys, std::placeholders::_1)));
+#endif
+
+    InstallAction action(make_named_values<InstallActionOptions>(
+                n::destination() = v_repo,
+                n::make_output_manager() = &make_standard_output_manager,
+                n::perform_uninstall() = &cannot_uninstall,
+                n::replacing() = std::make_shared<PackageIDSequence>(),
+                n::want_phase() = &want_all_phases
+            ));
+
+    {
+        std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Package(
+                        QualifiedPackageName("cat/eapi" + eapi + "donly")))]->begin());
+
+        EXPECT_EQ("the/depend", id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        if (special)
+            EXPECT_EQ("the/depend", id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        else
+            EXPECT_EQ("", id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+
+        id->perform_action(action);
+
+        v_repo->invalidate();
+
+        std::shared_ptr<const PackageID> v_id(*env[selection::RequireExactlyOne(generator::Package(
+                        QualifiedPackageName("cat/eapi" + eapi + "donly")) |
+                    filter::InstalledAtRoot(root))]->begin());
+
+        EXPECT_EQ("the/depend", v_id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        if (special)
+            EXPECT_EQ("the/depend", v_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        else
+            EXPECT_EQ("", v_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+    }
+
+    {
+        std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Package(
+                        QualifiedPackageName("cat/eapi" + eapi + "ronly")))]->begin());
+
+        EXPECT_EQ("", id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        EXPECT_EQ("the/rdepend", id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+
+        id->perform_action(action);
+
+        v_repo->invalidate();
+
+        std::shared_ptr<const PackageID> v_id(*env[selection::RequireExactlyOne(generator::Package(
+                        QualifiedPackageName("cat/eapi" + eapi + "ronly")) |
+                    filter::InstalledAtRoot(root))]->begin());
+
+        EXPECT_EQ("", v_id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        EXPECT_EQ("the/rdepend", v_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+    }
+
+    {
+        std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Package(
+                        QualifiedPackageName("cat/eapi" + eapi + "both")))]->begin());
+
+        EXPECT_EQ("the/depend", id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        EXPECT_EQ("the/rdepend", id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+
+        id->perform_action(action);
+
+        v_repo->invalidate();
+
+        std::shared_ptr<const PackageID> v_id(*env[selection::RequireExactlyOne(generator::Package(
+                        QualifiedPackageName("cat/eapi" + eapi + "both")) |
+                    filter::InstalledAtRoot(root))]->begin());
+
+        EXPECT_EQ("the/depend", v_id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        EXPECT_EQ("the/rdepend", v_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+    }
 }
+
+INSTANTIATE_TEST_CASE_P(DependRdepend, DependRdependTest, testing::Values(
+            TestParams{"0", true},
+            TestParams{"1", true},
+            TestParams{"2", true},
+            TestParams{"3", true},
+            TestParams{"4", false}
+            ));
 
