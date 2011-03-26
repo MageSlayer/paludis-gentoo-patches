@@ -22,15 +22,19 @@
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
+
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
+
 #include <paludis/output_manager.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/package_id.hh>
@@ -43,15 +47,15 @@
 #include <paludis/selection.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
 #include <functional>
 #include <set>
 #include <string>
 
 #include "config.h"
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
 namespace
@@ -82,101 +86,90 @@ namespace
         return wp_yes;
     }
 
-    struct EverTest : TestCase
+    struct EverTest :
+        testing::TestWithParam<std::string>
     {
-        const std::string test;
+        std::string test;
 
-        EverTest(const std::string & s) :
-            TestCase("ever " + s),
-            test(s)
+        void SetUp()
         {
-        }
-
-        unsigned max_run_time() const
-        {
-            return 3000;
-        }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-
-        void run()
-        {
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-            ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "yes", 1);
-#else
-            ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "", 1);
-#endif
-            TestEnvironment env;
-            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-            keys->insert("format", "e");
-            keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_ever_dir" / "repo1"));
-            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_ever_dir" / "repo1/profiles/profile"));
-            keys->insert("layout", "exheres");
-            keys->insert("eapi_when_unknown", "exheres-0");
-            keys->insert("eapi_when_unspecified", "exheres-0");
-            keys->insert("profile_eapi", "exheres-0");
-            keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_ever_dir" / "distdir"));
-            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_ever_dir" / "build"));
-            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::bind(from_keys, keys, std::placeholders::_1)));
-            env.add_repository(1, repo);
-
-            std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
-                        make_named_values<FakeInstalledRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("installed"),
-                            n::suitable_destination() = true,
-                            n::supports_uninstall() = true
-                            )));
-            installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
-            installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
-            env.add_repository(2, installed_repo);
-
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-            std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
-            iv_keys->insert("root", "/");
-            iv_keys->insert("format", "installed_virtuals");
-            env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
-                        std::bind(from_keys, iv_keys, std::placeholders::_1)));
-            std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
-            v_keys->insert("format", "virtuals");
-            env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
-                        std::bind(from_keys, v_keys, std::placeholders::_1)));
-#endif
-
-            InstallAction action(make_named_values<InstallActionOptions>(
-                        n::destination() = installed_repo,
-                        n::make_output_manager() = &make_standard_output_manager,
-                        n::perform_uninstall() = &cannot_uninstall,
-                        n::replacing() = std::make_shared<PackageIDSequence>(),
-                        n::want_phase() = &want_all_phases
-                    ));
-
-            const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                            PackageDepSpec(parse_user_package_dep_spec("cat/" + test,
-                                    &env, { })), make_null_shared_ptr(), { }))]->last());
-            TEST_CHECK(bool(id));
-            id->perform_action(action);
+            test = GetParam();
         }
     };
 }
 
-namespace test_cases
+TEST_P(EverTest, Works)
 {
-    EverTest test_split("ever-split");
-    EverTest test_split_all("ever-split-all");
-    EverTest test_at_least("ever-at-least");
-    EverTest test_is_scm("ever-is_scm");
-    EverTest test_major("ever-major");
-    EverTest test_range("ever-range");
-    EverTest test_remainder("ever-remainder");
-    EverTest test_replace("ever-replace");
-    EverTest test_replace_all("ever-replace_all");
-    EverTest test_delete("ever-delete");
-    EverTest test_delete_all("ever-delete_all");
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+    ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "yes", 1);
+#else
+    ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "", 1);
+#endif
+    TestEnvironment env;
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_ever_dir" / "repo1"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_ever_dir" / "repo1/profiles/profile"));
+    keys->insert("layout", "exheres");
+    keys->insert("eapi_when_unknown", "exheres-0");
+    keys->insert("eapi_when_unspecified", "exheres-0");
+    keys->insert("profile_eapi", "exheres-0");
+    keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_ever_dir" / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_ever_dir" / "build"));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
+
+    std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
+                make_named_values<FakeInstalledRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("installed"),
+                    n::suitable_destination() = true,
+                    n::supports_uninstall() = true
+                    )));
+    installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
+    installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
+    env.add_repository(2, installed_repo);
+
+#ifdef ENABLE_VIRTUALS_REPOSITORY
+    std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
+    iv_keys->insert("root", "/");
+    iv_keys->insert("format", "installed_virtuals");
+    env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
+                std::bind(from_keys, iv_keys, std::placeholders::_1)));
+    std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
+    v_keys->insert("format", "virtuals");
+    env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
+                std::bind(from_keys, v_keys, std::placeholders::_1)));
+#endif
+
+    InstallAction action(make_named_values<InstallActionOptions>(
+                n::destination() = installed_repo,
+                n::make_output_manager() = &make_standard_output_manager,
+                n::perform_uninstall() = &cannot_uninstall,
+                n::replacing() = std::make_shared<PackageIDSequence>(),
+                n::want_phase() = &want_all_phases
+            ));
+
+    const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                    PackageDepSpec(parse_user_package_dep_spec("cat/" + test,
+                            &env, { })), make_null_shared_ptr(), { }))]->last());
+    ASSERT_TRUE(bool(id));
+    id->perform_action(action);
 }
+
+INSTANTIATE_TEST_CASE_P(Works, EverTest, testing::Values(
+            std::string("ever-split"),
+            std::string("ever-split-all"),
+            std::string("ever-at-least"),
+            std::string("ever-is_scm"),
+            std::string("ever-major"),
+            std::string("ever-range"),
+            std::string("ever-remainder"),
+            std::string("ever-replace"),
+            std::string("ever-replace_all"),
+            std::string("ever-delete"),
+            std::string("ever-delete_all")
+            ));
 
