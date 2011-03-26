@@ -22,17 +22,22 @@
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
+
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/system.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
-#include <paludis/standard_output_manager.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
+
+#include <paludis/standard_output_manager.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
@@ -43,15 +48,15 @@
 #include <paludis/selection.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
 #include <functional>
 #include <set>
 #include <string>
 
 #include "config.h"
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
 namespace
@@ -83,69 +88,51 @@ namespace
     }
 }
 
-namespace test_cases
+TEST(ERepository, SymlinkRewriting)
 {
-    struct ERepositorySymlinkRewritingTest : TestCase
-    {
-        ERepositorySymlinkRewritingTest() : TestCase("symlink_rewriting") { }
+    TestEnvironment env;
 
-        unsigned max_run_time() const
-        {
-            return 3000;
-        }
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "repo/profiles/profile"));
+    keys->insert("layout", "traditional");
+    keys->insert("eapi_when_unknown", "0");
+    keys->insert("eapi_when_unspecified", "0");
+    keys->insert("profile_eapi", "0");
+    keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "symlinked_build"));
+    keys->insert("root", stringify(FSPath(stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root")).realpath()));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
 
-        bool repeatable() const
-        {
-            return false;
-        }
+    keys = std::make_shared<Map<std::string, std::string>>();
+    keys->insert("format", "vdb");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("provides_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "vdb"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "build"));
+    keys->insert("root", stringify(FSPath(stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root")).realpath()));
+    std::shared_ptr<Repository> installed_repo(VDBRepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, installed_repo);
 
-        void run()
-        {
-            TestEnvironment env;
+    InstallAction action(make_named_values<InstallActionOptions>(
+                n::destination() = installed_repo,
+                n::make_output_manager() = &make_standard_output_manager,
+                n::perform_uninstall() = &cannot_uninstall,
+                n::replacing() = std::make_shared<PackageIDSequence>(),
+                n::want_phase() = &want_all_phases
+            ));
 
-            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-            keys->insert("format", "e");
-            keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "repo"));
-            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "repo/profiles/profile"));
-            keys->insert("layout", "traditional");
-            keys->insert("eapi_when_unknown", "0");
-            keys->insert("eapi_when_unspecified", "0");
-            keys->insert("profile_eapi", "0");
-            keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "distdir"));
-            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "symlinked_build"));
-            keys->insert("root", stringify(FSPath(stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root")).realpath()));
-            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::bind(from_keys, keys, std::placeholders::_1)));
-            env.add_repository(1, repo);
+    const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                    PackageDepSpec(parse_user_package_dep_spec("cat/pkg",
+                            &env, { })), make_null_shared_ptr(), { }))]->last());
+    ASSERT_TRUE(bool(id));
 
-            keys = std::make_shared<Map<std::string, std::string>>();
-            keys->insert("format", "vdb");
-            keys->insert("names_cache", "/var/empty");
-            keys->insert("provides_cache", "/var/empty");
-            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "vdb"));
-            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "build"));
-            keys->insert("root", stringify(FSPath(stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root")).realpath()));
-            std::shared_ptr<Repository> installed_repo(VDBRepository::repository_factory_create(&env,
-                        std::bind(from_keys, keys, std::placeholders::_1)));
-            env.add_repository(1, installed_repo);
-
-            InstallAction action(make_named_values<InstallActionOptions>(
-                        n::destination() = installed_repo,
-                        n::make_output_manager() = &make_standard_output_manager,
-                        n::perform_uninstall() = &cannot_uninstall,
-                        n::replacing() = std::make_shared<PackageIDSequence>(),
-                        n::want_phase() = &want_all_phases
-                    ));
-
-            const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                            PackageDepSpec(parse_user_package_dep_spec("cat/pkg",
-                                    &env, { })), make_null_shared_ptr(), { }))]->last());
-            TEST_CHECK(bool(id));
-
-            id->perform_action(action);
-            TEST_CHECK_EQUAL(FSPath(stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root/bar")).readlink(), "/foo");
-        }
-    } test_e_repository_symlink_rewriting;
+    id->perform_action(action);
+    EXPECT_EQ("/foo", FSPath(stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root/bar")).readlink());
 }
 
