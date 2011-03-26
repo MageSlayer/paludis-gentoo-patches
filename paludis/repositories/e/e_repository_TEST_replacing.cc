@@ -20,13 +20,18 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
+
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/stringify.hh>
+
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
@@ -38,15 +43,15 @@
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
 #include <paludis/standard_output_manager.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
+
 #include <functional>
 #include <set>
 #include <string>
 
 #include "config.h"
 
-using namespace test;
+#include <gtest/gtest.h>
+
 using namespace paludis;
 
 namespace
@@ -81,97 +86,85 @@ namespace
         return wp_yes;
     }
 
-    struct ReplacingTest : TestCase
+    struct TestInfo
     {
-        const std::string eapi;
-        const std::string repo_path;
-        const std::string test;
-        const std::string replacing;
-        const std::string replacing_pkg_name;
+        std::string eapi;
+        std::string repo_path;
+        std::string test;
+        std::string replacing;
+        std::string replacing_pkg_name;
+    };
 
-        ReplacingTest(const std::string & e, const std::string & p, const std::string & s, const std::string & r,
-                const std::string & n) :
-            TestCase(e + " " + s),
-            eapi(e),
-            repo_path(p),
-            test(s),
-            replacing(r),
-            replacing_pkg_name(n)
+    struct ReplacingTest :
+        testing::TestWithParam<TestInfo>
+    {
+        TestInfo info;
+
+        void SetUp()
         {
-        }
-
-        unsigned max_run_time() const
-        {
-            return 3000;
-        }
-
-        bool repeatable() const
-        {
-            return false;
-        }
-
-        void run()
-        {
-            TestEnvironment env;
-            std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-            keys->insert("format", "e");
-            keys->insert("names_cache", "/var/empty");
-            keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_replacing_dir" / repo_path));
-            keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_replacing_dir" / repo_path
-                        / "profiles/profile"));
-            keys->insert("layout", "exheres");
-            keys->insert("eapi_when_unknown", eapi);
-            keys->insert("eapi_when_unspecified", eapi);
-            keys->insert("profile_eapi", eapi);
-            keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_replacing_dir" / "distdir"));
-            keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_replacing_dir" / "build"));
-            std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
-                        std::bind(from_keys, keys, std::placeholders::_1)));
-            env.add_repository(1, repo);
-
-            std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
-                        make_named_values<FakeInstalledRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("installed"),
-                            n::suitable_destination() = true,
-                            n::supports_uninstall() = true
-                            )));
-            installed_repo->add_version("cat", replacing_pkg_name, "1")->set_slot(SlotName("1"));
-            installed_repo->add_version("cat", replacing_pkg_name, "2")->set_slot(SlotName("2"));
-            installed_repo->add_version("cat", replacing_pkg_name, "3")->set_slot(SlotName("3"));
-            env.add_repository(2, installed_repo);
-
-            const std::shared_ptr<const PackageIDSequence> rlist(env[selection::AllVersionsSorted(generator::Matches(
-                            PackageDepSpec(parse_user_package_dep_spec(replacing, &env, { })),
-                            make_null_shared_ptr(), { }) |
-                        filter::InstalledAtRoot(env.preferred_root_key()->value()))]);
-
-            InstallAction action(make_named_values<InstallActionOptions>(
-                        n::destination() = installed_repo,
-                        n::make_output_manager() = &make_standard_output_manager,
-                        n::perform_uninstall() = &do_uninstall,
-                        n::replacing() = rlist,
-                        n::want_phase() = &want_all_phases
-                    ));
-
-            const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                            PackageDepSpec(parse_user_package_dep_spec("cat/" + test,
-                                    &env, { })), make_null_shared_ptr(), { }) |
-                        filter::SupportsAction<InstallAction>())]->last());
-            TEST_CHECK(bool(id));
-            id->perform_action(action);
+            info = GetParam();
         }
     };
 }
 
-namespace test_cases
+TEST_P(ReplacingTest, Works)
 {
-    ReplacingTest test_exheres_0_replace_none("exheres-0", "repo1", "replace-none", "cat/none", "pkg");
-    ReplacingTest test_exheres_0_replace_one("exheres-0", "repo1", "replace-one", "=cat/pkg-1", "pkg");
-    ReplacingTest test_exheres_0_replace_many("exheres-0", "repo1", "replace-many", "cat/pkg", "pkg");
+    TestEnvironment env;
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_replacing_dir" / info.repo_path));
+    keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_replacing_dir" / info.repo_path
+                / "profiles/profile"));
+    keys->insert("layout", "exheres");
+    keys->insert("eapi_when_unknown", info.eapi);
+    keys->insert("eapi_when_unspecified", info.eapi);
+    keys->insert("profile_eapi", info.eapi);
+    keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_replacing_dir" / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_replacing_dir" / "build"));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
 
-    ReplacingTest test_4_replace_none("0", "repo2", "replace-none", "cat/none", "replace-none");
-    ReplacingTest test_4_replace_one("0", "repo2", "replace-one", "=cat/replace-one-1", "replace-one");
-    ReplacingTest test_4_replace_many("0", "repo2", "replace-many", "cat/replace-many", "replace-many");
+    std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
+                make_named_values<FakeInstalledRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("installed"),
+                    n::suitable_destination() = true,
+                    n::supports_uninstall() = true
+                    )));
+    installed_repo->add_version("cat", info.replacing_pkg_name, "1")->set_slot(SlotName("1"));
+    installed_repo->add_version("cat", info.replacing_pkg_name, "2")->set_slot(SlotName("2"));
+    installed_repo->add_version("cat", info.replacing_pkg_name, "3")->set_slot(SlotName("3"));
+    env.add_repository(2, installed_repo);
+
+    const std::shared_ptr<const PackageIDSequence> rlist(env[selection::AllVersionsSorted(generator::Matches(
+                    PackageDepSpec(parse_user_package_dep_spec(info.replacing, &env, { })),
+                    make_null_shared_ptr(), { }) |
+                filter::InstalledAtRoot(env.preferred_root_key()->value()))]);
+
+    InstallAction action(make_named_values<InstallActionOptions>(
+                n::destination() = installed_repo,
+                n::make_output_manager() = &make_standard_output_manager,
+                n::perform_uninstall() = &do_uninstall,
+                n::replacing() = rlist,
+                n::want_phase() = &want_all_phases
+            ));
+
+    const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                    PackageDepSpec(parse_user_package_dep_spec("cat/" + info.test,
+                            &env, { })), make_null_shared_ptr(), { }) |
+                filter::SupportsAction<InstallAction>())]->last());
+    ASSERT_TRUE(bool(id));
+    id->perform_action(action);
 }
+
+INSTANTIATE_TEST_CASE_P(Works, ReplacingTest, testing::Values(
+            TestInfo{"exheres-0", "repo1", "replace-none", "cat/none", "pkg"},
+            TestInfo{"exheres-0", "repo1", "replace-one", "=cat/pkg-1", "pkg"},
+            TestInfo{"exheres-0", "repo1", "replace-many", "cat/pkg", "pkg"},
+            TestInfo{"0", "repo2", "replace-none", "cat/none", "replace-none"},
+            TestInfo{"0", "repo2", "replace-one", "=cat/replace-one-1", "replace-one"},
+            TestInfo{"0", "repo2", "replace-many", "cat/replace-many", "replace-many"}
+            ));
 
