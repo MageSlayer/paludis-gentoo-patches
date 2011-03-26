@@ -21,73 +21,69 @@
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/spec_tree_pretty_printer.hh>
+
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
-#include <paludis/environments/test/test_environment.hh>
-#include <paludis/util/make_named_values.hh>
-#include <paludis/unformatted_pretty_printer.hh>
-#include <test/test_framework.hh>
-#include <test/test_runner.hh>
 
-using namespace test;
+#include <paludis/environments/test/test_environment.hh>
+
+#include <paludis/util/make_named_values.hh>
+#include <paludis/util/stringify.hh>
+
+#include <paludis/unformatted_pretty_printer.hh>
+
+#include <gtest/gtest.h>
+
 using namespace paludis;
 using namespace paludis::erepository;
 
-namespace test_cases
+TEST(FixLockedDependencies, Works)
 {
-    struct FixLockedDependenciesTest : TestCase
-    {
-        FixLockedDependenciesTest() : TestCase("fix locked dependencies") { }
+    TestEnvironment env;
+    const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo")
+                    )));
+    env.add_repository(1, repo);
+    std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
 
-        void run()
-        {
-            TestEnvironment env;
-            const std::shared_ptr<FakeRepository> repo(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo")
-                            )));
-            env.add_repository(1, repo);
-            std::shared_ptr<const PackageID> id(repo->add_version("cat", "pkg", "1"));
+    std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
+                make_named_values<FakeInstalledRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("installed"),
+                    n::suitable_destination() = true,
+                    n::supports_uninstall() = true
+                    )));
+    env.add_repository(2, installed_repo);
+    installed_repo->add_version("cat", "installed", "1")->set_slot(SlotName("monkey"));
 
-            std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
-                        make_named_values<FakeInstalledRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("installed"),
-                            n::suitable_destination() = true,
-                            n::supports_uninstall() = true
-                            )));
-            env.add_repository(2, installed_repo);
-            installed_repo->add_version("cat", "installed", "1")->set_slot(SlotName("monkey"));
+    std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"));
 
-            std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"));
+    std::shared_ptr<const DependencySpecTree> bb(parse_depend(
+                "|| ( foo/bar ( bar/baz oink/squeak ) ) blah/blah", &env, *eapi, false)),
+        aa(fix_locked_dependencies(&env, *eapi, id, bb));
 
-            std::shared_ptr<const DependencySpecTree> bb(parse_depend(
-                        "|| ( foo/bar ( bar/baz oink/squeak ) ) blah/blah", &env, *eapi, false)),
-                aa(fix_locked_dependencies(&env, *eapi, id, bb));
+    UnformattedPrettyPrinter ff;
+    SpecTreePrettyPrinter
+        a(ff, { }),
+        b(ff, { });
+    aa->top()->accept(a);
+    bb->top()->accept(b);
 
-            UnformattedPrettyPrinter ff;
-            SpecTreePrettyPrinter
-                a(ff, { }),
-                b(ff, { });
-            aa->top()->accept(a);
-            bb->top()->accept(b);
+    EXPECT_EQ(stringify(b), stringify(a));
 
-            TEST_CHECK_STRINGIFY_EQUAL(a, b);
+    std::shared_ptr<const DependencySpecTree> cc(parse_depend(
+                "foo/bar:= cat/installed:= >=cat/installed-1.2:= <=cat/installed-1.2:=", &env, *eapi, false)),
+        dd(fix_locked_dependencies(&env, *eapi, id, cc));
 
-            std::shared_ptr<const DependencySpecTree> cc(parse_depend(
-                        "foo/bar:= cat/installed:= >=cat/installed-1.2:= <=cat/installed-1.2:=", &env, *eapi, false)),
-                dd(fix_locked_dependencies(&env, *eapi, id, cc));
+    SpecTreePrettyPrinter
+        c(ff, { }),
+        d(ff, { });
+    cc->top()->accept(c);
+    dd->top()->accept(d);
 
-            SpecTreePrettyPrinter
-                c(ff, { }),
-                d(ff, { });
-            cc->top()->accept(c);
-            dd->top()->accept(d);
-
-            TEST_CHECK_STRINGIFY_EQUAL(c, "foo/bar:= cat/installed:= >=cat/installed-1.2:= <=cat/installed-1.2:=");
-            TEST_CHECK_STRINGIFY_EQUAL(d, "foo/bar:= cat/installed:=monkey >=cat/installed-1.2:= <=cat/installed-1.2:=monkey");
-        }
-    } test_fix_locked_dependencies;
+    EXPECT_EQ("foo/bar:= cat/installed:= >=cat/installed-1.2:= <=cat/installed-1.2:=", stringify(c));
+    EXPECT_EQ("foo/bar:= cat/installed:=monkey >=cat/installed-1.2:= <=cat/installed-1.2:=monkey", stringify(d));
 }
 
