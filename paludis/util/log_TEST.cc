@@ -65,7 +65,6 @@ TEST(Log, Messages)
 
     EXPECT_TRUE(s.str().empty());
     Log::get_instance()->message("test.log", ll_debug, lc_no_context) << "one";
-    Log::get_instance()->complete_pending();
     EXPECT_TRUE(! s.str().empty());
     EXPECT_TRUE(std::string::npos != s.str().find("one"));
 
@@ -75,10 +74,8 @@ TEST(Log, Messages)
 
     Log::get_instance()->set_log_level(ll_warning);
     Log::get_instance()->message("test.log", ll_debug, lc_no_context) << "two";
-    Log::get_instance()->complete_pending();
     EXPECT_TRUE(t.str().empty());
     Log::get_instance()->message("test.log", ll_warning, lc_no_context) << "three" << "." << 14;
-    Log::get_instance()->complete_pending();
     EXPECT_TRUE(! t.str().empty());
     EXPECT_TRUE(std::string::npos == t.str().find("one"));
     EXPECT_TRUE(std::string::npos == t.str().find("two"));
@@ -95,19 +92,15 @@ TEST(Log, Exceptions)
     EXPECT_TRUE(s.str().empty());
 
     EXPECT_THROW(Log::get_instance()->message("test.log", ll_debug, lc_no_context) << throws_a_monkey(), Monkey);
-    Log::get_instance()->complete_pending();
     EXPECT_TRUE(s.str().empty());
     EXPECT_THROW(Log::get_instance()->message("test.log", ll_debug, lc_no_context)
             << "one" << throws_a_monkey() << "two", Monkey);
-    Log::get_instance()->complete_pending();
     EXPECT_TRUE(s.str().empty());
 
     EXPECT_THROW(Log::get_instance()->message("test.log", ll_debug, lc_no_context) << throws_a_monkey_when_stringified(), Monkey);
-    Log::get_instance()->complete_pending();
     EXPECT_TRUE(s.str().empty());
     EXPECT_THROW(Log::get_instance()->message("test.log", ll_debug, lc_no_context)
             << "one" << throws_a_monkey_when_stringified() << "two", Monkey);
-    Log::get_instance()->complete_pending();
     EXPECT_TRUE(s.str().empty());
 }
 

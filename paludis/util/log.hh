@@ -97,11 +97,6 @@ namespace paludis
              * Set our program name.
              */
             void set_program_name(const std::string &);
-
-            /**
-             * Finish any pending writes.
-             */
-            void complete_pending() const;
     };
 
     /**

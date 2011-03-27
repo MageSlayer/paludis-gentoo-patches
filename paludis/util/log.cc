@@ -23,7 +23,7 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/action_queue.hh>
+#include <paludis/util/mutex.hh>
 #include "config.h"
 
 #ifdef __linux__
@@ -44,18 +44,16 @@ namespace paludis
     template<>
     struct Imp<Log>
     {
+        Mutex mutex;
         LogLevel log_level;
         std::ostream * stream;
         std::string program_name;
         std::string previous_context;
 
-        mutable ActionQueue action_queue;
-
         Imp() :
             log_level(ll_qa),
             stream(&std::cerr),
-            program_name("paludis"),
-            action_queue(1, false, false)
+            program_name("paludis")
         {
         }
 
@@ -138,31 +136,31 @@ Log::~Log()
 void
 Log::set_log_level(const LogLevel l)
 {
-    _imp->action_queue.enqueue(std::bind(std::mem_fn(&Imp<Log>::set_log_level), _imp.get(), l));
+    Lock lock(_imp->mutex);
+    _imp->log_level = l;
 }
 
 LogLevel
 Log::log_level() const
 {
-    LogLevel result(static_cast<LogLevel>(1337));
-    _imp->action_queue.enqueue(std::bind(std::mem_fn(&Imp<Log>::get_log_level), _imp.get(), std::ref(result)));
-    _imp->action_queue.complete_pending();
-    return result;
+    return _imp->log_level;
 }
 
 void
 Log::_message(const std::string & id, const LogLevel l, const LogContext c, const std::string & s)
 {
+    Lock lock(_imp->mutex);
+
     if (lc_context == c)
-        _imp->action_queue.enqueue(std::bind(std::mem_fn(&Imp<Log>::message), _imp.get(), id, l, c,
+        _imp->message(id, l, c,
 #ifdef __linux__
-                    "In thread ID '" + stringify(syscall(SYS_gettid)) + "':\n  ... " +
+                "In thread ID '" + stringify(syscall(SYS_gettid)) + "':\n  ... " +
 #else
 #  warning "Don't know how to get a thread ID on your platform"
 #endif
-                    Context::backtrace("\n  ... "), s));
+                Context::backtrace("\n  ... "), s);
     else
-        _imp->action_queue.enqueue(std::bind(std::mem_fn(&Imp<Log>::message), _imp.get(), id, l, c, "", s));
+        _imp->message(id, l, c, "", s);
 }
 
 LogMessageHandler::LogMessageHandler(const LogMessageHandler & o) :
@@ -182,19 +180,15 @@ Log::message(const std::string & id, const LogLevel l, const LogContext c)
 void
 Log::set_log_stream(std::ostream * const s)
 {
-    _imp->action_queue.enqueue(std::bind(std::mem_fn(&Imp<Log>::set_log_stream), _imp.get(), s));
-}
-
-void
-Log::complete_pending() const
-{
-    _imp->action_queue.complete_pending();
+    Lock lock(_imp->mutex);
+    _imp->stream = s;
 }
 
 void
 Log::set_program_name(const std::string & s)
 {
-    _imp->action_queue.enqueue(std::bind(std::mem_fn(&Imp<Log>::set_program_name), _imp.get(), s));
+    Lock lock(_imp->mutex);
+    _imp->program_name = s;
 }
 
 LogMessageHandler::LogMessageHandler(Log * const ll, const std::string & id, const LogLevel l, const LogContext c) :
