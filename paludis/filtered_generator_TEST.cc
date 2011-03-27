@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,15 +20,13 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/generator.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
-#include <test/test_concepts.hh>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
-namespace test_cases
+TEST(FilteredGenerator, Works)
 {
-    TESTCASE_SEMIREGULAR(FilteredGenerator, generator::All() | filter::All());
+    generator::All() | filter::All();
 }
 
