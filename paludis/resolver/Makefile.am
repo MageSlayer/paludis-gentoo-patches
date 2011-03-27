@@ -217,7 +217,7 @@ resolver_TEST_blockers_SOURCES = resolver_TEST_blockers.cc
 
 resolver_TEST_blockers_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	libpaludisresolver.a \
@@ -225,11 +225,13 @@ resolver_TEST_blockers_LDADD = \
 
 resolver_TEST_blockers_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+resolver_TEST_blockers_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
+
 resolver_TEST_cycles_SOURCES = resolver_TEST_cycles.cc
 
 resolver_TEST_cycles_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	libpaludisresolver.a \
@@ -237,11 +239,13 @@ resolver_TEST_cycles_LDADD = \
 
 resolver_TEST_cycles_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+resolver_TEST_cycles_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
+
 resolver_TEST_virtuals_SOURCES = resolver_TEST_virtuals.cc
 
 resolver_TEST_virtuals_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	libpaludisresolver.a \
@@ -249,11 +253,13 @@ resolver_TEST_virtuals_LDADD = \
 
 resolver_TEST_virtuals_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+resolver_TEST_virtuals_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
+
 resolver_TEST_suggestions_SOURCES = resolver_TEST_suggestions.cc
 
 resolver_TEST_suggestions_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	libpaludisresolver.a \
@@ -261,11 +267,13 @@ resolver_TEST_suggestions_LDADD = \
 
 resolver_TEST_suggestions_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+resolver_TEST_suggestions_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
+
 resolver_TEST_serialisation_SOURCES = resolver_TEST_serialisation.cc
 
 resolver_TEST_serialisation_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	libpaludisresolver.a \
@@ -273,15 +281,19 @@ resolver_TEST_serialisation_LDADD = \
 
 resolver_TEST_serialisation_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+resolver_TEST_serialisation_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
+
 resolver_TEST_simple_SOURCES = resolver_TEST_simple.cc
 
 resolver_TEST_simple_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	libpaludisresolver.a \
 	$(DYNAMIC_LD_LIBS)
+
+resolver_TEST_simple_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
 resolver_TEST_simple_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
@@ -289,7 +301,7 @@ resolver_TEST_any_SOURCES = resolver_TEST_any.cc
 
 resolver_TEST_any_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	libpaludisresolver.a \
@@ -297,11 +309,13 @@ resolver_TEST_any_LDADD = \
 
 resolver_TEST_any_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+resolver_TEST_any_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
+
 resolver_TEST_errors_SOURCES = resolver_TEST_errors.cc
 
 resolver_TEST_errors_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	libpaludisresolver.a \
@@ -309,11 +323,13 @@ resolver_TEST_errors_LDADD = \
 
 resolver_TEST_errors_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+resolver_TEST_errors_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
+
 resolver_TEST_continue_on_failure_SOURCES = resolver_TEST_continue_on_failure.cc
 
 resolver_TEST_continue_on_failure_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	libpaludisresolver.a \
@@ -321,11 +337,13 @@ resolver_TEST_continue_on_failure_LDADD = \
 
 resolver_TEST_continue_on_failure_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+resolver_TEST_continue_on_failure_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
+
 resolver_TEST_uninstalls_SOURCES = resolver_TEST_uninstalls.cc
 
 resolver_TEST_uninstalls_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	libpaludisresolver.a \
@@ -333,11 +351,13 @@ resolver_TEST_uninstalls_LDADD = \
 
 resolver_TEST_uninstalls_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+resolver_TEST_uninstalls_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
+
 resolver_TEST_fetches_SOURCES = resolver_TEST_fetches.cc
 
 resolver_TEST_fetches_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	libpaludisresolver.a \
@@ -345,17 +365,21 @@ resolver_TEST_fetches_LDADD = \
 
 resolver_TEST_fetches_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
 
+resolver_TEST_fetches_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
+
 resolver_TEST_purges_SOURCES = resolver_TEST_purges.cc
 
 resolver_TEST_purges_LDADD = \
 	libpaludisresolvertest.a \
-	$(top_builddir)/test/libtest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	libpaludisresolver.a \
 	$(DYNAMIC_LD_LIBS)
 
 resolver_TEST_purges_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+
+resolver_TEST_purges_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
 use_existing-se.hh : use_existing.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/use_existing.se > $@ ; then rm -f $@ ; exit 1 ; fi

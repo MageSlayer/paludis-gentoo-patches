@@ -29,7 +29,9 @@
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/job_requirements.hh>
 #include <paludis/resolver/make_uninstall_blocker.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -41,12 +43,11 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/join.hh>
+
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 
 #include <paludis/resolver/resolver_test.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
 
 #include <list>
 #include <functional>
@@ -56,15 +57,22 @@
 using namespace paludis;
 using namespace paludis::resolver;
 using namespace paludis::resolver::resolver_test;
-using namespace test;
 
 namespace
 {
-    struct ResolverContinueOnFailureTestCase : ResolverTestCase
+    struct ResolverContinueOnFailureTestCase :
+        ResolverTestCase
     {
-        ResolverContinueOnFailureTestCase(const std::string & s) :
-            ResolverTestCase("continue_on_failure", s, "exheres-0", "exheres")
+        std::shared_ptr<ResolverTestData> data;
+
+        void SetUp()
         {
+            data = std::make_shared<ResolverTestData>("continue_on_failure", "exheres-0", "exheres");
+        }
+
+        void TearDown()
+        {
+            data.reset();
         }
     };
 
@@ -83,27 +91,22 @@ namespace
     }
 }
 
-namespace test_cases
+namespace
 {
-    struct TestContinueOnFailure : ResolverContinueOnFailureTestCase
+    template <bool direct_dep_installed_>
+    struct TestContinueOnFailure :
+        ResolverContinueOnFailureTestCase
     {
-        const bool direct_dep_installed;
-
-        TestContinueOnFailure(const bool d) :
-            ResolverContinueOnFailureTestCase("continue on failure " + stringify(d)),
-            direct_dep_installed(d)
+        void common_test_code()
         {
-            if (d)
-                install("continue-on-failure", "direct-dep", "0");
-            install("continue-on-failure", "unchanged-dep", "1")->build_dependencies_key()->set_from_string("continue-on-failure/indirect-dep");
+            if (direct_dep_installed_)
+                data->install("continue-on-failure", "direct-dep", "0");
+            data->install("continue-on-failure", "unchanged-dep", "1")->build_dependencies_key()->set_from_string("continue-on-failure/indirect-dep");
 
-            get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_same);
-            get_use_existing_nothing_helper.set_use_existing_for_targets(ue_if_same);
-        }
+            data->get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_same);
+            data->get_use_existing_nothing_helper.set_use_existing_for_targets(ue_if_same);
 
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved("continue-on-failure/target"));
+            std::shared_ptr<const Resolved> resolved(data->get_resolved("continue-on-failure/target"));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
@@ -123,94 +126,89 @@ namespace test_cases
                         .finished())
                     );
 
-            TEST_CHECK_EQUAL(resolved->job_lists()->execute_job_list()->length(), 6);
+            EXPECT_EQ(6, resolved->job_lists()->execute_job_list()->length());
 
             const InstallJob * const direct_dep_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
-            TEST_CHECK(direct_dep_job);
-            TEST_CHECK_EQUAL(join(direct_dep_job->requirements()->begin(), direct_dep_job->requirements()->end(), ", ", stringify_req),
-                    "0 satisfied independent always");
+            ASSERT_TRUE(direct_dep_job);
+            EXPECT_EQ("0 satisfied independent always",
+                    join(direct_dep_job->requirements()->begin(), direct_dep_job->requirements()->end(), ", ", stringify_req));
 
             const InstallJob * const indirect_dep_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
-            TEST_CHECK(indirect_dep_job);
-            TEST_CHECK_EQUAL(join(indirect_dep_job->requirements()->begin(), indirect_dep_job->requirements()->end(), ", ", stringify_req),
-                    "2 satisfied independent always");
+            ASSERT_TRUE(indirect_dep_job);
+            EXPECT_EQ("2 satisfied independent always",
+                    join(indirect_dep_job->requirements()->begin(), indirect_dep_job->requirements()->end(), ", ", stringify_req));
 
             const InstallJob * const target_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(5)));
-            TEST_CHECK(target_job);
-            if (direct_dep_installed)
-                TEST_CHECK_EQUAL(join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req),
-                        "4 satisfied independent always, 3 independent, 1 independent");
+            ASSERT_TRUE(target_job);
+            if (direct_dep_installed_)
+                EXPECT_EQ("4 satisfied independent always, 3 independent, 1 independent",
+                        join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req));
             else
-                TEST_CHECK_EQUAL(join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req),
-                        "4 satisfied independent always, 1 satisfied, 3 independent, 1 independent");
+                EXPECT_EQ("4 satisfied independent always, 1 satisfied, 3 independent, 1 independent",
+                        join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req));
         }
-    } test_continue_on_failure_false(false), test_continue_on_failure_true(true);
+    };
+}
 
-    struct TestUninstallContinueOnFailure : ResolverContinueOnFailureTestCase
-    {
-        TestUninstallContinueOnFailure() :
-            ResolverContinueOnFailureTestCase("uninstall continue on failure")
-        {
-            install("continue-on-failure-uninstall", "dep-of-dep", "1")->build_dependencies_key()->set_from_string("");
-            install("continue-on-failure-uninstall", "dep", "1")->build_dependencies_key()->set_from_string("continue-on-failure-uninstall/dep-of-dep");
-            install("continue-on-failure-uninstall", "target", "1")->build_dependencies_key()->set_from_string("continue-on-failure-uninstall/dep");
-            install("continue-on-failure-uninstall", "needs-target", "1")->build_dependencies_key()->set_from_string("continue-on-failure-uninstall/target");
+typedef TestContinueOnFailure<false> ContinueOnFailureF;
+typedef TestContinueOnFailure<true> ContinueOnFailureT;
 
-            get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/dep-of-dep", &env, { }));
-            get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/dep", &env, { }));
-            get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/target", &env, { }));
+TEST_F(ContinueOnFailureF, Works) { common_test_code(); }
+TEST_F(ContinueOnFailureT, Works) { common_test_code(); }
 
-            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/needs-target", &env, { }));
+TEST_F(ResolverContinueOnFailureTestCase, Uninstall)
+{
+    data->install("continue-on-failure-uninstall", "dep-of-dep", "1")->build_dependencies_key()->set_from_string("");
+    data->install("continue-on-failure-uninstall", "dep", "1")->build_dependencies_key()->set_from_string("continue-on-failure-uninstall/dep-of-dep");
+    data->install("continue-on-failure-uninstall", "target", "1")->build_dependencies_key()->set_from_string("continue-on-failure-uninstall/dep");
+    data->install("continue-on-failure-uninstall", "needs-target", "1")->build_dependencies_key()->set_from_string("continue-on-failure-uninstall/target");
 
-            remove_if_dependent_helper.add_remove_if_dependent_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/needs-target", &env, { }));
-        }
+    data->get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/dep-of-dep", &data->env, { }));
+    data->get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/dep", &data->env, { }));
+    data->get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/target", &data->env, { }));
 
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved(make_uninstall_blocker(
-                            parse_user_package_dep_spec("continue-on-failure-uninstall/target", &env, { }))));
+    data->allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/needs-target", &data->env, { }));
 
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .remove(QualifiedPackageName("continue-on-failure-uninstall/needs-target"))
-                        .remove(QualifiedPackageName("continue-on-failure-uninstall/target"))
-                        .remove(QualifiedPackageName("continue-on-failure-uninstall/dep"))
-                        .remove(QualifiedPackageName("continue-on-failure-uninstall/dep-of-dep"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
+    data->remove_if_dependent_helper.add_remove_if_dependent_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/needs-target", &data->env, { }));
 
-            TEST_CHECK_EQUAL(resolved->job_lists()->execute_job_list()->length(), 4);
+    std::shared_ptr<const Resolved> resolved(data->get_resolved(make_uninstall_blocker(
+                    parse_user_package_dep_spec("continue-on-failure-uninstall/target", &data->env, { }))));
 
-            const UninstallJob * const needs_target_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(0)));
-            TEST_CHECK(needs_target_job);
-            TEST_CHECK_EQUAL(join(needs_target_job->requirements()->begin(), needs_target_job->requirements()->end(), ", ", stringify_req),
-                    "");
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .remove(QualifiedPackageName("continue-on-failure-uninstall/needs-target"))
+                .remove(QualifiedPackageName("continue-on-failure-uninstall/target"))
+                .remove(QualifiedPackageName("continue-on-failure-uninstall/dep"))
+                .remove(QualifiedPackageName("continue-on-failure-uninstall/dep-of-dep"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
 
-            const UninstallJob * const target_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
-            TEST_CHECK(target_job);
-            TEST_CHECK_EQUAL(join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req),
-                    "0 satisfied");
+    EXPECT_EQ(4, resolved->job_lists()->execute_job_list()->length());
 
-            const UninstallJob * const dep_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(2)));
-            TEST_CHECK(dep_job);
-            TEST_CHECK_EQUAL(join(dep_job->requirements()->begin(), dep_job->requirements()->end(), ", ", stringify_req),
-                    "1 satisfied");
+    const UninstallJob * const needs_target_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(0)));
+    ASSERT_TRUE(needs_target_job);
+    EXPECT_EQ("", join(needs_target_job->requirements()->begin(), needs_target_job->requirements()->end(), ", ", stringify_req));
 
-            const UninstallJob * const dep_of_dep_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
-            TEST_CHECK(dep_of_dep_job);
-            TEST_CHECK_EQUAL(join(dep_of_dep_job->requirements()->begin(), dep_of_dep_job->requirements()->end(), ", ", stringify_req),
-                    "2 satisfied");
-        }
-    } test_uninstall_continue_on_failure_uninstall;
+    const UninstallJob * const target_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
+    ASSERT_TRUE(target_job);
+    EXPECT_EQ("0 satisfied", join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req));
+
+    const UninstallJob * const dep_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(2)));
+    ASSERT_TRUE(dep_job);
+    EXPECT_EQ("1 satisfied", join(dep_job->requirements()->begin(), dep_job->requirements()->end(), ", ", stringify_req));
+
+    const UninstallJob * const dep_of_dep_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
+    ASSERT_TRUE(dep_of_dep_job);
+    EXPECT_EQ("2 satisfied", join(dep_of_dep_job->requirements()->begin(), dep_of_dep_job->requirements()->end(), ", ", stringify_req));
 }
 

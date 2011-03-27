@@ -24,7 +24,9 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/suggest_restart.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -33,12 +35,11 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/make_shared_copy.hh>
+
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 
 #include <paludis/resolver/resolver_test.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
 
 #include <list>
 #include <functional>
@@ -48,72 +49,65 @@
 using namespace paludis;
 using namespace paludis::resolver;
 using namespace paludis::resolver::resolver_test;
-using namespace test;
 
 namespace
 {
     struct ResolverVirtualsTestCase : ResolverTestCase
     {
-        ResolverVirtualsTestCase(const std::string & s) :
-            ResolverTestCase("virtuals", s, "0", "traditional")
+        std::shared_ptr<ResolverTestData> data;
+
+        void SetUp()
         {
+            data = std::make_shared<ResolverTestData>("virtuals", "0", "traditional");
+        }
+
+        void TearDown()
+        {
+            data.reset();
         }
     };
 }
 
-namespace test_cases
+TEST_F(ResolverVirtualsTestCase, Virtuals)
 {
-    struct TestVirtuals : ResolverVirtualsTestCase
-    {
-        TestVirtuals() : ResolverVirtualsTestCase("virtuals") { }
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("virtuals/target"));
 
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved("virtuals/target"));
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("cat/foo-a"))
+                .change(QualifiedPackageName("virtuals/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
+}
 
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("cat/foo-a"))
-                        .change(QualifiedPackageName("virtuals/target"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
-        }
-    } test_virtuals;
+TEST_F(ResolverVirtualsTestCase, VirtualsTarget)
+{
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("virtual/virtual-target"));
 
-    struct TestVirtualsTarget : ResolverVirtualsTestCase
-    {
-        TestVirtualsTarget() : ResolverVirtualsTestCase("virtuals target") { }
-
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved("virtual/virtual-target"));
-
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("cat/real-target"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
-        }
-    } test_virtuals_target;
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("cat/real-target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
 }
 

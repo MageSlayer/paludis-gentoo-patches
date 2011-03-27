@@ -24,7 +24,9 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/suggest_restart.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -34,13 +36,12 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/string_list_stream.hh>
+
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/serialise.hh>
 
 #include <paludis/resolver/resolver_test.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
 
 #include <list>
 #include <functional>
@@ -50,59 +51,57 @@
 using namespace paludis;
 using namespace paludis::resolver;
 using namespace paludis::resolver::resolver_test;
-using namespace test;
 
 namespace
 {
     struct ResolverSerialisationTestCase : ResolverTestCase
     {
-        ResolverSerialisationTestCase(const std::string & s) :
-            ResolverTestCase("serialisation", s, "exheres-0", "exheres")
+        std::shared_ptr<ResolverTestData> data;
+
+        void SetUp()
         {
+            data = std::make_shared<ResolverTestData>("serialisation", "exheres-0", "exheres");
+        }
+
+        void TearDown()
+        {
+            data.reset();
         }
     };
 }
 
-namespace test_cases
+TEST_F(ResolverSerialisationTestCase, Serialisation)
 {
-    struct TestSerialisation : ResolverSerialisationTestCase
+    std::shared_ptr<const Resolved> resolved;
     {
-        TestSerialisation() : ResolverSerialisationTestCase("serialisation") { }
+        std::shared_ptr<const Resolved> orig_resolved(data->get_resolved("serialisation/target"));
+        StringListStream str;
+        Serialiser ser(str);
+        orig_resolved->serialise(ser);
+        str.nothing_more_to_write();
 
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved;
-            {
-                std::shared_ptr<const Resolved> orig_resolved(get_resolved("serialisation/target"));
-                StringListStream str;
-                Serialiser ser(str);
-                orig_resolved->serialise(ser);
-                str.nothing_more_to_write();
+        Deserialiser deser(&data->env, str);
+        Deserialisation desern("ResolverLists", deser);
+        resolved = std::make_shared<Resolved>(Resolved::deserialise(desern));
+    }
 
-                Deserialiser deser(&env, str);
-                Deserialisation desern("ResolverLists", deser);
-                resolved = std::make_shared<Resolved>(Resolved::deserialise(desern));
-            }
-
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("serialisation/dep"))
-                        .change(QualifiedPackageName("serialisation/target"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .unable(QualifiedPackageName("serialisation/error"))
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("serialisation/suggestion"))
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
-        }
-    } test_serialisation;
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("serialisation/dep"))
+                .change(QualifiedPackageName("serialisation/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .unable(QualifiedPackageName("serialisation/error"))
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("serialisation/suggestion"))
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
 }
 

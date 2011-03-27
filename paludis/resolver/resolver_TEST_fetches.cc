@@ -28,7 +28,9 @@
 #include <paludis/resolver/job_list.hh>
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/job_requirements.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -40,12 +42,11 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/join.hh>
+
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 
 #include <paludis/resolver/resolver_test.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
 
 #include <list>
 #include <functional>
@@ -55,15 +56,21 @@
 using namespace paludis;
 using namespace paludis::resolver;
 using namespace paludis::resolver::resolver_test;
-using namespace test;
 
 namespace
 {
     struct ResolverFetchTestCase : ResolverTestCase
     {
-        ResolverFetchTestCase(const std::string & s) :
-            ResolverTestCase("fetch", s, "exheres-0", "exheres")
+        std::shared_ptr<ResolverTestData> data;
+
+        void SetUp()
         {
+            data = std::make_shared<ResolverTestData>("fetch", "exheres-0", "exheres");
+        }
+
+        void TearDown()
+        {
+            data.reset();
         }
     };
 
@@ -82,55 +89,46 @@ namespace
     }
 }
 
-namespace test_cases
+TEST_F(ResolverFetchTestCase, Fetch)
 {
-    struct TestFetchDeps : ResolverFetchTestCase
-    {
-        TestFetchDeps() : ResolverFetchTestCase("fetch") { }
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("fetch/target"));
 
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved("fetch/target"));
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("fetch/fetch-dep"))
+                .change(QualifiedPackageName("fetch/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
 
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("fetch/fetch-dep"))
-                        .change(QualifiedPackageName("fetch/target"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
+    EXPECT_EQ(4, resolved->job_lists()->execute_job_list()->length());
 
-            TEST_CHECK_EQUAL(resolved->job_lists()->execute_job_list()->length(), 4);
+    const FetchJob * const fetch_fetch_dep_job(visitor_cast<const FetchJob>(**resolved->job_lists()->execute_job_list()->fetch(0)));
+    ASSERT_TRUE(fetch_fetch_dep_job);
+    EXPECT_EQ("", join(fetch_fetch_dep_job->requirements()->begin(), fetch_fetch_dep_job->requirements()->end(), ", ", stringify_req));
 
-            const FetchJob * const fetch_fetch_dep_job(visitor_cast<const FetchJob>(**resolved->job_lists()->execute_job_list()->fetch(0)));
-            TEST_CHECK(fetch_fetch_dep_job);
-            TEST_CHECK_EQUAL(join(fetch_fetch_dep_job->requirements()->begin(), fetch_fetch_dep_job->requirements()->end(), ", ", stringify_req),
-                    "");
+    const InstallJob * const fetch_dep_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
+    ASSERT_TRUE(fetch_dep_job);
+    EXPECT_EQ("0 satisfied independent always",
+            join(fetch_dep_job->requirements()->begin(), fetch_dep_job->requirements()->end(), ", ", stringify_req));
 
-            const InstallJob * const fetch_dep_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
-            TEST_CHECK(fetch_dep_job);
-            TEST_CHECK_EQUAL(join(fetch_dep_job->requirements()->begin(), fetch_dep_job->requirements()->end(), ", ", stringify_req),
-                    "0 satisfied independent always");
+    const FetchJob * const fetch_target_job(visitor_cast<const FetchJob>(**resolved->job_lists()->execute_job_list()->fetch(2)));
+    ASSERT_TRUE(fetch_target_job);
+    EXPECT_EQ("1 satisfied, 1 independent",
+            join(fetch_target_job->requirements()->begin(), fetch_target_job->requirements()->end(), ", ", stringify_req));
 
-            const FetchJob * const fetch_target_job(visitor_cast<const FetchJob>(**resolved->job_lists()->execute_job_list()->fetch(2)));
-            TEST_CHECK(fetch_target_job);
-            TEST_CHECK_EQUAL(join(fetch_target_job->requirements()->begin(), fetch_target_job->requirements()->end(), ", ", stringify_req),
-                    "1 satisfied, 1 independent");
-
-            const InstallJob * const target_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
-            TEST_CHECK(target_job);
-            TEST_CHECK_EQUAL(join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req),
-                    "2 satisfied independent always, 1 independent");
-        }
-    } test_fetch_dep;
+    const InstallJob * const target_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
+    ASSERT_TRUE(target_job);
+    EXPECT_EQ("2 satisfied independent always, 1 independent",
+            join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req));
 }
 

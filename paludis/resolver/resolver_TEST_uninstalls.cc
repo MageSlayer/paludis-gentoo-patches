@@ -26,7 +26,9 @@
 #include <paludis/resolver/suggest_restart.hh>
 #include <paludis/resolver/required_confirmations.hh>
 #include <paludis/resolver/make_uninstall_blocker.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -37,12 +39,11 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/return_literal_function.hh>
+
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 
 #include <paludis/resolver/resolver_test.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
 
 #include <list>
 #include <functional>
@@ -52,51 +53,50 @@
 using namespace paludis;
 using namespace paludis::resolver;
 using namespace paludis::resolver::resolver_test;
-using namespace test;
 
 namespace
 {
     struct ResolverUninstallsTestCase : ResolverTestCase
     {
-        ResolverUninstallsTestCase(const std::string & s) :
-            ResolverTestCase("uninstalls", s, "exheres-0", "exheres")
+        std::shared_ptr<ResolverTestData> data;
+
+        void SetUp()
         {
+            data = std::make_shared<ResolverTestData>("uninstalls", "exheres-0", "exheres");
+        }
+
+        void TearDown()
+        {
+            data.reset();
         }
     };
 }
 
-namespace test_cases
+namespace
 {
-    struct TestUninstallBreaking : ResolverUninstallsTestCase
+    template <bool allowed_to_remove_, bool confirm_>
+    struct TestUninstallBreaking :
+        ResolverUninstallsTestCase
     {
-        const bool allowed_to_remove;
-        const bool confirm;
-
-        TestUninstallBreaking(const bool ar, const bool c) :
-            ResolverUninstallsTestCase("uninstall breaking " + stringify(ar) + " " + stringify(c)),
-            allowed_to_remove(ar),
-            confirm(c)
+        void common_test_code()
         {
-            install("breaking", "dep", "1")->run_dependencies_key()->set_from_string("breaking/target");
-            install("breaking", "target", "1");
+            data->install("breaking", "dep", "1")->run_dependencies_key()->set_from_string("breaking/target");
+            data->install("breaking", "target", "1");
 
-            allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("breaking/target", &env, { }));
-            if (allowed_to_remove)
+            data->allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("breaking/target", &data->env, UserPackageDepSpecOptions()));
+            if (allowed_to_remove_)
             {
-                remove_if_dependent_helper.add_remove_if_dependent_spec(parse_user_package_dep_spec("breaking/dep", &env, { }));
-                allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("breaking/dep", &env, { }));
+                data->remove_if_dependent_helper.add_remove_if_dependent_spec(parse_user_package_dep_spec("breaking/dep", &data->env, UserPackageDepSpecOptions()));
+                data->allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("breaking/dep", &data->env, UserPackageDepSpecOptions()));
             }
 
-            if (confirm)
-                confirm_helper.add_allowed_to_break_spec(parse_user_package_dep_spec("*/*", &env, { updso_allow_wildcards }));
-        }
+            if (confirm_)
+                data->confirm_helper.add_allowed_to_break_spec(parse_user_package_dep_spec("*/*", &data->env, UserPackageDepSpecOptions() + updso_allow_wildcards));
 
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved(make_uninstall_blocker(
-                            parse_user_package_dep_spec("breaking/target", &env, { }))));
+            std::shared_ptr<const Resolved> resolved(data->get_resolved(make_uninstall_blocker(
+                            parse_user_package_dep_spec("breaking/target", &data->env, UserPackageDepSpecOptions()))));
 
-            if (allowed_to_remove)
+            if (allowed_to_remove_)
                 check_resolved(resolved,
                         n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                             .remove(QualifiedPackageName("breaking/dep"))
@@ -113,7 +113,7 @@ namespace test_cases
                         n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                             .finished())
                         );
-            else if (confirm)
+            else if (confirm_)
                 check_resolved(resolved,
                         n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                             .remove(QualifiedPackageName("breaking/target"))
@@ -147,9 +147,16 @@ namespace test_cases
                             .finished())
                         );
         }
-    } test_uninstall_breaking_f_f(false, false),
-      test_uninstall_breaking_f_t(false, true),
-      test_uninstall_breaking_t_f(true, false),
-      test_uninstall_breaking_t_t(true, true);
+    };
 }
+
+typedef TestUninstallBreaking<false, false> UninstallBreakingFF;
+typedef TestUninstallBreaking<false, true> UninstallBreakingFT;
+typedef TestUninstallBreaking<true, false> UninstallBreakingTF;
+typedef TestUninstallBreaking<true, true> UninstallBreakingTT;
+
+TEST_F(UninstallBreakingFF, Works) { common_test_code(); }
+TEST_F(UninstallBreakingFT, Works) { common_test_code(); }
+TEST_F(UninstallBreakingTF, Works) { common_test_code(); }
+TEST_F(UninstallBreakingTT, Works) { common_test_code(); }
 

@@ -24,7 +24,9 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/suggest_restart.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -33,12 +35,12 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/make_shared_copy.hh>
+
 #include <paludis/user_dep_spec.hh>
+
 #include <paludis/repository_factory.hh>
 
 #include <paludis/resolver/resolver_test.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
 
 #include <list>
 #include <functional>
@@ -48,47 +50,45 @@
 using namespace paludis;
 using namespace paludis::resolver;
 using namespace paludis::resolver::resolver_test;
-using namespace test;
 
 namespace
 {
     struct ResolverErrorsTestCase : ResolverTestCase
     {
-        ResolverErrorsTestCase(const std::string & s) :
-            ResolverTestCase("errors", s, "exheres-0", "exheres")
+        std::shared_ptr<ResolverTestData> data;
+
+        void SetUp()
         {
+            data = std::make_shared<ResolverTestData>("errors", "exheres-0", "exheres");
+        }
+
+        void TearDown()
+        {
+            data.reset();
         }
     };
 }
 
-namespace test_cases
+TEST_F(ResolverErrorsTestCase, UnableToDecideThenMore)
 {
-    struct TestUnableToDecideThenMore : ResolverErrorsTestCase
-    {
-        TestUnableToDecideThenMore() : ResolverErrorsTestCase("unable to decide then more") { }
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("unable-to-decide-then-more/target"));
 
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved("unable-to-decide-then-more/target"));
-
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("unable-to-decide-then-more/pkg-b"))
-                        .change(QualifiedPackageName("unable-to-decide-then-more/target"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .unable(QualifiedPackageName("unable-to-decide-then-more/pkg-a"))
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
-        }
-    } test_unable_to_decide_then_more;
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("unable-to-decide-then-more/pkg-b"))
+                .change(QualifiedPackageName("unable-to-decide-then-more/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .unable(QualifiedPackageName("unable-to-decide-then-more/pkg-a"))
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
 }
 

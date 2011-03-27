@@ -30,6 +30,7 @@
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/resolver/labels_classifier.hh>
+
 #include <paludis/util/map.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/accept_visitor.hh>
@@ -39,7 +40,12 @@
 #include <paludis/util/tribool.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/join.hh>
-#include <paludis/repositories/fake/fake_installed_repository.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/map-impl.hh>
+#include <paludis/util/sequence-impl.hh>
+
 #include <paludis/repository_factory.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/filter.hh>
@@ -49,10 +55,7 @@
 #include <paludis/elike_slot_requirement.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 
-#include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/map-impl.hh>
-#include <paludis/util/sequence-impl.hh>
+#include <paludis/repositories/fake/fake_installed_repository.hh>
 
 #include <algorithm>
 #include "config.h"
@@ -60,7 +63,6 @@
 using namespace paludis;
 using namespace paludis::resolver;
 using namespace paludis::resolver::resolver_test;
-using namespace test;
 
 std::string
 paludis::resolver::resolver_test::from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
@@ -98,9 +100,7 @@ namespace
 #endif
 }
 
-ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s, const std::string & e,
-        const std::string & l) :
-    TestCase(s),
+ResolverTestData::ResolverTestData(const std::string & t, const std::string & e, const std::string & l) :
     allow_choice_changes_helper(&env),
     allowed_to_remove_helper(&env),
     allowed_to_restart_helper(&env),
@@ -171,7 +171,7 @@ ResolverTestCase::ResolverTestCase(const std::string & t, const std::string & s,
 }
 
 ResolverFunctions
-ResolverTestCase::get_resolver_functions()
+ResolverTestData::get_resolver_functions()
 {
     return make_named_values<ResolverFunctions>(
             n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
@@ -201,7 +201,7 @@ ResolverTestCase::get_resolver_functions()
 }
 
 const std::shared_ptr<const Resolved>
-ResolverTestCase::get_resolved(const PackageOrBlockDepSpec & target)
+ResolverTestData::get_resolved(const PackageOrBlockDepSpec & target)
 {
     while (true)
     {
@@ -220,7 +220,7 @@ ResolverTestCase::get_resolved(const PackageOrBlockDepSpec & target)
 }
 
 const std::shared_ptr<const Resolved>
-ResolverTestCase::get_resolved(const std::string & target)
+ResolverTestData::get_resolved(const std::string & target)
 {
     PackageDepSpec target_spec(parse_user_package_dep_spec(target, &env, { }));
     return get_resolved(target_spec);
@@ -259,12 +259,12 @@ ResolverTestCase::check_resolved_one(
         if (decision != decision_end)
             d = get_decision(*decision++);
 
-        TEST_CHECK_MESSAGE(decision_check->first(d), decision_check->second(d));
+        EXPECT_TRUE(decision_check->first(d)) << decision_check->second(d);
         ++decision_check;
     }
 
-    TEST_CHECK(decision_check == decision_check_end);
-    TEST_CHECK(decision == decision_end);
+    ASSERT_TRUE(decision_check == decision_check_end);
+    ASSERT_TRUE(decision == decision_end);
 }
 
 void
@@ -278,35 +278,12 @@ ResolverTestCase::check_resolved(
         const NamedValue<n::untaken_unable_to_make_decisions, const std::shared_ptr<const DecisionChecks> > & untaken_unable_to_make_decisions
         )
 {
-    {
-        TestMessageSuffix s("taken change or remove");
-        check_resolved_one(resolved->taken_change_or_remove_decisions(), taken_change_or_remove_decisions());
-    }
-
-    {
-        TestMessageSuffix s("taken unable to make");
-        check_resolved_one(resolved->taken_unable_to_make_decisions(), taken_unable_to_make_decisions());
-    }
-
-    {
-        TestMessageSuffix s("taken unconfirmed");
-        check_resolved_one(resolved->taken_unconfirmed_decisions(), taken_unconfirmed_decisions());
-    }
-
-    {
-        TestMessageSuffix s("taken unorderable");
-        check_resolved_one(resolved->taken_unorderable_decisions(), taken_unorderable_decisions());
-    }
-
-    {
-        TestMessageSuffix s("untaken change or remove");
-        check_resolved_one(resolved->untaken_change_or_remove_decisions(), untaken_change_or_remove_decisions());
-    }
-
-    {
-        TestMessageSuffix s("untaken unable to make");
-        check_resolved_one(resolved->untaken_unable_to_make_decisions(), untaken_unable_to_make_decisions());
-    }
+    check_resolved_one(resolved->taken_change_or_remove_decisions(), taken_change_or_remove_decisions());
+    check_resolved_one(resolved->taken_unable_to_make_decisions(), taken_unable_to_make_decisions());
+    check_resolved_one(resolved->taken_unconfirmed_decisions(), taken_unconfirmed_decisions());
+    check_resolved_one(resolved->taken_unorderable_decisions(), taken_unorderable_decisions());
+    check_resolved_one(resolved->untaken_change_or_remove_decisions(), untaken_change_or_remove_decisions());
+    check_resolved_one(resolved->untaken_unable_to_make_decisions(), untaken_unable_to_make_decisions());
 }
 
 ResolverTestCase::DecisionChecks &
@@ -503,7 +480,7 @@ ResolverTestCase::DecisionChecks::check_generic_msg(const std::string & q, const
 }
 
 const std::shared_ptr<FakePackageID>
-ResolverTestCase::install(const std::string & c, const std::string & p, const std::string & v)
+ResolverTestData::install(const std::string & c, const std::string & p, const std::string & v)
 {
     return fake_inst_repo->add_version(c, p, v);
 }

@@ -24,7 +24,9 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/suggest_restart.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -33,12 +35,11 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/make_shared_copy.hh>
+
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 
 #include <paludis/resolver/resolver_test.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
 
 #include <list>
 #include <functional>
@@ -48,101 +49,89 @@
 using namespace paludis;
 using namespace paludis::resolver;
 using namespace paludis::resolver::resolver_test;
-using namespace test;
 
 namespace
 {
     struct ResolverSuggestionsTestCase : ResolverTestCase
     {
-        ResolverSuggestionsTestCase(const std::string & s) :
-            ResolverTestCase("suggestions", s, "exheres-0", "exheres")
+        std::shared_ptr<ResolverTestData> data;
+
+        void SetUp()
         {
+            data = std::make_shared<ResolverTestData>("suggestions", "exheres-0", "exheres");
+        }
+
+        void TearDown()
+        {
+            data.reset();
         }
     };
 }
 
-namespace test_cases
+TEST_F(ResolverSuggestionsTestCase, Suggestion)
 {
-    struct TestSuggestion : ResolverSuggestionsTestCase
-    {
-        TestSuggestion() : ResolverSuggestionsTestCase("suggestion") { }
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("suggestion/target"));
 
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved("suggestion/target"));
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("suggestion/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("suggestion/dep"))
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
+}
 
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("suggestion/target"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("suggestion/dep"))
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
-        }
-    } test_suggestion;
+TEST_F(ResolverSuggestionsTestCase, Unmeetable)
+{
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("unmeetable-suggestion/target"));
 
-    struct TestUnmeetableSuggestion : ResolverSuggestionsTestCase
-    {
-        TestUnmeetableSuggestion() : ResolverSuggestionsTestCase("unmeetable suggestion") { }
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("unmeetable-suggestion/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .unable(QualifiedPackageName("unmeetable-suggestion/unmeetable-dep"))
+                .finished())
+            );
+}
 
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved("unmeetable-suggestion/target"));
+TEST_F(ResolverSuggestionsTestCase, SuggestionThenDependency)
+{
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("suggestion-then-dependency/target"));
 
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("unmeetable-suggestion/target"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .unable(QualifiedPackageName("unmeetable-suggestion/unmeetable-dep"))
-                        .finished())
-                    );
-        }
-    } test_unmeetable_suggestion;
-
-    struct TestSuggestionThenDependency : ResolverSuggestionsTestCase
-    {
-        TestSuggestionThenDependency() : ResolverSuggestionsTestCase("suggestion then dependency") { }
-
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved("suggestion-then-dependency/target"));
-
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("suggestion-then-dependency/a-suggested-dep"))
-                        .change(QualifiedPackageName("suggestion-then-dependency/hard-dep"))
-                        .change(QualifiedPackageName("suggestion-then-dependency/target"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
-        }
-    } test_suggestion_then_dependency;
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("suggestion-then-dependency/a-suggested-dep"))
+                .change(QualifiedPackageName("suggestion-then-dependency/hard-dep"))
+                .change(QualifiedPackageName("suggestion-then-dependency/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
 }
 

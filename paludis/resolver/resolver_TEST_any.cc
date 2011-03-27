@@ -25,7 +25,9 @@
 #include <paludis/resolver/constraint.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/suggest_restart.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -35,12 +37,11 @@
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_shared_copy.hh>
+
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 
 #include <paludis/resolver/resolver_test.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
 
 #include <list>
 #include <functional>
@@ -50,131 +51,115 @@
 using namespace paludis;
 using namespace paludis::resolver;
 using namespace paludis::resolver::resolver_test;
-using namespace test;
 
 namespace
 {
     struct ResolverAnyTestCase : ResolverTestCase
     {
-        ResolverAnyTestCase(const std::string & s) :
-            ResolverTestCase("any", s, "exheres-0", "exheres")
+        std::shared_ptr<ResolverTestData> data;
+
+        void SetUp()
         {
-            get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_never);
+            data = std::make_shared<ResolverTestData>("any", "exheres-0", "exheres");
+            data->get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_never);
+        }
+
+        void TearDown()
+        {
+            data.reset();
         }
     };
 }
 
-namespace test_cases
+TEST_F(ResolverAnyTestCase, EmptyAlternative)
 {
-    struct TestEmptyAlternative : ResolverAnyTestCase
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("test/target"));
+
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("test/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
+}
+
+TEST_F(ResolverAnyTestCase, EmptyAlternativeWithUpdate)
+{
+    data->install("test", "dep", "2");
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("test/target"));
+
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("test/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
+}
+
+TEST_F(ResolverAnyTestCase, EmptyAlternativeWithUntakenUpgrade)
+{
+    data->install("test", "dep", "1");
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("test/target"));
+
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("test/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
+}
+
+namespace
+{
+    enum TriboolValue { tri_true, tri_false, tri_indeterminate };
+
+    template <TriboolValue a_, TriboolValue b_>
+    struct ResolverAnyTestEmptyPreferences :
+        ResolverAnyTestCase
     {
-        TestEmptyAlternative() : ResolverAnyTestCase("empty alternative") { }
-
-        void run()
+        void common_test_code()
         {
-            std::shared_ptr<const Resolved> resolved(get_resolved("test/target"));
+            Tribool a(a_ == tri_true ? true : a_ == tri_false ? false : Tribool(indeterminate));
+            Tribool b(b_ == tri_true ? true : b_ == tri_false ? false : Tribool(indeterminate));
 
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("test/target"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
-        }
-    } test_empty_alternative;
-
-    struct TestEmptyAlternativeWithUpgrade : ResolverAnyTestCase
-    {
-        TestEmptyAlternativeWithUpgrade() :
-            ResolverAnyTestCase("empty alternative with upgrade")
-        {
-            install("test", "dep", "2");
-        }
-
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved("test/target"));
-
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("test/target"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
-        }
-    } test_empty_alternative_with_upgrade;
-
-    struct TestEmptyAlternativeWithUntakenUpgrade : ResolverAnyTestCase
-    {
-        TestEmptyAlternativeWithUntakenUpgrade() :
-            ResolverAnyTestCase("empty alternative with untaken upgrade")
-        {
-            install("test", "dep", "1");
-        }
-
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved("test/target"));
-
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("test/target"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
-        }
-    } test_empty_alternative_with_untaken_upgrade;
-
-    struct TestEmptyPreferences : ResolverAnyTestCase
-    {
-        const Tribool a, b;
-
-        TestEmptyPreferences(const Tribool aa, const Tribool bb) :
-            ResolverAnyTestCase("empty preferences " + stringify(aa) + " " + stringify(bb)),
-            a(aa),
-            b(bb)
-        {
             if (a.is_true())
-                prefer_or_avoid_helper.add_prefer_name(QualifiedPackageName("preferences/dep-a"));
+                data->prefer_or_avoid_helper.add_prefer_name(QualifiedPackageName("preferences/dep-a"));
             else if (a.is_false())
-                prefer_or_avoid_helper.add_avoid_name(QualifiedPackageName("preferences/dep-a"));
+                data->prefer_or_avoid_helper.add_avoid_name(QualifiedPackageName("preferences/dep-a"));
 
             if (b.is_true())
-                prefer_or_avoid_helper.add_prefer_name(QualifiedPackageName("preferences/dep-b"));
+                data->prefer_or_avoid_helper.add_prefer_name(QualifiedPackageName("preferences/dep-b"));
             else if (b.is_false())
-                prefer_or_avoid_helper.add_avoid_name(QualifiedPackageName("preferences/dep-b"));
-        }
+                data->prefer_or_avoid_helper.add_avoid_name(QualifiedPackageName("preferences/dep-b"));
 
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved("preferences/target"));
+            std::shared_ptr<const Resolved> resolved(data->get_resolved("preferences/target"));
 
             std::shared_ptr<DecisionChecks> checks;
 
@@ -221,101 +206,93 @@ namespace test_cases
                         .finished())
                     );
         }
-    } test_empty_preferences_tt(true, true),
-           test_empty_preferences_ti(true, indeterminate), test_empty_preferences_tf(true, false),
-           test_empty_preferences_it(indeterminate, true), test_empty_preferences_ii(indeterminate, indeterminate),
-           test_empty_preferences_if(indeterminate, false), test_empty_preferences_ft(false, true),
-           test_empty_preferences_fi(false, indeterminate), test_empty_preferences_ff(false, false);
+    };
+}
 
-    struct TestSelfUseFirst : ResolverAnyTestCase
-    {
-        TestSelfUseFirst() :
-            ResolverAnyTestCase("self use first")
-        {
-        }
+typedef ResolverAnyTestEmptyPreferences<tri_true, tri_true> TestEmptyPreferencesTT;
+typedef ResolverAnyTestEmptyPreferences<tri_true, tri_false> TestEmptyPreferencesTF;
+typedef ResolverAnyTestEmptyPreferences<tri_true, tri_indeterminate> TestEmptyPreferencesTI;
+typedef ResolverAnyTestEmptyPreferences<tri_false, tri_true> TestEmptyPreferencesFT;
+typedef ResolverAnyTestEmptyPreferences<tri_false, tri_false> TestEmptyPreferencesFF;
+typedef ResolverAnyTestEmptyPreferences<tri_false, tri_indeterminate> TestEmptyPreferencesFI;
+typedef ResolverAnyTestEmptyPreferences<tri_indeterminate, tri_true> TestEmptyPreferencesIT;
+typedef ResolverAnyTestEmptyPreferences<tri_indeterminate, tri_false> TestEmptyPreferencesIF;
+typedef ResolverAnyTestEmptyPreferences<tri_indeterminate, tri_indeterminate> TestEmptyPreferencesII;
 
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved("self-use-first/target"));
+TEST_F(TestEmptyPreferencesTT, Works) { common_test_code(); }
+TEST_F(TestEmptyPreferencesTF, Works) { common_test_code(); }
+TEST_F(TestEmptyPreferencesTI, Works) { common_test_code(); }
+TEST_F(TestEmptyPreferencesFT, Works) { common_test_code(); }
+TEST_F(TestEmptyPreferencesFF, Works) { common_test_code(); }
+TEST_F(TestEmptyPreferencesFI, Works) { common_test_code(); }
+TEST_F(TestEmptyPreferencesIT, Works) { common_test_code(); }
+TEST_F(TestEmptyPreferencesIF, Works) { common_test_code(); }
+TEST_F(TestEmptyPreferencesII, Works) { common_test_code(); }
 
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("self-use-first/dep"))
-                        .change(QualifiedPackageName("self-use-first/target"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
-        }
-    } test_self_use_first;
+TEST_F(ResolverAnyTestCase, SelfUseFirst)
+{
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("self-use-first/target"));
 
-    struct TestSelfUseSecond : ResolverAnyTestCase
-    {
-        TestSelfUseSecond() :
-            ResolverAnyTestCase("self use second")
-        {
-        }
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("self-use-first/dep"))
+                .change(QualifiedPackageName("self-use-first/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
+}
 
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved("self-use-second/target"));
+TEST_F(ResolverAnyTestCase, SelfUseSecond)
+{
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("self-use-second/target"));
 
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("self-use-second/dep"))
-                        .change(QualifiedPackageName("self-use-second/target"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
-        }
-    } test_self_use_second;
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("self-use-second/dep"))
+                .change(QualifiedPackageName("self-use-second/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
+}
 
-    struct TestSelfUseNeither : ResolverAnyTestCase
-    {
-        TestSelfUseNeither() :
-            ResolverAnyTestCase("self use neither")
-        {
-        }
+TEST_F(ResolverAnyTestCase, SelfUseNeither)
+{
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("self-use-neither/target"));
 
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved("self-use-neither/target"));
-
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("self-use-neither/dep"))
-                        .change(QualifiedPackageName("self-use-neither/target"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("self-use-neither/dep"))
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
-        }
-    } test_self_use_neither;
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("self-use-neither/dep"))
+                .change(QualifiedPackageName("self-use-neither/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("self-use-neither/dep"))
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
 }
 

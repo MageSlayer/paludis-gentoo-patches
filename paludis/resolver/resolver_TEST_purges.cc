@@ -26,6 +26,7 @@
 #include <paludis/resolver/suggest_restart.hh>
 #include <paludis/resolver/make_uninstall_blocker.hh>
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -35,12 +36,11 @@
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/return_literal_function.hh>
+
 #include <paludis/user_dep_spec.hh>
 #include <paludis/repository_factory.hh>
 
 #include <paludis/resolver/resolver_test.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
 
 #include <list>
 #include <functional>
@@ -50,98 +50,86 @@
 using namespace paludis;
 using namespace paludis::resolver;
 using namespace paludis::resolver::resolver_test;
-using namespace test;
 
 namespace
 {
     struct ResolverPurgesTestCase : ResolverTestCase
     {
-        ResolverPurgesTestCase(const std::string & s) :
-            ResolverTestCase("purges", s, "exheres-0", "exheres")
+        std::shared_ptr<ResolverTestData> data;
+
+        void SetUp()
+        {
+            data = std::make_shared<ResolverTestData>("purges", "exheres-0", "exheres");
+        }
+
+        void TearDown()
         {
         }
     };
 }
 
-namespace test_cases
+TEST_F(ResolverPurgesTestCase, Purges)
 {
-    struct TestPurges : ResolverPurgesTestCase
-    {
-        TestPurges() :
-            ResolverPurgesTestCase("purges")
-        {
-            install("purges", "target", "0")->build_dependencies_key()->set_from_string(
-                    "purges/still-used-dep purges/old-dep purges/old-dep-locked purges/unrelated-dep");
-            install("purges", "old-dep", "0");
-            install("purges", "old-dep-locked", "0")->behaviours_set()->insert("used");
-            install("purges", "still-used-dep", "0");
-            install("purges", "unrelated-dep", "0");
-            install("purges", "unrelated", "0")->build_dependencies_key()->set_from_string("purges/unrelated-dep");
+    data->install("purges", "target", "0")->build_dependencies_key()->set_from_string(
+            "purges/still-used-dep purges/old-dep purges/old-dep-locked purges/unrelated-dep");
+    data->install("purges", "old-dep", "0");
+    data->install("purges", "old-dep-locked", "0")->behaviours_set()->insert("used");
+    data->install("purges", "still-used-dep", "0");
+    data->install("purges", "unrelated-dep", "0");
+    data->install("purges", "unrelated", "0")->build_dependencies_key()->set_from_string("purges/unrelated-dep");
 
-            get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("purges/old-dep", &env, { }));
+    data->get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("purges/old-dep", &data->env, { }));
 
-            get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_possible);
-        }
+    data->get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_possible);
 
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved("purges/target"));
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .change(QualifiedPackageName("purges/new-dep"))
-                        .change(QualifiedPackageName("purges/target"))
-                        .remove(QualifiedPackageName("purges/old-dep"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
-        }
-    } test_purges;
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("purges/target"));
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("purges/new-dep"))
+                .change(QualifiedPackageName("purges/target"))
+                .remove(QualifiedPackageName("purges/old-dep"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
+}
 
-    struct TestStarSlotPurges : ResolverPurgesTestCase
-    {
-        TestStarSlotPurges() :
-            ResolverPurgesTestCase("star slot purges")
-        {
-            install("star-slot-purges", "target", "1")->set_slot(SlotName("1"));
-            install("star-slot-purges", "target", "2")->set_slot(SlotName("2"));
+TEST_F(ResolverPurgesTestCase, StarSlotPurges)
+{
+    data->install("star-slot-purges", "target", "1")->set_slot(SlotName("1"));
+    data->install("star-slot-purges", "target", "2")->set_slot(SlotName("2"));
 
-            install("star-slot-purges", "uses", "1")->build_dependencies_key()->set_from_string("star-slot-purges/target:*");
+    data->install("star-slot-purges", "uses", "1")->build_dependencies_key()->set_from_string("star-slot-purges/target:*");
 
-            get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("star-slot-purges/target", &env, { }));
+    data->get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("star-slot-purges/target", &data->env, { }));
 
-            get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_possible);
-        }
+    data->get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_possible);
 
-        void run()
-        {
-            std::shared_ptr<const Resolved> resolved(get_resolved(make_uninstall_blocker(
-                            parse_user_package_dep_spec("star-slot-purges/target:1", &env, { }))));
+    std::shared_ptr<const Resolved> resolved(data->get_resolved(make_uninstall_blocker(
+                    parse_user_package_dep_spec("star-slot-purges/target:1", &data->env, { }))));
 
-            check_resolved(resolved,
-                    n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .remove(QualifiedPackageName("star-slot-purges/target"))
-                        .finished()),
-                    n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
-                        .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
-                        .finished())
-                    );
-        }
-    } test_star_slot_purges;
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .remove(QualifiedPackageName("star-slot-purges/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
 }
 

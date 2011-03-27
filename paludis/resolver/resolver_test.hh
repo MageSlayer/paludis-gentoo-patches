@@ -70,12 +70,12 @@
 #include <paludis/filtered_generator-fwd.hh>
 #include <paludis/generator-fwd.hh>
 
-#include <test/test_framework.hh>
-
 #include <memory>
 #include <string>
 #include <map>
 #include <list>
+
+#include <gtest/gtest.h>
 
 namespace paludis
 {
@@ -86,7 +86,7 @@ namespace paludis
             std::string from_keys(const std::shared_ptr<const Map<std::string, std::string> > & m,
                     const std::string & k);
 
-            struct ResolverTestCase : test::TestCase
+            struct ResolverTestData
             {
                 TestEnvironment env;
                 std::shared_ptr<Repository> repo, inst_repo;
@@ -116,14 +116,21 @@ namespace paludis
                 PreferOrAvoidHelper prefer_or_avoid_helper;
                 RemoveIfDependentHelper remove_if_dependent_helper;
 
-                ResolverTestCase(const std::string & group, const std::string & test_name, const std::string & eapi,
-                        const std::string & layout);
+                ResolverTestData(const std::string & group, const std::string & eapi, const std::string & layout);
+
+                ResolverFunctions get_resolver_functions();
 
                 const std::shared_ptr<const Resolved> get_resolved(const PackageOrBlockDepSpec & target);
+
                 const std::shared_ptr<const Resolved> get_resolved(const std::string & target);
 
-                virtual ResolverFunctions get_resolver_functions();
+                const std::shared_ptr<FakePackageID> install(
+                        const std::string & c, const std::string & p, const std::string & v);
+            };
 
+            struct ResolverTestCase :
+                testing::Test
+            {
                 struct DecisionChecks
                 {
                     typedef std::function<bool (const std::shared_ptr<const Decision> &) > CheckFunction;
@@ -173,9 +180,6 @@ namespace paludis
                         const NamedValue<n::untaken_change_or_remove_decisions, const std::shared_ptr<const DecisionChecks> > &,
                         const NamedValue<n::untaken_unable_to_make_decisions, const std::shared_ptr<const DecisionChecks> > &
                         );
-
-                const std::shared_ptr<FakePackageID> install(
-                        const std::string & c, const std::string & p, const std::string & v);
             };
         }
     }
