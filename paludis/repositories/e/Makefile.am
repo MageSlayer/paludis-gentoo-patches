@@ -43,7 +43,6 @@ noinst_HEADERS = \
 	e_repository.hh \
 	e_repository_exceptions.hh \
 	e_repository_id.hh \
-	e_repository_mask_file.hh \
 	e_repository_news.hh \
 	e_repository_params-se.hh \
 	e_repository_params.hh \
@@ -92,6 +91,7 @@ noinst_HEADERS = \
 	source_uri_finder.hh \
 	spec_tree_pretty_printer.hh \
 	traditional_layout.hh \
+	traditional_mask_file.hh \
 	traditional_mask_store.hh \
 	traditional_profile.hh \
 	use_desc.hh \
@@ -124,7 +124,6 @@ libpaludiserepository_la_SOURCES = \
 	e_repository.cc \
 	e_repository_exceptions.cc \
 	e_repository_id.cc \
-	e_repository_mask_file.cc \
 	e_repository_news.cc \
 	e_repository_params.cc \
 	e_repository_sets.cc \
@@ -171,6 +170,7 @@ libpaludiserepository_la_SOURCES = \
 	source_uri_finder.cc \
 	spec_tree_pretty_printer.cc \
 	traditional_layout.cc \
+	traditional_mask_file.cc \
 	traditional_mask_store.cc \
 	traditional_profile.cc \
 	use_desc.cc \

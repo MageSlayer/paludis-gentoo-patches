@@ -17,8 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/e/e_repository_mask_file.hh>
+#include <paludis/repositories/e/traditional_mask_file.hh>
 #include <paludis/repositories/e/eapi.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>
@@ -31,6 +32,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
+
 #include <paludis/mask.hh>
 
 #include <vector>
@@ -44,19 +46,19 @@ typedef std::list<std::pair<const std::string, std::shared_ptr<const erepository
 namespace paludis
 {
     template <>
-    struct Imp<MaskFile>
+    struct Imp<TraditionalMaskFile>
     {
         MaskFileLines lines;
     };
 
     template <>
-    struct WrappedForwardIteratorTraits<MaskFile::ConstIteratorTag>
+    struct WrappedForwardIteratorTraits<TraditionalMaskFile::ConstIteratorTag>
     {
         typedef MaskFileLines::const_iterator UnderlyingIterator;
     };
 }
 
-MaskFile::MaskFile(const FSPath & f, const LineConfigFileOptions & opts, const EAPI & eapi) :
+TraditionalMaskFile::TraditionalMaskFile(const FSPath & f, const LineConfigFileOptions & opts, const EAPI & eapi) :
     _imp()
 {
     LineConfigFileOptions myopts(opts);
@@ -119,22 +121,22 @@ MaskFile::MaskFile(const FSPath & f, const LineConfigFileOptions & opts, const E
     }
 }
 
-MaskFile::ConstIterator
-MaskFile::begin() const
+TraditionalMaskFile::ConstIterator
+TraditionalMaskFile::begin() const
 {
     return ConstIterator(_imp->lines.begin());
 }
 
-MaskFile::ConstIterator
-MaskFile::end() const
+TraditionalMaskFile::ConstIterator
+TraditionalMaskFile::end() const
 {
     return ConstIterator(_imp->lines.end());
 }
 
-MaskFile::~MaskFile()
+TraditionalMaskFile::~TraditionalMaskFile()
 {
 }
 
-template class WrappedForwardIterator<MaskFile::ConstIteratorTag,
+template class WrappedForwardIterator<TraditionalMaskFile::ConstIteratorTag,
          const std::pair<const std::string, std::shared_ptr<const MaskInfo> > >;
 

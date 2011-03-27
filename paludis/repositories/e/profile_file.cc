@@ -18,10 +18,10 @@
  */
 
 #include <paludis/repositories/e/profile_file.hh>
-#include <paludis/repositories/e/e_repository_mask_file.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/traditional_mask_file.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/config_file.hh>
@@ -106,10 +106,10 @@ namespace paludis
     };
 
     template <>
-    struct WrappedForwardIteratorTraits<ProfileFile<MaskFile>::ConstIteratorTag>
+    struct WrappedForwardIteratorTraits<ProfileFile<TraditionalMaskFile>::ConstIteratorTag>
     {
         typedef std::list<std::pair<std::shared_ptr<const EAPI>,
-                const std::remove_reference<MaskFile::ConstIterator::value_type>::type> >::const_iterator UnderlyingIterator;
+                const std::remove_reference<TraditionalMaskFile::ConstIterator::value_type>::type> >::const_iterator UnderlyingIterator;
     };
 
     template <typename T_>
@@ -210,8 +210,8 @@ template class WrappedForwardIterator<ProfileFile<LineConfigFile>::ConstIterator
     std::shared_ptr<const EAPI>,
     const std::remove_reference<LineConfigFile::ConstIterator::value_type>::type> >;
 
-template class ProfileFile<MaskFile>;
-template class WrappedForwardIterator<ProfileFile<MaskFile>::ConstIteratorTag, const std::pair<
+template class ProfileFile<TraditionalMaskFile>;
+template class WrappedForwardIterator<ProfileFile<TraditionalMaskFile>::ConstIteratorTag, const std::pair<
     std::shared_ptr<const EAPI>,
-    const std::remove_reference<MaskFile::ConstIterator::value_type>::type> >;
+    const std::remove_reference<TraditionalMaskFile::ConstIterator::value_type>::type> >;
 

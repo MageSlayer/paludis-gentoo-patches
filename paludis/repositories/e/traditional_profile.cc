@@ -19,7 +19,7 @@
 
 #include <paludis/repositories/e/traditional_profile.hh>
 #include <paludis/repositories/e/profile_file.hh>
-#include <paludis/repositories/e/e_repository_mask_file.hh>
+#include <paludis/repositories/e/traditional_mask_file.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
@@ -108,7 +108,7 @@ namespace paludis
 
         ProfileFile<LineConfigFile> packages_file;
         ProfileFile<LineConfigFile> virtuals_file;
-        ProfileFile<MaskFile> package_mask_file;
+        ProfileFile<TraditionalMaskFile> package_mask_file;
 
         std::shared_ptr<FSPathSequence> profiles_with_parents;
 
@@ -347,7 +347,7 @@ namespace
                     << "Loading virtuals failed due to exception: " << e.message() << " (" << e.what() << ")";
             }
 
-        for (ProfileFile<MaskFile>::ConstIterator line(_imp->package_mask_file.begin()), line_end(_imp->package_mask_file.end()) ;
+        for (ProfileFile<TraditionalMaskFile>::ConstIterator line(_imp->package_mask_file.begin()), line_end(_imp->package_mask_file.end()) ;
                 line != line_end ; ++line)
         {
             if (line->second.first.empty())

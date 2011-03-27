@@ -17,14 +17,16 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_MASK_FILE_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_E_REPOSITORY_MASK_FILE_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_TRADITIONAL_MASK_FILE_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_TRADITIONAL_MASK_FILE_HH 1
 
 #include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+
 #include <paludis/mask-fwd.hh>
+
 #include <paludis/repositories/e/mask_info.hh>
 
 namespace paludis
@@ -33,41 +35,24 @@ namespace paludis
     {
         class EAPI;
 
-        /**
-         * A file listing masks in an ERepository.
-         *
-         * Handles parsing mask reasons from the comments.
-         *
-         * \ingroup grperepository
-         */
-        class PALUDIS_VISIBLE MaskFile
+        class PALUDIS_VISIBLE TraditionalMaskFile
         {
             private:
-                Pimp<MaskFile> _imp;
+                Pimp<TraditionalMaskFile> _imp;
 
             public:
-                ///\name Basic operations
-                ///\{
-
-                MaskFile(const FSPath &, const LineConfigFileOptions &, const EAPI &);
-                ~MaskFile();
-
-                ///\}
-
-                ///\name Iterate over our mask lines.
-                ///\{
+                TraditionalMaskFile(const FSPath &, const LineConfigFileOptions &, const EAPI &);
+                ~TraditionalMaskFile();
 
                 struct ConstIteratorTag;
                 typedef WrappedForwardIterator<ConstIteratorTag,
                         const std::pair<const std::string, std::shared_ptr<const MaskInfo> > > ConstIterator;
                 ConstIterator begin() const;
                 ConstIterator end() const;
-
-                ///\}
         };
     }
 
-    extern template class WrappedForwardIterator<erepository::MaskFile::ConstIteratorTag,
+    extern template class WrappedForwardIterator<erepository::TraditionalMaskFile::ConstIteratorTag,
              const std::pair<const std::string, std::shared_ptr<const erepository::MaskInfo> > >;
 }
 
