@@ -104,7 +104,7 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "matched by this option, the block will instead only block the installed dependent "
             "package, so if reinstalling or upgrading the package will make it no longer be dependent "
             "then this will be done instead."),
-    a_reinstall_dependents_of(&g_dependent_options, "reinstall-dependents-of", '\0', /* todo: 'D' */
+    a_reinstall_dependents_of(&g_dependent_options, "reinstall-dependents-of", 'D',
             "Force any installed package that is dependent upon any installed package matching the "
             "supplied spec to be reinstalled. May be specified multiple times. May be combined with "
             "--not-usable to obtain a particular ordering. Note that a target must still be specified "
@@ -298,12 +298,7 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     g_dump_options(this, "Dump Options", "Dump the resolver's state to stdout after completion, or when an "
             "error occurs. For debugging purposes; produces rather a lot of noise."),
     a_dump(&g_dump_options, "dump", '\0', "Dump debug output", true),
-    a_dump_restarts(&g_dump_options, "dump-restarts", '\0', "Dump restarts", true),
-
-    g_deprecated_options(this, "Deprecated Options", "Deprecated options. These will be removed or reused for "
-            "other commands in later versions."),
-    a_deprecated_d(&g_deprecated_options, "", 'D', "Deprecated short option for --" + a_follow_installed_build_dependencies.long_name()
-            + " / -" + a_follow_installed_build_dependencies.short_name(), false)
+    a_dump_restarts(&g_dump_options, "dump-restarts", '\0', "Dump restarts", true)
 {
 }
 
@@ -497,13 +492,6 @@ ResolveCommandLineResolutionOptions::apply_shortcuts()
             a_slots.set_argument("all");
         if (! a_follow_installed_build_dependencies.specified())
             a_follow_installed_build_dependencies.set_specified(true);
-    }
-
-    if (a_deprecated_d.specified())
-    {
-        Log::get_instance()->message("cave.resolve.d_deprecated", ll_warning, lc_context)
-            << "Use of -D is deprecated and will mean something else in the future. Use -B instead.";
-        a_no_follow_installed_dependencies.set_specified(true);
     }
 }
 
