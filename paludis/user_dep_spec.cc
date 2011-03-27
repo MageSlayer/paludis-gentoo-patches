@@ -86,6 +86,27 @@ namespace
         }
     }
 
+    void envless_add_package_requirement(const std::string & s, PartiallyMadePackageDepSpec & result)
+    {
+        if (s.length() >= 3 && (0 == s.compare(0, 2, "*/")))
+        {
+            if (0 != s.compare(s.length() - 2, 2, "/*"))
+                result.package_name_part(PackageNamePart(s.substr(2)));
+        }
+        else if (s.length() >= 3 && (0 == s.compare(s.length() - 2, 2, "/*")))
+        {
+            result.category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
+        }
+        else if (s == "*")
+            throw PackageDepSpecError("Use '*/*' not '*' to match everything");
+        else if (std::string::npos != s.find('/'))
+            result.package(QualifiedPackageName(s));
+        else
+        {
+            throw PackageDepSpecError("Need an explicit category specified");
+        }
+    }
+
     void user_check_sanity(const std::string & s, const UserPackageDepSpecOptions & options,
             const Environment * const env)
     {
@@ -102,6 +123,12 @@ namespace
             catch (const SetNameError &)
             {
             }
+    }
+
+    void test_check_sanity(const std::string & s)
+    {
+        if (s.empty())
+            throw PackageDepSpecError("Got empty dep spec");
     }
 
     bool user_remove_trailing_square_bracket_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
@@ -315,6 +342,34 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
             n::add_package_requirement() = std::bind(&user_add_package_requirement, _1, _2, env, options, filter),
             n::add_version_requirement() = std::bind(&elike_add_version_requirement, _1, _2, _3),
             n::check_sanity() = std::bind(&user_check_sanity, _1, options, env),
+            n::get_remove_trailing_version() = std::bind(&elike_get_remove_trailing_version, _1,
+                    user_version_spec_options()),
+            n::get_remove_version_operator() = std::bind(&elike_get_remove_version_operator, _1,
+                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star),
+            n::has_version_operator() = std::bind(&elike_has_version_operator, _1,
+                    std::cref(had_bracket_version_requirements), ELikePackageDepSpecOptions()),
+            n::options_for_partially_made_package_dep_spec() = std::bind(&fixed_options_for_partially_made_package_dep_spec, std::cref(o)),
+            n::remove_trailing_repo_if_exists() = std::bind(&user_remove_trailing_repo_if_exists, _1, _2),
+            n::remove_trailing_slot_if_exists() = std::bind(&user_remove_trailing_slot_if_exists, _1, _2),
+            n::remove_trailing_square_bracket_if_exists() = std::bind(&user_remove_trailing_square_bracket_if_exists,
+                    _1, _2, std::ref(had_bracket_version_requirements))
+            ));
+}
+
+PackageDepSpec
+paludis::envless_parse_package_dep_spec_for_tests(const std::string & ss)
+{
+    using namespace std::placeholders;
+
+    Context context("When parsing test package dep spec '" + ss + "':");
+
+    bool had_bracket_version_requirements(false);
+    PartiallyMadePackageDepSpecOptions o;
+
+    return partial_parse_generic_elike_package_dep_spec(ss, make_named_values<GenericELikePackageDepSpecParseFunctions>(
+            n::add_package_requirement() = std::bind(&envless_add_package_requirement, _1, _2),
+            n::add_version_requirement() = std::bind(&elike_add_version_requirement, _1, _2, _3),
+            n::check_sanity() = std::bind(&test_check_sanity, _1),
             n::get_remove_trailing_version() = std::bind(&elike_get_remove_trailing_version, _1,
                     user_version_spec_options()),
             n::get_remove_version_operator() = std::bind(&elike_get_remove_version_operator, _1,

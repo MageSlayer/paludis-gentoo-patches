@@ -41,6 +41,18 @@ namespace paludis
             const UserPackageDepSpecOptions &,
             const Filter & = filter::All()) PALUDIS_VISIBLE;
 
+    /**
+     * Create a PackageDepSpec from user input, restricted to not having
+     * an Environment available.
+     *
+     * For use in test cases; should not be used elsewhere.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.61
+     */
+    PackageDepSpec envless_parse_package_dep_spec_for_tests(
+            const std::string &) PALUDIS_VISIBLE;
+
     class PALUDIS_VISIBLE UserSlotExactRequirement :
         public SlotExactRequirement
     {
