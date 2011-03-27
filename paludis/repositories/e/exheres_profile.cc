@@ -18,7 +18,6 @@
  */
 
 #include <paludis/repositories/e/exheres_profile.hh>
-#include <paludis/repositories/e/e_repository_mask_file.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/profile_file.hh>
@@ -80,9 +79,7 @@ namespace paludis
 
         PaludisLikeOptionsConf options_conf;
         EnvironmentVariablesMap environment_variables;
-        PackageMaskMap package_mask;
 
-        ProfileFile<MaskFile> package_mask_file;
         ProfileFile<LineConfigFile> packages_file;
 
         const std::shared_ptr<Set<std::string> > use_expand;
@@ -107,7 +104,6 @@ namespace paludis
                         n::environment() = e,
                         n::make_config_file() = &make_config_file
                         )),
-            package_mask_file(eapi_for_file),
             packages_file(eapi_for_file),
             use_expand(std::make_shared<Set<std::string>>()),
             use_expand_hidden(std::make_shared<Set<std::string>>()),
@@ -170,38 +166,6 @@ ExheresProfile::ExheresProfile(
 
             _imp->system_packages->top()->append(spec);
         }
-
-    for (ProfileFile<MaskFile>::ConstIterator line(_imp->package_mask_file.begin()), line_end(_imp->package_mask_file.end()) ;
-            line != line_end ; ++line)
-    {
-        if (line->second.first.empty())
-            continue;
-
-        try
-        {
-            std::shared_ptr<const PackageDepSpec> a(std::make_shared<PackageDepSpec>(
-                        parse_elike_package_dep_spec(line->second.first,
-                            line->first->supported()->package_dep_spec_parse_options(),
-                            line->first->supported()->version_spec_options())));
-
-            if (a->package_ptr())
-                _imp->package_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second.second));
-            else
-                Log::get_instance()->message("e.profile.package_mask.bad_spec", ll_warning, lc_context)
-                    << "Loading package.mask spec '" << line->second.first << "' failed because specification does not restrict to a "
-                    "unique package";
-        }
-        catch (const InternalError &)
-        {
-            throw;
-        }
-        catch (const Exception & e)
-        {
-            Log::get_instance()->message("e.profile.package_mask.bad_spec", ll_warning, lc_context)
-                << "Loading package.mask spec '" << line->second.first << "' failed due to exception '" << e.message() << "' ("
-                << e.what() << ")";
-        }
-    }
 }
 
 ExheresProfile::~ExheresProfile()
@@ -228,9 +192,6 @@ ExheresProfile::_load_dir(const FSPath & f)
 
     if ((f / "options.conf").stat().exists())
         _imp->options_conf.add_file(f / "options.conf");
-
-    if ((f / "package_mask.conf").stat().exists())
-        _imp->package_mask_file.add_file(f / "package_mask.conf");
 
     if ((f / "packages").stat().exists())
         _imp->packages_file.add_file(f / "packages");
@@ -360,19 +321,9 @@ ExheresProfile::environment_variable(const std::string & s) const
 }
 
 const std::shared_ptr<const MasksInfo>
-ExheresProfile::profile_masks(const std::shared_ptr<const PackageID> & id) const
+ExheresProfile::profile_masks(const std::shared_ptr<const PackageID> &) const
 {
     auto result(std::make_shared<MasksInfo>());
-
-    PackageMaskMap::const_iterator rr(_imp->package_mask.find(id->name()));
-    if (_imp->package_mask.end() != rr)
-    {
-        for (std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const MaskInfo> > >::const_iterator k(rr->second.begin()),
-                k_end(rr->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->env, *k->first, id, make_null_shared_ptr(), { }))
-                result->push_back(*k->second);
-    }
-
     return result;
 }
 
