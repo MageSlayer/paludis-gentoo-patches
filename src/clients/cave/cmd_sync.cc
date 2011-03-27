@@ -21,7 +21,6 @@
 #include "exceptions.hh"
 #include "colours.hh"
 #include "format_user_config.hh"
-#include <paludis/util/action_queue.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/make_named_values.hh>
