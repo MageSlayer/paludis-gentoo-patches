@@ -6,22 +6,12 @@ dnl vim: set ft=m4 noet :
 include $(top_srcdir)/misc/common-makefile.am
 
 define(`filelist', `')dnl
-define(`testlist', `')dnl
 define(`gtestlist', `')dnl
 define(`headerlist', `')dnl
 define(`selist', `')dnl
 define(`secleanlist', `')dnl
 define(`seheaderlist', `')dnl
 define(`testscriptlist', `')dnl
-define(`addtest', `define(`testlist', testlist `$1_TEST')dnl
-$1_TEST_SOURCES = $1_TEST.cc
-$1_TEST_LDADD = \
-	$(top_builddir)/test/libtest.a \
-	libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(DYNAMIC_LD_LIBS)
-$1_TEST_CXXFLAGS = -I$(top_srcdir) $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
-')dnl
 define(`addgtest', `define(`gtestlist', gtestlist `$1_TEST')dnl
 $1_TEST_SOURCES = $1_TEST.cc
 $1_TEST_LDADD = \
@@ -55,7 +45,6 @@ ifelse(`$2', `hhx', `addhhx(`$1')', `')dnl
 ifelse(`$2', `cc', `addcc(`$1')', `')dnl
 ifelse(`$2', `se', `addse(`$1')', `')dnl
 ifelse(`$2', `impl', `addimpl(`$1')', `')dnl
-ifelse(`$2', `test', `addtest(`$1')', `')dnl
 ifelse(`$2', `gtest', `addgtest(`$1')', `')dnl
 ifelse(`$2', `testscript', `addtestscript(`$1')', `')')dnl
 define(`add', `addthis(`$1',`$2')addthis(`$1',`$3')addthis(`$1',`$4')dnl
@@ -140,9 +129,9 @@ libpaludis_@PALUDIS_PC_SLOT@_la_LIBADD = \
 	$(PTHREAD_LIBS)
 
 if HAVE_GTEST
-TESTS = testlist gtestlist
+TESTS = gtestlist
 else
-TESTS = testlist
+TESTS =
 endif
 
 check_PROGRAMS = $(TESTS) stripper_TEST_binary

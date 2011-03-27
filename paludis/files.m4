@@ -5,7 +5,7 @@ dnl
 dnl This file is used to avoid having to make lots of repetitive changes in
 dnl Makefile.am every time we add a source or test file. The first parameter is
 dnl the base filename with no extension; later parameters can be `hh', `cc',
-dnl `test', `impl', `testscript'. Note that there isn't much error checking done
+dnl `gtest', `impl', `testscript'. Note that there isn't much error checking done
 dnl on this file at present...
 
 add(`about',                                       `hh', `gtest')
