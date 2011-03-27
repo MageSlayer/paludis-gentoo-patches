@@ -22,306 +22,171 @@
 #include <paludis/selection.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/user_dep_spec.hh>
+
 #include <paludis/environments/test/test_environment.hh>
+
 #include <paludis/repositories/fake/fake_package_id.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
 #include <paludis/repositories/fake/fake_installed_repository.hh>
+
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/join.hh>
-#include <test/test_runner.hh>
-#include <test/test_framework.hh>
-#include <test/test_concepts.hh>
+
+#include <gtest/gtest.h>
 
 using namespace paludis;
-using namespace test;
 
-namespace test_cases
+namespace
 {
-    TESTCASE_SEMIREGULAR(Generator, generator::All());
-    TESTCASE_STRINGIFYABLE(Generator, generator::All(), "all packages");
-
-    struct GeneratorTestCaseBase : TestCase
+    struct TestInfo
     {
-        Generator generator;
-        TestEnvironment env;
-        std::shared_ptr<FakeRepository> repo1;
-        std::shared_ptr<FakeRepository> repo2;
-        std::shared_ptr<FakeInstalledRepository> inst_repo1;
-
-        GeneratorTestCaseBase(const std::string & s, const Generator & f) :
-            TestCase("generator " + s + " with " + stringify(f)),
-            generator(f),
-            repo1(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo1")))),
-            repo2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("repo2")))),
-            inst_repo1(std::make_shared<FakeInstalledRepository>(
-                        make_named_values<FakeInstalledRepositoryParams>(
-                            n::environment() = &env,
-                            n::name() = RepositoryName("inst_repo1"),
-                            n::suitable_destination() = true,
-                            n::supports_uninstall() = true
-                            )))
-        {
-            env.add_repository(1, repo1);
-            env.add_repository(10, repo2);
-            env.add_repository(0, inst_repo1);
-
-            repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", { }));
-            repo1->add_version(CategoryNamePart("cat") + PackageNamePart("b"), VersionSpec("2", { }));
-
-            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", { }));
-            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("2", { }))->keywords_key()->set_from_string("");
-            repo2->add_version(CategoryNamePart("cat") + PackageNamePart("c"), VersionSpec("3", { }));
-
-            inst_repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", { }));
-        }
-
-        virtual std::string get_expected() const = 0;
-
-        void run()
-        {
-            const std::string expected(get_expected());
-            std::shared_ptr<const PackageIDSequence> got(env[selection::AllVersionsSorted(generator)]);
-
-            TEST_CHECK(bool(got));
-            TEST_CHECK_EQUAL(join(indirect_iterator(got->begin()), indirect_iterator(got->end()), ", "), expected);
-
-            std::shared_ptr<const PackageIDSequence> got_none(env[selection::AllVersionsSorted(generator |
-                        filter::SupportsAction<InstallAction>() | filter::SupportsAction<UninstallAction>())]);
-            TEST_CHECK(bool(got_none));
-            TEST_CHECK_EQUAL(join(indirect_iterator(got_none->begin()), indirect_iterator(got_none->end()), ", "), "");
-        }
+        std::shared_ptr<Generator> generator;
+        std::string expected;
     };
 
-    struct AllGeneratorTestCase : GeneratorTestCaseBase
+    struct GeneratorTestCaseBase :
+        testing::TestWithParam<TestInfo>
     {
-        AllGeneratorTestCase() :
-            GeneratorTestCaseBase("all", generator::All())
+        TestInfo info;
+
+        void SetUp()
         {
+            info = GetParam();
         }
 
-        virtual std::string get_expected() const
-        {
-            return
-                "cat/a-1:0::inst_repo1, "
-                "cat/a-1:0::repo1, "
-                "cat/a-1:0::repo2, "
-                "cat/a-2:0::repo2, "
-                "cat/b-2:0::repo1, "
-                "cat/c-3:0::repo2";
-        }
-    } all_generator_test;
-
-    struct MatchesGeneratorTestCase : GeneratorTestCaseBase
-    {
-        MatchesGeneratorTestCase() :
-            GeneratorTestCaseBase("matches", generator::Matches(parse_user_package_dep_spec("cat/a",
-                            &env, { }), make_null_shared_ptr(), { }))
+        void TearDown()
         {
         }
-
-        virtual std::string get_expected() const
-        {
-            return
-                "cat/a-1:0::inst_repo1, "
-                "cat/a-1:0::repo1, "
-                "cat/a-1:0::repo2, "
-                "cat/a-2:0::repo2";
-        }
-    } matches_generator_test;
-
-    struct MatchesCatWildcardGeneratorTestCase : GeneratorTestCaseBase
-    {
-        MatchesCatWildcardGeneratorTestCase() :
-            GeneratorTestCaseBase("matches cat wildcard", generator::Matches(parse_user_package_dep_spec("*/a",
-                            &env, { updso_allow_wildcards }), make_null_shared_ptr(), { }))
-        {
-        }
-
-        virtual std::string get_expected() const
-        {
-            return
-                "cat/a-1:0::inst_repo1, "
-                "cat/a-1:0::repo1, "
-                "cat/a-1:0::repo2, "
-                "cat/a-2:0::repo2";
-        }
-    } matches_cat_wildcard_generator_test;
-
-    struct MatchesPkgWildcardGeneratorTestCase : GeneratorTestCaseBase
-    {
-        MatchesPkgWildcardGeneratorTestCase() :
-            GeneratorTestCaseBase("matches pkg wildcard", generator::Matches(parse_user_package_dep_spec("cat/*",
-                            &env, { updso_allow_wildcards }), make_null_shared_ptr(), { }))
-        {
-        }
-
-        virtual std::string get_expected() const
-        {
-            return
-                "cat/a-1:0::inst_repo1, "
-                "cat/a-1:0::repo1, "
-                "cat/a-1:0::repo2, "
-                "cat/a-2:0::repo2, "
-                "cat/b-2:0::repo1, "
-                "cat/c-3:0::repo2";
-        }
-    } matches_pkg_wildcard_generator_test;
-
-    struct MatchesAllWildcardGeneratorTestCase : GeneratorTestCaseBase
-    {
-        MatchesAllWildcardGeneratorTestCase() :
-            GeneratorTestCaseBase("matches all wildcard", generator::Matches(
-                        parse_user_package_dep_spec(">=*/*-2",
-                            &env, { updso_allow_wildcards }), make_null_shared_ptr(), { }))
-        {
-        }
-
-        virtual std::string get_expected() const
-        {
-            return
-                "cat/a-2:0::repo2, "
-                "cat/b-2:0::repo1, "
-                "cat/c-3:0::repo2";
-        }
-    } matches_all_wildcard_generator_test;
-
-    struct PackageGeneratorTestCase : GeneratorTestCaseBase
-    {
-        PackageGeneratorTestCase() :
-            GeneratorTestCaseBase("package", generator::Package(QualifiedPackageName("cat/a")))
-        {
-        }
-
-        virtual std::string get_expected() const
-        {
-            return
-                "cat/a-1:0::inst_repo1, "
-                "cat/a-1:0::repo1, "
-                "cat/a-1:0::repo2, "
-                "cat/a-2:0::repo2";
-        }
-    } package_generator_test;
-
-    struct NoPackageGeneratorTestCase : GeneratorTestCaseBase
-    {
-        NoPackageGeneratorTestCase() :
-            GeneratorTestCaseBase("package", generator::Package(QualifiedPackageName("cat/d")))
-        {
-        }
-
-        virtual std::string get_expected() const
-        {
-            return "";
-        }
-    } no_package_generator_test;
-
-    struct RepositoryGeneratorTestCase : GeneratorTestCaseBase
-    {
-        RepositoryGeneratorTestCase() :
-            GeneratorTestCaseBase("repository", generator::InRepository(RepositoryName("repo1")))
-        {
-        }
-
-        virtual std::string get_expected() const
-        {
-            return
-                "cat/a-1:0::repo1, "
-                "cat/b-2:0::repo1";
-        }
-    } repository_generator_test;
-
-    struct NoRepositoryGeneratorTestCase : GeneratorTestCaseBase
-    {
-        NoRepositoryGeneratorTestCase() :
-            GeneratorTestCaseBase("no repository", generator::InRepository(RepositoryName("repo3")))
-        {
-        }
-
-        virtual std::string get_expected() const
-        {
-            return "";
-        }
-    } no_repository_generator_test;
-
-    struct CategoryGeneratorTestCase : GeneratorTestCaseBase
-    {
-        CategoryGeneratorTestCase() :
-            GeneratorTestCaseBase("category", generator::Category(CategoryNamePart("cat")))
-        {
-        }
-
-        virtual std::string get_expected() const
-        {
-            return
-                "cat/a-1:0::inst_repo1, "
-                "cat/a-1:0::repo1, "
-                "cat/a-1:0::repo2, "
-                "cat/a-2:0::repo2, "
-                "cat/b-2:0::repo1, "
-                "cat/c-3:0::repo2";
-        }
-    } category_generator_test;
-
-    struct NoCategoryGeneratorTestCase : GeneratorTestCaseBase
-    {
-        NoCategoryGeneratorTestCase() :
-            GeneratorTestCaseBase("no category", generator::Category(CategoryNamePart("a")))
-        {
-        }
-
-        virtual std::string get_expected() const
-        {
-            return "";
-        }
-    } no_category_generator_test;
-
-    struct IntersectionGeneratorTestCase : GeneratorTestCaseBase
-    {
-        IntersectionGeneratorTestCase() :
-            GeneratorTestCaseBase("intersection", generator::Intersection(
-                    generator::Matches(parse_user_package_dep_spec("*/a",
-                            &env, { updso_allow_wildcards }), make_null_shared_ptr(), { }),
-                    generator::Matches(parse_user_package_dep_spec("cat/*",
-                            &env, { updso_allow_wildcards }), make_null_shared_ptr(), { })
-                    ))
-        {
-        }
-
-        virtual std::string get_expected() const
-        {
-            return
-                "cat/a-1:0::inst_repo1, "
-                "cat/a-1:0::repo1, "
-                "cat/a-1:0::repo2, "
-                "cat/a-2:0::repo2";
-        }
-    } intersection_generator_test;
-
-    struct SomeIDsMightSupportInstallActionGeneratorTestCase : GeneratorTestCaseBase
-    {
-        SomeIDsMightSupportInstallActionGeneratorTestCase() :
-            GeneratorTestCaseBase("some IDs might support install",
-                    generator::SomeIDsMightSupportAction<InstallAction>())
-        {
-        }
-
-        virtual std::string get_expected() const
-        {
-            return
-                "cat/a-1:0::repo1, "
-                "cat/a-1:0::repo2, "
-                "cat/a-2:0::repo2, "
-                "cat/b-2:0::repo1, "
-                "cat/c-3:0::repo2";
-        }
-    } some_ids_might_support_install_action_generator_test;
+    };
 }
+
+TEST_P(GeneratorTestCaseBase, Works)
+{
+    TestEnvironment env;
+
+    auto repo1(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo1"))));
+
+    auto repo2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo2"))));
+
+    auto inst_repo1(std::make_shared<FakeInstalledRepository>(
+                make_named_values<FakeInstalledRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("inst_repo1"),
+                    n::suitable_destination() = true,
+                    n::supports_uninstall() = true
+                    )));
+
+    env.add_repository(1, repo1);
+    env.add_repository(10, repo2);
+    env.add_repository(0, inst_repo1);
+
+    repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", { }));
+    repo1->add_version(CategoryNamePart("cat") + PackageNamePart("b"), VersionSpec("2", { }));
+
+    repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", { }));
+    repo2->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("2", { }))->keywords_key()->set_from_string("");
+    repo2->add_version(CategoryNamePart("cat") + PackageNamePart("c"), VersionSpec("3", { }));
+
+    inst_repo1->add_version(CategoryNamePart("cat") + PackageNamePart("a"), VersionSpec("1", { }));
+
+    std::shared_ptr<const PackageIDSequence> got(env[selection::AllVersionsSorted(*info.generator)]);
+
+    ASSERT_TRUE(bool(got));
+    EXPECT_EQ(info.expected, join(indirect_iterator(got->begin()), indirect_iterator(got->end()), ", "));
+
+    std::shared_ptr<const PackageIDSequence> got_none(env[selection::AllVersionsSorted(*info.generator |
+                filter::SupportsAction<InstallAction>() | filter::SupportsAction<UninstallAction>())]);
+    ASSERT_TRUE(bool(got_none));
+    EXPECT_EQ("", join(indirect_iterator(got_none->begin()), indirect_iterator(got_none->end()), ", "));
+}
+
+INSTANTIATE_TEST_CASE_P(GeneratorTest, GeneratorTestCaseBase, testing::Values(
+            TestInfo{ std::make_shared<generator::All>(), std::string(
+                "cat/a-1:0::inst_repo1, "
+                "cat/a-1:0::repo1, "
+                "cat/a-1:0::repo2, "
+                "cat/a-2:0::repo2, "
+                "cat/b-2:0::repo1, "
+                "cat/c-3:0::repo2" ) },
+
+            TestInfo{ std::make_shared<generator::Matches>(
+                envless_parse_package_dep_spec_for_tests("cat/a"), make_null_shared_ptr(), MatchPackageOptions()), std::string(
+                "cat/a-1:0::inst_repo1, "
+                "cat/a-1:0::repo1, "
+                "cat/a-1:0::repo2, "
+                "cat/a-2:0::repo2") },
+
+            TestInfo{ std::make_shared<generator::Matches>(
+                envless_parse_package_dep_spec_for_tests("*/a"), make_null_shared_ptr(), MatchPackageOptions()), std::string(
+                "cat/a-1:0::inst_repo1, "
+                "cat/a-1:0::repo1, "
+                "cat/a-1:0::repo2, "
+                "cat/a-2:0::repo2") },
+
+            TestInfo{ std::make_shared<generator::Matches>(
+                envless_parse_package_dep_spec_for_tests("cat/*"), make_null_shared_ptr(), MatchPackageOptions()), std::string(
+                "cat/a-1:0::inst_repo1, "
+                "cat/a-1:0::repo1, "
+                "cat/a-1:0::repo2, "
+                "cat/a-2:0::repo2, "
+                "cat/b-2:0::repo1, "
+                "cat/c-3:0::repo2") },
+
+            TestInfo{ std::make_shared<generator::Matches>(
+                envless_parse_package_dep_spec_for_tests(">=*/*-2"), make_null_shared_ptr(), MatchPackageOptions()), std::string(
+                "cat/a-2:0::repo2, "
+                "cat/b-2:0::repo1, "
+                "cat/c-3:0::repo2") },
+
+            TestInfo{ std::make_shared<generator::Package>(QualifiedPackageName("cat/a")), std::string(
+                "cat/a-1:0::inst_repo1, "
+                "cat/a-1:0::repo1, "
+                "cat/a-1:0::repo2, "
+                "cat/a-2:0::repo2") },
+
+            TestInfo{ std::make_shared<generator::Package>(QualifiedPackageName("cat/d")), std::string(
+                "") },
+
+            TestInfo{ std::make_shared<generator::InRepository>(RepositoryName("repo1")), std::string(
+                "cat/a-1:0::repo1, "
+                "cat/b-2:0::repo1") },
+
+            TestInfo{ std::make_shared<generator::InRepository>(RepositoryName("repo3")), std::string(
+                "") },
+
+            TestInfo{ std::make_shared<generator::Category>(CategoryNamePart("cat")), std::string(
+                "cat/a-1:0::inst_repo1, "
+                "cat/a-1:0::repo1, "
+                "cat/a-1:0::repo2, "
+                "cat/a-2:0::repo2, "
+                "cat/b-2:0::repo1, "
+                "cat/c-3:0::repo2") },
+
+            TestInfo{ std::make_shared<generator::Category>(CategoryNamePart("a")), std::string(
+                "") },
+
+            TestInfo{ std::make_shared<generator::Intersection>(
+                    generator::Matches(envless_parse_package_dep_spec_for_tests("*/a"), make_null_shared_ptr(), MatchPackageOptions()),
+                    generator::Matches(envless_parse_package_dep_spec_for_tests("cat/*"), make_null_shared_ptr(), MatchPackageOptions())
+                    ), std::string(
+                "cat/a-1:0::inst_repo1, "
+                "cat/a-1:0::repo1, "
+                "cat/a-1:0::repo2, "
+                "cat/a-2:0::repo2") },
+
+            TestInfo{ std::make_shared<generator::SomeIDsMightSupportAction<InstallAction> >(), std::string(
+                "cat/a-1:0::repo1, "
+                "cat/a-1:0::repo2, "
+                "cat/a-2:0::repo2, "
+                "cat/b-2:0::repo1, "
+                "cat/c-3:0::repo2") }
+            ));
 
