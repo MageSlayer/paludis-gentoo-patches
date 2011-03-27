@@ -98,7 +98,7 @@ LOG_COMPILER = \
 		TOP_SRCDIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)`" \
 		TOP_BUILDDIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)`" \
 		$(LOG_COMPILER_EXTRA) \
-		bash $(top_srcdir)/test/run_test.sh $(LOG_COMPILER_INTERP)
+		bash $(top_srcdir)/paludis/util/run_test.sh $(LOG_COMPILER_INTERP)
 
 built-sources : $(BUILT_SOURCES)
 	for s in `echo $(SUBDIRS) | tr -d .` ; do $(MAKE) -C $$s built-sources || exit 1 ; done

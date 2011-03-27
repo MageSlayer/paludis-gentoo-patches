@@ -1863,7 +1863,6 @@ AC_CONFIG_FILES([
 	src/clients/cave/Makefile
 	src/clients/instruo/Makefile
 	src/output/Makefile
-	test/Makefile
 	vim/Makefile
 	vim/ftdetect/Makefile
 	vim/syntax/Makefile
