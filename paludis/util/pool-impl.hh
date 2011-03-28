@@ -66,7 +66,9 @@ namespace paludis
     }
 
     template <typename T_>
-    Pool<T_>::~Pool() = default;
+    Pool<T_>::~Pool()
+    {
+    }
 
     template <typename T_>
     struct PreventConversion
@@ -87,7 +89,7 @@ namespace paludis
     template <typename T_>
     template <typename... Args_>
     const std::shared_ptr<const T_>
-    Pool<T_>::create(Args_ ... args) const
+    Pool<T_>::create(const Args_ & ... args) const
     {
         PoolKeys keys;
         keys.add(args...);
@@ -95,7 +97,10 @@ namespace paludis
         Lock lock(_imp->mutex);
         auto i(_imp->store.find(keys));
         if (i == _imp->store.end())
-            i = _imp->store.insert(std::make_pair(keys, std::make_shared<const T_>(PreventConversion<Args_>(args)...))).first;
+        {
+            /* std::make_shared<> doesn't play well with private ctors */
+            i = _imp->store.insert(std::make_pair(keys, std::shared_ptr<const T_>(new T_(PreventConversion<Args_>(args)...)))).first;
+        }
         else
             ++_imp->reused;
 

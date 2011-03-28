@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_POOL_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_POOL_HH 1
 
+#include <paludis/util/pool-fwd.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/util/pimp.hh>
 #include <memory>
@@ -43,7 +44,7 @@ namespace paludis
 
         public:
             template <typename... Args_>
-            const std::shared_ptr<const T_> create(Args_ ...) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const T_> create(const Args_ & ...) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE PoolKey
