@@ -1,0 +1,45 @@
+/* vim: set sw=4 sts=4 et foldmethod=syntax : */
+
+/*
+ * Copyright (c) 2011 Ciaran McCreesh
+ *
+ * This file is part of the Paludis package manager. Paludis is free software;
+ * you can redistribute it and/or modify it under the terms of the GNU General
+ * Public License version 2, as published by the Free Software Foundation.
+ *
+ * Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+ * Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
+#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/util/pool-impl.hh>
+#include <paludis/util/pimp-impl.hh>
+#include <paludis/util/singleton-impl.hh>
+
+using namespace paludis;
+
+PackageDepSpecConstraint::~PackageDepSpecConstraint() = default;
+
+NameConstraint::NameConstraint(const QualifiedPackageName & n) :
+    _name(n)
+{
+}
+
+NameConstraint::~NameConstraint() = default;
+
+const QualifiedPackageName
+NameConstraint::name() const
+{
+    return _name;
+}
+
+template class Pool<NameConstraint>;
+template class Singleton<Pool<NameConstraint> >;
+template const std::shared_ptr<const NameConstraint> Pool<NameConstraint>::create(const QualifiedPackageName &) const;
+

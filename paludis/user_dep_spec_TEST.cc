@@ -21,6 +21,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/match_package.hh>
 #include <paludis/version_requirements.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/sequence.hh>
@@ -90,11 +91,11 @@ UserDepSpecTest::check_spec(
 {
 
     if (package.empty())
-        EXPECT_TRUE(! spec.package_ptr());
+        EXPECT_TRUE(! spec.package_name_constraint());
     else
     {
-        EXPECT_TRUE(bool(spec.package_ptr()));
-        EXPECT_EQ(package, stringify(*spec.package_ptr()));
+        EXPECT_TRUE(bool(spec.package_name_constraint()));
+        EXPECT_EQ(package, stringify(spec.package_name_constraint()->name()));
     }
 
     if (category_name_part.empty())

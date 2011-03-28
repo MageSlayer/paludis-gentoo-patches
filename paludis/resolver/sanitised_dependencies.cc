@@ -169,7 +169,7 @@ namespace
 
         void visit_package_spec(const PackageDepSpec & spec)
         {
-            if (spec.package_ptr())
+            if (spec.package_name_constraint())
                 visit_package_or_block_spec(PackageOrBlockDepSpec(spec));
             else
                 super_complicated = true;
@@ -177,7 +177,7 @@ namespace
 
         void visit_block_spec(const BlockDepSpec & spec)
         {
-            if (spec.blocking().package_ptr())
+            if (spec.blocking().package_name_constraint())
                 visit_package_or_block_spec(PackageOrBlockDepSpec(spec));
             else
                 super_complicated = true;

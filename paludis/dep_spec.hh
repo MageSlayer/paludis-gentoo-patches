@@ -41,6 +41,7 @@
 #include <paludis/partially_made_package_dep_spec-fwd.hh>
 #include <paludis/dep_spec_data-fwd.hh>
 #include <paludis/dep_spec_annotations-fwd.hh>
+#include <paludis/package_dep_spec_constraint-fwd.hh>
 
 #include <memory>
 
@@ -347,9 +348,12 @@ namespace paludis
             ///\}
 
             /**
-             * Fetch the package name (may be a zero pointer).
+             * Fetch the single NameConstraint, if we have one, or
+             * a null pointer otherwise.
+             *
+             * \since 0.61
              */
-            std::shared_ptr<const QualifiedPackageName> package_ptr() const;
+            const std::shared_ptr<const NameConstraint> package_name_constraint() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Fetch the package name part, if wildcarded, or a zero pointer otherwise.

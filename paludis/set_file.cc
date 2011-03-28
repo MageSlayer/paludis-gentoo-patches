@@ -39,6 +39,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 
 #include <list>
 #include <vector>
@@ -238,13 +239,13 @@ namespace
                 }
 
                 std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(params.parser()(tokens.at(1))));
-                if (spec->package_ptr())
+                if (spec->package_name_constraint())
                 {
                     if (! params.environment())
                         Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
                             << "Line '" << line << "' uses ? operator but no environment is available";
                     else if (! (*params.environment())[selection::SomeArbitraryVersion(
-                                generator::Package(*spec->package_ptr()) |
+                                generator::Package(spec->package_name_constraint()->name()) |
                                 filter::InstalledAtRoot(params.environment()->preferred_root_key()->value()))]->empty())
                         result->top()->append(spec);
                 }
@@ -262,14 +263,14 @@ namespace
                 }
 
                 std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(params.parser()(tokens.at(1))));
-                if (spec->package_ptr())
+                if (spec->package_name_constraint())
                 {
                     if (! params.environment())
                         Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
                             << "Line '" << line << "' uses ?: operator but no environment is available";
                     else if (! (*params.environment())[selection::SomeArbitraryVersion(generator::Matches(
                                     make_package_dep_spec({ })
-                                    .package(*spec->package_ptr())
+                                    .package(spec->package_name_constraint()->name())
                                     .slot_requirement(spec->slot_requirement_ptr()),
                                     make_null_shared_ptr(), { }) |
                                 filter::InstalledAtRoot(params.environment()->preferred_root_key()->value()))]->empty())

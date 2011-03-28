@@ -28,6 +28,7 @@
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/additional_package_dep_spec_requirement.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 
 #include <paludis/util/set.hh>
 #include <paludis/util/options.hh>
@@ -86,7 +87,7 @@ paludis::match_package_with_maybe_changes(
         const ChangedChoices * const maybe_changes_to_target,
         const MatchPackageOptions & options)
 {
-    if (spec.package_ptr() && *spec.package_ptr() != id->name())
+    if (spec.package_name_constraint() && spec.package_name_constraint()->name() != id->name())
         return false;
 
     if (spec.package_name_part_ptr() && *spec.package_name_part_ptr() != id->name().package())

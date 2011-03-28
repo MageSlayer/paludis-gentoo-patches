@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,6 +33,7 @@
 #include <paludis/partially_made_package_dep_spec-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/package_dep_spec_constraint-fwd.hh>
 #include <string>
 #include <memory>
 
@@ -110,9 +111,12 @@ namespace paludis
             virtual std::string as_string() const = 0;
 
             /**
-             * Fetch the package name (may be a zero pointer).
+             * Fetch the single NameConstraint, if we have one, or
+             * a null pointer otherwise.
+             *
+             * \since 0.61
              */
-            virtual std::shared_ptr<const QualifiedPackageName> package_ptr() const = 0;
+            virtual const std::shared_ptr<const NameConstraint> package_name_constraint() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * Fetch the package name part, if wildcarded, or a zero pointer otherwise.

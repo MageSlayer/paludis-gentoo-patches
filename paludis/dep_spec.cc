@@ -542,10 +542,10 @@ PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
     set_annotations(d.maybe_annotations());
 }
 
-std::shared_ptr<const QualifiedPackageName>
-PackageDepSpec::package_ptr() const
+const std::shared_ptr<const NameConstraint>
+PackageDepSpec::package_name_constraint() const
 {
-    return _imp->data->package_ptr();
+    return _imp->data->package_name_constraint();
 }
 
 std::shared_ptr<const PackageNamePart>

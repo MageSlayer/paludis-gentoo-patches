@@ -40,6 +40,7 @@
 #include <paludis/resolver/same_slot.hh>
 #include <paludis/resolver/reason_utils.hh>
 #include <paludis/resolver/make_uninstall_blocker.hh>
+
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
@@ -53,6 +54,7 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/accept_visitor.hh>
+
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/repository.hh>
@@ -72,6 +74,7 @@
 #include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/dep_spec_annotations.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 
 #include <paludis/util/pimp-impl.hh>
 
@@ -1331,9 +1334,9 @@ Decider::find_any_score(
     }
 
     /* explicit preferences come first */
-    if (spec.package_ptr())
+    if (spec.package_name_constraint())
     {
-        Tribool prefer_or_avoid(_imp->fns.prefer_or_avoid_fn()(*spec.package_ptr()));
+        Tribool prefer_or_avoid(_imp->fns.prefer_or_avoid_fn()(spec.package_name_constraint()->name()));
         if (prefer_or_avoid.is_true())
             return std::make_pair(is_block ? acs_avoid : acs_prefer, operator_bias);
         else if (prefer_or_avoid.is_false())
@@ -1476,7 +1479,7 @@ Decider::_get_resolvents_for_blocker(const BlockDepSpec & spec,
     else
     {
         const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionInEachSlot(
-                    generator::Package(*spec.blocking().package_ptr())
+                    generator::Package(spec.blocking().package_name_constraint()->name())
                     )]);
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
@@ -1539,7 +1542,7 @@ Decider::_get_error_resolvents_for(
                         ),
                     *t);
 
-            auto ids(_find_installable_id_candidates_for(*spec.package_ptr(), filter::All(), true, true));
+            auto ids(_find_installable_id_candidates_for(spec.package_name_constraint()->name(), filter::All(), true, true));
             if (! ids->empty())
                 resolvent.slot() = make_named_values<SlotNameOrNull>(
                         n::name_or_null() = (*ids->rbegin())->slot_key() ?

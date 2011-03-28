@@ -29,6 +29,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/repository.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
@@ -393,14 +394,14 @@ namespace
 
                 return result;
             }
-            else if (spec.package_ptr())
+            else if (spec.package_name_constraint())
             {
                 std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
-                    if (env->fetch_repository(*r)->has_category_named(spec.package_ptr()->category(), x))
+                    if (env->fetch_repository(*r)->has_category_named(spec.package_name_constraint()->name().category(), x))
                     {
-                        result->insert(spec.package_ptr()->category());
+                        result->insert(spec.package_name_constraint()->name().category());
                         break;
                     }
 
@@ -428,14 +429,14 @@ namespace
 
                 return result;
             }
-            else if (spec.package_ptr())
+            else if (spec.package_name_constraint())
             {
                 std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
-                    if (env->fetch_repository(*r)->has_package_named(*spec.package_ptr(), x))
+                    if (env->fetch_repository(*r)->has_package_named(spec.package_name_constraint()->name(), x))
                     {
-                        result->insert(*spec.package_ptr());
+                        result->insert(spec.package_name_constraint()->name());
                         break;
                     }
 

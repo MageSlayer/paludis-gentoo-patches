@@ -54,6 +54,7 @@
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/unformatted_pretty_printer.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/mutex.hh>
@@ -1105,13 +1106,12 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
             if (std::string::npos == s.rfind('-'))
                 continue;
 
-            PackageDepSpec p(parse_user_package_dep_spec("=" + stringify(c) + "/" + s,
-                        _imp->params.environment(), { }));
-            q->insert(*p.package_ptr());
-            IDMap::iterator i(_imp->ids.find(*p.package_ptr()));
+            PackageDepSpec p(parse_user_package_dep_spec("=" + stringify(c) + "/" + s, _imp->params.environment(), { }));
+            q->insert(p.package_name_constraint()->name());
+            IDMap::iterator i(_imp->ids.find(p.package_name_constraint()->name()));
             if (_imp->ids.end() == i)
-                i = _imp->ids.insert(std::make_pair(*p.package_ptr(), std::make_shared<PackageIDSequence>())).first;
-            i->second->push_back(make_id(*p.package_ptr(), p.version_requirements_ptr()->begin()->version_spec(), *d));
+                i = _imp->ids.insert(std::make_pair(p.package_name_constraint()->name(), std::make_shared<PackageIDSequence>())).first;
+            i->second->push_back(make_id(p.package_name_constraint()->name(), p.version_requirements_ptr()->begin()->version_spec(), *d));
         }
         catch (const InternalError &)
         {
@@ -1269,11 +1269,11 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            if (node.spec()->package_ptr() && rewrites.end() != rewrites.find(*node.spec()->package_ptr()))
+            if (node.spec()->package_name_constraint() && rewrites.end() != rewrites.find(node.spec()->package_name_constraint()->name()))
             {
                 changed = true;
                 str << f.prettify(PartiallyMadePackageDepSpec(*node.spec())
-                        .package(rewrites.find(*node.spec()->package_ptr())->second)) << " ";
+                        .package(rewrites.find(node.spec()->package_name_constraint()->name())->second)) << " ";
             }
             else
                 str << f.prettify(*node.spec()) << " ";

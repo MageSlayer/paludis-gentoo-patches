@@ -22,6 +22,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/match_package.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 #include <list>
 #include <map>
 
@@ -53,8 +54,8 @@ PackageDepSpecCollection::~PackageDepSpecCollection() = default;
 void
 PackageDepSpecCollection::insert(const PackageDepSpec & spec)
 {
-    if (spec.package_ptr())
-        _imp->by_name.insert(std::make_pair(*spec.package_ptr(), spec));
+    if (spec.package_name_constraint())
+        _imp->by_name.insert(std::make_pair(spec.package_name_constraint()->name(), spec));
     else
         _imp->unnamed.push_back(spec);
 }

@@ -59,8 +59,8 @@ int main(int argc, char * argv[])
             /* Display information about the PackageDepSpec. */
             cout << "Information about '" << spec << "':" << endl;
 
-            if (spec.package_ptr())
-                cout << "    " << left << setw(24) << "Package:" << " " << *spec.package_ptr() << endl;
+            if (spec.package_name_constraint())
+                cout << "    " << left << setw(24) << "Package:" << " " << spec.package_name_constraint()->name() << endl;
 
             if (spec.category_name_part_ptr())
                 cout << "    " << left << setw(24) << "Category part:" << " " << *spec.category_name_part_ptr() << endl;

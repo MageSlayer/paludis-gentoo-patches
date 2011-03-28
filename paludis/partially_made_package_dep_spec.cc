@@ -28,6 +28,7 @@
 #include <paludis/version_requirements.hh>
 #include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/dep_spec_data.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 #include <iterator>
 #include <algorithm>
 #include <ostream>
@@ -47,7 +48,7 @@ namespace
     struct PartiallyMadePackageDepSpecData :
         PackageDepSpecData
     {
-        std::shared_ptr<const QualifiedPackageName> package;
+        std::shared_ptr<const NameConstraint> package;
         std::shared_ptr<const PackageNamePart> package_name_part;
         std::shared_ptr<const CategoryNamePart> category_name_part;
         std::shared_ptr<VersionRequirements> version_requirements;
@@ -70,7 +71,7 @@ namespace
 
         PartiallyMadePackageDepSpecData(const PackageDepSpecData & other) :
             PackageDepSpecData(other),
-            package(other.package_ptr()),
+            package(other.package_name_constraint()),
             package_name_part(other.package_name_part_ptr()),
             category_name_part(other.category_name_part_ptr()),
             version_requirements(other.version_requirements_ptr() ? new VersionRequirements : 0),
@@ -130,8 +131,8 @@ namespace
                 }
             }
 
-            if (package_ptr())
-                s << *package_ptr();
+            if (package_name_constraint())
+                s << package_name_constraint()->name();
             else
             {
                 if (category_name_part_ptr())
@@ -277,7 +278,7 @@ namespace
             return s.str();
         }
 
-        virtual std::shared_ptr<const QualifiedPackageName> package_ptr() const
+        virtual const std::shared_ptr<const NameConstraint> package_name_constraint() const
         {
             return package;
         }
@@ -390,7 +391,7 @@ PartiallyMadePackageDepSpec::~PartiallyMadePackageDepSpec()
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::package(const QualifiedPackageName & name)
 {
-    _imp->data->package = std::make_shared<QualifiedPackageName>(name);
+    _imp->data->package = NameConstraintPool::get_instance()->create(name);
     return *this;
 }
 

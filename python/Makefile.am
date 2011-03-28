@@ -70,6 +70,7 @@ IF_PYTHON_SOURCES = \
 	nice_names-nn.hh nice_names-nn.cc \
 	log.cc \
 	package_id.cc \
+	package_dep_spec_constraint.cc \
 	repository.cc \
 	selection.cc \
 	version_operator.cc \

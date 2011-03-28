@@ -38,6 +38,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/elike_blocker.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 #include <map>
 #include <set>
 
@@ -92,13 +93,13 @@ SpecRewriter::~SpecRewriter() = default;
 const std::shared_ptr<const RewrittenSpec>
 SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::shared_ptr<const Resolvent> & maybe_our_resolvent) const
 {
-    if (s.if_package() && s.if_package()->package_ptr())
+    if (s.if_package() && s.if_package()->package_name_constraint())
     {
-        if (s.if_package()->package_ptr()->category() != CategoryNamePart("virtual"))
+        if (s.if_package()->package_name_constraint()->name().category() != CategoryNamePart("virtual"))
             return make_null_shared_ptr();
         _need_rewrites();
 
-        Rewrites::const_iterator r(_imp->rewrites.find(*s.if_package()->package_ptr()));
+        Rewrites::const_iterator r(_imp->rewrites.find(s.if_package()->package_name_constraint()->name()));
         if (r == _imp->rewrites.end())
             return make_null_shared_ptr();
 
@@ -112,13 +113,13 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::sha
 
         return result;
     }
-    else if (s.if_block() && s.if_block()->blocking().package_ptr())
+    else if (s.if_block() && s.if_block()->blocking().package_name_constraint())
     {
-        if (s.if_block()->blocking().package_ptr()->category() != CategoryNamePart("virtual"))
+        if (s.if_block()->blocking().package_name_constraint()->name().category() != CategoryNamePart("virtual"))
             return make_null_shared_ptr();
         _need_rewrites();
 
-        Rewrites::const_iterator r(_imp->rewrites.find(*s.if_block()->blocking().package_ptr()));
+        Rewrites::const_iterator r(_imp->rewrites.find(s.if_block()->blocking().package_name_constraint()->name()));
         if (r == _imp->rewrites.end())
             return make_null_shared_ptr();
 

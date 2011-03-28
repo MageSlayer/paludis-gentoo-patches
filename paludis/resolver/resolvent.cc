@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,6 +29,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/serialise-impl.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -83,7 +84,7 @@ Resolvent::Resolvent(
         const SlotName & s,
         const DestinationType t) :
     destination_type(n::destination_type() = t),
-    package(n::package() = *spec.package_ptr()),
+    package(n::package() = spec.package_name_constraint()->name()),
     slot(make_named_values<SlotNameOrNull>(
                 n::name_or_null() = std::make_shared<SlotName>(s),
                 n::null_means_unknown() = false
@@ -96,7 +97,7 @@ Resolvent::Resolvent(
         const SlotNameOrNull & s,
         const DestinationType t) :
     destination_type(n::destination_type() = t),
-    package(n::package() = *spec.package_ptr()),
+    package(n::package() = spec.package_name_constraint()->name()),
     slot(s)
 {
 }

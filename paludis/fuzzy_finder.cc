@@ -28,6 +28,7 @@
 #include <paludis/filter_handler.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -143,10 +144,10 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
     {
         PackageDepSpec pds(parse_user_package_dep_spec(name, &e, { }));
 
-        if (pds.package_ptr())
+        if (pds.package_name_constraint())
         {
-            g = g & generator::Category(pds.package_ptr()->category());
-            package = stringify(pds.package_ptr()->package());
+            g = g & generator::Category(pds.package_name_constraint()->name().category());
+            package = stringify(pds.package_name_constraint()->name().package());
         }
 
         if (pds.in_repository_ptr())

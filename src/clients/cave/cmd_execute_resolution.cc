@@ -25,8 +25,10 @@
 #include "colours.hh"
 #include "resume_data.hh"
 #include "format_user_config.hh"
+
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
+
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/system.hh>
@@ -48,6 +50,7 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/process.hh>
+
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
@@ -62,6 +65,7 @@
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/job_state.hh>
 #include <paludis/resolver/job_requirements.hh>
+
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -80,6 +84,7 @@
 #include <paludis/filter.hh>
 #include <paludis/elike_blocker.hh>
 #include <paludis/repository.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 
 #include <set>
 #include <iterator>
@@ -323,7 +328,7 @@ namespace
                 const auto replacing_ids((*env)[selection::BestVersionOnly(generator::Matches(*i, make_null_shared_ptr(), { }))]);
                 if (replacing_ids->empty())
                     r.append(stringify(*i));
-                else if (id_specs->empty() || *id_specs->begin()->package_ptr() != (*replacing_ids->begin())->name())
+                else if (id_specs->empty() || id_specs->begin()->package_name_constraint()->name() != (*replacing_ids->begin())->name())
                     r.append(stringify(**replacing_ids->begin()));
                 else
                     r.append((*replacing_ids->begin())->canonical_form(idcf_no_name));

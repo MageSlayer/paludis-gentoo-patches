@@ -19,10 +19,13 @@
  */
 
 #include <paludis_ruby.hh>
+
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/version_operator.hh>
+#include <paludis/package_dep_spec_constraint.hh>
+
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
@@ -31,6 +34,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/accept_visitor.hh>
+
 #include <algorithm>
 #include <list>
 #include <ruby.h>
@@ -576,18 +580,18 @@ namespace
 
     /*
      * call-seq:
-     *     package -> QualifiedPackageName or Nil
+     *     package_name_constraint -> PackageDepSpecConstraint or Nil
      *
-     * Fetch the package name.
+     * Fetch the package name constraint (may be Nil).
      */
     VALUE
-    package_dep_spec_package(VALUE self)
+    package_dep_spec_package_name_constraint(VALUE self)
     {
         std::shared_ptr<WrappedSpecBase> * ptr;
         Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_ptr()))
+        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_name_constraint()))
             return Qnil;
-        return qualified_package_name_to_value(*std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_ptr());
+        return package_dep_spec_constraint_to_value(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_name_constraint());
     }
 
     /*
@@ -1107,7 +1111,7 @@ namespace
          * use Paludis::parse_user_package_dep_spec.
          */
         c_package_dep_spec = rb_define_class_under(paludis_module(), "PackageDepSpec", c_string_dep_spec);
-        rb_define_method(c_package_dep_spec, "package", RUBY_FUNC_CAST(&package_dep_spec_package), 0);
+        rb_define_method(c_package_dep_spec, "package_name_constraint", RUBY_FUNC_CAST(&package_dep_spec_package_name_constraint), 0);
         rb_define_method(c_package_dep_spec, "package_name_part", RUBY_FUNC_CAST(&package_dep_spec_package_name_part), 0);
         rb_define_method(c_package_dep_spec, "category_name_part", RUBY_FUNC_CAST(&package_dep_spec_category_name_part), 0);
         rb_define_method(c_package_dep_spec, "slot_requirement", RUBY_FUNC_CAST(&package_dep_spec_slot_requirement_ptr), 0);

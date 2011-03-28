@@ -50,6 +50,7 @@ IF_RUBY_SOURCES = \
 	metadata_key.cc \
 	name.cc \
 	nice_names-nn.hh nice_names-nn.cc \
+	package_dep_spec_constraint.cc \
 	package_id.cc \
 	paludis_ruby.cc paludis_ruby.hh \
 	qualified_package_name.cc \

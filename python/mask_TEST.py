@@ -98,7 +98,7 @@ class TestCase_01_Masks(unittest.TestCase):
 
             self.assertEquals(m.key(), "A")
             self.assertEquals(m.description(), "by association")
-            self.assertEquals(m.associated_package_spec().package, "masked/repo")
+            self.assertEquals(m.associated_package_spec().package_name_constraint.name, "masked/repo")
         elif os.environ.get("PALUDIS_ENABLE_VIRTUALS_REPOSITORY") != "no":
             raise "oops"
 

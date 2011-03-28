@@ -1392,7 +1392,7 @@ ShowCommand::run(
             try
             {
                 PackageDepSpec spec(parse_spec_with_nice_error(*p, env.get(), { updso_throw_if_set, updso_allow_wildcards }, filter::All()));
-                if ((! spec.package_ptr()))
+                if ((! spec.package_name_constraint()))
                     do_one_wildcard(env, spec);
                 else
                     do_one_package(cmdline, env, basic_ppos, spec);

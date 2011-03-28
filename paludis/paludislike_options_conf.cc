@@ -18,6 +18,7 @@
  */
 
 #include <paludis/paludislike_options_conf.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/named_value.hh>
@@ -33,6 +34,7 @@
 #include <paludis/util/active_object_ptr.hh>
 #include <paludis/util/deferred_construction_ptr.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+
 #include <paludis/choice.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
@@ -42,6 +44,8 @@
 #include <paludis/environment.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/package_dep_spec_properties.hh>
+#include <paludis/package_dep_spec_constraint.hh>
+
 #include <unordered_map>
 #include <unordered_set>
 #include <list>
@@ -208,10 +212,10 @@ PaludisLikeOptionsConf::add_file(const FSPath & f)
                 continue;
             }
 
-            if (d->package_ptr())
+            if (d->package_name_constraint())
             {
                 SpecificSpecs::iterator i(_imp->specific_specs.insert(std::make_pair(
-                                *d->package_ptr(),
+                                d->package_name_constraint()->name(),
                                 SpecsWithValuesGroups())).first);
                 values_groups = &i->second.insert(i->second.end(),
                         make_named_values<SpecWithValuesGroups>(

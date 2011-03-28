@@ -140,11 +140,11 @@ module Paludis
         end
 
         def test_package
-            assert_equal QualifiedPackageName.new("foo/bar"), pda.package
-            assert_nil pdb.package
-            assert_equal QualifiedPackageName.new("foo/bar"), pdc.package
-            assert_nil pdd.package
-            assert_equal QualifiedPackageName.new("foo/bar"), pde.package
+            assert_equal QualifiedPackageName.new("foo/bar"), pda.package_name_constraint.name
+            assert_nil pdb.package_name_constraint
+            assert_equal QualifiedPackageName.new("foo/bar"), pdc.package_name_constraint.name
+            assert_nil pdd.package_name_constraint
+            assert_equal QualifiedPackageName.new("foo/bar"), pde.package_name_constraint.name
         end
 
         def test_from_repository

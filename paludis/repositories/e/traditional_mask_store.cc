@@ -21,15 +21,18 @@
 #include <paludis/repositories/e/profile_file.hh>
 #include <paludis/repositories/e/traditional_mask_file.hh>
 #include <paludis/repositories/e/eapi.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/match_package.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 
 #include <algorithm>
 #include <unordered_map>
@@ -98,8 +101,8 @@ TraditionalMaskStore::_populate()
             auto a(parse_elike_package_dep_spec(
                         line->second.first, line->first->supported()->package_dep_spec_parse_options(),
                         line->first->supported()->version_spec_options()));
-            if (a.package_ptr())
-                _imp->repo_mask[*a.package_ptr()].push_back(std::make_pair(a, line->second.second));
+            if (a.package_name_constraint())
+                _imp->repo_mask[a.package_name_constraint()->name()].push_back(std::make_pair(a, line->second.second));
             else
                 Log::get_instance()->message("e.package_mask.bad_spec", ll_warning, lc_context)
                     << "Loading package mask spec '" << line->second.first << "' failed because specification does not restrict to a "

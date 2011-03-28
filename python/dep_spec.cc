@@ -29,6 +29,7 @@
 #include <paludis/version_requirements.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/dep_spec_data.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
@@ -72,7 +73,7 @@ namespace paludis
     template<>
     struct Imp<PythonPackageDepSpec>
     {
-        std::shared_ptr<const QualifiedPackageName> package_ptr;
+        std::shared_ptr<const NameConstraint> package_name_constraint;
         std::shared_ptr<const CategoryNamePart> category_name_part_ptr;
         std::shared_ptr<const PackageNamePart> package_name_part_ptr;
         std::shared_ptr<VersionRequirements> version_requirements;
@@ -84,7 +85,7 @@ namespace paludis
         const std::string str;
 
         Imp(
-                const std::shared_ptr<const QualifiedPackageName> & q,
+                const std::shared_ptr<const NameConstraint> & q,
                 const std::shared_ptr<const CategoryNamePart> & c,
                 const std::shared_ptr<const PackageNamePart> & p,
                 const std::shared_ptr<VersionRequirements> & v,
@@ -94,7 +95,7 @@ namespace paludis
                 const std::shared_ptr<const RepositoryName> & rf,
                 const std::shared_ptr<const AdditionalPackageDepSpecRequirements> & u,
                 const std::string & st) :
-            package_ptr(q),
+            package_name_constraint(q),
             category_name_part_ptr(c),
             package_name_part_ptr(p),
             version_requirements(v),
@@ -222,7 +223,7 @@ deep_copy(const std::shared_ptr<const T_> & x)
 PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
     PythonStringDepSpec(p.text()),
     _imp(
-            deep_copy(p.package_ptr()),
+            p.package_name_constraint(),
             deep_copy(p.category_name_part_ptr()),
             deep_copy(p.package_name_part_ptr()),
             std::make_shared<VersionRequirements>(),
@@ -243,7 +244,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
 PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
     PythonStringDepSpec(p.text()),
     _imp(
-            deep_copy(p.package_ptr()),
+            p.package_name_constraint(),
             deep_copy(p.category_name_part_ptr()),
             deep_copy(p.package_name_part_ptr()),
             std::make_shared<VersionRequirements>(),
@@ -266,8 +267,8 @@ PythonPackageDepSpec::operator PackageDepSpec() const
 {
     PartiallyMadePackageDepSpec p((PartiallyMadePackageDepSpecOptions()));
 
-    if (package_ptr())
-        p.package(*package_ptr());
+    if (package_name_constraint())
+        p.package(package_name_constraint()->name());
 
     if (category_name_part_ptr())
         p.category_name_part(*category_name_part_ptr());
@@ -309,10 +310,10 @@ PythonPackageDepSpec::operator std::shared_ptr<PackageDepSpec>() const
     return std::make_shared<PackageDepSpec>(*this);
 }
 
-std::shared_ptr<const QualifiedPackageName>
-PythonPackageDepSpec::package_ptr() const
+const std::shared_ptr<const NameConstraint>
+PythonPackageDepSpec::package_name_constraint() const
 {
-    return _imp->package_ptr;
+    return _imp->package_name_constraint;
 }
 
 std::shared_ptr<const PackageNamePart>
@@ -1200,9 +1201,9 @@ void expose_dep_spec()
          bp::no_init
         )
 
-        .add_property("package", &PythonPackageDepSpec::package_ptr,
-                "[ro] QualifiedPackageName\n"
-                "Qualified package name."
+        .add_property("package_name_constraint", &PythonPackageDepSpec::package_name_constraint,
+                "[ro] NameConstraint\n"
+                "Qualified package name constraint (may be None)."
                 )
 
         .add_property("package_name_part", &PythonPackageDepSpec::package_name_part_ptr,

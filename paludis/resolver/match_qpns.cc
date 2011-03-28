@@ -18,11 +18,14 @@
  */
 
 #include <paludis/resolver/match_qpns.hh>
+
+#include <paludis/util/make_named_values.hh>
+
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_dep_spec_properties.hh>
 #include <paludis/name.hh>
-#include <paludis/util/make_named_values.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -53,7 +56,7 @@ paludis::resolver::match_qpns(
                     )))
         return false;
 
-    if (spec.package_ptr() && *spec.package_ptr() != package)
+    if (spec.package_name_constraint() && spec.package_name_constraint()->name() != package)
         return false;
     if (spec.package_name_part_ptr() && *spec.package_name_part_ptr() != package.package())
         return false;
