@@ -126,8 +126,8 @@ paludis::match_package_with_maybe_changes(
                 ;
         }
 
-    if (spec.in_repository_ptr())
-        if (*spec.in_repository_ptr() != id->repository_name())
+    if (spec.in_repository_constraint())
+        if (spec.in_repository_constraint()->name() != id->repository_name())
             return false;
 
     if (spec.from_repository_ptr())

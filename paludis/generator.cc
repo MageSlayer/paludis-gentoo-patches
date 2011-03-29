@@ -322,21 +322,20 @@ namespace
 
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
 
-            if (spec.in_repository_ptr())
+            if (spec.in_repository_constraint())
             {
-                if (env->has_repository_named(*spec.in_repository_ptr()))
+                if (env->has_repository_named(spec.in_repository_constraint()->name()))
                 {
                     if (spec.installed_at_path_ptr())
                     {
-                        std::shared_ptr<const Repository> repo(env->fetch_repository(
-                                    *spec.in_repository_ptr()));
+                        std::shared_ptr<const Repository> repo(env->fetch_repository(spec.in_repository_constraint()->name()));
                         if (! repo->installed_root_key())
                             return result;
                         if (repo->installed_root_key()->value() != *spec.installed_at_path_ptr())
                             return result;
                     }
 
-                    result->insert(*spec.in_repository_ptr());
+                    result->insert(spec.in_repository_constraint()->name());
                 }
             }
             else

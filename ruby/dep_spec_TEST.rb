@@ -156,11 +156,11 @@ module Paludis
         end
 
         def test_in_repository
-            assert_equal "testrepo", pda.in_repository
-            assert_nil pdb.in_repository
-            assert_nil pdc.in_repository
-            assert_nil pdd.in_repository
-            assert_nil pde.in_repository
+            assert_equal "testrepo", pda.in_repository_constraint.name
+            assert_nil pdb.in_repository_constraint
+            assert_nil pdc.in_repository_constraint
+            assert_nil pdd.in_repository_constraint
+            assert_nil pde.in_repository_constraint
         end
 
         def test_installable_to_repository

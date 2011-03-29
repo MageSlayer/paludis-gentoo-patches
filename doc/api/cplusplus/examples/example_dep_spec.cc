@@ -101,9 +101,9 @@ int main(int argc, char * argv[])
             if (spec.slot_requirement_ptr())
                 cout << "    " << left << setw(24) << "Slot:" << " " << *spec.slot_requirement_ptr() << endl;
 
-            if (spec.in_repository_ptr())
+            if (spec.in_repository_constraint())
                 cout << "    " << left << setw(24) << "In repository:" << " " <<
-                    *spec.in_repository_ptr() << endl;
+                    spec.in_repository_constraint()->name() << endl;
 
             if (spec.from_repository_ptr())
                 cout << "    " << left << setw(24) << "From repository:" << " " <<

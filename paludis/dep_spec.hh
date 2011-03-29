@@ -387,9 +387,12 @@ namespace paludis
             std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const;
 
             /**
-             * Fetch the in-repository requirement (may be a zero pointer).
+             * Fetch the single InRepositoryConstraint, if we have one, or
+             * a null pointer otherwise.
+             *
+             * \since 0.61
              */
-            std::shared_ptr<const RepositoryName> in_repository_ptr() const;
+            const std::shared_ptr<const InRepositoryConstraint> in_repository_constraint() const;
 
             /**
              * Fetch the installable-to-repository requirement (may be a zero pointer).

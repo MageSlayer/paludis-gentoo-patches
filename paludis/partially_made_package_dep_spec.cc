@@ -54,7 +54,7 @@ namespace
         std::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode_v;
         std::shared_ptr<const SlotRequirement> slot;
-        std::shared_ptr<const RepositoryName> in_repository;
+        std::shared_ptr<const InRepositoryConstraint> in_repository;
         std::shared_ptr<const RepositoryName> from_repository;
         std::shared_ptr<const InstallableToRepository> installable_to_repository;
         std::shared_ptr<const FSPath> installed_at_path;
@@ -77,7 +77,7 @@ namespace
             version_requirements(other.version_requirements_ptr() ? new VersionRequirements : 0),
             version_requirements_mode_v(other.version_requirements_mode()),
             slot(other.slot_requirement_ptr()),
-            in_repository(other.in_repository_ptr()),
+            in_repository(other.in_repository_constraint()),
             from_repository(other.from_repository_ptr()),
             installable_to_repository(other.installable_to_repository_ptr()),
             installed_at_path(other.installed_at_path_ptr()),
@@ -171,8 +171,8 @@ namespace
             if (from_repository_ptr())
                 left = stringify(*from_repository_ptr());
 
-            if (in_repository_ptr())
-                right = stringify(*in_repository_ptr());
+            if (in_repository_constraint())
+                right = stringify(in_repository_constraint()->name());
 
             if (installed_at_path_ptr())
             {
@@ -308,7 +308,7 @@ namespace
             return slot;
         }
 
-        virtual std::shared_ptr<const RepositoryName> in_repository_ptr() const
+        virtual const std::shared_ptr<const InRepositoryConstraint> in_repository_constraint() const
         {
             return in_repository;
         }
@@ -419,7 +419,7 @@ PartiallyMadePackageDepSpec::clear_slot_requirement()
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::in_repository(const RepositoryName & s)
 {
-    _imp->data->in_repository = std::make_shared<RepositoryName>(s);
+    _imp->data->in_repository = InRepositoryConstraintPool::get_instance()->create(s);
     return *this;
 }
 

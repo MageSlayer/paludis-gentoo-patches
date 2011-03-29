@@ -103,5 +103,20 @@ void expose_package_dep_spec_constraint()
                 "[RO] The cat/ in question"
             )
         ;
+
+    /**
+     * InRepositoryConstraint
+     */
+    class_package_dep_spec_constraint<InRepositoryConstraint>
+        (
+         "InRepositoryConstraint",
+         "A ::repo constraint for a PackageDepSpec.",
+         bp::no_init
+        )
+
+        .add_property("name", &InRepositoryConstraint::name,
+                "[RO] The ::repo name in question"
+            )
+        ;
 }
 

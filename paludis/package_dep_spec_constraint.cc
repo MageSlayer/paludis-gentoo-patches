@@ -80,3 +80,21 @@ template class Singleton<Pool<PackageNamePartConstraint> >;
 template const std::shared_ptr<const PackageNamePartConstraint> Pool<PackageNamePartConstraint>::create(
         const PackageNamePart &) const;
 
+InRepositoryConstraint::InRepositoryConstraint(const RepositoryName & n) :
+    _name(n)
+{
+}
+
+InRepositoryConstraint::~InRepositoryConstraint() = default;
+
+const RepositoryName
+InRepositoryConstraint::name() const
+{
+    return _name;
+}
+
+template class Pool<InRepositoryConstraint>;
+template class Singleton<Pool<InRepositoryConstraint> >;
+template const std::shared_ptr<const InRepositoryConstraint> Pool<InRepositoryConstraint>::create(
+        const RepositoryName &) const;
+

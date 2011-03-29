@@ -578,10 +578,10 @@ PackageDepSpec::slot_requirement_ptr() const
     return _imp->data->slot_requirement_ptr();
 }
 
-std::shared_ptr<const RepositoryName>
-PackageDepSpec::in_repository_ptr() const
+const std::shared_ptr<const InRepositoryConstraint>
+PackageDepSpec::in_repository_constraint() const
 {
-    return _imp->data->in_repository_ptr();
+    return _imp->data->in_repository_constraint();
 }
 
 std::shared_ptr<const InstallableToRepository>

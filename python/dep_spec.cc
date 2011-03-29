@@ -79,7 +79,7 @@ namespace paludis
         std::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode;
         std::shared_ptr<const SlotRequirement> slot;
-        std::shared_ptr<const RepositoryName> in_repository;
+        std::shared_ptr<const InRepositoryConstraint> in_repository;
         std::shared_ptr<const RepositoryName> from_repository;
         std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements;
         const std::string str;
@@ -91,7 +91,7 @@ namespace paludis
                 const std::shared_ptr<VersionRequirements> & v,
                 const VersionRequirementsMode m,
                 const std::shared_ptr<const SlotRequirement> & s,
-                const std::shared_ptr<const RepositoryName> & ri,
+                const std::shared_ptr<const InRepositoryConstraint> & ri,
                 const std::shared_ptr<const RepositoryName> & rf,
                 const std::shared_ptr<const AdditionalPackageDepSpecRequirements> & u,
                 const std::string & st) :
@@ -229,7 +229,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
             std::make_shared<VersionRequirements>(),
             p.version_requirements_mode(),
             p.slot_requirement_ptr(),
-            deep_copy(p.in_repository_ptr()),
+            p.in_repository_constraint(),
             deep_copy(p.from_repository_ptr()),
             p.additional_requirements_ptr(),
             stringify(p))
@@ -250,7 +250,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
             std::make_shared<VersionRequirements>(),
             p.version_requirements_mode(),
             p.slot_requirement_ptr(),
-            deep_copy(p.in_repository_ptr()),
+            p.in_repository_constraint(),
             deep_copy(p.from_repository_ptr()),
             p.additional_requirements_ptr(),
             p.py_str())
@@ -281,8 +281,8 @@ PythonPackageDepSpec::operator PackageDepSpec() const
     if (slot_requirement_ptr())
         p.slot_requirement(slot_requirement_ptr());
 
-    if (in_repository_ptr())
-        p.in_repository(*in_repository_ptr());
+    if (in_repository_constraint())
+        p.in_repository(in_repository_constraint()->name());
 
     if (from_repository_ptr())
         p.from_repository(*from_repository_ptr());
@@ -352,8 +352,8 @@ PythonPackageDepSpec::slot_requirement_ptr() const
     return _imp->slot;
 }
 
-std::shared_ptr<const RepositoryName>
-PythonPackageDepSpec::in_repository_ptr() const
+const std::shared_ptr<const InRepositoryConstraint>
+PythonPackageDepSpec::in_repository_constraint() const
 {
     return _imp->in_repository;
 }
@@ -1233,9 +1233,9 @@ void expose_dep_spec()
                 )
 #endif
 
-        .add_property("in_repository", &PythonPackageDepSpec::in_repository_ptr,
-                "[ro] RepositoryName\n"
-                "In repository name (may be None)."
+        .add_property("in_repository_constraint", &PythonPackageDepSpec::in_repository_constraint,
+                "[ro] InRepositoryConstraint\n"
+                "In repository constraint (may be None)."
 
                 )
 

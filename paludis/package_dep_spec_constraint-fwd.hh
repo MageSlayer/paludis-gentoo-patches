@@ -34,6 +34,9 @@ namespace paludis
 
     class CategoryNamePartConstraint;
     typedef Pool<CategoryNamePartConstraint> CategoryNamePartConstraintPool;
+
+    class InRepositoryConstraint;
+    typedef Pool<InRepositoryConstraint> InRepositoryConstraintPool;
 }
 
 #endif

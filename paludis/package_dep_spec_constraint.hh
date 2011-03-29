@@ -34,7 +34,8 @@ namespace paludis
         public virtual DeclareAbstractAcceptMethods<PackageDepSpecConstraint, MakeTypeList<
             NameConstraint,
             PackageNamePartConstraint,
-            CategoryNamePartConstraint
+            CategoryNamePartConstraint,
+            InRepositoryConstraint
         >::Type>
     {
         public:
@@ -98,9 +99,29 @@ namespace paludis
             const PackageNamePart name_part() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    class PALUDIS_VISIBLE InRepositoryConstraint :
+        public PackageDepSpecConstraint,
+        public ImplementAcceptMethods<PackageDepSpecConstraint, InRepositoryConstraint>
+    {
+        friend class Pool<InRepositoryConstraint>;
+
+        private:
+            RepositoryName _name;
+
+            InRepositoryConstraint(const RepositoryName &);
+
+            InRepositoryConstraint(const InRepositoryConstraint &) = delete;
+
+        public:
+            ~InRepositoryConstraint();
+
+            const RepositoryName name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
     extern template class Pool<NameConstraint>;
     extern template class Pool<PackageNamePartConstraint>;
     extern template class Pool<CategoryNamePartConstraint>;
+    extern template class Pool<InRepositoryConstraint>;
 }
 
 #endif
