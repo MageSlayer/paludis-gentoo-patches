@@ -182,13 +182,12 @@ module Paludis
         end
 
         def test_installable_to_path
-            assert_nil pda.installable_to_path
-            assert_nil pdb.installable_to_path
-            assert_nil pdc.installable_to_path
-            assert_kind_of Hash, pdd.installable_to_path
-            assert_equal "/", pdd.installable_to_path[:path]
-            assert pdd.installable_to_path[:include_masked?]
-            assert_nil pde.installable_to_path
+            assert_nil pda.installable_to_path_constraint
+            assert_nil pdb.installable_to_path_constraint
+            assert_nil pdc.installable_to_path_constraint
+            assert_equal "/", pdd.installable_to_path_constraint.path
+            assert pdd.installable_to_path_constraint.include_masked?
+            assert_nil pde.installable_to_path_constraint
         end
 
         def test_package_name_part

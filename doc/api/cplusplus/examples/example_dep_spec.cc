@@ -113,10 +113,10 @@ int main(int argc, char * argv[])
                 cout << "    " << left << setw(24) << "Installed at path:" << " " <<
                     spec.installed_at_path_constraint()->path() << endl;
 
-            if (spec.installable_to_path_ptr())
+            if (spec.installable_to_path_constraint())
                 cout << "    " << left << setw(24) << "Installable to path:" << " " <<
-                    spec.installable_to_path_ptr()->path() << ", " <<
-                    spec.installable_to_path_ptr()->include_masked() << endl;
+                    spec.installable_to_path_constraint()->path() << ", " <<
+                    spec.installable_to_path_constraint()->include_masked() << endl;
 
             if (spec.installable_to_repository_ptr())
                 cout << "    " << left << setw(24) << "Installable to repository:" << " " <<

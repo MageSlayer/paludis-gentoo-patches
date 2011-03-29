@@ -169,12 +169,12 @@ UserDepSpecTest::check_spec(
     }
 
     if (installable_to_path_f.empty())
-        EXPECT_TRUE(! spec.installable_to_path_ptr());
+        EXPECT_TRUE(! spec.installable_to_path_constraint());
     else
     {
-        EXPECT_TRUE(bool(spec.installable_to_path_ptr()));
-        EXPECT_EQ(installable_to_path_f, stringify(spec.installable_to_path_ptr()->path()));
-        EXPECT_EQ(installable_to_path_s, spec.installable_to_path_ptr()->include_masked());
+        EXPECT_TRUE(bool(spec.installable_to_path_constraint()));
+        EXPECT_EQ(installable_to_path_f, stringify(spec.installable_to_path_constraint()->path()));
+        EXPECT_EQ(installable_to_path_s, spec.installable_to_path_constraint()->include_masked());
     }
 
 }

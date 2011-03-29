@@ -134,3 +134,28 @@ template class Singleton<Pool<InstalledAtPathConstraint> >;
 template const std::shared_ptr<const InstalledAtPathConstraint> Pool<InstalledAtPathConstraint>::create(
         const FSPath &) const;
 
+InstallableToPathConstraint::InstallableToPathConstraint(const FSPath & n, const bool i) :
+    _path(n),
+    _include_masked(i)
+{
+}
+
+InstallableToPathConstraint::~InstallableToPathConstraint() = default;
+
+const FSPath
+InstallableToPathConstraint::path() const
+{
+    return _path;
+}
+
+bool
+InstallableToPathConstraint::include_masked() const
+{
+    return _include_masked;
+}
+
+template class Pool<InstallableToPathConstraint>;
+template class Singleton<Pool<InstallableToPathConstraint> >;
+template const std::shared_ptr<const InstallableToPathConstraint> Pool<InstallableToPathConstraint>::create(
+        const FSPath &, const bool & ...) const;
+

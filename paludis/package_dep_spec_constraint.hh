@@ -38,7 +38,8 @@ namespace paludis
             CategoryNamePartConstraint,
             InRepositoryConstraint,
             FromRepositoryConstraint,
-            InstalledAtPathConstraint
+            InstalledAtPathConstraint,
+            InstallableToPathConstraint
         >::Type>
     {
         public:
@@ -159,12 +160,34 @@ namespace paludis
             const FSPath path() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    class PALUDIS_VISIBLE InstallableToPathConstraint :
+        public PackageDepSpecConstraint,
+        public ImplementAcceptMethods<PackageDepSpecConstraint, InstallableToPathConstraint>
+    {
+        friend class Pool<InstallableToPathConstraint>;
+
+        private:
+            FSPath _path;
+            bool _include_masked;
+
+            InstallableToPathConstraint(const FSPath &, const bool);
+
+            InstallableToPathConstraint(const InstallableToPathConstraint &) = delete;
+
+        public:
+            ~InstallableToPathConstraint();
+
+            const FSPath path() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool include_masked() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
     extern template class Pool<NameConstraint>;
     extern template class Pool<PackageNamePartConstraint>;
     extern template class Pool<CategoryNamePartConstraint>;
     extern template class Pool<InRepositoryConstraint>;
     extern template class Pool<FromRepositoryConstraint>;
     extern template class Pool<InstalledAtPathConstraint>;
+    extern template class Pool<InstallableToPathConstraint>;
 }
 
 #endif

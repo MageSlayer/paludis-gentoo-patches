@@ -185,11 +185,12 @@ namespace paludis
             virtual const std::shared_ptr<const InstalledAtPathConstraint> installed_at_path_constraint() const = 0;
 
             /**
-             * Fetch the installable-to-path requirement (may be a zero pointer).
+             * Fetch the single InstallableToPathConstraint, if we have one, or
+             * a null pointer otherwise.
              *
-             * \since 0.32
+             * \since 0.61
              */
-            virtual std::shared_ptr<const InstallableToPath> installable_to_path_ptr() const = 0;
+            virtual const std::shared_ptr<const InstallableToPathConstraint> installable_to_path_constraint() const = 0;
 
             /**
              * Fetch the additional requirements (may be a zero pointer).

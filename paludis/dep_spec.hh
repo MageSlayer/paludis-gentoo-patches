@@ -285,18 +285,6 @@ namespace paludis
     };
 
     /**
-     * Data for PackageDepSpec.installable_to_path_ptr() etc.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.32
-     */
-    struct InstallableToPath
-    {
-        NamedValue<n::include_masked, bool> include_masked;
-        NamedValue<n::path, FSPath> path;
-    };
-
-    /**
      * A PackageDepSpec represents a package name (for example,
      * 'app-editors/vim'), possibly with associated version and SLOT
      * restrictions.
@@ -416,11 +404,12 @@ namespace paludis
             const std::shared_ptr<const InstalledAtPathConstraint> installed_at_path_constraint() const;
 
             /**
-             * Fetch the installable-to-path requirement (may be a zero pointer).
+             * Fetch the single InstallableToPathConstraint, if we have one, or
+             * a null pointer otherwise.
              *
-             * \since 0.32
+             * \since 0.61
              */
-            std::shared_ptr<const InstallableToPath> installable_to_path_ptr() const;
+            const std::shared_ptr<const InstallableToPathConstraint> installable_to_path_constraint() const;
 
             /**
              * Fetch any additional requirements (may be a zero pointer).

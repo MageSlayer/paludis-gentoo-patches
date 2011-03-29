@@ -58,7 +58,7 @@ namespace
         std::shared_ptr<const FromRepositoryConstraint> from_repository;
         std::shared_ptr<const InstallableToRepository> installable_to_repository;
         std::shared_ptr<const InstalledAtPathConstraint> installed_at_path;
-        std::shared_ptr<const InstallableToPath> installable_to_path;
+        std::shared_ptr<const InstallableToPathConstraint> installable_to_path;
         std::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
         PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec_v;
 
@@ -81,7 +81,7 @@ namespace
             from_repository(other.from_repository_constraint()),
             installable_to_repository(other.installable_to_repository_ptr()),
             installed_at_path(other.installed_at_path_constraint()),
-            installable_to_path(other.installable_to_path_ptr()),
+            installable_to_path(other.installable_to_path_constraint()),
             additional_requirements(other.additional_requirements_ptr() ? new AdditionalPackageDepSpecRequirements : 0),
             options_for_partially_made_package_dep_spec_v(other.options_for_partially_made_package_dep_spec())
         {
@@ -197,17 +197,17 @@ namespace
                     right.append(stringify(installable_to_repository_ptr()->repository()) + "?");
             }
 
-            if (installable_to_path_ptr())
+            if (installable_to_path_constraint())
             {
                 if (! right.empty())
                 {
                     need_arrow = true;
                     right.append("->");
                 }
-                if (installable_to_path_ptr()->include_masked())
-                    right.append(stringify(installable_to_path_ptr()->path()) + "??");
+                if (installable_to_path_constraint()->include_masked())
+                    right.append(stringify(installable_to_path_constraint()->path()) + "??");
                 else
-                    right.append(stringify(installable_to_path_ptr()->path()) + "?");
+                    right.append(stringify(installable_to_path_constraint()->path()) + "?");
             }
 
             if (need_arrow || ((! left.empty()) && (! right.empty())))
@@ -328,7 +328,7 @@ namespace
             return installed_at_path;
         }
 
-        virtual std::shared_ptr<const InstallableToPath> installable_to_path_ptr() const
+        virtual const std::shared_ptr<const InstallableToPathConstraint> installable_to_path_constraint() const
         {
             return installable_to_path;
         }
@@ -473,9 +473,9 @@ PartiallyMadePackageDepSpec::clear_installed_at_path()
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::installable_to_path(const InstallableToPath & s)
+PartiallyMadePackageDepSpec::installable_to_path(const FSPath & s, const bool i)
 {
-    _imp->data->installable_to_path = std::make_shared<InstallableToPath>(s);
+    _imp->data->installable_to_path = InstallableToPathConstraintPool::get_instance()->create(s, i);
     return *this;
 }
 

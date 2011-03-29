@@ -129,9 +129,9 @@ namespace paludis
             /**
              * Set our installable-to-path requirement, return ourself.
              *
-             * \since 0.32
+             * \since 0.61
              */
-            PartiallyMadePackageDepSpec & installable_to_path(const InstallableToPath &);
+            PartiallyMadePackageDepSpec & installable_to_path(const FSPath &, const bool include_masked);
 
             /**
              * Clear our installable-to-path requirement, return ourself.

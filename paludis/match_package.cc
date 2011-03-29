@@ -165,11 +165,11 @@ paludis::match_package_with_maybe_changes(
             return false;
     }
 
-    if (spec.installable_to_path_ptr())
+    if (spec.installable_to_path_constraint())
     {
         if (! id->supports_action(SupportsActionTest<InstallAction>()))
             return false;
-        if (! spec.installable_to_path_ptr()->include_masked())
+        if (! spec.installable_to_path_constraint()->include_masked())
             if (id->masked())
                 return false;
 
@@ -181,7 +181,7 @@ paludis::match_package_with_maybe_changes(
                 continue;
             if (! (*d)->installed_root_key())
                 continue;
-            if ((*d)->installed_root_key()->value() != spec.installable_to_path_ptr()->path())
+            if ((*d)->installed_root_key()->value() != spec.installable_to_path_constraint()->path())
                 continue;
             if (! (*d)->destination_interface()->is_suitable_destination_for(id))
                 continue;

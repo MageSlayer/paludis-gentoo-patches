@@ -602,10 +602,10 @@ PackageDepSpec::installed_at_path_constraint() const
     return _imp->data->installed_at_path_constraint();
 }
 
-std::shared_ptr<const InstallableToPath>
-PackageDepSpec::installable_to_path_ptr() const
+const std::shared_ptr<const InstallableToPathConstraint>
+PackageDepSpec::installable_to_path_constraint() const
 {
-    return _imp->data->installable_to_path_ptr();
+    return _imp->data->installable_to_path_constraint();
 }
 
 std::shared_ptr<const AdditionalPackageDepSpecRequirements>

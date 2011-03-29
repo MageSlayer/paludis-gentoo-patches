@@ -195,10 +195,7 @@ namespace
                     include_masked = true;
                 }
 
-                s.installable_to_path(make_named_values<InstallableToPath>(
-                            n::include_masked() = include_masked,
-                            n::path() = FSPath(path)
-                            ));
+                s.installable_to_path(FSPath(path), include_masked);
             }
         }
 

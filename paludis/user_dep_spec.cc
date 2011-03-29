@@ -261,13 +261,9 @@ namespace
             if ('?' == req.at(req.length() - 1))
             {
                 if (req.length() >= 2 && '?' == req.at(req.length() - 2))
-                    reqs.installable_to_path(make_named_values<InstallableToPath>(
-                                n::include_masked() = true,
-                                n::path() = FSPath(req.substr(0, req.length() - 2))));
+                    reqs.installable_to_path(FSPath(req.substr(0, req.length() - 2)), true);
                 else
-                    reqs.installable_to_path(make_named_values<InstallableToPath>(
-                                n::include_masked() = false,
-                                n::path() = FSPath(req.substr(0, req.length() - 1))));
+                    reqs.installable_to_path(FSPath(req.substr(0, req.length() - 1)), false);
             }
             else
                 reqs.installed_at_path(FSPath(req));

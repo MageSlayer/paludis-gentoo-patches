@@ -148,5 +148,24 @@ void expose_package_dep_spec_constraint()
                 "[RO] The ::/ path in question"
             )
         ;
+
+    /**
+     * InstallableToPathConstraint
+     */
+    class_package_dep_spec_constraint<InstallableToPathConstraint>
+        (
+         "InstalledableToPathConstraint",
+         "A ::/? constraint for a PackageDepSpec.",
+         bp::no_init
+        )
+
+        .add_property("path", &InstallableToPathConstraint::path,
+                "[RO] The ::/? path in question"
+            )
+
+        .add_property("include_masked", &InstallableToPathConstraint::include_masked,
+                "[RO] Whether to include masked, as per ::/??"
+            )
+        ;
 }
 

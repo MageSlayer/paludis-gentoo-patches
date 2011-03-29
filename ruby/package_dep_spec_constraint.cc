@@ -37,6 +37,7 @@ namespace
     static VALUE c_in_repository_constraint;
     static VALUE c_from_repository_constraint;
     static VALUE c_installed_at_path_constraint;
+    static VALUE c_installable_to_path_constraint;
 
     struct V
     {
@@ -81,6 +82,12 @@ namespace
         void visit(const InstalledAtPathConstraint &)
         {
             value = Data_Wrap_Struct(c_installed_at_path_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
+                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+        }
+
+        void visit(const InstallableToPathConstraint &)
+        {
+            value = Data_Wrap_Struct(c_installable_to_path_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
                     new std::shared_ptr<const PackageDepSpecConstraint>(mm));
         }
     };
@@ -163,6 +170,32 @@ namespace
         return rb_str_new2(stringify((std::static_pointer_cast<const InstalledAtPathConstraint>(*ptr))->path()).c_str());
     }
 
+    /*
+     * Document-method: path
+     *
+     * The path constraint.
+     */
+    static VALUE
+    installable_to_path_constraint_path(VALUE self)
+    {
+        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
+        return rb_str_new2(stringify((std::static_pointer_cast<const InstallableToPathConstraint>(*ptr))->path()).c_str());
+    }
+
+    /*
+     * Document-method: include_masked?
+     *
+     * The include-masked constraint.
+     */
+    static VALUE
+    installable_to_path_constraint_include_masked(VALUE self)
+    {
+        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
+        return (std::static_pointer_cast<const InstallableToPathConstraint>(*ptr))->include_masked() ? Qtrue : Qfalse;
+    }
+
     void do_register_package_dep_spec_constraint()
     {
         /*
@@ -237,6 +270,19 @@ namespace
         rb_funcall(c_installed_at_path_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_installed_at_path_constraint, "path", RUBY_FUNC_CAST(
                     &installed_at_path_constraint_path), 0);
+
+        /*
+         * Document-class: Paludis::InstallableToPathConstraint
+         *
+         * Represents a ::/ path constraint in a PackageDepSpec.
+         */
+        c_installable_to_path_constraint = rb_define_class_under(
+                paludis_module(), "InRepositoryConstraint", c_package_dep_spec_constraint);
+        rb_funcall(c_installable_to_path_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_installable_to_path_constraint, "path", RUBY_FUNC_CAST(
+                    &installable_to_path_constraint_path), 0);
+        rb_define_method(c_installable_to_path_constraint, "include_masked?", RUBY_FUNC_CAST(
+                    &installable_to_path_constraint_include_masked), 0);
     }
 }
 
