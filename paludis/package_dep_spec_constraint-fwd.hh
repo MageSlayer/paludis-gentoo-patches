@@ -46,6 +46,9 @@ namespace paludis
 
     class InstallableToPathConstraint;
     typedef Pool<InstallableToPathConstraint> InstallableToPathConstraintPool;
+
+    class InstallableToRepositoryConstraint;
+    typedef Pool<InstallableToRepositoryConstraint> InstallableToRepositoryConstraintPool;
 }
 
 #endif

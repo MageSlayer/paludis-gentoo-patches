@@ -584,10 +584,10 @@ PackageDepSpec::in_repository_constraint() const
     return _imp->data->in_repository_constraint();
 }
 
-std::shared_ptr<const InstallableToRepository>
-PackageDepSpec::installable_to_repository_ptr() const
+const std::shared_ptr<const InstallableToRepositoryConstraint>
+PackageDepSpec::installable_to_repository_constraint() const
 {
-    return _imp->data->installable_to_repository_ptr();
+    return _imp->data->installable_to_repository_constraint();
 }
 
 const std::shared_ptr<const FromRepositoryConstraint>

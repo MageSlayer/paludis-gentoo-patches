@@ -704,28 +704,6 @@ namespace
 
     /*
      * call-seq:
-     *     installable_to_repository -> Hash or Nil
-     *
-     * Fetch the installable-to-repository requirement.
-     */
-    VALUE
-    package_dep_spec_installable_to_repository(VALUE self)
-    {
-        std::shared_ptr<WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        std::shared_ptr<const InstallableToRepository> i2r(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installable_to_repository_ptr());
-        if (! i2r)
-            return Qnil;
-        VALUE result(rb_hash_new());
-        rb_hash_aset(result, ID2SYM(rb_intern("repository")),
-            rb_str_new2(stringify(i2r->repository()).c_str()));
-        rb_hash_aset(result, ID2SYM(rb_intern("include_masked?")),
-            i2r->include_masked() ? Qtrue : Qfalse);
-        return result;
-    }
-
-    /*
-     * call-seq:
      *     installed_at_path_constraint ->
      *     InstalledAtPathConstraint or Nil
      *
@@ -743,8 +721,7 @@ namespace
 
     /*
      * call-seq:
-     *     installable_to_path_constraint ->
-     *     InstallableToPathConstraintPool or Nil
+     *     installable_to_path_constraint -> InstallableToPathConstraint or Nil
      *
      * Fetch the installable-to-path constraint.
      */
@@ -757,6 +734,23 @@ namespace
             return Qnil;
         return package_dep_spec_constraint_to_value(
                 std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installable_to_path_constraint());
+    }
+
+    /*
+     * call-seq:
+     *     installable_to_path_constraint -> InstallableToRepositoryConstraint or Nil
+     *
+     * Fetch the installable-to-path constraint.
+     */
+    VALUE
+    package_dep_spec_installable_to_repository_constraint(VALUE self)
+    {
+        std::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
+        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installable_to_repository_constraint()))
+            return Qnil;
+        return package_dep_spec_constraint_to_value(
+                std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installable_to_repository_constraint());
     }
 
     /*
@@ -1112,7 +1106,7 @@ namespace
         rb_define_method(c_package_dep_spec, "slot_requirement", RUBY_FUNC_CAST(&package_dep_spec_slot_requirement_ptr), 0);
         rb_define_method(c_package_dep_spec, "in_repository_constraint", RUBY_FUNC_CAST(&package_dep_spec_in_repository_constraint), 0);
         rb_define_method(c_package_dep_spec, "from_repository_constraint", RUBY_FUNC_CAST(&package_dep_spec_from_repository_constraint), 0);
-        rb_define_method(c_package_dep_spec, "installable_to_repository", RUBY_FUNC_CAST(&package_dep_spec_installable_to_repository), 0);
+        rb_define_method(c_package_dep_spec, "installable_to_repository_constraint", RUBY_FUNC_CAST(&package_dep_spec_installable_to_repository_constraint), 0);
         rb_define_method(c_package_dep_spec, "installed_at_path_constraint", RUBY_FUNC_CAST(&package_dep_spec_installed_at_path_constraint), 0);
         rb_define_method(c_package_dep_spec, "installable_to_path_constraint", RUBY_FUNC_CAST(&package_dep_spec_installable_to_path_constraint), 0);
         rb_define_method(c_package_dep_spec, "version_requirements", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_ptr), 0);

@@ -265,25 +265,6 @@ namespace paludis
             std::string text() const;
     };
 
-    namespace n
-    {
-        typedef Name<struct name_include_masked> include_masked;
-        typedef Name<struct name_path> path;
-        typedef Name<struct name_repository> repository;
-    }
-
-    /**
-     * Data for PackageDepSpec.installable_to_repository_ptr() etc.
-     *
-     * \ingroup g_dep_spec
-     * \since 0.32
-     */
-    struct InstallableToRepository
-    {
-        NamedValue<n::include_masked, bool> include_masked;
-        NamedValue<n::repository, RepositoryName> repository;
-    };
-
     /**
      * A PackageDepSpec represents a package name (for example,
      * 'app-editors/vim'), possibly with associated version and SLOT
@@ -383,11 +364,11 @@ namespace paludis
             const std::shared_ptr<const InRepositoryConstraint> in_repository_constraint() const;
 
             /**
-             * Fetch the installable-to-repository requirement (may be a zero pointer).
+             * Fetch the single InstallableToRepositoryConstraint, if we have one, or
              *
-             * \since 0.32
+             * \since 0.61
              */
-            std::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const;
+            const std::shared_ptr<const InstallableToRepositoryConstraint> installable_to_repository_constraint() const;
 
             /**
              * Fetch the single FromRepositoryConstraint, if we have one, or

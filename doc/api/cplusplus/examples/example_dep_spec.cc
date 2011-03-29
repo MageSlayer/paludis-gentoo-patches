@@ -118,10 +118,10 @@ int main(int argc, char * argv[])
                     spec.installable_to_path_constraint()->path() << ", " <<
                     spec.installable_to_path_constraint()->include_masked() << endl;
 
-            if (spec.installable_to_repository_ptr())
+            if (spec.installable_to_repository_constraint())
                 cout << "    " << left << setw(24) << "Installable to repository:" << " " <<
-                    spec.installable_to_repository_ptr()->repository() << ", " <<
-                    spec.installable_to_repository_ptr()->include_masked() << endl;
+                    spec.installable_to_repository_constraint()->name() << ", " <<
+                    spec.installable_to_repository_constraint()->include_masked() << endl;
 
             if (spec.additional_requirements_ptr() && ! spec.additional_requirements_ptr()->empty())
             {

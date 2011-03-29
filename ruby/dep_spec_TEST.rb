@@ -164,13 +164,12 @@ module Paludis
         end
 
         def test_installable_to_repository
-            assert_nil pda.installable_to_repository
-            assert_nil pdb.installable_to_repository
-            assert_kind_of Hash, pdc.installable_to_repository
-            assert_equal "installed", pdc.installable_to_repository[:repository]
-            assert ! pdc.installable_to_repository[:include_masked?]
-            assert_nil pdd.installable_to_repository
-            assert_nil pde.installable_to_repository
+            assert_nil pda.installable_to_repository_constraint
+            assert_nil pdb.installable_to_repository_constraint
+            assert_equal "installed", pdc.installable_to_repository_constraint.name
+            assert ! pdc.installable_to_repository_constraint.include_masked?
+            assert_nil pdd.installable_to_repository_constraint
+            assert_nil pde.installable_to_repository_constraint
         end
 
         def test_installed_at_path

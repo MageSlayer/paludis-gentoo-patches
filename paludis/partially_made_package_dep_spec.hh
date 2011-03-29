@@ -101,9 +101,9 @@ namespace paludis
             /**
              * Set our installable-to-repository requirement, return ourself.
              *
-             * \since 0.32
+             * \since 0.61
              */
-            PartiallyMadePackageDepSpec & installable_to_repository(const InstallableToRepository &);
+            PartiallyMadePackageDepSpec & installable_to_repository(const RepositoryName &, const bool);
 
             /**
              * Clear our installable-to-repository requirement, return ourself.

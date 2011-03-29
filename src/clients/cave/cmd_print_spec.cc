@@ -166,10 +166,7 @@ namespace
                     include_masked = true;
                 }
 
-                s.installable_to_repository(make_named_values<InstallableToRepository>(
-                            n::include_masked() = include_masked,
-                            n::repository() = RepositoryName(repo)
-                            ));
+                s.installable_to_repository(RepositoryName(repo), include_masked);
             }
         }
 

@@ -149,16 +149,16 @@ paludis::match_package_with_maybe_changes(
             return false;
     }
 
-    if (spec.installable_to_repository_ptr())
+    if (spec.installable_to_repository_constraint())
     {
         if (! id->supports_action(SupportsActionTest<InstallAction>()))
             return false;
-        if (! spec.installable_to_repository_ptr()->include_masked())
+        if (! spec.installable_to_repository_constraint()->include_masked())
             if (id->masked())
                 return false;
 
         const std::shared_ptr<const Repository> dest(env.fetch_repository(
-                    spec.installable_to_repository_ptr()->repository()));
+                    spec.installable_to_repository_constraint()->name()));
         if (! dest->destination_interface())
             return false;
         if (! dest->destination_interface()->is_suitable_destination_for(id))

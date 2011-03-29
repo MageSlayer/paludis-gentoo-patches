@@ -39,7 +39,8 @@ namespace paludis
             InRepositoryConstraint,
             FromRepositoryConstraint,
             InstalledAtPathConstraint,
-            InstallableToPathConstraint
+            InstallableToPathConstraint,
+            InstallableToRepositoryConstraint
         >::Type>
     {
         public:
@@ -181,6 +182,27 @@ namespace paludis
             bool include_masked() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    class PALUDIS_VISIBLE InstallableToRepositoryConstraint :
+        public PackageDepSpecConstraint,
+        public ImplementAcceptMethods<PackageDepSpecConstraint, InstallableToRepositoryConstraint>
+    {
+        friend class Pool<InstallableToRepositoryConstraint>;
+
+        private:
+            RepositoryName _name;
+            bool _include_masked;
+
+            InstallableToRepositoryConstraint(const RepositoryName &, const bool);
+
+            InstallableToRepositoryConstraint(const InstallableToRepositoryConstraint &) = delete;
+
+        public:
+            ~InstallableToRepositoryConstraint();
+
+            const RepositoryName name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool include_masked() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
     extern template class Pool<NameConstraint>;
     extern template class Pool<PackageNamePartConstraint>;
     extern template class Pool<CategoryNamePartConstraint>;
@@ -188,6 +210,7 @@ namespace paludis
     extern template class Pool<FromRepositoryConstraint>;
     extern template class Pool<InstalledAtPathConstraint>;
     extern template class Pool<InstallableToPathConstraint>;
+    extern template class Pool<InstallableToRepositoryConstraint>;
 }
 
 #endif

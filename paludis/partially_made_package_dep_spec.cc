@@ -56,7 +56,7 @@ namespace
         std::shared_ptr<const SlotRequirement> slot;
         std::shared_ptr<const InRepositoryConstraint> in_repository;
         std::shared_ptr<const FromRepositoryConstraint> from_repository;
-        std::shared_ptr<const InstallableToRepository> installable_to_repository;
+        std::shared_ptr<const InstallableToRepositoryConstraint> installable_to_repository;
         std::shared_ptr<const InstalledAtPathConstraint> installed_at_path;
         std::shared_ptr<const InstallableToPathConstraint> installable_to_path;
         std::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
@@ -79,7 +79,7 @@ namespace
             slot(other.slot_requirement_ptr()),
             in_repository(other.in_repository_constraint()),
             from_repository(other.from_repository_constraint()),
-            installable_to_repository(other.installable_to_repository_ptr()),
+            installable_to_repository(other.installable_to_repository_constraint()),
             installed_at_path(other.installed_at_path_constraint()),
             installable_to_path(other.installable_to_path_constraint()),
             additional_requirements(other.additional_requirements_ptr() ? new AdditionalPackageDepSpecRequirements : 0),
@@ -184,17 +184,17 @@ namespace
                 right.append(stringify(installed_at_path_constraint()->path()));
             }
 
-            if (installable_to_repository_ptr())
+            if (installable_to_repository_constraint())
             {
                 if (! right.empty())
                 {
                     need_arrow = true;
                     right.append("->");
                 }
-                if (installable_to_repository_ptr()->include_masked())
-                    right.append(stringify(installable_to_repository_ptr()->repository()) + "??");
+                if (installable_to_repository_constraint()->include_masked())
+                    right.append(stringify(installable_to_repository_constraint()->name()) + "??");
                 else
-                    right.append(stringify(installable_to_repository_ptr()->repository()) + "?");
+                    right.append(stringify(installable_to_repository_constraint()->name()) + "?");
             }
 
             if (installable_to_path_constraint())
@@ -313,7 +313,7 @@ namespace
             return in_repository;
         }
 
-        virtual std::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const
+        virtual const std::shared_ptr<const InstallableToRepositoryConstraint> installable_to_repository_constraint() const
         {
             return installable_to_repository;
         }
@@ -445,9 +445,9 @@ PartiallyMadePackageDepSpec::clear_from_repository()
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::installable_to_repository(const InstallableToRepository & s)
+PartiallyMadePackageDepSpec::installable_to_repository(const RepositoryName & n, const bool i)
 {
-    _imp->data->installable_to_repository = std::make_shared<InstallableToRepository>(s);
+    _imp->data->installable_to_repository = InstallableToRepositoryConstraintPool::get_instance()->create(n, i);
     return *this;
 }
 

@@ -162,11 +162,11 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
-             * Fetch the installable-to-repository requirement (may be a zero pointer).
+             * Fetch the single InstallableToRepositoryConstraint, if we have one, or
              *
-             * \since 0.32
+             * \since 0.61
              */
-            virtual std::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const = 0;
+            virtual const std::shared_ptr<const InstallableToRepositoryConstraint> installable_to_repository_constraint() const = 0;
 
             /**
              * Fetch the single FromRepositoryConstraint, if we have one, or

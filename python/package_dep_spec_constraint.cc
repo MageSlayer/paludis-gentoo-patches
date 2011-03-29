@@ -167,5 +167,24 @@ void expose_package_dep_spec_constraint()
                 "[RO] Whether to include masked, as per ::/??"
             )
         ;
+
+    /**
+     * InstallableToRepositoryConstraint
+     */
+    class_package_dep_spec_constraint<InstallableToRepositoryConstraint>
+        (
+         "InstalledableToPathConstraint",
+         "A ::/? constraint for a PackageDepSpec.",
+         bp::no_init
+        )
+
+        .add_property("name", &InstallableToRepositoryConstraint::name,
+                "[RO] The ::repo? in question"
+            )
+
+        .add_property("include_masked", &InstallableToRepositoryConstraint::include_masked,
+                "[RO] Whether to include masked, as per ::repo??"
+            )
+        ;
 }
 

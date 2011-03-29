@@ -273,13 +273,9 @@ namespace
             if ('?' == req.at(req.length() - 1))
             {
                 if (req.length() >= 3 && '?' == req.at(req.length() - 2))
-                    reqs.installable_to_repository(make_named_values<InstallableToRepository>(
-                                n::include_masked() = true,
-                                n::repository() = RepositoryName(req.substr(0, req.length() - 2))));
+                    reqs.installable_to_repository(RepositoryName(req.substr(0, req.length() - 2)), true);
                 else
-                    reqs.installable_to_repository(make_named_values<InstallableToRepository>(
-                                n::include_masked() = false,
-                                n::repository() = RepositoryName(req.substr(0, req.length() - 1))));
+                    reqs.installable_to_repository(RepositoryName(req.substr(0, req.length() - 1)), false);
             }
             else
                 reqs.in_repository(RepositoryName(req));
