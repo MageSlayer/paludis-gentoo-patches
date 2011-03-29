@@ -174,11 +174,11 @@ module Paludis
         end
 
         def test_installed_at_path
-            assert_nil pda.installed_at_path
-            assert_nil pdb.installed_at_path
-            assert_nil pdc.installed_at_path
-            assert_nil pdd.installed_at_path
-            assert_equal "/mychroot", pde.installed_at_path
+            assert_nil pda.installed_at_path_constraint
+            assert_nil pdb.installed_at_path_constraint
+            assert_nil pdc.installed_at_path_constraint
+            assert_nil pdd.installed_at_path_constraint
+            assert_equal "/mychroot", pde.installed_at_path_constraint.path
         end
 
         def test_installable_to_path

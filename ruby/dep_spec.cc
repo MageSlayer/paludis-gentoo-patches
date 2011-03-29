@@ -726,18 +726,19 @@ namespace
 
     /*
      * call-seq:
-     *     installed_at_path -> String or Nil
+     *     installed_at_path_constraint ->
+     *     InstalledAtPathConstraint or Nil
      *
      * Fetch the installed-at-path requirement.
      */
     VALUE
-    package_dep_spec_installed_at_path(VALUE self)
+    package_dep_spec_installed_at_path_constraint(VALUE self)
     {
         std::shared_ptr<WrappedSpecBase> * ptr;
         Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installed_at_path_ptr()))
+        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installed_at_path_constraint()))
             return Qnil;
-        return rb_str_new2(stringify((*std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installed_at_path_ptr())).c_str());
+        return package_dep_spec_constraint_to_value(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installed_at_path_constraint());
     }
 
     /*
@@ -1116,7 +1117,7 @@ namespace
         rb_define_method(c_package_dep_spec, "in_repository_constraint", RUBY_FUNC_CAST(&package_dep_spec_in_repository_constraint), 0);
         rb_define_method(c_package_dep_spec, "from_repository_constraint", RUBY_FUNC_CAST(&package_dep_spec_from_repository_constraint), 0);
         rb_define_method(c_package_dep_spec, "installable_to_repository", RUBY_FUNC_CAST(&package_dep_spec_installable_to_repository), 0);
-        rb_define_method(c_package_dep_spec, "installed_at_path", RUBY_FUNC_CAST(&package_dep_spec_installed_at_path), 0);
+        rb_define_method(c_package_dep_spec, "installed_at_path_constraint", RUBY_FUNC_CAST(&package_dep_spec_installed_at_path_constraint), 0);
         rb_define_method(c_package_dep_spec, "installable_to_path", RUBY_FUNC_CAST(&package_dep_spec_installable_to_path), 0);
         rb_define_method(c_package_dep_spec, "version_requirements", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_ptr), 0);
         rb_define_method(c_package_dep_spec, "version_requirements_mode", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_mode), 0);

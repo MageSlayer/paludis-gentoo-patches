@@ -40,6 +40,9 @@ namespace paludis
 
     class FromRepositoryConstraint;
     typedef Pool<FromRepositoryConstraint> FromRepositoryConstraintPool;
+
+    class InstalledAtPathConstraint;
+    typedef Pool<InstalledAtPathConstraint> InstalledAtPathConstraintPool;
 }
 
 #endif

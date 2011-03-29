@@ -57,7 +57,7 @@ namespace
         std::shared_ptr<const InRepositoryConstraint> in_repository;
         std::shared_ptr<const FromRepositoryConstraint> from_repository;
         std::shared_ptr<const InstallableToRepository> installable_to_repository;
-        std::shared_ptr<const FSPath> installed_at_path;
+        std::shared_ptr<const InstalledAtPathConstraint> installed_at_path;
         std::shared_ptr<const InstallableToPath> installable_to_path;
         std::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
         PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec_v;
@@ -80,7 +80,7 @@ namespace
             in_repository(other.in_repository_constraint()),
             from_repository(other.from_repository_constraint()),
             installable_to_repository(other.installable_to_repository_ptr()),
-            installed_at_path(other.installed_at_path_ptr()),
+            installed_at_path(other.installed_at_path_constraint()),
             installable_to_path(other.installable_to_path_ptr()),
             additional_requirements(other.additional_requirements_ptr() ? new AdditionalPackageDepSpecRequirements : 0),
             options_for_partially_made_package_dep_spec_v(other.options_for_partially_made_package_dep_spec())
@@ -174,14 +174,14 @@ namespace
             if (in_repository_constraint())
                 right = stringify(in_repository_constraint()->name());
 
-            if (installed_at_path_ptr())
+            if (installed_at_path_constraint())
             {
                 if (! right.empty())
                 {
                     need_arrow = true;
                     right.append("->");
                 }
-                right.append(stringify(*installed_at_path_ptr()));
+                right.append(stringify(installed_at_path_constraint()->path()));
             }
 
             if (installable_to_repository_ptr())
@@ -323,7 +323,7 @@ namespace
             return from_repository;
         }
 
-        virtual std::shared_ptr<const FSPath> installed_at_path_ptr() const
+        virtual const std::shared_ptr<const InstalledAtPathConstraint> installed_at_path_constraint() const
         {
             return installed_at_path;
         }
@@ -461,7 +461,7 @@ PartiallyMadePackageDepSpec::clear_installable_to_repository()
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::installed_at_path(const FSPath & s)
 {
-    _imp->data->installed_at_path = std::make_shared<FSPath>(s);
+    _imp->data->installed_at_path = InstalledAtPathConstraintPool::get_instance()->create(s);
     return *this;
 }
 

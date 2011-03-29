@@ -326,12 +326,12 @@ namespace
             {
                 if (env->has_repository_named(spec.in_repository_constraint()->name()))
                 {
-                    if (spec.installed_at_path_ptr())
+                    if (spec.installed_at_path_constraint())
                     {
                         std::shared_ptr<const Repository> repo(env->fetch_repository(spec.in_repository_constraint()->name()));
                         if (! repo->installed_root_key())
                             return result;
-                        if (repo->installed_root_key()->value() != *spec.installed_at_path_ptr())
+                        if (repo->installed_root_key()->value() != spec.installed_at_path_constraint()->path())
                             return result;
                     }
 
@@ -340,7 +340,7 @@ namespace
             }
             else
             {
-                if (spec.installed_at_path_ptr())
+                if (spec.installed_at_path_constraint())
                 {
                     for (auto i(env->begin_repositories()),
                             i_end(env->end_repositories()) ; i != i_end ; ++i)
@@ -348,7 +348,7 @@ namespace
                         if (! (*i)->installed_root_key())
                             continue;
 
-                        if ((*i)->installed_root_key()->value() != *spec.installed_at_path_ptr())
+                        if ((*i)->installed_root_key()->value() != spec.installed_at_path_constraint()->path())
                             continue;
 
                         result->insert((*i)->name());

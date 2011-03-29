@@ -133,5 +133,20 @@ void expose_package_dep_spec_constraint()
                 "[RO] The ::repo-> name in question"
             )
         ;
+
+    /**
+     * InstalledAtPathConstraint
+     */
+    class_package_dep_spec_constraint<InstalledAtPathConstraint>
+        (
+         "InstalledAtPathConstraint",
+         "A ::/ constraint for a PackageDepSpec.",
+         bp::no_init
+        )
+
+        .add_property("path", &InstalledAtPathConstraint::path,
+                "[RO] The ::/ path in question"
+            )
+        ;
 }
 

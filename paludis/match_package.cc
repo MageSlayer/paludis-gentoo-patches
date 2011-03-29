@@ -140,12 +140,12 @@ paludis::match_package_with_maybe_changes(
             return false;
     }
 
-    if (spec.installed_at_path_ptr())
+    if (spec.installed_at_path_constraint())
     {
         auto repo(env.fetch_repository(id->repository_name()));
         if (! repo->installed_root_key())
             return false;
-        if (repo->installed_root_key()->value() != *spec.installed_at_path_ptr())
+        if (repo->installed_root_key()->value() != spec.installed_at_path_constraint()->path())
             return false;
     }
 

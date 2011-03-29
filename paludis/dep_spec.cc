@@ -596,10 +596,10 @@ PackageDepSpec::from_repository_constraint() const
     return _imp->data->from_repository_constraint();
 }
 
-std::shared_ptr<const FSPath>
-PackageDepSpec::installed_at_path_ptr() const
+const std::shared_ptr<const InstalledAtPathConstraint>
+PackageDepSpec::installed_at_path_constraint() const
 {
-    return _imp->data->installed_at_path_ptr();
+    return _imp->data->installed_at_path_constraint();
 }
 
 std::shared_ptr<const InstallableToPath>

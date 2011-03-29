@@ -116,3 +116,21 @@ template class Singleton<Pool<FromRepositoryConstraint> >;
 template const std::shared_ptr<const FromRepositoryConstraint> Pool<FromRepositoryConstraint>::create(
         const RepositoryName &) const;
 
+InstalledAtPathConstraint::InstalledAtPathConstraint(const FSPath & n) :
+    _path(n)
+{
+}
+
+InstalledAtPathConstraint::~InstalledAtPathConstraint() = default;
+
+const FSPath
+InstalledAtPathConstraint::path() const
+{
+    return _path;
+}
+
+template class Pool<InstalledAtPathConstraint>;
+template class Singleton<Pool<InstalledAtPathConstraint> >;
+template const std::shared_ptr<const InstalledAtPathConstraint> Pool<InstalledAtPathConstraint>::create(
+        const FSPath &) const;
+

@@ -27,6 +27,7 @@
 #include <paludis/util/pool.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/type_list.hh>
+#include <paludis/util/fs_path.hh>
 
 namespace paludis
 {
@@ -36,7 +37,8 @@ namespace paludis
             PackageNamePartConstraint,
             CategoryNamePartConstraint,
             InRepositoryConstraint,
-            FromRepositoryConstraint
+            FromRepositoryConstraint,
+            InstalledAtPathConstraint
         >::Type>
     {
         public:
@@ -138,11 +140,31 @@ namespace paludis
             const RepositoryName name() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    class PALUDIS_VISIBLE InstalledAtPathConstraint :
+        public PackageDepSpecConstraint,
+        public ImplementAcceptMethods<PackageDepSpecConstraint, InstalledAtPathConstraint>
+    {
+        friend class Pool<InstalledAtPathConstraint>;
+
+        private:
+            FSPath _path;
+
+            InstalledAtPathConstraint(const FSPath &);
+
+            InstalledAtPathConstraint(const InstalledAtPathConstraint &) = delete;
+
+        public:
+            ~InstalledAtPathConstraint();
+
+            const FSPath path() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
     extern template class Pool<NameConstraint>;
     extern template class Pool<PackageNamePartConstraint>;
     extern template class Pool<CategoryNamePartConstraint>;
     extern template class Pool<InRepositoryConstraint>;
     extern template class Pool<FromRepositoryConstraint>;
+    extern template class Pool<InstalledAtPathConstraint>;
 }
 
 #endif

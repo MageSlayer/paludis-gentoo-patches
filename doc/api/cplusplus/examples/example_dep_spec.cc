@@ -109,9 +109,9 @@ int main(int argc, char * argv[])
                 cout << "    " << left << setw(24) << "From repository:" << " " <<
                     spec.from_repository_constraint()->name() << endl;
 
-            if (spec.installed_at_path_ptr())
+            if (spec.installed_at_path_constraint())
                 cout << "    " << left << setw(24) << "Installed at path:" << " " <<
-                    *spec.installed_at_path_ptr() << endl;
+                    spec.installed_at_path_constraint()->path() << endl;
 
             if (spec.installable_to_path_ptr())
                 cout << "    " << left << setw(24) << "Installable to path:" << " " <<

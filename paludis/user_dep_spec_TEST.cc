@@ -161,11 +161,11 @@ UserDepSpecTest::check_spec(
     }
 
     if (installed_at_path.empty())
-        EXPECT_TRUE(! spec.installed_at_path_ptr());
+        EXPECT_TRUE(! spec.installed_at_path_constraint());
     else
     {
-        EXPECT_TRUE(bool(spec.installed_at_path_ptr()));
-        EXPECT_EQ(installed_at_path, stringify(*spec.installed_at_path_ptr()));
+        EXPECT_TRUE(bool(spec.installed_at_path_constraint()));
+        EXPECT_EQ(installed_at_path, stringify(spec.installed_at_path_constraint()->path()));
     }
 
     if (installable_to_path_f.empty())
