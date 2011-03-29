@@ -62,7 +62,8 @@ DEFS=\
 EXTRA_DIST = util.hh.m4 Makefile.am.m4 files.m4 selist secleanlist \
 	testscriptlist \
 	gtest_runner.cc \
-	echo_functions.bash.in
+	echo_functions.bash.in \
+	run_test.sh
 SUBDIRS = .
 
 libpaludisutil_@PALUDIS_PC_SLOT@_la_SOURCES = filelist
