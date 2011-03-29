@@ -58,9 +58,9 @@ paludis::resolver::match_qpns(
 
     if (spec.package_name_constraint() && spec.package_name_constraint()->name() != package)
         return false;
-    if (spec.package_name_part_ptr() && *spec.package_name_part_ptr() != package.package())
+    if (spec.package_name_part_constraint() && spec.package_name_part_constraint()->name_part() != package.package())
         return false;
-    if (spec.category_name_part_ptr() && *spec.category_name_part_ptr() != package.category())
+    if (spec.category_name_part_constraint() && spec.category_name_part_constraint()->name_part() != package.category())
         return false;
 
     return true;

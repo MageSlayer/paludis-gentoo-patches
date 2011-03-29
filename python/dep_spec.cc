@@ -74,8 +74,8 @@ namespace paludis
     struct Imp<PythonPackageDepSpec>
     {
         std::shared_ptr<const NameConstraint> package_name_constraint;
-        std::shared_ptr<const CategoryNamePart> category_name_part_ptr;
-        std::shared_ptr<const PackageNamePart> package_name_part_ptr;
+        std::shared_ptr<const CategoryNamePartConstraint> category_name_part_constraint;
+        std::shared_ptr<const PackageNamePartConstraint> package_name_part_constraint;
         std::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode;
         std::shared_ptr<const SlotRequirement> slot;
@@ -86,8 +86,8 @@ namespace paludis
 
         Imp(
                 const std::shared_ptr<const NameConstraint> & q,
-                const std::shared_ptr<const CategoryNamePart> & c,
-                const std::shared_ptr<const PackageNamePart> & p,
+                const std::shared_ptr<const CategoryNamePartConstraint> & c,
+                const std::shared_ptr<const PackageNamePartConstraint> & p,
                 const std::shared_ptr<VersionRequirements> & v,
                 const VersionRequirementsMode m,
                 const std::shared_ptr<const SlotRequirement> & s,
@@ -96,8 +96,8 @@ namespace paludis
                 const std::shared_ptr<const AdditionalPackageDepSpecRequirements> & u,
                 const std::string & st) :
             package_name_constraint(q),
-            category_name_part_ptr(c),
-            package_name_part_ptr(p),
+            category_name_part_constraint(c),
+            package_name_part_constraint(p),
             version_requirements(v),
             version_requirements_mode(m),
             slot(s),
@@ -224,8 +224,8 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
     PythonStringDepSpec(p.text()),
     _imp(
             p.package_name_constraint(),
-            deep_copy(p.category_name_part_ptr()),
-            deep_copy(p.package_name_part_ptr()),
+            p.category_name_part_constraint(),
+            p.package_name_part_constraint(),
             std::make_shared<VersionRequirements>(),
             p.version_requirements_mode(),
             p.slot_requirement_ptr(),
@@ -245,8 +245,8 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
     PythonStringDepSpec(p.text()),
     _imp(
             p.package_name_constraint(),
-            deep_copy(p.category_name_part_ptr()),
-            deep_copy(p.package_name_part_ptr()),
+            p.category_name_part_constraint(),
+            p.package_name_part_constraint(),
             std::make_shared<VersionRequirements>(),
             p.version_requirements_mode(),
             p.slot_requirement_ptr(),
@@ -270,11 +270,11 @@ PythonPackageDepSpec::operator PackageDepSpec() const
     if (package_name_constraint())
         p.package(package_name_constraint()->name());
 
-    if (category_name_part_ptr())
-        p.category_name_part(*category_name_part_ptr());
+    if (category_name_part_constraint())
+        p.category_name_part(category_name_part_constraint()->name_part());
 
-    if (package_name_part_ptr())
-        p.package_name_part(*package_name_part_ptr());
+    if (package_name_part_constraint())
+        p.package_name_part(package_name_part_constraint()->name_part());
 
     p.version_requirements_mode(version_requirements_mode());
 
@@ -316,16 +316,16 @@ PythonPackageDepSpec::package_name_constraint() const
     return _imp->package_name_constraint;
 }
 
-std::shared_ptr<const PackageNamePart>
-PythonPackageDepSpec::package_name_part_ptr() const
+const std::shared_ptr<const PackageNamePartConstraint>
+PythonPackageDepSpec::package_name_part_constraint() const
 {
-    return _imp->package_name_part_ptr;
+    return _imp->package_name_part_constraint;
 }
 
-std::shared_ptr<const CategoryNamePart>
-PythonPackageDepSpec::category_name_part_ptr() const
+const std::shared_ptr<const CategoryNamePartConstraint>
+PythonPackageDepSpec::category_name_part_constraint() const
 {
-    return _imp->category_name_part_ptr;
+    return _imp->category_name_part_constraint;
 }
 
 std::shared_ptr<const VersionRequirements>
@@ -1206,14 +1206,14 @@ void expose_dep_spec()
                 "Qualified package name constraint (may be None)."
                 )
 
-        .add_property("package_name_part", &PythonPackageDepSpec::package_name_part_ptr,
-                "[ro] PackageNamePart\n"
-                "Package name part (may be None)"
+        .add_property("package_name_part_constraint", &PythonPackageDepSpec::package_name_part_constraint,
+                "[ro] CategoryNamePartConstraint\n"
+                "Package name part constraint (may be None)"
                 )
 
-        .add_property("category_name_part", &PythonPackageDepSpec::category_name_part_ptr,
-                "[ro] CategoryNamePart\n"
-                "Category name part (may be None)."
+        .add_property("category_name_part_constraint", &PythonPackageDepSpec::category_name_part_constraint,
+                "[ro] CategoryNamePartConstraint\n"
+                "Category name part constraint (may be None)."
                 )
 
         .add_property("version_requirements", &PythonPackageDepSpec::version_requirements_ptr,

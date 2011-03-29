@@ -548,16 +548,16 @@ PackageDepSpec::package_name_constraint() const
     return _imp->data->package_name_constraint();
 }
 
-std::shared_ptr<const PackageNamePart>
-PackageDepSpec::package_name_part_ptr() const
+const std::shared_ptr<const PackageNamePartConstraint>
+PackageDepSpec::package_name_part_constraint() const
 {
-    return _imp->data->package_name_part_ptr();
+    return _imp->data->package_name_part_constraint();
 }
 
-std::shared_ptr<const CategoryNamePart>
-PackageDepSpec::category_name_part_ptr() const
+const std::shared_ptr<const CategoryNamePartConstraint>
+PackageDepSpec::category_name_part_constraint() const
 {
-    return _imp->data->category_name_part_ptr();
+    return _imp->data->category_name_part_constraint();
 }
 
 std::shared_ptr<const VersionRequirements>

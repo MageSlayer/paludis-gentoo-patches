@@ -90,10 +90,10 @@ paludis::match_package_with_maybe_changes(
     if (spec.package_name_constraint() && spec.package_name_constraint()->name() != id->name())
         return false;
 
-    if (spec.package_name_part_ptr() && *spec.package_name_part_ptr() != id->name().package())
+    if (spec.package_name_part_constraint() && spec.package_name_part_constraint()->name_part() != id->name().package())
         return false;
 
-    if (spec.category_name_part_ptr() && *spec.category_name_part_ptr() != id->name().category())
+    if (spec.category_name_part_constraint() && spec.category_name_part_constraint()->name_part() != id->name().category())
         return false;
 
     if (spec.version_requirements_ptr())

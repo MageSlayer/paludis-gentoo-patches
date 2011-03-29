@@ -73,5 +73,35 @@ void expose_package_dep_spec_constraint()
                 "[RO] The cat/pkg in question"
             )
         ;
+
+    /**
+     * PackageNamePartConstraint
+     */
+    class_package_dep_spec_constraint<PackageNamePartConstraint>
+        (
+         "PackageNamePartConstraint",
+         "A /pkg constraint for a PackageDepSpec.",
+         bp::no_init
+        )
+
+        .add_property("name_part", &PackageNamePartConstraint::name_part,
+                "[RO] The /pkg in question"
+            )
+        ;
+
+    /**
+     * CategoryNamePartConstraint
+     */
+    class_package_dep_spec_constraint<CategoryNamePartConstraint>
+        (
+         "CategoryNamePartConstraint",
+         "A cat/ constraint for a PackageDepSpec.",
+         bp::no_init
+        )
+
+        .add_property("name_part", &CategoryNamePartConstraint::name_part,
+                "[RO] The cat/ in question"
+            )
+        ;
 }
 

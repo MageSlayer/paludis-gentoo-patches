@@ -42,14 +42,14 @@ paludis::package_dep_spec_has_properties(const PackageDepSpec & spec, const Pack
     bool result(true);
 
     result = result && check(bool(spec.additional_requirements_ptr()) && ! spec.additional_requirements_ptr()->empty(), properties.has_additional_requirements());
-    result = result && check(bool(spec.category_name_part_ptr()), properties.has_category_name_part());
+    result = result && check(bool(spec.category_name_part_constraint()), properties.has_category_name_part());
     result = result && check(bool(spec.from_repository_ptr()), properties.has_from_repository());
     result = result && check(bool(spec.in_repository_ptr()), properties.has_in_repository());
     result = result && check(bool(spec.installable_to_path_ptr()), properties.has_installable_to_path());
     result = result && check(bool(spec.installable_to_repository_ptr()), properties.has_installable_to_repository());
     result = result && check(bool(spec.installed_at_path_ptr()), properties.has_installed_at_path());
     result = result && check(bool(spec.package_name_constraint()), properties.has_package());
-    result = result && check(bool(spec.package_name_part_ptr()), properties.has_package_name_part());
+    result = result && check(bool(spec.package_name_part_constraint()), properties.has_package_name_part());
     result = result && check(bool(spec.slot_requirement_ptr()), properties.has_slot_requirement());
     result = result && check(spec.version_requirements_ptr() && ! spec.version_requirements_ptr()->empty(), properties.has_version_requirements());
 

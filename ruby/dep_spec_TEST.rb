@@ -192,19 +192,19 @@ module Paludis
         end
 
         def test_package_name_part
-            assert_nil pda.package_name_part
-            assert_equal "bar", pdb.package_name_part
-            assert_nil pdc.package_name_part
-            assert_nil pdd.package_name_part
-            assert_nil pde.package_name_part
+            assert_nil pda.package_name_part_constraint
+            assert_equal "bar", pdb.package_name_part_constraint.name_part
+            assert_nil pdc.package_name_part_constraint
+            assert_nil pdd.package_name_part_constraint
+            assert_nil pde.package_name_part_constraint
         end
 
         def test_category_name_part
-            assert_nil pda.category_name_part
-            assert_nil pdb.category_name_part
-            assert_nil pdc.category_name_part
-            assert_equal "foo", pdd.category_name_part
-            assert_nil pde.category_name_part
+            assert_nil pda.category_name_part_constraint
+            assert_nil pdb.category_name_part_constraint
+            assert_nil pdc.category_name_part_constraint
+            assert_equal "foo", pdd.category_name_part_constraint.name_part
+            assert_nil pde.category_name_part_constraint
         end
 
         def test_version_requirements

@@ -356,14 +356,20 @@ namespace paludis
             const std::shared_ptr<const NameConstraint> package_name_constraint() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Fetch the package name part, if wildcarded, or a zero pointer otherwise.
+             * Fetch the single PackageNamePartConstraint, if we have one, or
+             * a null pointer otherwise.
+             *
+             * \since 0.61
              */
-            std::shared_ptr<const PackageNamePart> package_name_part_ptr() const;
+            const std::shared_ptr<const PackageNamePartConstraint> package_name_part_constraint() const;
 
             /**
-             * Fetch the category name part, if wildcarded, or a zero pointer otherwise.
+             * Fetch the single CategoryNamePartConstraint, if we have one, or
+             * a null pointer otherwise.
+             *
+             * \since 0.61
              */
-            std::shared_ptr<const CategoryNamePart> category_name_part_ptr() const;
+            const std::shared_ptr<const CategoryNamePartConstraint> category_name_part_constraint() const;
 
             /**
              * Fetch the version requirements (may be a zero pointer).

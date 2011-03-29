@@ -49,8 +49,8 @@ namespace
         PackageDepSpecData
     {
         std::shared_ptr<const NameConstraint> package;
-        std::shared_ptr<const PackageNamePart> package_name_part;
-        std::shared_ptr<const CategoryNamePart> category_name_part;
+        std::shared_ptr<const PackageNamePartConstraint> package_name_part;
+        std::shared_ptr<const CategoryNamePartConstraint> category_name_part;
         std::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode_v;
         std::shared_ptr<const SlotRequirement> slot;
@@ -72,8 +72,8 @@ namespace
         PartiallyMadePackageDepSpecData(const PackageDepSpecData & other) :
             PackageDepSpecData(other),
             package(other.package_name_constraint()),
-            package_name_part(other.package_name_part_ptr()),
-            category_name_part(other.category_name_part_ptr()),
+            package_name_part(other.package_name_part_constraint()),
+            category_name_part(other.category_name_part_constraint()),
             version_requirements(other.version_requirements_ptr() ? new VersionRequirements : 0),
             version_requirements_mode_v(other.version_requirements_mode()),
             slot(other.slot_requirement_ptr()),
@@ -135,15 +135,15 @@ namespace
                 s << package_name_constraint()->name();
             else
             {
-                if (category_name_part_ptr())
-                    s << *category_name_part_ptr();
+                if (category_name_part_constraint())
+                    s << category_name_part_constraint()->name_part();
                 else
                     s << "*";
 
                 s << "/";
 
-                if (package_name_part_ptr())
-                    s << *package_name_part_ptr();
+                if (package_name_part_constraint())
+                    s << package_name_part_constraint()->name_part();
                 else
                     s << "*";
             }
@@ -283,12 +283,12 @@ namespace
             return package;
         }
 
-        virtual std::shared_ptr<const PackageNamePart> package_name_part_ptr() const
+        virtual const std::shared_ptr<const PackageNamePartConstraint> package_name_part_constraint() const
         {
             return package_name_part;
         }
 
-        virtual std::shared_ptr<const CategoryNamePart> category_name_part_ptr() const
+        virtual const std::shared_ptr<const CategoryNamePartConstraint> category_name_part_constraint() const
         {
             return category_name_part;
         }
@@ -489,7 +489,7 @@ PartiallyMadePackageDepSpec::clear_installable_to_path()
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::package_name_part(const PackageNamePart & part)
 {
-    _imp->data->package_name_part = std::make_shared<PackageNamePart>(part);
+    _imp->data->package_name_part = PackageNamePartConstraintPool::get_instance()->create(part);
     return *this;
 }
 
@@ -503,7 +503,7 @@ PartiallyMadePackageDepSpec::clear_package_name_part()
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::category_name_part(const CategoryNamePart & part)
 {
-    _imp->data->category_name_part = std::make_shared<CategoryNamePart>(part);
+    _imp->data->category_name_part = CategoryNamePartConstraintPool::get_instance()->create(part);
     return *this;
 }
 

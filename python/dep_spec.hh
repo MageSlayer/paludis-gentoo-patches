@@ -173,9 +173,9 @@ namespace paludis
                 operator std::shared_ptr<PackageDepSpec>() const;
 
                 const std::shared_ptr<const NameConstraint> package_name_constraint() const;
+                const std::shared_ptr<const PackageNamePartConstraint> package_name_part_constraint() const;
+                const std::shared_ptr<const CategoryNamePartConstraint> category_name_part_constraint() const;
 
-                std::shared_ptr<const PackageNamePart> package_name_part_ptr() const;
-                std::shared_ptr<const CategoryNamePart> category_name_part_ptr() const;
                 std::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
                 VersionRequirementsMode version_requirements_mode() const;
                 void set_version_requirements_mode(const VersionRequirementsMode m);

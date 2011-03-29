@@ -99,19 +99,19 @@ UserDepSpecTest::check_spec(
     }
 
     if (category_name_part.empty())
-        EXPECT_TRUE(! spec.category_name_part_ptr());
+        EXPECT_TRUE(! spec.category_name_part_constraint());
     else
     {
-        EXPECT_TRUE(bool(spec.category_name_part_ptr()));
-        EXPECT_EQ(category_name_part, stringify(*spec.category_name_part_ptr()));
+        EXPECT_TRUE(bool(spec.category_name_part_constraint()));
+        EXPECT_EQ(category_name_part, stringify(spec.category_name_part_constraint()->name_part()));
     }
 
     if (package_name_part.empty())
-        EXPECT_TRUE(! spec.package_name_part_ptr());
+        EXPECT_TRUE(! spec.package_name_part_constraint());
     else
     {
-        EXPECT_TRUE(bool(spec.package_name_part_ptr()));
-        EXPECT_EQ(package_name_part, stringify(*spec.package_name_part_ptr()));
+        EXPECT_TRUE(bool(spec.package_name_part_constraint()));
+        EXPECT_EQ(package_name_part, stringify(spec.package_name_part_constraint()->name_part()));
     }
 
     if (! version_requirement_mode.empty())

@@ -62,11 +62,11 @@ int main(int argc, char * argv[])
             if (spec.package_name_constraint())
                 cout << "    " << left << setw(24) << "Package:" << " " << spec.package_name_constraint()->name() << endl;
 
-            if (spec.category_name_part_ptr())
-                cout << "    " << left << setw(24) << "Category part:" << " " << *spec.category_name_part_ptr() << endl;
+            if (spec.category_name_part_constraint())
+                cout << "    " << left << setw(24) << "Category part:" << " " << spec.category_name_part_constraint()->name_part() << endl;
 
-            if (spec.package_name_part_ptr())
-                cout << "    " << left << setw(24) << "Package part:" << " " << *spec.package_name_part_ptr() << endl;
+            if (spec.package_name_part_constraint())
+                cout << "    " << left << setw(24) << "Package part:" << " " << spec.package_name_part_constraint()->name_part() << endl;
 
             if (spec.version_requirements_ptr() && ! spec.version_requirements_ptr()->empty())
             {

@@ -32,7 +32,10 @@ namespace paludis
 {
     class PALUDIS_VISIBLE PackageDepSpecConstraint :
         public virtual DeclareAbstractAcceptMethods<PackageDepSpecConstraint, MakeTypeList<
-            NameConstraint>::Type>
+            NameConstraint,
+            PackageNamePartConstraint,
+            CategoryNamePartConstraint
+        >::Type>
     {
         public:
             virtual ~PackageDepSpecConstraint() = 0;
@@ -57,7 +60,47 @@ namespace paludis
             const QualifiedPackageName name() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    class PALUDIS_VISIBLE CategoryNamePartConstraint :
+        public PackageDepSpecConstraint,
+        public ImplementAcceptMethods<PackageDepSpecConstraint, CategoryNamePartConstraint>
+    {
+        friend class Pool<CategoryNamePartConstraint>;
+
+        private:
+            CategoryNamePart _name_part;
+
+            CategoryNamePartConstraint(const CategoryNamePart &);
+
+            CategoryNamePartConstraint(const CategoryNamePartConstraint &) = delete;
+
+        public:
+            ~CategoryNamePartConstraint();
+
+            const CategoryNamePart name_part() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    class PALUDIS_VISIBLE PackageNamePartConstraint :
+        public PackageDepSpecConstraint,
+        public ImplementAcceptMethods<PackageDepSpecConstraint, PackageNamePartConstraint>
+    {
+        friend class Pool<PackageNamePartConstraint>;
+
+        private:
+            PackageNamePart _name_part;
+
+            PackageNamePartConstraint(const PackageNamePart &);
+
+            PackageNamePartConstraint(const PackageNamePartConstraint &) = delete;
+
+        public:
+            ~PackageNamePartConstraint();
+
+            const PackageNamePart name_part() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
     extern template class Pool<NameConstraint>;
+    extern template class Pool<PackageNamePartConstraint>;
+    extern template class Pool<CategoryNamePartConstraint>;
 }
 
 #endif

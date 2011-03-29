@@ -28,6 +28,12 @@ namespace paludis
 
     class NameConstraint;
     typedef Pool<NameConstraint> NameConstraintPool;
+
+    class PackageNamePartConstraint;
+    typedef Pool<PackageNamePartConstraint> PackageNamePartConstraintPool;
+
+    class CategoryNamePartConstraint;
+    typedef Pool<CategoryNamePartConstraint> CategoryNamePartConstraintPool;
 }
 
 #endif

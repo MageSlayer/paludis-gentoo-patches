@@ -41,5 +41,42 @@ NameConstraint::name() const
 
 template class Pool<NameConstraint>;
 template class Singleton<Pool<NameConstraint> >;
-template const std::shared_ptr<const NameConstraint> Pool<NameConstraint>::create(const QualifiedPackageName &) const;
+template const std::shared_ptr<const NameConstraint> Pool<NameConstraint>::create(
+        const QualifiedPackageName &) const;
+
+CategoryNamePartConstraint::CategoryNamePartConstraint(const CategoryNamePart & n) :
+    _name_part(n)
+{
+}
+
+CategoryNamePartConstraint::~CategoryNamePartConstraint() = default;
+
+const CategoryNamePart
+CategoryNamePartConstraint::name_part() const
+{
+    return _name_part;
+}
+
+template class Pool<CategoryNamePartConstraint>;
+template class Singleton<Pool<CategoryNamePartConstraint> >;
+template const std::shared_ptr<const CategoryNamePartConstraint> Pool<CategoryNamePartConstraint>::create(
+        const CategoryNamePart &) const;
+
+PackageNamePartConstraint::PackageNamePartConstraint(const PackageNamePart & n) :
+    _name_part(n)
+{
+}
+
+PackageNamePartConstraint::~PackageNamePartConstraint() = default;
+
+const PackageNamePart
+PackageNamePartConstraint::name_part() const
+{
+    return _name_part;
+}
+
+template class Pool<PackageNamePartConstraint>;
+template class Singleton<Pool<PackageNamePartConstraint> >;
+template const std::shared_ptr<const PackageNamePartConstraint> Pool<PackageNamePartConstraint>::create(
+        const PackageNamePart &) const;
 

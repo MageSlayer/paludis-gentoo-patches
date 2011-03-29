@@ -580,7 +580,7 @@ namespace
 
     /*
      * call-seq:
-     *     package_name_constraint -> PackageDepSpecConstraint or Nil
+     *     package_name_constraint -> NameConstraint or Nil
      *
      * Fetch the package name constraint (may be Nil).
      */
@@ -596,36 +596,34 @@ namespace
 
     /*
      * call-seq:
-     *     package_name_part -> String or Nil
+     *     package_name_part_constraint -> PackageNamePartConstraint or Nil
      *
-     * Fetch the package name part.
+     * Fetch the package name part constraint (may be Nil).
      */
     VALUE
-    package_dep_spec_package_name_part(VALUE self)
+    package_dep_spec_package_name_part_constraint(VALUE self)
     {
         std::shared_ptr<WrappedSpecBase> * ptr;
         Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_name_part_ptr()))
+        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_name_part_constraint()))
             return Qnil;
-        return rb_str_new2(stringify(*std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->
-                    package_name_part_ptr()).c_str());
+        return package_dep_spec_constraint_to_value(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_name_part_constraint());
     }
 
     /*
      * call-seq:
-     *     category_name_part -> String or Nil
+     *     category_name_part_constraint -> CategoryNamePartConstraint or Nil
      *
-     * Fetch the category name part.
+     * Fetch the category name part constraint (may be Nil).
      */
     VALUE
-    package_dep_spec_category_name_part(VALUE self)
+    package_dep_spec_category_name_part_constraint(VALUE self)
     {
         std::shared_ptr<WrappedSpecBase> * ptr;
         Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->category_name_part_ptr()))
+        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->category_name_part_constraint()))
             return Qnil;
-        return rb_str_new2(stringify(*std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->
-                    category_name_part_ptr()).c_str());
+        return package_dep_spec_constraint_to_value(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->category_name_part_constraint());
     }
 
     /*
@@ -1112,8 +1110,8 @@ namespace
          */
         c_package_dep_spec = rb_define_class_under(paludis_module(), "PackageDepSpec", c_string_dep_spec);
         rb_define_method(c_package_dep_spec, "package_name_constraint", RUBY_FUNC_CAST(&package_dep_spec_package_name_constraint), 0);
-        rb_define_method(c_package_dep_spec, "package_name_part", RUBY_FUNC_CAST(&package_dep_spec_package_name_part), 0);
-        rb_define_method(c_package_dep_spec, "category_name_part", RUBY_FUNC_CAST(&package_dep_spec_category_name_part), 0);
+        rb_define_method(c_package_dep_spec, "package_name_part_constraint", RUBY_FUNC_CAST(&package_dep_spec_package_name_part_constraint), 0);
+        rb_define_method(c_package_dep_spec, "category_name_part_constraint", RUBY_FUNC_CAST(&package_dep_spec_category_name_part_constraint), 0);
         rb_define_method(c_package_dep_spec, "slot_requirement", RUBY_FUNC_CAST(&package_dep_spec_slot_requirement_ptr), 0);
         rb_define_method(c_package_dep_spec, "in_repository", RUBY_FUNC_CAST(&package_dep_spec_in_repository_ptr), 0);
         rb_define_method(c_package_dep_spec, "from_repository", RUBY_FUNC_CAST(&package_dep_spec_from_repository_ptr), 0);
