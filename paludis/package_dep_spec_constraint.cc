@@ -98,3 +98,21 @@ template class Singleton<Pool<InRepositoryConstraint> >;
 template const std::shared_ptr<const InRepositoryConstraint> Pool<InRepositoryConstraint>::create(
         const RepositoryName &) const;
 
+FromRepositoryConstraint::FromRepositoryConstraint(const RepositoryName & n) :
+    _name(n)
+{
+}
+
+FromRepositoryConstraint::~FromRepositoryConstraint() = default;
+
+const RepositoryName
+FromRepositoryConstraint::name() const
+{
+    return _name;
+}
+
+template class Pool<FromRepositoryConstraint>;
+template class Singleton<Pool<FromRepositoryConstraint> >;
+template const std::shared_ptr<const FromRepositoryConstraint> Pool<FromRepositoryConstraint>::create(
+        const RepositoryName &) const;
+

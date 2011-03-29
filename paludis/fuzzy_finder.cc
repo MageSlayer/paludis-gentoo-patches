@@ -153,8 +153,8 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
         if (pds.in_repository_constraint())
             g = g & generator::InRepository(pds.in_repository_constraint()->name());
 
-        if (pds.from_repository_ptr())
-            g = g & generator::FromRepository(*pds.from_repository_ptr());
+        if (pds.from_repository_constraint())
+            g = g & generator::FromRepository(pds.from_repository_constraint()->name());
     }
 
     std::shared_ptr<const PackageIDSequence> ids(e[selection::BestVersionOnly(g | FuzzyPackageName(package) | filter)]);

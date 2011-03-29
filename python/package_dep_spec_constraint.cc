@@ -118,5 +118,20 @@ void expose_package_dep_spec_constraint()
                 "[RO] The ::repo name in question"
             )
         ;
+
+    /**
+     * FromRepositoryConstraint
+     */
+    class_package_dep_spec_constraint<FromRepositoryConstraint>
+        (
+         "FromRepositoryConstraint",
+         "A ::repo-> constraint for a PackageDepSpec.",
+         bp::no_init
+        )
+
+        .add_property("name", &FromRepositoryConstraint::name,
+                "[RO] The ::repo-> name in question"
+            )
+        ;
 }
 

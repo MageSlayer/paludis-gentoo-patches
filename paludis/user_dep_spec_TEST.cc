@@ -135,11 +135,11 @@ UserDepSpecTest::check_spec(
     }
 
     if (from_repository.empty())
-        EXPECT_TRUE(! spec.from_repository_ptr());
+        EXPECT_TRUE(! spec.from_repository_constraint());
     else
     {
-        EXPECT_TRUE(bool(spec.from_repository_ptr()));
-        EXPECT_EQ(from_repository, stringify(*spec.from_repository_ptr()));
+        EXPECT_TRUE(bool(spec.from_repository_constraint()));
+        EXPECT_EQ(from_repository, stringify(spec.from_repository_constraint()->name()));
     }
 
     if (in_repository.empty())

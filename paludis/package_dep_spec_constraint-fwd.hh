@@ -37,6 +37,9 @@ namespace paludis
 
     class InRepositoryConstraint;
     typedef Pool<InRepositoryConstraint> InRepositoryConstraintPool;
+
+    class FromRepositoryConstraint;
+    typedef Pool<FromRepositoryConstraint> FromRepositoryConstraintPool;
 }
 
 #endif

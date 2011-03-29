@@ -35,7 +35,8 @@ namespace paludis
             NameConstraint,
             PackageNamePartConstraint,
             CategoryNamePartConstraint,
-            InRepositoryConstraint
+            InRepositoryConstraint,
+            FromRepositoryConstraint
         >::Type>
     {
         public:
@@ -118,10 +119,30 @@ namespace paludis
             const RepositoryName name() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    class PALUDIS_VISIBLE FromRepositoryConstraint :
+        public PackageDepSpecConstraint,
+        public ImplementAcceptMethods<PackageDepSpecConstraint, FromRepositoryConstraint>
+    {
+        friend class Pool<FromRepositoryConstraint>;
+
+        private:
+            RepositoryName _name;
+
+            FromRepositoryConstraint(const RepositoryName &);
+
+            FromRepositoryConstraint(const FromRepositoryConstraint &) = delete;
+
+        public:
+            ~FromRepositoryConstraint();
+
+            const RepositoryName name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
     extern template class Pool<NameConstraint>;
     extern template class Pool<PackageNamePartConstraint>;
     extern template class Pool<CategoryNamePartConstraint>;
     extern template class Pool<InRepositoryConstraint>;
+    extern template class Pool<FromRepositoryConstraint>;
 }
 
 #endif

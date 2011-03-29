@@ -402,9 +402,10 @@ namespace paludis
             std::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const;
 
             /**
-             * Fetch the from-repository requirement (may be a zero pointer).
+             * Fetch the single FromRepositoryConstraint, if we have one, or
+             * a null pointer otherwise.
              */
-            std::shared_ptr<const RepositoryName> from_repository_ptr() const;
+            const std::shared_ptr<const FromRepositoryConstraint> from_repository_constraint() const;
 
             /**
              * Fetch the installed-at-path requirement (may be a zero pointer).

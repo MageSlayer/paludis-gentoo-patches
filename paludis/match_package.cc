@@ -130,13 +130,13 @@ paludis::match_package_with_maybe_changes(
         if (spec.in_repository_constraint()->name() != id->repository_name())
             return false;
 
-    if (spec.from_repository_ptr())
+    if (spec.from_repository_constraint())
     {
         if (! id->from_repositories_key())
             return false;
 
         if (id->from_repositories_key()->value()->end() == id->from_repositories_key()->value()->find(
-                    stringify(*spec.from_repository_ptr())))
+                    stringify(spec.from_repository_constraint()->name())))
             return false;
     }
 

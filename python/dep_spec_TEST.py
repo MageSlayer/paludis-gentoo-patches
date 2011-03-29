@@ -69,7 +69,7 @@ class TestCase_1_DepSpecs(unittest.TestCase):
     def test_06_in_from_repository(self):
         self.get_depspecs()
         self.assertEqual(str(self.pds.in_repository_constraint.name), "testrepo")
-        self.assertEqual(self.pds.from_repository, None)
+        self.assertEqual(self.pds.from_repository_constraint, None)
 
     def test_07_version_requirements(self):
         self.get_depspecs()

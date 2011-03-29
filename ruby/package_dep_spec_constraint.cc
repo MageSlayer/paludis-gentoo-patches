@@ -35,6 +35,7 @@ namespace
     static VALUE c_package_name_part_constraint;
     static VALUE c_category_name_part_constraint;
     static VALUE c_in_repository_constraint;
+    static VALUE c_from_repository_constraint;
 
     struct V
     {
@@ -67,6 +68,12 @@ namespace
         void visit(const InRepositoryConstraint &)
         {
             value = Data_Wrap_Struct(c_in_repository_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
+                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+        }
+
+        void visit(const FromRepositoryConstraint &)
+        {
+            value = Data_Wrap_Struct(c_from_repository_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
                     new std::shared_ptr<const PackageDepSpecConstraint>(mm));
         }
     };
@@ -123,6 +130,19 @@ namespace
         return rb_str_new2(stringify((std::static_pointer_cast<const InRepositoryConstraint>(*ptr))->name()).c_str());
     }
 
+    /*
+     * Document-method: name
+     *
+     * The name constraint.
+     */
+    static VALUE
+    from_repository_constraint_name(VALUE self)
+    {
+        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
+        return rb_str_new2(stringify((std::static_pointer_cast<const FromRepositoryConstraint>(*ptr))->name()).c_str());
+    }
+
     void do_register_package_dep_spec_constraint()
     {
         /*
@@ -175,6 +195,17 @@ namespace
         rb_funcall(c_in_repository_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_in_repository_constraint, "name", RUBY_FUNC_CAST(
                     &in_repository_constraint_name), 0);
+
+        /*
+         * Document-class: Paludis::FromRepositoryConstraint
+         *
+         * Represents a /pkg name constraint in a PackageDepSpec.
+         */
+        c_from_repository_constraint = rb_define_class_under(
+                paludis_module(), "InRepositoryConstraint", c_package_dep_spec_constraint);
+        rb_funcall(c_from_repository_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_from_repository_constraint, "name", RUBY_FUNC_CAST(
+                    &from_repository_constraint_name), 0);
     }
 }
 

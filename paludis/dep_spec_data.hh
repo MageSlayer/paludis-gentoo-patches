@@ -155,6 +155,8 @@ namespace paludis
             /**
              * Fetch the single InRepositoryConstraint, if we have one, or
              * a null pointer otherwise.
+             *
+             * \since 0.61
              */
             virtual const std::shared_ptr<const InRepositoryConstraint> in_repository_constraint() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
@@ -167,9 +169,12 @@ namespace paludis
             virtual std::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const = 0;
 
             /**
-             * Fetch the from-repository requirement (may be a zero pointer).
+             * Fetch the single FromRepositoryConstraint, if we have one, or
+             * a null pointer otherwise.
+             *
+             * \since 0.61
              */
-            virtual std::shared_ptr<const RepositoryName> from_repository_ptr() const = 0;
+            virtual const std::shared_ptr<const FromRepositoryConstraint> from_repository_constraint() const = 0;
 
             /**
              * Fetch the installed-at-path requirement (may be a zero pointer).
