@@ -186,5 +186,39 @@ void expose_package_dep_spec_constraint()
                 "[RO] Whether to include masked, as per ::repo??"
             )
         ;
+
+    /**
+     * AnySlotConstraint
+     */
+    class_package_dep_spec_constraint<AnySlotConstraint>
+        (
+         "AnySlotConstraint",
+         "A :* or := constraint for a PackageDepSpec.",
+         bp::no_init
+        )
+
+        .add_property("locking", &AnySlotConstraint::locking,
+                "[RO] Are we locking (:= rather than :*)?"
+            )
+        ;
+
+    /**
+     * ExactSlotConstraint
+     */
+    class_package_dep_spec_constraint<ExactSlotConstraint>
+        (
+         "ExactSlotConstraint",
+         "A :slot or :=slot constraint for a PackageDepSpec.",
+         bp::no_init
+        )
+
+        .add_property("locked", &ExactSlotConstraint::locked,
+                "[RO] Are we locked (:=blah)?"
+            )
+
+        .add_property("name", &ExactSlotConstraint::name,
+                "[RO] The slot name"
+            )
+        ;
 }
 

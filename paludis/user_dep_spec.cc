@@ -245,7 +245,7 @@ namespace
         std::string::size_type slot_p(s.rfind(':'));
         if (std::string::npos != slot_p)
         {
-            result.slot_requirement(std::make_shared<UserSlotExactRequirement>(SlotName(s.substr(slot_p + 1))));
+            result.exact_slot_constraint(SlotName(s.substr(slot_p + 1)), false);
             s.erase(slot_p);
         }
     }
@@ -374,22 +374,6 @@ paludis::envless_parse_package_dep_spec_for_tests(const std::string & ss)
             n::remove_trailing_square_bracket_if_exists() = std::bind(&user_remove_trailing_square_bracket_if_exists,
                     _1, _2, std::ref(had_bracket_version_requirements))
             ));
-}
-
-UserSlotExactRequirement::UserSlotExactRequirement(const SlotName & s) :
-    _s(s)
-{
-}
-const SlotName
-UserSlotExactRequirement::slot() const
-{
-    return _s;
-}
-
-const std::string
-UserSlotExactRequirement::as_string() const
-{
-    return ":" + stringify(_s);
 }
 
 GotASetNotAPackageDepSpec::GotASetNotAPackageDepSpec(const std::string & s) throw () :

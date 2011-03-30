@@ -28,13 +28,13 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
-#include <paludis/elike_slot_requirement.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 #include <functional>
 #include <algorithm>
 #include <list>
@@ -99,11 +99,7 @@ namespace
 
             do
             {
-                if (! node.spec()->slot_requirement_ptr())
-                    break;
-
-                const SlotAnyLockedRequirement * const r(visitor_cast<const SlotAnyLockedRequirement>(*node.spec()->slot_requirement_ptr()));
-                if (! r)
+                if ((! node.spec()->any_slot_constraint()) || (! node.spec()->any_slot_constraint()->locking()))
                     break;
 
                 std::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
@@ -113,8 +109,9 @@ namespace
 
                 if ((*matches->last())->slot_key())
                 {
-                    PackageDepSpec new_s(PartiallyMadePackageDepSpec(*node.spec()).slot_requirement(
-                                std::make_shared<ELikeSlotExactRequirement>((*matches->last())->slot_key()->value(), true)));
+                    PackageDepSpec new_s(PartiallyMadePackageDepSpec(*node.spec())
+                            .clear_any_slot()
+                            .exact_slot_constraint((*matches->last())->slot_key()->value(), true));
                     c = std::make_shared<PackageDepSpec>(new_s);
                 }
             } while (false);

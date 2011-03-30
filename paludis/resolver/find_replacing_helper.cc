@@ -25,7 +25,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/package_id.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
-#include <paludis/elike_slot_requirement.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>

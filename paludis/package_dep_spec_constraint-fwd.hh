@@ -49,6 +49,12 @@ namespace paludis
 
     class InstallableToRepositoryConstraint;
     typedef Pool<InstallableToRepositoryConstraint> InstallableToRepositoryConstraintPool;
+
+    class ExactSlotConstraint;
+    typedef Pool<ExactSlotConstraint> ExactSlotConstraintPool;
+
+    class AnySlotConstraint;
+    typedef Pool<AnySlotConstraint> AnySlotConstraintPool;
 }
 
 #endif

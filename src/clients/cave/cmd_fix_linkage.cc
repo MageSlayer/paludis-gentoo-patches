@@ -210,7 +210,7 @@ FixLinkageCommand::run(
         PartiallyMadePackageDepSpec part_spec({ });
         part_spec.package((*pkg_it)->name());
         if ((*pkg_it)->slot_key())
-            part_spec.slot_requirement(std::make_shared<UserSlotExactRequirement>((*pkg_it)->slot_key()->value()));
+            part_spec.exact_slot_constraint((*pkg_it)->slot_key()->value(), false);
 
         if (cmdline.a_exact.specified())
             part_spec.version_requirement(make_named_values<VersionRequirement>(

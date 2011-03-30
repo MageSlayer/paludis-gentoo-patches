@@ -36,7 +36,6 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/spec_tree.hh>
-#include <paludis/slot_requirement.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
 #include <paludis/elike_package_dep_spec.hh>

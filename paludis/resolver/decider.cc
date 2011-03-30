@@ -65,10 +65,8 @@
 #include <paludis/filter.hh>
 #include <paludis/match_package.hh>
 #include <paludis/version_requirements.hh>
-#include <paludis/slot_requirement.hh>
 #include <paludis/choice.hh>
 #include <paludis/action.hh>
-#include <paludis/elike_slot_requirement.hh>
 #include <paludis/package_id.hh>
 #include <paludis/changed_choices.hh>
 #include <paludis/additional_package_dep_spec_requirement.hh>
@@ -1434,27 +1432,6 @@ Decider::find_any_score(
     return std::make_pair(acs_not_installable, operator_bias);
 }
 
-namespace
-{
-    struct SlotNameFinder
-    {
-        std::shared_ptr<SlotName> visit(const SlotExactRequirement & s)
-        {
-            return std::make_shared<SlotName>(s.slot());
-        }
-
-        std::shared_ptr<SlotName> visit(const SlotAnyUnlockedRequirement &)
-        {
-            return make_null_shared_ptr();
-        }
-
-        std::shared_ptr<SlotName> visit(const SlotAnyLockedRequirement &)
-        {
-            return make_null_shared_ptr();
-        }
-    };
-}
-
 const std::shared_ptr<const Resolvents>
 Decider::_get_resolvents_for_blocker(const BlockDepSpec & spec,
         const std::shared_ptr<const Reason> & reason) const
@@ -1462,11 +1439,8 @@ Decider::_get_resolvents_for_blocker(const BlockDepSpec & spec,
     Context context("When finding slots for '" + stringify(spec) + "':");
 
     std::shared_ptr<SlotName> exact_slot;
-    if (spec.blocking().slot_requirement_ptr())
-    {
-        SlotNameFinder f;
-        exact_slot = spec.blocking().slot_requirement_ptr()->accept_returning<std::shared_ptr<SlotName> >(f);
-    }
+    if (spec.blocking().exact_slot_constraint())
+        exact_slot = make_shared_copy(spec.blocking().exact_slot_constraint()->name());
 
     DestinationTypes destination_types(_get_destination_types_for_blocker(spec, reason));
     std::shared_ptr<Resolvents> result(std::make_shared<Resolvents>());
@@ -1507,11 +1481,8 @@ Decider::_get_resolvents_for(
 
     std::shared_ptr<SlotName> exact_slot;
 
-    if (spec.slot_requirement_ptr())
-    {
-        SlotNameFinder f;
-        exact_slot = spec.slot_requirement_ptr()->accept_returning<std::shared_ptr<SlotName> >(f);
-    }
+    if (spec.exact_slot_constraint())
+        exact_slot = make_shared_copy(spec.exact_slot_constraint()->name());
 
     return _imp->fns.get_resolvents_for_fn()(spec, maybe_from_package_id_from_reason(reason), exact_slot, reason);
 }

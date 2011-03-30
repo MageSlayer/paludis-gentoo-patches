@@ -572,10 +572,16 @@ PackageDepSpec::version_requirements_mode() const
     return _imp->data->version_requirements_mode();
 }
 
-std::shared_ptr<const SlotRequirement>
-PackageDepSpec::slot_requirement_ptr() const
+const std::shared_ptr<const AnySlotConstraint>
+PackageDepSpec::any_slot_constraint() const
 {
-    return _imp->data->slot_requirement_ptr();
+    return _imp->data->any_slot_constraint();
+}
+
+const std::shared_ptr<const ExactSlotConstraint>
+PackageDepSpec::exact_slot_constraint() const
+{
+    return _imp->data->exact_slot_constraint();
 }
 
 const std::shared_ptr<const InRepositoryConstraint>

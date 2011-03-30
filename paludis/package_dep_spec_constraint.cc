@@ -184,3 +184,44 @@ template class Singleton<Pool<InstallableToRepositoryConstraint> >;
 template const std::shared_ptr<const InstallableToRepositoryConstraint> Pool<InstallableToRepositoryConstraint>::create(
         const RepositoryName &, const bool & ...) const;
 
+ExactSlotConstraint::ExactSlotConstraint(const SlotName & n, const bool i) :
+    _name(n),
+    _locked(i)
+{
+}
+
+ExactSlotConstraint::~ExactSlotConstraint() = default;
+
+const SlotName
+ExactSlotConstraint::name() const
+{
+    return _name;
+}
+
+bool
+ExactSlotConstraint::locked() const
+{
+    return _locked;
+}
+
+template class Pool<ExactSlotConstraint>;
+template class Singleton<Pool<ExactSlotConstraint> >;
+template const std::shared_ptr<const ExactSlotConstraint> Pool<ExactSlotConstraint>::create(const SlotName &, const bool & ...) const;
+
+AnySlotConstraint::AnySlotConstraint(const bool i) :
+    _locking(i)
+{
+}
+
+AnySlotConstraint::~AnySlotConstraint() = default;
+
+bool
+AnySlotConstraint::locking() const
+{
+    return _locking;
+}
+
+template class Pool<AnySlotConstraint>;
+template class Singleton<Pool<AnySlotConstraint> >;
+template const std::shared_ptr<const AnySlotConstraint> Pool<AnySlotConstraint>::create(const bool &) const;
+

@@ -34,7 +34,6 @@
 #include <paludis/version_operator-fwd.hh>
 #include <paludis/version_requirements-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
-#include <paludis/slot_requirement-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/additional_package_dep_spec_requirement-fwd.hh>
@@ -351,9 +350,20 @@ namespace paludis
             VersionRequirementsMode version_requirements_mode() const;
 
             /**
-             * Fetch the slot requirement (may be a zero pointer).
+             * Fetch the single ExactSlotConstraint, if we have one, or
+             * a null pointer otherwise.
+             *
+             * \since 0.61
              */
-            std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const;
+            const std::shared_ptr<const ExactSlotConstraint> exact_slot_constraint() const;
+
+            /**
+             * Fetch the single AnySlotConstraint, if we have one, or
+             * a null pointer otherwise.
+             *
+             * \since 0.61
+             */
+            const std::shared_ptr<const AnySlotConstraint> any_slot_constraint() const;
 
             /**
              * Fetch the single InRepositoryConstraint, if we have one, or

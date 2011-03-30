@@ -75,8 +75,7 @@ namespace paludis
                             .version_requirement(make_named_values<VersionRequirement>(
                                     n::version_operator() = vo_equal,
                                     n::version_spec() = v->version()))
-                            .slot_requirement(std::make_shared<UserSlotExactRequirement>(
-                                        v->slot_key() ? v->slot_key()->value() : SlotName("UNKNOWN")))
+                            .exact_slot_constraint(v->slot_key() ? v->slot_key()->value() : SlotName("UNKNOWN"), false)
                             .in_repository(v->repository_name()))
                     :
                     std::make_shared<PackageDepSpec>(

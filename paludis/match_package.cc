@@ -23,7 +23,6 @@
 #include <paludis/environment.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/package_id.hh>
-#include <paludis/slot_requirement.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
@@ -46,36 +45,6 @@
 using namespace paludis;
 
 #include <paludis/match_package-se.cc>
-
-namespace
-{
-    struct SlotRequirementChecker
-    {
-        const std::shared_ptr<const PackageID> id;
-        bool result;
-
-        SlotRequirementChecker(const std::shared_ptr<const PackageID> & i) :
-            id(i),
-            result(true)
-        {
-        }
-
-        void visit(const SlotExactRequirement & s)
-        {
-            result = id->slot_key() && id->slot_key()->value() == s.slot();
-        }
-
-        void visit(const SlotAnyLockedRequirement &)
-        {
-            result = true;
-        }
-
-        void visit(const SlotAnyUnlockedRequirement &)
-        {
-            result = true;
-        }
-    };
-}
 
 bool
 paludis::match_package_with_maybe_changes(
@@ -194,12 +163,15 @@ paludis::match_package_with_maybe_changes(
             return false;
     }
 
-    if (spec.slot_requirement_ptr())
+    if (spec.exact_slot_constraint())
     {
-        SlotRequirementChecker v(id);
-        spec.slot_requirement_ptr()->accept(v);
-        if (! v.result)
+        if ((! id->slot_key()) || (id->slot_key()->value() != spec.exact_slot_constraint()->name()))
             return false;
+    }
+
+    if (spec.any_slot_constraint())
+    {
+        /* don't care */
     }
 
     if (! options[mpo_ignore_additional_requirements])

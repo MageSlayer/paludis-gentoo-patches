@@ -177,11 +177,12 @@ namespace paludis
                 const std::shared_ptr<const CategoryNamePartConstraint> category_name_part_constraint() const;
                 const std::shared_ptr<const InRepositoryConstraint> in_repository_constraint() const;
                 const std::shared_ptr<const FromRepositoryConstraint> from_repository_constraint() const;
+                const std::shared_ptr<const ExactSlotConstraint> exact_slot_constraint() const;
+                const std::shared_ptr<const AnySlotConstraint> any_slot_constraint() const;
 
                 std::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
                 VersionRequirementsMode version_requirements_mode() const;
                 void set_version_requirements_mode(const VersionRequirementsMode m);
-                std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const;
                 std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
 
                 std::string py_str() const;

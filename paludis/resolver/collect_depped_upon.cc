@@ -29,10 +29,10 @@
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
-#include <paludis/elike_slot_requirement.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/match_package.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/package_dep_spec_constraint.hh>
 #include <algorithm>
 
 using namespace paludis;
@@ -108,8 +108,7 @@ namespace
             {
                 auto spec(s.spec());
 
-                if (s.spec()->slot_requirement_ptr() && visitor_cast<const SlotAnyUnlockedRequirement>(
-                            *s.spec()->slot_requirement_ptr()))
+                if (s.spec()->any_slot_constraint() && ! s.spec()->any_slot_constraint()->locking())
                 {
                     auto best_eventual_id(best_eventual(env, *s.spec(), id_for_specs, newly_available));
                     if (! best_eventual_id)
@@ -117,7 +116,7 @@ namespace
                     if (best_eventual_id && best_eventual_id->slot_key())
                     {
                         PartiallyMadePackageDepSpec part_spec(*s.spec());
-                        part_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(best_eventual_id->slot_key()->value(), false));
+                        part_spec.exact_slot_constraint(best_eventual_id->slot_key()->value(), false);
                         spec = std::make_shared<PackageDepSpec>(part_spec);
                     }
                 }

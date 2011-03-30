@@ -22,7 +22,6 @@
 
 #include <paludis/user_dep_spec-fwd.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/slot_requirement.hh>
 #include <paludis/filter.hh>
 #include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/util/pimp.hh>
@@ -52,24 +51,6 @@ namespace paludis
      */
     PackageDepSpec envless_parse_package_dep_spec_for_tests(
             const std::string &) PALUDIS_VISIBLE;
-
-    class PALUDIS_VISIBLE UserSlotExactRequirement :
-        public SlotExactRequirement
-    {
-        private:
-            const SlotName _s;
-
-        public:
-            ///\name Basic operations
-            ///\{
-
-            UserSlotExactRequirement(const SlotName &);
-
-            ///\}
-
-            virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
 
     /**
      * A key requirement for a user PackageDepSpec.

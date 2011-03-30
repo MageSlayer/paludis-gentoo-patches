@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,7 +27,6 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
-#include <paludis/elike_slot_requirement.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -59,8 +58,7 @@ namespace
                 result->top()->append(std::make_shared<PackageDepSpec>(
                                 make_package_dep_spec({ })
                                 .package((*i)->name())
-                                .slot_requirement(std::make_shared<ELikeSlotExactRequirement>(
-                                            (*i)->slot_key()->value(), false))
+                                .exact_slot_constraint((*i)->slot_key()->value(), false)
                                 ));
             else
                 result->top()->append(std::make_shared<PackageDepSpec>(

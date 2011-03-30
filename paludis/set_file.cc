@@ -169,6 +169,18 @@ namespace
         }
     };
 
+    PackageDepSpec name_and_slot(const PackageDepSpec & spec)
+    {
+        if (spec.exact_slot_constraint())
+            return make_package_dep_spec({ })
+                .package(spec.package_name_constraint()->name())
+                .exact_slot_constraint(spec.exact_slot_constraint()->name(), spec.exact_slot_constraint()->locked())
+                ;
+        else
+            return make_package_dep_spec({ })
+                .package(spec.package_name_constraint()->name());
+    }
+
     void
     do_one_conf_line(const std::string & line, std::shared_ptr<SetSpecTree> result,
             const SetFileParams & params)
@@ -269,10 +281,7 @@ namespace
                         Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
                             << "Line '" << line << "' uses ?: operator but no environment is available";
                     else if (! (*params.environment())[selection::SomeArbitraryVersion(generator::Matches(
-                                    make_package_dep_spec({ })
-                                    .package(spec->package_name_constraint()->name())
-                                    .slot_requirement(spec->slot_requirement_ptr()),
-                                    make_null_shared_ptr(), { }) |
+                                    name_and_slot(*spec), make_null_shared_ptr(), { }) |
                                 filter::InstalledAtRoot(params.environment()->preferred_root_key()->value()))]->empty())
                         result->top()->append(spec);
                 }

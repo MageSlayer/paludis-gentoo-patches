@@ -53,7 +53,8 @@ namespace
         std::shared_ptr<const CategoryNamePartConstraint> category_name_part;
         std::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode_v;
-        std::shared_ptr<const SlotRequirement> slot;
+        std::shared_ptr<const AnySlotConstraint> any_slot;
+        std::shared_ptr<const ExactSlotConstraint> exact_slot;
         std::shared_ptr<const InRepositoryConstraint> in_repository;
         std::shared_ptr<const FromRepositoryConstraint> from_repository;
         std::shared_ptr<const InstallableToRepositoryConstraint> installable_to_repository;
@@ -76,7 +77,8 @@ namespace
             category_name_part(other.category_name_part_constraint()),
             version_requirements(other.version_requirements_ptr() ? new VersionRequirements : 0),
             version_requirements_mode_v(other.version_requirements_mode()),
-            slot(other.slot_requirement_ptr()),
+            any_slot(other.any_slot_constraint()),
+            exact_slot(other.exact_slot_constraint()),
             in_repository(other.in_repository_constraint()),
             from_repository(other.from_repository_constraint()),
             installable_to_repository(other.installable_to_repository_constraint()),
@@ -101,7 +103,8 @@ namespace
             category_name_part(other.category_name_part),
             version_requirements(other.version_requirements),
             version_requirements_mode_v(other.version_requirements_mode_v),
-            slot(other.slot),
+            any_slot(other.any_slot),
+            exact_slot(other.exact_slot),
             in_repository(other.in_repository),
             from_repository(other.from_repository),
             installable_to_repository(other.installable_to_repository),
@@ -162,8 +165,23 @@ namespace
                 }
             }
 
-            if (slot_requirement_ptr())
-                s << stringify(*slot_requirement_ptr());
+            if (exact_slot_constraint())
+            {
+                if (exact_slot_constraint()->locked())
+                    s << ":=";
+                else
+                    s << ":";
+
+                s << stringify(exact_slot_constraint()->name());
+            }
+
+            if (any_slot_constraint())
+            {
+                if (any_slot_constraint()->locking())
+                    s << ":=";
+                else
+                    s << ":*";
+            }
 
             std::string left, right;
             bool need_arrow(false);
@@ -303,9 +321,14 @@ namespace
             return version_requirements_mode_v;
         }
 
-        virtual std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const
+        virtual const std::shared_ptr<const ExactSlotConstraint> exact_slot_constraint() const
         {
-            return slot;
+            return exact_slot;
+        }
+
+        virtual const std::shared_ptr<const AnySlotConstraint> any_slot_constraint() const
+        {
+            return any_slot;
         }
 
         virtual const std::shared_ptr<const InRepositoryConstraint> in_repository_constraint() const
@@ -403,16 +426,30 @@ PartiallyMadePackageDepSpec::clear_package()
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::slot_requirement(const std::shared_ptr<const SlotRequirement> & s)
+PartiallyMadePackageDepSpec::any_slot_constraint(const bool s)
 {
-    _imp->data->slot = s;
+    _imp->data->any_slot = AnySlotConstraintPool::get_instance()->create(s);
     return *this;
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::clear_slot_requirement()
+PartiallyMadePackageDepSpec::exact_slot_constraint(const SlotName & n, const bool s)
 {
-    _imp->data->slot.reset();
+    _imp->data->exact_slot = ExactSlotConstraintPool::get_instance()->create(n, s);
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::clear_exact_slot()
+{
+    _imp->data->exact_slot.reset();
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::clear_any_slot()
+{
+    _imp->data->any_slot.reset();
     return *this;
 }
 

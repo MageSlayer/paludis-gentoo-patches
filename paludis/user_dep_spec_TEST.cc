@@ -127,11 +127,11 @@ UserDepSpecTest::check_spec(
     }
 
     if (slot_requirement.empty())
-        EXPECT_TRUE(! spec.slot_requirement_ptr());
+        EXPECT_TRUE(! spec.exact_slot_constraint());
     else
     {
-        EXPECT_TRUE(bool(spec.slot_requirement_ptr()));
-        EXPECT_EQ(slot_requirement, stringify(*spec.slot_requirement_ptr()));
+        EXPECT_TRUE(bool(spec.exact_slot_constraint()));
+        EXPECT_EQ(slot_requirement, ":" + stringify(spec.exact_slot_constraint()->name()));
     }
 
     if (from_repository.empty())

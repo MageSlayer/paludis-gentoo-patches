@@ -131,9 +131,15 @@ namespace
         if (cmdline.a_slot_requirement.specified())
         {
             if (cmdline.a_slot_requirement.argument().empty())
-                s.clear_slot_requirement();
+            {
+                s.clear_any_slot();
+                s.clear_exact_slot();
+            }
             else
-                s.slot_requirement(std::make_shared<UserSlotExactRequirement>(SlotName(cmdline.a_slot_requirement.argument())));
+            {
+                s.clear_any_slot();
+                s.exact_slot_constraint(SlotName(cmdline.a_slot_requirement.argument()), false);
+            }
         }
 
         if (cmdline.a_in_repository.specified())

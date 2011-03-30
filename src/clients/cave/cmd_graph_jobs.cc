@@ -96,8 +96,8 @@ namespace
         else
         {
             std::string result(stringify(p.package_name_constraint()->name().package()));
-            if (p.slot_requirement_ptr())
-                result = result + stringify(*p.slot_requirement_ptr());
+            if (p.exact_slot_constraint())
+                result = result + ":" + stringify(p.exact_slot_constraint()->name());
             if (p.in_repository_constraint())
                 result = result + "::" + stringify(p.in_repository_constraint()->name());
             return result;

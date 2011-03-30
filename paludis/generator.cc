@@ -306,7 +306,9 @@ namespace
         {
             if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
                             n::has_additional_requirements() = indeterminate,
+                            n::has_any_slot_requirement() = indeterminate,
                             n::has_category_name_part() = indeterminate,
+                            n::has_exact_slot_requirement() = indeterminate,
                             n::has_from_repository() = indeterminate,
                             n::has_in_repository() = false,
                             n::has_installable_to_path() = indeterminate,
@@ -314,7 +316,6 @@ namespace
                             n::has_installed_at_path() = false,
                             n::has_package() = indeterminate,
                             n::has_package_name_part() = indeterminate,
-                            n::has_slot_requirement() = indeterminate,
                             n::has_tag() = indeterminate,
                             n::has_version_requirements() = indeterminate
                             )))

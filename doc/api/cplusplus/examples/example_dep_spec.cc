@@ -98,8 +98,8 @@ int main(int argc, char * argv[])
                 cout << endl;
             }
 
-            if (spec.slot_requirement_ptr())
-                cout << "    " << left << setw(24) << "Slot:" << " " << *spec.slot_requirement_ptr() << endl;
+            if (spec.exact_slot_constraint())
+                cout << "    " << left << setw(24) << "Slot:" << " " << spec.exact_slot_constraint()->name() << endl;
 
             if (spec.in_repository_constraint())
                 cout << "    " << left << setw(24) << "In repository:" << " " <<

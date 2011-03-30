@@ -130,13 +130,11 @@ module Paludis
         end
 
         def test_slot
-            assert_kind_of SlotExactRequirement, pda.slot_requirement
-            assert_equal ":100", pda.slot_requirement.to_s
-            assert_equal "100", pda.slot_requirement.slot
-            assert_nil pdb.slot_requirement
-            assert_nil pdc.slot_requirement
-            assert_nil pdd.slot_requirement
-            assert_nil pde.slot_requirement
+            assert_equal "100", pda.exact_slot_constraint.name
+            assert_nil pdb.exact_slot_constraint
+            assert_nil pdc.exact_slot_constraint
+            assert_nil pdd.exact_slot_constraint
+            assert_nil pde.exact_slot_constraint
         end
 
         def test_package

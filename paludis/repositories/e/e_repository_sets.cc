@@ -26,7 +26,6 @@
 
 #include <paludis/action-fwd.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/elike_slot_requirement.hh>
 #include <paludis/environment.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>

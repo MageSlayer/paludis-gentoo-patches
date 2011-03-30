@@ -42,7 +42,9 @@ paludis::resolver::match_qpns(
      * but we're lazy) */
     if (! package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
                     n::has_additional_requirements() = false,
+                    n::has_any_slot_requirement() = false,
                     n::has_category_name_part() = indeterminate,
+                    n::has_exact_slot_requirement() = false,
                     n::has_from_repository() = false,
                     n::has_in_repository() = false,
                     n::has_installable_to_path() = false,
@@ -50,7 +52,6 @@ paludis::resolver::match_qpns(
                     n::has_installed_at_path() = false,
                     n::has_package() = indeterminate,
                     n::has_package_name_part() = indeterminate,
-                    n::has_slot_requirement() = false,
                     n::has_tag() = false,
                     n::has_version_requirements() = false
                     )))

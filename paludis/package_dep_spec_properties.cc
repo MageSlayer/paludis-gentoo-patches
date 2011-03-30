@@ -50,7 +50,8 @@ paludis::package_dep_spec_has_properties(const PackageDepSpec & spec, const Pack
     result = result && check(bool(spec.installed_at_path_constraint()), properties.has_installed_at_path());
     result = result && check(bool(spec.package_name_constraint()), properties.has_package());
     result = result && check(bool(spec.package_name_part_constraint()), properties.has_package_name_part());
-    result = result && check(bool(spec.slot_requirement_ptr()), properties.has_slot_requirement());
+    result = result && check(bool(spec.exact_slot_constraint()), properties.has_exact_slot_requirement());
+    result = result && check(bool(spec.any_slot_constraint()), properties.has_any_slot_requirement());
     result = result && check(spec.version_requirements_ptr() && ! spec.version_requirements_ptr()->empty(), properties.has_version_requirements());
 
     return result;

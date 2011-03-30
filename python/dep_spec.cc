@@ -78,7 +78,8 @@ namespace paludis
         std::shared_ptr<const PackageNamePartConstraint> package_name_part_constraint;
         std::shared_ptr<VersionRequirements> version_requirements;
         VersionRequirementsMode version_requirements_mode;
-        std::shared_ptr<const SlotRequirement> slot;
+        std::shared_ptr<const AnySlotConstraint> any_slot;
+        std::shared_ptr<const ExactSlotConstraint> exact_slot;
         std::shared_ptr<const InRepositoryConstraint> in_repository;
         std::shared_ptr<const FromRepositoryConstraint> from_repository;
         std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements;
@@ -90,7 +91,8 @@ namespace paludis
                 const std::shared_ptr<const PackageNamePartConstraint> & p,
                 const std::shared_ptr<VersionRequirements> & v,
                 const VersionRequirementsMode m,
-                const std::shared_ptr<const SlotRequirement> & s,
+                const std::shared_ptr<const AnySlotConstraint> & s,
+                const std::shared_ptr<const ExactSlotConstraint> & xs,
                 const std::shared_ptr<const InRepositoryConstraint> & ri,
                 const std::shared_ptr<const FromRepositoryConstraint> & rf,
                 const std::shared_ptr<const AdditionalPackageDepSpecRequirements> & u,
@@ -100,7 +102,8 @@ namespace paludis
             package_name_part_constraint(p),
             version_requirements(v),
             version_requirements_mode(m),
-            slot(s),
+            any_slot(s),
+            exact_slot(xs),
             in_repository(ri),
             from_repository(rf),
             additional_requirements(u),
@@ -228,7 +231,8 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
             p.package_name_part_constraint(),
             std::make_shared<VersionRequirements>(),
             p.version_requirements_mode(),
-            p.slot_requirement_ptr(),
+            p.any_slot_constraint(),
+            p.exact_slot_constraint(),
             p.in_repository_constraint(),
             p.from_repository_constraint(),
             p.additional_requirements_ptr(),
@@ -249,7 +253,8 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
             p.package_name_part_constraint(),
             std::make_shared<VersionRequirements>(),
             p.version_requirements_mode(),
-            p.slot_requirement_ptr(),
+            p.any_slot_constraint(),
+            p.exact_slot_constraint(),
             p.in_repository_constraint(),
             p.from_repository_constraint(),
             p.additional_requirements_ptr(),
@@ -278,8 +283,11 @@ PythonPackageDepSpec::operator PackageDepSpec() const
 
     p.version_requirements_mode(version_requirements_mode());
 
-    if (slot_requirement_ptr())
-        p.slot_requirement(slot_requirement_ptr());
+    if (any_slot_constraint())
+        p.any_slot_constraint(any_slot_constraint()->locking());
+
+    if (exact_slot_constraint())
+        p.exact_slot_constraint(exact_slot_constraint()->name(), exact_slot_constraint()->locked());
 
     if (in_repository_constraint())
         p.in_repository(in_repository_constraint()->name());
@@ -346,10 +354,16 @@ PythonPackageDepSpec::set_version_requirements_mode(const VersionRequirementsMod
     _imp->version_requirements_mode = m;
 }
 
-std::shared_ptr<const SlotRequirement>
-PythonPackageDepSpec::slot_requirement_ptr() const
+const std::shared_ptr<const AnySlotConstraint>
+PythonPackageDepSpec::any_slot_constraint() const
 {
-    return _imp->slot;
+    return _imp->any_slot;
+}
+
+const std::shared_ptr<const ExactSlotConstraint>
+PythonPackageDepSpec::exact_slot_constraint() const
+{
+    return _imp->exact_slot;
 }
 
 const std::shared_ptr<const InRepositoryConstraint>
@@ -1226,12 +1240,15 @@ void expose_dep_spec()
                 "Version requirements mode."
                 )
 
-#if 0
-        .add_property("slot", &PythonPackageDepSpec::slot_ptr,
-                "[ro] SlotName\n"
-                "Slot name (may be None)."
+        .add_property("exact_slot", &PythonPackageDepSpec::exact_slot_constraint,
+                "[ro] ExactSlotConstraint\n"
+                "Exact slot constraint (may be None)."
                 )
-#endif
+
+        .add_property("any_slot", &PythonPackageDepSpec::any_slot_constraint,
+                "[ro] AnySlotConstraint\n"
+                "Any slot constraint (may be None)."
+                )
 
         .add_property("in_repository_constraint", &PythonPackageDepSpec::in_repository_constraint,
                 "[ro] InRepositoryConstraint\n"

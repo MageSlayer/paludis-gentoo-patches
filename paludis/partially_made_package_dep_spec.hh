@@ -63,16 +63,34 @@ namespace paludis
             PartiallyMadePackageDepSpec & clear_package();
 
             /**
-             * Set our slot requirements, return ourself.
+             * Set our exact slot requirements, return ourself.
+             *
+             * \since 0.61
              */
-            PartiallyMadePackageDepSpec & slot_requirement(const std::shared_ptr<const SlotRequirement> &);
+            PartiallyMadePackageDepSpec & exact_slot_constraint(
+                    const SlotName &, const bool);
 
             /**
-             * Clear our slot requirements, return ourself.
+             * Set our locked slot requirements, return ourself.
              *
-             * \since 0.55
+             * \since 0.61
              */
-            PartiallyMadePackageDepSpec & clear_slot_requirement();
+             PartiallyMadePackageDepSpec & any_slot_constraint(
+                     const bool);
+
+            /**
+             * Clear our exact slot requirements, return ourself.
+             *
+             * \since 0.61
+             */
+            PartiallyMadePackageDepSpec & clear_exact_slot();
+
+            /**
+             * Clear our any slot requirements, return ourself.
+             *
+             * \since 0.61
+             */
+            PartiallyMadePackageDepSpec & clear_any_slot();
 
             /**
              * Set our in-repository requirement, return ourself.

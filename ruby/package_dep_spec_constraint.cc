@@ -39,6 +39,8 @@ namespace
     static VALUE c_installed_at_path_constraint;
     static VALUE c_installable_to_path_constraint;
     static VALUE c_installable_to_repository_constraint;
+    static VALUE c_any_slot_constraint;
+    static VALUE c_exact_slot_constraint;
 
     struct V
     {
@@ -95,6 +97,18 @@ namespace
         void visit(const InstallableToRepositoryConstraint &)
         {
             value = Data_Wrap_Struct(c_installable_to_repository_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
+                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+        }
+
+        void visit(const AnySlotConstraint &)
+        {
+            value = Data_Wrap_Struct(c_any_slot_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
+                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+        }
+
+        void visit(const ExactSlotConstraint &)
+        {
+            value = Data_Wrap_Struct(c_exact_slot_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
                     new std::shared_ptr<const PackageDepSpecConstraint>(mm));
         }
     };
@@ -229,6 +243,45 @@ namespace
         return (std::static_pointer_cast<const InstallableToRepositoryConstraint>(*ptr))->include_masked() ? Qtrue : Qfalse;
     }
 
+    /*
+     * Document-method: locking?
+     *
+     * The locking constraint.
+     */
+    static VALUE
+    any_slot_constraint_locking(VALUE self)
+    {
+        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
+        return (std::static_pointer_cast<const AnySlotConstraint>(*ptr))->locking() ? Qtrue : Qfalse;
+    }
+
+    /*
+     * Document-method: locked?
+     *
+     * The locked constraint.
+     */
+    static VALUE
+    exact_slot_constraint_locked(VALUE self)
+    {
+        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
+        return (std::static_pointer_cast<const ExactSlotConstraint>(*ptr))->locked() ? Qtrue : Qfalse;
+    }
+
+    /*
+     * Document-method: name
+     *
+     * The name constraint.
+     */
+    static VALUE
+    exact_slot_constraint_name(VALUE self)
+    {
+        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
+        return rb_str_new2(stringify((std::static_pointer_cast<const ExactSlotConstraint>(*ptr))->name()).c_str());
+    }
+
     void do_register_package_dep_spec_constraint()
     {
         /*
@@ -329,6 +382,30 @@ namespace
                     &installable_to_repository_constraint_name), 0);
         rb_define_method(c_installable_to_repository_constraint, "include_masked?", RUBY_FUNC_CAST(
                     &installable_to_repository_constraint_include_masked), 0);
+
+        /*
+         * Document-class: Paludis::AnySlotConstraint
+         *
+         * Represents a :* or := constraint in a PackageDepSpec.
+         */
+        c_any_slot_constraint = rb_define_class_under(
+                paludis_module(), "AnySlotConstraint", c_package_dep_spec_constraint);
+        rb_funcall(c_any_slot_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_any_slot_constraint, "locking?", RUBY_FUNC_CAST(
+                    &any_slot_constraint_locking), 0);
+
+        /*
+         * Document-class: Paludis::ExactSlotConstraint
+         *
+         * Represents a :slot or :=slot constraint in a PackageDepSpec.
+         */
+        c_exact_slot_constraint = rb_define_class_under(
+                paludis_module(), "ExactSlotConstraint", c_package_dep_spec_constraint);
+        rb_funcall(c_exact_slot_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_exact_slot_constraint, "locked?", RUBY_FUNC_CAST(
+                    &exact_slot_constraint_locked), 0);
+        rb_define_method(c_exact_slot_constraint, "name", RUBY_FUNC_CAST(
+                    &exact_slot_constraint_name), 0);
     }
 }
 

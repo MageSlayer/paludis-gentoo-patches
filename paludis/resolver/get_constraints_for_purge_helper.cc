@@ -34,7 +34,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/package_dep_spec_collection.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
-#include <paludis/elike_slot_requirement.hh>
 #include <paludis/metadata_key.hh>
 
 using namespace paludis;
@@ -80,7 +79,7 @@ GetConstraintsForPurgeHelper::operator() (
     PartiallyMadePackageDepSpec partial_spec({ });
     partial_spec.package(id->name());
     if (id->slot_key())
-        partial_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(id->slot_key()->value(), false));
+        partial_spec.exact_slot_constraint(id->slot_key()->value(), false);
     PackageDepSpec spec(partial_spec);
 
     const std::shared_ptr<WasUsedByReason> reason(std::make_shared<WasUsedByReason>(was_used_by_ids));

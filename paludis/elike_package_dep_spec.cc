@@ -19,7 +19,6 @@
 
 #include <paludis/elike_package_dep_spec.hh>
 #include <paludis/elike_use_requirement.hh>
-#include <paludis/elike_slot_requirement.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
@@ -292,7 +291,7 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
                 Log::get_instance()->message("e.package_dep_spec.slot_star_not_allowed", ll_warning, lc_context)
                     << "Slot '*' dependencies not safe for use here";
         }
-        result.slot_requirement(std::make_shared<ELikeSlotAnyUnlockedRequirement>());
+        result.any_slot_constraint(false);
     }
     else if ('=' == match.at(0))
     {
@@ -306,9 +305,9 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
         }
 
         if (1 == match.length())
-            result.slot_requirement(std::make_shared<ELikeSlotAnyLockedRequirement>());
+            result.any_slot_constraint(true);
         else
-            result.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(SlotName(s.substr(slot_p + 2)), true));
+            result.exact_slot_constraint(SlotName(s.substr(slot_p + 2)), true);
     }
     else
     {
@@ -320,7 +319,7 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
                 Log::get_instance()->message("e.package_dep_spec.slot_not_allowed", ll_warning, lc_context)
                     << "Slot dependencies not safe for use here";
         }
-        result.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(SlotName(s.substr(slot_p + 1)), false));
+        result.exact_slot_constraint(SlotName(s.substr(slot_p + 1)), false);
     }
     s.erase(slot_p);
 }

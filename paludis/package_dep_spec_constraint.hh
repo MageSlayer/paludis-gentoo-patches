@@ -40,7 +40,9 @@ namespace paludis
             FromRepositoryConstraint,
             InstalledAtPathConstraint,
             InstallableToPathConstraint,
-            InstallableToRepositoryConstraint
+            InstallableToRepositoryConstraint,
+            AnySlotConstraint,
+            ExactSlotConstraint
         >::Type>
     {
         public:
@@ -203,6 +205,46 @@ namespace paludis
             bool include_masked() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    class PALUDIS_VISIBLE ExactSlotConstraint :
+        public PackageDepSpecConstraint,
+        public ImplementAcceptMethods<PackageDepSpecConstraint, ExactSlotConstraint>
+    {
+        friend class Pool<ExactSlotConstraint>;
+
+        private:
+            SlotName _name;
+            bool _locked;
+
+            ExactSlotConstraint(const SlotName &, const bool);
+
+            ExactSlotConstraint(const ExactSlotConstraint &) = delete;
+
+        public:
+            ~ExactSlotConstraint();
+
+            const SlotName name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    class PALUDIS_VISIBLE AnySlotConstraint :
+        public PackageDepSpecConstraint,
+        public ImplementAcceptMethods<PackageDepSpecConstraint, AnySlotConstraint>
+    {
+        friend class Pool<AnySlotConstraint>;
+
+        private:
+            bool _locking;
+
+            AnySlotConstraint(const bool);
+
+            AnySlotConstraint(const AnySlotConstraint &) = delete;
+
+        public:
+            ~AnySlotConstraint();
+
+            bool locking() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
     extern template class Pool<NameConstraint>;
     extern template class Pool<PackageNamePartConstraint>;
     extern template class Pool<CategoryNamePartConstraint>;
@@ -211,6 +253,8 @@ namespace paludis
     extern template class Pool<InstalledAtPathConstraint>;
     extern template class Pool<InstallableToPathConstraint>;
     extern template class Pool<InstallableToRepositoryConstraint>;
+    extern template class Pool<ExactSlotConstraint>;
+    extern template class Pool<AnySlotConstraint>;
 }
 
 #endif
