@@ -208,6 +208,7 @@ namespace paludis
         typedef Name<struct name_use_expand> use_expand;
         typedef Name<struct name_use_expand_hidden> use_expand_hidden;
         typedef Name<struct name_use_expand_separator> use_expand_separator;
+        typedef Name<struct name_use_with_enable_empty_third_argument> use_with_enable_empty_third_argument;
         typedef Name<struct name_userpriv_cannot_use_root> userpriv_cannot_use_root;
         typedef Name<struct name_utility_path_suffixes> utility_path_suffixes;
         typedef Name<struct name_vdb_from_env_unless_empty_variables> vdb_from_env_unless_empty_variables;
@@ -467,6 +468,7 @@ namespace paludis
             NamedValue<n::unpack_fix_permissions, bool> unpack_fix_permissions;
             NamedValue<n::unpack_suffixes, std::string> unpack_suffixes;
             NamedValue<n::unpack_unrecognised_is_fatal, bool> unpack_unrecognised_is_fatal;
+            NamedValue<n::use_with_enable_empty_third_argument, bool> use_with_enable_empty_third_argument;
         };
 
         struct EAPIPipeCommands

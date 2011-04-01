@@ -2,6 +2,7 @@
 # vim: set sw=4 sts=4 et :
 
 # Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2011 David Leverton
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -23,7 +24,11 @@
 use_with()
 {
     if useq "${1}" ; then
-        echo "--with-${2:-${1}}${3+=${3}}"
+        if [[ -n ${PALUDIS_USE_WITH_ENABLE_EMPTY_THIRD_ARGUMENT} ]]; then
+            echo "--with-${2:-${1}}${3+=${3}}"
+        else
+            echo "--with-${2:-${1}}${3:+=${3}}"
+        fi
     else
         echo "--without-${2:-${1}}"
     fi
@@ -32,7 +37,11 @@ use_with()
 use_enable()
 {
     if useq "${1}" ; then
-        echo "--enable-${2:-${1}}${3+=${3}}"
+        if [[ -n ${PALUDIS_USE_WITH_ENABLE_EMPTY_THIRD_ARGUMENT} ]]; then
+            echo "--enable-${2:-${1}}${3+=${3}}"
+        else
+            echo "--enable-${2:-${1}}${3:+=${3}}"
+        fi
     else
         echo "--disable-${2:-${1}}"
     fi

@@ -221,6 +221,14 @@ TEST(ERepository, InstallEAPI4)
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
         id->perform_action(action);
     }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/use-with-enable-empty-third-4",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 }
 
 TEST(ERepository, EAPI4MergeType)

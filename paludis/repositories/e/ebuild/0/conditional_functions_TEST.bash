@@ -2,6 +2,7 @@
 # vim: set sw=4 sts=4 et :
 
 # Copyright (c) 2006 Ciaran McCreesh
+# Copyright (c) 2011 David Leverton
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,6 +28,11 @@ use_with_TEST()
     test_equality "$(use_with foo )" "--without-foo"
     test_equality "$(use_with foo bar )" "--without-bar"
     test_equality "$(use_with foo bar baz )" "--without-bar"
+
+    export PALUDIS_USE_WITH_ENABLE_EMPTY_THIRD_ARGUMENT=
+    test_equality "$(use_with oink zoink "" )" "--with-zoink"
+    export PALUDIS_USE_WITH_ENABLE_EMPTY_THIRD_ARGUMENT=yes
+    test_equality "$(use_with oink zoink "" )" "--with-zoink="
 }
 
 
@@ -41,5 +47,10 @@ use_enable_TEST()
     test_equality "$(use_enable foo )" "--disable-foo"
     test_equality "$(use_enable foo bar )" "--disable-bar"
     test_equality "$(use_enable foo bar baz )" "--disable-bar"
+
+    export PALUDIS_USE_WITH_ENABLE_EMPTY_THIRD_ARGUMENT=
+    test_equality "$(use_enable oink zoink "" )" "--enable-zoink"
+    export PALUDIS_USE_WITH_ENABLE_EMPTY_THIRD_ARGUMENT=yes
+    test_equality "$(use_enable oink zoink "" )" "--enable-zoink="
 }
 

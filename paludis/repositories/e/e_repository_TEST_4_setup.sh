@@ -1201,6 +1201,23 @@ src_install() {
     rm "${D}"/usr/share/man/xx/man7/bar.en_GB.7 || die
 }
 END
+mkdir -p "cat/use-with-enable-empty-third"
+cat <<'END' > cat/use-with-enable-empty-third/use-with-enable-empty-third-4.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+S=${WORKDIR}
+
+src_configure() {
+    [[ $(use_with   cheese cheese "") == --with-cheese=   ]] || die
+    [[ $(use_enable cheese cheese "") == --enable-cheese= ]] || die
+}
+END
 cd ..
 
 cd ..

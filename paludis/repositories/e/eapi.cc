@@ -246,7 +246,8 @@ namespace
                         n::failure_is_fatal() = destringify_key<bool>(k, "failure_is_fatal"),
                         n::unpack_fix_permissions() = destringify_key<bool>(k, "unpack_fix_permissions"),
                         n::unpack_suffixes() = k.get("unpack_suffixes"),
-                        n::unpack_unrecognised_is_fatal() = destringify_key<bool>(k, "unpack_unrecognised_is_fatal")
+                        n::unpack_unrecognised_is_fatal() = destringify_key<bool>(k, "unpack_unrecognised_is_fatal"),
+                        n::use_with_enable_empty_third_argument() = destringify_key<bool>(k, "use_with_enable_empty_third_argument")
                         ));
     }
 
