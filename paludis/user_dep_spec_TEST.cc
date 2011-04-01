@@ -94,7 +94,7 @@ UserDepSpecTest::check_spec(
         EXPECT_TRUE(! spec.package_name_constraint());
     else
     {
-        EXPECT_TRUE(bool(spec.package_name_constraint()));
+        ASSERT_TRUE(bool(spec.package_name_constraint()));
         EXPECT_EQ(package, stringify(spec.package_name_constraint()->name()));
     }
 
@@ -102,7 +102,7 @@ UserDepSpecTest::check_spec(
         EXPECT_TRUE(! spec.category_name_part_constraint());
     else
     {
-        EXPECT_TRUE(bool(spec.category_name_part_constraint()));
+        ASSERT_TRUE(bool(spec.category_name_part_constraint()));
         EXPECT_EQ(category_name_part, stringify(spec.category_name_part_constraint()->name_part()));
     }
 
@@ -110,7 +110,7 @@ UserDepSpecTest::check_spec(
         EXPECT_TRUE(! spec.package_name_part_constraint());
     else
     {
-        EXPECT_TRUE(bool(spec.package_name_part_constraint()));
+        ASSERT_TRUE(bool(spec.package_name_part_constraint()));
         EXPECT_EQ(package_name_part, stringify(spec.package_name_part_constraint()->name_part()));
     }
 
@@ -121,7 +121,7 @@ UserDepSpecTest::check_spec(
         EXPECT_TRUE((! spec.version_requirements_ptr()) || spec.version_requirements_ptr()->empty());
     else
     {
-        EXPECT_TRUE(bool(spec.version_requirements_ptr()));
+        ASSERT_TRUE(bool(spec.version_requirements_ptr()));
         EXPECT_EQ(version_requirements, stringify(join(
                         spec.version_requirements_ptr()->begin(), spec.version_requirements_ptr()->end(), ", ", &dump_version_requirement)));
     }
@@ -130,7 +130,7 @@ UserDepSpecTest::check_spec(
         EXPECT_TRUE(! spec.exact_slot_constraint());
     else
     {
-        EXPECT_TRUE(bool(spec.exact_slot_constraint()));
+        ASSERT_TRUE(bool(spec.exact_slot_constraint()));
         EXPECT_EQ(slot_requirement, ":" + stringify(spec.exact_slot_constraint()->name()));
     }
 
@@ -138,7 +138,7 @@ UserDepSpecTest::check_spec(
         EXPECT_TRUE(! spec.from_repository_constraint());
     else
     {
-        EXPECT_TRUE(bool(spec.from_repository_constraint()));
+        ASSERT_TRUE(bool(spec.from_repository_constraint()));
         EXPECT_EQ(from_repository, stringify(spec.from_repository_constraint()->name()));
     }
 
@@ -146,7 +146,7 @@ UserDepSpecTest::check_spec(
         EXPECT_TRUE(! spec.in_repository_constraint());
     else
     {
-        EXPECT_TRUE(bool(spec.in_repository_constraint()));
+        ASSERT_TRUE(bool(spec.in_repository_constraint()));
         EXPECT_EQ(in_repository, stringify(spec.in_repository_constraint()->name()));
     }
 
@@ -154,7 +154,7 @@ UserDepSpecTest::check_spec(
         EXPECT_TRUE((! spec.additional_requirements_ptr()) || spec.additional_requirements_ptr()->empty());
     else
     {
-        EXPECT_TRUE(bool(spec.additional_requirements_ptr()));
+        ASSERT_TRUE(bool(spec.additional_requirements_ptr()));
         EXPECT_EQ(additional_requirement, stringify(join(
                         indirect_iterator(spec.additional_requirements_ptr()->begin()),
                         indirect_iterator(spec.additional_requirements_ptr()->end()), ", ")));
@@ -164,7 +164,7 @@ UserDepSpecTest::check_spec(
         EXPECT_TRUE(! spec.installed_at_path_constraint());
     else
     {
-        EXPECT_TRUE(bool(spec.installed_at_path_constraint()));
+        ASSERT_TRUE(bool(spec.installed_at_path_constraint()));
         EXPECT_EQ(installed_at_path, stringify(spec.installed_at_path_constraint()->path()));
     }
 
@@ -172,7 +172,7 @@ UserDepSpecTest::check_spec(
         EXPECT_TRUE(! spec.installable_to_path_constraint());
     else
     {
-        EXPECT_TRUE(bool(spec.installable_to_path_constraint()));
+        ASSERT_TRUE(bool(spec.installable_to_path_constraint()));
         EXPECT_EQ(installable_to_path_f, stringify(spec.installable_to_path_constraint()->path()));
         EXPECT_EQ(installable_to_path_s, spec.installable_to_path_constraint()->include_masked());
     }
