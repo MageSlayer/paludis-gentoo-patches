@@ -231,6 +231,8 @@ EbuildCommand::operator() ()
                 params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_distdir())
         .setenv("PALUDIS_ECONF_EXTRA_OPTIONS",
                 params.package_id()->eapi()->supported()->tools_options()->econf_extra_options())
+        .setenv("PALUDIS_ECONF_EXTRA_OPTIONS_HELP_DEPENDENT",
+                params.package_id()->eapi()->supported()->tools_options()->econf_extra_options_help_dependent())
         .setenv("PALUDIS_UNPACK_UNRECOGNISED_IS_FATAL",
                 params.package_id()->eapi()->supported()->tools_options()->unpack_unrecognised_is_fatal() ? "yes" : "")
         .setenv("PALUDIS_UNPACK_FIX_PERMISSIONS",

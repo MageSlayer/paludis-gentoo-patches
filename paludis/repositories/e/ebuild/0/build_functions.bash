@@ -45,6 +45,11 @@ econf()
         [[ -z "${CBUILD}" ]] || LOCAL_EXTRA_ECONF="--build=${CBUILD} ${LOCAL_EXTRA_ECONF}"
         [[ -z "${CTARGET}" ]] || LOCAL_EXTRA_ECONF="--target=${CTARGET} ${LOCAL_EXTRA_ECONF}"
 
+        for i in ${PALUDIS_ECONF_EXTRA_OPTIONS_HELP_DEPENDENT}; do
+            "${ECONF_SOURCE}/configure" --help 2>/dev/null | grep -q "${i%%::*}" \
+                && LOCAL_EXTRA_ECONF+=" ${i#*::}"
+        done
+
         # If the ebuild passed in --prefix, use that to set --libdir. KDE at least needs this.
 
         ECONF_PREFIX=/usr

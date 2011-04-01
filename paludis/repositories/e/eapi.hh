@@ -87,6 +87,7 @@ namespace paludis
         typedef Name<struct name_ebuild_variable> ebuild_variable;
         typedef Name<struct name_ebuild_new_upgrade_phase_order> ebuild_new_upgrade_phase_order;
         typedef Name<struct name_econf_extra_options> econf_extra_options;
+        typedef Name<struct name_econf_extra_options_help_dependent> econf_extra_options_help_dependent;
         typedef Name<struct name_eclass_must_not_set_variables> eclass_must_not_set_variables;
         typedef Name<struct name_env_a> env_a;
         typedef Name<struct name_env_aa> env_aa;
@@ -464,6 +465,7 @@ namespace paludis
             NamedValue<n::doman_lang_filenames_overrides, bool> doman_lang_filenames_overrides;
             NamedValue<n::dosym_mkdir, bool> dosym_mkdir;
             NamedValue<n::econf_extra_options, std::string> econf_extra_options;
+            NamedValue<n::econf_extra_options_help_dependent, std::string> econf_extra_options_help_dependent;
             NamedValue<n::failure_is_fatal, bool> failure_is_fatal;
             NamedValue<n::unpack_fix_permissions, bool> unpack_fix_permissions;
             NamedValue<n::unpack_suffixes, std::string> unpack_suffixes;

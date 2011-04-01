@@ -877,8 +877,8 @@ src_install() {
 }
 END
 mkdir -p "cat/econf-disable-dependency-tracking" || exit 1
-cat << 'END' > cat/econf-disable-dependency-tracking/econf-disable-dependency-tracking-0.ebuild || exit 1
-EAPI="${PV}"
+cat << 'END' > cat/econf-disable-dependency-tracking/econf-disable-dependency-tracking-4_beta.ebuild || exit 1
+EAPI="${PV%_*}"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -886,7 +886,6 @@ SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="0"
 
 S="${WORKDIR}"
 
@@ -916,7 +915,6 @@ SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="4"
 
 S="${WORKDIR}"
 
@@ -926,6 +924,11 @@ src_unpack() {
 
     cat <<'EOF' > configure
 #!/bin/sh
+
+if echo "$@" | grep -q 'help' ; then
+    echo disable-dependency-tracking
+    exit 0
+fi
 
 if ! echo "$@" | grep -q 'disable-dependency-tracking' ; then
     exit 1

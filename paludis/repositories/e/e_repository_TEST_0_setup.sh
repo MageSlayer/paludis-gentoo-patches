@@ -887,6 +887,11 @@ src_unpack() {
     cat <<'EOF' > configure
 #!/bin/sh
 
+if echo "$@" | grep -q 'help' ; then
+    echo disable-dependency-tracking
+    exit 0
+fi
+
 if echo "$@" | grep -q 'disable-dependency-tracking' ; then
     exit 1
 fi
