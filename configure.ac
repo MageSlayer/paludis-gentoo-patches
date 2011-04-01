@@ -1618,6 +1618,7 @@ dnl }}}
 
 dnl {{{
 
+AC_MSG_CHECKING([whether to build pbins])
 AC_ARG_ENABLE([pbins],
 			  AS_HELP_STRING([--enable-pbins], [Enable pbins (nonfunctional, for development only)]),
 			  [ENABLE_PBINS=$enableval
