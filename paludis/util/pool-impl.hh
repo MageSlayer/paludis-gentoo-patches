@@ -89,7 +89,7 @@ namespace paludis
     template <typename T_>
     template <typename... Args_>
     const std::shared_ptr<const T_>
-    Pool<T_>::create(const Args_ & ... args) const
+    Pool<T_>::really_create(const Args_ & ... args) const
     {
         PoolKeys keys;
         keys.add(args...);
@@ -105,6 +105,38 @@ namespace paludis
             ++_imp->reused;
 
         return i->second;
+    }
+
+    template <typename T_>
+    template <typename... Args_>
+    const std::shared_ptr<const T_>
+    Pool<T_>::create(const Args_ & ... args) const
+    {
+        return really_create(args...);
+    }
+
+    template <typename T_>
+    template <typename T1_>
+    const std::shared_ptr<const T_>
+    Pool<T_>::create(const T1_ & a1) const
+    {
+        return really_create(a1);
+    }
+
+    template <typename T_>
+    template <typename T1_, typename T2_>
+    const std::shared_ptr<const T_>
+    Pool<T_>::create(const T1_ & a1, const T2_ & a2) const
+    {
+        return really_create(a1, a2);
+    }
+
+    template <typename T_>
+    template <typename T1_, typename T2_, typename T3_>
+    const std::shared_ptr<const T_>
+    Pool<T_>::create(const T1_ & a1, const T2_ & a2, const T3_ & a3) const
+    {
+        return really_create(a1, a2, a3);
     }
 
     template <typename T_>

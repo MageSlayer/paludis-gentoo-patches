@@ -42,9 +42,23 @@ namespace paludis
             Pool();
             ~Pool();
 
+            template <typename... Args_>
+            const std::shared_ptr<const T_> really_create(const Args_ & ...) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
         public:
             template <typename... Args_>
             const std::shared_ptr<const T_> create(const Args_ & ...) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            // can't explicitly instantiate variadics
+
+            template <typename T1_>
+            const std::shared_ptr<const T_> create(const T1_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            template <typename T1_, typename T2_>
+            const std::shared_ptr<const T_> create(const T1_ &, const T2_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            template <typename T1_, typename T2_, typename T3_>
+            const std::shared_ptr<const T_> create(const T1_ &, const T2_ &, const T3_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE PoolKey

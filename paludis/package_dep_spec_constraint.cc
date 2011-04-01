@@ -157,7 +157,7 @@ InstallableToPathConstraint::include_masked() const
 template class Pool<InstallableToPathConstraint>;
 template class Singleton<Pool<InstallableToPathConstraint> >;
 template const std::shared_ptr<const InstallableToPathConstraint> Pool<InstallableToPathConstraint>::create(
-        const FSPath &, const bool & ...) const;
+        const FSPath &, const bool &) const;
 
 InstallableToRepositoryConstraint::InstallableToRepositoryConstraint(const RepositoryName & n, const bool i) :
     _name(n),
@@ -182,7 +182,7 @@ InstallableToRepositoryConstraint::include_masked() const
 template class Pool<InstallableToRepositoryConstraint>;
 template class Singleton<Pool<InstallableToRepositoryConstraint> >;
 template const std::shared_ptr<const InstallableToRepositoryConstraint> Pool<InstallableToRepositoryConstraint>::create(
-        const RepositoryName &, const bool & ...) const;
+        const RepositoryName &, const bool &) const;
 
 ExactSlotConstraint::ExactSlotConstraint(const SlotName & n, const bool i) :
     _name(n),
@@ -206,7 +206,7 @@ ExactSlotConstraint::locked() const
 
 template class Pool<ExactSlotConstraint>;
 template class Singleton<Pool<ExactSlotConstraint> >;
-template const std::shared_ptr<const ExactSlotConstraint> Pool<ExactSlotConstraint>::create(const SlotName &, const bool & ...) const;
+template const std::shared_ptr<const ExactSlotConstraint> Pool<ExactSlotConstraint>::create(const SlotName &, const bool &) const;
 
 AnySlotConstraint::AnySlotConstraint(const bool i) :
     _locking(i)
