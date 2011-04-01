@@ -59,7 +59,7 @@ namespace paludis
         public:
             std::size_t operator() (const T_ & t) const
             {
-                return hash_internals::DefaultHash<T_, std::is_integral<T_>::value>::hash(t);
+                return hash_internals::DefaultHash<T_, std::is_integral<T_>::value || std::is_enum<T_>::value>::hash(t);
             }
     };
 
