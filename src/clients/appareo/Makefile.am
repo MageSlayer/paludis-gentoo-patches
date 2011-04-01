@@ -11,7 +11,6 @@ DEFS= \
 SUBDIRS = .
 
 bin_PROGRAMS = appareo
-noinst_PROGRAMS = man-appareo
 man_MANS = appareo.1
 
 SUFFIXES = .1 .txt .xml .html-man-fragment
@@ -19,6 +18,11 @@ SUFFIXES = .1 .txt .xml .html-man-fragment
 man_MANS_txts = appareo.txt
 man_MANS_xmls = appareo.xml
 man_MANS_html_man_fragments = appareo.html-man-fragment
+
+if USE_PREBUILT_DOCUMENTATION
+else
+
+noinst_PROGRAMS = man-appareo
 
 $(man_MANS_txts) : man-appareo
 	if ! ./man-appareo `echo $@ | sed -e 's.^appareo-*..' -e 's,\.txt$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
@@ -49,6 +53,8 @@ man_appareo_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
+
+endif
 
 appareo_SOURCES = \
 	command_line.hh      command_line.cc      \

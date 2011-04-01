@@ -11,7 +11,6 @@ DEFS= \
 SUBDIRS = .
 
 bin_PROGRAMS = accerso
-noinst_PROGRAMS = man-accerso
 man_MANS = accerso.1
 
 SUFFIXES = .1 .txt .xml .html-man-fragment
@@ -19,6 +18,11 @@ SUFFIXES = .1 .txt .xml .html-man-fragment
 man_MANS_txts = accerso.txt
 man_MANS_xmls = accerso.xml
 man_MANS_html_man_fragments = accerso.html-man-fragment
+
+if USE_PREBUILT_DOCUMENTATION
+else
+
+noinst_PROGRAMS = man-accerso
 
 $(man_MANS_txts) : man-accerso
 	if ! ./man-accerso `echo $@ | sed -e 's.^accerso-*..' -e 's,\.txt$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
@@ -49,6 +53,8 @@ man_accerso_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
+
+endif
 
 accerso_SOURCES = \
 	command_line.hh      command_line.cc      \

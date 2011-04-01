@@ -11,7 +11,6 @@ DEFS= \
 SUBDIRS = .
 
 bin_PROGRAMS = instruo
-noinst_PROGRAMS = man-instruo
 man_MANS = instruo.1
 
 SUFFIXES = .1 .txt .xml
@@ -19,6 +18,11 @@ SUFFIXES = .1 .txt .xml
 man_MANS_txts = instruo.txt
 man_MANS_xmls = instruo.xml
 man_MANS_html_man_fragments = instruo.html-man-fragment
+
+if USE_PREBUILT_DOCUMENTATION
+else
+
+noinst_PROGRAMS = man-instruo
 
 $(man_MANS_txts) : man-instruo
 	if ! ./man-instruo `echo $@ | sed -e 's.^instruo-*..' -e 's,\.txt$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
@@ -49,6 +53,8 @@ man_instruo_LDADD = \
 	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
+
+endif
 
 instruo_SOURCES = \
 	command_line.hh      command_line.cc      \

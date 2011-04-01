@@ -985,19 +985,36 @@ AC_SUBST([DOXYGEN_TAG_FILES])
 dnl }}}
 
 dnl {{{ asciidoc & xmlto
-AC_CHECK_PROG(HAVE_ASCIIDOC, [asciidoc], [yes], [no])
-AC_SUBST([HAVE_ASCIIDOC])
-AM_CONDITIONAL([HAVE_ASCIIDOC], test "x$HAVE_ASCIIDOC" = "xyes")
-if test "x$HAVE_ASCIIDOC" = xno ; then
-	AC_MSG_ERROR([asciidoc not found])
+AC_MSG_CHECKING([whether to use pre-built documentation])
+AC_ARG_ENABLE([prebuilt-documentation],
+			  AS_HELP_STRING([--enable-prebuilt-documentation], [Use prebuilt documentation]),
+			  [USE_PREBUILT_DOCUMENTATION=$enableval
+			   AC_MSG_RESULT([$enableval])],
+			   USE_PREBUILT_DOCUMENTATION=no
+			   AC_MSG_RESULT([no]))
+
+AM_CONDITIONAL([USE_PREBUILT_DOCUMENTATION], test "x$USE_PREBUILT_DOCUMENTATION" = "xyes")
+
+if test x$USE_PREBUILT_DOCUMENTATION = xno ; then
+	AC_CHECK_PROG(HAVE_ASCIIDOC, [asciidoc], [yes], [no])
+	if test "x$HAVE_ASCIIDOC" = xno ; then
+		AC_MSG_ERROR([asciidoc not found])
+	fi
+
+	AC_CHECK_PROG(HAVE_XMLTO, [xmlto], [yes], [no])
+	if test "x$HAVE_XMLTO" = xno ; then
+		AC_MSG_ERROR([xmlto not found])
+	fi
+else
+	HAVE_ASCIIDOC=no
+	HAVE_XMLTO=no
 fi
 
-AC_CHECK_PROG(HAVE_XMLTO, [xmlto], [yes], [no])
+AC_SUBST([HAVE_ASCIIDOC])
+AM_CONDITIONAL([HAVE_ASCIIDOC], test "x$HAVE_ASCIIDOC" = "xyes")
+
 AC_SUBST([HAVE_XMLTO])
 AM_CONDITIONAL([HAVE_XMLTO], test "x$HAVE_XMLTO" = "xyes")
-if test "x$HAVE_XMLTO" = xno ; then
-	AC_MSG_ERROR([xmlto not found])
-fi
 dnl }}}
 
 dnl {{{

@@ -15,8 +15,6 @@ SUBDIRS = .
 
 bin_PROGRAMS = cave
 
-noinst_PROGRAMS = man-cave
-
 # When adding commands, you need to add to both command_MANS and
 # libcave_a_SOURCES. You should also update command_factory.cc,
 # doc/clients/Makefile.am and .gitignore.
@@ -93,6 +91,11 @@ command_MANS_html_man_fragments = $(command_MANS_txts:.txt=.html-man-fragment)
 
 SUFFIXES = .1 .txt .xml .html-man-fragment
 
+if USE_PREBUILT_DOCUMENTATION
+else
+
+noinst_PROGRAMS = man-cave
+
 $(command_MANS_txts) : man-cave
 	if ! env \
 	    CAVE_FORMATS_CONF="/dev/null" \
@@ -114,6 +117,18 @@ $(command_MANS_txts) : man-cave
 	    $@-dir/index.html > $@
 	rm -fr $@-dir
 
+man_cave_SOURCES = \
+	man_cave.cc
+
+man_cave_LDADD = \
+	libcave.a \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/resolver/libpaludisresolver.a
+
+endif
+
 cave_SOURCES = \
 	cave.cc
 
@@ -125,16 +140,6 @@ cave_LDADD = \
 	$(top_builddir)/paludis/resolver/libpaludisresolver.a \
 	$(top_builddir)/src/output/liboutput.a \
 	$(DYNAMIC_LD_LIBS)
-
-man_cave_SOURCES = \
-	man_cave.cc
-
-man_cave_LDADD = \
-	libcave.a \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/args/libpaludisargs_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/resolver/libpaludisresolver.a
 
 noinst_LIBRARIES = libcave.a
 
