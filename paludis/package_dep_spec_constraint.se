@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_KeyConstraintOperation()
+{
+    prefix kco
+
+    key kco_equals             "An = constraint"
+    key kco_less_than          "A less than constraint"
+    key kco_greater_than       "A greater than constraint"
+    key kco_question           "A question constraint"
+}
+

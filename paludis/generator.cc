@@ -314,6 +314,7 @@ namespace
                             n::has_installable_to_path() = indeterminate,
                             n::has_installable_to_repository() = indeterminate,
                             n::has_installed_at_path() = false,
+                            n::has_key_requirements() = indeterminate,
                             n::has_package() = indeterminate,
                             n::has_package_name_part() = indeterminate,
                             n::has_tag() = indeterminate,

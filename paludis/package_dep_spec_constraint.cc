@@ -21,8 +21,17 @@
 #include <paludis/util/pool-impl.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+
+#include <istream>
+#include <ostream>
 
 using namespace paludis;
+
+#include <paludis/package_dep_spec_constraint-se.cc>
 
 PackageDepSpecConstraint::~PackageDepSpecConstraint() = default;
 
@@ -224,4 +233,37 @@ AnySlotConstraint::locking() const
 template class Pool<AnySlotConstraint>;
 template class Singleton<Pool<AnySlotConstraint> >;
 template const std::shared_ptr<const AnySlotConstraint> Pool<AnySlotConstraint>::create(const bool &) const;
+
+KeyConstraint::KeyConstraint(const std::string & k, const KeyConstraintOperation o, const std::string & p) :
+    _key(k),
+    _operation(o),
+    _pattern(p)
+{
+}
+
+KeyConstraint::~KeyConstraint() = default;
+
+const std::string
+KeyConstraint::key() const
+{
+    return _key;
+}
+
+KeyConstraintOperation
+KeyConstraint::operation() const
+{
+    return _operation;
+}
+
+const std::string
+KeyConstraint::pattern() const
+{
+    return _pattern;
+}
+
+template class Pool<KeyConstraint>;
+template class Singleton<Pool<KeyConstraint> >;
+template const std::shared_ptr<const KeyConstraint> Pool<KeyConstraint>::create(const std::string &, const KeyConstraintOperation &, const std::string &) const;
+template class Sequence<std::shared_ptr<const KeyConstraint> >;
+template class WrappedForwardIterator<Sequence<std::shared_ptr<const KeyConstraint> >::ConstIteratorTag, const std::shared_ptr<const KeyConstraint> >;
 

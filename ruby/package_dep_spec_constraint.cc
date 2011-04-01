@@ -41,6 +41,9 @@ namespace
     static VALUE c_installable_to_repository_constraint;
     static VALUE c_any_slot_constraint;
     static VALUE c_exact_slot_constraint;
+    static VALUE c_key_constraint;
+
+    static VALUE c_key_constraint_operation;
 
     struct V
     {
@@ -109,6 +112,12 @@ namespace
         void visit(const ExactSlotConstraint &)
         {
             value = Data_Wrap_Struct(c_exact_slot_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
+                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+        }
+
+        void visit(const KeyConstraint &)
+        {
+            value = Data_Wrap_Struct(c_key_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
                     new std::shared_ptr<const PackageDepSpecConstraint>(mm));
         }
     };
@@ -282,6 +291,45 @@ namespace
         return rb_str_new2(stringify((std::static_pointer_cast<const ExactSlotConstraint>(*ptr))->name()).c_str());
     }
 
+    /*
+     * Document-method: key
+     *
+     * The key constraint.
+     */
+    static VALUE
+    key_constraint_key(VALUE self)
+    {
+        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
+        return rb_str_new2(stringify((std::static_pointer_cast<const KeyConstraint>(*ptr))->key()).c_str());
+    }
+
+    /*
+     * Document-method: pattern
+     *
+     * The pattern constraint.
+     */
+    static VALUE
+    key_constraint_pattern(VALUE self)
+    {
+        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
+        return rb_str_new2(stringify((std::static_pointer_cast<const KeyConstraint>(*ptr))->pattern()).c_str());
+    }
+
+    /*
+     * Document-method: operation
+     *
+     * The operation constraint.
+     */
+    static VALUE
+    key_constraint_operation(VALUE self)
+    {
+        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
+        return INT2FIX((std::static_pointer_cast<const KeyConstraint>(*ptr))->operation());
+    }
+
     void do_register_package_dep_spec_constraint()
     {
         /*
@@ -406,6 +454,33 @@ namespace
                     &exact_slot_constraint_locked), 0);
         rb_define_method(c_exact_slot_constraint, "name", RUBY_FUNC_CAST(
                     &exact_slot_constraint_name), 0);
+
+        /*
+         * Document-class: Paludis::KeyConstraint
+         *
+         * Represents a [.key=value] constraint in a PackageDepSpec.
+         */
+        c_key_constraint = rb_define_class_under(
+                paludis_module(), "KeyConstraint", c_package_dep_spec_constraint);
+        rb_funcall(c_key_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_key_constraint, "key", RUBY_FUNC_CAST(
+                    &key_constraint_key), 0);
+        rb_define_method(c_key_constraint, "pattern", RUBY_FUNC_CAST(
+                    &key_constraint_pattern), 0);
+        rb_define_method(c_key_constraint, "operation", RUBY_FUNC_CAST(
+                    &key_constraint_operation), 0);
+
+        /*
+         * Document-module: Paludis::KeyConstraintOperation
+         *
+         * The operation for a KeyConstraint.
+         */
+        c_key_constraint_operation = rb_define_module_under(paludis_module(), "KeyConstraintOperation");
+        for (KeyConstraintOperation l(static_cast<KeyConstraintOperation>(0)), l_end(last_kco) ; l != l_end ;
+                l = static_cast<KeyConstraintOperation>(static_cast<int>(l) + 1))
+            rb_define_const(c_key_constraint_operation, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+
+        // cc_enum_special<paludis/package_dep_spec_constraint-se.hh, KeyConstraint, c_key_constraint_operation>
     }
 }
 

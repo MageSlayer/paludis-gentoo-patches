@@ -620,6 +620,12 @@ PackageDepSpec::additional_requirements_ptr() const
     return _imp->data->additional_requirements_ptr();
 }
 
+const std::shared_ptr<const KeyConstraintSequence>
+PackageDepSpec::all_key_constraints() const
+{
+    return _imp->data->all_key_constraints();
+}
+
 std::string
 PackageDepSpec::_as_string() const
 {

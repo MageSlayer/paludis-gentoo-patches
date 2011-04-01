@@ -694,6 +694,7 @@ namespace
                                 n::has_installable_to_path() = false,
                                 n::has_installable_to_repository() = false,
                                 n::has_installed_at_path() = false,
+                                n::has_key_requirements() = false,
                                 n::has_package() = true,
                                 n::has_package_name_part() = false,
                                 n::has_tag() = indeterminate,

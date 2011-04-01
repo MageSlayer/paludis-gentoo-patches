@@ -83,6 +83,7 @@ namespace paludis
         std::shared_ptr<const InRepositoryConstraint> in_repository;
         std::shared_ptr<const FromRepositoryConstraint> from_repository;
         std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements;
+        std::shared_ptr<const KeyConstraintSequence> all_keys;
         const std::string str;
 
         Imp(
@@ -96,6 +97,7 @@ namespace paludis
                 const std::shared_ptr<const InRepositoryConstraint> & ri,
                 const std::shared_ptr<const FromRepositoryConstraint> & rf,
                 const std::shared_ptr<const AdditionalPackageDepSpecRequirements> & u,
+                const std::shared_ptr<const KeyConstraintSequence> & k,
                 const std::string & st) :
             package_name_constraint(q),
             category_name_part_constraint(c),
@@ -107,6 +109,7 @@ namespace paludis
             in_repository(ri),
             from_repository(rf),
             additional_requirements(u),
+            all_keys(k),
             str(st)
         {
         }
@@ -236,6 +239,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
             p.in_repository_constraint(),
             p.from_repository_constraint(),
             p.additional_requirements_ptr(),
+            p.all_key_constraints(),
             stringify(p))
 {
     if (p.version_requirements_ptr())
@@ -258,6 +262,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
             p.in_repository_constraint(),
             p.from_repository_constraint(),
             p.additional_requirements_ptr(),
+            p.all_key_constraints(),
             p.py_str())
 {
     std::copy(p.version_requirements_ptr()->begin(), p.version_requirements_ptr()->end(),
@@ -300,6 +305,13 @@ PythonPackageDepSpec::operator PackageDepSpec() const
         for (AdditionalPackageDepSpecRequirements::ConstIterator i(additional_requirements_ptr()->begin()),
                 i_end(additional_requirements_ptr()->end()) ; i != i_end ; ++i)
             p.additional_requirement(*i);
+    }
+
+    if (all_key_constraints())
+    {
+        for (auto i(all_key_constraints()->begin()), i_end(all_key_constraints()->end()) ;
+                i != i_end ; ++i)
+            p.key_constraint((*i)->key(), (*i)->operation(), (*i)->pattern());
     }
 
     if (version_requirements_ptr())
@@ -382,6 +394,12 @@ std::shared_ptr<const AdditionalPackageDepSpecRequirements>
 PythonPackageDepSpec::additional_requirements_ptr() const
 {
     return _imp->additional_requirements;
+}
+
+const std::shared_ptr<const KeyConstraintSequence>
+PythonPackageDepSpec::all_key_constraints() const
+{
+    return _imp->all_keys;
 }
 
 std::string

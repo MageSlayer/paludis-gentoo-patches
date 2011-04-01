@@ -403,6 +403,14 @@ namespace paludis
             const std::shared_ptr<const InstallableToPathConstraint> installable_to_path_constraint() const;
 
             /**
+             * Fetch all our KeyConstraints, if we have any, or
+             * a null pointer otherwise.
+             *
+             * \since 0.61
+             */
+            const std::shared_ptr<const KeyConstraintSequence> all_key_constraints() const;
+
+            /**
              * Fetch any additional requirements (may be a zero pointer).
              */
             std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;

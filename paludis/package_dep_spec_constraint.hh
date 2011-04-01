@@ -42,7 +42,8 @@ namespace paludis
             InstallableToPathConstraint,
             InstallableToRepositoryConstraint,
             AnySlotConstraint,
-            ExactSlotConstraint
+            ExactSlotConstraint,
+            KeyConstraint
         >::Type>
     {
         public:
@@ -245,6 +246,29 @@ namespace paludis
             bool locking() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    class PALUDIS_VISIBLE KeyConstraint :
+        public PackageDepSpecConstraint,
+        public ImplementAcceptMethods<PackageDepSpecConstraint, KeyConstraint>
+    {
+        friend class Pool<KeyConstraint>;
+
+        private:
+            std::string _key;
+            KeyConstraintOperation _operation;
+            std::string _pattern;
+
+            KeyConstraint(const std::string &, const KeyConstraintOperation, const std::string &);
+
+            KeyConstraint(const KeyConstraint &) = delete;
+
+        public:
+            ~KeyConstraint();
+
+            const std::string key() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            KeyConstraintOperation operation() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string pattern() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
     extern template class Pool<NameConstraint>;
     extern template class Pool<PackageNamePartConstraint>;
     extern template class Pool<CategoryNamePartConstraint>;
@@ -255,6 +279,7 @@ namespace paludis
     extern template class Pool<InstallableToRepositoryConstraint>;
     extern template class Pool<ExactSlotConstraint>;
     extern template class Pool<AnySlotConstraint>;
+    extern template class Pool<KeyConstraint>;
 }
 
 #endif

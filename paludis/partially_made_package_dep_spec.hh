@@ -206,6 +206,12 @@ namespace paludis
                     const std::shared_ptr<const AdditionalPackageDepSpecRequirement> &);
 
             /**
+             * Add a key requirement, return ourself.
+             */
+            PartiallyMadePackageDepSpec & key_constraint(
+                    const std::string & key, const KeyConstraintOperation, const std::string & pattern);
+
+            /**
              * Clear additional requirements, return ourself.
              *
              * \since 0.41

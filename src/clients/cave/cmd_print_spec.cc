@@ -258,7 +258,10 @@ namespace
                     a_end(cmdline.a_additional_requirement.end_args()) ;
                     a != a_end ; ++a)
                 if (! a->empty())
-                    s.additional_requirement(std::make_shared<UserKeyRequirement>(*a));
+                {
+                    auto k(parse_user_key_constraint(*a));
+                    s.key_constraint(std::get<0>(k), std::get<1>(k), std::get<2>(k));
+                }
         }
 
         cout << PackageDepSpec(s) << endl;

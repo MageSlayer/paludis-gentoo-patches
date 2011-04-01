@@ -179,6 +179,7 @@ namespace paludis
                 const std::shared_ptr<const FromRepositoryConstraint> from_repository_constraint() const;
                 const std::shared_ptr<const ExactSlotConstraint> exact_slot_constraint() const;
                 const std::shared_ptr<const AnySlotConstraint> any_slot_constraint() const;
+                const std::shared_ptr<const KeyConstraintSequence> all_key_constraints() const;
 
                 std::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
                 VersionRequirementsMode version_requirements_mode() const;

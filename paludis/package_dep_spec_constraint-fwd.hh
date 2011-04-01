@@ -21,6 +21,10 @@
 #define PALUDIS_GUARD_PALUDIS_PACKAGE_DEP_SPEC_CONSTRAINT_FWD_HH 1
 
 #include <paludis/util/pool-fwd.hh>
+#include <paludis/util/attributes.hh>
+#include <paludis/util/sequence-fwd.hh>
+#include <iosfwd>
+#include <memory>
 
 namespace paludis
 {
@@ -55,6 +59,14 @@ namespace paludis
 
     class AnySlotConstraint;
     typedef Pool<AnySlotConstraint> AnySlotConstraintPool;
+
+    class KeyConstraint;
+    typedef Pool<KeyConstraint> KeyConstraintPool;
+
+    typedef Sequence<std::shared_ptr<const KeyConstraint> > KeyConstraintSequence;
+
+#include <paludis/package_dep_spec_constraint-se.hh>
+
 }
 
 #endif

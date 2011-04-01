@@ -28,6 +28,7 @@
 #include <paludis/repository.hh>
 #include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/contents.hh>
 
 #include <paludis/util/set.hh>
 #include <paludis/util/options.hh>
@@ -36,6 +37,9 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/accept_visitor.hh>
+#include <paludis/util/destringify.hh>
+#include <paludis/util/join.hh>
 
 #include <functional>
 #include <algorithm>
@@ -45,6 +49,577 @@
 using namespace paludis;
 
 #include <paludis/match_package-se.cc>
+
+namespace
+{
+    std::string stringify_contents_entry(const ContentsEntry & e)
+    {
+        return stringify(e.location_key()->value());
+    }
+
+    struct StringifyEqual
+    {
+        const std::string pattern;
+
+        StringifyEqual(const std::string & p) :
+            pattern(p)
+        {
+        }
+
+        template <typename T_>
+        bool operator() (const T_ & t) const
+        {
+            return stringify(t) == pattern;
+        }
+
+        bool operator() (const ContentsEntry & e) const
+        {
+            return stringify_contents_entry(e) == pattern;
+        }
+    };
+
+    struct SpecTreeSearcher
+    {
+        const Environment * const env;
+        const std::shared_ptr<const PackageID> id;
+        const std::string pattern;
+
+        SpecTreeSearcher(const Environment * const e, const std::shared_ptr<const PackageID> & i, const std::string & p) :
+            env(e),
+            id(i),
+            pattern(p)
+        {
+        }
+
+        bool visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & n) const
+        {
+            return indirect_iterator(n.end()) != std::find_if(indirect_iterator(n.begin()), indirect_iterator(n.end()),
+                    accept_visitor_returning<bool>(*this));
+        }
+
+        bool visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type & n) const
+        {
+            return indirect_iterator(n.end()) != std::find_if(indirect_iterator(n.begin()), indirect_iterator(n.end()),
+                    accept_visitor_returning<bool>(*this));
+        }
+
+        bool visit(const GenericSpecTree::NodeType<ExactlyOneDepSpec>::Type & n) const
+        {
+            return indirect_iterator(n.end()) != std::find_if(indirect_iterator(n.begin()), indirect_iterator(n.end()),
+                    accept_visitor_returning<bool>(*this));
+        }
+
+        bool visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & n) const
+        {
+            if (n.spec()->condition_met(env, id))
+                return indirect_iterator(n.end()) != std::find_if(indirect_iterator(n.begin()), indirect_iterator(n.end()),
+                        accept_visitor_returning<bool>(*this));
+            else
+                return false;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<PlainTextDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+
+        bool visit(const GenericSpecTree::NodeType<DependenciesLabelsDepSpec>::Type & n) const
+        {
+            return indirect_iterator(n.spec()->end()) != std::find_if(indirect_iterator(n.spec()->begin()),
+                    indirect_iterator(n.spec()->end()), StringifyEqual(pattern));
+        }
+
+        bool visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type & n) const
+        {
+            return indirect_iterator(n.spec()->end()) != std::find_if(indirect_iterator(n.spec()->begin()),
+                    indirect_iterator(n.spec()->end()), StringifyEqual(pattern));
+        }
+
+        bool visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type & n) const
+        {
+            return stringify(*n.spec()) == pattern;
+        }
+    };
+
+    struct KeyComparator
+    {
+        const Environment * const env;
+        const std::shared_ptr<const PackageID> id;
+        const std::string pattern;
+        const KeyConstraintOperation op;
+
+        KeyComparator(const Environment * const e, const std::shared_ptr<const PackageID> & i,
+                const std::string & p, const KeyConstraintOperation o) :
+            env(e),
+            id(i),
+            pattern(p),
+            op(o)
+        {
+        }
+
+        bool visit(const MetadataSectionKey &) const
+        {
+            return false;
+        }
+
+        bool visit(const MetadataTimeKey & k) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return pattern == stringify(k.value().seconds());
+                case kco_less_than:
+                    return k.value().seconds() < destringify<time_t>(pattern);
+                case kco_greater_than:
+                    return k.value().seconds() > destringify<time_t>(pattern);
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+
+        bool visit(const MetadataValueKey<std::string> & k) const
+        {
+            return pattern == stringify(k.value());
+        }
+
+        bool visit(const MetadataValueKey<SlotName> & k) const
+        {
+            return pattern == stringify(k.value());
+        }
+
+        bool visit(const MetadataValueKey<FSPath> & k) const
+        {
+            return pattern == stringify(k.value());
+        }
+
+        bool visit(const MetadataValueKey<bool> & k) const
+        {
+            return pattern == stringify(k.value());
+        }
+
+        bool visit(const MetadataValueKey<long> & k) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return pattern == stringify(k.value());
+                case kco_less_than:
+                    return k.value() < destringify<long>(pattern);
+                case kco_greater_than:
+                    return k.value() > destringify<long>(pattern);
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+
+        bool visit(const MetadataValueKey<std::shared_ptr<const Choices> > &) const
+        {
+            return false;
+        }
+
+        bool visit(const MetadataValueKey<std::shared_ptr<const Contents> > & s) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return pattern == join(indirect_iterator(s.value()->begin()), indirect_iterator(s.value()->end()), " ",
+                            stringify_contents_entry);
+                case kco_less_than:
+                    return indirect_iterator(s.value()->end()) != std::find_if(
+                            indirect_iterator(s.value()->begin()),
+                            indirect_iterator(s.value()->end()),
+                            StringifyEqual(pattern));
+
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+
+        bool visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k) const
+        {
+            return pattern == stringify(*k.value());
+        }
+
+        bool visit(const MetadataSpecTreeKey<DependencySpecTree> & s) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return false;
+                case kco_less_than:
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+
+        bool visit(const MetadataSpecTreeKey<SetSpecTree> & s) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return false;
+                case kco_less_than:
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+
+        bool visit(const MetadataSpecTreeKey<PlainTextSpecTree> & s) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return false;
+                case kco_less_than:
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+
+        bool visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & s) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return false;
+                case kco_less_than:
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+
+        bool visit(const MetadataSpecTreeKey<ProvideSpecTree> & s) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return false;
+                case kco_less_than:
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+
+        bool visit(const MetadataSpecTreeKey<SimpleURISpecTree> & s) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return false;
+                case kco_less_than:
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+
+        bool visit(const MetadataSpecTreeKey<FetchableURISpecTree> & s) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return false;
+                case kco_less_than:
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+
+        bool visit(const MetadataSpecTreeKey<LicenseSpecTree> & s) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return false;
+                case kco_less_than:
+                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+
+        bool visit(const MetadataCollectionKey<FSPathSequence> & s) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return pattern == join(s.value()->begin(), s.value()->end(), " ");
+                case kco_less_than:
+                    return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
+                            StringifyEqual(pattern));
+
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+
+        bool visit(const MetadataCollectionKey<PackageIDSequence> & s) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return pattern == join(indirect_iterator(s.value()->begin()), indirect_iterator(s.value()->end()), " ");
+                case kco_less_than:
+                    return indirect_iterator(s.value()->end()) != std::find_if(
+                            indirect_iterator(s.value()->begin()),
+                            indirect_iterator(s.value()->end()),
+                            StringifyEqual(pattern));
+
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+
+        bool visit(const MetadataCollectionKey<Sequence<std::string> > & s) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return pattern == join(s.value()->begin(), s.value()->end(), " ");
+                case kco_less_than:
+                    return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
+                            StringifyEqual(pattern));
+
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+
+        bool visit(const MetadataCollectionKey<Set<std::string> > & s) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return pattern == join(s.value()->begin(), s.value()->end(), " ");
+                case kco_less_than:
+                    return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
+                            StringifyEqual(pattern));
+
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+
+        bool visit(const MetadataCollectionKey<Map<std::string, std::string> > &) const
+        {
+            return false;
+        }
+
+        bool visit(const MetadataCollectionKey<KeywordNameSet> & s) const
+        {
+            switch (op)
+            {
+                case kco_equals:
+                    return pattern == join(s.value()->begin(), s.value()->end(), " ");
+                case kco_less_than:
+                    return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
+                            StringifyEqual(pattern));
+
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
+        }
+    };
+
+    bool
+    match_key_constraint(
+            const Environment * const env,
+            const std::shared_ptr<const PackageID> & id,
+            const std::shared_ptr<const PackageID> &,
+            const std::shared_ptr<const KeyConstraint> & constraint)
+    {
+        const MetadataKey * key(0);
+
+        auto repo(env->fetch_repository(id->repository_name()));
+        if (0 == constraint->key().compare(0, 3, "::$"))
+        {
+            if (constraint->key() == "::$format")
+                key = repo->format_key().get();
+            else if (constraint->key() == "::$location")
+                key = repo->location_key().get();
+            else if (constraint->key() == "::$installed_root")
+                key = repo->installed_root_key().get();
+            else if (constraint->key() == "::$accept_keywords")
+                key = repo->accept_keywords_key().get();
+            else if (constraint->key() == "::$sync_host")
+                key = repo->sync_host_key().get();
+        }
+        else if (0 == constraint->key().compare(0, 1, "$"))
+        {
+            if (constraint->key() == "$behaviours")
+                key = id->behaviours_key().get();
+            else if (constraint->key() == "$build_dependencies")
+                key = id->build_dependencies_key().get();
+            else if (constraint->key() == "$choices")
+                key = id->choices_key().get();
+            else if (constraint->key() == "$contained_in")
+                key = id->contained_in_key().get();
+            else if (constraint->key() == "$contains")
+                key = id->contains_key().get();
+            else if (constraint->key() == "$contents")
+                key = id->contents_key().get();
+            else if (constraint->key() == "$dependencies")
+                key = id->dependencies_key().get();
+            else if (constraint->key() == "$fetches")
+                key = id->fetches_key().get();
+            else if (constraint->key() == "$from_repositories")
+                key = id->from_repositories_key().get();
+            else if (constraint->key() == "$fs_location")
+                key = id->fs_location_key().get();
+            else if (constraint->key() == "$homepage")
+                key = id->homepage_key().get();
+            else if (constraint->key() == "$installed_time")
+                key = id->installed_time_key().get();
+            else if (constraint->key() == "$keywords")
+                key = id->keywords_key().get();
+            else if (constraint->key() == "$long_description")
+                key = id->long_description_key().get();
+            else if (constraint->key() == "$post_dependencies")
+                key = id->post_dependencies_key().get();
+            else if (constraint->key() == "$provide")
+                key = id->provide_key().get();
+            else if (constraint->key() == "$run_dependencies")
+                key = id->run_dependencies_key().get();
+            else if (constraint->key() == "$short_description")
+                key = id->short_description_key().get();
+            else if (constraint->key() == "$slot")
+                key = id->slot_key().get();
+            else if (constraint->key() == "$suggested_dependencies")
+                key = id->suggested_dependencies_key().get();
+            else if (constraint->key() == "$virtual_for")
+                key = id->virtual_for_key().get();
+        }
+        else if (0 == constraint->key().compare(0, 2, "::"))
+        {
+            Repository::MetadataConstIterator m(repo->find_metadata(constraint->key().substr(2)));
+            if (m != repo->end_metadata())
+                key = m->get();
+        }
+        else
+        {
+            PackageID::MetadataConstIterator m(id->find_metadata(constraint->key()));
+            if (m != id->end_metadata())
+                key = m->get();
+        }
+
+        if (! key)
+            return false;
+
+        if (constraint->operation() == kco_question)
+            return true;
+        else
+        {
+            KeyComparator c(env, id, constraint->pattern(), constraint->operation());
+            return key->accept_returning<bool>(c);
+        }
+    }
+}
 
 bool
 paludis::match_package_with_maybe_changes(
@@ -182,6 +757,16 @@ paludis::match_package_with_maybe_changes(
                     u_end(spec.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
                 if (! (*u)->requirement_met(&env, maybe_changes_to_owner, id, from_id, maybe_changes_to_target).first)
                     return false;
+        }
+    }
+
+    if (spec.all_key_constraints())
+    {
+        for (auto c(spec.all_key_constraints()->begin()), c_end(spec.all_key_constraints()->end()) ;
+                c != c_end ; ++c)
+        {
+            if (! match_key_constraint(&env, id, from_id, *c))
+                return false;
         }
     }
 

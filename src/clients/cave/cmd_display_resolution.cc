@@ -79,6 +79,7 @@
 #include <paludis/changed_choices.hh>
 #include <paludis/mask_utils.hh>
 #include <paludis/dep_spec_annotations.hh>
+#include <paludis/additional_package_dep_spec_requirement.hh>
 
 #include <set>
 #include <iterator>

@@ -37,6 +37,7 @@ namespace paludis
         typedef Name<struct name_has_installable_to_path> has_installable_to_path;
         typedef Name<struct name_has_installable_to_repository> has_installable_to_repository;
         typedef Name<struct name_has_installed_at_path> has_installed_at_path;
+        typedef Name<struct name_has_key_requirements> has_key_requirements;
         typedef Name<struct name_has_package> has_package;
         typedef Name<struct name_has_package_name_part> has_package_name_part;
         typedef Name<struct name_has_tag> has_tag;
@@ -60,6 +61,7 @@ namespace paludis
         NamedValue<n::has_installable_to_path, Tribool> has_installable_to_path;
         NamedValue<n::has_installable_to_repository, Tribool> has_installable_to_repository;
         NamedValue<n::has_installed_at_path, Tribool> has_installed_at_path;
+        NamedValue<n::has_key_requirements, Tribool> has_key_requirements;
         NamedValue<n::has_package, Tribool> has_package;
         NamedValue<n::has_package_name_part, Tribool> has_package_name_part;
         NamedValue<n::has_tag, Tribool> has_tag;

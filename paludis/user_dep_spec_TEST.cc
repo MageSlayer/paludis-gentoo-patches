@@ -51,6 +51,24 @@ namespace
         return stringify(v.version_operator()) + stringify(v.version_spec());
     }
 
+    std::string stringify_key_constraint(const KeyConstraint & k)
+    {
+        std::string result(k.key());
+
+        switch (k.operation())
+        {
+            case kco_question:     result.append("?"); break;
+            case kco_equals:       result.append("="); break;
+            case kco_less_than:    result.append("<"); break;
+            case kco_greater_than: result.append(">"); break;
+            case last_kco:
+                break;
+        }
+
+        result.append(k.pattern());
+        return "[." + result + "]";
+    }
+
     class UserDepSpecTest :
         public testing::Test
     {
@@ -154,10 +172,17 @@ UserDepSpecTest::check_spec(
         EXPECT_TRUE((! spec.additional_requirements_ptr()) || spec.additional_requirements_ptr()->empty());
     else
     {
-        ASSERT_TRUE(bool(spec.additional_requirements_ptr()));
-        EXPECT_EQ(additional_requirement, stringify(join(
-                        indirect_iterator(spec.additional_requirements_ptr()->begin()),
-                        indirect_iterator(spec.additional_requirements_ptr()->end()), ", ")));
+        ASSERT_TRUE(bool(spec.additional_requirements_ptr()) || bool(spec.all_key_constraints()));
+        std::string x;
+        if (spec.additional_requirements_ptr())
+            x.append(stringify(join(
+                            indirect_iterator(spec.additional_requirements_ptr()->begin()),
+                            indirect_iterator(spec.additional_requirements_ptr()->end()), ", ")));
+        if (spec.all_key_constraints())
+            x.append(stringify(join(
+                            indirect_iterator(spec.all_key_constraints()->begin()),
+                            indirect_iterator(spec.all_key_constraints()->end()), ", ", &stringify_key_constraint)));
+        EXPECT_EQ(additional_requirement, x);
     }
 
     if (installed_at_path.empty())

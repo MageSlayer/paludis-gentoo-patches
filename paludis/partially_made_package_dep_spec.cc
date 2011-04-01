@@ -60,6 +60,7 @@ namespace
         std::shared_ptr<const InstallableToRepositoryConstraint> installable_to_repository;
         std::shared_ptr<const InstalledAtPathConstraint> installed_at_path;
         std::shared_ptr<const InstallableToPathConstraint> installable_to_path;
+        std::shared_ptr<KeyConstraintSequence> all_keys;
         std::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
         PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec_v;
 
@@ -84,12 +85,17 @@ namespace
             installable_to_repository(other.installable_to_repository_constraint()),
             installed_at_path(other.installed_at_path_constraint()),
             installable_to_path(other.installable_to_path_constraint()),
+            all_keys(other.all_key_constraints() ? new KeyConstraintSequence : 0),
             additional_requirements(other.additional_requirements_ptr() ? new AdditionalPackageDepSpecRequirements : 0),
             options_for_partially_made_package_dep_spec_v(other.options_for_partially_made_package_dep_spec())
         {
             if (version_requirements)
                 std::copy(other.version_requirements_ptr()->begin(), other.version_requirements_ptr()->end(),
                         version_requirements->back_inserter());
+
+            if (all_keys)
+                std::copy(other.all_key_constraints()->begin(), other.all_key_constraints()->end(),
+                        all_keys->back_inserter());
 
             if (additional_requirements)
                 std::copy(other.additional_requirements_ptr()->begin(), other.additional_requirements_ptr()->end(),
@@ -110,6 +116,7 @@ namespace
             installable_to_repository(other.installable_to_repository),
             installed_at_path(other.installed_at_path),
             installable_to_path(other.installable_to_path),
+            all_keys(other.all_keys),
             additional_requirements(other.additional_requirements),
             options_for_partially_made_package_dep_spec_v(other.options_for_partially_made_package_dep_spec_v)
         {
@@ -293,6 +300,25 @@ namespace
                         u_end(additional_requirements_ptr()->end()) ; u != u_end ; ++u)
                     s << (*u)->as_raw_string();
 
+            if (all_key_constraints())
+                for (auto u(all_key_constraints()->begin()), u_end(all_key_constraints()->end()) ; u != u_end ; ++u)
+                {
+                    s << "[" << (*u)->key();
+
+                    switch ((*u)->operation())
+                    {
+                        case kco_equals:         s << "=" << (*u)->pattern(); break;
+                        case kco_less_than:      s << "<" << (*u)->pattern(); break;
+                        case kco_greater_than:   s << ">" << (*u)->pattern(); break;
+                        case kco_question:       s << "?";                    break;
+
+                        case last_kco:
+                            throw InternalError(PALUDIS_HERE, "Bad KeyConstraintOperation");
+                    }
+
+                    s << "]";
+                }
+
             return s.str();
         }
 
@@ -359,6 +385,11 @@ namespace
         virtual std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
         {
             return additional_requirements;
+        }
+
+        virtual const std::shared_ptr<const KeyConstraintSequence> all_key_constraints() const
+        {
+            return all_keys;
         }
 
         virtual const PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec() const
@@ -580,6 +611,15 @@ PartiallyMadePackageDepSpec::additional_requirement(const std::shared_ptr<const 
     if (! _imp->data->additional_requirements)
         _imp->data->additional_requirements = std::make_shared<AdditionalPackageDepSpecRequirements>();
     _imp->data->additional_requirements->push_back(req);
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::key_constraint(const std::string & k, const KeyConstraintOperation o, const std::string & p)
+{
+    if (! _imp->data->all_keys)
+        _imp->data->all_keys = std::make_shared<KeyConstraintSequence>();
+    _imp->data->all_keys->push_back(KeyConstraintPool::get_instance()->create(k, o, p));
     return *this;
 }
 

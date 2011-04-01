@@ -50,6 +50,7 @@ paludis::resolver::match_qpns(
                     n::has_installable_to_path() = false,
                     n::has_installable_to_repository() = false,
                     n::has_installed_at_path() = false,
+                    n::has_key_requirements() = false,
                     n::has_package() = indeterminate,
                     n::has_package_name_part() = indeterminate,
                     n::has_tag() = false,

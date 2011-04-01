@@ -63,8 +63,6 @@ namespace paludis
             ///\}
     };
 
-    struct UserKeyRequirement;
-
     /**
      * The VersionSpecOptions to use for parsing a user spec.
      *

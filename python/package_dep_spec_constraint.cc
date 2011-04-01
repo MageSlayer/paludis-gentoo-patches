@@ -46,6 +46,12 @@ class class_package_dep_spec_constraint :
 void expose_package_dep_spec_constraint()
 {
     /**
+     * Enums
+     */
+    enum_auto("KeyConstraintOperation", last_kco,
+            "The operation for a KeyConstraint");
+
+    /**
      * PackageDepSpecConstraint
      */
     bp::register_ptr_to_python<std::shared_ptr<const PackageDepSpecConstraint> >();
@@ -218,6 +224,29 @@ void expose_package_dep_spec_constraint()
 
         .add_property("name", &ExactSlotConstraint::name,
                 "[RO] The slot name"
+            )
+        ;
+
+    /**
+     * KeyConstraint
+     */
+    class_package_dep_spec_constraint<KeyConstraint>
+        (
+         "KeyConstraint",
+         "A [.key=value] constraint for a PackageDepSpec.",
+         bp::no_init
+        )
+
+        .add_property("key", &KeyConstraint::key,
+                "[RO] The key"
+            )
+
+        .add_property("pattern", &KeyConstraint::pattern,
+                "[RO] The pattern"
+            )
+
+        .add_property("operation", &KeyConstraint::operation,
+                "[RO] The operation"
             )
         ;
 }

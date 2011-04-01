@@ -23,8 +23,11 @@
 #include <paludis/user_dep_spec-fwd.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/filter.hh>
-#include <paludis/additional_package_dep_spec_requirement.hh>
+#include <paludis/package_dep_spec_constraint-fwd.hh>
+
 #include <paludis/util/pimp.hh>
+
+#include <tuple>
 
 namespace paludis
 {
@@ -53,46 +56,13 @@ namespace paludis
             const std::string &) PALUDIS_VISIBLE;
 
     /**
-     * A key requirement for a user PackageDepSpec.
+     * Split up a [.key=value] into its component parts.
      *
-     * \since 0.36
      * \ingroup g_dep_spec
+     * \since 0.61
      */
-    class PALUDIS_VISIBLE UserKeyRequirement :
-        public AdditionalPackageDepSpecRequirement
-    {
-        private:
-            Pimp<UserKeyRequirement> _imp;
-
-        public:
-            ///\name Basic operations
-            ///\{
-
-            UserKeyRequirement(const std::string &);
-            ~UserKeyRequirement();
-
-            ///\}
-
-            virtual const std::pair<bool, std::string> requirement_met(
-                    const Environment * const, const ChangedChoices *,
-                    const std::shared_ptr<const PackageID> &,
-                    const std::shared_ptr<const PackageID> &,
-                    const ChangedChoices * const) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual const std::string as_human_string(
-                    const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            virtual Tribool accumulate_changes_to_make_met(
-                    const Environment * const,
-                    const ChangedChoices * const,
-                    const std::shared_ptr<const PackageID> &,
-                    const std::shared_ptr<const PackageID> &,
-                    ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-    };
-
-    extern template class Pimp<UserKeyRequirement>;
+    std::tuple<std::string, KeyConstraintOperation, std::string> parse_user_key_constraint(
+            const std::string &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 }
 
 #endif
