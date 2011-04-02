@@ -74,7 +74,7 @@ noinst_DATA = $(man_MANS_html_man_fragments)
 
 EXTRA_DIST = \
 	$(man_MANS) \
-	$(man_MAN_html_man_fragments) \
+	$(man_MANS_html_man_fragments) \
 	$(TESTS)
 
 DISTCLEANFILES = \
@@ -82,5 +82,5 @@ DISTCLEANFILES = \
 	$(noinst_DATA) \
 	$(man_MANS_txts) \
 	$(man_MANS_xmls) \
-	$(man_MAN_html_man_fragments)
+	$(man_MANS_html_man_fragments)
 
