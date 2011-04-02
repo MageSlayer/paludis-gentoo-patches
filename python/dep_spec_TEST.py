@@ -71,18 +71,6 @@ class TestCase_1_DepSpecs(unittest.TestCase):
         self.assertEqual(str(self.pds.in_repository_constraint.name), "testrepo")
         self.assertEqual(self.pds.from_repository_constraint, None)
 
-    def test_07_version_requirements(self):
-        self.get_depspecs()
-        vrc = self.pds.version_requirements
-
-        self.assertEquals(len(list(vrc)), 1)
-        self.assertEquals(iter(vrc).next().version_spec, VersionSpec("1"))
-        self.assertEquals(iter(vrc).next().version_operator.value, VersionOperator(">=").value)
-
-    def test_08_version_requirements_mode(self):
-        self.get_depspecs()
-        self.assertEquals(self.pds.version_requirements_mode, VersionRequirementsMode.AND)
-
 ###    def test_09_additional_requirements(self):
 ###        spec = parse_user_package_dep_spec("foo/monkey[foo]", UserPackageDepSpecOptions())
 ###        ur = iter(spec.additional_requirements).next()

@@ -183,9 +183,12 @@ namespace paludis
             PartiallyMadePackageDepSpec & clear_category_name_part();
 
             /**
-             * Add a version requirement, return ourself.
+             * Add a version constraint, return ourself.
+             *
+             * \since 0.61
              */
-            PartiallyMadePackageDepSpec & version_requirement(const VersionRequirement &);
+            PartiallyMadePackageDepSpec & version_constraint(
+                    const VersionSpec &, const VersionOperator &, const VersionConstraintCombiner);
 
             /**
              * Clear all version requirement, return ourself.
@@ -193,11 +196,6 @@ namespace paludis
              * \since 0.55
              */
             PartiallyMadePackageDepSpec & clear_version_requirements();
-
-            /**
-             * Set our version requirements mode, return ourself.
-             */
-            PartiallyMadePackageDepSpec & version_requirements_mode(const VersionRequirementsMode &);
 
             /**
              * Add an additional requirement, return ourself.

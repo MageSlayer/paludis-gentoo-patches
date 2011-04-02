@@ -64,7 +64,6 @@
 #include <paludis/selection.hh>
 #include <paludis/filter.hh>
 #include <paludis/match_package.hh>
-#include <paludis/version_requirements.hh>
 #include <paludis/choice.hh>
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
@@ -73,6 +72,7 @@
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/version_operator.hh>
 
 #include <paludis/util/pimp-impl.hh>
 
@@ -1271,16 +1271,15 @@ Decider::find_any_score(
     // AnyDepSpecChildHandler::commit in satitised_dependencies.cc
     // matches this logic
     OperatorScore operator_bias(os_worse_than_worst);
-    if (spec.version_requirements_ptr() && ! spec.version_requirements_ptr()->empty())
+    if (spec.all_version_constraints() && ! spec.all_version_constraints()->empty())
     {
         OperatorScore score(os_worse_than_worst);
-        for (VersionRequirements::ConstIterator v(spec.version_requirements_ptr()->begin()),
-                v_end(spec.version_requirements_ptr()->end()) ;
+        for (auto v(spec.all_version_constraints()->begin()), v_end(spec.all_version_constraints()->end()) ;
                 v != v_end ; ++v)
         {
             OperatorScore local_score(os_worse_than_worst);
 
-            switch (v->version_operator().value())
+            switch ((*v)->version_operator().value())
             {
                 case vo_greater:
                 case vo_greater_equal:
@@ -1308,17 +1307,17 @@ Decider::find_any_score(
             if (score == os_worse_than_worst)
                 score = local_score;
             else
-                switch (spec.version_requirements_mode())
+                switch ((*v)->combiner())
                 {
-                    case vr_and:
+                    case vcc_and:
                         score = is_block ? std::max(score, local_score) : std::min(score, local_score);
                         break;
 
-                    case vr_or:
+                    case vcc_or:
                         score = is_block ? std::min(score, local_score) : std::max(score, local_score);
                         break;
 
-                    case last_vr:
+                    case last_vcc:
                         break;
                 }
         }

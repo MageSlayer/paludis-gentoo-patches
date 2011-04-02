@@ -37,7 +37,6 @@
 #include <paludis/set_file.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/version_operator.hh>
-#include <paludis/version_requirements.hh>
 
 #include <paludis/util/config_file.hh>
 #include <paludis/util/is_file_with_extension.hh>
@@ -296,9 +295,7 @@ ERepositorySets::security_set(bool insecurity) const
                         std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                                     make_package_dep_spec({ })
                                     .package((*c)->name())
-                                    .version_requirement(make_named_values<VersionRequirement>(
-                                            n::version_operator() = vo_equal,
-                                            n::version_spec() = (*c)->version()))
+                                    .version_constraint((*c)->version(), vo_equal, vcc_and)
                                     .in_repository((*c)->repository_name())));
                         security_packages->top()->append(spec);
                     }
@@ -328,9 +325,7 @@ ERepositorySets::security_set(bool insecurity) const
 
                             std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(make_package_dep_spec({ })
                                         .package((*r)->name())
-                                        .version_requirement(make_named_values<VersionRequirement>(
-                                                n::version_operator() = vo_equal,
-                                                n::version_spec() = (*r)->version()))
+                                        .version_constraint((*r)->version(), vo_equal, vcc_and)
                                         .in_repository((*r)->repository_name())));
                             security_packages->top()->append(spec);
                             ok = true;

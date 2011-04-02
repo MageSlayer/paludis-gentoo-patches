@@ -32,7 +32,6 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/version_operator-fwd.hh>
-#include <paludis/version_requirements-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
@@ -340,14 +339,12 @@ namespace paludis
             const std::shared_ptr<const CategoryNamePartConstraint> category_name_part_constraint() const;
 
             /**
-             * Fetch the version requirements (may be a zero pointer).
+             * Fetch all our VersionConstraints, if we have any, or
+             * a null pointer otherwise.
+             *
+             * \since 0.61
              */
-            std::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
-
-            /**
-             * Fetch the version requirements mode.
-             */
-            VersionRequirementsMode version_requirements_mode() const;
+            const std::shared_ptr<const VersionConstraintSequence> all_version_constraints() const;
 
             /**
              * Fetch the single ExactSlotConstraint, if we have one, or

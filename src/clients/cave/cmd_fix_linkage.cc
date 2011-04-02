@@ -28,6 +28,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/create_iterator-impl.hh>
+
 #include <paludis/broken_linkage_finder.hh>
 #include <paludis/package_id.hh>
 #include <paludis/name.hh>
@@ -36,8 +37,8 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/version_operator.hh>
-#include <paludis/version_requirements.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/version_spec.hh>
 
 #include <iostream>
 #include <set>
@@ -213,9 +214,7 @@ FixLinkageCommand::run(
             part_spec.exact_slot_constraint((*pkg_it)->slot_key()->value(), false);
 
         if (cmdline.a_exact.specified())
-            part_spec.version_requirement(make_named_values<VersionRequirement>(
-                        n::version_operator() = vo_equal,
-                        n::version_spec() = (*pkg_it)->version()));
+            part_spec.version_constraint((*pkg_it)->version(), vo_equal, vcc_and);
 
         targets->push_back(std::make_pair(stringify(PackageDepSpec(part_spec)), join(broken_files.begin(), broken_files.end(), ", ")));
     }

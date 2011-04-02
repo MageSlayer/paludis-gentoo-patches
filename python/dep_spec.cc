@@ -26,10 +26,11 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/version_requirements.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/dep_spec_data.hh>
 #include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/version_spec.hh>
+#include <paludis/version_operator.hh>
 
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
@@ -76,8 +77,7 @@ namespace paludis
         std::shared_ptr<const NameConstraint> package_name_constraint;
         std::shared_ptr<const CategoryNamePartConstraint> category_name_part_constraint;
         std::shared_ptr<const PackageNamePartConstraint> package_name_part_constraint;
-        std::shared_ptr<VersionRequirements> version_requirements;
-        VersionRequirementsMode version_requirements_mode;
+        std::shared_ptr<const VersionConstraintSequence> all_versions;
         std::shared_ptr<const AnySlotConstraint> any_slot;
         std::shared_ptr<const ExactSlotConstraint> exact_slot;
         std::shared_ptr<const InRepositoryConstraint> in_repository;
@@ -90,8 +90,7 @@ namespace paludis
                 const std::shared_ptr<const NameConstraint> & q,
                 const std::shared_ptr<const CategoryNamePartConstraint> & c,
                 const std::shared_ptr<const PackageNamePartConstraint> & p,
-                const std::shared_ptr<VersionRequirements> & v,
-                const VersionRequirementsMode m,
+                const std::shared_ptr<const VersionConstraintSequence> & v,
                 const std::shared_ptr<const AnySlotConstraint> & s,
                 const std::shared_ptr<const ExactSlotConstraint> & xs,
                 const std::shared_ptr<const InRepositoryConstraint> & ri,
@@ -102,8 +101,7 @@ namespace paludis
             package_name_constraint(q),
             category_name_part_constraint(c),
             package_name_part_constraint(p),
-            version_requirements(v),
-            version_requirements_mode(m),
+            all_versions(v),
             any_slot(s),
             exact_slot(xs),
             in_repository(ri),
@@ -232,8 +230,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
             p.package_name_constraint(),
             p.category_name_part_constraint(),
             p.package_name_part_constraint(),
-            std::make_shared<VersionRequirements>(),
-            p.version_requirements_mode(),
+            p.all_version_constraints(),
             p.any_slot_constraint(),
             p.exact_slot_constraint(),
             p.in_repository_constraint(),
@@ -242,11 +239,6 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
             p.all_key_constraints(),
             stringify(p))
 {
-    if (p.version_requirements_ptr())
-    {
-        std::copy(p.version_requirements_ptr()->begin(), p.version_requirements_ptr()->end(),
-            _imp->version_requirements->back_inserter());
-    }
 }
 
 PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
@@ -255,8 +247,7 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
             p.package_name_constraint(),
             p.category_name_part_constraint(),
             p.package_name_part_constraint(),
-            std::make_shared<VersionRequirements>(),
-            p.version_requirements_mode(),
+            p.all_version_constraints(),
             p.any_slot_constraint(),
             p.exact_slot_constraint(),
             p.in_repository_constraint(),
@@ -265,8 +256,6 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
             p.all_key_constraints(),
             p.py_str())
 {
-    std::copy(p.version_requirements_ptr()->begin(), p.version_requirements_ptr()->end(),
-            _imp->version_requirements->back_inserter());
 }
 
 PythonPackageDepSpec::~PythonPackageDepSpec()
@@ -286,7 +275,12 @@ PythonPackageDepSpec::operator PackageDepSpec() const
     if (package_name_part_constraint())
         p.package_name_part(package_name_part_constraint()->name_part());
 
-    p.version_requirements_mode(version_requirements_mode());
+    if (all_version_constraints())
+    {
+        for (auto i(all_version_constraints()->begin()), i_end(all_version_constraints()->end()) ;
+                i != i_end ; ++i)
+            p.version_constraint((*i)->version_spec(), (*i)->version_operator(), (*i)->combiner());
+    }
 
     if (any_slot_constraint())
         p.any_slot_constraint(any_slot_constraint()->locking());
@@ -312,13 +306,6 @@ PythonPackageDepSpec::operator PackageDepSpec() const
         for (auto i(all_key_constraints()->begin()), i_end(all_key_constraints()->end()) ;
                 i != i_end ; ++i)
             p.key_constraint((*i)->key(), (*i)->operation(), (*i)->pattern());
-    }
-
-    if (version_requirements_ptr())
-    {
-        for (VersionRequirements::ConstIterator i(version_requirements_ptr()->begin()),
-                i_end(version_requirements_ptr()->end()) ; i != i_end ; ++i)
-            p.version_requirement(*i);
     }
 
     return p.to_package_dep_spec();
@@ -348,22 +335,10 @@ PythonPackageDepSpec::category_name_part_constraint() const
     return _imp->category_name_part_constraint;
 }
 
-std::shared_ptr<const VersionRequirements>
-PythonPackageDepSpec::version_requirements_ptr() const
+const std::shared_ptr<const VersionConstraintSequence>
+PythonPackageDepSpec::all_version_constraints() const
 {
-    return _imp->version_requirements;
-}
-
-VersionRequirementsMode
-PythonPackageDepSpec::version_requirements_mode() const
-{
-    return _imp->version_requirements_mode;
-}
-
-void
-PythonPackageDepSpec::set_version_requirements_mode(const VersionRequirementsMode m)
-{
-    _imp->version_requirements_mode = m;
+    return _imp->all_versions;
 }
 
 const std::shared_ptr<const AnySlotConstraint>
@@ -1246,16 +1221,6 @@ void expose_dep_spec()
         .add_property("category_name_part_constraint", &PythonPackageDepSpec::category_name_part_constraint,
                 "[ro] CategoryNamePartConstraint\n"
                 "Category name part constraint (may be None)."
-                )
-
-        .add_property("version_requirements", &PythonPackageDepSpec::version_requirements_ptr,
-                "[ro] VersionRequirements\n"
-                "Version requirements (may be None)."
-                )
-
-        .add_property("version_requirements_mode", &PythonPackageDepSpec::version_requirements_mode,
-                "[ro] VersionRequirementsMode\n"
-                "Version requirements mode."
                 )
 
         .add_property("exact_slot", &PythonPackageDepSpec::exact_slot_constraint,

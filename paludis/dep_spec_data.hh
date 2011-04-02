@@ -26,7 +26,6 @@
 #include <paludis/changed_choices-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/version_operator-fwd.hh>
-#include <paludis/version_requirements-fwd.hh>
 #include <paludis/additional_package_dep_spec_requirement-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/partially_made_package_dep_spec-fwd.hh>
@@ -137,14 +136,12 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
-             * Fetch the version requirements (may be a zero pointer).
+             * Fetch all our VersionConstraints, if we have any, or
+             * a null pointer otherwise.
+             *
+             * \since 0.61
              */
-            virtual std::shared_ptr<const VersionRequirements> version_requirements_ptr() const = 0;
-
-            /**
-             * Fetch the version requirements mode.
-             */
-            virtual VersionRequirementsMode version_requirements_mode() const = 0;
+            virtual const std::shared_ptr<const VersionConstraintSequence> all_version_constraints() const = 0;
 
             /**
              * Fetch the single ExactSlotConstraint, if we have one, or

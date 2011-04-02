@@ -21,7 +21,6 @@
 #include <paludis/environment.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/version_requirements.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
@@ -560,16 +559,10 @@ PackageDepSpec::category_name_part_constraint() const
     return _imp->data->category_name_part_constraint();
 }
 
-std::shared_ptr<const VersionRequirements>
-PackageDepSpec::version_requirements_ptr() const
+const std::shared_ptr<const VersionConstraintSequence>
+PackageDepSpec::all_version_constraints() const
 {
-    return _imp->data->version_requirements_ptr();
-}
-
-VersionRequirementsMode
-PackageDepSpec::version_requirements_mode() const
-{
-    return _imp->data->version_requirements_mode();
+    return _imp->data->all_version_constraints();
 }
 
 const std::shared_ptr<const AnySlotConstraint>

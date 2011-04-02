@@ -22,12 +22,15 @@
 
 #include <paludis/package_dep_spec_constraint-fwd.hh>
 #include <paludis/name.hh>
+#include <paludis/version_operator-fwd.hh>
+#include <paludis/version_spec-fwd.hh>
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pool.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/fs_path.hh>
+#include <paludis/util/pimp.hh>
 
 namespace paludis
 {
@@ -36,6 +39,7 @@ namespace paludis
             NameConstraint,
             PackageNamePartConstraint,
             CategoryNamePartConstraint,
+            VersionConstraint,
             InRepositoryConstraint,
             FromRepositoryConstraint,
             InstalledAtPathConstraint,
@@ -105,6 +109,26 @@ namespace paludis
             ~PackageNamePartConstraint();
 
             const PackageNamePart name_part() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    class PALUDIS_VISIBLE VersionConstraint :
+        public PackageDepSpecConstraint,
+        public ImplementAcceptMethods<PackageDepSpecConstraint, VersionConstraint>
+    {
+        private:
+            Pimp<VersionConstraint> _imp;
+
+            VersionConstraint(const VersionConstraint &) = delete;
+
+        public:
+            /* not pooled for now, since VersionSpec gives equality for 1 and 1-r0 */
+            VersionConstraint(const VersionSpec &, const VersionOperator &, const VersionConstraintCombiner);
+
+            ~VersionConstraint();
+
+            const VersionSpec version_spec() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const VersionOperator version_operator() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            VersionConstraintCombiner combiner() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE InRepositoryConstraint :
@@ -272,6 +296,7 @@ namespace paludis
     extern template class Pool<NameConstraint>;
     extern template class Pool<PackageNamePartConstraint>;
     extern template class Pool<CategoryNamePartConstraint>;
+    extern template class Pool<VersionConstraint>;
     extern template class Pool<InRepositoryConstraint>;
     extern template class Pool<FromRepositoryConstraint>;
     extern template class Pool<InstalledAtPathConstraint>;
@@ -280,6 +305,8 @@ namespace paludis
     extern template class Pool<ExactSlotConstraint>;
     extern template class Pool<AnySlotConstraint>;
     extern template class Pool<KeyConstraint>;
+
+    extern template class Pimp<VersionConstraint>;
 }
 
 #endif

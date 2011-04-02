@@ -31,8 +31,8 @@
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/version_operator.hh>
 #include <paludis/environment.hh>
-#include <paludis/version_requirements.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
@@ -72,9 +72,7 @@ namespace paludis
                     std::make_shared<PackageDepSpec>(
                             make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
                             .package(v->name())
-                            .version_requirement(make_named_values<VersionRequirement>(
-                                    n::version_operator() = vo_equal,
-                                    n::version_spec() = v->version()))
+                            .version_constraint(v->version(), vo_equal, vcc_and)
                             .exact_slot_constraint(v->slot_key() ? v->slot_key()->value() : SlotName("UNKNOWN"), false)
                             .in_repository(v->repository_name()))
                     :

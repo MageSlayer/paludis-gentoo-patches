@@ -45,7 +45,6 @@
 #include <paludis/repository_name_cache.hh>
 #include <paludis/set_file.hh>
 #include <paludis/version_operator.hh>
-#include <paludis/version_requirements.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
@@ -1111,7 +1110,11 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
             IDMap::iterator i(_imp->ids.find(p.package_name_constraint()->name()));
             if (_imp->ids.end() == i)
                 i = _imp->ids.insert(std::make_pair(p.package_name_constraint()->name(), std::make_shared<PackageIDSequence>())).first;
-            i->second->push_back(make_id(p.package_name_constraint()->name(), p.version_requirements_ptr()->begin()->version_spec(), *d));
+
+            if ((! bool(p.all_version_constraints())) || (std::distance(p.all_version_constraints()->begin(), p.all_version_constraints()->end()) != 1))
+                throw InternalError(PALUDIS_HERE, "didn't get a single version constraint");
+
+            i->second->push_back(make_id(p.package_name_constraint()->name(), (*p.all_version_constraints()->begin())->version_spec(), *d));
         }
         catch (const InternalError &)
         {

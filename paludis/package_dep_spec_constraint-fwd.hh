@@ -39,6 +39,10 @@ namespace paludis
     class CategoryNamePartConstraint;
     typedef Pool<CategoryNamePartConstraint> CategoryNamePartConstraintPool;
 
+    class VersionConstraint;
+
+    typedef Sequence<std::shared_ptr<const VersionConstraint> > VersionConstraintSequence;
+
     class InRepositoryConstraint;
     typedef Pool<InRepositoryConstraint> InRepositoryConstraintPool;
 

@@ -19,15 +19,17 @@
 
 #include <paludis/elike_package_dep_spec.hh>
 #include <paludis/elike_use_requirement.hh>
-#include <paludis/util/options.hh>
-#include <paludis/util/log.hh>
-#include <paludis/util/make_named_values.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/version_requirements.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+
+#include <paludis/util/options.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/make_named_values.hh>
+#include <paludis/util/options.hh>
+
 #include <strings.h>
 
 using namespace paludis;
@@ -59,7 +61,7 @@ paludis::partial_parse_generic_elike_package_dep_spec(const std::string & ss, co
         /* Leading (or maybe =*) operator, so trailing version. */
         VersionOperator op(fns.get_remove_version_operator()(s));
         VersionSpec spec(fns.get_remove_trailing_version()(s));
-        fns.add_version_requirement()(op, spec, result);
+        fns.add_version_requirement()(spec, op, vcc_and, result);
         fns.add_package_requirement()(s, result);
     }
     else
@@ -122,68 +124,7 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
                         << "Version range dependencies not safe for use here";
             }
 
-            {
-                char needed_mode(0);
-
-                while (! flag.empty())
-                {
-                    Context cc("When parsing [] segment '" + flag + "':");
-
-                    std::string op;
-                    std::string::size_type opos(0);
-                    while (opos < flag.length())
-                        if (std::string::npos == std::string("><=~").find(flag.at(opos)))
-                            break;
-                        else
-                            ++opos;
-
-                    op = flag.substr(0, opos);
-                    flag.erase(0, opos);
-
-                    if (op.empty())
-                        throw PackageDepSpecError("Missing operator inside []");
-
-                    VersionOperator vop(op);
-
-                    std::string ver;
-                    opos = flag.find_first_of("|&");
-                    if (std::string::npos == opos)
-                    {
-
-                        ver = flag;
-                        flag.clear();
-                    }
-                    else
-                    {
-                        if (0 == needed_mode)
-                            needed_mode = flag.at(opos);
-                        else if (needed_mode != flag.at(opos))
-                            throw PackageDepSpecError("Mixed & and | inside []");
-
-                        result.version_requirements_mode((flag.at(opos) == '|' ? vr_or : vr_and));
-                        ver = flag.substr(0, opos++);
-                        flag.erase(0, opos);
-                    }
-
-                    if (ver.empty())
-                        throw PackageDepSpecError("Missing version after operator '" + stringify(vop) + " inside []");
-
-                    if ('*' == ver.at(ver.length() - 1))
-                    {
-                        ver.erase(ver.length() - 1);
-                        if (vop == vo_equal)
-                            vop = options[epdso_nice_equal_star] ? vo_nice_equal_star : vo_stupid_equal_star;
-                        else
-                            throw PackageDepSpecError("Invalid use of * with operator '" + stringify(vop) + " inside []");
-                    }
-
-                    VersionSpec vs(ver, version_options);
-                    result.version_requirement(make_named_values<VersionRequirement>(
-                                n::version_operator() = vop,
-                                n::version_spec() = vs));
-                    had_bracket_version_requirements = true;
-                }
-            }
+            parse_elike_version_range(flag, result, options, version_options, had_bracket_version_requirements);
             break;
 
         case '.':
@@ -429,11 +370,13 @@ paludis::elike_get_remove_trailing_version(std::string & s, const VersionSpecOpt
 }
 
 void
-paludis::elike_add_version_requirement(const VersionOperator & op, const VersionSpec & spec, PartiallyMadePackageDepSpec & result)
+paludis::elike_add_version_requirement(
+        const VersionSpec & ver,
+        const VersionOperator & op,
+        const VersionConstraintCombiner vcc,
+        PartiallyMadePackageDepSpec & result)
 {
-    result.version_requirement(make_named_values<VersionRequirement>(
-                n::version_operator() = op,
-                n::version_spec() = spec));
+    result.version_constraint(ver, op, vcc);
 }
 
 void
@@ -484,7 +427,7 @@ paludis::partial_parse_elike_package_dep_spec(
 
     return partial_parse_generic_elike_package_dep_spec(ss, make_named_values<GenericELikePackageDepSpecParseFunctions>(
                 n::add_package_requirement() = std::bind(&elike_add_package_requirement, _1, _2),
-                n::add_version_requirement() = std::bind(&elike_add_version_requirement, _1, _2, _3),
+                n::add_version_requirement() = std::bind(&elike_add_version_requirement, _1, _2, _3, _4),
                 n::check_sanity() = &elike_check_sanity,
                 n::get_remove_trailing_version() = std::bind(&elike_get_remove_trailing_version, _1, version_options),
                 n::get_remove_version_operator() = std::bind(&elike_get_remove_version_operator, _1, options),
@@ -503,5 +446,70 @@ paludis::parse_elike_package_dep_spec(const std::string & ss, const ELikePackage
         const VersionSpecOptions & version_options)
 {
     return partial_parse_elike_package_dep_spec(ss, options, version_options);
+}
+
+void
+paludis::parse_elike_version_range(
+        const std::string & s,
+        PartiallyMadePackageDepSpec & result,
+        const ELikePackageDepSpecOptions & options,
+        const VersionSpecOptions & version_options,
+        bool & had_bracket_version_requirements)
+{
+    std::string flag(s);
+    VersionConstraintCombiner vcc(vcc_and);
+
+    while (! flag.empty())
+    {
+        Context cc("When parsing [] segment '" + flag + "':");
+        VersionConstraintCombiner next_vcc(vcc);
+
+        std::string op;
+        std::string::size_type opos(0);
+        while (opos < flag.length())
+            if (std::string::npos == std::string("><=~").find(flag.at(opos)))
+                break;
+            else
+                ++opos;
+
+        op = flag.substr(0, opos);
+        flag.erase(0, opos);
+
+        if (op.empty())
+            throw PackageDepSpecError("Missing operator inside []");
+
+        VersionOperator vop(op);
+
+        std::string ver;
+        opos = flag.find_first_of("|&");
+        if (std::string::npos == opos)
+        {
+            ver = flag;
+            flag.clear();
+        }
+        else
+        {
+            next_vcc = (flag.at(opos) == '|' ? vcc_or : vcc_and);
+            ver = flag.substr(0, opos++);
+            flag.erase(0, opos);
+        }
+
+        if (ver.empty())
+            throw PackageDepSpecError("Missing version after operator '" + stringify(vop) + " inside []");
+
+        if ('*' == ver.at(ver.length() - 1))
+        {
+            ver.erase(ver.length() - 1);
+            if (vop == vo_equal)
+                vop = options[epdso_nice_equal_star] ? vo_nice_equal_star : vo_stupid_equal_star;
+            else
+                throw PackageDepSpecError("Invalid use of * with operator '" + stringify(vop) + " inside []");
+        }
+
+        VersionSpec vs(ver, version_options);
+        result.version_constraint(vs, vop, vcc);
+        had_bracket_version_requirements = true;
+        vcc = next_vcc;
+    }
 }
 

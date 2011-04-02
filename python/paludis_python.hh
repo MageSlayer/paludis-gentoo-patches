@@ -193,7 +193,6 @@ void expose_package_id() PALUDIS_VISIBLE;
 void expose_repository() PALUDIS_VISIBLE;
 void expose_selection() PALUDIS_VISIBLE;
 void expose_version_operator() PALUDIS_VISIBLE;
-void expose_version_requirements() PALUDIS_VISIBLE;
 void expose_version_spec() PALUDIS_VISIBLE;
 
 #endif

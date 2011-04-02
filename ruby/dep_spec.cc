@@ -22,7 +22,6 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/version_requirements.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/package_dep_spec_constraint.hh>
 
@@ -64,8 +63,6 @@ namespace
     static VALUE c_any_dep_spec;
     static VALUE c_exactly_one_dep_spec;
     static VALUE c_conditional_dep_spec;
-
-    static VALUE c_version_requirements_mode;
 
     struct WrappedSpecBase;
     template <typename> struct WrappedSpec;
@@ -719,35 +716,6 @@ namespace
                 std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installable_to_repository_constraint());
     }
 
-    /*
-     * call-seq:
-     *     version_requirements -> Array
-     *
-     * Fetch the version requirements. E.g. [ {:operator => '=', :spec => VersionSpec.new('0.1') } ]
-     */
-    VALUE
-    package_dep_spec_version_requirements_ptr(VALUE self)
-    {
-        std::shared_ptr<WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        VALUE result(rb_ary_new());
-        VALUE result_hash;
-        if (std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->version_requirements_ptr())
-            for (VersionRequirements::ConstIterator i(std::static_pointer_cast<const PackageDepSpec>((*ptr)->base_spec())->
-                        version_requirements_ptr()->begin()),
-                    i_end(std::static_pointer_cast<const PackageDepSpec>((*ptr)->base_spec())->version_requirements_ptr()->end()) ;
-                    i != i_end; ++i)
-            {
-                result_hash = rb_hash_new();
-                rb_hash_aset(result_hash, ID2SYM(rb_intern("operator")),
-                    rb_str_new2(stringify(i->version_operator()).c_str()));
-                rb_hash_aset(result_hash, ID2SYM(rb_intern("spec")),
-                    version_spec_to_value(i->version_spec()));
-                rb_ary_push(result, result_hash);
-            }
-        return result;
-    }
-
 #ifdef CIARANM_REMOVED_THIS
     /*
      * call-seq:
@@ -779,14 +747,6 @@ namespace
         return result;
     }
 #endif
-
-    VALUE
-    package_dep_spec_version_requirements_mode(VALUE self)
-    {
-        std::shared_ptr<WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        return INT2FIX(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->version_requirements_mode());
-    }
 
     /*
      * Document-method: original_url
@@ -1068,8 +1028,6 @@ namespace
         rb_define_method(c_package_dep_spec, "installable_to_path_constraint", RUBY_FUNC_CAST(&package_dep_spec_installable_to_path_constraint), 0);
         rb_define_method(c_package_dep_spec, "any_slot_constraint", RUBY_FUNC_CAST(&package_dep_spec_any_slot_constraint), 0);
         rb_define_method(c_package_dep_spec, "exact_slot_constraint", RUBY_FUNC_CAST(&package_dep_spec_exact_slot_constraint), 0);
-        rb_define_method(c_package_dep_spec, "version_requirements", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_ptr), 0);
-        rb_define_method(c_package_dep_spec, "version_requirements_mode", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_mode), 0);
 #ifdef CIARANM_REMOVED_THIS
         rb_define_method(c_package_dep_spec, "use_requirements", RUBY_FUNC_CAST(&package_dep_spec_use_requirements), 0);
 #endif
@@ -1134,19 +1092,6 @@ namespace
         rb_define_method(c_block_dep_spec, "blocking", RUBY_FUNC_CAST(&block_dep_spec_blocking), 0);
         VALUE (* block_dep_spec_to_s) (VALUE) = &dep_spec_to_s<BlockDepSpec>;
         rb_define_method(c_block_dep_spec, "to_s", RUBY_FUNC_CAST(block_dep_spec_to_s), 0);
-
-        /*
-         * Document-module: Paludis::VersionRequirementsMode
-         *
-         * What sort of VersionRequirements to we have.
-         *
-         */
-        c_version_requirements_mode = rb_define_module_under(paludis_module(), "VersionRequirementsMode");
-        for (VersionRequirementsMode l(static_cast<VersionRequirementsMode>(0)), l_end(last_vr) ; l != l_end ;
-                l = static_cast<VersionRequirementsMode>(static_cast<int>(l) + 1))
-            rb_define_const(c_version_requirements_mode, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
-
-        // cc_enum_special<paludis/version_requirements.hh, VersionRequirementsMode, c_version_requirements_mode>
 
         rb_define_module_function(paludis_module(), "parse_user_package_dep_spec", RUBY_FUNC_CAST(&paludis_parse_user_dep_spec), -1);
     }

@@ -36,7 +36,6 @@
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
-#include <paludis/version_requirements.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/pretty_printer.hh>
@@ -175,10 +174,7 @@ namespace
 
         return make_shared_copy(PackageDepSpec(make_package_dep_spec({ pmpdso_always_use_ranged_deps })
                     .package(QualifiedPackageName("gem/" + dep.name()))
-                    .version_requirement(make_named_values<VersionRequirement>(
-                            n::version_operator() = op,
-                            n::version_spec() = ver
-                            ))
+                    .version_constraint(ver, op, vcc_and)
                     ));
     }
 

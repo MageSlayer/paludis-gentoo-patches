@@ -20,8 +20,10 @@
 #include "cmd_print_spec.hh"
 #include "exceptions.hh"
 #include "format_string.hh"
+
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
+
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/iterator_funcs.hh>
@@ -32,6 +34,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
+
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/user_dep_spec.hh>
@@ -39,7 +42,8 @@
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/version_operator.hh>
-#include <paludis/version_requirements.hh>
+#include <paludis/version_spec.hh>
+
 #include <iostream>
 #include <algorithm>
 
@@ -218,6 +222,17 @@ namespace
                 s.category_name_part(CategoryNamePart(cmdline.a_category_part.argument()));
         }
 
+        VersionConstraintCombiner vcc(vcc_and);
+        if (cmdline.a_version_requirements_mode.specified())
+        {
+            if (cmdline.a_version_requirements_mode.argument() == "and")
+                vcc = vcc_and;
+            else if (cmdline.a_version_requirements_mode.argument() == "or")
+                vcc = vcc_or;
+            else
+                throw args::DoHelp("Argument for --" + cmdline.a_version_requirements_mode.long_name() + " unrecognised");
+        }
+
         if (cmdline.a_version_requirement.specified())
         {
             s.clear_version_requirements();
@@ -232,22 +247,8 @@ namespace
                         throw args::DoHelp("--" + cmdline.a_version_requirement.long_name() + " arguments should be in the form =1.23");
 
                     std::string op(a->substr(0, p)), ver(a->substr(p));
-
-                    s.version_requirement(make_named_values<VersionRequirement>(
-                                n::version_operator() = VersionOperator(op),
-                                n::version_spec() = VersionSpec(ver, {})
-                                ));
+                    s.version_constraint(VersionSpec(ver, {}), VersionOperator(op), vcc);
                 }
-        }
-
-        if (cmdline.a_version_requirements_mode.specified())
-        {
-            if (cmdline.a_version_requirements_mode.argument() == "and")
-                s.version_requirements_mode(vr_and);
-            else if (cmdline.a_version_requirements_mode.argument() == "or")
-                s.version_requirements_mode(vr_or);
-            else
-                throw args::DoHelp("Argument for --" + cmdline.a_version_requirements_mode.long_name() + " unrecognised");
         }
 
         if (cmdline.a_additional_requirement.specified())

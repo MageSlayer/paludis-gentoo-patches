@@ -21,7 +21,6 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
-#include <paludis/version_requirements.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
@@ -29,6 +28,7 @@
 #include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/package_dep_spec_constraint.hh>
 #include <paludis/contents.hh>
+#include <paludis/version_operator.hh>
 
 #include <paludis/util/set.hh>
 #include <paludis/util/options.hh>
@@ -640,35 +640,26 @@ paludis::match_package_with_maybe_changes(
     if (spec.category_name_part_constraint() && spec.category_name_part_constraint()->name_part() != id->name().category())
         return false;
 
-    if (spec.version_requirements_ptr())
-        switch (spec.version_requirements_mode())
+    if (spec.all_version_constraints())
+    {
+        bool ok(true);
+
+        for (auto r(spec.all_version_constraints()->begin()), r_end(spec.all_version_constraints()->end()) ;
+                r != r_end ; ++r)
         {
-            case vr_and:
-                for (VersionRequirements::ConstIterator r(spec.version_requirements_ptr()->begin()),
-                        r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
-                    if (! r->version_operator().as_version_spec_comparator()(id->version(), r->version_spec()))
-                        return false;
-                break;
+            bool one((*r)->version_operator().as_version_spec_comparator()(id->version(), (*r)->version_spec()));
 
-            case vr_or:
-                {
-                    bool matched(false);
-                    for (VersionRequirements::ConstIterator r(spec.version_requirements_ptr()->begin()),
-                            r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
-                        if (r->version_operator().as_version_spec_comparator()(id->version(), r->version_spec()))
-                        {
-                            matched = true;
-                            break;
-                        }
-
-                    if (! matched)
-                        return false;
-                }
-                break;
-
-            case last_vr:
-                ;
+            switch ((*r)->combiner())
+            {
+                case vcc_and:   ok &= one; break;
+                case vcc_or:    ok |= one; break;
+                case last_vcc:  throw InternalError(PALUDIS_HERE, "Bad vcc");
+            }
         }
+
+        if (! ok)
+            return false;
+    }
 
     if (spec.in_repository_constraint())
         if (spec.in_repository_constraint()->name() != id->repository_name())

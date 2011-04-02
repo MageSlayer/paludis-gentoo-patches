@@ -1118,7 +1118,7 @@ paludis::cave::resolve_common(
                                 if ('!' != t->at(0) && std::string::npos != t->find('/'))
                                 {
                                     PackageDepSpec ts(parse_spec_with_nice_error(*t, env.get(), { }, filter::All()));
-                                    if (ts.version_requirements_ptr() && ! ts.version_requirements_ptr()->empty())
+                                    if (ts.all_version_constraints() && ! ts.all_version_constraints()->empty())
                                     {
                                         confirm_helper.add_permit_downgrade_spec(ts);
                                         confirm_helper.add_permit_old_version_spec(ts);

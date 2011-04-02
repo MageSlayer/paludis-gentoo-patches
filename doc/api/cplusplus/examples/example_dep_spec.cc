@@ -68,31 +68,31 @@ int main(int argc, char * argv[])
             if (spec.package_name_part_constraint())
                 cout << "    " << left << setw(24) << "Package part:" << " " << spec.package_name_part_constraint()->name_part() << endl;
 
-            if (spec.version_requirements_ptr() && ! spec.version_requirements_ptr()->empty())
+            if (spec.all_version_constraints() && ! spec.all_version_constraints()->empty())
             {
                 cout << "    " << left << setw(24) << "Version requirements:" << " ";
                 bool need_join(false);
-                for (VersionRequirements::ConstIterator r(spec.version_requirements_ptr()->begin()),
-                        r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+                for (auto r(spec.all_version_constraints()->begin()), r_end(spec.all_version_constraints()->end()) ;
+                        r != r_end ; ++r)
                 {
                     if (need_join)
                     {
-                        switch (spec.version_requirements_mode())
+                        switch ((*r)->combiner())
                         {
-                            case vr_and:
+                            case vcc_and:
                                 cout << " and ";
                                 break;
 
-                            case vr_or:
+                            case vcc_or:
                                 cout << " or ";
                                 break;
 
-                            case last_vr:
+                            case last_vcc:
                                 throw InternalError(PALUDIS_HERE, "Bad version_requirements_mode");
                         }
                     }
 
-                    cout << r->version_operator() << r->version_spec();
+                    cout << (*r)->version_operator() << (*r)->version_spec();
                     need_join = true;
                 }
                 cout << endl;

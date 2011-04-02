@@ -11,3 +11,11 @@ make_enum_KeyConstraintOperation()
     key kco_question           "A question constraint"
 }
 
+make_enum_VersionConstraintCombiner()
+{
+    prefix vcc
+
+    key vcc_and                 "And with previous value"
+    key vcc_or                  "Or with previons value"
+}
+

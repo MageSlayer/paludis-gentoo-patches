@@ -203,22 +203,6 @@ module Paludis
             assert_nil pde.category_name_part_constraint
         end
 
-        def test_version_requirements
-            assert_kind_of Array, pda.version_requirements
-            assert_equal 1, pda.version_requirements.size
-            assert_equal VersionSpec.new('1'), pda.version_requirements.first[:spec]
-            assert_equal ">=", pda.version_requirements.first[:operator]
-            assert_equal 0, pdb.version_requirements.size
-            assert_equal 0, pdc.version_requirements.size
-            assert_equal 0, pdd.version_requirements.size
-            assert_equal 0, pde.version_requirements.size
-        end
-
-        def test_version_requirements_mode
-            assert_kind_of Fixnum, pda.version_requirements_mode
-            assert_equal VersionRequirementsMode::And, pda.version_requirements_mode
-        end
-
 ###        def test_use_requirements
 ###            assert_kind_of Array, pda.use_requirements
 ###            assert_equal 2, pda.use_requirements.size

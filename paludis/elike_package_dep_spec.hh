@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -42,7 +42,11 @@ namespace paludis
     struct GenericELikePackageDepSpecParseFunctions
     {
         NamedValue<n::add_package_requirement, std::function<void (const std::string &, PartiallyMadePackageDepSpec &)> > add_package_requirement;
-        NamedValue<n::add_version_requirement, std::function<void (const VersionOperator &, const VersionSpec &, PartiallyMadePackageDepSpec &)> > add_version_requirement;
+        NamedValue<n::add_version_requirement, std::function<void (
+                const VersionSpec &,
+                const VersionOperator &,
+                const VersionConstraintCombiner,
+                PartiallyMadePackageDepSpec &)> > add_version_requirement;
         NamedValue<n::check_sanity, std::function<void (const std::string &)> > check_sanity;
         NamedValue<n::get_remove_trailing_version, std::function<VersionSpec (std::string &)> > get_remove_trailing_version;
         NamedValue<n::get_remove_version_operator, std::function<VersionOperator (std::string &)> > get_remove_version_operator;

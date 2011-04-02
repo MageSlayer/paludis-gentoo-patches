@@ -38,8 +38,8 @@
 #include <paludis/mask.hh>
 #include <paludis/match_package.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
-#include <paludis/version_requirements.hh>
 #include <paludis/action.hh>
+#include <paludis/version_operator.hh>
 
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -108,9 +108,7 @@ namespace
                                 generator::InRepository(RepositoryName(*r)) &
                                 generator::Matches(make_package_dep_spec({ })
                                     .package(id->name())
-                                    .version_requirement(make_named_values<VersionRequirement>(
-                                            n::version_operator() = vo_equal,
-                                            n::version_spec() = id->version())),
+                                    .version_constraint(id->version(), vo_equal, vcc_and),
                                     make_null_shared_ptr(), { })) |
                             filter::SupportsAction<InstallAction>())]);
 

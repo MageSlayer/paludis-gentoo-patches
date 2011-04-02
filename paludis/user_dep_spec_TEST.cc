@@ -20,8 +20,8 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/match_package.hh>
-#include <paludis/version_requirements.hh>
 #include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/version_operator.hh>
 
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/sequence.hh>
@@ -46,7 +46,7 @@ using namespace paludis;
 
 namespace
 {
-    std::string dump_version_requirement(const VersionRequirement & v)
+    std::string dump_version_requirement(const VersionConstraint & v)
     {
         return stringify(v.version_operator()) + stringify(v.version_spec());
     }
@@ -133,15 +133,22 @@ UserDepSpecTest::check_spec(
     }
 
     if (! version_requirement_mode.empty())
-        EXPECT_EQ(version_requirement_mode, stringify(spec.version_requirements_mode()));
+    {
+        ASSERT_TRUE(bool(spec.all_version_constraints()));
+        ASSERT_TRUE(! spec.all_version_constraints()->empty());
+        for (auto v(next(spec.all_version_constraints()->begin())), v_end(spec.all_version_constraints()->end()) ;
+                v != v_end ; ++v)
+            EXPECT_EQ(version_requirement_mode, stringify((*v)->combiner()));
+    }
 
     if (version_requirements.empty())
-        EXPECT_TRUE((! spec.version_requirements_ptr()) || spec.version_requirements_ptr()->empty());
+        EXPECT_TRUE((! spec.all_version_constraints()) || spec.all_version_constraints()->empty());
     else
     {
-        ASSERT_TRUE(bool(spec.version_requirements_ptr()));
+        ASSERT_TRUE(bool(spec.all_version_constraints()));
         EXPECT_EQ(version_requirements, stringify(join(
-                        spec.version_requirements_ptr()->begin(), spec.version_requirements_ptr()->end(), ", ", &dump_version_requirement)));
+                        indirect_iterator(spec.all_version_constraints()->begin()),
+                        indirect_iterator(spec.all_version_constraints()->end()), ", ", &dump_version_requirement)));
     }
 
     if (slot_requirement.empty())
@@ -270,6 +277,9 @@ TEST_F(UserDepSpecTest, Parsing)
 
     PackageDepSpec r(parse_user_package_dep_spec("foo/bar[.$short_description=value]", &env, { }));
     check_spec(r, "foo/bar", "", "", "", "", "", "", "", "[.$short_description=value]");
+
+    PackageDepSpec s(parse_user_package_dep_spec("=foo/bar-1-r0", &env, { }));
+    check_spec(s, "foo/bar", "", "", "=1-r0", "", "", "", "", "");
 }
 
 TEST_F(UserDepSpecTest, Unspecified)

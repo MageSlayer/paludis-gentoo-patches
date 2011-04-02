@@ -18,6 +18,9 @@
  */
 
 #include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/version_spec.hh>
+#include <paludis/version_operator.hh>
+
 #include <paludis/util/pool-impl.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
@@ -25,6 +28,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/pimp-impl.hh>
 
 #include <istream>
 #include <ostream>
@@ -88,6 +92,53 @@ template class Pool<PackageNamePartConstraint>;
 template class Singleton<Pool<PackageNamePartConstraint> >;
 template const std::shared_ptr<const PackageNamePartConstraint> Pool<PackageNamePartConstraint>::create(
         const PackageNamePart &) const;
+
+namespace paludis
+{
+    template <>
+    struct Imp<VersionConstraint>
+    {
+        VersionSpec spec;
+        VersionOperator op;
+        VersionConstraintCombiner combiner;
+
+        Imp(const VersionSpec & s, const VersionOperator & o, const VersionConstraintCombiner c) :
+            spec(s),
+            op(o),
+            combiner(c)
+        {
+        }
+    };
+}
+
+VersionConstraint::VersionConstraint(const VersionSpec & s, const VersionOperator & o, const VersionConstraintCombiner c) :
+    _imp(s, o, c)
+{
+}
+
+VersionConstraint::~VersionConstraint() = default;
+
+const VersionSpec
+VersionConstraint::version_spec() const
+{
+    return _imp->spec;
+}
+
+const VersionOperator
+VersionConstraint::version_operator() const
+{
+    return _imp->op;
+}
+
+VersionConstraintCombiner
+VersionConstraint::combiner() const
+{
+    return _imp->combiner;
+}
+
+template class Sequence<std::shared_ptr<const VersionConstraint> >;
+template class WrappedForwardIterator<Sequence<std::shared_ptr<const VersionConstraint> >::ConstIteratorTag, const std::shared_ptr<const VersionConstraint> >;
+template class Pimp<VersionConstraint>;
 
 InRepositoryConstraint::InRepositoryConstraint(const RepositoryName & n) :
     _name(n)

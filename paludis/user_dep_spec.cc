@@ -23,7 +23,6 @@
 #include <paludis/elike_use_requirement.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/version_requirements.hh>
 #include <paludis/filter.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -155,67 +154,7 @@ namespace
             case '>':
             case '=':
             case '~':
-                {
-                    char needed_mode(0);
-
-                    while (! flag.empty())
-                    {
-                        Context cc("When parsing [] segment '" + flag + "':");
-
-                        std::string op;
-                        std::string::size_type opos(0);
-                        while (opos < flag.length())
-                            if (std::string::npos == std::string("><=~").find(flag.at(opos)))
-                                break;
-                            else
-                                ++opos;
-
-                        op = flag.substr(0, opos);
-                        flag.erase(0, opos);
-
-                        if (op.empty())
-                            throw PackageDepSpecError("Missing operator inside []");
-
-                        VersionOperator vop(op);
-
-                        std::string ver;
-                        opos = flag.find_first_of("|&");
-                        if (std::string::npos == opos)
-                        {
-                            ver = flag;
-                            flag.clear();
-                        }
-                        else
-                        {
-                            if (0 == needed_mode)
-                                needed_mode = flag.at(opos);
-                            else if (needed_mode != flag.at(opos))
-                                throw PackageDepSpecError("Mixed & and | inside []");
-
-                            result.version_requirements_mode((flag.at(opos) == '|' ? vr_or : vr_and));
-                            ver = flag.substr(0, opos++);
-                            flag.erase(0, opos);
-                        }
-
-                        if (ver.empty())
-                            throw PackageDepSpecError("Missing version after operator '" + stringify(vop) + " inside []");
-
-                        if ('*' == ver.at(ver.length() - 1))
-                        {
-                            ver.erase(ver.length() - 1);
-                            if (vop == vo_equal)
-                                vop = vo_nice_equal_star;
-                            else
-                                throw PackageDepSpecError("Invalid use of * with operator '" + stringify(vop) + " inside []");
-                        }
-
-                        VersionSpec vs(ver, user_version_spec_options());
-                        result.version_requirement(make_named_values<VersionRequirement>(
-                                    n::version_operator() = vop,
-                                    n::version_spec() = vs));
-                        had_bracket_version_requirements = true;
-                    }
-                }
+                parse_elike_version_range(flag, result, { epdso_nice_equal_star }, user_version_spec_options(), had_bracket_version_requirements);
                 break;
 
             case '.':
@@ -331,7 +270,7 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
 
     return partial_parse_generic_elike_package_dep_spec(ss, make_named_values<GenericELikePackageDepSpecParseFunctions>(
             n::add_package_requirement() = std::bind(&user_add_package_requirement, _1, _2, env, options, filter),
-            n::add_version_requirement() = std::bind(&elike_add_version_requirement, _1, _2, _3),
+            n::add_version_requirement() = std::bind(&elike_add_version_requirement, _1, _2, _3, _4),
             n::check_sanity() = std::bind(&user_check_sanity, _1, options, env),
             n::get_remove_trailing_version() = std::bind(&elike_get_remove_trailing_version, _1,
                     user_version_spec_options()),
@@ -359,7 +298,7 @@ paludis::envless_parse_package_dep_spec_for_tests(const std::string & ss)
 
     return partial_parse_generic_elike_package_dep_spec(ss, make_named_values<GenericELikePackageDepSpecParseFunctions>(
             n::add_package_requirement() = std::bind(&envless_add_package_requirement, _1, _2),
-            n::add_version_requirement() = std::bind(&elike_add_version_requirement, _1, _2, _3),
+            n::add_version_requirement() = std::bind(&elike_add_version_requirement, _1, _2, _3, _4),
             n::check_sanity() = std::bind(&test_check_sanity, _1),
             n::get_remove_trailing_version() = std::bind(&elike_get_remove_trailing_version, _1,
                     user_version_spec_options()),

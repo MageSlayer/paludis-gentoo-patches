@@ -103,6 +103,5 @@ add(`unformatted_pretty_printer',                  `hh', `cc', `fwd')
 add(`unmerger',                                    `hh', `cc')
 add(`user_dep_spec',                               `hh', `cc', `se', `fwd', `gtest')
 add(`version_operator',                            `hh', `cc', `fwd', `se', `gtest')
-add(`version_requirements',                        `hh', `cc', `fwd')
 add(`version_spec',                                `hh', `cc', `se', `fwd', `gtest')
 

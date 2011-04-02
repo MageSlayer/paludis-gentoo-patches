@@ -26,6 +26,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/version_operator-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
+#include <paludis/package_dep_spec_constraint-fwd.hh>
 #include <paludis/partially_made_package_dep_spec-fwd.hh>
 #include <functional>
 #include <iosfwd>
@@ -78,8 +79,19 @@ namespace paludis
     VersionSpec elike_get_remove_trailing_version(std::string & s,
             const VersionSpecOptions &) PALUDIS_VISIBLE;
 
-    void elike_add_version_requirement(const VersionOperator & op, const VersionSpec & spec, PartiallyMadePackageDepSpec & result)
+    void elike_add_version_requirement(
+            const VersionSpec & spec,
+            const VersionOperator & op,
+            const VersionConstraintCombiner,
+            PartiallyMadePackageDepSpec & result)
         PALUDIS_VISIBLE;
+
+    void parse_elike_version_range(
+            const std::string &,
+            PartiallyMadePackageDepSpec &,
+            const ELikePackageDepSpecOptions & options,
+            const VersionSpecOptions & version_options,
+            bool & had_bracket_version_requirements) PALUDIS_VISIBLE;
 
     void elike_add_package_requirement(const std::string & s, PartiallyMadePackageDepSpec & result) PALUDIS_VISIBLE;
 }

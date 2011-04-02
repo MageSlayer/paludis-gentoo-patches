@@ -18,6 +18,12 @@
  */
 
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/additional_package_dep_spec_requirement.hh>
+#include <paludis/dep_spec_data.hh>
+#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/version_operator.hh>
+#include <paludis/version_spec.hh>
+
 #include <paludis/util/stringify.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/options.hh>
@@ -25,10 +31,7 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence-impl.hh>
-#include <paludis/version_requirements.hh>
-#include <paludis/additional_package_dep_spec_requirement.hh>
-#include <paludis/dep_spec_data.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+
 #include <iterator>
 #include <algorithm>
 #include <ostream>
@@ -51,8 +54,7 @@ namespace
         std::shared_ptr<const NameConstraint> package;
         std::shared_ptr<const PackageNamePartConstraint> package_name_part;
         std::shared_ptr<const CategoryNamePartConstraint> category_name_part;
-        std::shared_ptr<VersionRequirements> version_requirements;
-        VersionRequirementsMode version_requirements_mode_v;
+        std::shared_ptr<VersionConstraintSequence> all_versions;
         std::shared_ptr<const AnySlotConstraint> any_slot;
         std::shared_ptr<const ExactSlotConstraint> exact_slot;
         std::shared_ptr<const InRepositoryConstraint> in_repository;
@@ -66,7 +68,6 @@ namespace
 
         PartiallyMadePackageDepSpecData(const PartiallyMadePackageDepSpecOptions & o) :
             PackageDepSpecData(),
-            version_requirements_mode_v(vr_and),
             options_for_partially_made_package_dep_spec_v(o)
         {
         }
@@ -76,8 +77,7 @@ namespace
             package(other.package_name_constraint()),
             package_name_part(other.package_name_part_constraint()),
             category_name_part(other.category_name_part_constraint()),
-            version_requirements(other.version_requirements_ptr() ? new VersionRequirements : 0),
-            version_requirements_mode_v(other.version_requirements_mode()),
+            all_versions(other.all_version_constraints() ? new VersionConstraintSequence : 0),
             any_slot(other.any_slot_constraint()),
             exact_slot(other.exact_slot_constraint()),
             in_repository(other.in_repository_constraint()),
@@ -89,9 +89,9 @@ namespace
             additional_requirements(other.additional_requirements_ptr() ? new AdditionalPackageDepSpecRequirements : 0),
             options_for_partially_made_package_dep_spec_v(other.options_for_partially_made_package_dep_spec())
         {
-            if (version_requirements)
-                std::copy(other.version_requirements_ptr()->begin(), other.version_requirements_ptr()->end(),
-                        version_requirements->back_inserter());
+            if (all_versions)
+                std::copy(other.all_version_constraints()->begin(), other.all_version_constraints()->end(),
+                        all_versions->back_inserter());
 
             if (all_keys)
                 std::copy(other.all_key_constraints()->begin(), other.all_key_constraints()->end(),
@@ -107,8 +107,7 @@ namespace
             package(other.package),
             package_name_part(other.package_name_part),
             category_name_part(other.category_name_part),
-            version_requirements(other.version_requirements),
-            version_requirements_mode_v(other.version_requirements_mode_v),
+            all_versions(other.all_versions),
             any_slot(other.any_slot),
             exact_slot(other.exact_slot),
             in_repository(other.in_repository),
@@ -126,18 +125,19 @@ namespace
         {
             std::ostringstream s;
 
-            if (version_requirements_ptr())
+            if (all_version_constraints())
             {
-                if (version_requirements_ptr()->begin() == version_requirements_ptr()->end())
+                if (all_version_constraints()->begin() == all_version_constraints()->end())
                 {
                 }
-                else if (next(version_requirements_ptr()->begin()) == version_requirements_ptr()->end() &&
+                else if (next(all_version_constraints()->begin()) == all_version_constraints()->end() &&
                         ! options_for_partially_made_package_dep_spec_v[pmpdso_always_use_ranged_deps])
                 {
-                    if (version_requirements_ptr()->begin()->version_operator() == vo_stupid_equal_star || version_requirements_ptr()->begin()->version_operator() == vo_nice_equal_star)
+                    if ((*all_version_constraints()->begin())->version_operator() == vo_stupid_equal_star ||
+                            (*all_version_constraints()->begin())->version_operator() == vo_nice_equal_star)
                         s << "=";
                     else
-                        s << version_requirements_ptr()->begin()->version_operator();
+                        s << (*all_version_constraints()->begin())->version_operator();
                 }
             }
 
@@ -158,16 +158,17 @@ namespace
                     s << "*";
             }
 
-            if (version_requirements_ptr())
+            if (all_version_constraints())
             {
-                if (version_requirements_ptr()->begin() == version_requirements_ptr()->end())
+                if (all_version_constraints()->begin() == all_version_constraints()->end())
                 {
                 }
-                else if (next(version_requirements_ptr()->begin()) == version_requirements_ptr()->end() &&
+                else if (next(all_version_constraints()->begin()) == all_version_constraints()->end() &&
                         ! options_for_partially_made_package_dep_spec_v[pmpdso_always_use_ranged_deps])
                 {
-                    s << "-" << version_requirements_ptr()->begin()->version_spec();
-                    if (version_requirements_ptr()->begin()->version_operator() == vo_stupid_equal_star || version_requirements_ptr()->begin()->version_operator() == vo_nice_equal_star)
+                    s << "-" << (*all_version_constraints()->begin())->version_spec();
+                    if ((*all_version_constraints()->begin())->version_operator() == vo_stupid_equal_star ||
+                            (*all_version_constraints()->begin())->version_operator() == vo_nice_equal_star)
                         s << "*";
                 }
             }
@@ -242,12 +243,12 @@ namespace
             else if (! left.empty())
                 s << "::" << left << "->";
 
-            if (version_requirements_ptr())
+            if (all_version_constraints())
             {
-                if (version_requirements_ptr()->begin() == version_requirements_ptr()->end())
+                if (all_version_constraints()->begin() == all_version_constraints()->end())
                 {
                 }
-                else if (next(version_requirements_ptr()->begin()) == version_requirements_ptr()->end() &&
+                else if (next(all_version_constraints()->begin()) == all_version_constraints()->end() &&
                         ! options_for_partially_made_package_dep_spec_v[pmpdso_always_use_ranged_deps])
                 {
                 }
@@ -255,38 +256,37 @@ namespace
                 {
                     bool need_op(false);
                     s << "[";
-                    for (VersionRequirements::ConstIterator r(version_requirements_ptr()->begin()),
-                            r_end(version_requirements_ptr()->end()) ; r != r_end ; ++r)
+                    for (auto r(all_version_constraints()->begin()), r_end(all_version_constraints()->end()) ; r != r_end ; ++r)
                     {
                         if (need_op)
                         {
                             do
                             {
-                                switch (version_requirements_mode())
+                                switch ((*r)->combiner())
                                 {
-                                    case vr_and:
+                                    case vcc_and:
                                         s << "&";
                                         continue;
 
-                                    case vr_or:
+                                    case vcc_or:
                                         s << "|";
                                         continue;
 
-                                    case last_vr:
+                                    case last_vcc:
                                         ;
                                 }
                                 throw InternalError(PALUDIS_HERE, "Bad version_requirements_mode");
                             } while (false);
                         }
 
-                        if (r->version_operator() == vo_stupid_equal_star || r->version_operator() == vo_nice_equal_star)
+                        if ((*r)->version_operator() == vo_stupid_equal_star || (*r)->version_operator() == vo_nice_equal_star)
                             s << "=";
                         else
-                            s << r->version_operator();
+                            s << (*r)->version_operator();
 
-                        s << r->version_spec();
+                        s << (*r)->version_spec();
 
-                        if (r->version_operator() == vo_stupid_equal_star || r->version_operator() == vo_nice_equal_star)
+                        if ((*r)->version_operator() == vo_stupid_equal_star || (*r)->version_operator() == vo_nice_equal_star)
                             s << "*";
 
                         need_op = true;
@@ -337,14 +337,9 @@ namespace
             return category_name_part;
         }
 
-        virtual std::shared_ptr<const VersionRequirements> version_requirements_ptr() const
+        virtual const std::shared_ptr<const VersionConstraintSequence> all_version_constraints() const
         {
-            return version_requirements;
-        }
-
-        virtual VersionRequirementsMode version_requirements_mode() const
-        {
-            return version_requirements_mode_v;
+            return all_versions;
         }
 
         virtual const std::shared_ptr<const ExactSlotConstraint> exact_slot_constraint() const
@@ -583,25 +578,22 @@ PartiallyMadePackageDepSpec::clear_category_name_part()
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::version_requirement(const VersionRequirement & req)
+PartiallyMadePackageDepSpec::version_constraint(const VersionSpec & vs, const VersionOperator & vo, const VersionConstraintCombiner vc)
 {
-    if (! _imp->data->version_requirements)
-        _imp->data->version_requirements = std::make_shared<VersionRequirements>();
-    _imp->data->version_requirements->push_back(req);
+    if (! _imp->data->all_versions)
+        _imp->data->all_versions = std::make_shared<VersionConstraintSequence>();
+
+    if (_imp->data->all_versions->empty() && vc != vcc_and)
+        throw InternalError(PALUDIS_HERE, "First vc must be vcc_and");
+
+    _imp->data->all_versions->push_back(std::make_shared<VersionConstraint>(vs, vo, vc));
     return *this;
 }
 
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::clear_version_requirements()
 {
-    _imp->data->version_requirements.reset();
-    return *this;
-}
-
-PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::version_requirements_mode(const VersionRequirementsMode & mode)
-{
-    _imp->data->version_requirements_mode_v = mode;
+    _imp->data->all_versions.reset();
     return *this;
 }
 

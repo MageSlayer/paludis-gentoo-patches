@@ -34,6 +34,7 @@ namespace
     static VALUE c_name_constraint;
     static VALUE c_package_name_part_constraint;
     static VALUE c_category_name_part_constraint;
+    static VALUE c_version_constraint;
     static VALUE c_in_repository_constraint;
     static VALUE c_from_repository_constraint;
     static VALUE c_installed_at_path_constraint;
@@ -70,6 +71,12 @@ namespace
         void visit(const PackageNamePartConstraint &)
         {
             value = Data_Wrap_Struct(c_package_name_part_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
+                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+        }
+
+        void visit(const VersionConstraint &)
+        {
+            value = Data_Wrap_Struct(c_version_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
                     new std::shared_ptr<const PackageDepSpecConstraint>(mm));
         }
 
