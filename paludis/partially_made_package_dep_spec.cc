@@ -440,6 +440,8 @@ PartiallyMadePackageDepSpec::~PartiallyMadePackageDepSpec()
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::package(const QualifiedPackageName & name)
 {
+    _imp->data->package_name_part.reset();
+    _imp->data->category_name_part.reset();
     _imp->data->package = NameConstraintPool::get_instance()->create(name);
     return *this;
 }
@@ -552,7 +554,15 @@ PartiallyMadePackageDepSpec::clear_installable_to_path()
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::package_name_part(const PackageNamePart & part)
 {
-    _imp->data->package_name_part = PackageNamePartConstraintPool::get_instance()->create(part);
+    _imp->data->package.reset();
+    if (_imp->data->category_name_part)
+    {
+        _imp->data->package = NameConstraintPool::get_instance()->create(_imp->data->category_name_part->name_part() + part);
+        _imp->data->category_name_part.reset();
+    }
+    else
+        _imp->data->package_name_part = PackageNamePartConstraintPool::get_instance()->create(part);
+
     return *this;
 }
 
@@ -566,7 +576,15 @@ PartiallyMadePackageDepSpec::clear_package_name_part()
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::category_name_part(const CategoryNamePart & part)
 {
-    _imp->data->category_name_part = CategoryNamePartConstraintPool::get_instance()->create(part);
+    _imp->data->category_name_part.reset();
+    if (_imp->data->package_name_part)
+    {
+        _imp->data->package = NameConstraintPool::get_instance()->create(part + _imp->data->package_name_part->name_part());
+        _imp->data->package_name_part.reset();
+    }
+    else
+        _imp->data->category_name_part = CategoryNamePartConstraintPool::get_instance()->create(part);
+
     return *this;
 }
 
