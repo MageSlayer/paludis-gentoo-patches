@@ -17,6 +17,7 @@ make_enum_KeyConstraintKeyType()
 
     key kckt_id                "A regular [.key] constraint"
     key kckt_id_role           "A role [.\$key] constraint"
+    key kckt_id_mask           "A role [.(mask)] constraint"
     key kckt_repo              "A [.::repo] constraint"
     key kckt_repo_role         "A [.::\$repo] constraint"
 }

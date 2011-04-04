@@ -373,6 +373,12 @@ paludis::parse_user_key_constraint(const std::string & s)
         type = kckt_id_role;
         key.erase(0, 1);
     }
+    else if (0 == key.compare(0, 1, "(", 0, 1) && ')' == key.at(key.length() - 1))
+    {
+        type = kckt_id_mask;
+        key.erase(0, 1);
+        key.erase(key.length() - 1);
+    }
 
     return std::make_tuple(type, key, op, value);
 }

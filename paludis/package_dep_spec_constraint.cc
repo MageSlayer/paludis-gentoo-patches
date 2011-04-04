@@ -26,6 +26,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
+#include <paludis/mask.hh>
 
 #include <paludis/util/pool-impl.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -808,6 +809,71 @@ namespace
             return false;
         }
     };
+
+    struct AssociatedKeyFinder
+    {
+        const Environment * const env;
+        const std::shared_ptr<const PackageID> id;
+
+        const MetadataKey * const visit(const UserMask &) const
+        {
+            return 0;
+        }
+
+        const MetadataKey * const visit(const UnacceptedMask & m) const
+        {
+            auto k(id->find_metadata(m.unaccepted_key_name()));
+            if (k != id->end_metadata())
+                return &**k;
+            else
+                return 0;
+        }
+
+        const MetadataKey * const visit(const RepositoryMask &) const
+        {
+            return 0;
+        }
+
+        const MetadataKey * const visit(const UnsupportedMask &) const
+        {
+            return 0;
+        }
+
+        const MetadataKey * const visit(const AssociationMask &) const
+        {
+            return 0;
+        }
+    };
+
+    struct MaskChecker
+    {
+        const std::string key;
+
+        bool visit(const UserMask & m) const
+        {
+            return key == "*" || key == "user" || m.token() == key;
+        }
+
+        bool visit(const UnacceptedMask & m) const
+        {
+            return key == "*" || key == "unaccepted" || m.unaccepted_key_name() == key;
+        }
+
+        bool visit(const RepositoryMask & m) const
+        {
+            return key == "*" || key == "repository" || m.token() == key;
+        }
+
+        bool visit(const UnsupportedMask &) const
+        {
+            return key == "*" || key == "unsupported";
+        }
+
+        bool visit(const AssociationMask &) const
+        {
+            return key == "*" || key == "association";
+        }
+    };
 }
 
 bool
@@ -816,6 +882,7 @@ KeyConstraint::matches(
         const std::shared_ptr<const PackageID> & id) const
 {
     const MetadataKey * k(0);
+    const Mask * m(0);
 
     switch (key_type())
     {
@@ -885,17 +952,29 @@ KeyConstraint::matches(
         case kckt_repo:
             {
                 auto repo(env->fetch_repository(id->repository_name()));
-                Repository::MetadataConstIterator m(repo->find_metadata(key()));
-                if (m != repo->end_metadata())
-                    k = m->get();
+                Repository::MetadataConstIterator mm(repo->find_metadata(key()));
+                if (mm != repo->end_metadata())
+                    k = mm->get();
             }
             break;
 
         case kckt_id:
             {
-                PackageID::MetadataConstIterator m(id->find_metadata(key()));
-                if (m != id->end_metadata())
-                    k = m->get();
+                PackageID::MetadataConstIterator mm(id->find_metadata(key()));
+                if (mm != id->end_metadata())
+                    k = mm->get();
+            }
+            break;
+
+        case kckt_id_mask:
+            {
+                for (auto mm(id->begin_masks()), mm_end(id->end_masks()) ;
+                        mm != mm_end ; ++mm)
+                    if ((*mm)->accept_returning<bool>(MaskChecker{key()}))
+                    {
+                        m = &**mm;
+                        break;
+                    }
             }
             break;
 
@@ -903,15 +982,23 @@ KeyConstraint::matches(
             break;
     }
 
-    if (! k)
+    if ((! k) && (! m))
         return false;
 
     if (operation() == kco_question)
         return true;
     else
     {
-        KeyComparator c(env, id, pattern(), operation());
-        return k->accept_returning<bool>(c);
+        if (m)
+            k = m->accept_returning<const MetadataKey *>(AssociatedKeyFinder{env, id});
+
+        if (k)
+        {
+            KeyComparator c(env, id, pattern(), operation());
+            return k->accept_returning<bool>(c);
+        }
+
+        return false;
     }
 }
 
@@ -925,7 +1012,8 @@ KeyConstraint::as_raw_string() const
     {
         case kckt_id:                    break;
         case kckt_id_role:   s << "$";   break;
-        case kckt_repo:      s << "::"; break;
+        case kckt_id_mask:   s << "(";   break;
+        case kckt_repo:      s << "::";  break;
         case kckt_repo_role: s << "::$"; break;
         case last_kckt:
             break;
@@ -942,6 +1030,17 @@ KeyConstraint::as_raw_string() const
 
         case last_kco:
             throw InternalError(PALUDIS_HERE, "Bad KeyConstraintOperation");
+    }
+
+    switch (key_type())
+    {
+        case kckt_id:                    break;
+        case kckt_id_role:               break;
+        case kckt_id_mask:   s << ")";   break;
+        case kckt_repo:                  break;
+        case kckt_repo_role:             break;
+        case last_kckt:
+            break;
     }
 
     s << "]";
