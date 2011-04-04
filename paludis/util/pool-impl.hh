@@ -140,6 +140,14 @@ namespace paludis
     }
 
     template <typename T_>
+    template <typename T1_, typename T2_, typename T3_, typename T4_>
+    const std::shared_ptr<const T_>
+    Pool<T_>::create(const T1_ & a1, const T2_ & a2, const T3_ & a3, const T4_ & a4) const
+    {
+        return really_create(a1, a2, a3, a4);
+    }
+
+    template <typename T_>
     ConcretePoolKey<T_>::ConcretePoolKey(const T_ & t) :
         PoolKey(PoolKeyTypeCodes::get<T_>()),
         _value(t)

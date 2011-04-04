@@ -59,6 +59,9 @@ namespace paludis
 
             template <typename T1_, typename T2_, typename T3_>
             const std::shared_ptr<const T_> create(const T1_ &, const T2_ &, const T3_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            template <typename T1_, typename T2_, typename T3_, typename T4_>
+            const std::shared_ptr<const T_> create(const T1_ &, const T2_ &, const T3_ &, const T4_ &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE PoolKey
