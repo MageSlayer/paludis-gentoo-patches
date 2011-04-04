@@ -624,7 +624,7 @@ PackageDepSpec::_as_string() const
     return _imp->data->as_string();
 }
 
-std::shared_ptr<const PackageDepSpecData>
+const std::shared_ptr<const PackageDepSpecData>
 PackageDepSpec::data() const
 {
     return _imp->data;

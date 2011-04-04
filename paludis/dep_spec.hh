@@ -417,7 +417,7 @@ namespace paludis
             /**
              * Access to our data.
              */
-            std::shared_ptr<const PackageDepSpecData> data() const;
+            const std::shared_ptr<const PackageDepSpecData> data() const;
     };
 
     /**
