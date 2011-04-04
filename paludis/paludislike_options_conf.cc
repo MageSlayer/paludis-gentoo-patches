@@ -341,20 +341,20 @@ namespace
     bool match_anything(const PackageDepSpec & spec)
     {
         return package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                    n::has_any_slot_requirement() = indeterminate,
+                    n::has_any_slot_constraint() = indeterminate,
                     n::has_category_name_part() = false,
-                    n::has_choice_requirements() = false,
-                    n::has_exact_slot_requirement() = false,
+                    n::has_choice_constraints() = false,
+                    n::has_exact_slot_constraint() = false,
                     n::has_from_repository() = false,
                     n::has_in_repository() = false,
                     n::has_installable_to_path() = false,
                     n::has_installable_to_repository() = false,
                     n::has_installed_at_path() = false,
-                    n::has_key_requirements() = false,
+                    n::has_key_constraints() = false,
                     n::has_package() = false,
                     n::has_package_name_part() = false,
                     n::has_tag() = false,
-                    n::has_version_requirements() = false
+                    n::has_version_constraints() = false
                     ));
     }
 

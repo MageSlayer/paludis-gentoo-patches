@@ -41,20 +41,20 @@ paludis::resolver::match_qpns(
      * either can be wildcards (we could work for :slot too,
      * but we're lazy) */
     if (! package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                    n::has_any_slot_requirement() = false,
+                    n::has_any_slot_constraint() = false,
                     n::has_category_name_part() = indeterminate,
-                    n::has_choice_requirements() = false,
-                    n::has_exact_slot_requirement() = false,
+                    n::has_choice_constraints() = false,
+                    n::has_exact_slot_constraint() = false,
                     n::has_from_repository() = false,
                     n::has_in_repository() = false,
                     n::has_installable_to_path() = false,
                     n::has_installable_to_repository() = false,
                     n::has_installed_at_path() = false,
-                    n::has_key_requirements() = false,
+                    n::has_key_constraints() = false,
                     n::has_package() = indeterminate,
                     n::has_package_name_part() = indeterminate,
                     n::has_tag() = false,
-                    n::has_version_requirements() = false
+                    n::has_version_constraints() = false
                     )))
         return false;
 

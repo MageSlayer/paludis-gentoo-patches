@@ -305,20 +305,20 @@ namespace
                 const RepositoryContentMayExcludes & x) const
         {
             if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                            n::has_any_slot_requirement() = indeterminate,
+                            n::has_any_slot_constraint() = indeterminate,
                             n::has_category_name_part() = indeterminate,
-                            n::has_choice_requirements() = indeterminate,
-                            n::has_exact_slot_requirement() = indeterminate,
+                            n::has_choice_constraints() = indeterminate,
+                            n::has_exact_slot_constraint() = indeterminate,
                             n::has_from_repository() = indeterminate,
                             n::has_in_repository() = false,
                             n::has_installable_to_path() = indeterminate,
                             n::has_installable_to_repository() = indeterminate,
                             n::has_installed_at_path() = false,
-                            n::has_key_requirements() = indeterminate,
+                            n::has_key_constraints() = indeterminate,
                             n::has_package() = indeterminate,
                             n::has_package_name_part() = indeterminate,
                             n::has_tag() = indeterminate,
-                            n::has_version_requirements() = indeterminate
+                            n::has_version_constraints() = indeterminate
                             )))
                 return AllGeneratorHandlerBase::repositories(env, x);
 
