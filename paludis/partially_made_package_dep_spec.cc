@@ -607,7 +607,7 @@ PartiallyMadePackageDepSpec::version_constraint(const VersionSpec & vs, const Ve
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::clear_version_requirements()
+PartiallyMadePackageDepSpec::clear_version()
 {
     _imp->data->all_versions.reset();
     return *this;
@@ -632,7 +632,7 @@ PartiallyMadePackageDepSpec::choice_constraint(const std::shared_ptr<const Choic
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::clear_choice_requirements()
+PartiallyMadePackageDepSpec::clear_choices()
 {
     _imp->data->all_choices.reset();
     return *this;

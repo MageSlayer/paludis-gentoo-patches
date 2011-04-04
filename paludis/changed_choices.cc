@@ -59,7 +59,7 @@ ChangedChoices::empty() const
 }
 
 void
-ChangedChoices::add_additional_requirements_to(PartiallyMadePackageDepSpec & spec) const
+ChangedChoices::add_constraints_to(PartiallyMadePackageDepSpec & spec) const
 {
     for (auto o(_imp->overrides.begin()), o_end(_imp->overrides.end()) ;
             o != o_end ; ++o)

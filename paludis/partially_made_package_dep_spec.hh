@@ -51,19 +51,19 @@ namespace paludis
             ///\}
 
             /**
-             * Set our package requirements, return ourself.
+             * Set our package constraints, return ourself.
              */
             PartiallyMadePackageDepSpec & package(const QualifiedPackageName &);
 
             /**
-             * Clear our package requirements, return ourself.
+             * Clear our package constraints, return ourself.
              *
              * \since 0.55
              */
             PartiallyMadePackageDepSpec & clear_package();
 
             /**
-             * Set our exact slot requirements, return ourself.
+             * Set our exact slot constraints, return ourself.
              *
              * \since 0.61
              */
@@ -71,7 +71,7 @@ namespace paludis
                     const SlotName &, const bool);
 
             /**
-             * Set our locked slot requirements, return ourself.
+             * Set our locked slot constraints, return ourself.
              *
              * \since 0.61
              */
@@ -79,104 +79,104 @@ namespace paludis
                      const bool);
 
             /**
-             * Clear our exact slot requirements, return ourself.
+             * Clear our exact slot constraints, return ourself.
              *
              * \since 0.61
              */
             PartiallyMadePackageDepSpec & clear_exact_slot();
 
             /**
-             * Clear our any slot requirements, return ourself.
+             * Clear our any slot constraints, return ourself.
              *
              * \since 0.61
              */
             PartiallyMadePackageDepSpec & clear_any_slot();
 
             /**
-             * Set our in-repository requirement, return ourself.
+             * Set our in-repository constraint, return ourself.
              */
             PartiallyMadePackageDepSpec & in_repository(const RepositoryName &);
 
             /**
-             * Clear our in-repository requirement, return ourself.
+             * Clear our in-repository constraint, return ourself.
              *
              * \since 0.55
              */
             PartiallyMadePackageDepSpec & clear_in_repository();
 
             /**
-             * Set our from-repository requirement, return ourself.
+             * Set our from-repository constraint, return ourself.
              */
             PartiallyMadePackageDepSpec & from_repository(const RepositoryName &);
 
             /**
-             * Clear our from-repository requirement, return ourself.
+             * Clear our from-repository constraint, return ourself.
              *
              * \since 0.55
              */
             PartiallyMadePackageDepSpec & clear_from_repository();
 
             /**
-             * Set our installable-to-repository requirement, return ourself.
+             * Set our installable-to-repository constraint, return ourself.
              *
              * \since 0.61
              */
             PartiallyMadePackageDepSpec & installable_to_repository(const RepositoryName &, const bool);
 
             /**
-             * Clear our installable-to-repository requirement, return ourself.
+             * Clear our installable-to-repository constraint, return ourself.
              *
              * \since 0.55
              */
             PartiallyMadePackageDepSpec & clear_installable_to_repository();
 
             /**
-             * Set our installed-at-path requirement, return ourself.
+             * Set our installed-at-path constraint, return ourself.
              *
              * \since 0.32
              */
             PartiallyMadePackageDepSpec & installed_at_path(const FSPath &);
 
             /**
-             * Clear our installed-at-path requirement, return ourself.
+             * Clear our installed-at-path constraint, return ourself.
              *
              * \since 0.55
              */
             PartiallyMadePackageDepSpec & clear_installed_at_path();
 
             /**
-             * Set our installable-to-path requirement, return ourself.
+             * Set our installable-to-path constraint, return ourself.
              *
              * \since 0.61
              */
             PartiallyMadePackageDepSpec & installable_to_path(const FSPath &, const bool include_masked);
 
             /**
-             * Clear our installable-to-path requirement, return ourself.
+             * Clear our installable-to-path constraint, return ourself.
              *
              * \since 0.55
              */
             PartiallyMadePackageDepSpec & clear_installable_to_path();
 
             /**
-             * Set our package name part requirements, return ourself.
+             * Set our package name part constraints, return ourself.
              */
             PartiallyMadePackageDepSpec & package_name_part(const PackageNamePart &);
 
             /**
-             * Clear our package name part requirements, return ourself.
+             * Clear our package name part constraints, return ourself.
              *
              * \since 0.55
              */
             PartiallyMadePackageDepSpec & clear_package_name_part();
 
             /**
-             * Set our category name part requirements, return ourself.
+             * Set our category name part constraints, return ourself.
              */
             PartiallyMadePackageDepSpec & category_name_part(const CategoryNamePart &);
 
             /**
-             * Clear our category name part requirements, return ourself.
+             * Clear our category name part constraints, return ourself.
              *
              * \since 0.55
              */
@@ -191,11 +191,11 @@ namespace paludis
                     const VersionSpec &, const VersionOperator &, const VersionConstraintCombiner);
 
             /**
-             * Clear all version requirement, return ourself.
+             * Clear all version constraints, return ourself.
              *
              * \since 0.55
              */
-            PartiallyMadePackageDepSpec & clear_version_requirements();
+            PartiallyMadePackageDepSpec & clear_version();
 
             /**
              * Add a choice constraint, return ourself.
@@ -206,17 +206,17 @@ namespace paludis
                     const std::shared_ptr<const ChoiceConstraint> &);
 
             /**
-             * Add a key requirement, return ourself.
+             * Add a key constraint, return ourself.
              */
             PartiallyMadePackageDepSpec & key_constraint(
                     const std::string & key, const KeyConstraintOperation, const std::string & pattern);
 
             /**
-             * Clear choice requirements, return ourself.
+             * Clear choice constraints, return ourself.
              *
              * \since 0.61
              */
-            PartiallyMadePackageDepSpec & clear_choice_requirements();
+            PartiallyMadePackageDepSpec & clear_choices();
 
             /**
              * Turn ourselves into a PackageDepSpec.

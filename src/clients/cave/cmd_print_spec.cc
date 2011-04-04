@@ -235,7 +235,7 @@ namespace
 
         if (cmdline.a_version_requirement.specified())
         {
-            s.clear_version_requirements();
+            s.clear_version();
 
             for (args::StringSetArg::ConstIterator a(cmdline.a_version_requirement.begin_args()),
                     a_end(cmdline.a_version_requirement.end_args()) ;
@@ -253,7 +253,7 @@ namespace
 
         if (cmdline.a_additional_requirement.specified())
         {
-            s.clear_choice_requirements();
+            s.clear_choices();
 
             for (args::StringSetArg::ConstIterator a(cmdline.a_additional_requirement.begin_args()),
                     a_end(cmdline.a_additional_requirement.end_args()) ;

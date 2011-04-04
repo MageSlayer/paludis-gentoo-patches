@@ -1071,11 +1071,11 @@ Decider::_make_spec_for_preloading(const PackageDepSpec & spec,
 
     /* we don't want to copy use deps from the constraint, since things like
      * [foo?] start to get weird when there's no longer an associated ID. */
-    result.clear_choice_requirements();
+    result.clear_choices();
 
     /* but we do want to impose our own ChangedChoices if necessary. */
     if (changed_choices)
-        changed_choices->add_additional_requirements_to(result);
+        changed_choices->add_constraints_to(result);
 
     return result;
 }
