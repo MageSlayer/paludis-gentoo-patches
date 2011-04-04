@@ -160,7 +160,7 @@ namespace
             case '.':
                 {
                     auto k(parse_user_key_constraint(flag.substr(1)));
-                    result.key_constraint(std::get<0>(k), std::get<1>(k), std::get<2>(k));
+                    result.key_constraint(std::get<0>(k), std::get<1>(k), std::get<2>(k), std::get<3>(k));
                 }
                 break;
 
@@ -323,23 +323,28 @@ paludis::user_version_spec_options()
         vso_ignore_case, vso_letters_anywhere, vso_dotted_suffixes };
 }
 
-std::tuple<std::string, KeyConstraintOperation, std::string>
+std::tuple<KeyConstraintKeyType, std::string, KeyConstraintOperation, std::string>
 paludis::parse_user_key_constraint(const std::string & s)
 {
     std::string::size_type p(s.find_first_of("=<>?"));
     if (std::string::npos == p)
         throw PackageDepSpecError("[." + s + "] contains no operator");
 
+    std::string key, value;
+    KeyConstraintOperation op(last_kco);
+
     if (s.at(p) == '?')
     {
         if (s.length() - 1 != p)
             throw PackageDepSpecError("[." + s + "] uses a key with operator '?'");
         else
-            return std::make_tuple(s.substr(0, p), kco_question, "");
+        {
+            key = s.substr(0, p);
+            op = kco_question;
+        }
     }
     else
     {
-        KeyConstraintOperation op(last_kco);
         switch (s.at(p))
         {
             case '=': op = kco_equals;        break;
@@ -348,7 +353,27 @@ paludis::parse_user_key_constraint(const std::string & s)
             default:
                 throw PackageDepSpecError("[." + s + "] unknown operator");
         }
-        return std::make_tuple(s.substr(0, p), op, s.substr(p + 1));
+        key = s.substr(0, p);
+        value = s.substr(p + 1);
     }
+
+    KeyConstraintKeyType type(kckt_id);
+    if (0 == key.compare(0, 3, "::$", 0, 3))
+    {
+        type = kckt_repo_role;
+        key.erase(0, 3);
+    }
+    else if (0 == key.compare(0, 2, "::2", 0, 2))
+    {
+        type = kckt_repo;
+        key.erase(0, 2);
+    }
+    else if (0 == key.compare(0, 1, "$", 0, 1))
+    {
+        type = kckt_id_role;
+        key.erase(0, 1);
+    }
+
+    return std::make_tuple(type, key, op, value);
 }
 

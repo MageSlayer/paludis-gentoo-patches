@@ -298,7 +298,8 @@ template class Pool<AnySlotConstraint>;
 template class Singleton<Pool<AnySlotConstraint> >;
 template const std::shared_ptr<const AnySlotConstraint> Pool<AnySlotConstraint>::create(const bool &) const;
 
-KeyConstraint::KeyConstraint(const std::string & k, const KeyConstraintOperation o, const std::string & p) :
+KeyConstraint::KeyConstraint(const KeyConstraintKeyType t, const std::string & k, const KeyConstraintOperation o, const std::string & p) :
+    _key_type(t),
     _key(k),
     _operation(o),
     _pattern(p)
@@ -306,6 +307,12 @@ KeyConstraint::KeyConstraint(const std::string & k, const KeyConstraintOperation
 }
 
 KeyConstraint::~KeyConstraint() = default;
+
+KeyConstraintKeyType
+KeyConstraint::key_type() const
+{
+    return _key_type;
+}
 
 const std::string
 KeyConstraint::key() const
@@ -810,76 +817,90 @@ KeyConstraint::matches(
 {
     const MetadataKey * k(0);
 
-    auto repo(env->fetch_repository(id->repository_name()));
-    if (0 == key().compare(0, 3, "::$"))
+    switch (key_type())
     {
-        if (key() == "::$format")
-            k = repo->format_key().get();
-        else if (key() == "::$location")
-            k = repo->location_key().get();
-        else if (key() == "::$installed_root")
-            k = repo->installed_root_key().get();
-        else if (key() == "::$accept_keywords")
-            k = repo->accept_keywords_key().get();
-        else if (key() == "::$sync_host")
-            k = repo->sync_host_key().get();
-    }
-    else if (0 == key().compare(0, 1, "$"))
-    {
-        if (key() == "$behaviours")
-            k = id->behaviours_key().get();
-        else if (key() == "$build_dependencies")
-            k = id->build_dependencies_key().get();
-        else if (key() == "$choices")
-            k = id->choices_key().get();
-        else if (key() == "$contained_in")
-            k = id->contained_in_key().get();
-        else if (key() == "$contains")
-            k = id->contains_key().get();
-        else if (key() == "$contents")
-            k = id->contents_key().get();
-        else if (key() == "$dependencies")
-            k = id->dependencies_key().get();
-        else if (key() == "$fetches")
-            k = id->fetches_key().get();
-        else if (key() == "$from_repositories")
-            k = id->from_repositories_key().get();
-        else if (key() == "$fs_location")
-            k = id->fs_location_key().get();
-        else if (key() == "$homepage")
-            k = id->homepage_key().get();
-        else if (key() == "$installed_time")
-            k = id->installed_time_key().get();
-        else if (key() == "$keywords")
-            k = id->keywords_key().get();
-        else if (key() == "$long_description")
-            k = id->long_description_key().get();
-        else if (key() == "$post_dependencies")
-            k = id->post_dependencies_key().get();
-        else if (key() == "$provide")
-            k = id->provide_key().get();
-        else if (key() == "$run_dependencies")
-            k = id->run_dependencies_key().get();
-        else if (key() == "$short_description")
-            k = id->short_description_key().get();
-        else if (key() == "$slot")
-            k = id->slot_key().get();
-        else if (key() == "$suggested_dependencies")
-            k = id->suggested_dependencies_key().get();
-        else if (key() == "$virtual_for")
-            k = id->virtual_for_key().get();
-    }
-    else if (0 == key().compare(0, 2, "::"))
-    {
-        Repository::MetadataConstIterator m(repo->find_metadata(key().substr(2)));
-        if (m != repo->end_metadata())
-            k = m->get();
-    }
-    else
-    {
-        PackageID::MetadataConstIterator m(id->find_metadata(key()));
-        if (m != id->end_metadata())
-            k = m->get();
+        case kckt_repo_role:
+            {
+                auto repo(env->fetch_repository(id->repository_name()));
+                if (key() == "format")
+                    k = repo->format_key().get();
+                else if (key() == "location")
+                    k = repo->location_key().get();
+                else if (key() == "installed_root")
+                    k = repo->installed_root_key().get();
+                else if (key() == "accept_keywords")
+                    k = repo->accept_keywords_key().get();
+                else if (key() == "sync_host")
+                    k = repo->sync_host_key().get();
+            }
+            break;
+
+        case kckt_id_role:
+            {
+                if (key() == "behaviours")
+                    k = id->behaviours_key().get();
+                else if (key() == "build_dependencies")
+                    k = id->build_dependencies_key().get();
+                else if (key() == "choices")
+                    k = id->choices_key().get();
+                else if (key() == "contained_in")
+                    k = id->contained_in_key().get();
+                else if (key() == "contains")
+                    k = id->contains_key().get();
+                else if (key() == "contents")
+                    k = id->contents_key().get();
+                else if (key() == "dependencies")
+                    k = id->dependencies_key().get();
+                else if (key() == "fetches")
+                    k = id->fetches_key().get();
+                else if (key() == "from_repositories")
+                    k = id->from_repositories_key().get();
+                else if (key() == "fs_location")
+                    k = id->fs_location_key().get();
+                else if (key() == "homepage")
+                    k = id->homepage_key().get();
+                else if (key() == "installed_time")
+                    k = id->installed_time_key().get();
+                else if (key() == "keywords")
+                    k = id->keywords_key().get();
+                else if (key() == "long_description")
+                    k = id->long_description_key().get();
+                else if (key() == "post_dependencies")
+                    k = id->post_dependencies_key().get();
+                else if (key() == "provide")
+                    k = id->provide_key().get();
+                else if (key() == "run_dependencies")
+                    k = id->run_dependencies_key().get();
+                else if (key() == "short_description")
+                    k = id->short_description_key().get();
+                else if (key() == "slot")
+                    k = id->slot_key().get();
+                else if (key() == "suggested_dependencies")
+                    k = id->suggested_dependencies_key().get();
+                else if (key() == "virtual_for")
+                    k = id->virtual_for_key().get();
+            }
+            break;
+
+        case kckt_repo:
+            {
+                auto repo(env->fetch_repository(id->repository_name()));
+                Repository::MetadataConstIterator m(repo->find_metadata(key()));
+                if (m != repo->end_metadata())
+                    k = m->get();
+            }
+            break;
+
+        case kckt_id:
+            {
+                PackageID::MetadataConstIterator m(id->find_metadata(key()));
+                if (m != id->end_metadata())
+                    k = m->get();
+            }
+            break;
+
+        case last_kckt:
+            break;
     }
 
     if (! k)
@@ -894,9 +915,44 @@ KeyConstraint::matches(
     }
 }
 
+const std::string
+KeyConstraint::as_raw_string() const
+{
+    std::stringstream s;
+    s << "[.";
+
+    switch (key_type())
+    {
+        case kckt_id:                    break;
+        case kckt_id_role:   s << "$";   break;
+        case kckt_repo:      s << "::"; break;
+        case kckt_repo_role: s << "::$"; break;
+        case last_kckt:
+            break;
+    }
+
+    s << key();
+
+    switch (operation())
+    {
+        case kco_equals:         s << "=" << pattern(); break;
+        case kco_less_than:      s << "<" << pattern(); break;
+        case kco_greater_than:   s << ">" << pattern(); break;
+        case kco_question:       s << "?";              break;
+
+        case last_kco:
+            throw InternalError(PALUDIS_HERE, "Bad KeyConstraintOperation");
+    }
+
+    s << "]";
+
+    return s.str();
+}
+
 template class Pool<KeyConstraint>;
 template class Singleton<Pool<KeyConstraint> >;
-template const std::shared_ptr<const KeyConstraint> Pool<KeyConstraint>::create(const std::string &, const KeyConstraintOperation &, const std::string &) const;
+template const std::shared_ptr<const KeyConstraint> Pool<KeyConstraint>::create(
+        const KeyConstraintKeyType &, const std::string &, const KeyConstraintOperation &, const std::string &) const;
 template class Sequence<std::shared_ptr<const KeyConstraint> >;
 template class WrappedForwardIterator<Sequence<std::shared_ptr<const KeyConstraint> >::ConstIteratorTag, const std::shared_ptr<const KeyConstraint> >;
 

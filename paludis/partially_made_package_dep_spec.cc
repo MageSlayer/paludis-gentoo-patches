@@ -300,22 +300,7 @@ namespace
 
             if (all_key_constraints())
                 for (auto u(all_key_constraints()->begin()), u_end(all_key_constraints()->end()) ; u != u_end ; ++u)
-                {
-                    s << "[" << (*u)->key();
-
-                    switch ((*u)->operation())
-                    {
-                        case kco_equals:         s << "=" << (*u)->pattern(); break;
-                        case kco_less_than:      s << "<" << (*u)->pattern(); break;
-                        case kco_greater_than:   s << ">" << (*u)->pattern(); break;
-                        case kco_question:       s << "?";                    break;
-
-                        case last_kco:
-                            throw InternalError(PALUDIS_HERE, "Bad KeyConstraintOperation");
-                    }
-
-                    s << "]";
-                }
+                    s << (*u)->as_raw_string();
 
             return s.str();
         }
@@ -614,11 +599,11 @@ PartiallyMadePackageDepSpec::clear_version()
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::key_constraint(const std::string & k, const KeyConstraintOperation o, const std::string & p)
+PartiallyMadePackageDepSpec::key_constraint(const KeyConstraintKeyType t, const std::string & k, const KeyConstraintOperation o, const std::string & p)
 {
     if (! _imp->data->all_keys)
         _imp->data->all_keys = std::make_shared<KeyConstraintSequence>();
-    _imp->data->all_keys->push_back(KeyConstraintPool::get_instance()->create(k, o, p));
+    _imp->data->all_keys->push_back(KeyConstraintPool::get_instance()->create(t, k, o, p));
     return *this;
 }
 

@@ -139,7 +139,7 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
                 }
 
                 auto k(parse_user_key_constraint(flag.substr(1)));
-                result.key_constraint(std::get<0>(k), std::get<1>(k), std::get<2>(k));
+                result.key_constraint(std::get<0>(k), std::get<1>(k), std::get<2>(k), std::get<3>(k));
             }
             break;
 

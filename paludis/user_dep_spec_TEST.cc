@@ -53,20 +53,7 @@ namespace
 
     std::string stringify_key_constraint(const KeyConstraint & k)
     {
-        std::string result(k.key());
-
-        switch (k.operation())
-        {
-            case kco_question:     result.append("?"); break;
-            case kco_equals:       result.append("="); break;
-            case kco_less_than:    result.append("<"); break;
-            case kco_greater_than: result.append(">"); break;
-            case last_kco:
-                break;
-        }
-
-        result.append(k.pattern());
-        return "[." + result + "]";
+        return k.as_raw_string();
     }
 
     std::string stringify_choice_constraint(const ChoiceConstraint & k)

@@ -11,6 +11,16 @@ make_enum_KeyConstraintOperation()
     key kco_question           "A question constraint"
 }
 
+make_enum_KeyConstraintKeyType()
+{
+    prefix kckt
+
+    key kckt_id                "A regular [.key] constraint"
+    key kckt_id_role           "A role [.\$key] constraint"
+    key kckt_repo              "A [.::repo] constraint"
+    key kckt_repo_role         "A [.::\$repo] constraint"
+}
+
 make_enum_VersionConstraintCombiner()
 {
     prefix vcc

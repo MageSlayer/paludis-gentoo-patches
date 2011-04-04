@@ -209,7 +209,7 @@ namespace paludis
              * Add a key constraint, return ourself.
              */
             PartiallyMadePackageDepSpec & key_constraint(
-                    const std::string & key, const KeyConstraintOperation, const std::string & pattern);
+                    const KeyConstraintKeyType, const std::string & key, const KeyConstraintOperation, const std::string & pattern);
 
             /**
              * Clear choice constraints, return ourself.

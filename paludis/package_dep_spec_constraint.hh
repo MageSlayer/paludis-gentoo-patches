@@ -282,17 +282,19 @@ namespace paludis
         friend class Pool<KeyConstraint>;
 
         private:
+            KeyConstraintKeyType _key_type;
             std::string _key;
             KeyConstraintOperation _operation;
             std::string _pattern;
 
-            KeyConstraint(const std::string &, const KeyConstraintOperation, const std::string &);
+            KeyConstraint(const KeyConstraintKeyType, const std::string &, const KeyConstraintOperation, const std::string &);
 
             KeyConstraint(const KeyConstraint &) = delete;
 
         public:
             ~KeyConstraint();
 
+            KeyConstraintKeyType key_type() const PALUDIS_ATTRIBUTE((warn_unused_result));
             const std::string key() const PALUDIS_ATTRIBUTE((warn_unused_result));
             KeyConstraintOperation operation() const PALUDIS_ATTRIBUTE((warn_unused_result));
             const std::string pattern() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -300,6 +302,11 @@ namespace paludis
            bool matches(
                     const Environment * const env,
                     const std::shared_ptr<const PackageID> & id) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Return a raw string representation of ourself.
+             */
+            const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE ChoiceConstraint :

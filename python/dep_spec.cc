@@ -305,7 +305,7 @@ PythonPackageDepSpec::operator PackageDepSpec() const
     {
         for (auto i(all_key_constraints()->begin()), i_end(all_key_constraints()->end()) ;
                 i != i_end ; ++i)
-            p.key_constraint((*i)->key(), (*i)->operation(), (*i)->pattern());
+            p.key_constraint((*i)->key_type(), (*i)->key(), (*i)->operation(), (*i)->pattern());
     }
 
     return p.to_package_dep_spec();
