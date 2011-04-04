@@ -481,6 +481,8 @@ namespace
             {
                 case kco_equals:
                     return pattern == stringify(k.value().seconds());
+                case kco_tilde:
+                    return std::string::npos != stringify(k.value().seconds()).find(pattern);
                 case kco_less_than:
                     return k.value().seconds() < destringify<time_t>(pattern);
                 case kco_greater_than:
@@ -495,22 +497,74 @@ namespace
 
         bool visit(const MetadataValueKey<std::string> & k) const
         {
-            return pattern == stringify(k.value());
+            switch (op)
+            {
+                case kco_equals:
+                    return pattern == stringify(k.value());
+                case kco_tilde:
+                    return std::string::npos != stringify(k.value()).find(pattern);
+                case kco_less_than:
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
         }
 
         bool visit(const MetadataValueKey<SlotName> & k) const
         {
-            return pattern == stringify(k.value());
+            switch (op)
+            {
+                case kco_equals:
+                    return pattern == stringify(k.value());
+                case kco_tilde:
+                    return std::string::npos != stringify(k.value()).find(pattern);
+                case kco_less_than:
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
         }
 
         bool visit(const MetadataValueKey<FSPath> & k) const
         {
-            return pattern == stringify(k.value());
+            switch (op)
+            {
+                case kco_equals:
+                    return pattern == stringify(k.value());
+                case kco_tilde:
+                    return std::string::npos != stringify(k.value()).find(pattern);
+                case kco_less_than:
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
         }
 
         bool visit(const MetadataValueKey<bool> & k) const
         {
-            return pattern == stringify(k.value());
+            switch (op)
+            {
+                case kco_equals:
+                    return pattern == stringify(k.value());
+                case kco_tilde:
+                    return std::string::npos != stringify(k.value()).find(pattern);
+                case kco_less_than:
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
         }
 
         bool visit(const MetadataValueKey<long> & k) const
@@ -519,6 +573,8 @@ namespace
             {
                 case kco_equals:
                     return pattern == stringify(k.value());
+                case kco_tilde:
+                    return std::string::npos != stringify(k.value()).find(pattern);
                 case kco_less_than:
                     return k.value() < destringify<long>(pattern);
                 case kco_greater_than:
@@ -551,6 +607,7 @@ namespace
 
                 case kco_greater_than:
                 case kco_question:
+                case kco_tilde:
                 case last_kco:
                     break;
             }
@@ -560,7 +617,20 @@ namespace
 
         bool visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k) const
         {
-            return pattern == stringify(*k.value());
+            switch (op)
+            {
+                case kco_equals:
+                    return pattern == stringify(*k.value());
+                case kco_tilde:
+                    return std::string::npos != stringify(*k.value()).find(pattern);
+                case kco_less_than:
+                case kco_greater_than:
+                case kco_question:
+                case last_kco:
+                    break;
+            }
+
+            return false;
         }
 
         bool visit(const MetadataSpecTreeKey<DependencySpecTree> & s) const
@@ -572,6 +642,7 @@ namespace
                 case kco_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
+                case kco_tilde:
                 case kco_greater_than:
                 case kco_question:
                 case last_kco:
@@ -590,6 +661,7 @@ namespace
                 case kco_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
+                case kco_tilde:
                 case kco_greater_than:
                 case kco_question:
                 case last_kco:
@@ -608,6 +680,7 @@ namespace
                 case kco_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
+                case kco_tilde:
                 case kco_greater_than:
                 case kco_question:
                 case last_kco:
@@ -626,6 +699,7 @@ namespace
                 case kco_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
+                case kco_tilde:
                 case kco_greater_than:
                 case kco_question:
                 case last_kco:
@@ -644,6 +718,7 @@ namespace
                 case kco_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
+                case kco_tilde:
                 case kco_greater_than:
                 case kco_question:
                 case last_kco:
@@ -662,6 +737,7 @@ namespace
                 case kco_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
+                case kco_tilde:
                 case kco_greater_than:
                 case kco_question:
                 case last_kco:
@@ -680,6 +756,7 @@ namespace
                 case kco_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
+                case kco_tilde:
                 case kco_greater_than:
                 case kco_question:
                 case last_kco:
@@ -698,6 +775,7 @@ namespace
                 case kco_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
+                case kco_tilde:
                 case kco_greater_than:
                 case kco_question:
                 case last_kco:
@@ -717,6 +795,7 @@ namespace
                     return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
                             StringifyEqual(pattern));
 
+                case kco_tilde:
                 case kco_greater_than:
                 case kco_question:
                 case last_kco:
@@ -738,6 +817,7 @@ namespace
                             indirect_iterator(s.value()->end()),
                             StringifyEqual(pattern));
 
+                case kco_tilde:
                 case kco_greater_than:
                 case kco_question:
                 case last_kco:
@@ -757,6 +837,7 @@ namespace
                     return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
                             StringifyEqual(pattern));
 
+                case kco_tilde:
                 case kco_greater_than:
                 case kco_question:
                 case last_kco:
@@ -776,6 +857,7 @@ namespace
                     return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
                             StringifyEqual(pattern));
 
+                case kco_tilde:
                 case kco_greater_than:
                 case kco_question:
                 case last_kco:
@@ -800,6 +882,7 @@ namespace
                     return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
                             StringifyEqual(pattern));
 
+                case kco_tilde:
                 case kco_greater_than:
                 case kco_question:
                 case last_kco:
@@ -1024,6 +1107,7 @@ KeyConstraint::as_raw_string() const
     switch (operation())
     {
         case kco_equals:         s << "=" << pattern(); break;
+        case kco_tilde:          s << "~" << pattern(); break;
         case kco_less_than:      s << "<" << pattern(); break;
         case kco_greater_than:   s << ">" << pattern(); break;
         case kco_question:       s << "?";              break;

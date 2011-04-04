@@ -326,7 +326,7 @@ paludis::user_version_spec_options()
 std::tuple<KeyConstraintKeyType, std::string, KeyConstraintOperation, std::string>
 paludis::parse_user_key_constraint(const std::string & s)
 {
-    std::string::size_type p(s.find_first_of("=<>?"));
+    std::string::size_type p(s.find_first_of("=<>?~"));
     if (std::string::npos == p)
         throw PackageDepSpecError("[." + s + "] contains no operator");
 
@@ -348,6 +348,7 @@ paludis::parse_user_key_constraint(const std::string & s)
         switch (s.at(p))
         {
             case '=': op = kco_equals;        break;
+            case '~': op = kco_tilde;         break;
             case '<': op = kco_less_than;     break;
             case '>': op = kco_greater_than;  break;
             default:

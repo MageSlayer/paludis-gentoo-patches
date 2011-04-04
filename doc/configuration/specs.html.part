@@ -46,10 +46,10 @@ the following order:</p>
     <li><code>[.key=value]</code>: Match only if the specified metadata key has a particular exact value. Only works for
     simple values, sets and sequences, not spec trees and other complex compound keys. If <code>&lt;</code> is used in
     place of <code>=</code>, for numeric values a less-than comparison is used, and for sets, sequences and spec trees,
-    a match occurs if any member of the set or sequence is equal to the value. Similarly if <code>&gt;</code> is used,
-    for numeric values a greater-than comparison is used; it does not match for other types of values. As above, the key
-    may be a raw name or a dollar-prefixed role name, and may be prefixed with <code>::</code> for checking repository
-    metadata.</li>
+    a match occurs if any member of the set or sequence is equal to the value. If <code>&gt;</code> is used,
+    for numeric values a greater-than comparison is used; it does not match for other types of values. If <code>~</code>
+    is used, a substring match is performed. As above, the key may be a raw name or a dollar-prefixed role name, and
+    may be prefixed with <code>::</code> for checking repository metadata.</li>
 </ul>
 
 <p>Repository requirements are in the form <code>to</code>, <code>from-&gt;</code> or <code>::from-&gt;to</code>. The

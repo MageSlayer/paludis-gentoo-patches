@@ -6,6 +6,7 @@ make_enum_KeyConstraintOperation()
     prefix kco
 
     key kco_equals             "An = constraint"
+    key kco_tilde              "A ~ constraint"
     key kco_less_than          "A less than constraint"
     key kco_greater_than       "A greater than constraint"
     key kco_question           "A question constraint"
