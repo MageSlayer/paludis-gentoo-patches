@@ -25,7 +25,6 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
-#include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/package_dep_spec_constraint.hh>
 #include <paludis/contents.hh>
 #include <paludis/version_operator.hh>
@@ -171,10 +170,10 @@ paludis::match_package_with_maybe_changes(
 
     if (! options[mpo_ignore_additional_requirements])
     {
-        if (spec.additional_requirements_ptr())
+        if (spec.all_choice_constraints())
         {
-            for (AdditionalPackageDepSpecRequirements::ConstIterator u(spec.additional_requirements_ptr()->begin()),
-                    u_end(spec.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
+            for (auto u(spec.all_choice_constraints()->begin()), u_end(spec.all_choice_constraints()->end()) ;
+                    u != u_end ; ++u)
                 if (! (*u)->requirement_met(&env, maybe_changes_to_owner, id, from_id, maybe_changes_to_target).first)
                     return false;
         }

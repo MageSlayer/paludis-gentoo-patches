@@ -123,12 +123,11 @@ int main(int argc, char * argv[])
                     spec.installable_to_repository_constraint()->name() << ", " <<
                     spec.installable_to_repository_constraint()->include_masked() << endl;
 
-            if (spec.additional_requirements_ptr() && ! spec.additional_requirements_ptr()->empty())
+            if (spec.all_choice_constraints() && ! spec.all_choice_constraints()->empty())
             {
-                cout << "    " << left << setw(24) << "Additional requirements:" << " ";
+                cout << "    " << left << setw(24) << "Choice constraints:" << " ";
                 bool need_join(false);
-                for (AdditionalPackageDepSpecRequirements::ConstIterator u(spec.additional_requirements_ptr()->begin()),
-                        u_end(spec.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
+                for (auto u(spec.all_choice_constraints()->begin()), u_end(spec.all_choice_constraints()->end()) ; u != u_end ; ++u)
                 {
                     if (need_join)
                         cout << " and ";

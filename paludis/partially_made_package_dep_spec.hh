@@ -198,10 +198,12 @@ namespace paludis
             PartiallyMadePackageDepSpec & clear_version_requirements();
 
             /**
-             * Add an additional requirement, return ourself.
+             * Add a choice constraint, return ourself.
+             *
+             * \since 0.61
              */
-            PartiallyMadePackageDepSpec & additional_requirement(
-                    const std::shared_ptr<const AdditionalPackageDepSpecRequirement> &);
+            PartiallyMadePackageDepSpec & choice_constraint(
+                    const std::shared_ptr<const ChoiceConstraint> &);
 
             /**
              * Add a key requirement, return ourself.
@@ -210,11 +212,11 @@ namespace paludis
                     const std::string & key, const KeyConstraintOperation, const std::string & pattern);
 
             /**
-             * Clear additional requirements, return ourself.
+             * Clear choice requirements, return ourself.
              *
-             * \since 0.41
+             * \since 0.61
              */
-            PartiallyMadePackageDepSpec & clear_additional_requirements();
+            PartiallyMadePackageDepSpec & clear_choice_requirements();
 
             /**
              * Turn ourselves into a PackageDepSpec.

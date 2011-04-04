@@ -360,7 +360,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
 template<typename I_>
 void
-PortageEnvironment::_load_atom_file(const FSPath & f, I_ i, const std::string & def_value, const bool reject_additional)
+PortageEnvironment::_load_atom_file(const FSPath & f, I_ i, const std::string & def_value, const bool reject_choices)
 {
     using namespace std::placeholders;
 
@@ -372,7 +372,7 @@ PortageEnvironment::_load_atom_file(const FSPath & f, I_ i, const std::string & 
     if (f.stat().is_directory())
     {
         std::for_each(FSIterator(f, { }), FSIterator(), std::bind(
-                    &PortageEnvironment::_load_atom_file<I_>, this, _1, i, def_value, reject_additional));
+                    &PortageEnvironment::_load_atom_file<I_>, this, _1, i, def_value, reject_choices));
     }
     else
     {
@@ -388,7 +388,7 @@ PortageEnvironment::_load_atom_file(const FSPath & f, I_ i, const std::string & 
 
             std::shared_ptr<PackageDepSpec> p(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
                             tokens.at(0), this, UserPackageDepSpecOptions() + updso_no_disambiguation)));
-            if (reject_additional && p->additional_requirements_ptr())
+            if (reject_choices && p->all_choice_constraints() && ! p->all_choice_constraints()->empty())
             {
                 Log::get_instance()->message("portage_environment.bad_spec", ll_warning, lc_context)
                     << "Dependency specification '" << stringify(*p)

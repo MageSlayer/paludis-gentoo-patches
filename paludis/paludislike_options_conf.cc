@@ -204,7 +204,7 @@ PaludisLikeOptionsConf::add_file(const FSPath & f)
                             tokens.at(0), _imp->params.environment(),
                             { updso_allow_wildcards, updso_no_disambiguation, updso_throw_if_set })));
 
-            if (d->additional_requirements_ptr())
+            if (d->all_choice_constraints() && ! d->all_choice_constraints()->empty())
             {
                 Log::get_instance()->message("paludislike_options_conf.bad_spec", ll_warning, lc_context)
                     << "Dependency specification '" << stringify(*d)
@@ -341,9 +341,9 @@ namespace
     bool match_anything(const PackageDepSpec & spec)
     {
         return package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                    n::has_additional_requirements() = false,
                     n::has_any_slot_requirement() = indeterminate,
                     n::has_category_name_part() = false,
+                    n::has_choice_requirements() = false,
                     n::has_exact_slot_requirement() = false,
                     n::has_from_repository() = false,
                     n::has_in_repository() = false,

@@ -41,9 +41,9 @@ paludis::resolver::match_qpns(
      * either can be wildcards (we could work for :slot too,
      * but we're lazy) */
     if (! package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                    n::has_additional_requirements() = false,
                     n::has_any_slot_requirement() = false,
                     n::has_category_name_part() = indeterminate,
+                    n::has_choice_requirements() = false,
                     n::has_exact_slot_requirement() = false,
                     n::has_from_repository() = false,
                     n::has_in_repository() = false,

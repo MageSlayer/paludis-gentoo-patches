@@ -38,11 +38,11 @@
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/elike_use_requirement.hh>
 
 #include <iostream>
 #include <algorithm>
@@ -253,15 +253,15 @@ namespace
 
         if (cmdline.a_additional_requirement.specified())
         {
-            s.clear_additional_requirements();
+            s.clear_choice_requirements();
 
             for (args::StringSetArg::ConstIterator a(cmdline.a_additional_requirement.begin_args()),
                     a_end(cmdline.a_additional_requirement.end_args()) ;
                     a != a_end ; ++a)
                 if (! a->empty())
                 {
-                    auto k(parse_user_key_constraint(*a));
-                    s.key_constraint(std::get<0>(k), std::get<1>(k), std::get<2>(k));
+                    auto k(parse_elike_use_requirement(*a, { }));
+                    s.choice_constraint(k);
                 }
         }
 

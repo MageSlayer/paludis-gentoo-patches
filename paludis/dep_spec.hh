@@ -35,7 +35,6 @@
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
-#include <paludis/additional_package_dep_spec_requirement-fwd.hh>
 #include <paludis/partially_made_package_dep_spec-fwd.hh>
 #include <paludis/dep_spec_data-fwd.hh>
 #include <paludis/dep_spec_annotations-fwd.hh>
@@ -408,9 +407,12 @@ namespace paludis
             const std::shared_ptr<const KeyConstraintSequence> all_key_constraints() const;
 
             /**
-             * Fetch any additional requirements (may be a zero pointer).
+             * Fetch all our ChoiceConstraints, if we have any, or
+             * a null pointer otherwise.
+             *
+             * \since 0.61
              */
-            std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
+            const std::shared_ptr<const ChoiceConstraintSequence> all_choice_constraints() const;
 
             /**
              * Access to our data.

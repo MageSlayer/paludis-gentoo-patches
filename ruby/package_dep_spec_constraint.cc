@@ -43,6 +43,7 @@ namespace
     static VALUE c_any_slot_constraint;
     static VALUE c_exact_slot_constraint;
     static VALUE c_key_constraint;
+    static VALUE c_choice_constraint;
 
     static VALUE c_key_constraint_operation;
 
@@ -125,6 +126,12 @@ namespace
         void visit(const KeyConstraint &)
         {
             value = Data_Wrap_Struct(c_key_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
+                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+        }
+
+        void visit(const ChoiceConstraint &)
+        {
+            value = Data_Wrap_Struct(c_choice_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
                     new std::shared_ptr<const PackageDepSpecConstraint>(mm));
         }
     };
@@ -488,6 +495,15 @@ namespace
             rb_define_const(c_key_constraint_operation, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
         // cc_enum_special<paludis/package_dep_spec_constraint-se.hh, KeyConstraint, c_key_constraint_operation>
+
+        /*
+         * Document-class: Paludis::ChoiceConstraint
+         *
+         * Represents a [flag] constraint in a PackageDepSpec.
+         */
+        c_choice_constraint = rb_define_class_under(
+                paludis_module(), "KeyConstraint", c_package_dep_spec_constraint);
+        rb_funcall(c_choice_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
     }
 }
 

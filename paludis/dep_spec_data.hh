@@ -26,7 +26,6 @@
 #include <paludis/changed_choices-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/version_operator-fwd.hh>
-#include <paludis/additional_package_dep_spec_requirement-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/partially_made_package_dep_spec-fwd.hh>
 #include <paludis/environment-fwd.hh>
@@ -208,9 +207,12 @@ namespace paludis
             virtual const std::shared_ptr<const KeyConstraintSequence> all_key_constraints() const = 0;
 
             /**
-             * Fetch the additional requirements (may be a zero pointer).
+             * Fetch all our ChoiceConstraints, if we have any, or
+             * a null pointer otherwise.
+             *
+             * \since 0.61
              */
-            virtual std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const = 0;
+            virtual const std::shared_ptr<const ChoiceConstraintSequence> all_choice_constraints() const = 0;
 
             /**
              * Fetch options if we're being used to construct a new PartiallyMadePackageDepSpec.

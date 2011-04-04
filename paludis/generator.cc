@@ -305,9 +305,9 @@ namespace
                 const RepositoryContentMayExcludes & x) const
         {
             if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                            n::has_additional_requirements() = indeterminate,
                             n::has_any_slot_requirement() = indeterminate,
                             n::has_category_name_part() = indeterminate,
+                            n::has_choice_requirements() = indeterminate,
                             n::has_exact_slot_requirement() = indeterminate,
                             n::has_from_repository() = indeterminate,
                             n::has_in_repository() = false,

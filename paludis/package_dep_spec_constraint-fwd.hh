@@ -69,6 +69,10 @@ namespace paludis
 
     typedef Sequence<std::shared_ptr<const KeyConstraint> > KeyConstraintSequence;
 
+    class ChoiceConstraint;
+
+    typedef Sequence<std::shared_ptr<const ChoiceConstraint> > ChoiceConstraintSequence;
+
 #include <paludis/package_dep_spec_constraint-se.hh>
 
 }

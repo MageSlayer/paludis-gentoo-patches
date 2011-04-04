@@ -68,7 +68,6 @@
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
 #include <paludis/changed_choices.hh>
-#include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/package_dep_spec_constraint.hh>
@@ -1072,7 +1071,7 @@ Decider::_make_spec_for_preloading(const PackageDepSpec & spec,
 
     /* we don't want to copy use deps from the constraint, since things like
      * [foo?] start to get weird when there's no longer an associated ID. */
-    result.clear_additional_requirements();
+    result.clear_choice_requirements();
 
     /* but we do want to impose our own ChangedChoices if necessary. */
     if (changed_choices)
@@ -1886,8 +1885,8 @@ Decider::_find_id_for_from(
 
                     if (! (*c)->spec().if_package())
                     {
-                        if ((*c)->spec().if_block()->blocking().additional_requirements_ptr() &&
-                                ! (*c)->spec().if_block()->blocking().additional_requirements_ptr()->empty())
+                        if ((*c)->spec().if_block()->blocking().all_choice_constraints() &&
+                                ! (*c)->spec().if_block()->blocking().all_choice_constraints()->empty())
                         {
                             /* too complicated for now */
                             ok = false;
@@ -1895,14 +1894,14 @@ Decider::_find_id_for_from(
                         break;
                     }
 
-                    if (! (*c)->spec().if_package()->additional_requirements_ptr())
+                    if (! (*c)->spec().if_package()->all_choice_constraints())
                     {
                         /* no additional requirements, so no tinkering required */
                         continue;
                     }
 
-                    for (auto a((*c)->spec().if_package()->additional_requirements_ptr()->begin()),
-                            a_end((*c)->spec().if_package()->additional_requirements_ptr()->end()) ;
+                    for (auto a((*c)->spec().if_package()->all_choice_constraints()->begin()),
+                            a_end((*c)->spec().if_package()->all_choice_constraints()->end()) ;
                             a != a_end ; ++a)
                     {
                         auto b((*a)->accumulate_changes_to_make_met(_imp->env,

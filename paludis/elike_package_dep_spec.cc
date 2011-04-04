@@ -179,8 +179,7 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
             if (options[epdso_strict_parsing])
                 euro += euro_strict_parsing;
 
-            std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag, euro));
-            result.additional_requirement(req);
+            result.choice_constraint(parse_elike_use_requirement(flag, euro));
 
             break;
     };

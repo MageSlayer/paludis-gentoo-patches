@@ -65,10 +65,10 @@ ChangedChoices::add_additional_requirements_to(PartiallyMadePackageDepSpec & spe
             o != o_end ; ++o)
     {
         if (o->second)
-            spec.additional_requirement(parse_elike_use_requirement("" + stringify(o->first) + "(-)",
+            spec.choice_constraint(parse_elike_use_requirement("" + stringify(o->first) + "(-)",
                         { euro_allow_default_values }));
         else
-            spec.additional_requirement(parse_elike_use_requirement("-" + stringify(o->first) + "(-)",
+            spec.choice_constraint(parse_elike_use_requirement("-" + stringify(o->first) + "(-)",
                         { euro_allow_default_values }));
     }
 }

@@ -24,7 +24,7 @@
 #include <paludis/util/options-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/additional_package_dep_spec_requirement-fwd.hh>
+#include <paludis/package_dep_spec_constraint-fwd.hh>
 #include <iosfwd>
 #include <string>
 #include <memory>
@@ -37,7 +37,7 @@ namespace paludis
 
     typedef Options<ELikeUseRequirementOption> ELikeUseRequirementOptions;
 
-    std::shared_ptr<const AdditionalPackageDepSpecRequirement> parse_elike_use_requirement(
+    std::shared_ptr<const ChoiceConstraint> parse_elike_use_requirement(
             const std::string &, const ELikeUseRequirementOptions &)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 }

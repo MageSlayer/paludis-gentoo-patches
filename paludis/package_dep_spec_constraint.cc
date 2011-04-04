@@ -900,3 +900,8 @@ template const std::shared_ptr<const KeyConstraint> Pool<KeyConstraint>::create(
 template class Sequence<std::shared_ptr<const KeyConstraint> >;
 template class WrappedForwardIterator<Sequence<std::shared_ptr<const KeyConstraint> >::ConstIteratorTag, const std::shared_ptr<const KeyConstraint> >;
 
+ChoiceConstraint::ChoiceConstraint() = default;
+
+template class Sequence<std::shared_ptr<const ChoiceConstraint> >;
+template class WrappedForwardIterator<Sequence<std::shared_ptr<const ChoiceConstraint> >::ConstIteratorTag, const std::shared_ptr<const ChoiceConstraint> >;
+

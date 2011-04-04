@@ -18,7 +18,6 @@
  */
 
 #include <paludis/partially_made_package_dep_spec.hh>
-#include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/dep_spec_data.hh>
 #include <paludis/package_dep_spec_constraint.hh>
 #include <paludis/version_operator.hh>
@@ -63,7 +62,7 @@ namespace
         std::shared_ptr<const InstalledAtPathConstraint> installed_at_path;
         std::shared_ptr<const InstallableToPathConstraint> installable_to_path;
         std::shared_ptr<KeyConstraintSequence> all_keys;
-        std::shared_ptr<AdditionalPackageDepSpecRequirements> additional_requirements;
+        std::shared_ptr<ChoiceConstraintSequence> all_choices;
         PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec_v;
 
         PartiallyMadePackageDepSpecData(const PartiallyMadePackageDepSpecOptions & o) :
@@ -86,7 +85,7 @@ namespace
             installed_at_path(other.installed_at_path_constraint()),
             installable_to_path(other.installable_to_path_constraint()),
             all_keys(other.all_key_constraints() ? new KeyConstraintSequence : 0),
-            additional_requirements(other.additional_requirements_ptr() ? new AdditionalPackageDepSpecRequirements : 0),
+            all_choices(other.all_choice_constraints() ? new ChoiceConstraintSequence : 0),
             options_for_partially_made_package_dep_spec_v(other.options_for_partially_made_package_dep_spec())
         {
             if (all_versions)
@@ -97,9 +96,9 @@ namespace
                 std::copy(other.all_key_constraints()->begin(), other.all_key_constraints()->end(),
                         all_keys->back_inserter());
 
-            if (additional_requirements)
-                std::copy(other.additional_requirements_ptr()->begin(), other.additional_requirements_ptr()->end(),
-                        additional_requirements->back_inserter());
+            if (all_choices)
+                std::copy(other.all_choice_constraints()->begin(), other.all_choice_constraints()->end(),
+                        all_choices->back_inserter());
         }
 
         PartiallyMadePackageDepSpecData(const PartiallyMadePackageDepSpecData & other) :
@@ -116,7 +115,7 @@ namespace
             installed_at_path(other.installed_at_path),
             installable_to_path(other.installable_to_path),
             all_keys(other.all_keys),
-            additional_requirements(other.additional_requirements),
+            all_choices(other.all_choices),
             options_for_partially_made_package_dep_spec_v(other.options_for_partially_made_package_dep_spec_v)
         {
         }
@@ -295,9 +294,8 @@ namespace
                 }
             }
 
-            if (additional_requirements_ptr())
-                for (AdditionalPackageDepSpecRequirements::ConstIterator u(additional_requirements_ptr()->begin()),
-                        u_end(additional_requirements_ptr()->end()) ; u != u_end ; ++u)
+            if (all_choice_constraints())
+                for (auto u(all_choice_constraints()->begin()), u_end(all_choice_constraints()->end()) ; u != u_end ; ++u)
                     s << (*u)->as_raw_string();
 
             if (all_key_constraints())
@@ -377,14 +375,14 @@ namespace
             return installable_to_path;
         }
 
-        virtual std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
-        {
-            return additional_requirements;
-        }
-
         virtual const std::shared_ptr<const KeyConstraintSequence> all_key_constraints() const
         {
             return all_keys;
+        }
+
+        virtual const std::shared_ptr<const ChoiceConstraintSequence> all_choice_constraints() const
+        {
+            return all_choices;
         }
 
         virtual const PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec() const
@@ -616,15 +614,6 @@ PartiallyMadePackageDepSpec::clear_version_requirements()
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::additional_requirement(const std::shared_ptr<const AdditionalPackageDepSpecRequirement> & req)
-{
-    if (! _imp->data->additional_requirements)
-        _imp->data->additional_requirements = std::make_shared<AdditionalPackageDepSpecRequirements>();
-    _imp->data->additional_requirements->push_back(req);
-    return *this;
-}
-
-PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::key_constraint(const std::string & k, const KeyConstraintOperation o, const std::string & p)
 {
     if (! _imp->data->all_keys)
@@ -634,9 +623,18 @@ PartiallyMadePackageDepSpec::key_constraint(const std::string & k, const KeyCons
 }
 
 PartiallyMadePackageDepSpec &
-PartiallyMadePackageDepSpec::clear_additional_requirements()
+PartiallyMadePackageDepSpec::choice_constraint(const std::shared_ptr<const ChoiceConstraint> & c)
 {
-    _imp->data->additional_requirements.reset();
+    if (! _imp->data->all_choices)
+        _imp->data->all_choices = std::make_shared<ChoiceConstraintSequence>();
+    _imp->data->all_choices->push_back(c);
+    return *this;
+}
+
+PartiallyMadePackageDepSpec &
+PartiallyMadePackageDepSpec::clear_choice_requirements()
+{
+    _imp->data->all_choices.reset();
     return *this;
 }
 

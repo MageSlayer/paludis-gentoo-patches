@@ -69,6 +69,11 @@ namespace
         return "[." + result + "]";
     }
 
+    std::string stringify_choice_constraint(const ChoiceConstraint & k)
+    {
+        return k.as_raw_string();
+    }
+
     class UserDepSpecTest :
         public testing::Test
     {
@@ -176,15 +181,15 @@ UserDepSpecTest::check_spec(
     }
 
     if (additional_requirement.empty())
-        EXPECT_TRUE((! spec.additional_requirements_ptr()) || spec.additional_requirements_ptr()->empty());
+        EXPECT_TRUE((! spec.all_choice_constraints()) || spec.all_choice_constraints()->empty());
     else
     {
-        ASSERT_TRUE(bool(spec.additional_requirements_ptr()) || bool(spec.all_key_constraints()));
+        ASSERT_TRUE(bool(spec.all_choice_constraints()) || bool(spec.all_key_constraints()));
         std::string x;
-        if (spec.additional_requirements_ptr())
+        if (spec.all_choice_constraints())
             x.append(stringify(join(
-                            indirect_iterator(spec.additional_requirements_ptr()->begin()),
-                            indirect_iterator(spec.additional_requirements_ptr()->end()), ", ")));
+                            indirect_iterator(spec.all_choice_constraints()->begin()),
+                            indirect_iterator(spec.all_choice_constraints()->end()), ", ", &stringify_choice_constraint)));
         if (spec.all_key_constraints())
             x.append(stringify(join(
                             indirect_iterator(spec.all_key_constraints()->begin()),

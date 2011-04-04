@@ -181,8 +181,7 @@ namespace paludis
                 const std::shared_ptr<const ExactSlotConstraint> exact_slot_constraint() const;
                 const std::shared_ptr<const AnySlotConstraint> any_slot_constraint() const;
                 const std::shared_ptr<const KeyConstraintSequence> all_key_constraints() const;
-
-                std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
+                const std::shared_ptr<const ChoiceConstraintSequence> all_choice_constraints() const;
 
                 std::string py_str() const;
         };

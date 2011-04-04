@@ -82,8 +82,8 @@ namespace paludis
         std::shared_ptr<const ExactSlotConstraint> exact_slot;
         std::shared_ptr<const InRepositoryConstraint> in_repository;
         std::shared_ptr<const FromRepositoryConstraint> from_repository;
-        std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements;
         std::shared_ptr<const KeyConstraintSequence> all_keys;
+        std::shared_ptr<const ChoiceConstraintSequence> all_choices;
         const std::string str;
 
         Imp(
@@ -95,8 +95,8 @@ namespace paludis
                 const std::shared_ptr<const ExactSlotConstraint> & xs,
                 const std::shared_ptr<const InRepositoryConstraint> & ri,
                 const std::shared_ptr<const FromRepositoryConstraint> & rf,
-                const std::shared_ptr<const AdditionalPackageDepSpecRequirements> & u,
                 const std::shared_ptr<const KeyConstraintSequence> & k,
+                const std::shared_ptr<const ChoiceConstraintSequence> & a,
                 const std::string & st) :
             package_name_constraint(q),
             category_name_part_constraint(c),
@@ -106,8 +106,8 @@ namespace paludis
             exact_slot(xs),
             in_repository(ri),
             from_repository(rf),
-            additional_requirements(u),
             all_keys(k),
+            all_choices(a),
             str(st)
         {
         }
@@ -235,8 +235,8 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
             p.exact_slot_constraint(),
             p.in_repository_constraint(),
             p.from_repository_constraint(),
-            p.additional_requirements_ptr(),
             p.all_key_constraints(),
+            p.all_choice_constraints(),
             stringify(p))
 {
 }
@@ -252,8 +252,8 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
             p.exact_slot_constraint(),
             p.in_repository_constraint(),
             p.from_repository_constraint(),
-            p.additional_requirements_ptr(),
             p.all_key_constraints(),
+            p.all_choice_constraints(),
             p.py_str())
 {
 }
@@ -294,11 +294,11 @@ PythonPackageDepSpec::operator PackageDepSpec() const
     if (from_repository_constraint())
         p.from_repository(from_repository_constraint()->name());
 
-    if (additional_requirements_ptr())
+    if (all_choice_constraints())
     {
-        for (AdditionalPackageDepSpecRequirements::ConstIterator i(additional_requirements_ptr()->begin()),
-                i_end(additional_requirements_ptr()->end()) ; i != i_end ; ++i)
-            p.additional_requirement(*i);
+        for (ChoiceConstraintSequence::ConstIterator i(all_choice_constraints()->begin()),
+                i_end(all_choice_constraints()->end()) ; i != i_end ; ++i)
+            p.choice_constraint(*i);
     }
 
     if (all_key_constraints())
@@ -365,10 +365,10 @@ PythonPackageDepSpec::from_repository_constraint() const
     return _imp->from_repository;
 }
 
-std::shared_ptr<const AdditionalPackageDepSpecRequirements>
-PythonPackageDepSpec::additional_requirements_ptr() const
+const std::shared_ptr<const ChoiceConstraintSequence>
+PythonPackageDepSpec::all_choice_constraints() const
 {
-    return _imp->additional_requirements;
+    return _imp->all_choices;
 }
 
 const std::shared_ptr<const KeyConstraintSequence>

@@ -33,7 +33,6 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/options.hh>
-#include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/dep_spec_data.hh>
 
 #include <functional>
@@ -607,10 +606,10 @@ PackageDepSpec::installable_to_path_constraint() const
     return _imp->data->installable_to_path_constraint();
 }
 
-std::shared_ptr<const AdditionalPackageDepSpecRequirements>
-PackageDepSpec::additional_requirements_ptr() const
+const std::shared_ptr<const ChoiceConstraintSequence>
+PackageDepSpec::all_choice_constraints() const
 {
-    return _imp->data->additional_requirements_ptr();
+    return _imp->data->all_choice_constraints();
 }
 
 const std::shared_ptr<const KeyConstraintSequence>

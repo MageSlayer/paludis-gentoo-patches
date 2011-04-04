@@ -26,6 +26,7 @@
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/changed_choices-fwd.hh>
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pool.hh>
@@ -33,6 +34,7 @@
 #include <paludis/util/type_list.hh>
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/pimp.hh>
+#include <paludis/util/tribool-fwd.hh>
 
 namespace paludis
 {
@@ -49,7 +51,8 @@ namespace paludis
             InstallableToRepositoryConstraint,
             AnySlotConstraint,
             ExactSlotConstraint,
-            KeyConstraint
+            KeyConstraint,
+            ChoiceConstraint
         >::Type>
     {
         public:
@@ -297,6 +300,77 @@ namespace paludis
            bool matches(
                     const Environment * const env,
                     const std::shared_ptr<const PackageID> & id) const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    class PALUDIS_VISIBLE ChoiceConstraint :
+        public PackageDepSpecConstraint,
+        public ImplementAcceptMethods<PackageDepSpecConstraint, ChoiceConstraint>
+    {
+        private:
+            ChoiceConstraint(const ChoiceConstraint &) = delete;
+
+        protected:
+            ChoiceConstraint();
+
+        public:
+            /**
+             * Is our requirement met for a given PackageID?
+             *
+             * The string in the return type might be a description of why the
+             * requirement was not met. Sometimes better messages can be given
+             * than simply the return value of as_human_string() when the ID to
+             * be matched is known. If the bool is false, the string is
+             * meaningless.
+             *
+             * \param spec_id The PackageID the spec comes from. May be null. Used for
+             * [use=] style dependencies.
+             *
+             * \since 0.61 is in ChoiceConstraint
+             */
+            virtual const std::pair<bool, std::string> requirement_met(
+                    const Environment * const,
+                    const ChangedChoices * const maybe_changes_to_owner,
+                    const std::shared_ptr<const PackageID> & target_id,
+                    const std::shared_ptr<const PackageID> & spec_id,
+                    const ChangedChoices * const maybe_changes_to_target) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * If possible, indicate which choices to change to make our
+             * requirement met for a particular ID.
+             *
+             * Verifies that the ID has the appropriate choice, and that that
+             * choice isn't locked.
+             *
+             * Returns true for changes made, false for not possible,
+             * indeterminate for nothing needs changing.
+             *
+             * \param spec_id The PackageID the spec comes from. May be null. Used for
+             * [use=] style dependencies.
+             *
+             * \since 0.61 is in ChoiceConstraint
+             */
+            virtual Tribool accumulate_changes_to_make_met(
+                    const Environment * const,
+                    const ChangedChoices * const maybe_changes_to_owner,
+                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> & spec_id,
+                    ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Return a human readable string representation of ourself.
+             *
+             * \param spec_id The PackageID the spec comes from. May be null. Used for
+             * [use=] style dependencies.
+             *
+             * \since 0.61 is in ChoiceConstraint
+             */
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & spec_id) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * Return a raw string representation of ourself.
+             */
+            virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     extern template class Pool<NameConstraint>;

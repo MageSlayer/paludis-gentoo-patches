@@ -165,10 +165,7 @@ namespace
                 break;
 
             default:
-                {
-                    std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag, { }));
-                    result.additional_requirement(req);
-                }
+                result.choice_constraint(parse_elike_use_requirement(flag, { }));
                 break;
         };
 

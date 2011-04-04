@@ -18,13 +18,6 @@
  */
 
 #include <paludis/elike_use_requirement.hh>
-#include <paludis/util/options.hh>
-#include <paludis/util/stringify.hh>
-#include <paludis/util/join.hh>
-#include <paludis/util/tokeniser.hh>
-#include <paludis/util/log.hh>
-#include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/tribool.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
 #include <paludis/environment.hh>
@@ -32,7 +25,16 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/choice.hh>
 #include <paludis/changed_choices.hh>
-#include <paludis/additional_package_dep_spec_requirement.hh>
+#include <paludis/package_dep_spec_constraint.hh>
+
+#include <paludis/util/options.hh>
+#include <paludis/util/stringify.hh>
+#include <paludis/util/join.hh>
+#include <paludis/util/tokeniser.hh>
+#include <paludis/util/log.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/tribool.hh>
+
 #include <vector>
 #include <functional>
 #include <algorithm>
@@ -498,7 +500,7 @@ namespace
     };
 
     class UseRequirements :
-        public AdditionalPackageDepSpecRequirement
+        public ChoiceConstraint
     {
         private:
             typedef std::vector<std::shared_ptr<const UseRequirement> > Reqs;
@@ -809,7 +811,7 @@ ELikeUseRequirementError::ELikeUseRequirementError(const std::string & s, const 
 {
 }
 
-std::shared_ptr<const AdditionalPackageDepSpecRequirement>
+std::shared_ptr<const ChoiceConstraint>
 paludis::parse_elike_use_requirement(const std::string & s,
         const ELikeUseRequirementOptions & options)
 {
