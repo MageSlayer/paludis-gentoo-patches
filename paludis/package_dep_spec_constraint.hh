@@ -24,6 +24,8 @@
 #include <paludis/name.hh>
 #include <paludis/version_operator-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
+#include <paludis/environment-fwd.hh>
+#include <paludis/package_id-fwd.hh>
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pool.hh>
@@ -291,6 +293,10 @@ namespace paludis
             const std::string key() const PALUDIS_ATTRIBUTE((warn_unused_result));
             KeyConstraintOperation operation() const PALUDIS_ATTRIBUTE((warn_unused_result));
             const std::string pattern() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+           bool matches(
+                    const Environment * const env,
+                    const std::shared_ptr<const PackageID> & id) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     extern template class Pool<NameConstraint>;
