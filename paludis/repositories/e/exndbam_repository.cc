@@ -88,7 +88,7 @@ namespace paludis
             root_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("root", "root",
                         mkt_normal, params.root())),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format",
-                        mkt_significant, "vdb")),
+                        mkt_significant, "exndbam")),
             builddir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("builddir", "builddir",
                         mkt_normal, params.builddir())),
             eapi_when_unknown_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
