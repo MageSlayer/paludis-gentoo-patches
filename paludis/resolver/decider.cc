@@ -1345,7 +1345,7 @@ Decider::find_any_score(
         Context sub_context("When working out whether it's acs_vacuous_blocker:");
 
         const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, our_id, { mpo_ignore_additional_requirements })
+                    generator::Matches(spec, our_id, { mpo_ignore_choice_constraints })
                         | filter::SupportsAction<InstallAction>() | filter::NotMasked()
                     )]);
         if (ids->empty())
@@ -1845,7 +1845,7 @@ Decider::_find_id_for_from(
 {
     MatchPackageOptions opts;
     if (trying_changing_choices)
-        opts += mpo_ignore_additional_requirements;
+        opts += mpo_ignore_choice_constraints;
 
     std::shared_ptr<const PackageID> best_version;
     for (PackageIDSequence::ReverseConstIterator i(ids->rbegin()), i_end(ids->rend()) ;

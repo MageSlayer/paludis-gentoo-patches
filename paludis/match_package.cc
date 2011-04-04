@@ -168,7 +168,7 @@ paludis::match_package_with_maybe_changes(
         /* don't care */
     }
 
-    if (! options[mpo_ignore_additional_requirements])
+    if (! options[mpo_ignore_choice_constraints])
     {
         if (spec.all_choice_constraints())
         {

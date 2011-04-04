@@ -274,7 +274,7 @@ GetResolventsForHelper::operator() (
     std::shared_ptr<const PackageID> best;
 
     auto ids((*_imp->env)[selection::BestVersionOnly(
-                generator::Matches(spec, from_id, { mpo_ignore_additional_requirements }) |
+                generator::Matches(spec, from_id, { mpo_ignore_choice_constraints }) |
                 filter::SupportsAction<InstallAction>() |
                 filter::NotMasked() |
                 (maybe_slot ? Filter(filter::Slot(*maybe_slot)) : Filter(filter::All())))]);

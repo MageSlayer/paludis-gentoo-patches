@@ -475,8 +475,8 @@ namespace
         virtual std::string as_string() const
         {
             std::string suffix;
-            if (options[mpo_ignore_additional_requirements])
-                suffix = " (ignoring additional requirements)";
+            if (options[mpo_ignore_choice_constraints])
+                suffix = " (ignoring choice constraints)";
             return "packages matching " + stringify(spec) + suffix;
         }
     };

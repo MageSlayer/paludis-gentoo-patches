@@ -1423,7 +1423,7 @@ namespace
 
                 if ((*c)->spec().if_package() && (*c)->spec().if_package()->all_choice_constraints() &&
                         (! match_package(*env, *(*c)->spec().if_package(), u->package_id(), (*c)->from_id(), { })) &&
-                        match_package(*env, *(*c)->spec().if_package(), u->package_id(), (*c)->from_id(), { mpo_ignore_additional_requirements }))
+                        match_package(*env, *(*c)->spec().if_package(), u->package_id(), (*c)->from_id(), { mpo_ignore_choice_constraints }))
                 {
                     for (auto a((*c)->spec().if_package()->all_choice_constraints()->begin()),
                             a_end((*c)->spec().if_package()->all_choice_constraints()->end()) ;
