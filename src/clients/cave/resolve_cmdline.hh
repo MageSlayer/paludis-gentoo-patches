@@ -86,14 +86,13 @@ namespace paludis
             args::ArgsGroup g_package_options;
             args::StringSetArg a_favour;
             args::StringSetArg a_avoid;
+            args::StringSetArg a_preset;
+            args::StringSetArg a_hide;
 
             args::ArgsGroup g_ordering_options;
             args::StringSetArg a_not_usable;
             args::StringSetArg a_early;
             args::StringSetArg a_late;
-
-            args::ArgsGroup g_preset_options;
-            args::StringSetArg a_preset;
 
             args::ArgsGroup g_destination_options;
             args::EnumArg a_make;

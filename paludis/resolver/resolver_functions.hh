@@ -68,6 +68,7 @@ namespace paludis
         typedef Name<struct name_make_unmaskable_filter_fn> make_unmaskable_filter_fn;
         typedef Name<struct name_order_early_fn> order_early_fn;
         typedef Name<struct name_prefer_or_avoid_fn> prefer_or_avoid_fn;
+        typedef Name<struct name_remove_hidden_fn> remove_hidden_fn;
         typedef Name<struct name_remove_if_dependent_fn> remove_if_dependent_fn;
     }
 
@@ -180,6 +181,10 @@ namespace paludis
                 const QualifiedPackageName &
                 )> PreferOrAvoidFunction;
 
+        typedef std::function<std::shared_ptr<const PackageIDSequence> (
+                const std::shared_ptr<const PackageIDSequence> &
+                )> RemoveHiddenFunction;
+
         typedef std::function<bool (
                 const std::shared_ptr<const PackageID> &
                 )> RemoveIfDependentFunction;
@@ -211,6 +216,7 @@ namespace paludis
                 MakeUnmaskableFilterFunction> make_unmaskable_filter_fn;
             NamedValue<n::order_early_fn, OrderEarlyFunction> order_early_fn;
             NamedValue<n::prefer_or_avoid_fn, PreferOrAvoidFunction> prefer_or_avoid_fn;
+            NamedValue<n::remove_hidden_fn, RemoveHiddenFunction> remove_hidden_fn;
             NamedValue<n::remove_if_dependent_fn, RemoveIfDependentFunction> remove_if_dependent_fn;
         };
     }

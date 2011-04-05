@@ -227,6 +227,13 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "specified package names"),
     a_avoid(&g_package_options, "avoid", 'A', "If there is a choice (e.g. || ( ) dependencies), avoid the "
             "specified package names"),
+    a_preset(&g_package_options, "preset", 'p', "Preset a given constraint. For example, --preset =cat/pkg-2.1 will tell "
+            "the resolver to use that particular version. Note that this may lead to errors, if the specified version "
+            "does not satisfy other constraints. Also note that specifying a preset will not force a package to be "
+            "considered if it would otherwise not be part of the resolution set."),
+    a_hide(&g_package_options, "hide", 'H', "When selecting origin ID candidates, pretend that any ID matching the "
+            "specified spec does not exist. For example, --hide */*::foo can be used to avoid selecting any ID in the "
+            "foo repository. May be specified multiple times."),
 
     g_ordering_options(this, "Package Ordering Options", "Control the order in which packages are installed"),
     a_not_usable(&g_ordering_options, "not-usable", 'N', "Consider installed packages matching the supplied specification "
@@ -236,12 +243,6 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "order packages matching the supplied spec first."),
     a_late(&g_ordering_options, "late", 'L', "When given a collection of otherwise equally desirable packages to order, "
             "order packages matching the supplied spec last."),
-
-    g_preset_options(this, "Preset Options", "Preset various constraints."),
-    a_preset(&g_preset_options, "preset", 'p', "Preset a given constraint. For example, --preset =cat/pkg-2.1 will tell "
-            "the resolver to use that particular version. Note that this may lead to errors, if the specified version "
-            "does not satisfy other constraints. Also note that specifying a preset will not force a package to be "
-            "considered if it would otherwise not be part of the resolution set."),
 
     g_destination_options(this, "Destination Options", "Control to which destinations targets are installed. Dependencies "
             "will always be installed to / as necessary."),

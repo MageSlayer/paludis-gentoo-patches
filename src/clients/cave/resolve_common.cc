@@ -91,6 +91,7 @@
 #include <paludis/resolver/make_origin_filtered_generator_helper.hh>
 #include <paludis/resolver/make_unmaskable_filter_helper.hh>
 #include <paludis/resolver/order_early_helper.hh>
+#include <paludis/resolver/remove_hidden_helper.hh>
 #include <paludis/resolver/remove_if_dependent_helper.hh>
 #include <paludis/resolver/prefer_or_avoid_helper.hh>
 
@@ -961,6 +962,12 @@ paludis::cave::resolve_common(
             i != i_end ; ++i)
         prefer_or_avoid_helper.add_avoid_name(disambiguate_if_necessary(env.get(), *i));
 
+    RemoveHiddenHelper remove_hidden_helper(env.get());
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_hide.begin_args()),
+            i_end(resolution_options.a_hide.end_args()) ;
+            i != i_end ; ++i)
+        remove_hidden_helper.add_hide_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+
     RemoveIfDependentHelper remove_if_dependent_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_remove_if_dependent.begin_args()),
             i_end(resolution_options.a_remove_if_dependent.end_args()) ;
@@ -1082,6 +1089,7 @@ paludis::cave::resolve_common(
                 n::make_unmaskable_filter_fn() = std::cref(make_unmaskable_filter_helper),
                 n::order_early_fn() = std::cref(order_early_helper),
                 n::prefer_or_avoid_fn() = std::cref(prefer_or_avoid_helper),
+                n::remove_hidden_fn() = std::cref(remove_hidden_helper),
                 n::remove_if_dependent_fn() = std::cref(remove_if_dependent_helper)
                 ));
 

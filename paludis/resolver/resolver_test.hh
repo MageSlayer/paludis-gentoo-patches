@@ -56,6 +56,7 @@
 #include <paludis/resolver/make_origin_filtered_generator_helper.hh>
 #include <paludis/resolver/make_unmaskable_filter_helper.hh>
 #include <paludis/resolver/order_early_helper.hh>
+#include <paludis/resolver/remove_hidden_helper.hh>
 #include <paludis/resolver/remove_if_dependent_helper.hh>
 #include <paludis/resolver/prefer_or_avoid_helper.hh>
 
@@ -114,6 +115,7 @@ namespace paludis
                 MakeUnmaskableFilterHelper make_unmaskable_filter_helper;
                 OrderEarlyHelper order_early_helper;
                 PreferOrAvoidHelper prefer_or_avoid_helper;
+                RemoveHiddenHelper remove_hidden_helper;
                 RemoveIfDependentHelper remove_if_dependent_helper;
 
                 ResolverTestData(const std::string & group, const std::string & eapi, const std::string & layout);

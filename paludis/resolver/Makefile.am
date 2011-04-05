@@ -81,6 +81,7 @@ noinst_HEADERS = \
 	prefer_or_avoid_helper.hh prefer_or_avoid_helper-fwd.hh \
 	reason.hh reason-fwd.hh \
 	reason_utils.hh reason_utils-fwd.hh \
+	remove_hidden_helper.hh remove_hidden_helper-fwd.hh \
 	remove_if_dependent_helper.hh remove_if_dependent_helper-fwd.hh \
 	required_confirmations.hh required_confirmations-fwd.hh \
 	resolution.hh resolution-fwd.hh \
@@ -153,6 +154,7 @@ libpaludisresolver_a_SOURCES = \
 	prefer_or_avoid_helper.cc \
 	reason.cc \
 	reason_utils.cc \
+	remove_hidden_helper.cc \
 	remove_if_dependent_helper.cc \
 	required_confirmations.cc \
 	resolution.cc \
