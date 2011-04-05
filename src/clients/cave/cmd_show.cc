@@ -25,18 +25,6 @@
 #include "format_user_config.hh"
 #include "parse_spec_with_nice_error.hh"
 
-#include <paludis/args/args.hh>
-#include <paludis/args/do_help.hh>
-#include <paludis/name.hh>
-#include <paludis/environment.hh>
-#include <paludis/repository.hh>
-#include <paludis/user_dep_spec.hh>
-#include <paludis/filter.hh>
-#include <paludis/generator.hh>
-#include <paludis/filtered_generator.hh>
-#include <paludis/selection.hh>
-#include <paludis/package_id.hh>
-#include <paludis/metadata_key.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/visitor_cast.hh>
@@ -47,13 +35,28 @@
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
+
+#include <paludis/args/args.hh>
+#include <paludis/args/do_help.hh>
+
+#include <paludis/name.hh>
+#include <paludis/environment.hh>
+#include <paludis/repository.hh>
+#include <paludis/user_dep_spec.hh>
+#include <paludis/filter.hh>
+#include <paludis/generator.hh>
+#include <paludis/filtered_generator.hh>
+#include <paludis/selection.hh>
+#include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
 #include <paludis/choice.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/mask_utils.hh>
 #include <paludis/permitted_choice_value_parameter_values.hh>
 #include <paludis/contents.hh>
+#include <paludis/dep_spec_data.hh>
+
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -239,7 +242,7 @@ namespace
         for (PackageIDSequence::ConstIterator i(names->begin()), i_end(names->end()) ;
                 i != i_end ; ++i)
         {
-            PackageDepSpec name_spec(make_package_dep_spec({ }).package((*i)->name()));
+            PackageDepSpec name_spec(MutablePackageDepSpecData({ }).constrain_package((*i)->name()));
             cout << fuc(select_format_for_spec(env, name_spec, make_null_shared_ptr(),
                         fs_wildcard_spec_installed(),
                         fs_wildcard_spec_installable(),
@@ -1323,7 +1326,9 @@ namespace
             for (auto r(repos.begin()), r_end(repos.end()) ; r != r_end ; ++r)
             {
                 auto r_ids((*env)[selection::AllVersionsGroupedBySlot(generator::Matches(
-                                PartiallyMadePackageDepSpec(s).in_repository(*r), make_null_shared_ptr(), { }))]);
+                                MutablePackageDepSpecData(*s.data())
+                                .unconstrain_in_repository()
+                                .constrain_in_repository(*r), make_null_shared_ptr(), { }))]);
                 if (! r_ids->empty())
                     do_one_package_with_ids(cmdline, env, basic_ppos, s, r_ids, cout, rest_out);
             }
@@ -1350,7 +1355,9 @@ namespace
 
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
-            do_one_package(cmdline, env, basic_ppos, PartiallyMadePackageDepSpec(s).package((*i)->name()));
+            do_one_package(cmdline, env, basic_ppos, MutablePackageDepSpecData(*s.data())
+                    .unconstrain_package()
+                    .constrain_package((*i)->name()));
     }
 }
 

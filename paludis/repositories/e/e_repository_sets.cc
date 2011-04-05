@@ -32,11 +32,11 @@
 #include <paludis/generator.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/selection.hh>
 #include <paludis/set_file.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/version_operator.hh>
+#include <paludis/dep_spec_data.hh>
 
 #include <paludis/util/config_file.hh>
 #include <paludis/util/is_file_with_extension.hh>
@@ -293,10 +293,10 @@ ERepositorySets::security_set(bool insecurity) const
                     if (insecurity)
                     {
                         std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
-                                    make_package_dep_spec({ })
-                                    .package((*c)->name())
-                                    .version_constraint((*c)->version(), vo_equal, vcc_and)
-                                    .in_repository((*c)->repository_name())));
+                                    MutablePackageDepSpecData({ })
+                                    .constrain_package((*c)->name())
+                                    .constrain_version(vcc_and, vo_equal, (*c)->version())
+                                    .constrain_in_repository((*c)->repository_name())));
                         security_packages->top()->append(spec);
                     }
                     else
@@ -323,10 +323,10 @@ ERepositorySets::security_set(bool insecurity) const
                                 continue;
                             }
 
-                            std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(make_package_dep_spec({ })
-                                        .package((*r)->name())
-                                        .version_constraint((*r)->version(), vo_equal, vcc_and)
-                                        .in_repository((*r)->repository_name())));
+                            std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(MutablePackageDepSpecData({ })
+                                        .constrain_package((*r)->name())
+                                        .constrain_version(vcc_and, vo_equal, (*r)->version())
+                                        .constrain_in_repository((*r)->repository_name())));
                             security_packages->top()->append(spec);
                             ok = true;
                             break;

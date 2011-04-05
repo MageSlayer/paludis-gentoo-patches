@@ -26,7 +26,6 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/dep_spec_data.hh>
 #include <paludis/package_dep_spec_constraint.hh>
 #include <paludis/version_spec.hh>
@@ -264,51 +263,51 @@ PythonPackageDepSpec::~PythonPackageDepSpec()
 
 PythonPackageDepSpec::operator PackageDepSpec() const
 {
-    PartiallyMadePackageDepSpec p((PartiallyMadePackageDepSpecOptions()));
+    MutablePackageDepSpecData p({ });
 
     if (package_name_constraint())
-        p.package(package_name_constraint()->name());
+        p.constrain_package(package_name_constraint()->name());
 
     if (category_name_part_constraint())
-        p.category_name_part(category_name_part_constraint()->name_part());
+        p.constrain_category_name_part(category_name_part_constraint()->name_part());
 
     if (package_name_part_constraint())
-        p.package_name_part(package_name_part_constraint()->name_part());
+        p.constrain_package_name_part(package_name_part_constraint()->name_part());
 
     if (all_version_constraints())
     {
         for (auto i(all_version_constraints()->begin()), i_end(all_version_constraints()->end()) ;
                 i != i_end ; ++i)
-            p.version_constraint((*i)->version_spec(), (*i)->version_operator(), (*i)->combiner());
+            p.constrain_version((*i)->combiner(), (*i)->version_operator(), (*i)->version_spec());
     }
 
     if (any_slot_constraint())
-        p.any_slot_constraint(any_slot_constraint()->locking());
+        p.constrain_any_slot(any_slot_constraint()->locking());
 
     if (exact_slot_constraint())
-        p.exact_slot_constraint(exact_slot_constraint()->name(), exact_slot_constraint()->locked());
+        p.constrain_exact_slot(exact_slot_constraint()->name(), exact_slot_constraint()->locked());
 
     if (in_repository_constraint())
-        p.in_repository(in_repository_constraint()->name());
+        p.constrain_in_repository(in_repository_constraint()->name());
 
     if (from_repository_constraint())
-        p.from_repository(from_repository_constraint()->name());
+        p.constrain_from_repository(from_repository_constraint()->name());
 
     if (all_choice_constraints())
     {
         for (ChoiceConstraintSequence::ConstIterator i(all_choice_constraints()->begin()),
                 i_end(all_choice_constraints()->end()) ; i != i_end ; ++i)
-            p.choice_constraint(*i);
+            p.constrain_choice(*i);
     }
 
     if (all_key_constraints())
     {
         for (auto i(all_key_constraints()->begin()), i_end(all_key_constraints()->end()) ;
                 i != i_end ; ++i)
-            p.key_constraint((*i)->key_type(), (*i)->key(), (*i)->operation(), (*i)->pattern());
+            p.constrain_key((*i)->key_type(), (*i)->key(), (*i)->operation(), (*i)->pattern());
     }
 
-    return p.to_package_dep_spec();
+    return PackageDepSpec(p);
 }
 
 

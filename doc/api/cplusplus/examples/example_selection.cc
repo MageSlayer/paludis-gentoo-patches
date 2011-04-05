@@ -62,13 +62,13 @@ int main(int argc, char * argv[])
          * object used determines the number and ordering of results. In the
          * simplest form, it takes a Generator as a parameter. */
         show_selection(env, selection::AllVersionsSorted(
-                    generator::Matches(make_package_dep_spec({ }).package(
+                    generator::Matches(MutablePackageDepSpecData({ }).constrain_package(
                             QualifiedPackageName("sys-apps/paludis")), make_null_shared_ptr(), { })));
 
         /* Generators can be passed through a Filter. The Selection optimises
          * the code internally to avoid doing excess work. */
         show_selection(env, selection::AllVersionsSorted(
-                    generator::Matches(make_package_dep_spec({ }).package(
+                    generator::Matches(MutablePackageDepSpecData({ }).constrain_package(
                             QualifiedPackageName("sys-apps/paludis")), make_null_shared_ptr(), { }) |
                     filter::InstalledAtSlash()));
 
@@ -76,7 +76,7 @@ int main(int argc, char * argv[])
          * with filter::SupportsAction<InstallAction>, since installed packages
          * aren't masked. */
         show_selection(env, selection::AllVersionsSorted(
-                    generator::Matches(make_package_dep_spec({ }).package(
+                    generator::Matches(MutablePackageDepSpecData({ }).constrain_package(
                             QualifiedPackageName("sys-apps/paludis")), make_null_shared_ptr(), { }) |
                     filter::SupportsAction<InstallAction>() |
                     filter::NotMasked()));
@@ -85,7 +85,7 @@ int main(int argc, char * argv[])
          * is no metadata cache. Consider using other Selection objects if
          * you only need the best matching or some arbitrary matching ID. */
         show_selection(env, selection::BestVersionOnly(
-                    generator::Matches(make_package_dep_spec({ }).package(
+                    generator::Matches(MutablePackageDepSpecData({ }).constrain_package(
                             QualifiedPackageName("sys-apps/paludis")), make_null_shared_ptr(), { }) |
                     filter::SupportsAction<InstallAction>() |
                     filter::NotMasked()));

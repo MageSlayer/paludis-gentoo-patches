@@ -37,9 +37,9 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/dep_spec_data.hh>
 
 #include <list>
 #include <vector>
@@ -172,13 +172,13 @@ namespace
     PackageDepSpec name_and_slot(const PackageDepSpec & spec)
     {
         if (spec.exact_slot_constraint())
-            return make_package_dep_spec({ })
-                .package(spec.package_name_constraint()->name())
-                .exact_slot_constraint(spec.exact_slot_constraint()->name(), spec.exact_slot_constraint()->locked())
+            return MutablePackageDepSpecData({ })
+                .constrain_package(spec.package_name_constraint()->name())
+                .constrain_exact_slot(spec.exact_slot_constraint()->name(), spec.exact_slot_constraint()->locked())
                 ;
         else
-            return make_package_dep_spec({ })
-                .package(spec.package_name_constraint()->name());
+            return MutablePackageDepSpecData({ })
+                .constrain_package(spec.package_name_constraint()->name());
     }
 
     void

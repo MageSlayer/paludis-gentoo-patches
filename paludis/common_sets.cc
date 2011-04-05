@@ -27,7 +27,8 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/dep_spec_data.hh>
+
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/stringify.hh>
@@ -56,14 +57,14 @@ namespace
                 i != i_end ; ++i)
             if (slots && (*i)->slot_key())
                 result->top()->append(std::make_shared<PackageDepSpec>(
-                                make_package_dep_spec({ })
-                                .package((*i)->name())
-                                .exact_slot_constraint((*i)->slot_key()->value(), false)
+                                MutablePackageDepSpecData({ })
+                                .constrain_package((*i)->name())
+                                .constrain_exact_slot((*i)->slot_key()->value(), false)
                                 ));
             else
                 result->top()->append(std::make_shared<PackageDepSpec>(
-                                make_package_dep_spec({ })
-                                .package((*i)->name())
+                                MutablePackageDepSpecData({ })
+                                .constrain_package((*i)->name())
                                 ));
 
         return result;

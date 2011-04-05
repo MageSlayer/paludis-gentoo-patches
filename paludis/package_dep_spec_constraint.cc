@@ -36,6 +36,7 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
@@ -152,6 +153,7 @@ VersionConstraint::combiner() const
 
 template class Sequence<std::shared_ptr<const VersionConstraint> >;
 template class WrappedForwardIterator<Sequence<std::shared_ptr<const VersionConstraint> >::ConstIteratorTag, const std::shared_ptr<const VersionConstraint> >;
+template class WrappedOutputIterator<Sequence<std::shared_ptr<const VersionConstraint> >::InserterTag, std::shared_ptr<const VersionConstraint> >;
 template class Pimp<VersionConstraint>;
 
 InRepositoryConstraint::InRepositoryConstraint(const RepositoryName & n) :
@@ -1137,10 +1139,12 @@ template class Singleton<Pool<KeyConstraint> >;
 template const std::shared_ptr<const KeyConstraint> Pool<KeyConstraint>::create(
         const KeyConstraintKeyType &, const std::string &, const KeyConstraintOperation &, const std::string &) const;
 template class Sequence<std::shared_ptr<const KeyConstraint> >;
+template class WrappedOutputIterator<Sequence<std::shared_ptr<const KeyConstraint> >::InserterTag, std::shared_ptr<const KeyConstraint> >;
 template class WrappedForwardIterator<Sequence<std::shared_ptr<const KeyConstraint> >::ConstIteratorTag, const std::shared_ptr<const KeyConstraint> >;
 
 ChoiceConstraint::ChoiceConstraint() = default;
 
 template class Sequence<std::shared_ptr<const ChoiceConstraint> >;
 template class WrappedForwardIterator<Sequence<std::shared_ptr<const ChoiceConstraint> >::ConstIteratorTag, const std::shared_ptr<const ChoiceConstraint> >;
+template class WrappedOutputIterator<Sequence<std::shared_ptr<const ChoiceConstraint> >::InserterTag, std::shared_ptr<const ChoiceConstraint> >;
 

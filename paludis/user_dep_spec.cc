@@ -27,9 +27,9 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/dep_label.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/contents.hh>
 #include <paludis/repository.hh>
+#include <paludis/dep_spec_data.hh>
 
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
@@ -43,6 +43,7 @@
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/return_literal_function.hh>
 
 #include <algorithm>
 
@@ -52,7 +53,7 @@ using namespace paludis;
 
 namespace
 {
-    void user_add_package_requirement(const std::string & s, PartiallyMadePackageDepSpec & result,
+    void user_add_package_requirement(const std::string & s, MutablePackageDepSpecData & result,
             const Environment * const env, const UserPackageDepSpecOptions & options,
             const Filter & filter)
     {
@@ -62,43 +63,43 @@ namespace
                 throw PackageDepSpecError("Wildcard '*' not allowed");
 
             if (0 != s.compare(s.length() - 2, 2, "/*"))
-                result.package_name_part(PackageNamePart(s.substr(2)));
+                result.constrain_package_name_part(PackageNamePart(s.substr(2)));
         }
         else if (s.length() >= 3 && (0 == s.compare(s.length() - 2, 2, "/*")))
         {
             if (! options[updso_allow_wildcards])
                 throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(s) + "'");
 
-            result.category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
+            result.constrain_category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
         }
         else if (s == "*")
             throw PackageDepSpecError("Use '*/*' not '*' to match everything");
         else if (std::string::npos != s.find('/'))
-            result.package(QualifiedPackageName(s));
+            result.constrain_package(QualifiedPackageName(s));
         else
         {
             if (options[updso_no_disambiguation])
                 throw PackageDepSpecError("Need an explicit category specified");
-            result.package(env->fetch_unique_qualified_package_name(PackageNamePart(s),
+            result.constrain_package(env->fetch_unique_qualified_package_name(PackageNamePart(s),
                 filter::And(filter, filter::Matches(result, make_null_shared_ptr(), { }))));
         }
     }
 
-    void envless_add_package_requirement(const std::string & s, PartiallyMadePackageDepSpec & result)
+    void envless_add_package_requirement(const std::string & s, MutablePackageDepSpecData & result)
     {
         if (s.length() >= 3 && (0 == s.compare(0, 2, "*/")))
         {
             if (0 != s.compare(s.length() - 2, 2, "/*"))
-                result.package_name_part(PackageNamePart(s.substr(2)));
+                result.constrain_package_name_part(PackageNamePart(s.substr(2)));
         }
         else if (s.length() >= 3 && (0 == s.compare(s.length() - 2, 2, "/*")))
         {
-            result.category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
+            result.constrain_category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
         }
         else if (s == "*")
             throw PackageDepSpecError("Use '*/*' not '*' to match everything");
         else if (std::string::npos != s.find('/'))
-            result.package(QualifiedPackageName(s));
+            result.constrain_package(QualifiedPackageName(s));
         else
         {
             throw PackageDepSpecError("Need an explicit category specified");
@@ -129,7 +130,7 @@ namespace
             throw PackageDepSpecError("Got empty dep spec");
     }
 
-    bool user_remove_trailing_square_bracket_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
+    bool user_remove_trailing_square_bracket_if_exists(std::string & s, MutablePackageDepSpecData & result,
             bool & had_bracket_version_requirements)
     {
         std::string::size_type use_group_p;
@@ -160,12 +161,12 @@ namespace
             case '.':
                 {
                     auto k(parse_user_key_constraint(flag.substr(1)));
-                    result.key_constraint(std::get<0>(k), std::get<1>(k), std::get<2>(k), std::get<3>(k));
+                    result.constrain_key(std::get<0>(k), std::get<1>(k), std::get<2>(k), std::get<3>(k));
                 }
                 break;
 
             default:
-                result.choice_constraint(parse_elike_use_requirement(flag, { }));
+                result.constrain_choice(parse_elike_use_requirement(flag, { }));
                 break;
         };
 
@@ -175,18 +176,18 @@ namespace
     }
 
     void
-    user_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePackageDepSpec & result)
+    user_remove_trailing_slot_if_exists(std::string & s, MutablePackageDepSpecData & result)
     {
         std::string::size_type slot_p(s.rfind(':'));
         if (std::string::npos != slot_p)
         {
-            result.exact_slot_constraint(SlotName(s.substr(slot_p + 1)), false);
+            result.constrain_exact_slot(SlotName(s.substr(slot_p + 1)), false);
             s.erase(slot_p);
         }
     }
 
     void
-    parse_rhs(PartiallyMadePackageDepSpec & reqs, const std::string & req)
+    parse_rhs(MutablePackageDepSpecData & reqs, const std::string & req)
     {
         if (req.empty())
             throw PackageDepSpecError("Invalid empty :: requirement");
@@ -196,29 +197,29 @@ namespace
             if ('?' == req.at(req.length() - 1))
             {
                 if (req.length() >= 2 && '?' == req.at(req.length() - 2))
-                    reqs.installable_to_path(FSPath(req.substr(0, req.length() - 2)), true);
+                    reqs.constrain_installable_to_path(FSPath(req.substr(0, req.length() - 2)), true);
                 else
-                    reqs.installable_to_path(FSPath(req.substr(0, req.length() - 1)), false);
+                    reqs.constrain_installable_to_path(FSPath(req.substr(0, req.length() - 1)), false);
             }
             else
-                reqs.installed_at_path(FSPath(req));
+                reqs.constrain_installed_at_path(FSPath(req));
         }
         else
         {
             if ('?' == req.at(req.length() - 1))
             {
                 if (req.length() >= 3 && '?' == req.at(req.length() - 2))
-                    reqs.installable_to_repository(RepositoryName(req.substr(0, req.length() - 2)), true);
+                    reqs.constrain_installable_to_repository(RepositoryName(req.substr(0, req.length() - 2)), true);
                 else
-                    reqs.installable_to_repository(RepositoryName(req.substr(0, req.length() - 1)), false);
+                    reqs.constrain_installable_to_repository(RepositoryName(req.substr(0, req.length() - 1)), false);
             }
             else
-                reqs.in_repository(RepositoryName(req));
+                reqs.constrain_in_repository(RepositoryName(req));
         }
     }
 
     void
-    user_remove_trailing_repo_if_exists(std::string & s, PartiallyMadePackageDepSpec & result)
+    user_remove_trailing_repo_if_exists(std::string & s, MutablePackageDepSpecData & result)
     {
         std::string::size_type repo_p;
         if (std::string::npos == ((repo_p = s.rfind("::"))))
@@ -244,13 +245,8 @@ namespace
                 parse_rhs(result, right);
 
             if (! left.empty())
-                result.from_repository(RepositoryName(left));
+                result.constrain_from_repository(RepositoryName(left));
         }
-    }
-
-    const PartiallyMadePackageDepSpecOptions fixed_options_for_partially_made_package_dep_spec(PartiallyMadePackageDepSpecOptions o)
-    {
-        return o;
     }
 }
 
@@ -263,7 +259,6 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
     Context context("When parsing user package dep spec '" + ss + "':");
 
     bool had_bracket_version_requirements(false);
-    PartiallyMadePackageDepSpecOptions o;
 
     return partial_parse_generic_elike_package_dep_spec(ss, make_named_values<GenericELikePackageDepSpecParseFunctions>(
             n::add_package_requirement() = std::bind(&user_add_package_requirement, _1, _2, env, options, filter),
@@ -275,7 +270,7 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
                     ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star),
             n::has_version_operator() = std::bind(&elike_has_version_operator, _1,
                     std::cref(had_bracket_version_requirements), ELikePackageDepSpecOptions()),
-            n::options_for_partially_made_package_dep_spec() = std::bind(&fixed_options_for_partially_made_package_dep_spec, std::cref(o)),
+            n::options_for_partially_made_package_dep_spec() = return_literal_function(PackageDepSpecDataOptions()),
             n::remove_trailing_repo_if_exists() = std::bind(&user_remove_trailing_repo_if_exists, _1, _2),
             n::remove_trailing_slot_if_exists() = std::bind(&user_remove_trailing_slot_if_exists, _1, _2),
             n::remove_trailing_square_bracket_if_exists() = std::bind(&user_remove_trailing_square_bracket_if_exists,
@@ -291,7 +286,6 @@ paludis::envless_parse_package_dep_spec_for_tests(const std::string & ss)
     Context context("When parsing test package dep spec '" + ss + "':");
 
     bool had_bracket_version_requirements(false);
-    PartiallyMadePackageDepSpecOptions o;
 
     return partial_parse_generic_elike_package_dep_spec(ss, make_named_values<GenericELikePackageDepSpecParseFunctions>(
             n::add_package_requirement() = std::bind(&envless_add_package_requirement, _1, _2),
@@ -303,7 +297,7 @@ paludis::envless_parse_package_dep_spec_for_tests(const std::string & ss)
                     ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star),
             n::has_version_operator() = std::bind(&elike_has_version_operator, _1,
                     std::cref(had_bracket_version_requirements), ELikePackageDepSpecOptions()),
-            n::options_for_partially_made_package_dep_spec() = std::bind(&fixed_options_for_partially_made_package_dep_spec, std::cref(o)),
+            n::options_for_partially_made_package_dep_spec() = return_literal_function(PackageDepSpecDataOptions()),
             n::remove_trailing_repo_if_exists() = std::bind(&user_remove_trailing_repo_if_exists, _1, _2),
             n::remove_trailing_slot_if_exists() = std::bind(&user_remove_trailing_slot_if_exists, _1, _2),
             n::remove_trailing_square_bracket_if_exists() = std::bind(&user_remove_trailing_square_bracket_if_exists,

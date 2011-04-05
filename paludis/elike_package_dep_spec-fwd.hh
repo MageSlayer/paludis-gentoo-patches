@@ -22,12 +22,14 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/options-fwd.hh>
+
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/version_operator-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/package_dep_spec_constraint-fwd.hh>
-#include <paludis/partially_made_package_dep_spec-fwd.hh>
+#include <paludis/dep_spec_data-fwd.hh>
+
 #include <functional>
 #include <iosfwd>
 
@@ -43,7 +45,7 @@ namespace paludis
     PackageDepSpec parse_generic_elike_package_dep_spec(const std::string & ss, const GenericELikePackageDepSpecParseFunctions & fns)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
-    PartiallyMadePackageDepSpec partial_parse_generic_elike_package_dep_spec(const std::string & ss,
+    MutablePackageDepSpecData partial_parse_generic_elike_package_dep_spec(const std::string & ss,
             const GenericELikePackageDepSpecParseFunctions & fns)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
@@ -51,23 +53,23 @@ namespace paludis
             const VersionSpecOptions &)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
-    PartiallyMadePackageDepSpec partial_parse_elike_package_dep_spec(const std::string & ss,
+    MutablePackageDepSpecData partial_parse_elike_package_dep_spec(const std::string & ss,
             const ELikePackageDepSpecOptions &,
             const VersionSpecOptions &)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
     void elike_check_sanity(const std::string & s) PALUDIS_VISIBLE;
 
-    bool elike_remove_trailing_square_bracket_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
+    bool elike_remove_trailing_square_bracket_if_exists(std::string & s, MutablePackageDepSpecData & result,
             const ELikePackageDepSpecOptions & options,
             const VersionSpecOptions & version_options,
             bool & had_bracket_version_requirements,
             bool & had_use_requirements) PALUDIS_VISIBLE;
 
-    void elike_remove_trailing_repo_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
+    void elike_remove_trailing_repo_if_exists(std::string & s, MutablePackageDepSpecData & result,
             const ELikePackageDepSpecOptions & options) PALUDIS_VISIBLE;
 
-    void elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
+    void elike_remove_trailing_slot_if_exists(std::string & s, MutablePackageDepSpecData & result,
             const ELikePackageDepSpecOptions & options) PALUDIS_VISIBLE;
 
     bool elike_has_version_operator(const std::string & s, const bool had_bracket_version_requirements,
@@ -83,17 +85,17 @@ namespace paludis
             const VersionSpec & spec,
             const VersionOperator & op,
             const VersionConstraintCombiner,
-            PartiallyMadePackageDepSpec & result)
+            MutablePackageDepSpecData & result)
         PALUDIS_VISIBLE;
 
     void parse_elike_version_range(
             const std::string &,
-            PartiallyMadePackageDepSpec &,
+            MutablePackageDepSpecData &,
             const ELikePackageDepSpecOptions & options,
             const VersionSpecOptions & version_options,
             bool & had_bracket_version_requirements) PALUDIS_VISIBLE;
 
-    void elike_add_package_requirement(const std::string & s, PartiallyMadePackageDepSpec & result) PALUDIS_VISIBLE;
+    void elike_add_package_requirement(const std::string & s, MutablePackageDepSpecData & result) PALUDIS_VISIBLE;
 }
 
 #endif

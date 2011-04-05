@@ -52,7 +52,6 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
 
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 

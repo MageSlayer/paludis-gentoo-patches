@@ -27,6 +27,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+
 #include <paludis/spec_tree.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
@@ -36,9 +37,10 @@
 #include <paludis/filter.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/elike_blocker.hh>
 #include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/dep_spec_data.hh>
+
 #include <map>
 #include <set>
 
@@ -109,7 +111,9 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::sha
 
         for (std::set<QualifiedPackageName>::const_iterator n(r->second.begin()), n_end(r->second.end()) ;
                 n != n_end ; ++n)
-            result->specs()->push_back(PackageOrBlockDepSpec(PartiallyMadePackageDepSpec(*s.if_package()).package(*n)));
+            result->specs()->push_back(PackageOrBlockDepSpec(MutablePackageDepSpecData(*s.if_package()->data())
+                        .unconstrain_package()
+                        .constrain_package(*n)));
 
         return result;
     }
@@ -133,7 +137,9 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::sha
             if (maybe_our_resolvent && (*n == maybe_our_resolvent->package()))
                 continue;
 
-            PackageDepSpec spec(PartiallyMadePackageDepSpec(s.if_block()->blocking()).package(*n));
+            PackageDepSpec spec(MutablePackageDepSpecData(*s.if_block()->blocking().data())
+                    .unconstrain_package()
+                    .constrain_package(*n));
             auto p(split_elike_blocker(s.if_block()->text()));
             BlockDepSpec b(std::get<1>(p) + stringify(spec), spec);
             b.set_annotations(s.if_block()->maybe_annotations());

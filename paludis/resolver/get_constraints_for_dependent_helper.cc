@@ -24,17 +24,19 @@
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/make_uninstall_blocker.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
+
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_dep_spec_collection.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/dep_spec_data.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -81,10 +83,10 @@ GetConstraintsForDependentHelper::operator() (
         spec = make_shared_copy(id->uniquely_identifying_spec());
     else
     {
-        PartiallyMadePackageDepSpec partial_spec({ });
-        partial_spec.package(id->name());
+        MutablePackageDepSpecData partial_spec({ });
+        partial_spec.constrain_package(id->name());
         if (id->slot_key())
-            partial_spec.exact_slot_constraint(id->slot_key()->value(), false);
+            partial_spec.constrain_exact_slot(id->slot_key()->value(), false);
         spec = std::make_shared<PackageDepSpec>(partial_spec);
     }
 

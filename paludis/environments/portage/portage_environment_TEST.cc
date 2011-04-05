@@ -37,7 +37,7 @@
 #include <paludis/selection.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/choice.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/dep_spec_data.hh>
 
 #include <gtest/gtest.h>
 
@@ -177,8 +177,8 @@ TEST(PortageEnvironment, World)
     TestPortageEnvironment env("portage_environment_TEST_dir/world");
     FSPath w(FSPath::cwd() / "portage_environment_TEST_dir" / "world" / "var" / "lib" / "portage" / "world");
 
-    env.update_config_files_for_package_move(make_package_dep_spec({ })
-            .package(QualifiedPackageName("cat/before")),
+    env.update_config_files_for_package_move(MutablePackageDepSpecData({ })
+            .constrain_package(QualifiedPackageName("cat/before")),
             QualifiedPackageName("cat/after"));
 
     SafeIFStream f(w);

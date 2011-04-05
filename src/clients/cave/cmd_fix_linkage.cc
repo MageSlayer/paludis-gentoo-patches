@@ -37,8 +37,8 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/version_operator.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/dep_spec_data.hh>
 
 #include <iostream>
 #include <set>
@@ -208,13 +208,13 @@ FixLinkageCommand::run(
             cout << endl;
         }
 
-        PartiallyMadePackageDepSpec part_spec({ });
-        part_spec.package((*pkg_it)->name());
+        MutablePackageDepSpecData part_spec({ });
+        part_spec.constrain_package((*pkg_it)->name());
         if ((*pkg_it)->slot_key())
-            part_spec.exact_slot_constraint((*pkg_it)->slot_key()->value(), false);
+            part_spec.constrain_exact_slot((*pkg_it)->slot_key()->value(), false);
 
         if (cmdline.a_exact.specified())
-            part_spec.version_constraint((*pkg_it)->version(), vo_equal, vcc_and);
+            part_spec.constrain_version(vcc_and, vo_equal, (*pkg_it)->version());
 
         targets->push_back(std::make_pair(stringify(PackageDepSpec(part_spec)), join(broken_files.begin(), broken_files.end(), ", ")));
     }

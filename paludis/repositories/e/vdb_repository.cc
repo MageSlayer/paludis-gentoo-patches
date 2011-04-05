@@ -50,10 +50,10 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/output_manager.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/unformatted_pretty_printer.hh>
 #include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/dep_spec_data.hh>
 
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/mutex.hh>
@@ -1275,8 +1275,9 @@ namespace
             if (node.spec()->package_name_constraint() && rewrites.end() != rewrites.find(node.spec()->package_name_constraint()->name()))
             {
                 changed = true;
-                str << f.prettify(PartiallyMadePackageDepSpec(*node.spec())
-                        .package(rewrites.find(node.spec()->package_name_constraint()->name())->second)) << " ";
+                str << f.prettify(MutablePackageDepSpecData(*node.spec()->data())
+                        .unconstrain_package()
+                        .constrain_package(rewrites.find(node.spec()->package_name_constraint()->name())->second)) << " ";
             }
             else
                 str << f.prettify(*node.spec()) << " ";
@@ -1613,7 +1614,9 @@ VDBRepository::perform_updates()
             for (DepRewrites::const_iterator i(dep_rewrites.begin()), i_end(dep_rewrites.end()) ;
                     i != i_end ; ++i)
                 _imp->params.environment()->update_config_files_for_package_move(
-                        make_package_dep_spec({ }).package(i->first),
+                        MutablePackageDepSpecData({ })
+                        .unconstrain_package()
+                        .constrain_package(i->first),
                         i->second
                         );
         }

@@ -20,6 +20,7 @@
 #include <paludis/repositories/virtuals/package_id.hh>
 #include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
+
 #include <paludis/util/stringify.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
@@ -28,6 +29,7 @@
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/singleton-impl.hh>
+
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_spec.hh>
@@ -42,9 +44,9 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/always_enabled_dependency_label.hh>
 #include <paludis/pretty_printer.hh>
+#include <paludis/dep_spec_data.hh>
 
 using namespace paludis;
 using namespace paludis::virtuals;
@@ -70,15 +72,15 @@ namespace paludis
             labels(l),
             spec(exact ?
                     std::make_shared<PackageDepSpec>(
-                            make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
-                            .package(v->name())
-                            .version_constraint(v->version(), vo_equal, vcc_and)
-                            .exact_slot_constraint(v->slot_key() ? v->slot_key()->value() : SlotName("UNKNOWN"), false)
-                            .in_repository(v->repository_name()))
+                            MutablePackageDepSpecData({ })
+                            .constrain_package(v->name())
+                            .constrain_version(vcc_and, vo_equal, v->version())
+                            .constrain_exact_slot(v->slot_key() ? v->slot_key()->value() : SlotName("UNKNOWN"), false)
+                            .constrain_in_repository(v->repository_name()))
                     :
                     std::make_shared<PackageDepSpec>(
-                            make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
-                            .package(v->name())
+                            MutablePackageDepSpecData({ })
+                            .constrain_package(v->name())
                             )
                 ),
             raw_name(r),

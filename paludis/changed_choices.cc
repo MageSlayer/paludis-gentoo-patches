@@ -18,13 +18,15 @@
  */
 
 #include <paludis/changed_choices.hh>
-#include <paludis/util/pimp-impl.hh>
-#include <paludis/util/tribool.hh>
 #include <paludis/choice.hh>
 #include <paludis/serialise-impl.hh>
 #include <paludis/elike_use_requirement-fwd.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/dep_spec_data.hh>
+
+#include <paludis/util/pimp-impl.hh>
+#include <paludis/util/tribool.hh>
+
 #include <map>
 
 using namespace paludis;
@@ -59,16 +61,16 @@ ChangedChoices::empty() const
 }
 
 void
-ChangedChoices::add_constraints_to(PartiallyMadePackageDepSpec & spec) const
+ChangedChoices::add_constraints_to(MutablePackageDepSpecData & spec) const
 {
     for (auto o(_imp->overrides.begin()), o_end(_imp->overrides.end()) ;
             o != o_end ; ++o)
     {
         if (o->second)
-            spec.choice_constraint(parse_elike_use_requirement("" + stringify(o->first) + "(-)",
+            spec.constrain_choice(parse_elike_use_requirement("" + stringify(o->first) + "(-)",
                         { euro_allow_default_values }));
         else
-            spec.choice_constraint(parse_elike_use_requirement("-" + stringify(o->first) + "(-)",
+            spec.constrain_choice(parse_elike_use_requirement("-" + stringify(o->first) + "(-)",
                         { euro_allow_default_values }));
     }
 }

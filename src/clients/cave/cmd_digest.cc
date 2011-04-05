@@ -47,7 +47,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/action.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/dep_spec_data.hh>
 
 #include <cstdlib>
 #include <iostream>
@@ -116,7 +116,7 @@ DigestCommand::run(
         throw args::DoHelp("digest takes exactly two parameters");
 
     RepositoryName repo(*next(cmdline.begin_parameters()));
-    Filter repo_filter(filter::Matches(make_package_dep_spec({ }).in_repository(repo), make_null_shared_ptr(), { }));
+    Filter repo_filter(filter::Matches(MutablePackageDepSpecData({ }).constrain_in_repository(repo), make_null_shared_ptr(), { }));
     QualifiedPackageName pkg(std::string::npos == cmdline.begin_parameters()->find('/') ?
             env->fetch_unique_qualified_package_name(PackageNamePart(*cmdline.begin_parameters()), repo_filter) :
             QualifiedPackageName(*cmdline.begin_parameters()));

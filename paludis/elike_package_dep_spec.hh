@@ -21,6 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_ELIKE_PACKAGE_DEP_SPEC_HH 1
 
 #include <paludis/elike_package_dep_spec-fwd.hh>
+#include <paludis/dep_spec_data-fwd.hh>
+
 #include <paludis/util/named_value.hh>
 
 namespace paludis
@@ -41,20 +43,20 @@ namespace paludis
 
     struct GenericELikePackageDepSpecParseFunctions
     {
-        NamedValue<n::add_package_requirement, std::function<void (const std::string &, PartiallyMadePackageDepSpec &)> > add_package_requirement;
+        NamedValue<n::add_package_requirement, std::function<void (const std::string &, MutablePackageDepSpecData &)> > add_package_requirement;
         NamedValue<n::add_version_requirement, std::function<void (
                 const VersionSpec &,
                 const VersionOperator &,
                 const VersionConstraintCombiner,
-                PartiallyMadePackageDepSpec &)> > add_version_requirement;
+                MutablePackageDepSpecData &)> > add_version_requirement;
         NamedValue<n::check_sanity, std::function<void (const std::string &)> > check_sanity;
         NamedValue<n::get_remove_trailing_version, std::function<VersionSpec (std::string &)> > get_remove_trailing_version;
         NamedValue<n::get_remove_version_operator, std::function<VersionOperator (std::string &)> > get_remove_version_operator;
         NamedValue<n::has_version_operator, std::function<bool (const std::string &)> > has_version_operator;
-        NamedValue<n::options_for_partially_made_package_dep_spec, std::function<const PartiallyMadePackageDepSpecOptions ()> > options_for_partially_made_package_dep_spec;
-        NamedValue<n::remove_trailing_repo_if_exists, std::function<void (std::string &, PartiallyMadePackageDepSpec &)> > remove_trailing_repo_if_exists;
-        NamedValue<n::remove_trailing_slot_if_exists, std::function<void (std::string &, PartiallyMadePackageDepSpec &)> > remove_trailing_slot_if_exists;
-        NamedValue<n::remove_trailing_square_bracket_if_exists, std::function<bool (std::string &, PartiallyMadePackageDepSpec &)> > remove_trailing_square_bracket_if_exists;
+        NamedValue<n::options_for_partially_made_package_dep_spec, std::function<const PackageDepSpecDataOptions ()> > options_for_partially_made_package_dep_spec;
+        NamedValue<n::remove_trailing_repo_if_exists, std::function<void (std::string &, MutablePackageDepSpecData &)> > remove_trailing_repo_if_exists;
+        NamedValue<n::remove_trailing_slot_if_exists, std::function<void (std::string &, MutablePackageDepSpecData &)> > remove_trailing_slot_if_exists;
+        NamedValue<n::remove_trailing_square_bracket_if_exists, std::function<bool (std::string &, MutablePackageDepSpecData &)> > remove_trailing_square_bracket_if_exists;
     };
 }
 

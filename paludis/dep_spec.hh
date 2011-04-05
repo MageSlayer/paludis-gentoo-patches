@@ -35,7 +35,6 @@
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
-#include <paludis/partially_made_package_dep_spec-fwd.hh>
 #include <paludis/dep_spec_data-fwd.hh>
 #include <paludis/dep_spec_annotations-fwd.hh>
 #include <paludis/package_dep_spec_constraint-fwd.hh>

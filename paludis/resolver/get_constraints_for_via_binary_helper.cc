@@ -23,14 +23,16 @@
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+
 #include <paludis/dep_spec.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/dep_spec_data.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -63,8 +65,8 @@ GetConstraintsForViaBinaryHelper::operator() (
 {
     auto result(std::make_shared<ConstraintSequence>());
 
-    PartiallyMadePackageDepSpec partial_spec({ });
-    partial_spec.package(resolution->resolvent().package());
+    MutablePackageDepSpecData partial_spec({ });
+    partial_spec.constrain_package(resolution->resolvent().package());
     PackageDepSpec spec(partial_spec);
 
     auto reason(std::make_shared<ViaBinaryReason>(other_resolution->resolvent()));

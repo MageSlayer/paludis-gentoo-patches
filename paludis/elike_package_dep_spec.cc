@@ -23,12 +23,13 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/dep_spec_data.hh>
 
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/return_literal_function.hh>
 
 #include <strings.h>
 
@@ -36,7 +37,7 @@ using namespace paludis;
 
 #include <paludis/elike_package_dep_spec-se.cc>
 
-PartiallyMadePackageDepSpec
+MutablePackageDepSpecData
 paludis::partial_parse_generic_elike_package_dep_spec(const std::string & ss, const GenericELikePackageDepSpecParseFunctions & fns)
 {
     Context context("When parsing generic package dep spec '" + ss + "':");
@@ -45,7 +46,7 @@ paludis::partial_parse_generic_elike_package_dep_spec(const std::string & ss, co
     fns.check_sanity()(ss);
 
     std::string s(ss);
-    PartiallyMadePackageDepSpec result(fns.options_for_partially_made_package_dep_spec()());
+    MutablePackageDepSpecData result(fns.options_for_partially_made_package_dep_spec()());
 
     /* Remove trailing [use], [version] etc parts. */
     while (fns.remove_trailing_square_bracket_if_exists()(s, result))
@@ -87,7 +88,7 @@ paludis::elike_check_sanity(const std::string & s)
 }
 
 bool
-paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
+paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, MutablePackageDepSpecData & result,
         const ELikePackageDepSpecOptions & options,
         const VersionSpecOptions & version_options,
         bool & had_bracket_version_requirements,
@@ -139,7 +140,7 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
                 }
 
                 auto k(parse_user_key_constraint(flag.substr(1)));
-                result.key_constraint(std::get<0>(k), std::get<1>(k), std::get<2>(k), std::get<3>(k));
+                result.constrain_key(std::get<0>(k), std::get<1>(k), std::get<2>(k), std::get<3>(k));
             }
             break;
 
@@ -179,7 +180,7 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
             if (options[epdso_strict_parsing])
                 euro += euro_strict_parsing;
 
-            result.choice_constraint(parse_elike_use_requirement(flag, euro));
+            result.constrain_choice(parse_elike_use_requirement(flag, euro));
 
             break;
     };
@@ -190,7 +191,7 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
 }
 
 void
-paludis::elike_remove_trailing_repo_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
+paludis::elike_remove_trailing_repo_if_exists(std::string & s, MutablePackageDepSpecData & result,
         const ELikePackageDepSpecOptions & options)
 {
     std::string::size_type repo_p;
@@ -206,12 +207,12 @@ paludis::elike_remove_trailing_repo_if_exists(std::string & s, PartiallyMadePack
                 << "Repository dependencies not safe for use here";
     }
 
-    result.in_repository(RepositoryName(s.substr(repo_p + 2)));
+    result.constrain_in_repository(RepositoryName(s.substr(repo_p + 2)));
     s.erase(repo_p);
 }
 
 void
-paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
+paludis::elike_remove_trailing_slot_if_exists(std::string & s, MutablePackageDepSpecData & result,
         const ELikePackageDepSpecOptions & options)
 {
     std::string::size_type slot_p;
@@ -232,7 +233,7 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
                 Log::get_instance()->message("e.package_dep_spec.slot_star_not_allowed", ll_warning, lc_context)
                     << "Slot '*' dependencies not safe for use here";
         }
-        result.any_slot_constraint(false);
+        result.constrain_any_slot(false);
     }
     else if ('=' == match.at(0))
     {
@@ -246,9 +247,9 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
         }
 
         if (1 == match.length())
-            result.any_slot_constraint(true);
+            result.constrain_any_slot(true);
         else
-            result.exact_slot_constraint(SlotName(s.substr(slot_p + 2)), true);
+            result.constrain_exact_slot(SlotName(s.substr(slot_p + 2)), true);
     }
     else
     {
@@ -260,7 +261,7 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
                 Log::get_instance()->message("e.package_dep_spec.slot_not_allowed", ll_warning, lc_context)
                     << "Slot dependencies not safe for use here";
         }
-        result.exact_slot_constraint(SlotName(s.substr(slot_p + 1)), false);
+        result.constrain_exact_slot(SlotName(s.substr(slot_p + 1)), false);
     }
     s.erase(slot_p);
 }
@@ -373,13 +374,13 @@ paludis::elike_add_version_requirement(
         const VersionSpec & ver,
         const VersionOperator & op,
         const VersionConstraintCombiner vcc,
-        PartiallyMadePackageDepSpec & result)
+        MutablePackageDepSpecData & result)
 {
-    result.version_constraint(ver, op, vcc);
+    result.constrain_version(vcc, op, ver);
 }
 
 void
-paludis::elike_add_package_requirement(const std::string & s, PartiallyMadePackageDepSpec & result)
+paludis::elike_add_package_requirement(const std::string & s, MutablePackageDepSpecData & result)
 {
     if (std::string::npos == s.find('/'))
         throw PackageDepSpecError("No category/ found in '" + s + "' (cat/pkg is required, a simple pkg is not allowed here)");
@@ -389,27 +390,19 @@ paludis::elike_add_package_requirement(const std::string & s, PartiallyMadePacka
         throw PackageDepSpecError("Wildcard '*' not allowed here");
 
         if (0 != s.compare(s.length() - 2, 2, "/*"))
-            result.package_name_part(PackageNamePart(s.substr(2)));
+            result.constrain_package_name_part(PackageNamePart(s.substr(2)));
     }
     else if (s.length() >= 3 && (0 == s.compare(s.length() - 2, 2, "/*")))
     {
         throw PackageDepSpecError("Wildcard '*' not allowed here");
 
-        result.category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
+        result.constrain_category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
     }
     else
-        result.package(QualifiedPackageName(s));
+        result.constrain_package(QualifiedPackageName(s));
 }
 
-namespace
-{
-    const PartiallyMadePackageDepSpecOptions fixed_options_for_partially_made_package_dep_spec(PartiallyMadePackageDepSpecOptions o)
-    {
-        return o;
-    }
-}
-
-PartiallyMadePackageDepSpec
+MutablePackageDepSpecData
 paludis::partial_parse_elike_package_dep_spec(
         const std::string & ss, const ELikePackageDepSpecOptions & options,
         const VersionSpecOptions & version_options)
@@ -420,9 +413,9 @@ paludis::partial_parse_elike_package_dep_spec(
 
     bool had_bracket_version_requirements(false), had_use_requirements(false);
 
-    PartiallyMadePackageDepSpecOptions o;
+    PackageDepSpecDataOptions o;
     if (options[epdso_disallow_nonranged_deps])
-        o += pmpdso_always_use_ranged_deps;
+        o += pdsdo_always_use_ranged_deps;
 
     return partial_parse_generic_elike_package_dep_spec(ss, make_named_values<GenericELikePackageDepSpecParseFunctions>(
                 n::add_package_requirement() = std::bind(&elike_add_package_requirement, _1, _2),
@@ -432,7 +425,7 @@ paludis::partial_parse_elike_package_dep_spec(
                 n::get_remove_version_operator() = std::bind(&elike_get_remove_version_operator, _1, options),
                 n::has_version_operator() = std::bind(&elike_has_version_operator, _1,
                         std::cref(had_bracket_version_requirements), options),
-                n::options_for_partially_made_package_dep_spec() = std::bind(&fixed_options_for_partially_made_package_dep_spec, std::cref(o)),
+                n::options_for_partially_made_package_dep_spec() = return_literal_function(o),
                 n::remove_trailing_repo_if_exists() = std::bind(&elike_remove_trailing_repo_if_exists, _1, _2, options),
                 n::remove_trailing_slot_if_exists() = std::bind(&elike_remove_trailing_slot_if_exists, _1, _2, options),
                 n::remove_trailing_square_bracket_if_exists() = std::bind(&elike_remove_trailing_square_bracket_if_exists,
@@ -450,7 +443,7 @@ paludis::parse_elike_package_dep_spec(const std::string & ss, const ELikePackage
 void
 paludis::parse_elike_version_range(
         const std::string & s,
-        PartiallyMadePackageDepSpec & result,
+        MutablePackageDepSpecData & result,
         const ELikePackageDepSpecOptions & options,
         const VersionSpecOptions & version_options,
         bool & had_bracket_version_requirements)
@@ -506,7 +499,7 @@ paludis::parse_elike_version_range(
         }
 
         VersionSpec vs(ver, version_options);
-        result.version_constraint(vs, vop, vcc);
+        result.constrain_version(vcc, vop, vs);
         had_bracket_version_requirements = true;
         vcc = next_vcc;
     }

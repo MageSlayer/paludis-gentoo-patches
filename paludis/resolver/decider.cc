@@ -68,10 +68,10 @@
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
 #include <paludis/changed_choices.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/package_dep_spec_constraint.hh>
 #include <paludis/version_operator.hh>
+#include <paludis/dep_spec_data.hh>
 
 #include <paludis/util/pimp-impl.hh>
 
@@ -1067,11 +1067,11 @@ const PackageDepSpec
 Decider::_make_spec_for_preloading(const PackageDepSpec & spec,
         const std::shared_ptr<const ChangedChoices> & changed_choices) const
 {
-    PartiallyMadePackageDepSpec result(spec);
+    MutablePackageDepSpecData result(*spec.data());
 
     /* we don't want to copy use deps from the constraint, since things like
      * [foo?] start to get weird when there's no longer an associated ID. */
-    result.clear_choices();
+    result.unconstrain_choices();
 
     /* but we do want to impose our own ChangedChoices if necessary. */
     if (changed_choices)

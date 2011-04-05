@@ -23,7 +23,7 @@
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/options.hh>
 
-#include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/dep_spec_data.hh>
 
 #include <iterator>
 #include <cstdlib>
@@ -39,8 +39,8 @@ TEST(World, Updates)
     {
         TestEnvironment env;
         paludis_environment::World world(&env, w);
-        world.update_config_files_for_package_move(make_package_dep_spec({ })
-                .package(QualifiedPackageName("cat/before")),
+        world.update_config_files_for_package_move(MutablePackageDepSpecData({ })
+                .constrain_package(QualifiedPackageName("cat/before")),
                 QualifiedPackageName("cat/after"));
     }
 

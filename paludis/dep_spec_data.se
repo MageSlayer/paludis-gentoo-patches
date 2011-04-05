@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_PackageDepSpecDataOption()
+{
+    prefix pdsdo
+
+    key pdsdo_always_use_ranged_deps "Always write [>=1] style dependencies"
+
+    doxygen_comment << "END"
+        /**
+         * Options for PackageDepSpecData.
+         *
+         * \ingroup g_dep_spec
+         * \since 0.61
+         */
+END
+}
+

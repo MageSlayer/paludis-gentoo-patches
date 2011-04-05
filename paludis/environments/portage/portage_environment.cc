@@ -56,7 +56,7 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/dep_spec_data.hh>
 
 #include <functional>
 #include <algorithm>
@@ -939,7 +939,10 @@ void
 PortageEnvironment::update_config_files_for_package_move(const PackageDepSpec & s, const QualifiedPackageName & n) const
 {
     if (_remove_string_from_world(stringify(s)))
-        _add_string_to_world(stringify(PartiallyMadePackageDepSpec(s).package(n)));
+        _add_string_to_world(stringify(
+                    MutablePackageDepSpecData(*s.data())
+                    .unconstrain_package()
+                    .constrain_package(n)));
 }
 
 void

@@ -19,12 +19,14 @@
 
 #include <paludis/repositories/e/fix_locked_dependencies.hh>
 #include <paludis/repositories/e/eapi.hh>
+
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -33,8 +35,9 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/dep_spec_data.hh>
+
 #include <functional>
 #include <algorithm>
 #include <list>
@@ -109,9 +112,9 @@ namespace
 
                 if ((*matches->last())->slot_key())
                 {
-                    PackageDepSpec new_s(PartiallyMadePackageDepSpec(*node.spec())
-                            .clear_any_slot()
-                            .exact_slot_constraint((*matches->last())->slot_key()->value(), true));
+                    PackageDepSpec new_s(MutablePackageDepSpecData(*node.spec()->data())
+                            .unconstrain_any_slot()
+                            .constrain_exact_slot((*matches->last())->slot_key()->value(), true));
                     c = std::make_shared<PackageDepSpec>(new_s);
                 }
             } while (false);
