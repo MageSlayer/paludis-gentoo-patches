@@ -25,7 +25,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/choice.hh>
 #include <paludis/changed_choices.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 
 #include <paludis/util/options.hh>
 #include <paludis/util/stringify.hh>
@@ -500,7 +500,7 @@ namespace
     };
 
     class UseRequirements :
-        public ChoiceConstraint
+        public ChoiceRequirement
     {
         private:
             typedef std::vector<std::shared_ptr<const UseRequirement> > Reqs;
@@ -811,7 +811,7 @@ ELikeUseRequirementError::ELikeUseRequirementError(const std::string & s, const 
 {
 }
 
-std::shared_ptr<const ChoiceConstraint>
+std::shared_ptr<const ChoiceRequirement>
 paludis::parse_elike_use_requirement(const std::string & s,
         const ELikeUseRequirementOptions & options)
 {

@@ -76,7 +76,7 @@ namespace paludis
             {
                 std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                             MutablePackageDepSpecData({ })
-                            .constrain_package(CategoryNamePart("group") + PackageNamePart(*i))));
+                            .require_package(CategoryNamePart("group") + PackageNamePart(*i))));
                 specs->push_back(spec);
                 tree->top()->append(spec);
             }

@@ -516,7 +516,7 @@ EnvironmentImplementation::fetch_unique_qualified_package_name(const PackageName
     std::set<std::pair<CategoryNamePart, RepositoryName>, CategoryRepositoryNamePairComparator> checked;
 
     std::shared_ptr<const PackageIDSequence> pkgs((*this)[selection::AllVersionsUnsorted(
-                generator::Matches(MutablePackageDepSpecData({ }).constrain_package_name_part(p), make_null_shared_ptr(), { }) | f)]);
+                generator::Matches(MutablePackageDepSpecData({ }).require_package_name_part(p), make_null_shared_ptr(), { }) | f)]);
 
     for (IndirectIterator<PackageIDSequence::ConstIterator> it(pkgs->begin()),
              it_end(pkgs->end()); it_end != it; ++it)

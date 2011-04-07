@@ -6,7 +6,7 @@ make_enum_MatchPackageOption()
     prefix mpo
     want_destringify
 
-    key mpo_ignore_choice_constraints         "Ignore choice constraints"
+    key mpo_ignore_choice_requirements         "Ignore choice requirements"
 
     doxygen_comment << "END"
         /**

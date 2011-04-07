@@ -28,20 +28,20 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct name_has_any_slot_constraint> has_any_slot_constraint;
+        typedef Name<struct name_has_any_slot_requirement> has_any_slot_requirement;
         typedef Name<struct name_has_category_name_part> has_category_name_part;
-        typedef Name<struct name_has_choice_constraints> has_choice_constraints;
-        typedef Name<struct name_has_exact_slot_constraint> has_exact_slot_constraint;
+        typedef Name<struct name_has_choice_requirements> has_choice_requirements;
+        typedef Name<struct name_has_exact_slot_requirement> has_exact_slot_requirement;
         typedef Name<struct name_has_from_repository> has_from_repository;
         typedef Name<struct name_has_in_repository> has_in_repository;
         typedef Name<struct name_has_installable_to_path> has_installable_to_path;
         typedef Name<struct name_has_installable_to_repository> has_installable_to_repository;
         typedef Name<struct name_has_installed_at_path> has_installed_at_path;
-        typedef Name<struct name_has_key_constraints> has_key_constraints;
+        typedef Name<struct name_has_key_requirements> has_key_requirements;
         typedef Name<struct name_has_package> has_package;
         typedef Name<struct name_has_package_name_part> has_package_name_part;
         typedef Name<struct name_has_tag> has_tag;
-        typedef Name<struct name_has_version_constraints> has_version_constraints;
+        typedef Name<struct name_has_version_requirements> has_version_requirements;
     }
 
     /**
@@ -52,20 +52,20 @@ namespace paludis
      */
     struct PackageDepSpecProperties
     {
-        NamedValue<n::has_any_slot_constraint, Tribool> has_any_slot_constraint;
+        NamedValue<n::has_any_slot_requirement, Tribool> has_any_slot_requirement;
         NamedValue<n::has_category_name_part, Tribool> has_category_name_part;
-        NamedValue<n::has_choice_constraints, Tribool> has_choice_constraints;
-        NamedValue<n::has_exact_slot_constraint, Tribool> has_exact_slot_constraint;
+        NamedValue<n::has_choice_requirements, Tribool> has_choice_requirements;
+        NamedValue<n::has_exact_slot_requirement, Tribool> has_exact_slot_requirement;
         NamedValue<n::has_from_repository, Tribool> has_from_repository;
         NamedValue<n::has_in_repository, Tribool> has_in_repository;
         NamedValue<n::has_installable_to_path, Tribool> has_installable_to_path;
         NamedValue<n::has_installable_to_repository, Tribool> has_installable_to_repository;
         NamedValue<n::has_installed_at_path, Tribool> has_installed_at_path;
-        NamedValue<n::has_key_constraints, Tribool> has_key_constraints;
+        NamedValue<n::has_key_requirements, Tribool> has_key_requirements;
         NamedValue<n::has_package, Tribool> has_package;
         NamedValue<n::has_package_name_part, Tribool> has_package_name_part;
         NamedValue<n::has_tag, Tribool> has_tag;
-        NamedValue<n::has_version_constraints, Tribool> has_version_constraints;
+        NamedValue<n::has_version_requirements, Tribool> has_version_requirements;
     };
 }
 

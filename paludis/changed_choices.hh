@@ -47,7 +47,7 @@ namespace paludis
 
             bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            void add_constraints_to(MutablePackageDepSpecData &) const;
+            void add_requirements_to(MutablePackageDepSpecData &) const;
 
             void serialise(Serialiser &) const;
 

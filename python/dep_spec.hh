@@ -172,16 +172,16 @@ namespace paludis
                 operator PackageDepSpec() const;
                 operator std::shared_ptr<PackageDepSpec>() const;
 
-                const std::shared_ptr<const NameConstraint> package_name_constraint() const;
-                const std::shared_ptr<const PackageNamePartConstraint> package_name_part_constraint() const;
-                const std::shared_ptr<const CategoryNamePartConstraint> category_name_part_constraint() const;
-                const std::shared_ptr<const VersionConstraintSequence> all_version_constraints() const;
-                const std::shared_ptr<const InRepositoryConstraint> in_repository_constraint() const;
-                const std::shared_ptr<const FromRepositoryConstraint> from_repository_constraint() const;
-                const std::shared_ptr<const ExactSlotConstraint> exact_slot_constraint() const;
-                const std::shared_ptr<const AnySlotConstraint> any_slot_constraint() const;
-                const std::shared_ptr<const KeyConstraintSequence> all_key_constraints() const;
-                const std::shared_ptr<const ChoiceConstraintSequence> all_choice_constraints() const;
+                const std::shared_ptr<const NameRequirement> package_name_requirement() const;
+                const std::shared_ptr<const PackageNamePartRequirement> package_name_part_requirement() const;
+                const std::shared_ptr<const CategoryNamePartRequirement> category_name_part_requirement() const;
+                const std::shared_ptr<const VersionRequirementSequence> all_version_requirements() const;
+                const std::shared_ptr<const InRepositoryRequirement> in_repository_requirement() const;
+                const std::shared_ptr<const FromRepositoryRequirement> from_repository_requirement() const;
+                const std::shared_ptr<const ExactSlotRequirement> exact_slot_requirement() const;
+                const std::shared_ptr<const AnySlotRequirement> any_slot_requirement() const;
+                const std::shared_ptr<const KeyRequirementSequence> all_key_requirements() const;
+                const std::shared_ptr<const ChoiceRequirementSequence> all_choice_requirements() const;
 
                 std::string py_str() const;
         };

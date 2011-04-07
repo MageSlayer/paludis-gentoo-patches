@@ -69,7 +69,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/changed_choices.hh>
 #include <paludis/dep_spec_annotations.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/dep_spec_data.hh>
 
@@ -1071,11 +1071,11 @@ Decider::_make_spec_for_preloading(const PackageDepSpec & spec,
 
     /* we don't want to copy use deps from the constraint, since things like
      * [foo?] start to get weird when there's no longer an associated ID. */
-    result.unconstrain_choices();
+    result.unrequire_choices();
 
     /* but we do want to impose our own ChangedChoices if necessary. */
     if (changed_choices)
-        changed_choices->add_constraints_to(result);
+        changed_choices->add_requirements_to(result);
 
     return result;
 }
@@ -1270,10 +1270,10 @@ Decider::find_any_score(
     // AnyDepSpecChildHandler::commit in satitised_dependencies.cc
     // matches this logic
     OperatorScore operator_bias(os_worse_than_worst);
-    if (spec.all_version_constraints() && ! spec.all_version_constraints()->empty())
+    if (spec.all_version_requirements() && ! spec.all_version_requirements()->empty())
     {
         OperatorScore score(os_worse_than_worst);
-        for (auto v(spec.all_version_constraints()->begin()), v_end(spec.all_version_constraints()->end()) ;
+        for (auto v(spec.all_version_requirements()->begin()), v_end(spec.all_version_requirements()->end()) ;
                 v != v_end ; ++v)
         {
             OperatorScore local_score(os_worse_than_worst);
@@ -1308,15 +1308,15 @@ Decider::find_any_score(
             else
                 switch ((*v)->combiner())
                 {
-                    case vcc_and:
+                    case vrc_and:
                         score = is_block ? std::max(score, local_score) : std::min(score, local_score);
                         break;
 
-                    case vcc_or:
+                    case vrc_or:
                         score = is_block ? std::min(score, local_score) : std::max(score, local_score);
                         break;
 
-                    case last_vcc:
+                    case last_vrc:
                         break;
                 }
         }
@@ -1330,9 +1330,9 @@ Decider::find_any_score(
     }
 
     /* explicit preferences come first */
-    if (spec.package_name_constraint())
+    if (spec.package_name_requirement())
     {
-        Tribool prefer_or_avoid(_imp->fns.prefer_or_avoid_fn()(spec.package_name_constraint()->name()));
+        Tribool prefer_or_avoid(_imp->fns.prefer_or_avoid_fn()(spec.package_name_requirement()->name()));
         if (prefer_or_avoid.is_true())
             return std::make_pair(is_block ? acs_avoid : acs_prefer, operator_bias);
         else if (prefer_or_avoid.is_false())
@@ -1345,7 +1345,7 @@ Decider::find_any_score(
         Context sub_context("When working out whether it's acs_vacuous_blocker:");
 
         const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionOnly(
-                    generator::Matches(spec, our_id, { mpo_ignore_choice_constraints })
+                    generator::Matches(spec, our_id, { mpo_ignore_choice_requirements })
                         | filter::SupportsAction<InstallAction>() | filter::NotMasked()
                     )]);
         if (ids->empty())
@@ -1437,8 +1437,8 @@ Decider::_get_resolvents_for_blocker(const BlockDepSpec & spec,
     Context context("When finding slots for '" + stringify(spec) + "':");
 
     std::shared_ptr<SlotName> exact_slot;
-    if (spec.blocking().exact_slot_constraint())
-        exact_slot = make_shared_copy(spec.blocking().exact_slot_constraint()->name());
+    if (spec.blocking().exact_slot_requirement())
+        exact_slot = make_shared_copy(spec.blocking().exact_slot_requirement()->name());
 
     DestinationTypes destination_types(_get_destination_types_for_blocker(spec, reason));
     std::shared_ptr<Resolvents> result(std::make_shared<Resolvents>());
@@ -1451,7 +1451,7 @@ Decider::_get_resolvents_for_blocker(const BlockDepSpec & spec,
     else
     {
         const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionInEachSlot(
-                    generator::Package(spec.blocking().package_name_constraint()->name())
+                    generator::Package(spec.blocking().package_name_requirement()->name())
                     )]);
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
@@ -1479,8 +1479,8 @@ Decider::_get_resolvents_for(
 
     std::shared_ptr<SlotName> exact_slot;
 
-    if (spec.exact_slot_constraint())
-        exact_slot = make_shared_copy(spec.exact_slot_constraint()->name());
+    if (spec.exact_slot_requirement())
+        exact_slot = make_shared_copy(spec.exact_slot_requirement()->name());
 
     return _imp->fns.get_resolvents_for_fn()(spec, maybe_from_package_id_from_reason(reason), exact_slot, reason);
 }
@@ -1511,7 +1511,7 @@ Decider::_get_error_resolvents_for(
                         ),
                     *t);
 
-            auto ids(_find_installable_id_candidates_for(spec.package_name_constraint()->name(), filter::All(), true, true));
+            auto ids(_find_installable_id_candidates_for(spec.package_name_requirement()->name(), filter::All(), true, true));
             if (! ids->empty())
                 resolvent.slot() = make_named_values<SlotNameOrNull>(
                         n::name_or_null() = (*ids->rbegin())->slot_key() ?
@@ -1852,7 +1852,7 @@ Decider::_find_id_for_from(
 {
     MatchPackageOptions opts;
     if (trying_changing_choices)
-        opts += mpo_ignore_choice_constraints;
+        opts += mpo_ignore_choice_requirements;
 
     std::shared_ptr<const PackageID> best_version;
     for (PackageIDSequence::ReverseConstIterator i(ids->rbegin()), i_end(ids->rend()) ;
@@ -1892,8 +1892,8 @@ Decider::_find_id_for_from(
 
                     if (! (*c)->spec().if_package())
                     {
-                        if ((*c)->spec().if_block()->blocking().all_choice_constraints() &&
-                                ! (*c)->spec().if_block()->blocking().all_choice_constraints()->empty())
+                        if ((*c)->spec().if_block()->blocking().all_choice_requirements() &&
+                                ! (*c)->spec().if_block()->blocking().all_choice_requirements()->empty())
                         {
                             /* too complicated for now */
                             ok = false;
@@ -1901,14 +1901,14 @@ Decider::_find_id_for_from(
                         break;
                     }
 
-                    if (! (*c)->spec().if_package()->all_choice_constraints())
+                    if (! (*c)->spec().if_package()->all_choice_requirements())
                     {
                         /* no additional requirements, so no tinkering required */
                         continue;
                     }
 
-                    for (auto a((*c)->spec().if_package()->all_choice_constraints()->begin()),
-                            a_end((*c)->spec().if_package()->all_choice_constraints()->end()) ;
+                    for (auto a((*c)->spec().if_package()->all_choice_requirements()->begin()),
+                            a_end((*c)->spec().if_package()->all_choice_requirements()->end()) ;
                             a != a_end ; ++a)
                     {
                         auto b((*a)->accumulate_changes_to_make_met(_imp->env,

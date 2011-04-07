@@ -171,8 +171,8 @@ World::update_config_files_for_package_move(const PackageDepSpec & s, const Qual
     if (_remove_string_from_world(stringify(s)))
         _add_string_to_world(stringify(
                     MutablePackageDepSpecData(*s.data())
-                    .unconstrain_package()
-                    .constrain_package(n)));
+                    .unrequire_package()
+                    .require_package(n)));
 }
 
 const std::shared_ptr<const SetSpecTree>

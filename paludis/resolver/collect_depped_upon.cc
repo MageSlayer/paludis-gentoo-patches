@@ -33,7 +33,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/match_package.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 #include <paludis/dep_spec_data.hh>
 
 #include <algorithm>
@@ -111,7 +111,7 @@ namespace
             {
                 auto spec(s.spec());
 
-                if (s.spec()->any_slot_constraint() && ! s.spec()->any_slot_constraint()->locking())
+                if (s.spec()->any_slot_requirement() && ! s.spec()->any_slot_requirement()->locking())
                 {
                     auto best_eventual_id(best_eventual(env, *s.spec(), id_for_specs, newly_available));
                     if (! best_eventual_id)
@@ -120,8 +120,8 @@ namespace
                     {
                         MutablePackageDepSpecData part_spec(*s.spec()->data());
                         part_spec
-                            .unconstrain_exact_slot()
-                            .constrain_exact_slot(best_eventual_id->slot_key()->value(), false);
+                            .unrequire_exact_slot()
+                            .require_exact_slot(best_eventual_id->slot_key()->value(), false);
                         spec = std::make_shared<PackageDepSpec>(part_spec);
                     }
                 }

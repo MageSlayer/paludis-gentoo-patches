@@ -62,7 +62,7 @@ paludis::partial_parse_generic_elike_package_dep_spec(const std::string & ss, co
         /* Leading (or maybe =*) operator, so trailing version. */
         VersionOperator op(fns.get_remove_version_operator()(s));
         VersionSpec spec(fns.get_remove_trailing_version()(s));
-        fns.add_version_requirement()(spec, op, vcc_and, result);
+        fns.add_version_requirement()(spec, op, vrc_and, result);
         fns.add_package_requirement()(s, result);
     }
     else
@@ -139,8 +139,8 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Mutable
                             << "Key requirements not safe for use here";
                 }
 
-                auto k(parse_user_key_constraint(flag.substr(1)));
-                result.constrain_key(std::get<0>(k), std::get<1>(k), std::get<2>(k), std::get<3>(k));
+                auto k(parse_user_key_requirement(flag.substr(1)));
+                result.require_key(std::get<0>(k), std::get<1>(k), std::get<2>(k), std::get<3>(k));
             }
             break;
 
@@ -180,7 +180,7 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Mutable
             if (options[epdso_strict_parsing])
                 euro += euro_strict_parsing;
 
-            result.constrain_choice(parse_elike_use_requirement(flag, euro));
+            result.require_choice(parse_elike_use_requirement(flag, euro));
 
             break;
     };
@@ -207,7 +207,7 @@ paludis::elike_remove_trailing_repo_if_exists(std::string & s, MutablePackageDep
                 << "Repository dependencies not safe for use here";
     }
 
-    result.constrain_in_repository(RepositoryName(s.substr(repo_p + 2)));
+    result.require_in_repository(RepositoryName(s.substr(repo_p + 2)));
     s.erase(repo_p);
 }
 
@@ -233,7 +233,7 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, MutablePackageDep
                 Log::get_instance()->message("e.package_dep_spec.slot_star_not_allowed", ll_warning, lc_context)
                     << "Slot '*' dependencies not safe for use here";
         }
-        result.constrain_any_slot(false);
+        result.require_any_slot(false);
     }
     else if ('=' == match.at(0))
     {
@@ -247,9 +247,9 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, MutablePackageDep
         }
 
         if (1 == match.length())
-            result.constrain_any_slot(true);
+            result.require_any_slot(true);
         else
-            result.constrain_exact_slot(SlotName(s.substr(slot_p + 2)), true);
+            result.require_exact_slot(SlotName(s.substr(slot_p + 2)), true);
     }
     else
     {
@@ -261,7 +261,7 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, MutablePackageDep
                 Log::get_instance()->message("e.package_dep_spec.slot_not_allowed", ll_warning, lc_context)
                     << "Slot dependencies not safe for use here";
         }
-        result.constrain_exact_slot(SlotName(s.substr(slot_p + 1)), false);
+        result.require_exact_slot(SlotName(s.substr(slot_p + 1)), false);
     }
     s.erase(slot_p);
 }
@@ -373,10 +373,10 @@ void
 paludis::elike_add_version_requirement(
         const VersionSpec & ver,
         const VersionOperator & op,
-        const VersionConstraintCombiner vcc,
+        const VersionRequirementCombiner vrc,
         MutablePackageDepSpecData & result)
 {
-    result.constrain_version(vcc, op, ver);
+    result.require_version(vrc, op, ver);
 }
 
 void
@@ -390,16 +390,16 @@ paludis::elike_add_package_requirement(const std::string & s, MutablePackageDepS
         throw PackageDepSpecError("Wildcard '*' not allowed here");
 
         if (0 != s.compare(s.length() - 2, 2, "/*"))
-            result.constrain_package_name_part(PackageNamePart(s.substr(2)));
+            result.require_package_name_part(PackageNamePart(s.substr(2)));
     }
     else if (s.length() >= 3 && (0 == s.compare(s.length() - 2, 2, "/*")))
     {
         throw PackageDepSpecError("Wildcard '*' not allowed here");
 
-        result.constrain_category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
+        result.require_category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
     }
     else
-        result.constrain_package(QualifiedPackageName(s));
+        result.require_package(QualifiedPackageName(s));
 }
 
 MutablePackageDepSpecData
@@ -449,12 +449,12 @@ paludis::parse_elike_version_range(
         bool & had_bracket_version_requirements)
 {
     std::string flag(s);
-    VersionConstraintCombiner vcc(vcc_and);
+    VersionRequirementCombiner vrc(vrc_and);
 
     while (! flag.empty())
     {
         Context cc("When parsing [] segment '" + flag + "':");
-        VersionConstraintCombiner next_vcc(vcc);
+        VersionRequirementCombiner next_vrc(vrc);
 
         std::string op;
         std::string::size_type opos(0);
@@ -481,7 +481,7 @@ paludis::parse_elike_version_range(
         }
         else
         {
-            next_vcc = (flag.at(opos) == '|' ? vcc_or : vcc_and);
+            next_vrc = (flag.at(opos) == '|' ? vrc_or : vrc_and);
             ver = flag.substr(0, opos++);
             flag.erase(0, opos);
         }
@@ -499,9 +499,9 @@ paludis::parse_elike_version_range(
         }
 
         VersionSpec vs(ver, version_options);
-        result.constrain_version(vcc, vop, vs);
+        result.require_version(vrc, vop, vs);
         had_bracket_version_requirements = true;
-        vcc = next_vcc;
+        vrc = next_vrc;
     }
 }
 

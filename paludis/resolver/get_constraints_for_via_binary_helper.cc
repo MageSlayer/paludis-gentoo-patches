@@ -66,7 +66,7 @@ GetConstraintsForViaBinaryHelper::operator() (
     auto result(std::make_shared<ConstraintSequence>());
 
     MutablePackageDepSpecData partial_spec({ });
-    partial_spec.constrain_package(resolution->resolvent().package());
+    partial_spec.require_package(resolution->resolvent().package());
     PackageDepSpec spec(partial_spec);
 
     auto reason(std::make_shared<ViaBinaryReason>(other_resolution->resolvent()));

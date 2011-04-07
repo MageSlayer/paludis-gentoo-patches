@@ -176,8 +176,8 @@ namespace
         VersionSpec ver(tokens[1], { });
 
         return make_shared_copy(PackageDepSpec(MutablePackageDepSpecData({ pdsdo_always_use_ranged_deps })
-                    .constrain_package(QualifiedPackageName("gem/" + dep.name()))
-                    .constrain_version(vcc_and, op, ver)
+                    .require_package(QualifiedPackageName("gem/" + dep.name()))
+                    .require_version(vrc_and, op, ver)
                     ));
     }
 

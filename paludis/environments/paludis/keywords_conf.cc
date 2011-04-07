@@ -28,7 +28,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/match_package.hh>
 #include <paludis/package_id.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 
 #include <paludis/util/config_file.hh>
 #include <paludis/util/options.hh>
@@ -108,9 +108,9 @@ KeywordsConf::add(const FSPath & filename)
         {
             std::shared_ptr<PackageDepSpec> d(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
                             tokens.at(0), _imp->env, { updso_allow_wildcards, updso_no_disambiguation, updso_throw_if_set })));
-            if (d->package_name_constraint())
+            if (d->package_name_requirement())
             {
-                KeywordsList & k(_imp->qualified[d->package_name_constraint()->name()][d]);
+                KeywordsList & k(_imp->qualified[d->package_name_requirement()->name()][d]);
                 for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                         t != t_end ; ++t)
                     k.push_back(KeywordName(*t));

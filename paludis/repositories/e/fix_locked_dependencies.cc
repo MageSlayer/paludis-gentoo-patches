@@ -35,7 +35,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 #include <paludis/dep_spec_data.hh>
 
 #include <functional>
@@ -102,7 +102,7 @@ namespace
 
             do
             {
-                if ((! node.spec()->any_slot_constraint()) || (! node.spec()->any_slot_constraint()->locking()))
+                if ((! node.spec()->any_slot_requirement()) || (! node.spec()->any_slot_requirement()->locking()))
                     break;
 
                 std::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
@@ -113,8 +113,8 @@ namespace
                 if ((*matches->last())->slot_key())
                 {
                     PackageDepSpec new_s(MutablePackageDepSpecData(*node.spec()->data())
-                            .unconstrain_any_slot()
-                            .constrain_exact_slot((*matches->last())->slot_key()->value(), true));
+                            .unrequire_any_slot()
+                            .require_exact_slot((*matches->last())->slot_key()->value(), true));
                     c = std::make_shared<PackageDepSpec>(new_s);
                 }
             } while (false);

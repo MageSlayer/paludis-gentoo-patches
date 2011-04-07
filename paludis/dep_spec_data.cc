@@ -18,7 +18,7 @@
  */
 
 #include <paludis/dep_spec_data.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
@@ -45,19 +45,19 @@ namespace paludis
     template <>
     struct Imp<PackageDepSpecData>
     {
-        std::shared_ptr<const NameConstraint> package;
-        std::shared_ptr<const PackageNamePartConstraint> package_name_part;
-        std::shared_ptr<const CategoryNamePartConstraint> category_name_part;
-        std::shared_ptr<VersionConstraintSequence> all_versions;
-        std::shared_ptr<const AnySlotConstraint> any_slot;
-        std::shared_ptr<const ExactSlotConstraint> exact_slot;
-        std::shared_ptr<const InRepositoryConstraint> in_repository;
-        std::shared_ptr<const FromRepositoryConstraint> from_repository;
-        std::shared_ptr<const InstallableToRepositoryConstraint> installable_to_repository;
-        std::shared_ptr<const InstalledAtPathConstraint> installed_at_path;
-        std::shared_ptr<const InstallableToPathConstraint> installable_to_path;
-        std::shared_ptr<KeyConstraintSequence> all_keys;
-        std::shared_ptr<ChoiceConstraintSequence> all_choices;
+        std::shared_ptr<const NameRequirement> package;
+        std::shared_ptr<const PackageNamePartRequirement> package_name_part;
+        std::shared_ptr<const CategoryNamePartRequirement> category_name_part;
+        std::shared_ptr<VersionRequirementSequence> all_versions;
+        std::shared_ptr<const AnySlotRequirement> any_slot;
+        std::shared_ptr<const ExactSlotRequirement> exact_slot;
+        std::shared_ptr<const InRepositoryRequirement> in_repository;
+        std::shared_ptr<const FromRepositoryRequirement> from_repository;
+        std::shared_ptr<const InstallableToRepositoryRequirement> installable_to_repository;
+        std::shared_ptr<const InstalledAtPathRequirement> installed_at_path;
+        std::shared_ptr<const InstallableToPathRequirement> installable_to_path;
+        std::shared_ptr<KeyRequirementSequence> all_keys;
+        std::shared_ptr<ChoiceRequirementSequence> all_choices;
         PackageDepSpecDataOptions options;
 
         Imp(const PackageDepSpecDataOptions & o) :
@@ -66,31 +66,31 @@ namespace paludis
         }
 
         Imp(const PackageDepSpecData & other) :
-            package(other.package_name_constraint()),
-            package_name_part(other.package_name_part_constraint()),
-            category_name_part(other.category_name_part_constraint()),
-            all_versions(other.all_version_constraints() ? new VersionConstraintSequence : 0),
-            any_slot(other.any_slot_constraint()),
-            exact_slot(other.exact_slot_constraint()),
-            in_repository(other.in_repository_constraint()),
-            from_repository(other.from_repository_constraint()),
-            installable_to_repository(other.installable_to_repository_constraint()),
-            installed_at_path(other.installed_at_path_constraint()),
-            installable_to_path(other.installable_to_path_constraint()),
-            all_keys(other.all_key_constraints() ? new KeyConstraintSequence : 0),
-            all_choices(other.all_choice_constraints() ? new ChoiceConstraintSequence : 0),
+            package(other.package_name_requirement()),
+            package_name_part(other.package_name_part_requirement()),
+            category_name_part(other.category_name_part_requirement()),
+            all_versions(other.all_version_requirements() ? new VersionRequirementSequence : 0),
+            any_slot(other.any_slot_requirement()),
+            exact_slot(other.exact_slot_requirement()),
+            in_repository(other.in_repository_requirement()),
+            from_repository(other.from_repository_requirement()),
+            installable_to_repository(other.installable_to_repository_requirement()),
+            installed_at_path(other.installed_at_path_requirement()),
+            installable_to_path(other.installable_to_path_requirement()),
+            all_keys(other.all_key_requirements() ? new KeyRequirementSequence : 0),
+            all_choices(other.all_choice_requirements() ? new ChoiceRequirementSequence : 0),
             options(other.options())
         {
             if (all_versions)
-                std::copy(other.all_version_constraints()->begin(), other.all_version_constraints()->end(),
+                std::copy(other.all_version_requirements()->begin(), other.all_version_requirements()->end(),
                         all_versions->back_inserter());
 
             if (all_keys)
-                std::copy(other.all_key_constraints()->begin(), other.all_key_constraints()->end(),
+                std::copy(other.all_key_requirements()->begin(), other.all_key_requirements()->end(),
                         all_keys->back_inserter());
 
             if (all_choices)
-                std::copy(other.all_choice_constraints()->begin(), other.all_choice_constraints()->end(),
+                std::copy(other.all_choice_requirements()->begin(), other.all_choice_requirements()->end(),
                         all_choices->back_inserter());
         }
     };
@@ -108,80 +108,80 @@ PackageDepSpecData::PackageDepSpecData(const PackageDepSpecData & o) :
 
 PackageDepSpecData::~PackageDepSpecData() = default;
 
-const std::shared_ptr<const NameConstraint>
-PackageDepSpecData::package_name_constraint() const
+const std::shared_ptr<const NameRequirement>
+PackageDepSpecData::package_name_requirement() const
 {
     return _imp->package;
 }
 
-const std::shared_ptr<const PackageNamePartConstraint>
-PackageDepSpecData::package_name_part_constraint() const
+const std::shared_ptr<const PackageNamePartRequirement>
+PackageDepSpecData::package_name_part_requirement() const
 {
     return _imp->package_name_part;
 }
 
-const std::shared_ptr<const CategoryNamePartConstraint>
-PackageDepSpecData::category_name_part_constraint() const
+const std::shared_ptr<const CategoryNamePartRequirement>
+PackageDepSpecData::category_name_part_requirement() const
 {
     return _imp->category_name_part;
 }
 
-const std::shared_ptr<const VersionConstraintSequence>
-PackageDepSpecData::all_version_constraints() const
+const std::shared_ptr<const VersionRequirementSequence>
+PackageDepSpecData::all_version_requirements() const
 {
     return _imp->all_versions;
 }
 
-const std::shared_ptr<const ExactSlotConstraint>
-PackageDepSpecData::exact_slot_constraint() const
+const std::shared_ptr<const ExactSlotRequirement>
+PackageDepSpecData::exact_slot_requirement() const
 {
     return _imp->exact_slot;
 }
 
-const std::shared_ptr<const AnySlotConstraint>
-PackageDepSpecData::any_slot_constraint() const
+const std::shared_ptr<const AnySlotRequirement>
+PackageDepSpecData::any_slot_requirement() const
 {
     return _imp->any_slot;
 }
 
-const std::shared_ptr<const InRepositoryConstraint>
-PackageDepSpecData::in_repository_constraint() const
+const std::shared_ptr<const InRepositoryRequirement>
+PackageDepSpecData::in_repository_requirement() const
 {
     return _imp->in_repository;
 }
 
-const std::shared_ptr<const InstallableToRepositoryConstraint>
-PackageDepSpecData::installable_to_repository_constraint() const
+const std::shared_ptr<const InstallableToRepositoryRequirement>
+PackageDepSpecData::installable_to_repository_requirement() const
 {
     return _imp->installable_to_repository;
 }
 
-const std::shared_ptr<const FromRepositoryConstraint>
-PackageDepSpecData::from_repository_constraint() const
+const std::shared_ptr<const FromRepositoryRequirement>
+PackageDepSpecData::from_repository_requirement() const
 {
     return _imp->from_repository;
 }
 
-const std::shared_ptr<const InstalledAtPathConstraint>
-PackageDepSpecData::installed_at_path_constraint() const
+const std::shared_ptr<const InstalledAtPathRequirement>
+PackageDepSpecData::installed_at_path_requirement() const
 {
     return _imp->installed_at_path;
 }
 
-const std::shared_ptr<const InstallableToPathConstraint>
-PackageDepSpecData::installable_to_path_constraint() const
+const std::shared_ptr<const InstallableToPathRequirement>
+PackageDepSpecData::installable_to_path_requirement() const
 {
     return _imp->installable_to_path;
 }
 
-const std::shared_ptr<const KeyConstraintSequence>
-PackageDepSpecData::all_key_constraints() const
+const std::shared_ptr<const KeyRequirementSequence>
+PackageDepSpecData::all_key_requirements() const
 {
     return _imp->all_keys;
 }
 
-const std::shared_ptr<const ChoiceConstraintSequence>
-PackageDepSpecData::all_choice_constraints() const
+const std::shared_ptr<const ChoiceRequirementSequence>
+PackageDepSpecData::all_choice_requirements() const
 {
     return _imp->all_choices;
 }
@@ -197,67 +197,67 @@ PackageDepSpecData::as_string() const
 {
     std::ostringstream s;
 
-    if (all_version_constraints())
+    if (all_version_requirements())
     {
-        if (all_version_constraints()->begin() == all_version_constraints()->end())
+        if (all_version_requirements()->begin() == all_version_requirements()->end())
         {
         }
-        else if (next(all_version_constraints()->begin()) == all_version_constraints()->end() &&
+        else if (next(all_version_requirements()->begin()) == all_version_requirements()->end() &&
                 ! options()[pdsdo_always_use_ranged_deps])
         {
-            if ((*all_version_constraints()->begin())->version_operator() == vo_stupid_equal_star ||
-                    (*all_version_constraints()->begin())->version_operator() == vo_nice_equal_star)
+            if ((*all_version_requirements()->begin())->version_operator() == vo_stupid_equal_star ||
+                    (*all_version_requirements()->begin())->version_operator() == vo_nice_equal_star)
                 s << "=";
             else
-                s << (*all_version_constraints()->begin())->version_operator();
+                s << (*all_version_requirements()->begin())->version_operator();
         }
     }
 
-    if (package_name_constraint())
-        s << package_name_constraint()->name();
+    if (package_name_requirement())
+        s << package_name_requirement()->name();
     else
     {
-        if (category_name_part_constraint())
-            s << category_name_part_constraint()->name_part();
+        if (category_name_part_requirement())
+            s << category_name_part_requirement()->name_part();
         else
             s << "*";
 
         s << "/";
 
-        if (package_name_part_constraint())
-            s << package_name_part_constraint()->name_part();
+        if (package_name_part_requirement())
+            s << package_name_part_requirement()->name_part();
         else
             s << "*";
     }
 
-    if (all_version_constraints())
+    if (all_version_requirements())
     {
-        if (all_version_constraints()->begin() == all_version_constraints()->end())
+        if (all_version_requirements()->begin() == all_version_requirements()->end())
         {
         }
-        else if (next(all_version_constraints()->begin()) == all_version_constraints()->end() &&
+        else if (next(all_version_requirements()->begin()) == all_version_requirements()->end() &&
                 ! options()[pdsdo_always_use_ranged_deps])
         {
-            s << "-" << (*all_version_constraints()->begin())->version_spec();
-            if ((*all_version_constraints()->begin())->version_operator() == vo_stupid_equal_star ||
-                    (*all_version_constraints()->begin())->version_operator() == vo_nice_equal_star)
+            s << "-" << (*all_version_requirements()->begin())->version_spec();
+            if ((*all_version_requirements()->begin())->version_operator() == vo_stupid_equal_star ||
+                    (*all_version_requirements()->begin())->version_operator() == vo_nice_equal_star)
                 s << "*";
         }
     }
 
-    if (exact_slot_constraint())
+    if (exact_slot_requirement())
     {
-        if (exact_slot_constraint()->locked())
+        if (exact_slot_requirement()->locked())
             s << ":=";
         else
             s << ":";
 
-        s << stringify(exact_slot_constraint()->name());
+        s << stringify(exact_slot_requirement()->name());
     }
 
-    if (any_slot_constraint())
+    if (any_slot_requirement())
     {
-        if (any_slot_constraint()->locking())
+        if (any_slot_requirement()->locking())
             s << ":=";
         else
             s << ":*";
@@ -266,46 +266,46 @@ PackageDepSpecData::as_string() const
     std::string left, right;
     bool need_arrow(false);
 
-    if (from_repository_constraint())
-        left = stringify(from_repository_constraint()->name());
+    if (from_repository_requirement())
+        left = stringify(from_repository_requirement()->name());
 
-    if (in_repository_constraint())
-        right = stringify(in_repository_constraint()->name());
+    if (in_repository_requirement())
+        right = stringify(in_repository_requirement()->name());
 
-    if (installed_at_path_constraint())
+    if (installed_at_path_requirement())
     {
         if (! right.empty())
         {
             need_arrow = true;
             right.append("->");
         }
-        right.append(stringify(installed_at_path_constraint()->path()));
+        right.append(stringify(installed_at_path_requirement()->path()));
     }
 
-    if (installable_to_repository_constraint())
+    if (installable_to_repository_requirement())
     {
         if (! right.empty())
         {
             need_arrow = true;
             right.append("->");
         }
-        if (installable_to_repository_constraint()->include_masked())
-            right.append(stringify(installable_to_repository_constraint()->name()) + "??");
+        if (installable_to_repository_requirement()->include_masked())
+            right.append(stringify(installable_to_repository_requirement()->name()) + "??");
         else
-            right.append(stringify(installable_to_repository_constraint()->name()) + "?");
+            right.append(stringify(installable_to_repository_requirement()->name()) + "?");
     }
 
-    if (installable_to_path_constraint())
+    if (installable_to_path_requirement())
     {
         if (! right.empty())
         {
             need_arrow = true;
             right.append("->");
         }
-        if (installable_to_path_constraint()->include_masked())
-            right.append(stringify(installable_to_path_constraint()->path()) + "??");
+        if (installable_to_path_requirement()->include_masked())
+            right.append(stringify(installable_to_path_requirement()->path()) + "??");
         else
-            right.append(stringify(installable_to_path_constraint()->path()) + "?");
+            right.append(stringify(installable_to_path_requirement()->path()) + "?");
     }
 
     if (need_arrow || ((! left.empty()) && (! right.empty())))
@@ -315,12 +315,12 @@ PackageDepSpecData::as_string() const
     else if (! left.empty())
         s << "::" << left << "->";
 
-    if (all_version_constraints())
+    if (all_version_requirements())
     {
-        if (all_version_constraints()->begin() == all_version_constraints()->end())
+        if (all_version_requirements()->begin() == all_version_requirements()->end())
         {
         }
-        else if (next(all_version_constraints()->begin()) == all_version_constraints()->end() &&
+        else if (next(all_version_requirements()->begin()) == all_version_requirements()->end() &&
                 ! options()[pdsdo_always_use_ranged_deps])
         {
         }
@@ -328,7 +328,7 @@ PackageDepSpecData::as_string() const
         {
             bool need_op(false);
             s << "[";
-            for (auto r(all_version_constraints()->begin()), r_end(all_version_constraints()->end()) ; r != r_end ; ++r)
+            for (auto r(all_version_requirements()->begin()), r_end(all_version_requirements()->end()) ; r != r_end ; ++r)
             {
                 if (need_op)
                 {
@@ -336,15 +336,15 @@ PackageDepSpecData::as_string() const
                     {
                         switch ((*r)->combiner())
                         {
-                            case vcc_and:
+                            case vrc_and:
                                 s << "&";
                                 continue;
 
-                            case vcc_or:
+                            case vrc_or:
                                 s << "|";
                                 continue;
 
-                            case last_vcc:
+                            case last_vrc:
                                 ;
                         }
                         throw InternalError(PALUDIS_HERE, "Bad version_requirements_mode");
@@ -367,12 +367,12 @@ PackageDepSpecData::as_string() const
         }
     }
 
-    if (all_choice_constraints())
-        for (auto u(all_choice_constraints()->begin()), u_end(all_choice_constraints()->end()) ; u != u_end ; ++u)
+    if (all_choice_requirements())
+        for (auto u(all_choice_requirements()->begin()), u_end(all_choice_requirements()->end()) ; u != u_end ; ++u)
             s << (*u)->as_raw_string();
 
-    if (all_key_constraints())
-        for (auto u(all_key_constraints()->begin()), u_end(all_key_constraints()->end()) ; u != u_end ; ++u)
+    if (all_key_requirements())
+        for (auto u(all_key_requirements()->begin()), u_end(all_key_requirements()->end()) ; u != u_end ; ++u)
             s << (*u)->as_raw_string();
 
     return s.str();
@@ -397,188 +397,188 @@ MutablePackageDepSpecData::MutablePackageDepSpecData(const MutablePackageDepSpec
 MutablePackageDepSpecData::~MutablePackageDepSpecData() = default;
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::constrain_package(const QualifiedPackageName & name)
+MutablePackageDepSpecData::require_package(const QualifiedPackageName & name)
 {
-    _imp->package = NameConstraintPool::get_instance()->create(name);
+    _imp->package = NameRequirementPool::get_instance()->create(name);
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::unconstrain_package()
+MutablePackageDepSpecData::unrequire_package()
 {
     _imp->package.reset();
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::constrain_package_name_part(const PackageNamePart & part)
+MutablePackageDepSpecData::require_package_name_part(const PackageNamePart & part)
 {
-    _imp->package_name_part = PackageNamePartConstraintPool::get_instance()->create(part);
+    _imp->package_name_part = PackageNamePartRequirementPool::get_instance()->create(part);
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::unconstrain_package_name_part()
+MutablePackageDepSpecData::unrequire_package_name_part()
 {
     _imp->package_name_part.reset();
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::constrain_category_name_part(const CategoryNamePart & part)
+MutablePackageDepSpecData::require_category_name_part(const CategoryNamePart & part)
 {
-    _imp->category_name_part = CategoryNamePartConstraintPool::get_instance()->create(part);
+    _imp->category_name_part = CategoryNamePartRequirementPool::get_instance()->create(part);
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::unconstrain_category_name_part()
+MutablePackageDepSpecData::unrequire_category_name_part()
 {
     _imp->category_name_part.reset();
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::constrain_version(const VersionConstraintCombiner vc, const VersionOperator & vo, const VersionSpec & vs)
+MutablePackageDepSpecData::require_version(const VersionRequirementCombiner vc, const VersionOperator & vo, const VersionSpec & vs)
 {
     if (! _imp->all_versions)
-        _imp->all_versions = std::make_shared<VersionConstraintSequence>();
-    _imp->all_versions->push_back(std::make_shared<VersionConstraint>(vs, vo, vc));
+        _imp->all_versions = std::make_shared<VersionRequirementSequence>();
+    _imp->all_versions->push_back(std::make_shared<VersionRequirement>(vs, vo, vc));
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::unconstrain_versions()
+MutablePackageDepSpecData::unrequire_versions()
 {
     _imp->all_versions.reset();
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::constrain_exact_slot(const SlotName & n, const bool s)
+MutablePackageDepSpecData::require_exact_slot(const SlotName & n, const bool s)
 {
-    _imp->exact_slot = ExactSlotConstraintPool::get_instance()->create(n, s);
+    _imp->exact_slot = ExactSlotRequirementPool::get_instance()->create(n, s);
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::unconstrain_exact_slot()
+MutablePackageDepSpecData::unrequire_exact_slot()
 {
     _imp->exact_slot.reset();
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::constrain_in_repository(const RepositoryName & s)
+MutablePackageDepSpecData::require_in_repository(const RepositoryName & s)
 {
-    _imp->in_repository = InRepositoryConstraintPool::get_instance()->create(s);
+    _imp->in_repository = InRepositoryRequirementPool::get_instance()->create(s);
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::unconstrain_in_repository()
+MutablePackageDepSpecData::unrequire_in_repository()
 {
     _imp->in_repository.reset();
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::constrain_installable_to_path(const FSPath & s, const bool i)
+MutablePackageDepSpecData::require_installable_to_path(const FSPath & s, const bool i)
 {
-    _imp->installable_to_path = InstallableToPathConstraintPool::get_instance()->create(s, i);
+    _imp->installable_to_path = InstallableToPathRequirementPool::get_instance()->create(s, i);
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::unconstrain_installable_to_path()
+MutablePackageDepSpecData::unrequire_installable_to_path()
 {
     _imp->installable_to_path.reset();
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::constrain_installable_to_repository(const RepositoryName & n, const bool i)
+MutablePackageDepSpecData::require_installable_to_repository(const RepositoryName & n, const bool i)
 {
-    _imp->installable_to_repository = InstallableToRepositoryConstraintPool::get_instance()->create(n, i);
+    _imp->installable_to_repository = InstallableToRepositoryRequirementPool::get_instance()->create(n, i);
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::unconstrain_installable_to_repository()
+MutablePackageDepSpecData::unrequire_installable_to_repository()
 {
     _imp->installable_to_repository.reset();
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::constrain_from_repository(const RepositoryName & n)
+MutablePackageDepSpecData::require_from_repository(const RepositoryName & n)
 {
-    _imp->from_repository = FromRepositoryConstraintPool::get_instance()->create(n);
+    _imp->from_repository = FromRepositoryRequirementPool::get_instance()->create(n);
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::unconstrain_from_repository()
+MutablePackageDepSpecData::unrequire_from_repository()
 {
     _imp->from_repository.reset();
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::constrain_installed_at_path(const FSPath & s)
+MutablePackageDepSpecData::require_installed_at_path(const FSPath & s)
 {
-    _imp->installed_at_path = InstalledAtPathConstraintPool::get_instance()->create(s);
+    _imp->installed_at_path = InstalledAtPathRequirementPool::get_instance()->create(s);
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::unconstrain_installed_at_path()
+MutablePackageDepSpecData::unrequire_installed_at_path()
 {
     _imp->installed_at_path.reset();
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::constrain_any_slot(const bool s)
+MutablePackageDepSpecData::require_any_slot(const bool s)
 {
-    _imp->any_slot = AnySlotConstraintPool::get_instance()->create(s);
+    _imp->any_slot = AnySlotRequirementPool::get_instance()->create(s);
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::unconstrain_any_slot()
+MutablePackageDepSpecData::unrequire_any_slot()
 {
     _imp->any_slot.reset();
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::constrain_choice(const std::shared_ptr<const ChoiceConstraint> & c)
+MutablePackageDepSpecData::require_choice(const std::shared_ptr<const ChoiceRequirement> & c)
 {
     if (! _imp->all_choices)
-        _imp->all_choices = std::make_shared<ChoiceConstraintSequence>();
+        _imp->all_choices = std::make_shared<ChoiceRequirementSequence>();
     _imp->all_choices->push_back(c);
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::unconstrain_choices()
+MutablePackageDepSpecData::unrequire_choices()
 {
     _imp->all_choices.reset();
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::constrain_key(const KeyConstraintKeyType t, const std::string & k, const KeyConstraintOperation o, const std::string & p)
+MutablePackageDepSpecData::require_key(const KeyRequirementKeyType t, const std::string & k, const KeyRequirementOperation o, const std::string & p)
 {
     if (! _imp->all_keys)
-        _imp->all_keys = std::make_shared<KeyConstraintSequence>();
-    _imp->all_keys->push_back(KeyConstraintPool::get_instance()->create(t, k, o, p));
+        _imp->all_keys = std::make_shared<KeyRequirementSequence>();
+    _imp->all_keys->push_back(KeyRequirementPool::get_instance()->create(t, k, o, p));
     return *this;
 }
 
 MutablePackageDepSpecData &
-MutablePackageDepSpecData::unconstrain_keys()
+MutablePackageDepSpecData::unrequire_keys()
 {
     _imp->all_keys.reset();
     return *this;

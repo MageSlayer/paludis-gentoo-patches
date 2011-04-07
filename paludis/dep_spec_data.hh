@@ -27,7 +27,7 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-#include <paludis/package_dep_spec_constraint-fwd.hh>
+#include <paludis/package_dep_spec_requirement-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
 
 #include <paludis/util/attributes.hh>
@@ -119,111 +119,111 @@ namespace paludis
             std::string as_string() const;
 
             /**
-             * Fetch the single NameConstraint, if we have one, or
+             * Fetch the single NameRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const NameConstraint> package_name_constraint() const
+            const std::shared_ptr<const NameRequirement> package_name_requirement() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Fetch the single PackageNamePartConstraint, if we have one, or
+             * Fetch the single PackageNamePartRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const PackageNamePartConstraint> package_name_part_constraint() const
+            const std::shared_ptr<const PackageNamePartRequirement> package_name_part_requirement() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Fetch the single CategoryNamePartConstraint, if we have one, or
+             * Fetch the single CategoryNamePartRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const CategoryNamePartConstraint> category_name_part_constraint() const
+            const std::shared_ptr<const CategoryNamePartRequirement> category_name_part_requirement() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Fetch all our VersionConstraints, if we have any, or
+             * Fetch all our VersionRequirements, if we have any, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const VersionConstraintSequence> all_version_constraints() const;
+            const std::shared_ptr<const VersionRequirementSequence> all_version_requirements() const;
 
             /**
-             * Fetch the single ExactSlotConstraint, if we have one, or
+             * Fetch the single ExactSlotRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const ExactSlotConstraint> exact_slot_constraint() const;
+            const std::shared_ptr<const ExactSlotRequirement> exact_slot_requirement() const;
 
             /**
-             * Fetch the single AnySlotConstraint, if we have one, or
+             * Fetch the single AnySlotRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const AnySlotConstraint> any_slot_constraint() const;
+            const std::shared_ptr<const AnySlotRequirement> any_slot_requirement() const;
 
             /**
-             * Fetch the single InRepositoryConstraint, if we have one, or
+             * Fetch the single InRepositoryRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const InRepositoryConstraint> in_repository_constraint() const
+            const std::shared_ptr<const InRepositoryRequirement> in_repository_requirement() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Fetch the single InstallableToRepositoryConstraint, if we have one, or
+             * Fetch the single InstallableToRepositoryRequirement, if we have one, or
              *
              * \since 0.61
              */
-            const std::shared_ptr<const InstallableToRepositoryConstraint> installable_to_repository_constraint() const;
+            const std::shared_ptr<const InstallableToRepositoryRequirement> installable_to_repository_requirement() const;
 
             /**
-             * Fetch the single FromRepositoryConstraint, if we have one, or
+             * Fetch the single FromRepositoryRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const FromRepositoryConstraint> from_repository_constraint() const;
+            const std::shared_ptr<const FromRepositoryRequirement> from_repository_requirement() const;
 
             /**
-             * Fetch the single InstalledAtPathConstraint, if we have one, or
+             * Fetch the single InstalledAtPathRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const InstalledAtPathConstraint> installed_at_path_constraint() const;
+            const std::shared_ptr<const InstalledAtPathRequirement> installed_at_path_requirement() const;
 
             /**
-             * Fetch the single InstallableToPathConstraint, if we have one, or
+             * Fetch the single InstallableToPathRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const InstallableToPathConstraint> installable_to_path_constraint() const;
+            const std::shared_ptr<const InstallableToPathRequirement> installable_to_path_requirement() const;
 
             /**
-             * Fetch all our KeyConstraints, if we have any, or
+             * Fetch all our KeyRequirements, if we have any, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const KeyConstraintSequence> all_key_constraints() const;
+            const std::shared_ptr<const KeyRequirementSequence> all_key_requirements() const;
 
             /**
-             * Fetch all our ChoiceConstraints, if we have any, or
+             * Fetch all our ChoiceRequirements, if we have any, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const ChoiceConstraintSequence> all_choice_constraints() const;
+            const std::shared_ptr<const ChoiceRequirementSequence> all_choice_requirements() const;
 
             /**
              * Our options.
@@ -253,190 +253,190 @@ namespace paludis
             ~MutablePackageDepSpecData();
 
             /**
-             * Add a package constraint.
+             * Add a package requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & constrain_package(const QualifiedPackageName &);
+            MutablePackageDepSpecData & require_package(const QualifiedPackageName &);
 
             /**
-             * Clear any package constraints.
+             * Clear any package requirements.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & unconstrain_package();
+            MutablePackageDepSpecData & unrequire_package();
 
             /**
-             * Add a package name part constraint.
+             * Add a package name part requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & constrain_package_name_part(const PackageNamePart &);
+            MutablePackageDepSpecData & require_package_name_part(const PackageNamePart &);
 
             /**
-             * Clear any package name part constraints.
+             * Clear any package name part requirements.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & unconstrain_package_name_part();
+            MutablePackageDepSpecData & unrequire_package_name_part();
 
             /**
-             * Add a category name part constraint.
+             * Add a category name part requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & constrain_category_name_part(const CategoryNamePart &);
+            MutablePackageDepSpecData & require_category_name_part(const CategoryNamePart &);
 
             /**
-             * Clear any category name part constraints.
+             * Clear any category name part requirements.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & unconstrain_category_name_part();
+            MutablePackageDepSpecData & unrequire_category_name_part();
 
             /**
-             * Add a version constraint.
+             * Add a version requirement.
              *
              * The combiner must be vcc_and if this is the first version
-             * constraint.
+             * requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & constrain_version(const VersionConstraintCombiner, const VersionOperator &, const VersionSpec &);
+            MutablePackageDepSpecData & require_version(const VersionRequirementCombiner, const VersionOperator &, const VersionSpec &);
 
             /**
-             * Clear any version constraints.
+             * Clear any version requirements.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & unconstrain_versions();
+            MutablePackageDepSpecData & unrequire_versions();
 
             /**
-             * Add an exact slot constraint.
+             * Add an exact slot requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & constrain_exact_slot(const SlotName &, const bool locked);
+            MutablePackageDepSpecData & require_exact_slot(const SlotName &, const bool locked);
 
             /**
-             * Clear any exact slot constraints.
+             * Clear any exact slot requirements.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & unconstrain_exact_slot();
+            MutablePackageDepSpecData & unrequire_exact_slot();
 
             /**
-             * Add an in repository constraint.
+             * Add an in repository requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & constrain_in_repository(const RepositoryName &);
+            MutablePackageDepSpecData & require_in_repository(const RepositoryName &);
 
             /**
-             * Clear any in repository constraint.
+             * Clear any in repository requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & unconstrain_in_repository();
+            MutablePackageDepSpecData & unrequire_in_repository();
 
             /**
-             * Add an installable to path constraint.
+             * Add an installable to path requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & constrain_installable_to_path(const FSPath &, const bool);
+            MutablePackageDepSpecData & require_installable_to_path(const FSPath &, const bool);
 
             /**
-             * Clear any installable to path constraint.
+             * Clear any installable to path requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & unconstrain_installable_to_path();
+            MutablePackageDepSpecData & unrequire_installable_to_path();
 
             /**
-             * Add an installable to repository constraint.
+             * Add an installable to repository requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & constrain_installable_to_repository(const RepositoryName &, const bool);
+            MutablePackageDepSpecData & require_installable_to_repository(const RepositoryName &, const bool);
 
             /**
-             * Clear any installable to repository constraint.
+             * Clear any installable to repository requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & unconstrain_installable_to_repository();
+            MutablePackageDepSpecData & unrequire_installable_to_repository();
 
             /**
-             * Add a from repository constraint.
+             * Add a from repository requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & constrain_from_repository(const RepositoryName &);
+            MutablePackageDepSpecData & require_from_repository(const RepositoryName &);
 
             /**
-             * Clear any from repository constraint.
+             * Clear any from repository requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & unconstrain_from_repository();
+            MutablePackageDepSpecData & unrequire_from_repository();
 
             /**
-             * Add an installed at path constraint.
+             * Add an installed at path requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & constrain_installed_at_path(const FSPath &);
+            MutablePackageDepSpecData & require_installed_at_path(const FSPath &);
 
             /**
-             * Clear any installed at path constraint.
+             * Clear any installed at path requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & unconstrain_installed_at_path();
+            MutablePackageDepSpecData & unrequire_installed_at_path();
 
             /**
-             * Add an any slot constraint.
+             * Add an any slot requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & constrain_any_slot(const bool);
+            MutablePackageDepSpecData & require_any_slot(const bool);
 
             /**
-             * Clear our AnySlotConstraint, if we have one.
+             * Clear our AnySlotRequirement, if we have one.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & unconstrain_any_slot();
+            MutablePackageDepSpecData & unrequire_any_slot();
 
             /**
-             * Add a choice constraint.
+             * Add a choice requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & constrain_choice(const std::shared_ptr<const ChoiceConstraint> &);
+            MutablePackageDepSpecData & require_choice(const std::shared_ptr<const ChoiceRequirement> &);
 
             /**
-             * Clear any choice constraints.
+             * Clear any choice requirements.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & unconstrain_choices();
+            MutablePackageDepSpecData & unrequire_choices();
 
             /**
-             * Add a key constraint.
+             * Add a key requirement.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & constrain_key(
-                    const KeyConstraintKeyType, const std::string &, const KeyConstraintOperation, const std::string &);
+            MutablePackageDepSpecData & require_key(
+                    const KeyRequirementKeyType, const std::string &, const KeyRequirementOperation, const std::string &);
 
             /**
-             * Clear any key constraints.
+             * Clear any key requirements.
              *
              * \return *this
              */
-            MutablePackageDepSpecData & unconstrain_keys();
+            MutablePackageDepSpecData & unrequire_keys();
 
             /**
              * Convert ourself to a PackageDepSpec.

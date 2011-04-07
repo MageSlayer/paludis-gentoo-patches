@@ -209,12 +209,12 @@ FixLinkageCommand::run(
         }
 
         MutablePackageDepSpecData part_spec({ });
-        part_spec.constrain_package((*pkg_it)->name());
+        part_spec.require_package((*pkg_it)->name());
         if ((*pkg_it)->slot_key())
-            part_spec.constrain_exact_slot((*pkg_it)->slot_key()->value(), false);
+            part_spec.require_exact_slot((*pkg_it)->slot_key()->value(), false);
 
         if (cmdline.a_exact.specified())
-            part_spec.constrain_version(vcc_and, vo_equal, (*pkg_it)->version());
+            part_spec.require_version(vrc_and, vo_equal, (*pkg_it)->version());
 
         targets->push_back(std::make_pair(stringify(PackageDepSpec(part_spec)), join(broken_files.begin(), broken_files.end(), ", ")));
     }

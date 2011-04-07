@@ -58,13 +58,13 @@ namespace
             if (slots && (*i)->slot_key())
                 result->top()->append(std::make_shared<PackageDepSpec>(
                                 MutablePackageDepSpecData({ })
-                                .constrain_package((*i)->name())
-                                .constrain_exact_slot((*i)->slot_key()->value(), false)
+                                .require_package((*i)->name())
+                                .require_exact_slot((*i)->slot_key()->value(), false)
                                 ));
             else
                 result->top()->append(std::make_shared<PackageDepSpec>(
                                 MutablePackageDepSpecData({ })
-                                .constrain_package((*i)->name())
+                                .require_package((*i)->name())
                                 ));
 
         return result;

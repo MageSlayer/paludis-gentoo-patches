@@ -44,7 +44,7 @@
 #include <paludis/environment.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/package_dep_spec_properties.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 
 #include <unordered_map>
 #include <unordered_set>
@@ -204,7 +204,7 @@ PaludisLikeOptionsConf::add_file(const FSPath & f)
                             tokens.at(0), _imp->params.environment(),
                             { updso_allow_wildcards, updso_no_disambiguation, updso_throw_if_set })));
 
-            if (d->all_choice_constraints() && ! d->all_choice_constraints()->empty())
+            if (d->all_choice_requirements() && ! d->all_choice_requirements()->empty())
             {
                 Log::get_instance()->message("paludislike_options_conf.bad_spec", ll_warning, lc_context)
                     << "Dependency specification '" << stringify(*d)
@@ -212,10 +212,10 @@ PaludisLikeOptionsConf::add_file(const FSPath & f)
                 continue;
             }
 
-            if (d->package_name_constraint())
+            if (d->package_name_requirement())
             {
                 SpecificSpecs::iterator i(_imp->specific_specs.insert(std::make_pair(
-                                d->package_name_constraint()->name(),
+                                d->package_name_requirement()->name(),
                                 SpecsWithValuesGroups())).first);
                 values_groups = &i->second.insert(i->second.end(),
                         make_named_values<SpecWithValuesGroups>(
@@ -341,20 +341,20 @@ namespace
     bool match_anything(const PackageDepSpec & spec)
     {
         return package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                    n::has_any_slot_constraint() = indeterminate,
+                    n::has_any_slot_requirement() = indeterminate,
                     n::has_category_name_part() = false,
-                    n::has_choice_constraints() = false,
-                    n::has_exact_slot_constraint() = false,
+                    n::has_choice_requirements() = false,
+                    n::has_exact_slot_requirement() = false,
                     n::has_from_repository() = false,
                     n::has_in_repository() = false,
                     n::has_installable_to_path() = false,
                     n::has_installable_to_repository() = false,
                     n::has_installed_at_path() = false,
-                    n::has_key_constraints() = false,
+                    n::has_key_requirements() = false,
                     n::has_package() = false,
                     n::has_package_name_part() = false,
                     n::has_tag() = false,
-                    n::has_version_constraints() = false
+                    n::has_version_requirements() = false
                     ));
     }
 

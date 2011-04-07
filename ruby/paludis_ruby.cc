@@ -384,8 +384,8 @@ paludis::ruby::value_to_match_package_options(VALUE v)
     {
         VALUE entry(rb_ary_entry(v, i));
         Check_Type(entry, T_SYMBOL);
-        if (SYM2ID(entry) == rb_intern("ignore_choice_constraints"))
-            o += mpo_ignore_choice_constraints;
+        if (SYM2ID(entry) == rb_intern("ignore_choice_requirements"))
+            o += mpo_ignore_choice_requirements;
         else
             rb_raise(rb_eArgError, "Unknown MatchPackageOptions option '%s'", rb_obj_as_string(entry));
     }
@@ -396,8 +396,8 @@ VALUE
 paludis::ruby::match_package_options_to_value(const MatchPackageOptions & o)
 {
     VALUE a(rb_ary_new());
-    if (o[mpo_ignore_choice_constraints])
-        rb_ary_push(a, ID2SYM(rb_intern("ignore_choice_constraints")));
+    if (o[mpo_ignore_choice_requirements])
+        rb_ary_push(a, ID2SYM(rb_intern("ignore_choice_requirements")));
     return a;
 }
 

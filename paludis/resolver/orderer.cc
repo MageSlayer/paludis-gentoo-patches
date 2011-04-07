@@ -823,8 +823,8 @@ namespace
 
         if (changes_to_make_decision.if_via_new_binary_in())
             result
-                .unconstrain_in_repository()
-                .constrain_in_repository(*changes_to_make_decision.if_via_new_binary_in());
+                .unrequire_in_repository()
+                .require_in_repository(*changes_to_make_decision.if_via_new_binary_in());
 
         return result;
     }

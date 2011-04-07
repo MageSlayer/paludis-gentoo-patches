@@ -64,12 +64,12 @@ class TestCase_1_DepSpecs(unittest.TestCase):
 
     def test_05_package(self):
         self.get_depspecs()
-        self.assertEqual(str(self.pds.package_name_constraint.name), "foo/bar")
+        self.assertEqual(str(self.pds.package_name_requirement.name), "foo/bar")
 
     def test_06_in_from_repository(self):
         self.get_depspecs()
-        self.assertEqual(str(self.pds.in_repository_constraint.name), "testrepo")
-        self.assertEqual(self.pds.from_repository_constraint, None)
+        self.assertEqual(str(self.pds.in_repository_requirement.name), "testrepo")
+        self.assertEqual(self.pds.from_repository_requirement, None)
 
 ###    def test_09_additional_requirements(self):
 ###        spec = parse_user_package_dep_spec("foo/monkey[foo]", UserPackageDepSpecOptions())

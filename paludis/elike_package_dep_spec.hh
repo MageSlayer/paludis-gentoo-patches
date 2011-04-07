@@ -47,7 +47,7 @@ namespace paludis
         NamedValue<n::add_version_requirement, std::function<void (
                 const VersionSpec &,
                 const VersionOperator &,
-                const VersionConstraintCombiner,
+                const VersionRequirementCombiner,
                 MutablePackageDepSpecData &)> > add_version_requirement;
         NamedValue<n::check_sanity, std::function<void (const std::string &)> > check_sanity;
         NamedValue<n::get_remove_trailing_version, std::function<VersionSpec (std::string &)> > get_remove_trailing_version;

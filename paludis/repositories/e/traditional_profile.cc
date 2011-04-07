@@ -51,7 +51,7 @@
 #include <paludis/distribution.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 
 #include <unordered_map>
 #include <unordered_set>
@@ -361,8 +361,8 @@ namespace
                                 line->first->supported()->package_dep_spec_parse_options(),
                                 line->first->supported()->version_spec_options())));
 
-                if (a->package_name_constraint())
-                    _imp->package_mask[a->package_name_constraint()->name()].push_back(std::make_pair(a, line->second.second));
+                if (a->package_name_requirement())
+                    _imp->package_mask[a->package_name_requirement()->name()].push_back(std::make_pair(a, line->second.second));
                 else
                     Log::get_instance()->message("e.profile.package_mask.bad_spec", ll_warning, lc_context)
                         << "Loading package.mask spec '" << line->second.first << "' failed because specification does not restrict to a "

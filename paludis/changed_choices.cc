@@ -61,16 +61,16 @@ ChangedChoices::empty() const
 }
 
 void
-ChangedChoices::add_constraints_to(MutablePackageDepSpecData & spec) const
+ChangedChoices::add_requirements_to(MutablePackageDepSpecData & spec) const
 {
     for (auto o(_imp->overrides.begin()), o_end(_imp->overrides.end()) ;
             o != o_end ; ++o)
     {
         if (o->second)
-            spec.constrain_choice(parse_elike_use_requirement("" + stringify(o->first) + "(-)",
+            spec.require_choice(parse_elike_use_requirement("" + stringify(o->first) + "(-)",
                         { euro_allow_default_values }));
         else
-            spec.constrain_choice(parse_elike_use_requirement("-" + stringify(o->first) + "(-)",
+            spec.require_choice(parse_elike_use_requirement("-" + stringify(o->first) + "(-)",
                         { euro_allow_default_values }));
     }
 }

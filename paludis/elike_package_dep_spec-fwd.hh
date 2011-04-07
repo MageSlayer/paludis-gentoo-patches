@@ -27,7 +27,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/version_operator-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
-#include <paludis/package_dep_spec_constraint-fwd.hh>
+#include <paludis/package_dep_spec_requirement-fwd.hh>
 #include <paludis/dep_spec_data-fwd.hh>
 
 #include <functional>
@@ -84,7 +84,7 @@ namespace paludis
     void elike_add_version_requirement(
             const VersionSpec & spec,
             const VersionOperator & op,
-            const VersionConstraintCombiner,
+            const VersionRequirementCombiner,
             MutablePackageDepSpecData & result)
         PALUDIS_VISIBLE;
 

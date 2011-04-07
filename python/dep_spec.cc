@@ -27,7 +27,7 @@
 #include <paludis/environment.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/dep_spec_data.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_operator.hh>
 
@@ -73,33 +73,33 @@ namespace paludis
     template<>
     struct Imp<PythonPackageDepSpec>
     {
-        std::shared_ptr<const NameConstraint> package_name_constraint;
-        std::shared_ptr<const CategoryNamePartConstraint> category_name_part_constraint;
-        std::shared_ptr<const PackageNamePartConstraint> package_name_part_constraint;
-        std::shared_ptr<const VersionConstraintSequence> all_versions;
-        std::shared_ptr<const AnySlotConstraint> any_slot;
-        std::shared_ptr<const ExactSlotConstraint> exact_slot;
-        std::shared_ptr<const InRepositoryConstraint> in_repository;
-        std::shared_ptr<const FromRepositoryConstraint> from_repository;
-        std::shared_ptr<const KeyConstraintSequence> all_keys;
-        std::shared_ptr<const ChoiceConstraintSequence> all_choices;
+        std::shared_ptr<const NameRequirement> package_name_requirement;
+        std::shared_ptr<const CategoryNamePartRequirement> category_name_part_requirement;
+        std::shared_ptr<const PackageNamePartRequirement> package_name_part_requirement;
+        std::shared_ptr<const VersionRequirementSequence> all_versions;
+        std::shared_ptr<const AnySlotRequirement> any_slot;
+        std::shared_ptr<const ExactSlotRequirement> exact_slot;
+        std::shared_ptr<const InRepositoryRequirement> in_repository;
+        std::shared_ptr<const FromRepositoryRequirement> from_repository;
+        std::shared_ptr<const KeyRequirementSequence> all_keys;
+        std::shared_ptr<const ChoiceRequirementSequence> all_choices;
         const std::string str;
 
         Imp(
-                const std::shared_ptr<const NameConstraint> & q,
-                const std::shared_ptr<const CategoryNamePartConstraint> & c,
-                const std::shared_ptr<const PackageNamePartConstraint> & p,
-                const std::shared_ptr<const VersionConstraintSequence> & v,
-                const std::shared_ptr<const AnySlotConstraint> & s,
-                const std::shared_ptr<const ExactSlotConstraint> & xs,
-                const std::shared_ptr<const InRepositoryConstraint> & ri,
-                const std::shared_ptr<const FromRepositoryConstraint> & rf,
-                const std::shared_ptr<const KeyConstraintSequence> & k,
-                const std::shared_ptr<const ChoiceConstraintSequence> & a,
+                const std::shared_ptr<const NameRequirement> & q,
+                const std::shared_ptr<const CategoryNamePartRequirement> & c,
+                const std::shared_ptr<const PackageNamePartRequirement> & p,
+                const std::shared_ptr<const VersionRequirementSequence> & v,
+                const std::shared_ptr<const AnySlotRequirement> & s,
+                const std::shared_ptr<const ExactSlotRequirement> & xs,
+                const std::shared_ptr<const InRepositoryRequirement> & ri,
+                const std::shared_ptr<const FromRepositoryRequirement> & rf,
+                const std::shared_ptr<const KeyRequirementSequence> & k,
+                const std::shared_ptr<const ChoiceRequirementSequence> & a,
                 const std::string & st) :
-            package_name_constraint(q),
-            category_name_part_constraint(c),
-            package_name_part_constraint(p),
+            package_name_requirement(q),
+            category_name_part_requirement(c),
+            package_name_part_requirement(p),
             all_versions(v),
             any_slot(s),
             exact_slot(xs),
@@ -226,16 +226,16 @@ deep_copy(const std::shared_ptr<const T_> & x)
 PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
     PythonStringDepSpec(p.text()),
     _imp(
-            p.package_name_constraint(),
-            p.category_name_part_constraint(),
-            p.package_name_part_constraint(),
-            p.all_version_constraints(),
-            p.any_slot_constraint(),
-            p.exact_slot_constraint(),
-            p.in_repository_constraint(),
-            p.from_repository_constraint(),
-            p.all_key_constraints(),
-            p.all_choice_constraints(),
+            p.package_name_requirement(),
+            p.category_name_part_requirement(),
+            p.package_name_part_requirement(),
+            p.all_version_requirements(),
+            p.any_slot_requirement(),
+            p.exact_slot_requirement(),
+            p.in_repository_requirement(),
+            p.from_repository_requirement(),
+            p.all_key_requirements(),
+            p.all_choice_requirements(),
             stringify(p))
 {
 }
@@ -243,16 +243,16 @@ PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
 PythonPackageDepSpec::PythonPackageDepSpec(const PythonPackageDepSpec & p) :
     PythonStringDepSpec(p.text()),
     _imp(
-            p.package_name_constraint(),
-            p.category_name_part_constraint(),
-            p.package_name_part_constraint(),
-            p.all_version_constraints(),
-            p.any_slot_constraint(),
-            p.exact_slot_constraint(),
-            p.in_repository_constraint(),
-            p.from_repository_constraint(),
-            p.all_key_constraints(),
-            p.all_choice_constraints(),
+            p.package_name_requirement(),
+            p.category_name_part_requirement(),
+            p.package_name_part_requirement(),
+            p.all_version_requirements(),
+            p.any_slot_requirement(),
+            p.exact_slot_requirement(),
+            p.in_repository_requirement(),
+            p.from_repository_requirement(),
+            p.all_key_requirements(),
+            p.all_choice_requirements(),
             p.py_str())
 {
 }
@@ -265,46 +265,46 @@ PythonPackageDepSpec::operator PackageDepSpec() const
 {
     MutablePackageDepSpecData p({ });
 
-    if (package_name_constraint())
-        p.constrain_package(package_name_constraint()->name());
+    if (package_name_requirement())
+        p.require_package(package_name_requirement()->name());
 
-    if (category_name_part_constraint())
-        p.constrain_category_name_part(category_name_part_constraint()->name_part());
+    if (category_name_part_requirement())
+        p.require_category_name_part(category_name_part_requirement()->name_part());
 
-    if (package_name_part_constraint())
-        p.constrain_package_name_part(package_name_part_constraint()->name_part());
+    if (package_name_part_requirement())
+        p.require_package_name_part(package_name_part_requirement()->name_part());
 
-    if (all_version_constraints())
+    if (all_version_requirements())
     {
-        for (auto i(all_version_constraints()->begin()), i_end(all_version_constraints()->end()) ;
+        for (auto i(all_version_requirements()->begin()), i_end(all_version_requirements()->end()) ;
                 i != i_end ; ++i)
-            p.constrain_version((*i)->combiner(), (*i)->version_operator(), (*i)->version_spec());
+            p.require_version((*i)->combiner(), (*i)->version_operator(), (*i)->version_spec());
     }
 
-    if (any_slot_constraint())
-        p.constrain_any_slot(any_slot_constraint()->locking());
+    if (any_slot_requirement())
+        p.require_any_slot(any_slot_requirement()->locking());
 
-    if (exact_slot_constraint())
-        p.constrain_exact_slot(exact_slot_constraint()->name(), exact_slot_constraint()->locked());
+    if (exact_slot_requirement())
+        p.require_exact_slot(exact_slot_requirement()->name(), exact_slot_requirement()->locked());
 
-    if (in_repository_constraint())
-        p.constrain_in_repository(in_repository_constraint()->name());
+    if (in_repository_requirement())
+        p.require_in_repository(in_repository_requirement()->name());
 
-    if (from_repository_constraint())
-        p.constrain_from_repository(from_repository_constraint()->name());
+    if (from_repository_requirement())
+        p.require_from_repository(from_repository_requirement()->name());
 
-    if (all_choice_constraints())
+    if (all_choice_requirements())
     {
-        for (ChoiceConstraintSequence::ConstIterator i(all_choice_constraints()->begin()),
-                i_end(all_choice_constraints()->end()) ; i != i_end ; ++i)
-            p.constrain_choice(*i);
+        for (ChoiceRequirementSequence::ConstIterator i(all_choice_requirements()->begin()),
+                i_end(all_choice_requirements()->end()) ; i != i_end ; ++i)
+            p.require_choice(*i);
     }
 
-    if (all_key_constraints())
+    if (all_key_requirements())
     {
-        for (auto i(all_key_constraints()->begin()), i_end(all_key_constraints()->end()) ;
+        for (auto i(all_key_requirements()->begin()), i_end(all_key_requirements()->end()) ;
                 i != i_end ; ++i)
-            p.constrain_key((*i)->key_type(), (*i)->key(), (*i)->operation(), (*i)->pattern());
+            p.require_key((*i)->key_type(), (*i)->key(), (*i)->operation(), (*i)->pattern());
     }
 
     return PackageDepSpec(p);
@@ -316,62 +316,62 @@ PythonPackageDepSpec::operator std::shared_ptr<PackageDepSpec>() const
     return std::make_shared<PackageDepSpec>(*this);
 }
 
-const std::shared_ptr<const NameConstraint>
-PythonPackageDepSpec::package_name_constraint() const
+const std::shared_ptr<const NameRequirement>
+PythonPackageDepSpec::package_name_requirement() const
 {
-    return _imp->package_name_constraint;
+    return _imp->package_name_requirement;
 }
 
-const std::shared_ptr<const PackageNamePartConstraint>
-PythonPackageDepSpec::package_name_part_constraint() const
+const std::shared_ptr<const PackageNamePartRequirement>
+PythonPackageDepSpec::package_name_part_requirement() const
 {
-    return _imp->package_name_part_constraint;
+    return _imp->package_name_part_requirement;
 }
 
-const std::shared_ptr<const CategoryNamePartConstraint>
-PythonPackageDepSpec::category_name_part_constraint() const
+const std::shared_ptr<const CategoryNamePartRequirement>
+PythonPackageDepSpec::category_name_part_requirement() const
 {
-    return _imp->category_name_part_constraint;
+    return _imp->category_name_part_requirement;
 }
 
-const std::shared_ptr<const VersionConstraintSequence>
-PythonPackageDepSpec::all_version_constraints() const
+const std::shared_ptr<const VersionRequirementSequence>
+PythonPackageDepSpec::all_version_requirements() const
 {
     return _imp->all_versions;
 }
 
-const std::shared_ptr<const AnySlotConstraint>
-PythonPackageDepSpec::any_slot_constraint() const
+const std::shared_ptr<const AnySlotRequirement>
+PythonPackageDepSpec::any_slot_requirement() const
 {
     return _imp->any_slot;
 }
 
-const std::shared_ptr<const ExactSlotConstraint>
-PythonPackageDepSpec::exact_slot_constraint() const
+const std::shared_ptr<const ExactSlotRequirement>
+PythonPackageDepSpec::exact_slot_requirement() const
 {
     return _imp->exact_slot;
 }
 
-const std::shared_ptr<const InRepositoryConstraint>
-PythonPackageDepSpec::in_repository_constraint() const
+const std::shared_ptr<const InRepositoryRequirement>
+PythonPackageDepSpec::in_repository_requirement() const
 {
     return _imp->in_repository;
 }
 
-const std::shared_ptr<const FromRepositoryConstraint>
-PythonPackageDepSpec::from_repository_constraint() const
+const std::shared_ptr<const FromRepositoryRequirement>
+PythonPackageDepSpec::from_repository_requirement() const
 {
     return _imp->from_repository;
 }
 
-const std::shared_ptr<const ChoiceConstraintSequence>
-PythonPackageDepSpec::all_choice_constraints() const
+const std::shared_ptr<const ChoiceRequirementSequence>
+PythonPackageDepSpec::all_choice_requirements() const
 {
     return _imp->all_choices;
 }
 
-const std::shared_ptr<const KeyConstraintSequence>
-PythonPackageDepSpec::all_key_constraints() const
+const std::shared_ptr<const KeyRequirementSequence>
+PythonPackageDepSpec::all_key_requirements() const
 {
     return _imp->all_keys;
 }
@@ -1207,40 +1207,40 @@ void expose_dep_spec()
          bp::no_init
         )
 
-        .add_property("package_name_constraint", &PythonPackageDepSpec::package_name_constraint,
-                "[ro] NameConstraint\n"
-                "Qualified package name constraint (may be None)."
+        .add_property("package_name_requirement", &PythonPackageDepSpec::package_name_requirement,
+                "[ro] NameRequirement\n"
+                "Qualified package name requirement (may be None)."
                 )
 
-        .add_property("package_name_part_constraint", &PythonPackageDepSpec::package_name_part_constraint,
-                "[ro] CategoryNamePartConstraint\n"
-                "Package name part constraint (may be None)"
+        .add_property("package_name_part_requirement", &PythonPackageDepSpec::package_name_part_requirement,
+                "[ro] CategoryNamePartRequirement\n"
+                "Package name part requirement (may be None)"
                 )
 
-        .add_property("category_name_part_constraint", &PythonPackageDepSpec::category_name_part_constraint,
-                "[ro] CategoryNamePartConstraint\n"
-                "Category name part constraint (may be None)."
+        .add_property("category_name_part_requirement", &PythonPackageDepSpec::category_name_part_requirement,
+                "[ro] CategoryNamePartRequirement\n"
+                "Category name part requirement (may be None)."
                 )
 
-        .add_property("exact_slot", &PythonPackageDepSpec::exact_slot_constraint,
-                "[ro] ExactSlotConstraint\n"
-                "Exact slot constraint (may be None)."
+        .add_property("exact_slot", &PythonPackageDepSpec::exact_slot_requirement,
+                "[ro] ExactSlotRequirement\n"
+                "Exact slot requirement (may be None)."
                 )
 
-        .add_property("any_slot", &PythonPackageDepSpec::any_slot_constraint,
-                "[ro] AnySlotConstraint\n"
-                "Any slot constraint (may be None)."
+        .add_property("any_slot", &PythonPackageDepSpec::any_slot_requirement,
+                "[ro] AnySlotRequirement\n"
+                "Any slot requirement (may be None)."
                 )
 
-        .add_property("in_repository_constraint", &PythonPackageDepSpec::in_repository_constraint,
-                "[ro] InRepositoryConstraint\n"
-                "In repository constraint (may be None)."
+        .add_property("in_repository_requirement", &PythonPackageDepSpec::in_repository_requirement,
+                "[ro] InRepositoryRequirement\n"
+                "In repository requirement (may be None)."
 
                 )
 
-        .add_property("from_repository_constraint", &PythonPackageDepSpec::from_repository_constraint,
-                "[ro] FromRepositoryConstraint\n"
-                "From repository constraint (may be None)."
+        .add_property("from_repository_requirement", &PythonPackageDepSpec::from_repository_requirement,
+                "[ro] FromRepositoryRequirement\n"
+                "From repository requirement (may be None)."
                 )
 
 #if 0

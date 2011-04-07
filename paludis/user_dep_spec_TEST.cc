@@ -20,7 +20,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/match_package.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 #include <paludis/version_operator.hh>
 
 #include <paludis/util/clone-impl.hh>
@@ -46,17 +46,17 @@ using namespace paludis;
 
 namespace
 {
-    std::string dump_version_requirement(const VersionConstraint & v)
+    std::string dump_version_requirement(const VersionRequirement & v)
     {
         return stringify(v.version_operator()) + stringify(v.version_spec());
     }
 
-    std::string stringify_key_constraint(const KeyConstraint & k)
+    std::string stringify_key_requirement(const KeyRequirement & k)
     {
         return k.as_raw_string();
     }
 
-    std::string stringify_choice_constraint(const ChoiceConstraint & k)
+    std::string stringify_choice_requirement(const ChoiceRequirement & k)
     {
         return k.as_raw_string();
     }
@@ -101,104 +101,104 @@ UserDepSpecTest::check_spec(
 {
 
     if (package.empty())
-        EXPECT_TRUE(! spec.package_name_constraint());
+        EXPECT_TRUE(! spec.package_name_requirement());
     else
     {
-        ASSERT_TRUE(bool(spec.package_name_constraint()));
-        EXPECT_EQ(package, stringify(spec.package_name_constraint()->name()));
+        ASSERT_TRUE(bool(spec.package_name_requirement()));
+        EXPECT_EQ(package, stringify(spec.package_name_requirement()->name()));
     }
 
     if (category_name_part.empty())
-        EXPECT_TRUE(! spec.category_name_part_constraint());
+        EXPECT_TRUE(! spec.category_name_part_requirement());
     else
     {
-        ASSERT_TRUE(bool(spec.category_name_part_constraint()));
-        EXPECT_EQ(category_name_part, stringify(spec.category_name_part_constraint()->name_part()));
+        ASSERT_TRUE(bool(spec.category_name_part_requirement()));
+        EXPECT_EQ(category_name_part, stringify(spec.category_name_part_requirement()->name_part()));
     }
 
     if (package_name_part.empty())
-        EXPECT_TRUE(! spec.package_name_part_constraint());
+        EXPECT_TRUE(! spec.package_name_part_requirement());
     else
     {
-        ASSERT_TRUE(bool(spec.package_name_part_constraint()));
-        EXPECT_EQ(package_name_part, stringify(spec.package_name_part_constraint()->name_part()));
+        ASSERT_TRUE(bool(spec.package_name_part_requirement()));
+        EXPECT_EQ(package_name_part, stringify(spec.package_name_part_requirement()->name_part()));
     }
 
     if (! version_requirement_mode.empty())
     {
-        ASSERT_TRUE(bool(spec.all_version_constraints()));
-        ASSERT_TRUE(! spec.all_version_constraints()->empty());
-        for (auto v(next(spec.all_version_constraints()->begin())), v_end(spec.all_version_constraints()->end()) ;
+        ASSERT_TRUE(bool(spec.all_version_requirements()));
+        ASSERT_TRUE(! spec.all_version_requirements()->empty());
+        for (auto v(next(spec.all_version_requirements()->begin())), v_end(spec.all_version_requirements()->end()) ;
                 v != v_end ; ++v)
             EXPECT_EQ(version_requirement_mode, stringify((*v)->combiner()));
     }
 
     if (version_requirements.empty())
-        EXPECT_TRUE((! spec.all_version_constraints()) || spec.all_version_constraints()->empty());
+        EXPECT_TRUE((! spec.all_version_requirements()) || spec.all_version_requirements()->empty());
     else
     {
-        ASSERT_TRUE(bool(spec.all_version_constraints()));
+        ASSERT_TRUE(bool(spec.all_version_requirements()));
         EXPECT_EQ(version_requirements, stringify(join(
-                        indirect_iterator(spec.all_version_constraints()->begin()),
-                        indirect_iterator(spec.all_version_constraints()->end()), ", ", &dump_version_requirement)));
+                        indirect_iterator(spec.all_version_requirements()->begin()),
+                        indirect_iterator(spec.all_version_requirements()->end()), ", ", &dump_version_requirement)));
     }
 
     if (slot_requirement.empty())
-        EXPECT_TRUE(! spec.exact_slot_constraint());
+        EXPECT_TRUE(! spec.exact_slot_requirement());
     else
     {
-        ASSERT_TRUE(bool(spec.exact_slot_constraint()));
-        EXPECT_EQ(slot_requirement, ":" + stringify(spec.exact_slot_constraint()->name()));
+        ASSERT_TRUE(bool(spec.exact_slot_requirement()));
+        EXPECT_EQ(slot_requirement, ":" + stringify(spec.exact_slot_requirement()->name()));
     }
 
     if (from_repository.empty())
-        EXPECT_TRUE(! spec.from_repository_constraint());
+        EXPECT_TRUE(! spec.from_repository_requirement());
     else
     {
-        ASSERT_TRUE(bool(spec.from_repository_constraint()));
-        EXPECT_EQ(from_repository, stringify(spec.from_repository_constraint()->name()));
+        ASSERT_TRUE(bool(spec.from_repository_requirement()));
+        EXPECT_EQ(from_repository, stringify(spec.from_repository_requirement()->name()));
     }
 
     if (in_repository.empty())
-        EXPECT_TRUE(! spec.in_repository_constraint());
+        EXPECT_TRUE(! spec.in_repository_requirement());
     else
     {
-        ASSERT_TRUE(bool(spec.in_repository_constraint()));
-        EXPECT_EQ(in_repository, stringify(spec.in_repository_constraint()->name()));
+        ASSERT_TRUE(bool(spec.in_repository_requirement()));
+        EXPECT_EQ(in_repository, stringify(spec.in_repository_requirement()->name()));
     }
 
     if (additional_requirement.empty())
-        EXPECT_TRUE((! spec.all_choice_constraints()) || spec.all_choice_constraints()->empty());
+        EXPECT_TRUE((! spec.all_choice_requirements()) || spec.all_choice_requirements()->empty());
     else
     {
-        ASSERT_TRUE(bool(spec.all_choice_constraints()) || bool(spec.all_key_constraints()));
+        ASSERT_TRUE(bool(spec.all_choice_requirements()) || bool(spec.all_key_requirements()));
         std::string x;
-        if (spec.all_choice_constraints())
+        if (spec.all_choice_requirements())
             x.append(stringify(join(
-                            indirect_iterator(spec.all_choice_constraints()->begin()),
-                            indirect_iterator(spec.all_choice_constraints()->end()), ", ", &stringify_choice_constraint)));
-        if (spec.all_key_constraints())
+                            indirect_iterator(spec.all_choice_requirements()->begin()),
+                            indirect_iterator(spec.all_choice_requirements()->end()), ", ", &stringify_choice_requirement)));
+        if (spec.all_key_requirements())
             x.append(stringify(join(
-                            indirect_iterator(spec.all_key_constraints()->begin()),
-                            indirect_iterator(spec.all_key_constraints()->end()), ", ", &stringify_key_constraint)));
+                            indirect_iterator(spec.all_key_requirements()->begin()),
+                            indirect_iterator(spec.all_key_requirements()->end()), ", ", &stringify_key_requirement)));
         EXPECT_EQ(additional_requirement, x);
     }
 
     if (installed_at_path.empty())
-        EXPECT_TRUE(! spec.installed_at_path_constraint());
+        EXPECT_TRUE(! spec.installed_at_path_requirement());
     else
     {
-        ASSERT_TRUE(bool(spec.installed_at_path_constraint()));
-        EXPECT_EQ(installed_at_path, stringify(spec.installed_at_path_constraint()->path()));
+        ASSERT_TRUE(bool(spec.installed_at_path_requirement()));
+        EXPECT_EQ(installed_at_path, stringify(spec.installed_at_path_requirement()->path()));
     }
 
     if (installable_to_path_f.empty())
-        EXPECT_TRUE(! spec.installable_to_path_constraint());
+        EXPECT_TRUE(! spec.installable_to_path_requirement());
     else
     {
-        ASSERT_TRUE(bool(spec.installable_to_path_constraint()));
-        EXPECT_EQ(installable_to_path_f, stringify(spec.installable_to_path_constraint()->path()));
-        EXPECT_EQ(installable_to_path_s, spec.installable_to_path_constraint()->include_masked());
+        ASSERT_TRUE(bool(spec.installable_to_path_requirement()));
+        EXPECT_EQ(installable_to_path_f, stringify(spec.installable_to_path_requirement()->path()));
+        EXPECT_EQ(installable_to_path_s, spec.installable_to_path_requirement()->include_masked());
     }
 
 }

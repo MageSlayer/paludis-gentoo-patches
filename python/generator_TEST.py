@@ -35,8 +35,8 @@ class TestCase_01_Generator(unittest.TestCase):
         self.assertEquals(str(Generator.Matches(parse_user_package_dep_spec("foo/bar",
             env, []), MatchPackageOptions())), "packages matching foo/bar")
         self.assertEquals(str(Generator.Matches(parse_user_package_dep_spec("foo/bar",
-            env, []), [MatchPackageOption.IGNORE_CHOICE_CONSTRAINTS])),
-            "packages matching foo/bar (ignoring choice constraints)")
+            env, []), [MatchPackageOption.IGNORE_CHOICE_REQUIREMENTS])),
+            "packages matching foo/bar (ignoring choice requirements)")
 
 
 if __name__ == "__main__":

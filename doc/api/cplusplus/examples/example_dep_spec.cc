@@ -59,35 +59,35 @@ int main(int argc, char * argv[])
             /* Display information about the PackageDepSpec. */
             cout << "Information about '" << spec << "':" << endl;
 
-            if (spec.package_name_constraint())
-                cout << "    " << left << setw(24) << "Package:" << " " << spec.package_name_constraint()->name() << endl;
+            if (spec.package_name_requirement())
+                cout << "    " << left << setw(24) << "Package:" << " " << spec.package_name_requirement()->name() << endl;
 
-            if (spec.category_name_part_constraint())
-                cout << "    " << left << setw(24) << "Category part:" << " " << spec.category_name_part_constraint()->name_part() << endl;
+            if (spec.category_name_part_requirement())
+                cout << "    " << left << setw(24) << "Category part:" << " " << spec.category_name_part_requirement()->name_part() << endl;
 
-            if (spec.package_name_part_constraint())
-                cout << "    " << left << setw(24) << "Package part:" << " " << spec.package_name_part_constraint()->name_part() << endl;
+            if (spec.package_name_part_requirement())
+                cout << "    " << left << setw(24) << "Package part:" << " " << spec.package_name_part_requirement()->name_part() << endl;
 
-            if (spec.all_version_constraints() && ! spec.all_version_constraints()->empty())
+            if (spec.all_version_requirements() && ! spec.all_version_requirements()->empty())
             {
                 cout << "    " << left << setw(24) << "Version requirements:" << " ";
                 bool need_join(false);
-                for (auto r(spec.all_version_constraints()->begin()), r_end(spec.all_version_constraints()->end()) ;
+                for (auto r(spec.all_version_requirements()->begin()), r_end(spec.all_version_requirements()->end()) ;
                         r != r_end ; ++r)
                 {
                     if (need_join)
                     {
                         switch ((*r)->combiner())
                         {
-                            case vcc_and:
+                            case vrc_and:
                                 cout << " and ";
                                 break;
 
-                            case vcc_or:
+                            case vrc_or:
                                 cout << " or ";
                                 break;
 
-                            case last_vcc:
+                            case last_vrc:
                                 throw InternalError(PALUDIS_HERE, "Bad version_requirements_mode");
                         }
                     }
@@ -98,36 +98,36 @@ int main(int argc, char * argv[])
                 cout << endl;
             }
 
-            if (spec.exact_slot_constraint())
-                cout << "    " << left << setw(24) << "Slot:" << " " << spec.exact_slot_constraint()->name() << endl;
+            if (spec.exact_slot_requirement())
+                cout << "    " << left << setw(24) << "Slot:" << " " << spec.exact_slot_requirement()->name() << endl;
 
-            if (spec.in_repository_constraint())
+            if (spec.in_repository_requirement())
                 cout << "    " << left << setw(24) << "In repository:" << " " <<
-                    spec.in_repository_constraint()->name() << endl;
+                    spec.in_repository_requirement()->name() << endl;
 
-            if (spec.from_repository_constraint())
+            if (spec.from_repository_requirement())
                 cout << "    " << left << setw(24) << "From repository:" << " " <<
-                    spec.from_repository_constraint()->name() << endl;
+                    spec.from_repository_requirement()->name() << endl;
 
-            if (spec.installed_at_path_constraint())
+            if (spec.installed_at_path_requirement())
                 cout << "    " << left << setw(24) << "Installed at path:" << " " <<
-                    spec.installed_at_path_constraint()->path() << endl;
+                    spec.installed_at_path_requirement()->path() << endl;
 
-            if (spec.installable_to_path_constraint())
+            if (spec.installable_to_path_requirement())
                 cout << "    " << left << setw(24) << "Installable to path:" << " " <<
-                    spec.installable_to_path_constraint()->path() << ", " <<
-                    spec.installable_to_path_constraint()->include_masked() << endl;
+                    spec.installable_to_path_requirement()->path() << ", " <<
+                    spec.installable_to_path_requirement()->include_masked() << endl;
 
-            if (spec.installable_to_repository_constraint())
+            if (spec.installable_to_repository_requirement())
                 cout << "    " << left << setw(24) << "Installable to repository:" << " " <<
-                    spec.installable_to_repository_constraint()->name() << ", " <<
-                    spec.installable_to_repository_constraint()->include_masked() << endl;
+                    spec.installable_to_repository_requirement()->name() << ", " <<
+                    spec.installable_to_repository_requirement()->include_masked() << endl;
 
-            if (spec.all_choice_constraints() && ! spec.all_choice_constraints()->empty())
+            if (spec.all_choice_requirements() && ! spec.all_choice_requirements()->empty())
             {
-                cout << "    " << left << setw(24) << "Choice constraints:" << " ";
+                cout << "    " << left << setw(24) << "Choice requirements:" << " ";
                 bool need_join(false);
-                for (auto u(spec.all_choice_constraints()->begin()), u_end(spec.all_choice_constraints()->end()) ; u != u_end ; ++u)
+                for (auto u(spec.all_choice_requirements()->begin()), u_end(spec.all_choice_requirements()->end()) ; u != u_end ; ++u)
                 {
                     if (need_join)
                         cout << " and ";

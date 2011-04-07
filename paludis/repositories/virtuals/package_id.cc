@@ -73,14 +73,14 @@ namespace paludis
             spec(exact ?
                     std::make_shared<PackageDepSpec>(
                             MutablePackageDepSpecData({ })
-                            .constrain_package(v->name())
-                            .constrain_version(vcc_and, vo_equal, v->version())
-                            .constrain_exact_slot(v->slot_key() ? v->slot_key()->value() : SlotName("UNKNOWN"), false)
-                            .constrain_in_repository(v->repository_name()))
+                            .require_package(v->name())
+                            .require_version(vrc_and, vo_equal, v->version())
+                            .require_exact_slot(v->slot_key() ? v->slot_key()->value() : SlotName("UNKNOWN"), false)
+                            .require_in_repository(v->repository_name()))
                     :
                     std::make_shared<PackageDepSpec>(
                             MutablePackageDepSpecData({ })
-                            .constrain_package(v->name())
+                            .require_package(v->name())
                             )
                 ),
             raw_name(r),

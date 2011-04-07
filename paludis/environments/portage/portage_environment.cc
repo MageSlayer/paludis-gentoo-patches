@@ -388,7 +388,7 @@ PortageEnvironment::_load_atom_file(const FSPath & f, I_ i, const std::string & 
 
             std::shared_ptr<PackageDepSpec> p(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
                             tokens.at(0), this, UserPackageDepSpecOptions() + updso_no_disambiguation)));
-            if (reject_choices && p->all_choice_constraints() && ! p->all_choice_constraints()->empty())
+            if (reject_choices && p->all_choice_requirements() && ! p->all_choice_requirements()->empty())
             {
                 Log::get_instance()->message("portage_environment.bad_spec", ll_warning, lc_context)
                     << "Dependency specification '" << stringify(*p)
@@ -941,8 +941,8 @@ PortageEnvironment::update_config_files_for_package_move(const PackageDepSpec & 
     if (_remove_string_from_world(stringify(s)))
         _add_string_to_world(stringify(
                     MutablePackageDepSpecData(*s.data())
-                    .unconstrain_package()
-                    .constrain_package(n)));
+                    .unrequire_package()
+                    .require_package(n)));
 }
 
 void

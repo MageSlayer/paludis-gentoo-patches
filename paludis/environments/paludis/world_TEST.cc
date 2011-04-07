@@ -40,7 +40,7 @@ TEST(World, Updates)
         TestEnvironment env;
         paludis_environment::World world(&env, w);
         world.update_config_files_for_package_move(MutablePackageDepSpecData({ })
-                .constrain_package(QualifiedPackageName("cat/before")),
+                .require_package(QualifiedPackageName("cat/before")),
                 QualifiedPackageName("cat/after"));
     }
 

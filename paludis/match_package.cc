@@ -25,7 +25,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 #include <paludis/contents.hh>
 #include <paludis/version_operator.hh>
 
@@ -59,29 +59,29 @@ paludis::match_package_with_maybe_changes(
         const ChangedChoices * const maybe_changes_to_target,
         const MatchPackageOptions & options)
 {
-    if (spec.package_name_constraint() && spec.package_name_constraint()->name() != id->name())
+    if (spec.package_name_requirement() && spec.package_name_requirement()->name() != id->name())
         return false;
 
-    if (spec.package_name_part_constraint() && spec.package_name_part_constraint()->name_part() != id->name().package())
+    if (spec.package_name_part_requirement() && spec.package_name_part_requirement()->name_part() != id->name().package())
         return false;
 
-    if (spec.category_name_part_constraint() && spec.category_name_part_constraint()->name_part() != id->name().category())
+    if (spec.category_name_part_requirement() && spec.category_name_part_requirement()->name_part() != id->name().category())
         return false;
 
-    if (spec.all_version_constraints())
+    if (spec.all_version_requirements())
     {
         bool ok(true);
 
-        for (auto r(spec.all_version_constraints()->begin()), r_end(spec.all_version_constraints()->end()) ;
+        for (auto r(spec.all_version_requirements()->begin()), r_end(spec.all_version_requirements()->end()) ;
                 r != r_end ; ++r)
         {
             bool one((*r)->version_operator().as_version_spec_comparator()(id->version(), (*r)->version_spec()));
 
             switch ((*r)->combiner())
             {
-                case vcc_and:   ok &= one; break;
-                case vcc_or:    ok |= one; break;
-                case last_vcc:  throw InternalError(PALUDIS_HERE, "Bad vcc");
+                case vrc_and:   ok &= one; break;
+                case vrc_or:    ok |= one; break;
+                case last_vrc:  throw InternalError(PALUDIS_HERE, "Bad vrc");
             }
         }
 
@@ -89,50 +89,50 @@ paludis::match_package_with_maybe_changes(
             return false;
     }
 
-    if (spec.in_repository_constraint())
-        if (spec.in_repository_constraint()->name() != id->repository_name())
+    if (spec.in_repository_requirement())
+        if (spec.in_repository_requirement()->name() != id->repository_name())
             return false;
 
-    if (spec.from_repository_constraint())
+    if (spec.from_repository_requirement())
     {
         if (! id->from_repositories_key())
             return false;
 
         if (id->from_repositories_key()->value()->end() == id->from_repositories_key()->value()->find(
-                    stringify(spec.from_repository_constraint()->name())))
+                    stringify(spec.from_repository_requirement()->name())))
             return false;
     }
 
-    if (spec.installed_at_path_constraint())
+    if (spec.installed_at_path_requirement())
     {
         auto repo(env.fetch_repository(id->repository_name()));
         if (! repo->installed_root_key())
             return false;
-        if (repo->installed_root_key()->value() != spec.installed_at_path_constraint()->path())
+        if (repo->installed_root_key()->value() != spec.installed_at_path_requirement()->path())
             return false;
     }
 
-    if (spec.installable_to_repository_constraint())
+    if (spec.installable_to_repository_requirement())
     {
         if (! id->supports_action(SupportsActionTest<InstallAction>()))
             return false;
-        if (! spec.installable_to_repository_constraint()->include_masked())
+        if (! spec.installable_to_repository_requirement()->include_masked())
             if (id->masked())
                 return false;
 
         const std::shared_ptr<const Repository> dest(env.fetch_repository(
-                    spec.installable_to_repository_constraint()->name()));
+                    spec.installable_to_repository_requirement()->name()));
         if (! dest->destination_interface())
             return false;
         if (! dest->destination_interface()->is_suitable_destination_for(id))
             return false;
     }
 
-    if (spec.installable_to_path_constraint())
+    if (spec.installable_to_path_requirement())
     {
         if (! id->supports_action(SupportsActionTest<InstallAction>()))
             return false;
-        if (! spec.installable_to_path_constraint()->include_masked())
+        if (! spec.installable_to_path_requirement()->include_masked())
             if (id->masked())
                 return false;
 
@@ -144,7 +144,7 @@ paludis::match_package_with_maybe_changes(
                 continue;
             if (! (*d)->installed_root_key())
                 continue;
-            if ((*d)->installed_root_key()->value() != spec.installable_to_path_constraint()->path())
+            if ((*d)->installed_root_key()->value() != spec.installable_to_path_requirement()->path())
                 continue;
             if (! (*d)->destination_interface()->is_suitable_destination_for(id))
                 continue;
@@ -157,31 +157,31 @@ paludis::match_package_with_maybe_changes(
             return false;
     }
 
-    if (spec.exact_slot_constraint())
+    if (spec.exact_slot_requirement())
     {
-        if ((! id->slot_key()) || (id->slot_key()->value() != spec.exact_slot_constraint()->name()))
+        if ((! id->slot_key()) || (id->slot_key()->value() != spec.exact_slot_requirement()->name()))
             return false;
     }
 
-    if (spec.any_slot_constraint())
+    if (spec.any_slot_requirement())
     {
         /* don't care */
     }
 
-    if (! options[mpo_ignore_choice_constraints])
+    if (! options[mpo_ignore_choice_requirements])
     {
-        if (spec.all_choice_constraints())
+        if (spec.all_choice_requirements())
         {
-            for (auto u(spec.all_choice_constraints()->begin()), u_end(spec.all_choice_constraints()->end()) ;
+            for (auto u(spec.all_choice_requirements()->begin()), u_end(spec.all_choice_requirements()->end()) ;
                     u != u_end ; ++u)
                 if (! (*u)->requirement_met(&env, maybe_changes_to_owner, id, from_id, maybe_changes_to_target).first)
                     return false;
         }
     }
 
-    if (spec.all_key_constraints())
+    if (spec.all_key_requirements())
     {
-        for (auto c(spec.all_key_constraints()->begin()), c_end(spec.all_key_constraints()->end()) ;
+        for (auto c(spec.all_key_requirements()->begin()), c_end(spec.all_key_requirements()->end()) ;
                 c != c_end ; ++c)
             if (! (*c)->matches(&env, id))
                 return false;

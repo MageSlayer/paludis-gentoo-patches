@@ -126,38 +126,38 @@ namespace
 
         if (cmdline.a_package.specified())
         {
-            s.unconstrain_package();
-            s.unconstrain_package_name_part();
-            s.unconstrain_category_name_part();
+            s.unrequire_package();
+            s.unrequire_package_name_part();
+            s.unrequire_category_name_part();
             if (! cmdline.a_package.argument().empty())
-                s.constrain_package(QualifiedPackageName(cmdline.a_package.argument()));
+                s.require_package(QualifiedPackageName(cmdline.a_package.argument()));
         }
 
         if (cmdline.a_slot_requirement.specified())
         {
-            s.unconstrain_exact_slot();
-            s.unconstrain_any_slot();
+            s.unrequire_exact_slot();
+            s.unrequire_any_slot();
             if (! cmdline.a_slot_requirement.argument().empty())
-                s.constrain_exact_slot(SlotName(cmdline.a_slot_requirement.argument()), false);
+                s.require_exact_slot(SlotName(cmdline.a_slot_requirement.argument()), false);
         }
 
         if (cmdline.a_in_repository.specified())
         {
-            s.unconstrain_in_repository();
+            s.unrequire_in_repository();
             if (! cmdline.a_in_repository.argument().empty())
-                s.constrain_in_repository(RepositoryName(cmdline.a_in_repository.argument()));
+                s.require_in_repository(RepositoryName(cmdline.a_in_repository.argument()));
         }
 
         if (cmdline.a_from_repository.specified())
         {
-            s.unconstrain_from_repository();
+            s.unrequire_from_repository();
             if (! cmdline.a_from_repository.argument().empty())
-                s.constrain_from_repository(RepositoryName(cmdline.a_from_repository.argument()));
+                s.require_from_repository(RepositoryName(cmdline.a_from_repository.argument()));
         }
 
         if (cmdline.a_installable_to_repository.specified())
         {
-            s.unconstrain_installable_to_repository();
+            s.unrequire_installable_to_repository();
             if (! cmdline.a_installable_to_repository.argument().empty())
             {
                 std::string repo(cmdline.a_installable_to_repository.argument());
@@ -168,20 +168,20 @@ namespace
                     include_masked = true;
                 }
 
-                s.constrain_installable_to_repository(RepositoryName(repo), include_masked);
+                s.require_installable_to_repository(RepositoryName(repo), include_masked);
             }
         }
 
         if (cmdline.a_installed_at_path.specified())
         {
-            s.unconstrain_installed_at_path();
+            s.unrequire_installed_at_path();
             if (! cmdline.a_installed_at_path.argument().empty())
-                s.constrain_installed_at_path(FSPath(cmdline.a_installed_at_path.argument()));
+                s.require_installed_at_path(FSPath(cmdline.a_installed_at_path.argument()));
         }
 
         if (cmdline.a_installable_to_path.specified())
         {
-            s.unconstrain_installable_to_path();
+            s.unrequire_installable_to_path();
             if (! cmdline.a_installable_to_path.argument().empty())
             {
                 std::string path(cmdline.a_installable_to_path.argument());
@@ -192,43 +192,43 @@ namespace
                     include_masked = true;
                 }
 
-                s.constrain_installable_to_path(FSPath(path), include_masked);
+                s.require_installable_to_path(FSPath(path), include_masked);
             }
         }
 
         if (cmdline.a_package_part.specified() || cmdline.a_category_part.specified())
         {
-            s.unconstrain_package();
-            s.unconstrain_package_name_part();
-            s.unconstrain_category_name_part();
+            s.unrequire_package();
+            s.unrequire_package_name_part();
+            s.unrequire_category_name_part();
         }
 
         if (cmdline.a_package_part.specified())
         {
             if (! cmdline.a_package_part.argument().empty())
-                s.constrain_package_name_part(PackageNamePart(cmdline.a_package_part.argument()));
+                s.require_package_name_part(PackageNamePart(cmdline.a_package_part.argument()));
         }
 
         if (cmdline.a_category_part.specified())
         {
             if (! cmdline.a_category_part.argument().empty())
-                s.constrain_category_name_part(CategoryNamePart(cmdline.a_category_part.argument()));
+                s.require_category_name_part(CategoryNamePart(cmdline.a_category_part.argument()));
         }
 
-        VersionConstraintCombiner vcc(vcc_and);
+        VersionRequirementCombiner vrc(vrc_and);
         if (cmdline.a_version_requirements_mode.specified())
         {
             if (cmdline.a_version_requirements_mode.argument() == "and")
-                vcc = vcc_and;
+                vrc = vrc_and;
             else if (cmdline.a_version_requirements_mode.argument() == "or")
-                vcc = vcc_or;
+                vrc = vrc_or;
             else
                 throw args::DoHelp("Argument for --" + cmdline.a_version_requirements_mode.long_name() + " unrecognised");
         }
 
         if (cmdline.a_version_requirement.specified())
         {
-            s.unconstrain_versions();
+            s.unrequire_versions();
 
             for (args::StringSetArg::ConstIterator a(cmdline.a_version_requirement.begin_args()),
                     a_end(cmdline.a_version_requirement.end_args()) ;
@@ -240,13 +240,13 @@ namespace
                         throw args::DoHelp("--" + cmdline.a_version_requirement.long_name() + " arguments should be in the form =1.23");
 
                     std::string op(a->substr(0, p)), ver(a->substr(p));
-                    s.constrain_version(vcc, VersionOperator(op), VersionSpec(ver, {}));
+                    s.require_version(vrc, VersionOperator(op), VersionSpec(ver, {}));
                 }
         }
 
         if (cmdline.a_additional_requirement.specified())
         {
-            s.unconstrain_choices();
+            s.unrequire_choices();
 
             for (args::StringSetArg::ConstIterator a(cmdline.a_additional_requirement.begin_args()),
                     a_end(cmdline.a_additional_requirement.end_args()) ;
@@ -254,7 +254,7 @@ namespace
                 if (! a->empty())
                 {
                     auto k(parse_elike_use_requirement(*a, { }));
-                    s.constrain_choice(k);
+                    s.require_choice(k);
                 }
         }
 

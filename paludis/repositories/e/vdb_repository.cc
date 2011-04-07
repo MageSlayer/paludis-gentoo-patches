@@ -52,7 +52,7 @@
 #include <paludis/output_manager.hh>
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/unformatted_pretty_printer.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 #include <paludis/dep_spec_data.hh>
 
 #include <paludis/util/accept_visitor.hh>
@@ -1106,15 +1106,15 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
                 continue;
 
             PackageDepSpec p(parse_user_package_dep_spec("=" + stringify(c) + "/" + s, _imp->params.environment(), { }));
-            q->insert(p.package_name_constraint()->name());
-            IDMap::iterator i(_imp->ids.find(p.package_name_constraint()->name()));
+            q->insert(p.package_name_requirement()->name());
+            IDMap::iterator i(_imp->ids.find(p.package_name_requirement()->name()));
             if (_imp->ids.end() == i)
-                i = _imp->ids.insert(std::make_pair(p.package_name_constraint()->name(), std::make_shared<PackageIDSequence>())).first;
+                i = _imp->ids.insert(std::make_pair(p.package_name_requirement()->name(), std::make_shared<PackageIDSequence>())).first;
 
-            if ((! bool(p.all_version_constraints())) || (std::distance(p.all_version_constraints()->begin(), p.all_version_constraints()->end()) != 1))
-                throw InternalError(PALUDIS_HERE, "didn't get a single version constraint");
+            if ((! bool(p.all_version_requirements())) || (std::distance(p.all_version_requirements()->begin(), p.all_version_requirements()->end()) != 1))
+                throw InternalError(PALUDIS_HERE, "didn't get a single version requirement");
 
-            i->second->push_back(make_id(p.package_name_constraint()->name(), (*p.all_version_constraints()->begin())->version_spec(), *d));
+            i->second->push_back(make_id(p.package_name_requirement()->name(), (*p.all_version_requirements()->begin())->version_spec(), *d));
         }
         catch (const InternalError &)
         {
@@ -1272,12 +1272,12 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            if (node.spec()->package_name_constraint() && rewrites.end() != rewrites.find(node.spec()->package_name_constraint()->name()))
+            if (node.spec()->package_name_requirement() && rewrites.end() != rewrites.find(node.spec()->package_name_requirement()->name()))
             {
                 changed = true;
                 str << f.prettify(MutablePackageDepSpecData(*node.spec()->data())
-                        .unconstrain_package()
-                        .constrain_package(rewrites.find(node.spec()->package_name_constraint()->name())->second)) << " ";
+                        .unrequire_package()
+                        .require_package(rewrites.find(node.spec()->package_name_requirement()->name())->second)) << " ";
             }
             else
                 str << f.prettify(*node.spec()) << " ";
@@ -1615,8 +1615,8 @@ VDBRepository::perform_updates()
                     i != i_end ; ++i)
                 _imp->params.environment()->update_config_files_for_package_move(
                         MutablePackageDepSpecData({ })
-                        .unconstrain_package()
-                        .constrain_package(i->first),
+                        .unrequire_package()
+                        .require_package(i->first),
                         i->second
                         );
         }

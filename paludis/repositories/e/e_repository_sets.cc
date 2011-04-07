@@ -294,9 +294,9 @@ ERepositorySets::security_set(bool insecurity) const
                     {
                         std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                                     MutablePackageDepSpecData({ })
-                                    .constrain_package((*c)->name())
-                                    .constrain_version(vcc_and, vo_equal, (*c)->version())
-                                    .constrain_in_repository((*c)->repository_name())));
+                                    .require_package((*c)->name())
+                                    .require_version(vrc_and, vo_equal, (*c)->version())
+                                    .require_in_repository((*c)->repository_name())));
                         security_packages->top()->append(spec);
                     }
                     else
@@ -324,9 +324,9 @@ ERepositorySets::security_set(bool insecurity) const
                             }
 
                             std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(MutablePackageDepSpecData({ })
-                                        .constrain_package((*r)->name())
-                                        .constrain_version(vcc_and, vo_equal, (*r)->version())
-                                        .constrain_in_repository((*r)->repository_name())));
+                                        .require_package((*r)->name())
+                                        .require_version(vrc_and, vo_equal, (*r)->version())
+                                        .require_in_repository((*r)->repository_name())));
                             security_packages->top()->append(spec);
                             ok = true;
                             break;

@@ -130,77 +130,77 @@ module Paludis
         end
 
         def test_slot
-            assert_equal "100", pda.exact_slot_constraint.name
-            assert_nil pdb.exact_slot_constraint
-            assert_nil pdc.exact_slot_constraint
-            assert_nil pdd.exact_slot_constraint
-            assert_nil pde.exact_slot_constraint
+            assert_equal "100", pda.exact_slot_requirement.name
+            assert_nil pdb.exact_slot_requirement
+            assert_nil pdc.exact_slot_requirement
+            assert_nil pdd.exact_slot_requirement
+            assert_nil pde.exact_slot_requirement
         end
 
         def test_package
-            assert_equal QualifiedPackageName.new("foo/bar"), pda.package_name_constraint.name
-            assert_nil pdb.package_name_constraint
-            assert_equal QualifiedPackageName.new("foo/bar"), pdc.package_name_constraint.name
-            assert_nil pdd.package_name_constraint
-            assert_equal QualifiedPackageName.new("foo/bar"), pde.package_name_constraint.name
+            assert_equal QualifiedPackageName.new("foo/bar"), pda.package_name_requirement.name
+            assert_nil pdb.package_name_requirement
+            assert_equal QualifiedPackageName.new("foo/bar"), pdc.package_name_requirement.name
+            assert_nil pdd.package_name_requirement
+            assert_equal QualifiedPackageName.new("foo/bar"), pde.package_name_requirement.name
         end
 
         def test_from_repository
-            assert_nil pda.from_repository_constraint
-            assert_nil pdb.from_repository_constraint
-            assert_nil pdc.from_repository_constraint
-            assert_nil pdd.from_repository_constraint
-            assert_equal "testrepo", pde.from_repository_constraint.name
+            assert_nil pda.from_repository_requirement
+            assert_nil pdb.from_repository_requirement
+            assert_nil pdc.from_repository_requirement
+            assert_nil pdd.from_repository_requirement
+            assert_equal "testrepo", pde.from_repository_requirement.name
         end
 
         def test_in_repository
-            assert_equal "testrepo", pda.in_repository_constraint.name
-            assert_nil pdb.in_repository_constraint
-            assert_nil pdc.in_repository_constraint
-            assert_nil pdd.in_repository_constraint
-            assert_nil pde.in_repository_constraint
+            assert_equal "testrepo", pda.in_repository_requirement.name
+            assert_nil pdb.in_repository_requirement
+            assert_nil pdc.in_repository_requirement
+            assert_nil pdd.in_repository_requirement
+            assert_nil pde.in_repository_requirement
         end
 
         def test_installable_to_repository
-            assert_nil pda.installable_to_repository_constraint
-            assert_nil pdb.installable_to_repository_constraint
-            assert_equal "installed", pdc.installable_to_repository_constraint.name
-            assert ! pdc.installable_to_repository_constraint.include_masked?
-            assert_nil pdd.installable_to_repository_constraint
-            assert_nil pde.installable_to_repository_constraint
+            assert_nil pda.installable_to_repository_requirement
+            assert_nil pdb.installable_to_repository_requirement
+            assert_equal "installed", pdc.installable_to_repository_requirement.name
+            assert ! pdc.installable_to_repository_requirement.include_masked?
+            assert_nil pdd.installable_to_repository_requirement
+            assert_nil pde.installable_to_repository_requirement
         end
 
         def test_installed_at_path
-            assert_nil pda.installed_at_path_constraint
-            assert_nil pdb.installed_at_path_constraint
-            assert_nil pdc.installed_at_path_constraint
-            assert_nil pdd.installed_at_path_constraint
-            assert_equal "/mychroot", pde.installed_at_path_constraint.path
+            assert_nil pda.installed_at_path_requirement
+            assert_nil pdb.installed_at_path_requirement
+            assert_nil pdc.installed_at_path_requirement
+            assert_nil pdd.installed_at_path_requirement
+            assert_equal "/mychroot", pde.installed_at_path_requirement.path
         end
 
         def test_installable_to_path
-            assert_nil pda.installable_to_path_constraint
-            assert_nil pdb.installable_to_path_constraint
-            assert_nil pdc.installable_to_path_constraint
-            assert_equal "/", pdd.installable_to_path_constraint.path
-            assert pdd.installable_to_path_constraint.include_masked?
-            assert_nil pde.installable_to_path_constraint
+            assert_nil pda.installable_to_path_requirement
+            assert_nil pdb.installable_to_path_requirement
+            assert_nil pdc.installable_to_path_requirement
+            assert_equal "/", pdd.installable_to_path_requirement.path
+            assert pdd.installable_to_path_requirement.include_masked?
+            assert_nil pde.installable_to_path_requirement
         end
 
         def test_package_name_part
-            assert_nil pda.package_name_part_constraint
-            assert_equal "bar", pdb.package_name_part_constraint.name_part
-            assert_nil pdc.package_name_part_constraint
-            assert_nil pdd.package_name_part_constraint
-            assert_nil pde.package_name_part_constraint
+            assert_nil pda.package_name_part_requirement
+            assert_equal "bar", pdb.package_name_part_requirement.name_part
+            assert_nil pdc.package_name_part_requirement
+            assert_nil pdd.package_name_part_requirement
+            assert_nil pde.package_name_part_requirement
         end
 
         def test_category_name_part
-            assert_nil pda.category_name_part_constraint
-            assert_nil pdb.category_name_part_constraint
-            assert_nil pdc.category_name_part_constraint
-            assert_equal "foo", pdd.category_name_part_constraint.name_part
-            assert_nil pde.category_name_part_constraint
+            assert_nil pda.category_name_part_requirement
+            assert_nil pdb.category_name_part_requirement
+            assert_nil pdc.category_name_part_requirement
+            assert_equal "foo", pdd.category_name_part_requirement.name_part
+            assert_nil pde.category_name_part_requirement
         end
 
 ###        def test_use_requirements

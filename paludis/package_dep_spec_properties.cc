@@ -41,19 +41,19 @@ paludis::package_dep_spec_has_properties(const PackageDepSpec & spec, const Pack
 {
     bool result(true);
 
-    result = result && check(bool(spec.all_choice_constraints()) && ! spec.all_choice_constraints()->empty(), properties.has_choice_constraints());
-    result = result && check(bool(spec.category_name_part_constraint()), properties.has_category_name_part());
-    result = result && check(bool(spec.from_repository_constraint()), properties.has_from_repository());
-    result = result && check(bool(spec.all_key_constraints()) && ! spec.all_key_constraints()->empty(), properties.has_key_constraints());
-    result = result && check(bool(spec.in_repository_constraint()), properties.has_in_repository());
-    result = result && check(bool(spec.installable_to_path_constraint()), properties.has_installable_to_path());
-    result = result && check(bool(spec.installable_to_repository_constraint()), properties.has_installable_to_repository());
-    result = result && check(bool(spec.installed_at_path_constraint()), properties.has_installed_at_path());
-    result = result && check(bool(spec.package_name_constraint()), properties.has_package());
-    result = result && check(bool(spec.package_name_part_constraint()), properties.has_package_name_part());
-    result = result && check(bool(spec.exact_slot_constraint()), properties.has_exact_slot_constraint());
-    result = result && check(bool(spec.any_slot_constraint()), properties.has_any_slot_constraint());
-    result = result && check(bool(spec.all_version_constraints()) && ! spec.all_version_constraints()->empty(), properties.has_version_constraints());
+    result = result && check(bool(spec.all_choice_requirements()) && ! spec.all_choice_requirements()->empty(), properties.has_choice_requirements());
+    result = result && check(bool(spec.category_name_part_requirement()), properties.has_category_name_part());
+    result = result && check(bool(spec.from_repository_requirement()), properties.has_from_repository());
+    result = result && check(bool(spec.all_key_requirements()) && ! spec.all_key_requirements()->empty(), properties.has_key_requirements());
+    result = result && check(bool(spec.in_repository_requirement()), properties.has_in_repository());
+    result = result && check(bool(spec.installable_to_path_requirement()), properties.has_installable_to_path());
+    result = result && check(bool(spec.installable_to_repository_requirement()), properties.has_installable_to_repository());
+    result = result && check(bool(spec.installed_at_path_requirement()), properties.has_installed_at_path());
+    result = result && check(bool(spec.package_name_requirement()), properties.has_package());
+    result = result && check(bool(spec.package_name_part_requirement()), properties.has_package_name_part());
+    result = result && check(bool(spec.exact_slot_requirement()), properties.has_exact_slot_requirement());
+    result = result && check(bool(spec.any_slot_requirement()), properties.has_any_slot_requirement());
+    result = result && check(bool(spec.all_version_requirements()) && ! spec.all_version_requirements()->empty(), properties.has_version_requirements());
 
     return result;
 }

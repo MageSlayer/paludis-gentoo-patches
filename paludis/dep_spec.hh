@@ -37,7 +37,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/dep_spec_data-fwd.hh>
 #include <paludis/dep_spec_annotations-fwd.hh>
-#include <paludis/package_dep_spec_constraint-fwd.hh>
+#include <paludis/package_dep_spec_requirement-fwd.hh>
 
 #include <memory>
 
@@ -313,105 +313,105 @@ namespace paludis
             ///\}
 
             /**
-             * Fetch the single NameConstraint, if we have one, or
+             * Fetch the single NameRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const NameConstraint> package_name_constraint() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const NameRequirement> package_name_requirement() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
-             * Fetch the single PackageNamePartConstraint, if we have one, or
+             * Fetch the single PackageNamePartRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const PackageNamePartConstraint> package_name_part_constraint() const;
+            const std::shared_ptr<const PackageNamePartRequirement> package_name_part_requirement() const;
 
             /**
-             * Fetch the single CategoryNamePartConstraint, if we have one, or
+             * Fetch the single CategoryNamePartRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const CategoryNamePartConstraint> category_name_part_constraint() const;
+            const std::shared_ptr<const CategoryNamePartRequirement> category_name_part_requirement() const;
 
             /**
-             * Fetch all our VersionConstraints, if we have any, or
+             * Fetch all our VersionRequirements, if we have any, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const VersionConstraintSequence> all_version_constraints() const;
+            const std::shared_ptr<const VersionRequirementSequence> all_version_requirements() const;
 
             /**
-             * Fetch the single ExactSlotConstraint, if we have one, or
+             * Fetch the single ExactSlotRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const ExactSlotConstraint> exact_slot_constraint() const;
+            const std::shared_ptr<const ExactSlotRequirement> exact_slot_requirement() const;
 
             /**
-             * Fetch the single AnySlotConstraint, if we have one, or
+             * Fetch the single AnySlotRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const AnySlotConstraint> any_slot_constraint() const;
+            const std::shared_ptr<const AnySlotRequirement> any_slot_requirement() const;
 
             /**
-             * Fetch the single InRepositoryConstraint, if we have one, or
+             * Fetch the single InRepositoryRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const InRepositoryConstraint> in_repository_constraint() const;
+            const std::shared_ptr<const InRepositoryRequirement> in_repository_requirement() const;
 
             /**
-             * Fetch the single InstallableToRepositoryConstraint, if we have one, or
+             * Fetch the single InstallableToRepositoryRequirement, if we have one, or
              *
              * \since 0.61
              */
-            const std::shared_ptr<const InstallableToRepositoryConstraint> installable_to_repository_constraint() const;
+            const std::shared_ptr<const InstallableToRepositoryRequirement> installable_to_repository_requirement() const;
 
             /**
-             * Fetch the single FromRepositoryConstraint, if we have one, or
+             * Fetch the single FromRepositoryRequirement, if we have one, or
              * a null pointer otherwise.
              */
-            const std::shared_ptr<const FromRepositoryConstraint> from_repository_constraint() const;
+            const std::shared_ptr<const FromRepositoryRequirement> from_repository_requirement() const;
 
             /**
-             * Fetch the single InstalledAtPathConstraint, if we have one, or
-             * a null pointer otherwise.
-             *
-             * \since 0.61
-             */
-            const std::shared_ptr<const InstalledAtPathConstraint> installed_at_path_constraint() const;
-
-            /**
-             * Fetch the single InstallableToPathConstraint, if we have one, or
+             * Fetch the single InstalledAtPathRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const InstallableToPathConstraint> installable_to_path_constraint() const;
+            const std::shared_ptr<const InstalledAtPathRequirement> installed_at_path_requirement() const;
 
             /**
-             * Fetch all our KeyConstraints, if we have any, or
+             * Fetch the single InstallableToPathRequirement, if we have one, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const KeyConstraintSequence> all_key_constraints() const;
+            const std::shared_ptr<const InstallableToPathRequirement> installable_to_path_requirement() const;
 
             /**
-             * Fetch all our ChoiceConstraints, if we have any, or
+             * Fetch all our KeyRequirements, if we have any, or
              * a null pointer otherwise.
              *
              * \since 0.61
              */
-            const std::shared_ptr<const ChoiceConstraintSequence> all_choice_constraints() const;
+            const std::shared_ptr<const KeyRequirementSequence> all_key_requirements() const;
+
+            /**
+             * Fetch all our ChoiceRequirements, if we have any, or
+             * a null pointer otherwise.
+             *
+             * \since 0.61
+             */
+            const std::shared_ptr<const ChoiceRequirementSequence> all_choice_requirements() const;
 
             /**
              * Access to our data.

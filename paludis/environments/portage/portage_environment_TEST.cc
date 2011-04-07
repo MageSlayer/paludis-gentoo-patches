@@ -178,7 +178,7 @@ TEST(PortageEnvironment, World)
     FSPath w(FSPath::cwd() / "portage_environment_TEST_dir" / "world" / "var" / "lib" / "portage" / "world");
 
     env.update_config_files_for_package_move(MutablePackageDepSpecData({ })
-            .constrain_package(QualifiedPackageName("cat/before")),
+            .require_package(QualifiedPackageName("cat/before")),
             QualifiedPackageName("cat/after"));
 
     SafeIFStream f(w);

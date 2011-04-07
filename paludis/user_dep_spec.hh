@@ -23,7 +23,7 @@
 #include <paludis/user_dep_spec-fwd.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/filter.hh>
-#include <paludis/package_dep_spec_constraint-fwd.hh>
+#include <paludis/package_dep_spec_requirement-fwd.hh>
 
 #include <paludis/util/pimp.hh>
 
@@ -61,7 +61,7 @@ namespace paludis
      * \ingroup g_dep_spec
      * \since 0.61
      */
-    std::tuple<KeyConstraintKeyType, std::string, KeyConstraintOperation, std::string> parse_user_key_constraint(
+    std::tuple<KeyRequirementKeyType, std::string, KeyRequirementOperation, std::string> parse_user_key_requirement(
             const std::string &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 }
 

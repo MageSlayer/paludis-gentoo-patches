@@ -105,7 +105,7 @@ namespace paludis
         VALUE choice_value_to_value(const std::shared_ptr<const ChoiceValue> & c);
         VALUE match_package_options_to_value(const MatchPackageOptions & c);
         VALUE bool_to_value(bool b);
-        VALUE package_dep_spec_constraint_to_value(const std::shared_ptr<const PackageDepSpecConstraint> &);
+        VALUE package_dep_spec_requirement_to_value(const std::shared_ptr<const PackageDepSpecRequirement> &);
 
         VersionSpec value_to_version_spec(VALUE v);
         std::shared_ptr<const PackageID> value_to_package_id(VALUE, bool nil_ok = false);

@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/contents.hh>
@@ -50,74 +50,74 @@
 
 using namespace paludis;
 
-#include <paludis/package_dep_spec_constraint-se.cc>
+#include <paludis/package_dep_spec_requirement-se.cc>
 
-PackageDepSpecConstraint::~PackageDepSpecConstraint() = default;
+PackageDepSpecRequirement::~PackageDepSpecRequirement() = default;
 
-NameConstraint::NameConstraint(const QualifiedPackageName & n) :
+NameRequirement::NameRequirement(const QualifiedPackageName & n) :
     _name(n)
 {
 }
 
-NameConstraint::~NameConstraint() = default;
+NameRequirement::~NameRequirement() = default;
 
 const QualifiedPackageName
-NameConstraint::name() const
+NameRequirement::name() const
 {
     return _name;
 }
 
-template class Pool<NameConstraint>;
-template class Singleton<Pool<NameConstraint> >;
-template const std::shared_ptr<const NameConstraint> Pool<NameConstraint>::create(
+template class Pool<NameRequirement>;
+template class Singleton<Pool<NameRequirement> >;
+template const std::shared_ptr<const NameRequirement> Pool<NameRequirement>::create(
         const QualifiedPackageName &) const;
 
-CategoryNamePartConstraint::CategoryNamePartConstraint(const CategoryNamePart & n) :
+CategoryNamePartRequirement::CategoryNamePartRequirement(const CategoryNamePart & n) :
     _name_part(n)
 {
 }
 
-CategoryNamePartConstraint::~CategoryNamePartConstraint() = default;
+CategoryNamePartRequirement::~CategoryNamePartRequirement() = default;
 
 const CategoryNamePart
-CategoryNamePartConstraint::name_part() const
+CategoryNamePartRequirement::name_part() const
 {
     return _name_part;
 }
 
-template class Pool<CategoryNamePartConstraint>;
-template class Singleton<Pool<CategoryNamePartConstraint> >;
-template const std::shared_ptr<const CategoryNamePartConstraint> Pool<CategoryNamePartConstraint>::create(
+template class Pool<CategoryNamePartRequirement>;
+template class Singleton<Pool<CategoryNamePartRequirement> >;
+template const std::shared_ptr<const CategoryNamePartRequirement> Pool<CategoryNamePartRequirement>::create(
         const CategoryNamePart &) const;
 
-PackageNamePartConstraint::PackageNamePartConstraint(const PackageNamePart & n) :
+PackageNamePartRequirement::PackageNamePartRequirement(const PackageNamePart & n) :
     _name_part(n)
 {
 }
 
-PackageNamePartConstraint::~PackageNamePartConstraint() = default;
+PackageNamePartRequirement::~PackageNamePartRequirement() = default;
 
 const PackageNamePart
-PackageNamePartConstraint::name_part() const
+PackageNamePartRequirement::name_part() const
 {
     return _name_part;
 }
 
-template class Pool<PackageNamePartConstraint>;
-template class Singleton<Pool<PackageNamePartConstraint> >;
-template const std::shared_ptr<const PackageNamePartConstraint> Pool<PackageNamePartConstraint>::create(
+template class Pool<PackageNamePartRequirement>;
+template class Singleton<Pool<PackageNamePartRequirement> >;
+template const std::shared_ptr<const PackageNamePartRequirement> Pool<PackageNamePartRequirement>::create(
         const PackageNamePart &) const;
 
 namespace paludis
 {
     template <>
-    struct Imp<VersionConstraint>
+    struct Imp<VersionRequirement>
     {
         VersionSpec spec;
         VersionOperator op;
-        VersionConstraintCombiner combiner;
+        VersionRequirementCombiner combiner;
 
-        Imp(const VersionSpec & s, const VersionOperator & o, const VersionConstraintCombiner c) :
+        Imp(const VersionSpec & s, const VersionOperator & o, const VersionRequirementCombiner c) :
             spec(s),
             op(o),
             combiner(c)
@@ -126,182 +126,182 @@ namespace paludis
     };
 }
 
-VersionConstraint::VersionConstraint(const VersionSpec & s, const VersionOperator & o, const VersionConstraintCombiner c) :
+VersionRequirement::VersionRequirement(const VersionSpec & s, const VersionOperator & o, const VersionRequirementCombiner c) :
     _imp(s, o, c)
 {
 }
 
-VersionConstraint::~VersionConstraint() = default;
+VersionRequirement::~VersionRequirement() = default;
 
 const VersionSpec
-VersionConstraint::version_spec() const
+VersionRequirement::version_spec() const
 {
     return _imp->spec;
 }
 
 const VersionOperator
-VersionConstraint::version_operator() const
+VersionRequirement::version_operator() const
 {
     return _imp->op;
 }
 
-VersionConstraintCombiner
-VersionConstraint::combiner() const
+VersionRequirementCombiner
+VersionRequirement::combiner() const
 {
     return _imp->combiner;
 }
 
-template class Sequence<std::shared_ptr<const VersionConstraint> >;
-template class WrappedForwardIterator<Sequence<std::shared_ptr<const VersionConstraint> >::ConstIteratorTag, const std::shared_ptr<const VersionConstraint> >;
-template class WrappedOutputIterator<Sequence<std::shared_ptr<const VersionConstraint> >::InserterTag, std::shared_ptr<const VersionConstraint> >;
-template class Pimp<VersionConstraint>;
+template class Sequence<std::shared_ptr<const VersionRequirement> >;
+template class WrappedForwardIterator<Sequence<std::shared_ptr<const VersionRequirement> >::ConstIteratorTag, const std::shared_ptr<const VersionRequirement> >;
+template class WrappedOutputIterator<Sequence<std::shared_ptr<const VersionRequirement> >::InserterTag, std::shared_ptr<const VersionRequirement> >;
+template class Pimp<VersionRequirement>;
 
-InRepositoryConstraint::InRepositoryConstraint(const RepositoryName & n) :
+InRepositoryRequirement::InRepositoryRequirement(const RepositoryName & n) :
     _name(n)
 {
 }
 
-InRepositoryConstraint::~InRepositoryConstraint() = default;
+InRepositoryRequirement::~InRepositoryRequirement() = default;
 
 const RepositoryName
-InRepositoryConstraint::name() const
+InRepositoryRequirement::name() const
 {
     return _name;
 }
 
-template class Pool<InRepositoryConstraint>;
-template class Singleton<Pool<InRepositoryConstraint> >;
-template const std::shared_ptr<const InRepositoryConstraint> Pool<InRepositoryConstraint>::create(
+template class Pool<InRepositoryRequirement>;
+template class Singleton<Pool<InRepositoryRequirement> >;
+template const std::shared_ptr<const InRepositoryRequirement> Pool<InRepositoryRequirement>::create(
         const RepositoryName &) const;
 
-FromRepositoryConstraint::FromRepositoryConstraint(const RepositoryName & n) :
+FromRepositoryRequirement::FromRepositoryRequirement(const RepositoryName & n) :
     _name(n)
 {
 }
 
-FromRepositoryConstraint::~FromRepositoryConstraint() = default;
+FromRepositoryRequirement::~FromRepositoryRequirement() = default;
 
 const RepositoryName
-FromRepositoryConstraint::name() const
+FromRepositoryRequirement::name() const
 {
     return _name;
 }
 
-template class Pool<FromRepositoryConstraint>;
-template class Singleton<Pool<FromRepositoryConstraint> >;
-template const std::shared_ptr<const FromRepositoryConstraint> Pool<FromRepositoryConstraint>::create(
+template class Pool<FromRepositoryRequirement>;
+template class Singleton<Pool<FromRepositoryRequirement> >;
+template const std::shared_ptr<const FromRepositoryRequirement> Pool<FromRepositoryRequirement>::create(
         const RepositoryName &) const;
 
-InstalledAtPathConstraint::InstalledAtPathConstraint(const FSPath & n) :
+InstalledAtPathRequirement::InstalledAtPathRequirement(const FSPath & n) :
     _path(n)
 {
 }
 
-InstalledAtPathConstraint::~InstalledAtPathConstraint() = default;
+InstalledAtPathRequirement::~InstalledAtPathRequirement() = default;
 
 const FSPath
-InstalledAtPathConstraint::path() const
+InstalledAtPathRequirement::path() const
 {
     return _path;
 }
 
-template class Pool<InstalledAtPathConstraint>;
-template class Singleton<Pool<InstalledAtPathConstraint> >;
-template const std::shared_ptr<const InstalledAtPathConstraint> Pool<InstalledAtPathConstraint>::create(
+template class Pool<InstalledAtPathRequirement>;
+template class Singleton<Pool<InstalledAtPathRequirement> >;
+template const std::shared_ptr<const InstalledAtPathRequirement> Pool<InstalledAtPathRequirement>::create(
         const FSPath &) const;
 
-InstallableToPathConstraint::InstallableToPathConstraint(const FSPath & n, const bool i) :
+InstallableToPathRequirement::InstallableToPathRequirement(const FSPath & n, const bool i) :
     _path(n),
     _include_masked(i)
 {
 }
 
-InstallableToPathConstraint::~InstallableToPathConstraint() = default;
+InstallableToPathRequirement::~InstallableToPathRequirement() = default;
 
 const FSPath
-InstallableToPathConstraint::path() const
+InstallableToPathRequirement::path() const
 {
     return _path;
 }
 
 bool
-InstallableToPathConstraint::include_masked() const
+InstallableToPathRequirement::include_masked() const
 {
     return _include_masked;
 }
 
-template class Pool<InstallableToPathConstraint>;
-template class Singleton<Pool<InstallableToPathConstraint> >;
-template const std::shared_ptr<const InstallableToPathConstraint> Pool<InstallableToPathConstraint>::create(
+template class Pool<InstallableToPathRequirement>;
+template class Singleton<Pool<InstallableToPathRequirement> >;
+template const std::shared_ptr<const InstallableToPathRequirement> Pool<InstallableToPathRequirement>::create(
         const FSPath &, const bool &) const;
 
-InstallableToRepositoryConstraint::InstallableToRepositoryConstraint(const RepositoryName & n, const bool i) :
+InstallableToRepositoryRequirement::InstallableToRepositoryRequirement(const RepositoryName & n, const bool i) :
     _name(n),
     _include_masked(i)
 {
 }
 
-InstallableToRepositoryConstraint::~InstallableToRepositoryConstraint() = default;
+InstallableToRepositoryRequirement::~InstallableToRepositoryRequirement() = default;
 
 const RepositoryName
-InstallableToRepositoryConstraint::name() const
+InstallableToRepositoryRequirement::name() const
 {
     return _name;
 }
 
 bool
-InstallableToRepositoryConstraint::include_masked() const
+InstallableToRepositoryRequirement::include_masked() const
 {
     return _include_masked;
 }
 
-template class Pool<InstallableToRepositoryConstraint>;
-template class Singleton<Pool<InstallableToRepositoryConstraint> >;
-template const std::shared_ptr<const InstallableToRepositoryConstraint> Pool<InstallableToRepositoryConstraint>::create(
+template class Pool<InstallableToRepositoryRequirement>;
+template class Singleton<Pool<InstallableToRepositoryRequirement> >;
+template const std::shared_ptr<const InstallableToRepositoryRequirement> Pool<InstallableToRepositoryRequirement>::create(
         const RepositoryName &, const bool &) const;
 
-ExactSlotConstraint::ExactSlotConstraint(const SlotName & n, const bool i) :
+ExactSlotRequirement::ExactSlotRequirement(const SlotName & n, const bool i) :
     _name(n),
     _locked(i)
 {
 }
 
-ExactSlotConstraint::~ExactSlotConstraint() = default;
+ExactSlotRequirement::~ExactSlotRequirement() = default;
 
 const SlotName
-ExactSlotConstraint::name() const
+ExactSlotRequirement::name() const
 {
     return _name;
 }
 
 bool
-ExactSlotConstraint::locked() const
+ExactSlotRequirement::locked() const
 {
     return _locked;
 }
 
-template class Pool<ExactSlotConstraint>;
-template class Singleton<Pool<ExactSlotConstraint> >;
-template const std::shared_ptr<const ExactSlotConstraint> Pool<ExactSlotConstraint>::create(const SlotName &, const bool &) const;
+template class Pool<ExactSlotRequirement>;
+template class Singleton<Pool<ExactSlotRequirement> >;
+template const std::shared_ptr<const ExactSlotRequirement> Pool<ExactSlotRequirement>::create(const SlotName &, const bool &) const;
 
-AnySlotConstraint::AnySlotConstraint(const bool i) :
+AnySlotRequirement::AnySlotRequirement(const bool i) :
     _locking(i)
 {
 }
 
-AnySlotConstraint::~AnySlotConstraint() = default;
+AnySlotRequirement::~AnySlotRequirement() = default;
 
 bool
-AnySlotConstraint::locking() const
+AnySlotRequirement::locking() const
 {
     return _locking;
 }
 
-template class Pool<AnySlotConstraint>;
-template class Singleton<Pool<AnySlotConstraint> >;
-template const std::shared_ptr<const AnySlotConstraint> Pool<AnySlotConstraint>::create(const bool &) const;
+template class Pool<AnySlotRequirement>;
+template class Singleton<Pool<AnySlotRequirement> >;
+template const std::shared_ptr<const AnySlotRequirement> Pool<AnySlotRequirement>::create(const bool &) const;
 
-KeyConstraint::KeyConstraint(const KeyConstraintKeyType t, const std::string & k, const KeyConstraintOperation o, const std::string & p) :
+KeyRequirement::KeyRequirement(const KeyRequirementKeyType t, const std::string & k, const KeyRequirementOperation o, const std::string & p) :
     _key_type(t),
     _key(k),
     _operation(o),
@@ -309,28 +309,28 @@ KeyConstraint::KeyConstraint(const KeyConstraintKeyType t, const std::string & k
 {
 }
 
-KeyConstraint::~KeyConstraint() = default;
+KeyRequirement::~KeyRequirement() = default;
 
-KeyConstraintKeyType
-KeyConstraint::key_type() const
+KeyRequirementKeyType
+KeyRequirement::key_type() const
 {
     return _key_type;
 }
 
 const std::string
-KeyConstraint::key() const
+KeyRequirement::key() const
 {
     return _key;
 }
 
-KeyConstraintOperation
-KeyConstraint::operation() const
+KeyRequirementOperation
+KeyRequirement::operation() const
 {
     return _operation;
 }
 
 const std::string
-KeyConstraint::pattern() const
+KeyRequirement::pattern() const
 {
     return _pattern;
 }
@@ -461,10 +461,10 @@ namespace
         const Environment * const env;
         const std::shared_ptr<const PackageID> id;
         const std::string pattern;
-        const KeyConstraintOperation op;
+        const KeyRequirementOperation op;
 
         KeyComparator(const Environment * const e, const std::shared_ptr<const PackageID> & i,
-                const std::string & p, const KeyConstraintOperation o) :
+                const std::string & p, const KeyRequirementOperation o) :
             env(e),
             id(i),
             pattern(p),
@@ -481,16 +481,16 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return pattern == stringify(k.value().seconds());
-                case kco_tilde:
+                case kro_tilde:
                     return std::string::npos != stringify(k.value().seconds()).find(pattern);
-                case kco_less_than:
+                case kro_less_than:
                     return k.value().seconds() < destringify<time_t>(pattern);
-                case kco_greater_than:
+                case kro_greater_than:
                     return k.value().seconds() > destringify<time_t>(pattern);
-                case kco_question:
-                case last_kco:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -501,14 +501,14 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return pattern == stringify(k.value());
-                case kco_tilde:
+                case kro_tilde:
                     return std::string::npos != stringify(k.value()).find(pattern);
-                case kco_less_than:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_less_than:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -519,14 +519,14 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return pattern == stringify(k.value());
-                case kco_tilde:
+                case kro_tilde:
                     return std::string::npos != stringify(k.value()).find(pattern);
-                case kco_less_than:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_less_than:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -537,14 +537,14 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return pattern == stringify(k.value());
-                case kco_tilde:
+                case kro_tilde:
                     return std::string::npos != stringify(k.value()).find(pattern);
-                case kco_less_than:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_less_than:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -555,14 +555,14 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return pattern == stringify(k.value());
-                case kco_tilde:
+                case kro_tilde:
                     return std::string::npos != stringify(k.value()).find(pattern);
-                case kco_less_than:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_less_than:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -573,16 +573,16 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return pattern == stringify(k.value());
-                case kco_tilde:
+                case kro_tilde:
                     return std::string::npos != stringify(k.value()).find(pattern);
-                case kco_less_than:
+                case kro_less_than:
                     return k.value() < destringify<long>(pattern);
-                case kco_greater_than:
+                case kro_greater_than:
                     return k.value() > destringify<long>(pattern);
-                case kco_question:
-                case last_kco:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -598,19 +598,19 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return pattern == join(indirect_iterator(s.value()->begin()), indirect_iterator(s.value()->end()), " ",
                             stringify_contents_entry);
-                case kco_less_than:
+                case kro_less_than:
                     return indirect_iterator(s.value()->end()) != std::find_if(
                             indirect_iterator(s.value()->begin()),
                             indirect_iterator(s.value()->end()),
                             StringifyEqual(pattern));
 
-                case kco_greater_than:
-                case kco_question:
-                case kco_tilde:
-                case last_kco:
+                case kro_greater_than:
+                case kro_question:
+                case kro_tilde:
+                case last_kro:
                     break;
             }
 
@@ -621,14 +621,14 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return pattern == stringify(*k.value());
-                case kco_tilde:
+                case kro_tilde:
                     return std::string::npos != stringify(*k.value()).find(pattern);
-                case kco_less_than:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_less_than:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -639,15 +639,15 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return false;
-                case kco_less_than:
+                case kro_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
-                case kco_tilde:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_tilde:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -658,15 +658,15 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return false;
-                case kco_less_than:
+                case kro_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
-                case kco_tilde:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_tilde:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -677,15 +677,15 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return false;
-                case kco_less_than:
+                case kro_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
-                case kco_tilde:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_tilde:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -696,15 +696,15 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return false;
-                case kco_less_than:
+                case kro_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
-                case kco_tilde:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_tilde:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -715,15 +715,15 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return false;
-                case kco_less_than:
+                case kro_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
-                case kco_tilde:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_tilde:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -734,15 +734,15 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return false;
-                case kco_less_than:
+                case kro_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
-                case kco_tilde:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_tilde:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -753,15 +753,15 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return false;
-                case kco_less_than:
+                case kro_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
-                case kco_tilde:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_tilde:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -772,15 +772,15 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return false;
-                case kco_less_than:
+                case kro_less_than:
                     return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
-                case kco_tilde:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_tilde:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -791,16 +791,16 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return pattern == join(s.value()->begin(), s.value()->end(), " ");
-                case kco_less_than:
+                case kro_less_than:
                     return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
                             StringifyEqual(pattern));
 
-                case kco_tilde:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_tilde:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -811,18 +811,18 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return pattern == join(indirect_iterator(s.value()->begin()), indirect_iterator(s.value()->end()), " ");
-                case kco_less_than:
+                case kro_less_than:
                     return indirect_iterator(s.value()->end()) != std::find_if(
                             indirect_iterator(s.value()->begin()),
                             indirect_iterator(s.value()->end()),
                             StringifyEqual(pattern));
 
-                case kco_tilde:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_tilde:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -833,16 +833,16 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return pattern == join(s.value()->begin(), s.value()->end(), " ");
-                case kco_less_than:
+                case kro_less_than:
                     return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
                             StringifyEqual(pattern));
 
-                case kco_tilde:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_tilde:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -853,16 +853,16 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return pattern == join(s.value()->begin(), s.value()->end(), " ");
-                case kco_less_than:
+                case kro_less_than:
                     return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
                             StringifyEqual(pattern));
 
-                case kco_tilde:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_tilde:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -878,16 +878,16 @@ namespace
         {
             switch (op)
             {
-                case kco_equals:
+                case kro_equals:
                     return pattern == join(s.value()->begin(), s.value()->end(), " ");
-                case kco_less_than:
+                case kro_less_than:
                     return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
                             StringifyEqual(pattern));
 
-                case kco_tilde:
-                case kco_greater_than:
-                case kco_question:
-                case last_kco:
+                case kro_tilde:
+                case kro_greater_than:
+                case kro_question:
+                case last_kro:
                     break;
             }
 
@@ -962,7 +962,7 @@ namespace
 }
 
 bool
-KeyConstraint::matches(
+KeyRequirement::matches(
         const Environment * const env,
         const std::shared_ptr<const PackageID> & id) const
 {
@@ -971,7 +971,7 @@ KeyConstraint::matches(
 
     switch (key_type())
     {
-        case kckt_repo_role:
+        case krkt_repo_role:
             {
                 auto repo(env->fetch_repository(id->repository_name()));
                 if (key() == "format")
@@ -987,7 +987,7 @@ KeyConstraint::matches(
             }
             break;
 
-        case kckt_id_role:
+        case krkt_id_role:
             {
                 if (key() == "behaviours")
                     k = id->behaviours_key().get();
@@ -1034,7 +1034,7 @@ KeyConstraint::matches(
             }
             break;
 
-        case kckt_repo:
+        case krkt_repo:
             {
                 auto repo(env->fetch_repository(id->repository_name()));
                 Repository::MetadataConstIterator mm(repo->find_metadata(key()));
@@ -1043,7 +1043,7 @@ KeyConstraint::matches(
             }
             break;
 
-        case kckt_id:
+        case krkt_id:
             {
                 PackageID::MetadataConstIterator mm(id->find_metadata(key()));
                 if (mm != id->end_metadata())
@@ -1051,7 +1051,7 @@ KeyConstraint::matches(
             }
             break;
 
-        case kckt_id_mask:
+        case krkt_id_mask:
             {
                 for (auto mm(id->begin_masks()), mm_end(id->end_masks()) ;
                         mm != mm_end ; ++mm)
@@ -1063,14 +1063,14 @@ KeyConstraint::matches(
             }
             break;
 
-        case last_kckt:
+        case last_krkt:
             break;
     }
 
     if ((! k) && (! m))
         return false;
 
-    if (operation() == kco_question)
+    if (operation() == kro_question)
         return true;
     else
     {
@@ -1088,19 +1088,19 @@ KeyConstraint::matches(
 }
 
 const std::string
-KeyConstraint::as_raw_string() const
+KeyRequirement::as_raw_string() const
 {
     std::stringstream s;
     s << "[.";
 
     switch (key_type())
     {
-        case kckt_id:                    break;
-        case kckt_id_role:   s << "$";   break;
-        case kckt_id_mask:   s << "(";   break;
-        case kckt_repo:      s << "::";  break;
-        case kckt_repo_role: s << "::$"; break;
-        case last_kckt:
+        case krkt_id:                    break;
+        case krkt_id_role:   s << "$";   break;
+        case krkt_id_mask:   s << "(";   break;
+        case krkt_repo:      s << "::";  break;
+        case krkt_repo_role: s << "::$"; break;
+        case last_krkt:
             break;
     }
 
@@ -1108,24 +1108,24 @@ KeyConstraint::as_raw_string() const
 
     switch (operation())
     {
-        case kco_equals:         s << "=" << pattern(); break;
-        case kco_tilde:          s << "~" << pattern(); break;
-        case kco_less_than:      s << "<" << pattern(); break;
-        case kco_greater_than:   s << ">" << pattern(); break;
-        case kco_question:       s << "?";              break;
+        case kro_equals:         s << "=" << pattern(); break;
+        case kro_tilde:          s << "~" << pattern(); break;
+        case kro_less_than:      s << "<" << pattern(); break;
+        case kro_greater_than:   s << ">" << pattern(); break;
+        case kro_question:       s << "?";              break;
 
-        case last_kco:
-            throw InternalError(PALUDIS_HERE, "Bad KeyConstraintOperation");
+        case last_kro:
+            throw InternalError(PALUDIS_HERE, "Bad KeyRequirementOperation");
     }
 
     switch (key_type())
     {
-        case kckt_id:                    break;
-        case kckt_id_role:               break;
-        case kckt_id_mask:   s << ")";   break;
-        case kckt_repo:                  break;
-        case kckt_repo_role:             break;
-        case last_kckt:
+        case krkt_id:                    break;
+        case krkt_id_role:               break;
+        case krkt_id_mask:   s << ")";   break;
+        case krkt_repo:                  break;
+        case krkt_repo_role:             break;
+        case last_krkt:
             break;
     }
 
@@ -1134,17 +1134,17 @@ KeyConstraint::as_raw_string() const
     return s.str();
 }
 
-template class Pool<KeyConstraint>;
-template class Singleton<Pool<KeyConstraint> >;
-template const std::shared_ptr<const KeyConstraint> Pool<KeyConstraint>::create(
-        const KeyConstraintKeyType &, const std::string &, const KeyConstraintOperation &, const std::string &) const;
-template class Sequence<std::shared_ptr<const KeyConstraint> >;
-template class WrappedOutputIterator<Sequence<std::shared_ptr<const KeyConstraint> >::InserterTag, std::shared_ptr<const KeyConstraint> >;
-template class WrappedForwardIterator<Sequence<std::shared_ptr<const KeyConstraint> >::ConstIteratorTag, const std::shared_ptr<const KeyConstraint> >;
+template class Pool<KeyRequirement>;
+template class Singleton<Pool<KeyRequirement> >;
+template const std::shared_ptr<const KeyRequirement> Pool<KeyRequirement>::create(
+        const KeyRequirementKeyType &, const std::string &, const KeyRequirementOperation &, const std::string &) const;
+template class Sequence<std::shared_ptr<const KeyRequirement> >;
+template class WrappedOutputIterator<Sequence<std::shared_ptr<const KeyRequirement> >::InserterTag, std::shared_ptr<const KeyRequirement> >;
+template class WrappedForwardIterator<Sequence<std::shared_ptr<const KeyRequirement> >::ConstIteratorTag, const std::shared_ptr<const KeyRequirement> >;
 
-ChoiceConstraint::ChoiceConstraint() = default;
+ChoiceRequirement::ChoiceRequirement() = default;
 
-template class Sequence<std::shared_ptr<const ChoiceConstraint> >;
-template class WrappedForwardIterator<Sequence<std::shared_ptr<const ChoiceConstraint> >::ConstIteratorTag, const std::shared_ptr<const ChoiceConstraint> >;
-template class WrappedOutputIterator<Sequence<std::shared_ptr<const ChoiceConstraint> >::InserterTag, std::shared_ptr<const ChoiceConstraint> >;
+template class Sequence<std::shared_ptr<const ChoiceRequirement> >;
+template class WrappedForwardIterator<Sequence<std::shared_ptr<const ChoiceRequirement> >::ConstIteratorTag, const std::shared_ptr<const ChoiceRequirement> >;
+template class WrappedOutputIterator<Sequence<std::shared_ptr<const ChoiceRequirement> >::InserterTag, std::shared_ptr<const ChoiceRequirement> >;
 

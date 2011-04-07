@@ -21,231 +21,231 @@
 #include <python/paludis_python.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/fs_path.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 
 using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-// For classes derived from PackageDepSpecConstraint
+// For classes derived from PackageDepSpecRequirement
 template <typename C_>
-class class_package_dep_spec_constraint :
-    public bp::class_<C_, std::shared_ptr<C_>, bp::bases<PackageDepSpecConstraint>, boost::noncopyable>
+class class_package_dep_spec_requirement :
+    public bp::class_<C_, std::shared_ptr<C_>, bp::bases<PackageDepSpecRequirement>, boost::noncopyable>
 {
     public:
         template <class Init_>
-        class_package_dep_spec_constraint(const std::string & name, const std::string & class_doc, Init_ initspec) :
-            bp::class_<C_, std::shared_ptr<C_>, bp::bases<PackageDepSpecConstraint>, boost::noncopyable>(
+        class_package_dep_spec_requirement(const std::string & name, const std::string & class_doc, Init_ initspec) :
+            bp::class_<C_, std::shared_ptr<C_>, bp::bases<PackageDepSpecRequirement>, boost::noncopyable>(
                     name.c_str(), class_doc.c_str(), initspec)
         {
             bp::register_ptr_to_python<std::shared_ptr<const C_> >();
-            bp::implicitly_convertible<std::shared_ptr<C_>, std::shared_ptr<PackageDepSpecConstraint> >();
+            bp::implicitly_convertible<std::shared_ptr<C_>, std::shared_ptr<PackageDepSpecRequirement> >();
         }
 };
 
-void expose_package_dep_spec_constraint()
+void expose_package_dep_spec_requirement()
 {
     /**
      * Enums
      */
-    enum_auto("KeyConstraintOperation", last_kco,
-            "The operation for a KeyConstraint");
+    enum_auto("KeyRequirementOperation", last_kro,
+            "The operation for a KeyRequirement");
 
     /**
-     * PackageDepSpecConstraint
+     * PackageDepSpecRequirement
      */
-    bp::register_ptr_to_python<std::shared_ptr<const PackageDepSpecConstraint> >();
-    bp::implicitly_convertible<std::shared_ptr<PackageDepSpecConstraint>,
-            std::shared_ptr<const PackageDepSpecConstraint> >();
-    bp::class_<PackageDepSpecConstraint, boost::noncopyable>
+    bp::register_ptr_to_python<std::shared_ptr<const PackageDepSpecRequirement> >();
+    bp::implicitly_convertible<std::shared_ptr<PackageDepSpecRequirement>,
+            std::shared_ptr<const PackageDepSpecRequirement> >();
+    bp::class_<PackageDepSpecRequirement, boost::noncopyable>
         (
-         "PackageDepSpecConstraint",
-         "Base class for a constraint for a PackageDepSpec.",
+         "PackageDepSpecRequirement",
+         "Base class for a requirement for a PackageDepSpec.",
          bp::no_init
         )
         ;
 
     /**
-     * NameConstraint
+     * NameRequirement
      */
-    class_package_dep_spec_constraint<NameConstraint>
+    class_package_dep_spec_requirement<NameRequirement>
         (
-         "NameConstraint",
-         "A cat/pkg constraint for a PackageDepSpec.",
+         "NameRequirement",
+         "A cat/pkg requirement for a PackageDepSpec.",
          bp::no_init
         )
 
-        .add_property("name", &NameConstraint::name,
+        .add_property("name", &NameRequirement::name,
                 "[RO] The cat/pkg in question"
             )
         ;
 
     /**
-     * PackageNamePartConstraint
+     * PackageNamePartRequirement
      */
-    class_package_dep_spec_constraint<PackageNamePartConstraint>
+    class_package_dep_spec_requirement<PackageNamePartRequirement>
         (
-         "PackageNamePartConstraint",
-         "A /pkg constraint for a PackageDepSpec.",
+         "PackageNamePartRequirement",
+         "A /pkg requirement for a PackageDepSpec.",
          bp::no_init
         )
 
-        .add_property("name_part", &PackageNamePartConstraint::name_part,
+        .add_property("name_part", &PackageNamePartRequirement::name_part,
                 "[RO] The /pkg in question"
             )
         ;
 
     /**
-     * CategoryNamePartConstraint
+     * CategoryNamePartRequirement
      */
-    class_package_dep_spec_constraint<CategoryNamePartConstraint>
+    class_package_dep_spec_requirement<CategoryNamePartRequirement>
         (
-         "CategoryNamePartConstraint",
-         "A cat/ constraint for a PackageDepSpec.",
+         "CategoryNamePartRequirement",
+         "A cat/ requirement for a PackageDepSpec.",
          bp::no_init
         )
 
-        .add_property("name_part", &CategoryNamePartConstraint::name_part,
+        .add_property("name_part", &CategoryNamePartRequirement::name_part,
                 "[RO] The cat/ in question"
             )
         ;
 
     /**
-     * InRepositoryConstraint
+     * InRepositoryRequirement
      */
-    class_package_dep_spec_constraint<InRepositoryConstraint>
+    class_package_dep_spec_requirement<InRepositoryRequirement>
         (
-         "InRepositoryConstraint",
-         "A ::repo constraint for a PackageDepSpec.",
+         "InRepositoryRequirement",
+         "A ::repo requirement for a PackageDepSpec.",
          bp::no_init
         )
 
-        .add_property("name", &InRepositoryConstraint::name,
+        .add_property("name", &InRepositoryRequirement::name,
                 "[RO] The ::repo name in question"
             )
         ;
 
     /**
-     * FromRepositoryConstraint
+     * FromRepositoryRequirement
      */
-    class_package_dep_spec_constraint<FromRepositoryConstraint>
+    class_package_dep_spec_requirement<FromRepositoryRequirement>
         (
-         "FromRepositoryConstraint",
-         "A ::repo-> constraint for a PackageDepSpec.",
+         "FromRepositoryRequirement",
+         "A ::repo-> requirement for a PackageDepSpec.",
          bp::no_init
         )
 
-        .add_property("name", &FromRepositoryConstraint::name,
+        .add_property("name", &FromRepositoryRequirement::name,
                 "[RO] The ::repo-> name in question"
             )
         ;
 
     /**
-     * InstalledAtPathConstraint
+     * InstalledAtPathRequirement
      */
-    class_package_dep_spec_constraint<InstalledAtPathConstraint>
+    class_package_dep_spec_requirement<InstalledAtPathRequirement>
         (
-         "InstalledAtPathConstraint",
-         "A ::/ constraint for a PackageDepSpec.",
+         "InstalledAtPathRequirement",
+         "A ::/ requirement for a PackageDepSpec.",
          bp::no_init
         )
 
-        .add_property("path", &InstalledAtPathConstraint::path,
+        .add_property("path", &InstalledAtPathRequirement::path,
                 "[RO] The ::/ path in question"
             )
         ;
 
     /**
-     * InstallableToPathConstraint
+     * InstallableToPathRequirement
      */
-    class_package_dep_spec_constraint<InstallableToPathConstraint>
+    class_package_dep_spec_requirement<InstallableToPathRequirement>
         (
-         "InstalledableToPathConstraint",
-         "A ::/? constraint for a PackageDepSpec.",
+         "InstalledableToPathRequirement",
+         "A ::/? requirement for a PackageDepSpec.",
          bp::no_init
         )
 
-        .add_property("path", &InstallableToPathConstraint::path,
+        .add_property("path", &InstallableToPathRequirement::path,
                 "[RO] The ::/? path in question"
             )
 
-        .add_property("include_masked", &InstallableToPathConstraint::include_masked,
+        .add_property("include_masked", &InstallableToPathRequirement::include_masked,
                 "[RO] Whether to include masked, as per ::/??"
             )
         ;
 
     /**
-     * InstallableToRepositoryConstraint
+     * InstallableToRepositoryRequirement
      */
-    class_package_dep_spec_constraint<InstallableToRepositoryConstraint>
+    class_package_dep_spec_requirement<InstallableToRepositoryRequirement>
         (
-         "InstalledableToPathConstraint",
-         "A ::/? constraint for a PackageDepSpec.",
+         "InstalledableToPathRequirement",
+         "A ::/? requirement for a PackageDepSpec.",
          bp::no_init
         )
 
-        .add_property("name", &InstallableToRepositoryConstraint::name,
+        .add_property("name", &InstallableToRepositoryRequirement::name,
                 "[RO] The ::repo? in question"
             )
 
-        .add_property("include_masked", &InstallableToRepositoryConstraint::include_masked,
+        .add_property("include_masked", &InstallableToRepositoryRequirement::include_masked,
                 "[RO] Whether to include masked, as per ::repo??"
             )
         ;
 
     /**
-     * AnySlotConstraint
+     * AnySlotRequirement
      */
-    class_package_dep_spec_constraint<AnySlotConstraint>
+    class_package_dep_spec_requirement<AnySlotRequirement>
         (
-         "AnySlotConstraint",
-         "A :* or := constraint for a PackageDepSpec.",
+         "AnySlotRequirement",
+         "A :* or := requirement for a PackageDepSpec.",
          bp::no_init
         )
 
-        .add_property("locking", &AnySlotConstraint::locking,
+        .add_property("locking", &AnySlotRequirement::locking,
                 "[RO] Are we locking (:= rather than :*)?"
             )
         ;
 
     /**
-     * ExactSlotConstraint
+     * ExactSlotRequirement
      */
-    class_package_dep_spec_constraint<ExactSlotConstraint>
+    class_package_dep_spec_requirement<ExactSlotRequirement>
         (
-         "ExactSlotConstraint",
-         "A :slot or :=slot constraint for a PackageDepSpec.",
+         "ExactSlotRequirement",
+         "A :slot or :=slot requirement for a PackageDepSpec.",
          bp::no_init
         )
 
-        .add_property("locked", &ExactSlotConstraint::locked,
+        .add_property("locked", &ExactSlotRequirement::locked,
                 "[RO] Are we locked (:=blah)?"
             )
 
-        .add_property("name", &ExactSlotConstraint::name,
+        .add_property("name", &ExactSlotRequirement::name,
                 "[RO] The slot name"
             )
         ;
 
     /**
-     * KeyConstraint
+     * KeyRequirement
      */
-    class_package_dep_spec_constraint<KeyConstraint>
+    class_package_dep_spec_requirement<KeyRequirement>
         (
-         "KeyConstraint",
-         "A [.key=value] constraint for a PackageDepSpec.",
+         "KeyRequirement",
+         "A [.key=value] requirement for a PackageDepSpec.",
          bp::no_init
         )
 
-        .add_property("key", &KeyConstraint::key,
+        .add_property("key", &KeyRequirement::key,
                 "[RO] The key"
             )
 
-        .add_property("pattern", &KeyConstraint::pattern,
+        .add_property("pattern", &KeyRequirement::pattern,
                 "[RO] The pattern"
             )
 
-        .add_property("operation", &KeyConstraint::operation,
+        .add_property("operation", &KeyRequirement::operation,
                 "[RO] The operation"
             )
         ;

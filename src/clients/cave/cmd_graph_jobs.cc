@@ -42,7 +42,7 @@
 #include <paludis/serialise-impl.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 
 #include <iostream>
 #include <cstdlib>
@@ -91,15 +91,15 @@ namespace
 
     std::string short_spec(const PackageDepSpec & p, bool full)
     {
-        if (full || ! p.package_name_constraint())
+        if (full || ! p.package_name_requirement())
             return stringify(p);
         else
         {
-            std::string result(stringify(p.package_name_constraint()->name().package()));
-            if (p.exact_slot_constraint())
-                result = result + ":" + stringify(p.exact_slot_constraint()->name());
-            if (p.in_repository_constraint())
-                result = result + "::" + stringify(p.in_repository_constraint()->name());
+            std::string result(stringify(p.package_name_requirement()->name().package()));
+            if (p.exact_slot_requirement())
+                result = result + ":" + stringify(p.exact_slot_requirement()->name());
+            if (p.in_repository_requirement())
+                result = result + "::" + stringify(p.in_repository_requirement()->name());
             return result;
         }
     }

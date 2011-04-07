@@ -242,7 +242,7 @@ namespace
         for (PackageIDSequence::ConstIterator i(names->begin()), i_end(names->end()) ;
                 i != i_end ; ++i)
         {
-            PackageDepSpec name_spec(MutablePackageDepSpecData({ }).constrain_package((*i)->name()));
+            PackageDepSpec name_spec(MutablePackageDepSpecData({ }).require_package((*i)->name()));
             cout << fuc(select_format_for_spec(env, name_spec, make_null_shared_ptr(),
                         fs_wildcard_spec_installed(),
                         fs_wildcard_spec_installable(),
@@ -1327,8 +1327,8 @@ namespace
             {
                 auto r_ids((*env)[selection::AllVersionsGroupedBySlot(generator::Matches(
                                 MutablePackageDepSpecData(*s.data())
-                                .unconstrain_in_repository()
-                                .constrain_in_repository(*r), make_null_shared_ptr(), { }))]);
+                                .unrequire_in_repository()
+                                .require_in_repository(*r), make_null_shared_ptr(), { }))]);
                 if (! r_ids->empty())
                     do_one_package_with_ids(cmdline, env, basic_ppos, s, r_ids, cout, rest_out);
             }
@@ -1356,8 +1356,8 @@ namespace
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
             do_one_package(cmdline, env, basic_ppos, MutablePackageDepSpecData(*s.data())
-                    .unconstrain_package()
-                    .constrain_package((*i)->name()));
+                    .unrequire_package()
+                    .require_package((*i)->name()));
     }
 }
 
@@ -1399,7 +1399,7 @@ ShowCommand::run(
             try
             {
                 PackageDepSpec spec(parse_spec_with_nice_error(*p, env.get(), { updso_throw_if_set, updso_allow_wildcards }, filter::All()));
-                if ((! spec.package_name_constraint()))
+                if ((! spec.package_name_requirement()))
                     do_one_wildcard(env, spec);
                 else
                     do_one_package(cmdline, env, basic_ppos, spec);

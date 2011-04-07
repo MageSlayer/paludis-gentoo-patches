@@ -107,8 +107,8 @@ namespace
                 auto ids((*env)[selection::BestVersionOnly((
                                 generator::InRepository(RepositoryName(*r)) &
                                 generator::Matches(MutablePackageDepSpecData({ })
-                                    .constrain_package(id->name())
-                                    .constrain_version(vcc_and, vo_equal, id->version()),
+                                    .require_package(id->name())
+                                    .require_version(vrc_and, vo_equal, id->version()),
                                     make_null_shared_ptr(), { })) |
                             filter::SupportsAction<InstallAction>())]);
 

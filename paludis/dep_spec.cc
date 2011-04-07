@@ -540,82 +540,82 @@ PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
     set_annotations(d.maybe_annotations());
 }
 
-const std::shared_ptr<const NameConstraint>
-PackageDepSpec::package_name_constraint() const
+const std::shared_ptr<const NameRequirement>
+PackageDepSpec::package_name_requirement() const
 {
-    return _imp->data->package_name_constraint();
+    return _imp->data->package_name_requirement();
 }
 
-const std::shared_ptr<const PackageNamePartConstraint>
-PackageDepSpec::package_name_part_constraint() const
+const std::shared_ptr<const PackageNamePartRequirement>
+PackageDepSpec::package_name_part_requirement() const
 {
-    return _imp->data->package_name_part_constraint();
+    return _imp->data->package_name_part_requirement();
 }
 
-const std::shared_ptr<const CategoryNamePartConstraint>
-PackageDepSpec::category_name_part_constraint() const
+const std::shared_ptr<const CategoryNamePartRequirement>
+PackageDepSpec::category_name_part_requirement() const
 {
-    return _imp->data->category_name_part_constraint();
+    return _imp->data->category_name_part_requirement();
 }
 
-const std::shared_ptr<const VersionConstraintSequence>
-PackageDepSpec::all_version_constraints() const
+const std::shared_ptr<const VersionRequirementSequence>
+PackageDepSpec::all_version_requirements() const
 {
-    return _imp->data->all_version_constraints();
+    return _imp->data->all_version_requirements();
 }
 
-const std::shared_ptr<const AnySlotConstraint>
-PackageDepSpec::any_slot_constraint() const
+const std::shared_ptr<const AnySlotRequirement>
+PackageDepSpec::any_slot_requirement() const
 {
-    return _imp->data->any_slot_constraint();
+    return _imp->data->any_slot_requirement();
 }
 
-const std::shared_ptr<const ExactSlotConstraint>
-PackageDepSpec::exact_slot_constraint() const
+const std::shared_ptr<const ExactSlotRequirement>
+PackageDepSpec::exact_slot_requirement() const
 {
-    return _imp->data->exact_slot_constraint();
+    return _imp->data->exact_slot_requirement();
 }
 
-const std::shared_ptr<const InRepositoryConstraint>
-PackageDepSpec::in_repository_constraint() const
+const std::shared_ptr<const InRepositoryRequirement>
+PackageDepSpec::in_repository_requirement() const
 {
-    return _imp->data->in_repository_constraint();
+    return _imp->data->in_repository_requirement();
 }
 
-const std::shared_ptr<const InstallableToRepositoryConstraint>
-PackageDepSpec::installable_to_repository_constraint() const
+const std::shared_ptr<const InstallableToRepositoryRequirement>
+PackageDepSpec::installable_to_repository_requirement() const
 {
-    return _imp->data->installable_to_repository_constraint();
+    return _imp->data->installable_to_repository_requirement();
 }
 
-const std::shared_ptr<const FromRepositoryConstraint>
-PackageDepSpec::from_repository_constraint() const
+const std::shared_ptr<const FromRepositoryRequirement>
+PackageDepSpec::from_repository_requirement() const
 {
-    return _imp->data->from_repository_constraint();
+    return _imp->data->from_repository_requirement();
 }
 
-const std::shared_ptr<const InstalledAtPathConstraint>
-PackageDepSpec::installed_at_path_constraint() const
+const std::shared_ptr<const InstalledAtPathRequirement>
+PackageDepSpec::installed_at_path_requirement() const
 {
-    return _imp->data->installed_at_path_constraint();
+    return _imp->data->installed_at_path_requirement();
 }
 
-const std::shared_ptr<const InstallableToPathConstraint>
-PackageDepSpec::installable_to_path_constraint() const
+const std::shared_ptr<const InstallableToPathRequirement>
+PackageDepSpec::installable_to_path_requirement() const
 {
-    return _imp->data->installable_to_path_constraint();
+    return _imp->data->installable_to_path_requirement();
 }
 
-const std::shared_ptr<const ChoiceConstraintSequence>
-PackageDepSpec::all_choice_constraints() const
+const std::shared_ptr<const ChoiceRequirementSequence>
+PackageDepSpec::all_choice_requirements() const
 {
-    return _imp->data->all_choice_constraints();
+    return _imp->data->all_choice_requirements();
 }
 
-const std::shared_ptr<const KeyConstraintSequence>
-PackageDepSpec::all_key_constraints() const
+const std::shared_ptr<const KeyRequirementSequence>
+PackageDepSpec::all_key_requirements() const
 {
-    return _imp->data->all_key_constraints();
+    return _imp->data->all_key_requirements();
 }
 
 std::string

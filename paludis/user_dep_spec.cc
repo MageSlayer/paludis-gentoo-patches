@@ -63,24 +63,24 @@ namespace
                 throw PackageDepSpecError("Wildcard '*' not allowed");
 
             if (0 != s.compare(s.length() - 2, 2, "/*"))
-                result.constrain_package_name_part(PackageNamePart(s.substr(2)));
+                result.require_package_name_part(PackageNamePart(s.substr(2)));
         }
         else if (s.length() >= 3 && (0 == s.compare(s.length() - 2, 2, "/*")))
         {
             if (! options[updso_allow_wildcards])
                 throw PackageDepSpecError("Wildcard '*' not allowed in '" + stringify(s) + "'");
 
-            result.constrain_category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
+            result.require_category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
         }
         else if (s == "*")
             throw PackageDepSpecError("Use '*/*' not '*' to match everything");
         else if (std::string::npos != s.find('/'))
-            result.constrain_package(QualifiedPackageName(s));
+            result.require_package(QualifiedPackageName(s));
         else
         {
             if (options[updso_no_disambiguation])
                 throw PackageDepSpecError("Need an explicit category specified");
-            result.constrain_package(env->fetch_unique_qualified_package_name(PackageNamePart(s),
+            result.require_package(env->fetch_unique_qualified_package_name(PackageNamePart(s),
                 filter::And(filter, filter::Matches(result, make_null_shared_ptr(), { }))));
         }
     }
@@ -90,16 +90,16 @@ namespace
         if (s.length() >= 3 && (0 == s.compare(0, 2, "*/")))
         {
             if (0 != s.compare(s.length() - 2, 2, "/*"))
-                result.constrain_package_name_part(PackageNamePart(s.substr(2)));
+                result.require_package_name_part(PackageNamePart(s.substr(2)));
         }
         else if (s.length() >= 3 && (0 == s.compare(s.length() - 2, 2, "/*")))
         {
-            result.constrain_category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
+            result.require_category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
         }
         else if (s == "*")
             throw PackageDepSpecError("Use '*/*' not '*' to match everything");
         else if (std::string::npos != s.find('/'))
-            result.constrain_package(QualifiedPackageName(s));
+            result.require_package(QualifiedPackageName(s));
         else
         {
             throw PackageDepSpecError("Need an explicit category specified");
@@ -160,13 +160,13 @@ namespace
 
             case '.':
                 {
-                    auto k(parse_user_key_constraint(flag.substr(1)));
-                    result.constrain_key(std::get<0>(k), std::get<1>(k), std::get<2>(k), std::get<3>(k));
+                    auto k(parse_user_key_requirement(flag.substr(1)));
+                    result.require_key(std::get<0>(k), std::get<1>(k), std::get<2>(k), std::get<3>(k));
                 }
                 break;
 
             default:
-                result.constrain_choice(parse_elike_use_requirement(flag, { }));
+                result.require_choice(parse_elike_use_requirement(flag, { }));
                 break;
         };
 
@@ -181,7 +181,7 @@ namespace
         std::string::size_type slot_p(s.rfind(':'));
         if (std::string::npos != slot_p)
         {
-            result.constrain_exact_slot(SlotName(s.substr(slot_p + 1)), false);
+            result.require_exact_slot(SlotName(s.substr(slot_p + 1)), false);
             s.erase(slot_p);
         }
     }
@@ -197,24 +197,24 @@ namespace
             if ('?' == req.at(req.length() - 1))
             {
                 if (req.length() >= 2 && '?' == req.at(req.length() - 2))
-                    reqs.constrain_installable_to_path(FSPath(req.substr(0, req.length() - 2)), true);
+                    reqs.require_installable_to_path(FSPath(req.substr(0, req.length() - 2)), true);
                 else
-                    reqs.constrain_installable_to_path(FSPath(req.substr(0, req.length() - 1)), false);
+                    reqs.require_installable_to_path(FSPath(req.substr(0, req.length() - 1)), false);
             }
             else
-                reqs.constrain_installed_at_path(FSPath(req));
+                reqs.require_installed_at_path(FSPath(req));
         }
         else
         {
             if ('?' == req.at(req.length() - 1))
             {
                 if (req.length() >= 3 && '?' == req.at(req.length() - 2))
-                    reqs.constrain_installable_to_repository(RepositoryName(req.substr(0, req.length() - 2)), true);
+                    reqs.require_installable_to_repository(RepositoryName(req.substr(0, req.length() - 2)), true);
                 else
-                    reqs.constrain_installable_to_repository(RepositoryName(req.substr(0, req.length() - 1)), false);
+                    reqs.require_installable_to_repository(RepositoryName(req.substr(0, req.length() - 1)), false);
             }
             else
-                reqs.constrain_in_repository(RepositoryName(req));
+                reqs.require_in_repository(RepositoryName(req));
         }
     }
 
@@ -245,7 +245,7 @@ namespace
                 parse_rhs(result, right);
 
             if (! left.empty())
-                result.constrain_from_repository(RepositoryName(left));
+                result.require_from_repository(RepositoryName(left));
         }
     }
 }
@@ -317,15 +317,15 @@ paludis::user_version_spec_options()
         vso_ignore_case, vso_letters_anywhere, vso_dotted_suffixes };
 }
 
-std::tuple<KeyConstraintKeyType, std::string, KeyConstraintOperation, std::string>
-paludis::parse_user_key_constraint(const std::string & s)
+std::tuple<KeyRequirementKeyType, std::string, KeyRequirementOperation, std::string>
+paludis::parse_user_key_requirement(const std::string & s)
 {
     std::string::size_type p(s.find_first_of("=<>?~"));
     if (std::string::npos == p)
         throw PackageDepSpecError("[." + s + "] contains no operator");
 
     std::string key, value;
-    KeyConstraintOperation op(last_kco);
+    KeyRequirementOperation op(last_kro);
 
     if (s.at(p) == '?')
     {
@@ -334,17 +334,17 @@ paludis::parse_user_key_constraint(const std::string & s)
         else
         {
             key = s.substr(0, p);
-            op = kco_question;
+            op = kro_question;
         }
     }
     else
     {
         switch (s.at(p))
         {
-            case '=': op = kco_equals;        break;
-            case '~': op = kco_tilde;         break;
-            case '<': op = kco_less_than;     break;
-            case '>': op = kco_greater_than;  break;
+            case '=': op = kro_equals;        break;
+            case '~': op = kro_tilde;         break;
+            case '<': op = kro_less_than;     break;
+            case '>': op = kro_greater_than;  break;
             default:
                 throw PackageDepSpecError("[." + s + "] unknown operator");
         }
@@ -352,25 +352,25 @@ paludis::parse_user_key_constraint(const std::string & s)
         value = s.substr(p + 1);
     }
 
-    KeyConstraintKeyType type(kckt_id);
+    KeyRequirementKeyType type(krkt_id);
     if (0 == key.compare(0, 3, "::$", 0, 3))
     {
-        type = kckt_repo_role;
+        type = krkt_repo_role;
         key.erase(0, 3);
     }
     else if (0 == key.compare(0, 2, "::2", 0, 2))
     {
-        type = kckt_repo;
+        type = krkt_repo;
         key.erase(0, 2);
     }
     else if (0 == key.compare(0, 1, "$", 0, 1))
     {
-        type = kckt_id_role;
+        type = krkt_id_role;
         key.erase(0, 1);
     }
     else if (0 == key.compare(0, 1, "(", 0, 1) && ')' == key.at(key.length() - 1))
     {
-        type = kckt_id_mask;
+        type = krkt_id_mask;
         key.erase(0, 1);
         key.erase(key.length() - 1);
     }

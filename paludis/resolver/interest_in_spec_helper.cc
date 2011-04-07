@@ -39,7 +39,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/match_package.hh>
 #include <paludis/dep_spec_annotations.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 #include <list>
 #include <set>
 
@@ -270,7 +270,7 @@ InterestInSpecHelper::operator() (
         {
             for (auto l(_imp->take_specs.begin()), l_end(_imp->take_specs.end()) ;
                     l != l_end ; ++l)
-                if (match_qpns(*_imp->env, *l, dep.spec().if_package()->package_name_constraint()->name()))
+                if (match_qpns(*_imp->env, *l, dep.spec().if_package()->package_name_requirement()->name()))
                     return si_take;
         }
 
@@ -299,7 +299,7 @@ InterestInSpecHelper::operator() (
         {
             for (auto l(_imp->ignore_specs.begin()), l_end(_imp->ignore_specs.end()) ;
                     l != l_end ; ++l)
-                if (match_qpns(*_imp->env, *l, dep.spec().if_package()->package_name_constraint()->name()))
+                if (match_qpns(*_imp->env, *l, dep.spec().if_package()->package_name_requirement()->name()))
                     return si_ignore;
         }
 

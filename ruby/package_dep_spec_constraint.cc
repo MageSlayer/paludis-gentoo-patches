@@ -19,7 +19,7 @@
 
 #include <paludis_ruby.hh>
 
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 
 #include <algorithm>
 #include <list>
@@ -30,485 +30,485 @@ using namespace paludis::ruby;
 
 namespace
 {
-    static VALUE c_package_dep_spec_constraint;
-    static VALUE c_name_constraint;
-    static VALUE c_package_name_part_constraint;
-    static VALUE c_category_name_part_constraint;
-    static VALUE c_version_constraint;
-    static VALUE c_in_repository_constraint;
-    static VALUE c_from_repository_constraint;
-    static VALUE c_installed_at_path_constraint;
-    static VALUE c_installable_to_path_constraint;
-    static VALUE c_installable_to_repository_constraint;
-    static VALUE c_any_slot_constraint;
-    static VALUE c_exact_slot_constraint;
-    static VALUE c_key_constraint;
-    static VALUE c_choice_constraint;
+    static VALUE c_package_dep_spec_requirement;
+    static VALUE c_name_requirement;
+    static VALUE c_package_name_part_requirement;
+    static VALUE c_category_name_part_requirement;
+    static VALUE c_version_requirement;
+    static VALUE c_in_repository_requirement;
+    static VALUE c_from_repository_requirement;
+    static VALUE c_installed_at_path_requirement;
+    static VALUE c_installable_to_path_requirement;
+    static VALUE c_installable_to_repository_requirement;
+    static VALUE c_any_slot_requirement;
+    static VALUE c_exact_slot_requirement;
+    static VALUE c_key_requirement;
+    static VALUE c_choice_requirement;
 
-    static VALUE c_key_constraint_operation;
+    static VALUE c_key_requirement_operation;
 
     struct V
     {
         VALUE value;
-        std::shared_ptr<const PackageDepSpecConstraint> mm;
+        std::shared_ptr<const PackageDepSpecRequirement> mm;
 
-        V(const std::shared_ptr<const PackageDepSpecConstraint> & m) :
+        V(const std::shared_ptr<const PackageDepSpecRequirement> & m) :
             mm(m)
         {
         }
 
-        void visit(const NameConstraint &)
+        void visit(const NameRequirement &)
         {
-            value = Data_Wrap_Struct(c_name_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
-                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+            value = Data_Wrap_Struct(c_name_requirement, 0, &Common<std::shared_ptr<const PackageDepSpecRequirement> >::free,
+                    new std::shared_ptr<const PackageDepSpecRequirement>(mm));
         }
 
-        void visit(const CategoryNamePartConstraint &)
+        void visit(const CategoryNamePartRequirement &)
         {
-            value = Data_Wrap_Struct(c_category_name_part_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
-                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+            value = Data_Wrap_Struct(c_category_name_part_requirement, 0, &Common<std::shared_ptr<const PackageDepSpecRequirement> >::free,
+                    new std::shared_ptr<const PackageDepSpecRequirement>(mm));
         }
 
-        void visit(const PackageNamePartConstraint &)
+        void visit(const PackageNamePartRequirement &)
         {
-            value = Data_Wrap_Struct(c_package_name_part_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
-                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+            value = Data_Wrap_Struct(c_package_name_part_requirement, 0, &Common<std::shared_ptr<const PackageDepSpecRequirement> >::free,
+                    new std::shared_ptr<const PackageDepSpecRequirement>(mm));
         }
 
-        void visit(const VersionConstraint &)
+        void visit(const VersionRequirement &)
         {
-            value = Data_Wrap_Struct(c_version_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
-                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+            value = Data_Wrap_Struct(c_version_requirement, 0, &Common<std::shared_ptr<const PackageDepSpecRequirement> >::free,
+                    new std::shared_ptr<const PackageDepSpecRequirement>(mm));
         }
 
-        void visit(const InRepositoryConstraint &)
+        void visit(const InRepositoryRequirement &)
         {
-            value = Data_Wrap_Struct(c_in_repository_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
-                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+            value = Data_Wrap_Struct(c_in_repository_requirement, 0, &Common<std::shared_ptr<const PackageDepSpecRequirement> >::free,
+                    new std::shared_ptr<const PackageDepSpecRequirement>(mm));
         }
 
-        void visit(const FromRepositoryConstraint &)
+        void visit(const FromRepositoryRequirement &)
         {
-            value = Data_Wrap_Struct(c_from_repository_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
-                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+            value = Data_Wrap_Struct(c_from_repository_requirement, 0, &Common<std::shared_ptr<const PackageDepSpecRequirement> >::free,
+                    new std::shared_ptr<const PackageDepSpecRequirement>(mm));
         }
 
-        void visit(const InstalledAtPathConstraint &)
+        void visit(const InstalledAtPathRequirement &)
         {
-            value = Data_Wrap_Struct(c_installed_at_path_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
-                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+            value = Data_Wrap_Struct(c_installed_at_path_requirement, 0, &Common<std::shared_ptr<const PackageDepSpecRequirement> >::free,
+                    new std::shared_ptr<const PackageDepSpecRequirement>(mm));
         }
 
-        void visit(const InstallableToPathConstraint &)
+        void visit(const InstallableToPathRequirement &)
         {
-            value = Data_Wrap_Struct(c_installable_to_path_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
-                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+            value = Data_Wrap_Struct(c_installable_to_path_requirement, 0, &Common<std::shared_ptr<const PackageDepSpecRequirement> >::free,
+                    new std::shared_ptr<const PackageDepSpecRequirement>(mm));
         }
 
-        void visit(const InstallableToRepositoryConstraint &)
+        void visit(const InstallableToRepositoryRequirement &)
         {
-            value = Data_Wrap_Struct(c_installable_to_repository_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
-                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+            value = Data_Wrap_Struct(c_installable_to_repository_requirement, 0, &Common<std::shared_ptr<const PackageDepSpecRequirement> >::free,
+                    new std::shared_ptr<const PackageDepSpecRequirement>(mm));
         }
 
-        void visit(const AnySlotConstraint &)
+        void visit(const AnySlotRequirement &)
         {
-            value = Data_Wrap_Struct(c_any_slot_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
-                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+            value = Data_Wrap_Struct(c_any_slot_requirement, 0, &Common<std::shared_ptr<const PackageDepSpecRequirement> >::free,
+                    new std::shared_ptr<const PackageDepSpecRequirement>(mm));
         }
 
-        void visit(const ExactSlotConstraint &)
+        void visit(const ExactSlotRequirement &)
         {
-            value = Data_Wrap_Struct(c_exact_slot_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
-                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+            value = Data_Wrap_Struct(c_exact_slot_requirement, 0, &Common<std::shared_ptr<const PackageDepSpecRequirement> >::free,
+                    new std::shared_ptr<const PackageDepSpecRequirement>(mm));
         }
 
-        void visit(const KeyConstraint &)
+        void visit(const KeyRequirement &)
         {
-            value = Data_Wrap_Struct(c_key_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
-                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+            value = Data_Wrap_Struct(c_key_requirement, 0, &Common<std::shared_ptr<const PackageDepSpecRequirement> >::free,
+                    new std::shared_ptr<const PackageDepSpecRequirement>(mm));
         }
 
-        void visit(const ChoiceConstraint &)
+        void visit(const ChoiceRequirement &)
         {
-            value = Data_Wrap_Struct(c_choice_constraint, 0, &Common<std::shared_ptr<const PackageDepSpecConstraint> >::free,
-                    new std::shared_ptr<const PackageDepSpecConstraint>(mm));
+            value = Data_Wrap_Struct(c_choice_requirement, 0, &Common<std::shared_ptr<const PackageDepSpecRequirement> >::free,
+                    new std::shared_ptr<const PackageDepSpecRequirement>(mm));
         }
     };
 
     /*
      * Document-method: name
      *
-     * The name constraint.
+     * The name requirement.
      */
     static VALUE
-    name_constraint_name(VALUE self)
+    name_requirement_name(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return qualified_package_name_to_value((std::static_pointer_cast<const NameConstraint>(*ptr))->name());
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return qualified_package_name_to_value((std::static_pointer_cast<const NameRequirement>(*ptr))->name());
     }
 
     /*
      * Document-method: name_part
      *
-     * The name part constraint.
+     * The name part requirement.
      */
     static VALUE
-    package_name_part_constraint_name_part(VALUE self)
+    package_name_part_requirement_name_part(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return rb_str_new2(stringify((std::static_pointer_cast<const PackageNamePartConstraint>(*ptr))->name_part()).c_str());
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return rb_str_new2(stringify((std::static_pointer_cast<const PackageNamePartRequirement>(*ptr))->name_part()).c_str());
     }
 
     /*
      * Document-method: name_part
      *
-     * The name part constraint.
+     * The name part requirement.
      */
     static VALUE
-    category_name_part_constraint_name_part(VALUE self)
+    category_name_part_requirement_name_part(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return rb_str_new2(stringify((std::static_pointer_cast<const CategoryNamePartConstraint>(*ptr))->name_part()).c_str());
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return rb_str_new2(stringify((std::static_pointer_cast<const CategoryNamePartRequirement>(*ptr))->name_part()).c_str());
     }
 
     /*
      * Document-method: name
      *
-     * The name constraint.
+     * The name requirement.
      */
     static VALUE
-    in_repository_constraint_name(VALUE self)
+    in_repository_requirement_name(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return rb_str_new2(stringify((std::static_pointer_cast<const InRepositoryConstraint>(*ptr))->name()).c_str());
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return rb_str_new2(stringify((std::static_pointer_cast<const InRepositoryRequirement>(*ptr))->name()).c_str());
     }
 
     /*
      * Document-method: name
      *
-     * The name constraint.
+     * The name requirement.
      */
     static VALUE
-    from_repository_constraint_name(VALUE self)
+    from_repository_requirement_name(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return rb_str_new2(stringify((std::static_pointer_cast<const FromRepositoryConstraint>(*ptr))->name()).c_str());
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return rb_str_new2(stringify((std::static_pointer_cast<const FromRepositoryRequirement>(*ptr))->name()).c_str());
     }
 
     /*
      * Document-method: path
      *
-     * The path constraint.
+     * The path requirement.
      */
     static VALUE
-    installed_at_path_constraint_path(VALUE self)
+    installed_at_path_requirement_path(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return rb_str_new2(stringify((std::static_pointer_cast<const InstalledAtPathConstraint>(*ptr))->path()).c_str());
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return rb_str_new2(stringify((std::static_pointer_cast<const InstalledAtPathRequirement>(*ptr))->path()).c_str());
     }
 
     /*
      * Document-method: path
      *
-     * The path constraint.
+     * The path requirement.
      */
     static VALUE
-    installable_to_path_constraint_path(VALUE self)
+    installable_to_path_requirement_path(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return rb_str_new2(stringify((std::static_pointer_cast<const InstallableToPathConstraint>(*ptr))->path()).c_str());
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return rb_str_new2(stringify((std::static_pointer_cast<const InstallableToPathRequirement>(*ptr))->path()).c_str());
     }
 
     /*
      * Document-method: include_masked?
      *
-     * The include-masked constraint.
+     * The include-masked requirement.
      */
     static VALUE
-    installable_to_path_constraint_include_masked(VALUE self)
+    installable_to_path_requirement_include_masked(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return (std::static_pointer_cast<const InstallableToPathConstraint>(*ptr))->include_masked() ? Qtrue : Qfalse;
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return (std::static_pointer_cast<const InstallableToPathRequirement>(*ptr))->include_masked() ? Qtrue : Qfalse;
     }
 
     /*
      * Document-method: name
      *
-     * The name constraint.
+     * The name requirement.
      */
     static VALUE
-    installable_to_repository_constraint_name(VALUE self)
+    installable_to_repository_requirement_name(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return rb_str_new2(stringify((std::static_pointer_cast<const InstallableToRepositoryConstraint>(*ptr))->name()).c_str());
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return rb_str_new2(stringify((std::static_pointer_cast<const InstallableToRepositoryRequirement>(*ptr))->name()).c_str());
     }
 
     /*
      * Document-method: include_masked?
      *
-     * The include-masked constraint.
+     * The include-masked requirement.
      */
     static VALUE
-    installable_to_repository_constraint_include_masked(VALUE self)
+    installable_to_repository_requirement_include_masked(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return (std::static_pointer_cast<const InstallableToRepositoryConstraint>(*ptr))->include_masked() ? Qtrue : Qfalse;
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return (std::static_pointer_cast<const InstallableToRepositoryRequirement>(*ptr))->include_masked() ? Qtrue : Qfalse;
     }
 
     /*
      * Document-method: locking?
      *
-     * The locking constraint.
+     * The locking requirement.
      */
     static VALUE
-    any_slot_constraint_locking(VALUE self)
+    any_slot_requirement_locking(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return (std::static_pointer_cast<const AnySlotConstraint>(*ptr))->locking() ? Qtrue : Qfalse;
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return (std::static_pointer_cast<const AnySlotRequirement>(*ptr))->locking() ? Qtrue : Qfalse;
     }
 
     /*
      * Document-method: locked?
      *
-     * The locked constraint.
+     * The locked requirement.
      */
     static VALUE
-    exact_slot_constraint_locked(VALUE self)
+    exact_slot_requirement_locked(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return (std::static_pointer_cast<const ExactSlotConstraint>(*ptr))->locked() ? Qtrue : Qfalse;
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return (std::static_pointer_cast<const ExactSlotRequirement>(*ptr))->locked() ? Qtrue : Qfalse;
     }
 
     /*
      * Document-method: name
      *
-     * The name constraint.
+     * The name requirement.
      */
     static VALUE
-    exact_slot_constraint_name(VALUE self)
+    exact_slot_requirement_name(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return rb_str_new2(stringify((std::static_pointer_cast<const ExactSlotConstraint>(*ptr))->name()).c_str());
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return rb_str_new2(stringify((std::static_pointer_cast<const ExactSlotRequirement>(*ptr))->name()).c_str());
     }
 
     /*
      * Document-method: key
      *
-     * The key constraint.
+     * The key requirement.
      */
     static VALUE
-    key_constraint_key(VALUE self)
+    key_requirement_key(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return rb_str_new2(stringify((std::static_pointer_cast<const KeyConstraint>(*ptr))->key()).c_str());
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return rb_str_new2(stringify((std::static_pointer_cast<const KeyRequirement>(*ptr))->key()).c_str());
     }
 
     /*
      * Document-method: pattern
      *
-     * The pattern constraint.
+     * The pattern requirement.
      */
     static VALUE
-    key_constraint_pattern(VALUE self)
+    key_requirement_pattern(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return rb_str_new2(stringify((std::static_pointer_cast<const KeyConstraint>(*ptr))->pattern()).c_str());
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return rb_str_new2(stringify((std::static_pointer_cast<const KeyRequirement>(*ptr))->pattern()).c_str());
     }
 
     /*
      * Document-method: operation
      *
-     * The operation constraint.
+     * The operation requirement.
      */
     static VALUE
-    key_constraint_operation(VALUE self)
+    key_requirement_operation(VALUE self)
     {
-        std::shared_ptr<const PackageDepSpecConstraint> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecConstraint>, ptr);
-        return INT2FIX((std::static_pointer_cast<const KeyConstraint>(*ptr))->operation());
+        std::shared_ptr<const PackageDepSpecRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageDepSpecRequirement>, ptr);
+        return INT2FIX((std::static_pointer_cast<const KeyRequirement>(*ptr))->operation());
     }
 
-    void do_register_package_dep_spec_constraint()
+    void do_register_package_dep_spec_requirement()
     {
         /*
-         * Document-class: Paludis::PackageDepSpecConstraint
+         * Document-class: Paludis::PackageDepSpecRequirement
          *
-         * Represents a constraint in a PackageDepSpec.
+         * Represents a requirement in a PackageDepSpec.
          */
-        c_package_dep_spec_constraint = rb_define_class_under(paludis_module(), "PackageDepSpecConstraint", rb_cObject);
-        rb_funcall(c_package_dep_spec_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        c_package_dep_spec_requirement = rb_define_class_under(paludis_module(), "PackageDepSpecRequirement", rb_cObject);
+        rb_funcall(c_package_dep_spec_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
 
         /*
-         * Document-class: Paludis::NameConstraint
+         * Document-class: Paludis::NameRequirement
          *
-         * Represents a cat/pkg name constraint in a PackageDepSpec.
+         * Represents a cat/pkg name requirement in a PackageDepSpec.
          */
-        c_name_constraint = rb_define_class_under(
-                paludis_module(), "NameConstraint", c_package_dep_spec_constraint);
-        rb_funcall(c_name_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_package_dep_spec_constraint, "name", RUBY_FUNC_CAST(&name_constraint_name), 0);
+        c_name_requirement = rb_define_class_under(
+                paludis_module(), "NameRequirement", c_package_dep_spec_requirement);
+        rb_funcall(c_name_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_package_dep_spec_requirement, "name", RUBY_FUNC_CAST(&name_requirement_name), 0);
 
         /*
-         * Document-class: Paludis::PackageNamePartConstraint
+         * Document-class: Paludis::PackageNamePartRequirement
          *
-         * Represents a /pkg name constraint in a PackageDepSpec.
+         * Represents a /pkg name requirement in a PackageDepSpec.
          */
-        c_package_name_part_constraint = rb_define_class_under(
-                paludis_module(), "PackageNamePartConstraint", c_package_dep_spec_constraint);
-        rb_funcall(c_package_name_part_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_package_name_part_constraint, "name_part", RUBY_FUNC_CAST(
-                    &package_name_part_constraint_name_part), 0);
+        c_package_name_part_requirement = rb_define_class_under(
+                paludis_module(), "PackageNamePartRequirement", c_package_dep_spec_requirement);
+        rb_funcall(c_package_name_part_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_package_name_part_requirement, "name_part", RUBY_FUNC_CAST(
+                    &package_name_part_requirement_name_part), 0);
 
         /*
-         * Document-class: Paludis::CategoryNamePartConstraint
+         * Document-class: Paludis::CategoryNamePartRequirement
          *
-         * Represents a /pkg name constraint in a PackageDepSpec.
+         * Represents a /pkg name requirement in a PackageDepSpec.
          */
-        c_category_name_part_constraint = rb_define_class_under(
-                paludis_module(), "CategoryNamePartConstraint", c_package_dep_spec_constraint);
-        rb_funcall(c_category_name_part_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_category_name_part_constraint, "name_part", RUBY_FUNC_CAST(
-                    &category_name_part_constraint_name_part), 0);
+        c_category_name_part_requirement = rb_define_class_under(
+                paludis_module(), "CategoryNamePartRequirement", c_package_dep_spec_requirement);
+        rb_funcall(c_category_name_part_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_category_name_part_requirement, "name_part", RUBY_FUNC_CAST(
+                    &category_name_part_requirement_name_part), 0);
 
         /*
-         * Document-class: Paludis::InRepositoryConstraint
+         * Document-class: Paludis::InRepositoryRequirement
          *
-         * Represents a /pkg name constraint in a PackageDepSpec.
+         * Represents a /pkg name requirement in a PackageDepSpec.
          */
-        c_in_repository_constraint = rb_define_class_under(
-                paludis_module(), "InRepositoryConstraint", c_package_dep_spec_constraint);
-        rb_funcall(c_in_repository_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_in_repository_constraint, "name", RUBY_FUNC_CAST(
-                    &in_repository_constraint_name), 0);
+        c_in_repository_requirement = rb_define_class_under(
+                paludis_module(), "InRepositoryRequirement", c_package_dep_spec_requirement);
+        rb_funcall(c_in_repository_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_in_repository_requirement, "name", RUBY_FUNC_CAST(
+                    &in_repository_requirement_name), 0);
 
         /*
-         * Document-class: Paludis::FromRepositoryConstraint
+         * Document-class: Paludis::FromRepositoryRequirement
          *
-         * Represents a /pkg name constraint in a PackageDepSpec.
+         * Represents a /pkg name requirement in a PackageDepSpec.
          */
-        c_from_repository_constraint = rb_define_class_under(
-                paludis_module(), "InRepositoryConstraint", c_package_dep_spec_constraint);
-        rb_funcall(c_from_repository_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_from_repository_constraint, "name", RUBY_FUNC_CAST(
-                    &from_repository_constraint_name), 0);
+        c_from_repository_requirement = rb_define_class_under(
+                paludis_module(), "InRepositoryRequirement", c_package_dep_spec_requirement);
+        rb_funcall(c_from_repository_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_from_repository_requirement, "name", RUBY_FUNC_CAST(
+                    &from_repository_requirement_name), 0);
 
         /*
-         * Document-class: Paludis::InstalledAtPathConstraint
+         * Document-class: Paludis::InstalledAtPathRequirement
          *
-         * Represents a ::/ path constraint in a PackageDepSpec.
+         * Represents a ::/ path requirement in a PackageDepSpec.
          */
-        c_installed_at_path_constraint = rb_define_class_under(
-                paludis_module(), "InRepositoryConstraint", c_package_dep_spec_constraint);
-        rb_funcall(c_installed_at_path_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_installed_at_path_constraint, "path", RUBY_FUNC_CAST(
-                    &installed_at_path_constraint_path), 0);
+        c_installed_at_path_requirement = rb_define_class_under(
+                paludis_module(), "InRepositoryRequirement", c_package_dep_spec_requirement);
+        rb_funcall(c_installed_at_path_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_installed_at_path_requirement, "path", RUBY_FUNC_CAST(
+                    &installed_at_path_requirement_path), 0);
 
         /*
-         * Document-class: Paludis::InstallableToPathConstraint
+         * Document-class: Paludis::InstallableToPathRequirement
          *
-         * Represents a ::/? path constraint in a PackageDepSpec.
+         * Represents a ::/? path requirement in a PackageDepSpec.
          */
-        c_installable_to_path_constraint = rb_define_class_under(
-                paludis_module(), "InRepositoryConstraint", c_package_dep_spec_constraint);
-        rb_funcall(c_installable_to_path_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_installable_to_path_constraint, "path", RUBY_FUNC_CAST(
-                    &installable_to_path_constraint_path), 0);
-        rb_define_method(c_installable_to_path_constraint, "include_masked?", RUBY_FUNC_CAST(
-                    &installable_to_path_constraint_include_masked), 0);
+        c_installable_to_path_requirement = rb_define_class_under(
+                paludis_module(), "InRepositoryRequirement", c_package_dep_spec_requirement);
+        rb_funcall(c_installable_to_path_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_installable_to_path_requirement, "path", RUBY_FUNC_CAST(
+                    &installable_to_path_requirement_path), 0);
+        rb_define_method(c_installable_to_path_requirement, "include_masked?", RUBY_FUNC_CAST(
+                    &installable_to_path_requirement_include_masked), 0);
 
         /*
-         * Document-class: Paludis::InstallableToRepositoryConstraint
+         * Document-class: Paludis::InstallableToRepositoryRequirement
          *
-         * Represents a ::repo? repository constraint in a PackageDepSpec.
+         * Represents a ::repo? repository requirement in a PackageDepSpec.
          */
-        c_installable_to_repository_constraint = rb_define_class_under(
-                paludis_module(), "InstallableToRepositoryConstraint", c_package_dep_spec_constraint);
-        rb_funcall(c_installable_to_repository_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_installable_to_repository_constraint, "name", RUBY_FUNC_CAST(
-                    &installable_to_repository_constraint_name), 0);
-        rb_define_method(c_installable_to_repository_constraint, "include_masked?", RUBY_FUNC_CAST(
-                    &installable_to_repository_constraint_include_masked), 0);
+        c_installable_to_repository_requirement = rb_define_class_under(
+                paludis_module(), "InstallableToRepositoryRequirement", c_package_dep_spec_requirement);
+        rb_funcall(c_installable_to_repository_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_installable_to_repository_requirement, "name", RUBY_FUNC_CAST(
+                    &installable_to_repository_requirement_name), 0);
+        rb_define_method(c_installable_to_repository_requirement, "include_masked?", RUBY_FUNC_CAST(
+                    &installable_to_repository_requirement_include_masked), 0);
 
         /*
-         * Document-class: Paludis::AnySlotConstraint
+         * Document-class: Paludis::AnySlotRequirement
          *
-         * Represents a :* or := constraint in a PackageDepSpec.
+         * Represents a :* or := requirement in a PackageDepSpec.
          */
-        c_any_slot_constraint = rb_define_class_under(
-                paludis_module(), "AnySlotConstraint", c_package_dep_spec_constraint);
-        rb_funcall(c_any_slot_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_any_slot_constraint, "locking?", RUBY_FUNC_CAST(
-                    &any_slot_constraint_locking), 0);
+        c_any_slot_requirement = rb_define_class_under(
+                paludis_module(), "AnySlotRequirement", c_package_dep_spec_requirement);
+        rb_funcall(c_any_slot_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_any_slot_requirement, "locking?", RUBY_FUNC_CAST(
+                    &any_slot_requirement_locking), 0);
 
         /*
-         * Document-class: Paludis::ExactSlotConstraint
+         * Document-class: Paludis::ExactSlotRequirement
          *
-         * Represents a :slot or :=slot constraint in a PackageDepSpec.
+         * Represents a :slot or :=slot requirement in a PackageDepSpec.
          */
-        c_exact_slot_constraint = rb_define_class_under(
-                paludis_module(), "ExactSlotConstraint", c_package_dep_spec_constraint);
-        rb_funcall(c_exact_slot_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_exact_slot_constraint, "locked?", RUBY_FUNC_CAST(
-                    &exact_slot_constraint_locked), 0);
-        rb_define_method(c_exact_slot_constraint, "name", RUBY_FUNC_CAST(
-                    &exact_slot_constraint_name), 0);
+        c_exact_slot_requirement = rb_define_class_under(
+                paludis_module(), "ExactSlotRequirement", c_package_dep_spec_requirement);
+        rb_funcall(c_exact_slot_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_exact_slot_requirement, "locked?", RUBY_FUNC_CAST(
+                    &exact_slot_requirement_locked), 0);
+        rb_define_method(c_exact_slot_requirement, "name", RUBY_FUNC_CAST(
+                    &exact_slot_requirement_name), 0);
 
         /*
-         * Document-class: Paludis::KeyConstraint
+         * Document-class: Paludis::KeyRequirement
          *
-         * Represents a [.key=value] constraint in a PackageDepSpec.
+         * Represents a [.key=value] requirement in a PackageDepSpec.
          */
-        c_key_constraint = rb_define_class_under(
-                paludis_module(), "KeyConstraint", c_package_dep_spec_constraint);
-        rb_funcall(c_key_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
-        rb_define_method(c_key_constraint, "key", RUBY_FUNC_CAST(
-                    &key_constraint_key), 0);
-        rb_define_method(c_key_constraint, "pattern", RUBY_FUNC_CAST(
-                    &key_constraint_pattern), 0);
-        rb_define_method(c_key_constraint, "operation", RUBY_FUNC_CAST(
-                    &key_constraint_operation), 0);
+        c_key_requirement = rb_define_class_under(
+                paludis_module(), "KeyRequirement", c_package_dep_spec_requirement);
+        rb_funcall(c_key_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_key_requirement, "key", RUBY_FUNC_CAST(
+                    &key_requirement_key), 0);
+        rb_define_method(c_key_requirement, "pattern", RUBY_FUNC_CAST(
+                    &key_requirement_pattern), 0);
+        rb_define_method(c_key_requirement, "operation", RUBY_FUNC_CAST(
+                    &key_requirement_operation), 0);
 
         /*
-         * Document-module: Paludis::KeyConstraintOperation
+         * Document-module: Paludis::KeyRequirementOperation
          *
-         * The operation for a KeyConstraint.
+         * The operation for a KeyRequirement.
          */
-        c_key_constraint_operation = rb_define_module_under(paludis_module(), "KeyConstraintOperation");
-        for (KeyConstraintOperation l(static_cast<KeyConstraintOperation>(0)), l_end(last_kco) ; l != l_end ;
-                l = static_cast<KeyConstraintOperation>(static_cast<int>(l) + 1))
-            rb_define_const(c_key_constraint_operation, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+        c_key_requirement_operation = rb_define_module_under(paludis_module(), "KeyRequirementOperation");
+        for (KeyRequirementOperation l(static_cast<KeyRequirementOperation>(0)), l_end(last_kro) ; l != l_end ;
+                l = static_cast<KeyRequirementOperation>(static_cast<int>(l) + 1))
+            rb_define_const(c_key_requirement_operation, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
 
-        // cc_enum_special<paludis/package_dep_spec_constraint-se.hh, KeyConstraint, c_key_constraint_operation>
+        // cc_enum_special<paludis/package_dep_spec_requirement-se.hh, KeyRequirement, c_key_requirement_operation>
 
         /*
-         * Document-class: Paludis::ChoiceConstraint
+         * Document-class: Paludis::ChoiceRequirement
          *
-         * Represents a [flag] constraint in a PackageDepSpec.
+         * Represents a [flag] requirement in a PackageDepSpec.
          */
-        c_choice_constraint = rb_define_class_under(
-                paludis_module(), "KeyConstraint", c_package_dep_spec_constraint);
-        rb_funcall(c_choice_constraint, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        c_choice_requirement = rb_define_class_under(
+                paludis_module(), "KeyRequirement", c_package_dep_spec_requirement);
+        rb_funcall(c_choice_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
     }
 }
 
 VALUE
-paludis::ruby::package_dep_spec_constraint_to_value(const std::shared_ptr<const PackageDepSpecConstraint> & m)
+paludis::ruby::package_dep_spec_requirement_to_value(const std::shared_ptr<const PackageDepSpecRequirement> & m)
 {
     try
     {
@@ -522,6 +522,6 @@ paludis::ruby::package_dep_spec_constraint_to_value(const std::shared_ptr<const 
     }
 }
 
-RegisterRubyClass::Register paludis_ruby_register_package_dep_spec_constraint PALUDIS_ATTRIBUTE((used))
-    (&do_register_package_dep_spec_constraint);
+RegisterRubyClass::Register paludis_ruby_register_package_dep_spec_requirement PALUDIS_ATTRIBUTE((used))
+    (&do_register_package_dep_spec_requirement);
 

@@ -36,7 +36,7 @@ BOOST_PYTHON_MODULE(paludis)
     expose_fs_path();
     expose_contents();
     expose_filter(); /* must be before dep_spec */
-    expose_package_dep_spec_constraint();
+    expose_package_dep_spec_requirement();
     expose_dep_spec();
     expose_dep_label();
     expose_name();

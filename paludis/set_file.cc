@@ -38,7 +38,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 #include <paludis/dep_spec_data.hh>
 
 #include <list>
@@ -171,14 +171,14 @@ namespace
 
     PackageDepSpec name_and_slot(const PackageDepSpec & spec)
     {
-        if (spec.exact_slot_constraint())
+        if (spec.exact_slot_requirement())
             return MutablePackageDepSpecData({ })
-                .constrain_package(spec.package_name_constraint()->name())
-                .constrain_exact_slot(spec.exact_slot_constraint()->name(), spec.exact_slot_constraint()->locked())
+                .require_package(spec.package_name_requirement()->name())
+                .require_exact_slot(spec.exact_slot_requirement()->name(), spec.exact_slot_requirement()->locked())
                 ;
         else
             return MutablePackageDepSpecData({ })
-                .constrain_package(spec.package_name_constraint()->name());
+                .require_package(spec.package_name_requirement()->name());
     }
 
     void
@@ -251,13 +251,13 @@ namespace
                 }
 
                 std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(params.parser()(tokens.at(1))));
-                if (spec->package_name_constraint())
+                if (spec->package_name_requirement())
                 {
                     if (! params.environment())
                         Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
                             << "Line '" << line << "' uses ? operator but no environment is available";
                     else if (! (*params.environment())[selection::SomeArbitraryVersion(
-                                generator::Package(spec->package_name_constraint()->name()) |
+                                generator::Package(spec->package_name_requirement()->name()) |
                                 filter::InstalledAtRoot(params.environment()->preferred_root_key()->value()))]->empty())
                         result->top()->append(spec);
                 }
@@ -275,7 +275,7 @@ namespace
                 }
 
                 std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(params.parser()(tokens.at(1))));
-                if (spec->package_name_constraint())
+                if (spec->package_name_requirement())
                 {
                     if (! params.environment())
                         Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)

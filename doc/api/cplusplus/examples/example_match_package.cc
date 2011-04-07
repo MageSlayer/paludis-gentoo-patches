@@ -54,7 +54,7 @@ int main(int argc, char * argv[])
                 i != i_end ; ++i)
         {
             /* Is it paludis? */
-            if (match_package(*env, MutablePackageDepSpecData({ }).constrain_package(
+            if (match_package(*env, MutablePackageDepSpecData({ }).require_package(
                             QualifiedPackageName("sys-apps/paludis")), *i, make_null_shared_ptr(), { }))
                 cout << left << setw(50) << (stringify(**i) + ":") << " " << "paludis" << endl;
 

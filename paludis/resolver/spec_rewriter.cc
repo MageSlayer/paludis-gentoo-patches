@@ -38,7 +38,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/elike_blocker.hh>
-#include <paludis/package_dep_spec_constraint.hh>
+#include <paludis/package_dep_spec_requirement.hh>
 #include <paludis/dep_spec_data.hh>
 
 #include <map>
@@ -95,13 +95,13 @@ SpecRewriter::~SpecRewriter() = default;
 const std::shared_ptr<const RewrittenSpec>
 SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::shared_ptr<const Resolvent> & maybe_our_resolvent) const
 {
-    if (s.if_package() && s.if_package()->package_name_constraint())
+    if (s.if_package() && s.if_package()->package_name_requirement())
     {
-        if (s.if_package()->package_name_constraint()->name().category() != CategoryNamePart("virtual"))
+        if (s.if_package()->package_name_requirement()->name().category() != CategoryNamePart("virtual"))
             return make_null_shared_ptr();
         _need_rewrites();
 
-        Rewrites::const_iterator r(_imp->rewrites.find(s.if_package()->package_name_constraint()->name()));
+        Rewrites::const_iterator r(_imp->rewrites.find(s.if_package()->package_name_requirement()->name()));
         if (r == _imp->rewrites.end())
             return make_null_shared_ptr();
 
@@ -112,18 +112,18 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::sha
         for (std::set<QualifiedPackageName>::const_iterator n(r->second.begin()), n_end(r->second.end()) ;
                 n != n_end ; ++n)
             result->specs()->push_back(PackageOrBlockDepSpec(MutablePackageDepSpecData(*s.if_package()->data())
-                        .unconstrain_package()
-                        .constrain_package(*n)));
+                        .unrequire_package()
+                        .require_package(*n)));
 
         return result;
     }
-    else if (s.if_block() && s.if_block()->blocking().package_name_constraint())
+    else if (s.if_block() && s.if_block()->blocking().package_name_requirement())
     {
-        if (s.if_block()->blocking().package_name_constraint()->name().category() != CategoryNamePart("virtual"))
+        if (s.if_block()->blocking().package_name_requirement()->name().category() != CategoryNamePart("virtual"))
             return make_null_shared_ptr();
         _need_rewrites();
 
-        Rewrites::const_iterator r(_imp->rewrites.find(s.if_block()->blocking().package_name_constraint()->name()));
+        Rewrites::const_iterator r(_imp->rewrites.find(s.if_block()->blocking().package_name_requirement()->name()));
         if (r == _imp->rewrites.end())
             return make_null_shared_ptr();
 
@@ -138,8 +138,8 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::sha
                 continue;
 
             PackageDepSpec spec(MutablePackageDepSpecData(*s.if_block()->blocking().data())
-                    .unconstrain_package()
-                    .constrain_package(*n));
+                    .unrequire_package()
+                    .require_package(*n));
             auto p(split_elike_blocker(s.if_block()->text()));
             BlockDepSpec b(std::get<1>(p) + stringify(spec), spec);
             b.set_annotations(s.if_block()->maybe_annotations());

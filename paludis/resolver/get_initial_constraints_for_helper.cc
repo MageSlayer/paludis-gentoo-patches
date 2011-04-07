@@ -243,7 +243,7 @@ GetInitialConstraintsForHelper::_make_initial_constraints_for(
                         n::from_id() = make_null_shared_ptr(),
                         n::nothing_is_fine_too() = true,
                         n::reason() = std::make_shared<PresetReason>("is scm", make_null_shared_ptr()),
-                        n::spec() = MutablePackageDepSpecData({ }).constrain_package(resolvent.package()),
+                        n::spec() = MutablePackageDepSpecData({ }).require_package(resolvent.package()),
                         n::untaken() = false,
                         n::use_existing() = ue_only_if_transient
                         )));

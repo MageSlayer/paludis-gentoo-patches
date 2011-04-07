@@ -188,7 +188,7 @@ void expose_mask() PALUDIS_VISIBLE;
 void expose_match_package() PALUDIS_VISIBLE;
 void expose_metadata_key() PALUDIS_VISIBLE;
 void expose_name() PALUDIS_VISIBLE;
-void expose_package_dep_spec_constraint() PALUDIS_VISIBLE;
+void expose_package_dep_spec_requirement() PALUDIS_VISIBLE;
 void expose_package_id() PALUDIS_VISIBLE;
 void expose_repository() PALUDIS_VISIBLE;
 void expose_selection() PALUDIS_VISIBLE;

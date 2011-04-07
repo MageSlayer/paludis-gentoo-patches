@@ -168,7 +168,7 @@ namespace
 
         void visit_package_spec(const PackageDepSpec & spec)
         {
-            if (spec.package_name_constraint())
+            if (spec.package_name_requirement())
                 visit_package_or_block_spec(PackageOrBlockDepSpec(spec));
             else
                 super_complicated = true;
@@ -176,7 +176,7 @@ namespace
 
         void visit_block_spec(const BlockDepSpec & spec)
         {
-            if (spec.blocking().package_name_constraint())
+            if (spec.blocking().package_name_requirement())
                 visit_package_or_block_spec(PackageOrBlockDepSpec(spec));
             else
                 super_complicated = true;
