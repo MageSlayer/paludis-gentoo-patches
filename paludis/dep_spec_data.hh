@@ -241,7 +241,7 @@ namespace paludis
      * \ingroup g_dep_spec
      */
     class PALUDIS_VISIBLE MutablePackageDepSpecData :
-        public PackageDepSpecData
+        private PackageDepSpecData
     {
         public:
             explicit MutablePackageDepSpecData(const PackageDepSpecDataOptions &);

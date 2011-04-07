@@ -586,6 +586,7 @@ MutablePackageDepSpecData::unconstrain_keys()
 
 MutablePackageDepSpecData::operator PackageDepSpec() const
 {
-    return PackageDepSpec(std::make_shared<MutablePackageDepSpecData>(*this));
+    /* convoluted because it's private... */
+    PackageDepSpecData * data(new MutablePackageDepSpecData(*this));
+    return PackageDepSpec(std::shared_ptr<PackageDepSpecData>(data));
 }
-
