@@ -226,6 +226,13 @@ namespace paludis
             const std::shared_ptr<const ChoiceRequirementSequence> all_choice_requirements() const;
 
             /**
+             * All our requirements.
+             *
+             * \since 0.61
+             */
+            const std::shared_ptr<const PackageDepSpecRequirementSequence> requirements() const;
+
+            /**
              * Our options.
              *
              * \since 0.61

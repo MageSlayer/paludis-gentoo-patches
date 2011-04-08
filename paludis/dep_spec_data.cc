@@ -30,6 +30,9 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
+#include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/accept_visitor.hh>
 
 #include <istream>
 #include <ostream>
@@ -45,42 +48,27 @@ namespace paludis
     template <>
     struct Imp<PackageDepSpecData>
     {
-        std::shared_ptr<const NameRequirement> package;
-        std::shared_ptr<const PackageNamePartRequirement> package_name_part;
-        std::shared_ptr<const CategoryNamePartRequirement> category_name_part;
+        std::shared_ptr<PackageDepSpecRequirementSequence> requirements;
         std::shared_ptr<VersionRequirementSequence> all_versions;
-        std::shared_ptr<const AnySlotRequirement> any_slot;
-        std::shared_ptr<const ExactSlotRequirement> exact_slot;
-        std::shared_ptr<const InRepositoryRequirement> in_repository;
-        std::shared_ptr<const FromRepositoryRequirement> from_repository;
-        std::shared_ptr<const InstallableToRepositoryRequirement> installable_to_repository;
-        std::shared_ptr<const InstalledAtPathRequirement> installed_at_path;
-        std::shared_ptr<const InstallableToPathRequirement> installable_to_path;
         std::shared_ptr<KeyRequirementSequence> all_keys;
         std::shared_ptr<ChoiceRequirementSequence> all_choices;
         PackageDepSpecDataOptions options;
 
         Imp(const PackageDepSpecDataOptions & o) :
+            requirements(std::make_shared<PackageDepSpecRequirementSequence>()),
             options(o)
         {
         }
 
         Imp(const PackageDepSpecData & other) :
-            package(other.package_name_requirement()),
-            package_name_part(other.package_name_part_requirement()),
-            category_name_part(other.category_name_part_requirement()),
+            requirements(std::make_shared<PackageDepSpecRequirementSequence>()),
             all_versions(other.all_version_requirements() ? new VersionRequirementSequence : 0),
-            any_slot(other.any_slot_requirement()),
-            exact_slot(other.exact_slot_requirement()),
-            in_repository(other.in_repository_requirement()),
-            from_repository(other.from_repository_requirement()),
-            installable_to_repository(other.installable_to_repository_requirement()),
-            installed_at_path(other.installed_at_path_requirement()),
-            installable_to_path(other.installable_to_path_requirement()),
             all_keys(other.all_key_requirements() ? new KeyRequirementSequence : 0),
             all_choices(other.all_choice_requirements() ? new ChoiceRequirementSequence : 0),
             options(other.options())
         {
+            std::copy(other.requirements()->begin(), other.requirements()->end(), requirements->back_inserter());
+
             if (all_versions)
                 std::copy(other.all_version_requirements()->begin(), other.all_version_requirements()->end(),
                         all_versions->back_inserter());
@@ -108,22 +96,76 @@ PackageDepSpecData::PackageDepSpecData(const PackageDepSpecData & o) :
 
 PackageDepSpecData::~PackageDepSpecData() = default;
 
+namespace
+{
+    template <typename T_>
+    struct Detect
+    {
+        bool visit(const T_ &) const
+        {
+            return true;
+        }
+
+        bool visit(const PackageDepSpecRequirement &) const
+        {
+            return false;
+        }
+    };
+
+    template <typename I_, typename P_>
+    I_ find_unique_if(I_ cur, I_ end, P_ pred)
+    {
+        I_ result(end);
+        for ( ; cur != end ; ++cur)
+            if (pred(*cur))
+            {
+                if (result != end)
+                    return end;
+                else
+                    result = cur;
+            }
+
+        return result;
+    }
+}
+
 const std::shared_ptr<const NameRequirement>
 PackageDepSpecData::package_name_requirement() const
 {
-    return _imp->package;
+    Detect<NameRequirement> v;
+    auto r(find_unique_if(indirect_iterator(_imp->requirements->begin()),
+                indirect_iterator(_imp->requirements->end()), accept_visitor_returning<bool>(v)));
+
+    if (r != indirect_iterator(_imp->requirements->end()))
+        return std::static_pointer_cast<const NameRequirement>(*r.underlying_iterator());
+    else
+        return make_null_shared_ptr();
 }
 
 const std::shared_ptr<const PackageNamePartRequirement>
 PackageDepSpecData::package_name_part_requirement() const
 {
-    return _imp->package_name_part;
+    Detect<PackageNamePartRequirement> v;
+    auto r(find_unique_if(indirect_iterator(_imp->requirements->begin()),
+                indirect_iterator(_imp->requirements->end()), accept_visitor_returning<bool>(v)));
+
+    if (r != indirect_iterator(_imp->requirements->end()))
+        return std::static_pointer_cast<const PackageNamePartRequirement>(*r.underlying_iterator());
+    else
+        return make_null_shared_ptr();
 }
 
 const std::shared_ptr<const CategoryNamePartRequirement>
 PackageDepSpecData::category_name_part_requirement() const
 {
-    return _imp->category_name_part;
+    Detect<CategoryNamePartRequirement> v;
+    auto r(find_unique_if(indirect_iterator(_imp->requirements->begin()),
+                indirect_iterator(_imp->requirements->end()), accept_visitor_returning<bool>(v)));
+
+    if (r != indirect_iterator(_imp->requirements->end()))
+        return std::static_pointer_cast<const CategoryNamePartRequirement>(*r.underlying_iterator());
+    else
+        return make_null_shared_ptr();
 }
 
 const std::shared_ptr<const VersionRequirementSequence>
@@ -135,43 +177,92 @@ PackageDepSpecData::all_version_requirements() const
 const std::shared_ptr<const ExactSlotRequirement>
 PackageDepSpecData::exact_slot_requirement() const
 {
-    return _imp->exact_slot;
+    Detect<ExactSlotRequirement> v;
+    auto r(find_unique_if(indirect_iterator(_imp->requirements->begin()),
+                indirect_iterator(_imp->requirements->end()), accept_visitor_returning<bool>(v)));
+
+    if (r != indirect_iterator(_imp->requirements->end()))
+        return std::static_pointer_cast<const ExactSlotRequirement>(*r.underlying_iterator());
+    else
+        return make_null_shared_ptr();
 }
 
 const std::shared_ptr<const AnySlotRequirement>
 PackageDepSpecData::any_slot_requirement() const
 {
-    return _imp->any_slot;
+    Detect<AnySlotRequirement> v;
+    auto r(find_unique_if(indirect_iterator(_imp->requirements->begin()),
+                indirect_iterator(_imp->requirements->end()), accept_visitor_returning<bool>(v)));
+
+    if (r != indirect_iterator(_imp->requirements->end()))
+        return std::static_pointer_cast<const AnySlotRequirement>(*r.underlying_iterator());
+    else
+        return make_null_shared_ptr();
 }
 
 const std::shared_ptr<const InRepositoryRequirement>
 PackageDepSpecData::in_repository_requirement() const
 {
-    return _imp->in_repository;
+    Detect<InRepositoryRequirement> v;
+    auto r(find_unique_if(indirect_iterator(_imp->requirements->begin()),
+                indirect_iterator(_imp->requirements->end()), accept_visitor_returning<bool>(v)));
+
+    if (r != indirect_iterator(_imp->requirements->end()))
+        return std::static_pointer_cast<const InRepositoryRequirement>(*r.underlying_iterator());
+    else
+        return make_null_shared_ptr();
 }
 
 const std::shared_ptr<const InstallableToRepositoryRequirement>
 PackageDepSpecData::installable_to_repository_requirement() const
 {
-    return _imp->installable_to_repository;
+    Detect<InstallableToRepositoryRequirement> v;
+    auto r(find_unique_if(indirect_iterator(_imp->requirements->begin()),
+                indirect_iterator(_imp->requirements->end()), accept_visitor_returning<bool>(v)));
+
+    if (r != indirect_iterator(_imp->requirements->end()))
+        return std::static_pointer_cast<const InstallableToRepositoryRequirement>(*r.underlying_iterator());
+    else
+        return make_null_shared_ptr();
 }
 
 const std::shared_ptr<const FromRepositoryRequirement>
 PackageDepSpecData::from_repository_requirement() const
 {
-    return _imp->from_repository;
+    Detect<FromRepositoryRequirement> v;
+    auto r(find_unique_if(indirect_iterator(_imp->requirements->begin()),
+                indirect_iterator(_imp->requirements->end()), accept_visitor_returning<bool>(v)));
+
+    if (r != indirect_iterator(_imp->requirements->end()))
+        return std::static_pointer_cast<const FromRepositoryRequirement>(*r.underlying_iterator());
+    else
+        return make_null_shared_ptr();
 }
 
 const std::shared_ptr<const InstalledAtPathRequirement>
 PackageDepSpecData::installed_at_path_requirement() const
 {
-    return _imp->installed_at_path;
+    Detect<InstalledAtPathRequirement> v;
+    auto r(find_unique_if(indirect_iterator(_imp->requirements->begin()),
+                indirect_iterator(_imp->requirements->end()), accept_visitor_returning<bool>(v)));
+
+    if (r != indirect_iterator(_imp->requirements->end()))
+        return std::static_pointer_cast<const InstalledAtPathRequirement>(*r.underlying_iterator());
+    else
+        return make_null_shared_ptr();
 }
 
 const std::shared_ptr<const InstallableToPathRequirement>
 PackageDepSpecData::installable_to_path_requirement() const
 {
-    return _imp->installable_to_path;
+    Detect<InstallableToPathRequirement> v;
+    auto r(find_unique_if(indirect_iterator(_imp->requirements->begin()),
+                indirect_iterator(_imp->requirements->end()), accept_visitor_returning<bool>(v)));
+
+    if (r != indirect_iterator(_imp->requirements->end()))
+        return std::static_pointer_cast<const InstallableToPathRequirement>(*r.underlying_iterator());
+    else
+        return make_null_shared_ptr();
 }
 
 const std::shared_ptr<const KeyRequirementSequence>
@@ -184,6 +275,12 @@ const std::shared_ptr<const ChoiceRequirementSequence>
 PackageDepSpecData::all_choice_requirements() const
 {
     return _imp->all_choices;
+}
+
+const std::shared_ptr<const PackageDepSpecRequirementSequence>
+PackageDepSpecData::requirements() const
+{
+    return _imp->requirements;
 }
 
 const PackageDepSpecDataOptions
@@ -378,7 +475,6 @@ PackageDepSpecData::as_string() const
     return s.str();
 }
 
-
 MutablePackageDepSpecData::MutablePackageDepSpecData(const PackageDepSpecDataOptions & o) :
     PackageDepSpecData(o)
 {
@@ -399,51 +495,73 @@ MutablePackageDepSpecData::~MutablePackageDepSpecData() = default;
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_package(const QualifiedPackageName & name)
 {
-    _imp->package = NameRequirementPool::get_instance()->create(name);
+    _imp->requirements->push_back(NameRequirementPool::get_instance()->create(name));
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::unrequire_package()
 {
-    _imp->package.reset();
+    auto r(std::make_shared<PackageDepSpecRequirementSequence>());
+    for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
+            u != u_end ; ++u)
+        if (! (*u)->accept_returning<bool>(Detect<NameRequirement>()))
+            r->push_back(*u);
+
+    _imp->requirements = r;
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_package_name_part(const PackageNamePart & part)
 {
-    _imp->package_name_part = PackageNamePartRequirementPool::get_instance()->create(part);
+    _imp->requirements->push_back(PackageNamePartRequirementPool::get_instance()->create(part));
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::unrequire_package_name_part()
 {
-    _imp->package_name_part.reset();
+    auto r(std::make_shared<PackageDepSpecRequirementSequence>());
+    for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
+            u != u_end ; ++u)
+        if (! (*u)->accept_returning<bool>(Detect<PackageNamePartRequirement>()))
+            r->push_back(*u);
+
+    _imp->requirements = r;
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_category_name_part(const CategoryNamePart & part)
 {
-    _imp->category_name_part = CategoryNamePartRequirementPool::get_instance()->create(part);
+    _imp->requirements->push_back(CategoryNamePartRequirementPool::get_instance()->create(part));
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::unrequire_category_name_part()
 {
-    _imp->category_name_part.reset();
+    auto r(std::make_shared<PackageDepSpecRequirementSequence>());
+    for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
+            u != u_end ; ++u)
+        if (! (*u)->accept_returning<bool>(Detect<CategoryNamePartRequirement>()))
+            r->push_back(*u);
+
+    _imp->requirements = r;
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_version(const VersionRequirementCombiner vc, const VersionOperator & vo, const VersionSpec & vs)
 {
+    auto r(std::make_shared<VersionRequirement>(vs, vo, vc));
+    _imp->requirements->push_back(r);
+
     if (! _imp->all_versions)
         _imp->all_versions = std::make_shared<VersionRequirementSequence>();
-    _imp->all_versions->push_back(std::make_shared<VersionRequirement>(vs, vo, vc));
+    _imp->all_versions->push_back(r);
+
     return *this;
 }
 
@@ -451,113 +569,166 @@ MutablePackageDepSpecData &
 MutablePackageDepSpecData::unrequire_versions()
 {
     _imp->all_versions.reset();
+
+    auto r(std::make_shared<PackageDepSpecRequirementSequence>());
+    for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
+            u != u_end ; ++u)
+        if (! (*u)->accept_returning<bool>(Detect<VersionRequirement>()))
+            r->push_back(*u);
+
+    _imp->requirements = r;
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_exact_slot(const SlotName & n, const bool s)
 {
-    _imp->exact_slot = ExactSlotRequirementPool::get_instance()->create(n, s);
+    _imp->requirements->push_back(ExactSlotRequirementPool::get_instance()->create(n, s));
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::unrequire_exact_slot()
 {
-    _imp->exact_slot.reset();
+    auto r(std::make_shared<PackageDepSpecRequirementSequence>());
+    for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
+            u != u_end ; ++u)
+        if (! (*u)->accept_returning<bool>(Detect<ExactSlotRequirement>()))
+            r->push_back(*u);
+
+    _imp->requirements = r;
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_in_repository(const RepositoryName & s)
 {
-    _imp->in_repository = InRepositoryRequirementPool::get_instance()->create(s);
+    _imp->requirements->push_back(InRepositoryRequirementPool::get_instance()->create(s));
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::unrequire_in_repository()
 {
-    _imp->in_repository.reset();
+    auto r(std::make_shared<PackageDepSpecRequirementSequence>());
+    for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
+            u != u_end ; ++u)
+        if (! (*u)->accept_returning<bool>(Detect<InRepositoryRequirement>()))
+            r->push_back(*u);
+
+    _imp->requirements = r;
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_installable_to_path(const FSPath & s, const bool i)
 {
-    _imp->installable_to_path = InstallableToPathRequirementPool::get_instance()->create(s, i);
+    _imp->requirements->push_back(InstallableToPathRequirementPool::get_instance()->create(s, i));
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::unrequire_installable_to_path()
 {
-    _imp->installable_to_path.reset();
+    auto r(std::make_shared<PackageDepSpecRequirementSequence>());
+    for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
+            u != u_end ; ++u)
+        if (! (*u)->accept_returning<bool>(Detect<InstallableToPathRequirement>()))
+            r->push_back(*u);
+
+    _imp->requirements = r;
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_installable_to_repository(const RepositoryName & n, const bool i)
 {
-    _imp->installable_to_repository = InstallableToRepositoryRequirementPool::get_instance()->create(n, i);
+    _imp->requirements->push_back(InstallableToRepositoryRequirementPool::get_instance()->create(n, i));
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::unrequire_installable_to_repository()
 {
-    _imp->installable_to_repository.reset();
+    auto r(std::make_shared<PackageDepSpecRequirementSequence>());
+    for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
+            u != u_end ; ++u)
+        if (! (*u)->accept_returning<bool>(Detect<InstallableToRepositoryRequirement>()))
+            r->push_back(*u);
+
+    _imp->requirements = r;
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_from_repository(const RepositoryName & n)
 {
-    _imp->from_repository = FromRepositoryRequirementPool::get_instance()->create(n);
+    _imp->requirements->push_back(FromRepositoryRequirementPool::get_instance()->create(n));
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::unrequire_from_repository()
 {
-    _imp->from_repository.reset();
+    auto r(std::make_shared<PackageDepSpecRequirementSequence>());
+    for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
+            u != u_end ; ++u)
+        if (! (*u)->accept_returning<bool>(Detect<FromRepositoryRequirement>()))
+            r->push_back(*u);
+
+    _imp->requirements = r;
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_installed_at_path(const FSPath & s)
 {
-    _imp->installed_at_path = InstalledAtPathRequirementPool::get_instance()->create(s);
+    _imp->requirements->push_back(InstalledAtPathRequirementPool::get_instance()->create(s));
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::unrequire_installed_at_path()
 {
-    _imp->installed_at_path.reset();
+    auto r(std::make_shared<PackageDepSpecRequirementSequence>());
+    for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
+            u != u_end ; ++u)
+        if (! (*u)->accept_returning<bool>(Detect<InstalledAtPathRequirement>()))
+            r->push_back(*u);
+
+    _imp->requirements = r;
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_any_slot(const bool s)
 {
-    _imp->any_slot = AnySlotRequirementPool::get_instance()->create(s);
+    _imp->requirements->push_back(AnySlotRequirementPool::get_instance()->create(s));
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::unrequire_any_slot()
 {
-    _imp->any_slot.reset();
+    auto r(std::make_shared<PackageDepSpecRequirementSequence>());
+    for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
+            u != u_end ; ++u)
+        if (! (*u)->accept_returning<bool>(Detect<AnySlotRequirement>()))
+            r->push_back(*u);
+
+    _imp->requirements = r;
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_choice(const std::shared_ptr<const ChoiceRequirement> & c)
 {
+    _imp->requirements->push_back(c);
+
     if (! _imp->all_choices)
         _imp->all_choices = std::make_shared<ChoiceRequirementSequence>();
     _imp->all_choices->push_back(c);
+
     return *this;
 }
 
@@ -565,15 +736,28 @@ MutablePackageDepSpecData &
 MutablePackageDepSpecData::unrequire_choices()
 {
     _imp->all_choices.reset();
+
+    auto r(std::make_shared<PackageDepSpecRequirementSequence>());
+    for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
+            u != u_end ; ++u)
+        if (! (*u)->accept_returning<bool>(Detect<ChoiceRequirement>()))
+            r->push_back(*u);
+
+    _imp->requirements = r;
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_key(const KeyRequirementKeyType t, const std::string & k, const KeyRequirementOperation o, const std::string & p)
 {
+    auto r(KeyRequirementPool::get_instance()->create(t, k, o, p));
+
+    _imp->requirements->push_back(r);
+
     if (! _imp->all_keys)
         _imp->all_keys = std::make_shared<KeyRequirementSequence>();
-    _imp->all_keys->push_back(KeyRequirementPool::get_instance()->create(t, k, o, p));
+    _imp->all_keys->push_back(r);
+
     return *this;
 }
 
@@ -581,6 +765,14 @@ MutablePackageDepSpecData &
 MutablePackageDepSpecData::unrequire_keys()
 {
     _imp->all_keys.reset();
+
+    auto r(std::make_shared<PackageDepSpecRequirementSequence>());
+    for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
+            u != u_end ; ++u)
+        if (! (*u)->accept_returning<bool>(Detect<KeyRequirement>()))
+            r->push_back(*u);
+
+    _imp->requirements = r;
     return *this;
 }
 
@@ -590,3 +782,4 @@ MutablePackageDepSpecData::operator PackageDepSpec() const
     PackageDepSpecData * data(new MutablePackageDepSpecData(*this));
     return PackageDepSpec(std::shared_ptr<PackageDepSpecData>(data));
 }
+

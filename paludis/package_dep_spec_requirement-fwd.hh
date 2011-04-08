@@ -30,6 +30,8 @@ namespace paludis
 {
     class PackageDepSpecRequirement;
 
+    typedef Sequence<std::shared_ptr<const PackageDepSpecRequirement> > PackageDepSpecRequirementSequence;
+
     class NameRequirement;
     typedef Pool<NameRequirement> NameRequirementPool;
 

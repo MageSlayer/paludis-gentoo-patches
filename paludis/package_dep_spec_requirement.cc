@@ -54,6 +54,10 @@ using namespace paludis;
 
 PackageDepSpecRequirement::~PackageDepSpecRequirement() = default;
 
+template class Sequence<std::shared_ptr<const PackageDepSpecRequirement> >;
+template class WrappedForwardIterator<Sequence<std::shared_ptr<const PackageDepSpecRequirement> >::ConstIteratorTag, const std::shared_ptr<const PackageDepSpecRequirement> >;
+template class WrappedOutputIterator<Sequence<std::shared_ptr<const PackageDepSpecRequirement> >::InserterTag, std::shared_ptr<const PackageDepSpecRequirement> >;
+
 NameRequirement::NameRequirement(const QualifiedPackageName & n) :
     _name(n)
 {
