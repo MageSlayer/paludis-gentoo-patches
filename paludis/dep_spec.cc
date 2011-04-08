@@ -959,6 +959,12 @@ PackageDepSpec::all_choice_requirements() const
     return _imp->all_choices;
 }
 
+const std::shared_ptr<const PackageDepSpecRequirementSequence>
+PackageDepSpec::requirements() const
+{
+    return _imp->data->requirements();
+}
+
 std::string
 PackageDepSpec::_as_string() const
 {
