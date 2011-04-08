@@ -236,29 +236,11 @@ namespace paludis
     class PALUDIS_VISIBLE StringDepSpec :
         public DepSpec
     {
-        private:
-            std::string _str;
-
-        protected:
-            ///\name Basic operations
-            ///\{
-
-            StringDepSpec(const std::string &);
-
-            ~StringDepSpec();
-
-            ///\}
-
-            /**
-             * Change our text.
-             */
-            void set_text(const std::string &);
-
         public:
             /**
              * Fetch our text.
              */
-            std::string text() const;
+            virtual const std::string text() const = 0;
     };
 
     /**
@@ -311,6 +293,8 @@ namespace paludis
             ~PackageDepSpec();
 
             ///\}
+
+            virtual const std::string text() const;
 
             /**
              * Fetch the single NameRequirement, if we have one, or
@@ -428,6 +412,9 @@ namespace paludis
     class PALUDIS_VISIBLE PlainTextDepSpec :
         public StringDepSpec
     {
+        private:
+            std::string _text;
+
         public:
             ///\name Basic operations
             ///\{
@@ -435,6 +422,8 @@ namespace paludis
             PlainTextDepSpec(const std::string &);
 
             ///\}
+
+            virtual const std::string text() const;
 
             virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
@@ -459,6 +448,8 @@ namespace paludis
 
             ///\}
 
+            virtual const std::string text() const;
+
             /// Fetch the name of our set.
             const SetName name() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -475,6 +466,9 @@ namespace paludis
     class PALUDIS_VISIBLE LicenseDepSpec :
         public StringDepSpec
     {
+        private:
+            std::string _text;
+
         public:
             ///\name Basic operations
             ///\{
@@ -482,6 +476,8 @@ namespace paludis
             LicenseDepSpec(const std::string &);
 
             ///\}
+
+            virtual const std::string text() const;
 
             virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
@@ -500,6 +496,9 @@ namespace paludis
     class PALUDIS_VISIBLE FetchableURIDepSpec :
         public StringDepSpec
     {
+        private:
+            std::string _text;
+
         public:
             ///\name Basic operations
             ///\{
@@ -507,6 +506,8 @@ namespace paludis
             FetchableURIDepSpec(const std::string &);
 
             ///\}
+
+            virtual const std::string text() const;
 
             /**
              * The original URL (that is, the text to the left of the arrow, if present,
@@ -541,6 +542,9 @@ namespace paludis
     class PALUDIS_VISIBLE SimpleURIDepSpec :
         public StringDepSpec
     {
+        private:
+            std::string _text;
+
         public:
             ///\name Basic operations
             ///\{
@@ -548,6 +552,8 @@ namespace paludis
             SimpleURIDepSpec(const std::string &);
 
             ///\}
+
+            virtual const std::string text() const;
 
             virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
@@ -583,6 +589,7 @@ namespace paludis
         public StringDepSpec
     {
         private:
+            std::string _text;
             PackageDepSpec _spec;
 
         public:
@@ -594,6 +601,8 @@ namespace paludis
             BlockDepSpec(const BlockDepSpec &);
 
             ///\}
+
+            virtual const std::string text() const;
 
             /**
              * Fetch the spec we're blocking.
@@ -651,6 +660,9 @@ namespace paludis
     class PALUDIS_VISIBLE PlainTextLabelDepSpec :
         public StringDepSpec
     {
+        private:
+            std::string _text;
+
         public:
             ///\name Basic operations
             ///\{
@@ -659,6 +671,8 @@ namespace paludis
             ~PlainTextLabelDepSpec();
 
             ///\}
+
+            virtual const std::string text() const;
 
             virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

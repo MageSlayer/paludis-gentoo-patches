@@ -183,14 +183,7 @@ ConditionalDepSpec::_as_string() const
     return _imp->data->as_string();
 }
 
-std::string
-StringDepSpec::text() const
-{
-    return _str;
-}
-
 NamedSetDepSpec::NamedSetDepSpec(const SetName & n) :
-    StringDepSpec(stringify(n)),
     _name(n)
 {
 }
@@ -199,6 +192,12 @@ const SetName
 NamedSetDepSpec::name() const
 {
     return _name;
+}
+
+const std::string
+NamedSetDepSpec::text() const
+{
+    return stringify(_name);
 }
 
 std::shared_ptr<DepSpec>
@@ -210,16 +209,22 @@ NamedSetDepSpec::clone() const
 }
 
 BlockDepSpec::BlockDepSpec(const std::string & s, const PackageDepSpec & p) :
-    StringDepSpec(s),
+    _text(s),
     _spec(p)
 {
 }
 
 BlockDepSpec::BlockDepSpec(const BlockDepSpec & other) :
-    StringDepSpec(other.text()),
+    _text(other._text),
     _spec(other._spec)
 {
     set_annotations(other.maybe_annotations());
+}
+
+const std::string
+BlockDepSpec::text() const
+{
+    return _text;
 }
 
 std::ostream &
@@ -308,18 +313,8 @@ PackageDepSpecError::PackageDepSpecError(const std::string & msg) throw () :
 {
 }
 
-StringDepSpec::StringDepSpec(const std::string & s) :
-    _str(s)
-{
-}
-
-StringDepSpec::~StringDepSpec()
-{
-}
-
-
 PlainTextDepSpec::PlainTextDepSpec(const std::string & s) :
-    StringDepSpec(s)
+    _text(s)
 {
 }
 
@@ -331,8 +326,14 @@ PlainTextDepSpec::clone() const
     return result;
 }
 
+const std::string
+PlainTextDepSpec::text() const
+{
+    return _text;
+}
+
 PlainTextLabelDepSpec::PlainTextLabelDepSpec(const std::string & s) :
-    StringDepSpec(s)
+    _text(s)
 {
 }
 
@@ -349,13 +350,19 @@ PlainTextLabelDepSpec::clone() const
 }
 
 const std::string
+PlainTextLabelDepSpec::text() const
+{
+    return _text;
+}
+
+const std::string
 PlainTextLabelDepSpec::label() const
 {
     return text().substr(0, text().length() - 1);
 }
 
 LicenseDepSpec::LicenseDepSpec(const std::string & s) :
-    StringDepSpec(s)
+    _text(s)
 {
 }
 
@@ -367,8 +374,14 @@ LicenseDepSpec::clone() const
     return result;
 }
 
+const std::string
+LicenseDepSpec::text() const
+{
+    return _text;
+}
+
 SimpleURIDepSpec::SimpleURIDepSpec(const std::string & s) :
-    StringDepSpec(s)
+    _text(s)
 {
 }
 
@@ -378,6 +391,12 @@ SimpleURIDepSpec::clone() const
     std::shared_ptr<SimpleURIDepSpec> result(std::make_shared<SimpleURIDepSpec>(text()));
     result->set_annotations(maybe_annotations());
     return result;
+}
+
+const std::string
+SimpleURIDepSpec::text() const
+{
+    return _text;
 }
 
 const PackageDepSpec
@@ -395,7 +414,7 @@ BlockDepSpec::clone() const
 }
 
 FetchableURIDepSpec::FetchableURIDepSpec(const std::string & s) :
-    StringDepSpec(s)
+    _text(s)
 {
 }
 
@@ -440,6 +459,12 @@ FetchableURIDepSpec::clone() const
     std::shared_ptr<FetchableURIDepSpec> result(std::make_shared<FetchableURIDepSpec>(text()));
     result->set_annotations(maybe_annotations());
     return result;
+}
+
+const std::string
+FetchableURIDepSpec::text() const
+{
+    return _text;
 }
 
 namespace paludis
@@ -522,7 +547,6 @@ namespace paludis
 
 PackageDepSpec::PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> & d) :
     Cloneable<DepSpec>(),
-    StringDepSpec(d->as_string()),
     _imp(d)
 {
 }
@@ -533,11 +557,16 @@ PackageDepSpec::~PackageDepSpec()
 
 PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
     Cloneable<DepSpec>(d),
-    StringDepSpec(d._imp->data->as_string()),
     CloneUsingThis<DepSpec, PackageDepSpec>(d),
     _imp(d._imp->data)
 {
     set_annotations(d.maybe_annotations());
+}
+
+const std::string
+PackageDepSpec::text() const
+{
+    return _imp->data->as_string();
 }
 
 const std::shared_ptr<const NameRequirement>
