@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -104,6 +104,13 @@ namespace paludis
 
             ///\}
 
+            ///\name Additional typedefs
+            ///\{
+
+            typedef Iter_ underlying_iterator_type;
+
+            ///\}
+
             ///\name Increment
             ///\{
 
@@ -117,6 +124,8 @@ namespace paludis
 
             pointer operator-> () const;
             reference operator* () const;
+
+            underlying_iterator_type underlying_iterator();
 
             ///\}
     };
