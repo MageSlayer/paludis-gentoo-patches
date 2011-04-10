@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -78,7 +78,7 @@ paludis_tar_extras_add_file(PaludisTarExtras * const extras, const std::string &
     if (ARCHIVE_OK != archive_read_disk_entry_from_file(disk_archive, entry, fd, 0))
         throw MergerError("archive_read_disk_entry_from_file failed");
     if (ARCHIVE_OK != archive_write_header(extras->archive, entry))
-        throw MergerError("archive_read_disk_entry_from_file failed");
+        throw MergerError("archive_write_header failed");
 
     int bytes_read;
     char buf[4096];
