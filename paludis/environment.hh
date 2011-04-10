@@ -31,7 +31,6 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/mask-fwd.hh>
 #include <paludis/selection-fwd.hh>
-#include <paludis/selection_cache-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
 #include <paludis/choice-fwd.hh>
 #include <paludis/create_output_manager_info-fwd.hh>
@@ -380,26 +379,6 @@ namespace paludis
              */
             virtual std::shared_ptr<PackageIDSequence> operator[] (const Selection &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * Add a selection cache.
-             *
-             * Probably only to be used by ScopedSelectionCache.
-             *
-             * \since 0.42
-             */
-            virtual void add_selection_cache(
-                    const std::shared_ptr<const SelectionCache> &) = 0;
-
-            /**
-             * Remove a selection cache registered using add_selection_cache.
-             *
-             * Probably only to be used by ScopedSelectionCache.
-             *
-             * \since 0.42
-             */
-            virtual void remove_selection_cache(
-                    const std::shared_ptr<const SelectionCache> &) = 0;
 
             /**
              * Create a repository from a particular file.

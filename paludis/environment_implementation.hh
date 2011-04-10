@@ -105,12 +105,6 @@ namespace paludis
             virtual const std::shared_ptr<const SetSpecTree> set(const SetName &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void add_selection_cache(
-                    const std::shared_ptr<const SelectionCache> &);
-
-            virtual void remove_selection_cache(
-                    const std::shared_ptr<const SelectionCache> &);
-
             virtual void add_repository(int importance, const std::shared_ptr<Repository> &);
 
             virtual const std::shared_ptr<const Repository> fetch_repository(const RepositoryName &) const

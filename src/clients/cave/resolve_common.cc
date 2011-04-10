@@ -99,7 +99,6 @@
 #include <paludis/notifier_callback.hh>
 #include <paludis/environment.hh>
 #include <paludis/serialise-impl.hh>
-#include <paludis/selection_cache.hh>
 #include <paludis/package_id.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
@@ -1093,7 +1092,6 @@ paludis::cave::resolve_common(
                 n::remove_if_dependent_fn() = std::cref(remove_if_dependent_helper)
                 ));
 
-    ScopedSelectionCache selection_cache(env.get());
     std::shared_ptr<Resolver> resolver(std::make_shared<Resolver>(env.get(), resolver_functions));
     bool is_set(false);
     std::shared_ptr<const Sequence<std::string> > targets_cleaned_up;
