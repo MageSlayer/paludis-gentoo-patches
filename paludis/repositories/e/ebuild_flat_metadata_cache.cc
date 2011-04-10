@@ -654,7 +654,10 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
     {
         Log::get_instance()->message("e.cache.failure", ll_warning, lc_no_context) << "Not using cache file at '"
             << _imp->filename << "' due to exception '" << e.message() << "' (" << e.what() << ")";
-        return false;
+
+        id->set_eapi(EAPIData::get_instance()->unknown_eapi()->name());
+
+        return true;
     }
 }
 
