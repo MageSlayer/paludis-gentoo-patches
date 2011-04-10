@@ -293,5 +293,9 @@ TEST(Symlinks, Works)
     EXPECT_TRUE((root / ("symlinks-a")).stat().exists());
     EXPECT_TRUE((root / ("symlinks-b")).stat().exists());
     EXPECT_TRUE((root / ("symlinks-c")).stat().exists());
+
+    EXPECT_TRUE((root / ("symlinks-a")).stat().is_symlink());
+    EXPECT_TRUE((root / ("symlinks-b")).stat().is_regular_file());
+    EXPECT_TRUE((root / ("symlinks-c")).stat().is_symlink());
 }
 
