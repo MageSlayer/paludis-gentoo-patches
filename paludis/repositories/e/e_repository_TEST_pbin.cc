@@ -200,3 +200,98 @@ INSTANTIATE_TEST_CASE_P(Works, ERepositoryInstallEAPIPBinTest, testing::Values(
             std::string("exheres-0")
             ));
 
+TEST(Symlinks, Works)
+{
+    TestEnvironment env;
+    FSPath root(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "root");
+
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("repoexheres-0")));
+    keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("repoexheres-0/profiles/profile")));
+    keys->insert("layout", "traditional");
+    keys->insert("eapi_when_unknown", "0");
+    keys->insert("eapi_when_unspecified", "0");
+    keys->insert("profile_eapi", "0");
+    keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "build"));
+    keys->insert("root", stringify(root));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
+
+    std::shared_ptr<Map<std::string, std::string> > b_keys(std::make_shared<Map<std::string, std::string>>());
+    b_keys->insert("format", "e");
+    b_keys->insert("names_cache", "/var/empty");
+    b_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("binrepoexheres-0")));
+    b_keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / ("binrepoexheres-0/profiles/profile")));
+    b_keys->insert("layout", "traditional");
+    b_keys->insert("eapi_when_unknown", "0");
+    b_keys->insert("eapi_when_unspecified", "0");
+    b_keys->insert("profile_eapi", "0");
+    b_keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
+    b_keys->insert("binary_distdir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "distdir"));
+    b_keys->insert("binary_keywords_filter", "test");
+    b_keys->insert("binary_destination", "true");
+    b_keys->insert("master_repository", "repoexheres-0");
+    b_keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "build"));
+    b_keys->insert("root", stringify(root));
+    std::shared_ptr<Repository> b_repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, b_keys, std::placeholders::_1)));
+    env.add_repository(2, b_repo);
+
+    std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
+    v_keys->insert("format", "vdb");
+    v_keys->insert("names_cache", "/var/empty");
+    v_keys->insert("provides_cache", "/var/empty");
+    v_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_pbin_dir" / "vdb"));
+    v_keys->insert("root", stringify(root));
+    std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, v_repo);
+
+    {
+        InstallAction bin_action(make_named_values<InstallActionOptions>(
+                    n::destination() = b_repo,
+                    n::make_output_manager() = &make_standard_output_manager,
+                    n::perform_uninstall() = &cannot_uninstall,
+                    n::replacing() = std::make_shared<PackageIDSequence>(),
+                    n::want_phase() = &want_all_phases
+                    ));
+
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/symlinks-1",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("exheres-0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        id->perform_action(bin_action);
+    }
+
+    EXPECT_TRUE(! (root / ("symlinks-a")).stat().exists());
+    EXPECT_TRUE(! (root / ("symlinks-b")).stat().exists());
+    EXPECT_TRUE(! (root / ("symlinks-c")).stat().exists());
+    b_repo->invalidate();
+
+    {
+        InstallAction install_action(make_named_values<InstallActionOptions>(
+                    n::destination() = v_repo,
+                    n::make_output_manager() = &make_standard_output_manager,
+                    n::perform_uninstall() = &cannot_uninstall,
+                    n::replacing() = std::make_shared<PackageIDSequence>(),
+                    n::want_phase() = &want_all_phases
+                    ));
+
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/symlinks-1::binrepoexheres-0",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("pbin-1+exheres-0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        id->perform_action(install_action);
+    }
+
+    EXPECT_TRUE((root / ("symlinks-a")).stat().exists());
+    EXPECT_TRUE((root / ("symlinks-b")).stat().exists());
+    EXPECT_TRUE((root / ("symlinks-c")).stat().exists());
+}
+

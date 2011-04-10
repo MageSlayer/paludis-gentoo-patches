@@ -104,6 +104,7 @@ USE_EXPAND_VALUES_USERLAND="GNU"
 USE_EXPAND_VALUES_ARCH="cheese otherarch"
 IUSE_IMPLICIT="build"
 END
+
     mkdir -p "cat/simple"
     cat <<END > cat/simple/simple-1.ebuild || exit 1
 DESCRIPTION="The Description"
@@ -125,6 +126,32 @@ src_install() {
     doins installed-${e}
 }
 END
+
+    mkdir -p "cat/symlinks"
+    cat <<END > cat/symlinks/symlinks-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS=""
+LICENCES="GPL-2"
+PLATFORMS="test"
+EAPI="${e}"
+WORK="\${WORKBASE}"
+
+src_unpack() {
+    touch symlinks-b
+}
+
+src_install() {
+    insinto /
+    dosym symlinks-b symlinks-a
+    doins symlinks-b
+    dosym /symlinks-b symlinks-c
+    find \${IMAGE} | xargs ls -ld
+}
+END
+
     cd ..
 
     mkdir -p binrepo${e}/{profiles/profile,metadata,eclass} || exit 1
