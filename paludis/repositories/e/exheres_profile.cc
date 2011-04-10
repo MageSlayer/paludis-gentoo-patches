@@ -20,7 +20,6 @@
 #include <paludis/repositories/e/exheres_profile.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository.hh>
-#include <paludis/repositories/e/profile_file.hh>
 #include <paludis/repositories/e/eapi.hh>
 
 #include <paludis/util/log.hh>
@@ -80,8 +79,6 @@ namespace paludis
         PaludisLikeOptionsConf options_conf;
         EnvironmentVariablesMap environment_variables;
 
-        ProfileFile<LineConfigFile> packages_file;
-
         const std::shared_ptr<Set<std::string> > use_expand;
         const std::shared_ptr<Set<std::string> > use_expand_hidden;
         const std::shared_ptr<Set<std::string> > use_expand_unprefixed;
@@ -104,7 +101,6 @@ namespace paludis
                         n::environment() = e,
                         n::make_config_file() = &make_config_file
                         )),
-            packages_file(eapi_for_file),
             use_expand(std::make_shared<Set<std::string>>()),
             use_expand_hidden(std::make_shared<Set<std::string>>()),
             use_expand_unprefixed(std::make_shared<Set<std::string>>()),
@@ -150,22 +146,6 @@ ExheresProfile::ExheresProfile(
         if (_imp->options_conf.want_choice_enabled_locked(make_null_shared_ptr(),
                     ChoicePrefixName("hidden_suboptions"), *f).first.is_true())
             _imp->use_expand_hidden->insert(stringify(*f));
-
-    if (! _imp->has_master_repositories)
-        for (ProfileFile<LineConfigFile>::ConstIterator i(_imp->packages_file.begin()),
-                i_end(_imp->packages_file.end()) ; i != i_end ; ++i)
-        {
-            if (0 != i->second.compare(0, 1, "*", 0, 1))
-                continue;
-
-            Context context_spec("When parsing '" + i->second + "':");
-            std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
-                        parse_elike_package_dep_spec(i->second.substr(1),
-                            i->first->supported()->package_dep_spec_parse_options(),
-                            i->first->supported()->version_spec_options())));
-
-            _imp->system_packages->top()->append(spec);
-        }
 }
 
 ExheresProfile::~ExheresProfile()
@@ -193,8 +173,25 @@ ExheresProfile::_load_dir(const FSPath & f)
     if ((f / "options.conf").stat().exists())
         _imp->options_conf.add_file(f / "options.conf");
 
-    if ((f / "packages").stat().exists())
-        _imp->packages_file.add_file(f / "packages");
+    if (! _imp->has_master_repositories)
+    {
+        if ((f / "system.conf").stat().exists())
+        {
+            auto eapi(EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(f / "system.conf")));
+
+            LineConfigFile file(f / "system.conf", { });
+            for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
+                    line != line_end ; ++line)
+            {
+                std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
+                            parse_elike_package_dep_spec(*line,
+                                eapi->supported()->package_dep_spec_parse_options(),
+                                eapi->supported()->version_spec_options())));
+
+                _imp->system_packages->top()->append(spec);
+            }
+        }
+    }
 
     if ((f / "make.defaults").stat().exists())
     {
