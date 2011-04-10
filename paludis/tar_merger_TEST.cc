@@ -97,13 +97,14 @@ TEST(TarMerger, Works)
                 n::maybe_output_manager() = make_null_shared_ptr(),
                 n::merged_entries() = std::make_shared<FSPathSet>(),
                 n::no_chown() = true,
-                n::options() = MergerOptions(),
+                n::options() = MergerOptions() + mo_rewrite_symlinks,
                 n::root() = FSPath("/"),
                 n::tar_file() = output
                 ));
 
     ASSERT_TRUE(! output.stat().is_regular_file());
 
+    ASSERT_TRUE(merger.check());
     merger.merge();
     output = FSPath(stringify(output));
 
@@ -124,10 +125,13 @@ TEST(TarMerger, Works)
     EXPECT_TRUE(0 != ((FSPath("tar_merger_TEST_dir") / "simple_extract" / "subdir" / "subsubdir" / "script").stat().permissions() & S_IXUSR));
 
     EXPECT_TRUE((FSPath("tar_merger_TEST_dir") / "simple_extract" / "goodsym").stat().is_symlink());
-    EXPECT_TRUE((FSPath("tar_merger_TEST_dir") / "simple_extract" / "goodsym").readlink() == "file");
+    EXPECT_EQ("file", (FSPath("tar_merger_TEST_dir") / "simple_extract" / "goodsym").readlink());
 
     EXPECT_TRUE((FSPath("tar_merger_TEST_dir") / "simple_extract" / "badsym").stat().is_symlink());
-    EXPECT_TRUE((FSPath("tar_merger_TEST_dir") / "simple_extract" / "badsym").readlink() == "nothing");
+    EXPECT_EQ("nothing", (FSPath("tar_merger_TEST_dir") / "simple_extract" / "badsym").readlink());
+
+    EXPECT_TRUE((FSPath("tar_merger_TEST_dir") / "simple_extract" / "rewritesym").stat().is_symlink());
+    EXPECT_EQ("/bin/cat", (FSPath("tar_merger_TEST_dir") / "simple_extract" / "rewritesym").readlink());
 }
 
 #else

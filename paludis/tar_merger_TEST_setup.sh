@@ -20,3 +20,5 @@ chmod +x simple/subdir/subsubdir/script
 
 ln -s file simple/goodsym
 ln -s nothing simple/badsym
+
+ln -s ${PWD}/simple/bin/cat simple/rewritesym
