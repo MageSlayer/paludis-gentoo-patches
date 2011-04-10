@@ -650,6 +650,13 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
     {
         throw;
     }
+    catch (const DestringifyError & e)
+    {
+        Log::get_instance()->message("e.cache.failure", ll_warning, lc_no_context) << "Not using cache file at '"
+            << _imp->filename << "' due to destringify exception '" << e.message() << "' (" << e.what() << ")";
+
+        return false;
+    }
     catch (const Exception & e)
     {
         Log::get_instance()->message("e.cache.failure", ll_warning, lc_no_context) << "Not using cache file at '"
