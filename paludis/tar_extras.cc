@@ -112,6 +112,7 @@ paludis_tar_extras_add_sym(PaludisTarExtras * const extras, const std::string & 
     archive_entry_copy_pathname(entry, path.c_str());
     archive_entry_copy_stat(entry, &st);
     archive_entry_copy_symlink(entry, dest.c_str());
+    archive_entry_set_size(entry, dest.length());
     if (ARCHIVE_OK != archive_write_header(extras->archive, entry))
         throw MergerError("archive_write_header failed");
 
