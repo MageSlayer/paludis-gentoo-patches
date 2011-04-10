@@ -18,7 +18,6 @@
  */
 
 #include <paludis/repositories/e/exheres_mask_store.hh>
-#include <paludis/repositories/e/profile_file.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/dep_parser.hh>
 

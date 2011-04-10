@@ -22,7 +22,6 @@
 #include <paludis/repositories/e/e_key.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/profile.hh>
-#include <paludis/repositories/e/profile_file.hh>
 #include <paludis/repositories/e/traditional_profile.hh>
 #include <paludis/repositories/e/e_repository_news.hh>
 #include <paludis/repositories/e/e_repository_sets.hh>

@@ -18,7 +18,7 @@
  */
 
 #include <paludis/repositories/e/traditional_mask_store.hh>
-#include <paludis/repositories/e/profile_file.hh>
+#include <paludis/repositories/e/traditional_profile_file.hh>
 #include <paludis/repositories/e/traditional_mask_file.hh>
 #include <paludis/repositories/e/eapi.hh>
 
@@ -88,11 +88,11 @@ TraditionalMaskStore::_populate()
 
     using namespace std::placeholders;
 
-    ProfileFile<TraditionalMaskFile> repository_mask_file(_imp->eapi_for_file);
+    TraditionalProfileFile<TraditionalMaskFile> repository_mask_file(_imp->eapi_for_file);
     std::for_each(_imp->files->begin(), _imp->files->end(),
-            std::bind(&ProfileFile<TraditionalMaskFile>::add_file, std::ref(repository_mask_file), _1));
+            std::bind(&TraditionalProfileFile<TraditionalMaskFile>::add_file, std::ref(repository_mask_file), _1));
 
-    for (ProfileFile<TraditionalMaskFile>::ConstIterator
+    for (TraditionalProfileFile<TraditionalMaskFile>::ConstIterator
             line(repository_mask_file.begin()), line_end(repository_mask_file.end()) ;
             line != line_end ; ++line)
     {

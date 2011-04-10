@@ -17,7 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/repositories/e/profile_file.hh>
+#include <paludis/repositories/e/traditional_profile_file.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/e_repository.hh>
@@ -82,7 +82,7 @@ namespace
 namespace paludis
 {
     template <typename F_>
-    struct Imp<ProfileFile<F_> >
+    struct Imp<TraditionalProfileFile<F_> >
     {
         const EAPIForFileFunction eapi_for_file;
 
@@ -99,14 +99,14 @@ namespace paludis
     };
 
     template <>
-    struct WrappedForwardIteratorTraits<ProfileFile<LineConfigFile>::ConstIteratorTag>
+    struct WrappedForwardIteratorTraits<TraditionalProfileFile<LineConfigFile>::ConstIteratorTag>
     {
         typedef std::list<std::pair<std::shared_ptr<const EAPI>,
                 const std::remove_reference<LineConfigFile::ConstIterator::value_type>::type> >::const_iterator UnderlyingIterator;
     };
 
     template <>
-    struct WrappedForwardIteratorTraits<ProfileFile<TraditionalMaskFile>::ConstIteratorTag>
+    struct WrappedForwardIteratorTraits<TraditionalProfileFile<TraditionalMaskFile>::ConstIteratorTag>
     {
         typedef std::list<std::pair<std::shared_ptr<const EAPI>,
                 const std::remove_reference<TraditionalMaskFile::ConstIterator::value_type>::type> >::const_iterator UnderlyingIterator;
@@ -133,7 +133,7 @@ namespace paludis
 
 template <typename F_>
 void
-ProfileFile<F_>::add_file(const FSPath & f)
+TraditionalProfileFile<F_>::add_file(const FSPath & f)
 {
     Context context("When adding profile configuration file '" + stringify(f) + "':");
 
@@ -151,7 +151,7 @@ ProfileFile<F_>::add_file(const FSPath & f)
         const std::string key(FileEntryTraits<const typename std::remove_reference<typename F_::ConstIterator::value_type>::type>::extract_key(*line));
         if (0 == key.compare(0, 1, "-", 0, 1))
         {
-            typename Imp<ProfileFile>::Lines::iterator i(
+            typename Imp<TraditionalProfileFile>::Lines::iterator i(
                 std::find_if(this->_imp->lines.begin(), this->_imp->lines.end(),
                              MatchesKey<std::string>(key.substr(1))));
             if (this->_imp->lines.end() == i)
@@ -181,37 +181,37 @@ ProfileFile<F_>::add_file(const FSPath & f)
 }
 
 template <typename F_>
-ProfileFile<F_>::ProfileFile(const EAPIForFileFunction & f) :
+TraditionalProfileFile<F_>::TraditionalProfileFile(const EAPIForFileFunction & f) :
     _imp(f)
 {
 }
 
 template <typename F_>
-ProfileFile<F_>::~ProfileFile()
+TraditionalProfileFile<F_>::~TraditionalProfileFile()
 {
 }
 
 template <typename F_>
-typename ProfileFile<F_>::ConstIterator
-ProfileFile<F_>::begin() const
+typename TraditionalProfileFile<F_>::ConstIterator
+TraditionalProfileFile<F_>::begin() const
 {
     return ConstIterator(this->_imp->lines.begin());
 }
 
 template <typename F_>
-typename ProfileFile<F_>::ConstIterator
-ProfileFile<F_>::end() const
+typename TraditionalProfileFile<F_>::ConstIterator
+TraditionalProfileFile<F_>::end() const
 {
     return ConstIterator(this->_imp->lines.end());
 }
 
-template class ProfileFile<LineConfigFile>;
-template class WrappedForwardIterator<ProfileFile<LineConfigFile>::ConstIteratorTag, const std::pair<
+template class TraditionalProfileFile<LineConfigFile>;
+template class WrappedForwardIterator<TraditionalProfileFile<LineConfigFile>::ConstIteratorTag, const std::pair<
     std::shared_ptr<const EAPI>,
     const std::remove_reference<LineConfigFile::ConstIterator::value_type>::type> >;
 
-template class ProfileFile<TraditionalMaskFile>;
-template class WrappedForwardIterator<ProfileFile<TraditionalMaskFile>::ConstIteratorTag, const std::pair<
+template class TraditionalProfileFile<TraditionalMaskFile>;
+template class WrappedForwardIterator<TraditionalProfileFile<TraditionalMaskFile>::ConstIteratorTag, const std::pair<
     std::shared_ptr<const EAPI>,
     const std::remove_reference<TraditionalMaskFile::ConstIterator::value_type>::type> >;
 

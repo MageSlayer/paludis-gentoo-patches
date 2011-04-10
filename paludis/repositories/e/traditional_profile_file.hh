@@ -17,8 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_PROFILE_FILE_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_PROFILE_FILE_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_TRADITIONAL_PROFILE_FILE_HH
+#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_TRADITIONAL_PROFILE_FILE_HH 1
 
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/util/pimp.hh>
@@ -36,18 +36,18 @@ namespace paludis
     namespace erepository
     {
         template <typename F_>
-        class PALUDIS_VISIBLE ProfileFile
+        class PALUDIS_VISIBLE TraditionalProfileFile
         {
             private:
-                Pimp<ProfileFile<F_> > _imp;
+                Pimp<TraditionalProfileFile<F_> > _imp;
 
             public:
                 ///\name Basic operations
                 ///\{
 
-                explicit ProfileFile(const EAPIForFileFunction &);
+                explicit TraditionalProfileFile(const EAPIForFileFunction &);
 
-                ~ProfileFile();
+                ~TraditionalProfileFile();
 
                 ///\}
 

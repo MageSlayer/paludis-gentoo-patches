@@ -18,7 +18,7 @@
  */
 
 #include <paludis/repositories/e/traditional_profile.hh>
-#include <paludis/repositories/e/profile_file.hh>
+#include <paludis/repositories/e/traditional_profile_file.hh>
 #include <paludis/repositories/e/traditional_mask_file.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository.hh>
@@ -107,9 +107,9 @@ namespace paludis
         const IsArchFlagFunction is_arch_flag;
         const bool has_master_repositories;
 
-        ProfileFile<LineConfigFile> packages_file;
-        ProfileFile<LineConfigFile> virtuals_file;
-        ProfileFile<TraditionalMaskFile> package_mask_file;
+        TraditionalProfileFile<LineConfigFile> packages_file;
+        TraditionalProfileFile<LineConfigFile> virtuals_file;
+        TraditionalProfileFile<TraditionalMaskFile> package_mask_file;
 
         std::shared_ptr<FSPathSequence> profiles_with_parents;
 
@@ -294,7 +294,7 @@ namespace
         try
         {
             if (! _imp->has_master_repositories)
-                for (ProfileFile<LineConfigFile>::ConstIterator i(_imp->packages_file.begin()),
+                for (TraditionalProfileFile<LineConfigFile>::ConstIterator i(_imp->packages_file.begin()),
                         i_end(_imp->packages_file.end()) ; i != i_end ; ++i)
                 {
                     if (0 != i->second.compare(0, 1, "*", 0, 1))
@@ -323,7 +323,7 @@ namespace
                     _imp->env->distribution())).support_old_style_virtuals())
             try
             {
-                for (ProfileFile<LineConfigFile>::ConstIterator line(_imp->virtuals_file.begin()), line_end(_imp->virtuals_file.end()) ;
+                for (TraditionalProfileFile<LineConfigFile>::ConstIterator line(_imp->virtuals_file.begin()), line_end(_imp->virtuals_file.end()) ;
                         line != line_end ; ++line)
                 {
                     std::vector<std::string> tokens;
@@ -348,7 +348,7 @@ namespace
                     << "Loading virtuals failed due to exception: " << e.message() << " (" << e.what() << ")";
             }
 
-        for (ProfileFile<TraditionalMaskFile>::ConstIterator line(_imp->package_mask_file.begin()), line_end(_imp->package_mask_file.end()) ;
+        for (TraditionalProfileFile<TraditionalMaskFile>::ConstIterator line(_imp->package_mask_file.begin()), line_end(_imp->package_mask_file.end()) ;
                 line != line_end ; ++line)
         {
             if (line->second.first.empty())

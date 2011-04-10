@@ -86,7 +86,6 @@ noinst_HEADERS = \
 	pbin_merger.hh \
 	pipe_command_handler.hh \
 	profile.hh \
-	profile_file.hh \
 	required_use_verifier.hh \
 	source_uri_finder.hh \
 	spec_tree_pretty_printer.hh \
@@ -94,6 +93,7 @@ noinst_HEADERS = \
 	traditional_mask_file.hh \
 	traditional_mask_store.hh \
 	traditional_profile.hh \
+	traditional_profile_file.hh \
 	use_desc.hh \
 	xml_things_handle.hh \
 	vdb_contents_tokeniser.hh \
@@ -164,7 +164,6 @@ libpaludiserepository_la_SOURCES = \
 	pbin_merger.cc \
 	pipe_command_handler.cc \
 	profile.cc \
-	profile_file.cc \
 	registration.cc \
 	required_use_verifier.cc \
 	source_uri_finder.cc \
@@ -173,6 +172,7 @@ libpaludiserepository_la_SOURCES = \
 	traditional_mask_file.cc \
 	traditional_mask_store.cc \
 	traditional_profile.cc \
+	traditional_profile_file.cc \
 	use_desc.cc \
 	xml_things_handle.cc \
 	vdb_id.cc \
