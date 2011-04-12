@@ -36,6 +36,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/action.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -439,7 +440,8 @@ paludis::erepository::do_install_action(
                         n::ignore_for_unmerge() = std::bind(&ignore_merged, merged_entries,
                             std::placeholders::_1),
                         n::is_overwrite() = false,
-                        n::make_output_manager() = std::bind(&this_output_manager, output_manager, std::placeholders::_1)
+                        n::make_output_manager() = std::bind(&this_output_manager, output_manager, std::placeholders::_1),
+                        n::override_contents() = make_null_shared_ptr()
                         ));
             install_action.options.perform_uninstall()(*i, uo);
         }

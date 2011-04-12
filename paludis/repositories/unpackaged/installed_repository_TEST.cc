@@ -247,7 +247,8 @@ TEST(InstalledRepository, UninstallLast)
                 n::if_for_install_id() = make_null_shared_ptr(),
                 n::ignore_for_unmerge() = &ignore_nothing,
                 n::is_overwrite() = false,
-                n::make_output_manager() = &make_standard_output_manager
+                n::make_output_manager() = &make_standard_output_manager,
+                n::override_contents() = make_null_shared_ptr()
             ));
     id->perform_action(action);
 
@@ -293,7 +294,8 @@ TEST(InstalledRepository, UninstallNotLast)
                 n::if_for_install_id() = make_null_shared_ptr(),
                 n::ignore_for_unmerge() = &ignore_nothing,
                 n::is_overwrite() = false,
-                n::make_output_manager() = &make_standard_output_manager
+                n::make_output_manager() = &make_standard_output_manager,
+                n::override_contents() = make_null_shared_ptr()
             ));
     id->perform_action(action);
 
@@ -527,7 +529,8 @@ TEST(InstalledRepository, MultipleOps)
                     n::if_for_install_id() = make_null_shared_ptr(),
                     n::ignore_for_unmerge() = &ignore_nothing,
                     n::is_overwrite() = false,
-                    n::make_output_manager() = &make_standard_output_manager
+                    n::make_output_manager() = &make_standard_output_manager,
+                    n::override_contents() = make_null_shared_ptr()
                 ));
         (*env[selection::RequireExactlyOne(generator::Matches(
                 parse_user_package_dep_spec("cat/pkg4a",
@@ -571,7 +574,8 @@ TEST(InstalledRepository, MultipleOps)
                     n::if_for_install_id() = make_null_shared_ptr(),
                     n::ignore_for_unmerge() = &ignore_nothing,
                     n::is_overwrite() = false,
-                    n::make_output_manager() = &make_standard_output_manager
+                    n::make_output_manager() = &make_standard_output_manager,
+                    n::override_contents() = make_null_shared_ptr()
                 ));
         (*env[selection::RequireExactlyOne(generator::Matches(
                 parse_user_package_dep_spec("cat/pkg4b",

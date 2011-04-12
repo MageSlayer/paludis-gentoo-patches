@@ -457,7 +457,8 @@ ExndbamRepository::merge(const MergeParams & m)
                     n::ignore_for_unmerge() = std::bind(&ignore_merged, m.merged_entries(),
                             std::placeholders::_1),
                     n::is_overwrite() = true,
-                    n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1)
+                    n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1),
+                    n::override_contents() = make_null_shared_ptr()
                     ));
         m.perform_uninstall()(if_overwritten_id, uo);
     }
@@ -478,7 +479,8 @@ ExndbamRepository::merge(const MergeParams & m)
                             n::ignore_for_unmerge() = std::bind(&ignore_merged, m.merged_entries(),
                                     std::placeholders::_1),
                             n::is_overwrite() = false,
-                            n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1)
+                            n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1),
+                            n::override_contents() = make_null_shared_ptr()
                             ));
                 m.perform_uninstall()(candidate, uo);
             }

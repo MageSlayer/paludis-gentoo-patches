@@ -506,7 +506,8 @@ UnpackagedID::perform_action(Action & action) const
                     n::if_for_install_id() = shared_from_this(),
                     n::ignore_for_unmerge() = &ignore_nothing,
                     n::is_overwrite() = false,
-                    n::make_output_manager() = std::bind(&this_output_manager, output_manager, std::placeholders::_1)
+                    n::make_output_manager() = std::bind(&this_output_manager, output_manager, std::placeholders::_1),
+                    n::override_contents() = make_null_shared_ptr()
                     ));
         install_action->options.perform_uninstall()(*i, uo);
     }

@@ -593,7 +593,8 @@ PerformCommand::run(
                     n::if_for_install_id() = make_null_shared_ptr(),
                     n::ignore_for_unmerge() = &ignore_nothing,
                     n::is_overwrite() = false,
-                    n::make_output_manager() = std::ref(output_manager_holder)
+                    n::make_output_manager() = std::ref(output_manager_holder),
+                    n::override_contents() = make_null_shared_ptr()
                     ));
         UninstallAction uninstall_action(options);
         execute(env, cmdline, id, action, uninstall_action, output_manager_holder);

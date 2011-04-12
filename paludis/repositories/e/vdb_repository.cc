@@ -964,12 +964,13 @@ VDBRepository::merge(const MergeParams & m)
         return;
     }
 
+    std::shared_ptr<const Contents> is_replace_contents;
     if (is_replace)
     {
         /* hack: before we nuke its vdb dir, preload CONTENTS */
         if (! is_replace->contents_key())
             throw InternalError(PALUDIS_HERE, "No contents key in " + stringify(*is_replace) + ". How did that happen?");
-        is_replace->contents_key()->value();
+        is_replace_contents = is_replace->contents_key()->value();
 
         FSPath old_vdb_dir(_imp->params.location());
         old_vdb_dir /= stringify(is_replace->name().category());
@@ -1011,7 +1012,8 @@ VDBRepository::merge(const MergeParams & m)
                     n::ignore_for_unmerge() = std::bind(&ignore_merged, m.merged_entries(),
                             std::placeholders::_1),
                     n::is_overwrite() = true,
-                    n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1)
+                    n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1),
+                    n::override_contents() = is_replace_contents
                     ));
         m.perform_uninstall()(is_replace, uo);
     }
@@ -1032,7 +1034,8 @@ VDBRepository::merge(const MergeParams & m)
                             n::ignore_for_unmerge() = std::bind(&ignore_merged, m.merged_entries(),
                                     std::placeholders::_1),
                             n::is_overwrite() = false,
-                            n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1)
+                            n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1),
+                            n::override_contents() = make_null_shared_ptr()
                             ));
                 m.perform_uninstall()(candidate, uo);
             }

@@ -23,6 +23,9 @@
 #include <paludis/action-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/contents-fwd.hh>
+#include <paludis/output_manager-fwd.hh>
+
 #include <paludis/util/attributes.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/exception.hh>
@@ -31,8 +34,8 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/options.hh>
-#include <paludis/output_manager-fwd.hh>
 #include <paludis/util/type_list.hh>
+
 #include <functional>
 
 /** \file
@@ -61,6 +64,7 @@ namespace paludis
         typedef Name<struct name_ignore_unfetched> ignore_unfetched;
         typedef Name<struct name_is_overwrite> is_overwrite;
         typedef Name<struct name_make_output_manager> make_output_manager;
+        typedef Name<struct name_override_contents> override_contents;
         typedef Name<struct name_perform_uninstall> perform_uninstall;
         typedef Name<struct name_replacing> replacing;
         typedef Name<struct name_requires_manual_fetching> requires_manual_fetching;
@@ -219,6 +223,17 @@ namespace paludis
          */
         NamedValue<n::make_output_manager, std::function<std::shared_ptr<OutputManager> (
                 const UninstallAction &)> > make_output_manager;
+
+        /**
+         * Sometimes we need to override the contents of an installed package,
+         * for example when doing 'overwrite' merges for VDB.
+         *
+         * Not all repositories support this, or do what you expect with it. Clients
+         * should always set this to null.
+         *
+         * \since 0.61
+         */
+        NamedValue<n::override_contents, std::shared_ptr<const Contents> > override_contents;
     };
 
     /**
