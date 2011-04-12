@@ -173,7 +173,7 @@ SpecRewriter::_need_rewrites() const
         if (! ((*i)->virtual_for_key()))
             throw InternalError(PALUDIS_HERE, "huh? " + stringify(**i) + " has no virtual_for_key");
         _imp->rewrites.insert(std::make_pair((*i)->name(), std::set<QualifiedPackageName>())).first->second.insert(
-                (*i)->virtual_for_key()->value()->name());
+                (*i)->virtual_for_key()->parse_value()->name());
     }
 #endif
 }

@@ -141,7 +141,7 @@ TEST_P(ReplacingTest, Works)
     const std::shared_ptr<const PackageIDSequence> rlist(env[selection::AllVersionsSorted(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec(info.replacing, &env, { })),
                     make_null_shared_ptr(), { }) |
-                filter::InstalledAtRoot(env.preferred_root_key()->value()))]);
+                filter::InstalledAtRoot(env.preferred_root_key()->parse_value()))]);
 
     InstallAction action(make_named_values<InstallActionOptions>(
                 n::destination() = installed_repo,

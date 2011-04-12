@@ -75,7 +75,7 @@ namespace paludis
                             MutablePackageDepSpecData({ })
                             .require_package(v->name())
                             .require_version(vrc_and, vo_equal, v->version())
-                            .require_exact_slot(v->slot_key() ? v->slot_key()->value() : SlotName("UNKNOWN"), false)
+                            .require_exact_slot(v->slot_key() ? v->slot_key()->parse_value() : SlotName("UNKNOWN"), false)
                             .require_in_repository(v->repository_name()))
                     :
                     std::make_shared<PackageDepSpec>(
@@ -104,7 +104,7 @@ VirtualsDepKey::~VirtualsDepKey()
 }
 
 const std::shared_ptr<const DependencySpecTree>
-VirtualsDepKey::value() const
+VirtualsDepKey::parse_value() const
 {
     return _imp->value;
 }
@@ -217,18 +217,18 @@ VirtualsPackageID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             return stringify(_imp->name) + "-" + stringify(_imp->version) + "::" + stringify(_imp->repository_name) +
-                " (virtual for " + stringify(*_imp->virtual_for->value()) + ")";
+                " (virtual for " + stringify(*_imp->virtual_for->parse_value()) + ")";
 
         case idcf_no_version:
             return stringify(_imp->name) + "::" + stringify(_imp->repository_name) +
-                " (virtual for " + _imp->virtual_for->value()->canonical_form(idcf_no_version) + ")";
+                " (virtual for " + _imp->virtual_for->parse_value()->canonical_form(idcf_no_version) + ")";
 
         case idcf_version:
-            return stringify(_imp->version) + " (for " + stringify(_imp->virtual_for->value()->canonical_form(idcf_no_version)) + ")";
+            return stringify(_imp->version) + " (for " + stringify(_imp->virtual_for->parse_value()->canonical_form(idcf_no_version)) + ")";
 
         case idcf_no_name:
             return stringify(_imp->version) + "::" + stringify(_imp->repository_name) +
-                " (virtual for " + stringify(*_imp->virtual_for->value()) + ")";
+                " (virtual for " + stringify(*_imp->virtual_for->parse_value()) + ")";
 
         case last_idcf:
             break;
@@ -241,10 +241,10 @@ PackageDepSpec
 VirtualsPackageID::uniquely_identifying_spec() const
 {
     /* hack: ensure the slot key's loaded, so that stringify returns the full form */
-    _imp->virtual_for->value()->slot_key();
+    _imp->virtual_for->parse_value()->slot_key();
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository_name()) +
-            "[." + _imp->virtual_for->raw_name() + "=" + stringify(*_imp->virtual_for->value()) + "]",
+            (slot_key() ? ":" + stringify(slot_key()->parse_value()) : "") + "::" + stringify(repository_name()) +
+            "[." + _imp->virtual_for->raw_name() + "=" + stringify(*_imp->virtual_for->parse_value()) + "]",
             _imp->env, { });
 }
 
@@ -360,14 +360,14 @@ bool
 VirtualsPackageID::arbitrary_less_than_comparison(const PackageID & a) const
 {
     if (a.virtual_for_key())
-        return PackageIDSetComparator()(_imp->virtual_for->value(), a.virtual_for_key()->value());
+        return PackageIDSetComparator()(_imp->virtual_for->parse_value(), a.virtual_for_key()->parse_value());
     return false;
 }
 
 std::size_t
 VirtualsPackageID::extra_hash_value() const
 {
-    return Hash<PackageID>()(*_imp->virtual_for->value());
+    return Hash<PackageID>()(*_imp->virtual_for->parse_value());
 }
 
 void
@@ -493,8 +493,8 @@ VirtualsPackageID::need_masks_added() const
     if (_imp->has_masks)
         return;
 
-    if (_imp->virtual_for->value()->masked())
-        add_mask(std::make_shared<VirtualsAssociationMask>(_imp->virtual_for->value()->uniquely_identifying_spec()));
+    if (_imp->virtual_for->parse_value()->masked())
+        add_mask(std::make_shared<VirtualsAssociationMask>(_imp->virtual_for->parse_value()->uniquely_identifying_spec()));
 
     _imp->has_masks = true;
 }
@@ -526,7 +526,7 @@ VirtualsPackageID::fs_location_key() const
 const std::shared_ptr<const MetadataValueKey<SlotName> >
 VirtualsPackageID::slot_key() const
 {
-    return _imp->virtual_for->value()->slot_key();
+    return _imp->virtual_for->parse_value()->slot_key();
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >

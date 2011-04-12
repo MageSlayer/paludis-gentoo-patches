@@ -58,45 +58,45 @@ namespace
             void visit(const MetadataValueKey<std::string> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataValueKey<std::string>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.value() << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.parse_value() << endl;
             }
 
             void visit(const MetadataValueKey<SlotName> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataValueKey<SlotName>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.value() << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.parse_value() << endl;
             }
 
             void visit(const MetadataValueKey<long> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataValueKey<long>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.value() << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.parse_value() << endl;
             }
 
             void visit(const MetadataValueKey<bool> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataValueKey<bool>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.value() << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.parse_value() << endl;
             }
 
             void visit(const MetadataValueKey<FSPath> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataValueKey<FSPath>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.value() << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.parse_value() << endl;
             }
 
             void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " <<
                     "MetadataValueKey<std::shared_ptr<const PackageID> >" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << *key.value() << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << *key.parse_value() << endl;
             }
 
             void visit(const MetadataTimeKey & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataTimeKey" << endl;
 
-                cout << indent << left << setw(30) << "    Value:" << " " << pretty_print_time(key.value().seconds()) << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << pretty_print_time(key.parse_value().seconds()) << endl;
             }
 
             void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)
@@ -167,37 +167,41 @@ namespace
 
             void visit(const MetadataCollectionKey<Set<std::string> > & key)
             {
+                auto value(key.parse_value());
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<Set<std::string> >" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << join(key.value()->begin(), key.value()->end(), " ") << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << join(value->begin(), value->end(), " ") << endl;
             }
 
             void visit(const MetadataCollectionKey<Map<std::string, std::string> > & key)
             {
+                auto value(key.parse_value());
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<Map<std::string, std::string> >" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << join(
-                        key.value()->begin(), key.value()->end(), " ", stringify_string_pair) << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << join(value->begin(), value->end(), " ", stringify_string_pair) << endl;
             }
 
             void visit(const MetadataCollectionKey<Sequence<std::string> > & key)
             {
+                auto value(key.parse_value());
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<Sequence<std::string> >" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << join(key.value()->begin(), key.value()->end(), " ") << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << join(value->begin(), value->end(), " ") << endl;
             }
 
             void visit(const MetadataCollectionKey<FSPathSequence> & key)
             {
+                auto value(key.parse_value());
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<FSPathSequence>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << join(key.value()->begin(), key.value()->end(), " ") << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << join(value->begin(), value->end(), " ") << endl;
             }
 
             void visit(const MetadataCollectionKey<PackageIDSequence> & key)
             {
+                auto value(key.parse_value());
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<PackageIDSequence>" << endl;
                 /* Slight trickery: a PackageIDSequence stores shared pointers
                  * to PackageID instances, so we need indirect_iterator to get
                  * an extra level of dereferencing. */
-                cout << indent << left << setw(30) << "    Value:" << " " << join(indirect_iterator(key.value()->begin()),
-                        indirect_iterator(key.value()->end()), " ") << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << join(indirect_iterator(value->begin()),
+                        indirect_iterator(value->end()), " ") << endl;
             }
 
             void visit(const MetadataSectionKey & key)

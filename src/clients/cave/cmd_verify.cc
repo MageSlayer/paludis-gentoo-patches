@@ -123,7 +123,7 @@ namespace
             if (e.end_metadata() != k)
             {
                 const MetadataTimeKey * kk(visitor_cast<const MetadataTimeKey>(**k));
-                if (kk && (kk->value().seconds() != f.mtim().seconds()))
+                if (kk && (kk->parse_value().seconds() != f.mtim().seconds()))
                 {
                     message(p, "Modification time changed");
                     return false;
@@ -143,7 +143,7 @@ namespace
                 {
                     SafeIFStream s(f);
                     MD5 md5(s);
-                    if (kk->value() != md5.hexsum())
+                    if (kk->parse_value() != md5.hexsum())
                     {
                         message(f, "Contents (md5) changed");
                         return false;
@@ -156,7 +156,7 @@ namespace
 
         void visit(const ContentsFileEntry & e)
         {
-            FSPath f(e.location_key()->value());
+            FSPath f(e.location_key()->parse_value());
             FSStat f_stat(f);
             if (! f_stat.exists())
                 message(f, "Does not exist");
@@ -168,7 +168,7 @@ namespace
 
         void visit(const ContentsSymEntry & e)
         {
-            FSPath f(e.location_key()->value());
+            FSPath f(e.location_key()->parse_value());
             FSStat f_stat(f);
             if (! f_stat.exists())
                 message(f, "Does not exist");
@@ -180,7 +180,7 @@ namespace
 
         void visit(const ContentsDirEntry & e)
         {
-            FSPath f(e.location_key()->value());
+            FSPath f(e.location_key()->parse_value());
             FSStat f_stat(f);
             if (! f_stat.exists())
                 message(f, "Does not exist");
@@ -213,14 +213,14 @@ VerifyCommand::run(
         throw args::DoHelp("verify takes exactly one parameter");
 
     PackageDepSpec spec(parse_spec_with_nice_error(*cmdline.begin_parameters(), env.get(),
-                { updso_allow_wildcards }, filter::InstalledAtRoot(env->preferred_root_key()->value())));
+                { updso_allow_wildcards }, filter::InstalledAtRoot(env->preferred_root_key()->parse_value())));
 
     std::shared_ptr<const PackageIDSequence> entries(
             (*env)[selection::AllVersionsSorted(generator::Matches(spec, make_null_shared_ptr(), { }) |
-                filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
 
     if (entries->empty())
-        nothing_matching_error(env.get(), *cmdline.begin_parameters(), filter::InstalledAtRoot(env->preferred_root_key()->value()));
+        nothing_matching_error(env.get(), *cmdline.begin_parameters(), filter::InstalledAtRoot(env->preferred_root_key()->parse_value()));
 
     int exit_status(0);
     for (PackageIDSequence::ConstIterator i(entries->begin()), i_end(entries->end()) ;
@@ -230,9 +230,8 @@ VerifyCommand::run(
             continue;
 
         Verifier v(*i);
-        std::for_each(indirect_iterator((*i)->contents_key()->value()->begin()),
-                indirect_iterator((*i)->contents_key()->value()->end()),
-                accept_visitor(v));
+        auto contents((*i)->contents_key()->parse_value());
+        std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(v));
         exit_status |= v.exit_status;
     }
 

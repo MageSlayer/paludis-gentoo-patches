@@ -258,7 +258,7 @@ namespace
                             << "Line '" << line << "' uses ? operator but no environment is available";
                     else if (! (*params.environment())[selection::SomeArbitraryVersion(
                                 generator::Package(spec->package_name_requirement()->name()) |
-                                filter::InstalledAtRoot(params.environment()->preferred_root_key()->value()))]->empty())
+                                filter::InstalledAtRoot(params.environment()->preferred_root_key()->parse_value()))]->empty())
                         result->top()->append(spec);
                 }
                 else
@@ -282,7 +282,7 @@ namespace
                             << "Line '" << line << "' uses ?: operator but no environment is available";
                     else if (! (*params.environment())[selection::SomeArbitraryVersion(generator::Matches(
                                     name_and_slot(*spec), make_null_shared_ptr(), { }) |
-                                filter::InstalledAtRoot(params.environment()->preferred_root_key()->value()))]->empty())
+                                filter::InstalledAtRoot(params.environment()->preferred_root_key()->parse_value()))]->empty())
                         result->top()->append(spec);
                 }
                 else
@@ -541,7 +541,7 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
     std::stringstream s;
     Process process(ProcessCommand({ "bash", stringify(_p.file_name()) }));
     process
-        .setenv("ROOT", _p.environment() ? stringify(_p.environment()->preferred_root_key()->value()) : "/")
+        .setenv("ROOT", _p.environment() ? stringify(_p.environment()->preferred_root_key()->parse_value()) : "/")
         .setenv("SET", stringify(_p.file_name()))
         .setenv("SET_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
         .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))

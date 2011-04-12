@@ -175,7 +175,7 @@ AccountsID::_need_file_keys() const
 
     Lock lock(_imp->mutex);
 
-    KeyValueConfigFile k(_imp->fs_location_key->value(), { },
+    KeyValueConfigFile k(_imp->fs_location_key->parse_value(), { },
             &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
     /* also need to change the handlers if any of the raw names are changed */
@@ -507,7 +507,7 @@ AccountsID::perform_action(Action & action) const
                 n::build_start_time() = build_start_time,
                 n::check() = true,
                 n::environment_file() = FSPath("/dev/null"),
-                n::image_dir() = fs_location_key()->value(),
+                n::image_dir() = fs_location_key()->parse_value(),
                 n::merged_entries() = std::make_shared<FSPathSet>(),
                 n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                 n::output_manager() = output_manager,
@@ -561,7 +561,7 @@ AccountsID::perform_action(Action & action) const
     {
         Context local_context("When cleaning '" + stringify(**i) + "':");
         auto repo(_imp->env->fetch_repository((*i)->repository_name()));
-        if (repo->format_key() && repo->format_key()->value() == "installed-accounts"
+        if (repo->format_key() && repo->format_key()->parse_value() == "installed-accounts"
                 && (*i)->name() == name())
             continue;
         else

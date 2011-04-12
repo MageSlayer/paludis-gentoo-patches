@@ -128,7 +128,7 @@ InstalledUnpackagedRepository::package_ids(const QualifiedPackageName & q, const
         Lock l(*(*e).mutex());
         if (! (*e).package_id())
             (*e).package_id() = std::make_shared<InstalledUnpackagedID>(_imp->params.environment(), (*e).name(), (*e).version(),
-                        (*e).slot(), name(), (*e).fs_location(), (*e).magic(), installed_root_key()->value(), &_imp->ndbam);
+                        (*e).slot(), name(), (*e).fs_location(), (*e).magic(), installed_root_key()->parse_value(), &_imp->ndbam);
         result->push_back((*e).package_id());
     }
 
@@ -255,7 +255,7 @@ namespace
             const std::shared_ptr<const PackageID> & b)
     {
         if (a->slot_key())
-            return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
+            return b->slot_key() && a->slot_key()->parse_value() == b->slot_key()->parse_value();
         else
             return ! b->slot_key();
     }
@@ -281,7 +281,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         const MetadataValueKey<FSPath> * kk(visitor_cast<const MetadataValueKey<FSPath> >(**k));
         if (! kk)
             throw ActionFailedError("Fetched install_under key but did not get an FSPath key from owning repository");
-        install_under = kk->value();
+        install_under = kk->parse_value();
     }
 
     int rewrite_ids_over_to_root(-1);
@@ -292,7 +292,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         const MetadataValueKey<long> * kk(visitor_cast<const MetadataValueKey<long> >(**k));
         if (! kk)
             throw ActionFailedError("Fetched rewrite_ids_over_to_root key but did not get a long key from owning repository");
-        rewrite_ids_over_to_root = kk->value();
+        rewrite_ids_over_to_root = kk->parse_value();
     }
 
     std::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
@@ -312,7 +312,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
 
     FSPath uid_dir(_imp->params.location());
     if (if_same_name_id)
-        uid_dir = if_same_name_id->fs_location_key()->value().dirname();
+        uid_dir = if_same_name_id->fs_location_key()->parse_value().dirname();
     else
     {
         std::string uid(stringify(m.package_id()->name().category()) + "---" + stringify(m.package_id()->name().package()));
@@ -327,7 +327,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
     }
 
     FSPath target_ver_dir(uid_dir);
-    target_ver_dir /= (stringify(m.package_id()->version()) + ":" + stringify(m.package_id()->slot_key()->value()) + ":" + cookie());
+    target_ver_dir /= (stringify(m.package_id()->version()) + ":" + stringify(m.package_id()->slot_key()->parse_value()) + ":" + cookie());
 
     if (target_ver_dir.stat().exists())
         throw ActionFailedError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "
@@ -346,7 +346,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         if (m.package_id()->short_description_key())
         {
             SafeOFStream description_file(target_ver_dir / "description", -1, true);
-            description_file << m.package_id()->short_description_key()->value() << std::endl;
+            description_file << m.package_id()->short_description_key()->parse_value() << std::endl;
         }
 
         if (m.package_id()->build_dependencies_key())
@@ -377,7 +377,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
                 n::options() = m.options(),
                 n::output_manager() = m.output_manager(),
                 n::package_id() = m.package_id(),
-                n::root() = installed_root_key()->value()
+                n::root() = installed_root_key()->parse_value()
             ));
 
     if (m.check())
@@ -402,14 +402,14 @@ bool
 InstalledUnpackagedRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
     auto repo(_imp->params.environment()->fetch_repository(id->repository_name()));
-    std::string f(repo->format_key() ? repo->format_key()->value() : "");
+    std::string f(repo->format_key() ? repo->format_key()->parse_value() : "");
     return f == "unpackaged";
 }
 
 bool
 InstalledUnpackagedRepository::is_default_destination() const
 {
-    return _imp->params.environment()->preferred_root_key()->value() == installed_root_key()->value();
+    return _imp->params.environment()->preferred_root_key()->parse_value() == installed_root_key()->parse_value();
 }
 
 bool

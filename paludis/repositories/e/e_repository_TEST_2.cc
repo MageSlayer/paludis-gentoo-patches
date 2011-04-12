@@ -128,7 +128,7 @@ TEST(ERepository, InstallEAPI2)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-2",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -137,7 +137,7 @@ TEST(ERepository, InstallEAPI2)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/doman-2",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -146,7 +146,7 @@ TEST(ERepository, InstallEAPI2)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/src_prepare-2",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         ASSERT_THROW(id->perform_action(action), ActionFailedError);
     }
 
@@ -155,7 +155,7 @@ TEST(ERepository, InstallEAPI2)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/src_configure-2",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         ASSERT_THROW(id->perform_action(action), ActionFailedError);
     }
 
@@ -164,7 +164,7 @@ TEST(ERepository, InstallEAPI2)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/default-src_configure-2",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -173,7 +173,7 @@ TEST(ERepository, InstallEAPI2)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/default-src_compile-2",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -182,7 +182,7 @@ TEST(ERepository, InstallEAPI2)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/default_src_compile-2",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -191,7 +191,7 @@ TEST(ERepository, InstallEAPI2)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/src_compile-via-default-func-2",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("2", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 }

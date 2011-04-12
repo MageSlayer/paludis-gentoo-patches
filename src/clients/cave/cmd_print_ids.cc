@@ -258,7 +258,7 @@ namespace
         m->insert('c', stringify(i->name().category()));
         m->insert('p', stringify(i->name().package()));
         m->insert('v', stringify(i->version()));
-        m->insert('s', i->slot_key() ? stringify(i->slot_key()->value()) : "");
+        m->insert('s', i->slot_key() ? stringify(i->slot_key()->parse_value()) : "");
         m->insert(':', i->slot_key() ? ":" : "");
         m->insert('r', stringify(i->repository_name()));
         m->insert('F', i->canonical_form(idcf_full));

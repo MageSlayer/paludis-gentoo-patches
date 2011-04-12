@@ -81,17 +81,17 @@ namespace
 
             void visit(const ContentsFileEntry & e)
             {
-                if (is_executable_in_path(e.location_key()->value()))
-                    _displayer(e.location_key()->value());
+                if (is_executable_in_path(e.location_key()->parse_value()))
+                    _displayer(e.location_key()->parse_value());
             }
 
             void visit(const ContentsSymEntry & e)
             {
-                FSPath symlink(e.location_key()->value());
+                FSPath symlink(e.location_key()->parse_value());
                 FSPath real_file(symlink.realpath_if_exists());
 
                 if (symlink != real_file && is_executable_in_path(symlink))
-                    _displayer(e.location_key()->value());
+                    _displayer(e.location_key()->parse_value());
             }
 
             void visit(const ContentsDirEntry &)
@@ -113,11 +113,11 @@ paludis::cave::executables_common(
         const bool best)
 {
     PackageDepSpec spec(parse_spec_with_nice_error(param, env.get(), { updso_allow_wildcards },
-                filter::InstalledAtRoot(env->preferred_root_key()->value())));
+                filter::InstalledAtRoot(env->preferred_root_key()->parse_value())));
 
     std::shared_ptr<const PackageIDSequence> entries(
             (*env)[selection::AllVersionsSorted(generator::Matches(spec, make_null_shared_ptr(), { }) |
-                filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
 
     if (entries->empty())
         throw NoSuchPackageError(param);
@@ -135,7 +135,7 @@ paludis::cave::executables_common(
     {
         if ((*i)->contents_key())
         {
-            std::shared_ptr<const Contents> contents((*i)->contents_key()->value());
+            std::shared_ptr<const Contents> contents((*i)->contents_key()->parse_value());
             std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(ed));
         }
     }

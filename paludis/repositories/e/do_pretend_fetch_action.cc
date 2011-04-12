@@ -44,7 +44,7 @@ paludis::erepository::do_pretend_fetch_action(
         PretendFetchVisitor f(env, id, *id->eapi(),
                 repo->params().distdir(), a.options.fetch_parts()[fp_unneeded],
                 id->fetches_key()->initial_label(), a);
-        id->fetches_key()->value()->top()->accept(f);
+        id->fetches_key()->parse_value()->top()->accept(f);
     }
 }
 

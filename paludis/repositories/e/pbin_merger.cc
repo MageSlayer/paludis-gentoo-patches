@@ -96,7 +96,7 @@ PbinMerger::extend_hook(const Hook & h)
         std::string pn(stringify(_imp->params.package_id()->name().package()));
         std::string pvr(stringify(_imp->params.package_id()->version()));
         std::string pv(stringify(_imp->params.package_id()->version().remove_revision()));
-        std::string slot(_imp->params.package_id()->slot_key() ? stringify(_imp->params.package_id()->slot_key()->value()) : "");
+        std::string slot(_imp->params.package_id()->slot_key() ? stringify(_imp->params.package_id()->slot_key()->parse_value()) : "");
 
         return TarMerger::extend_hook(h)
             ("P", pn + "-" + pv)

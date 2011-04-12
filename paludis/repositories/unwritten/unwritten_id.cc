@@ -128,10 +128,10 @@ UnwrittenID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             return stringify(_imp->name) + "-" + stringify(_imp->version) +
-                ":" + stringify(slot_key()->value()) + "::" + stringify(_imp->repository_name);
+                ":" + stringify(slot_key()->parse_value()) + "::" + stringify(_imp->repository_name);
 
         case idcf_no_version:
-            return stringify(_imp->name) + ":" + stringify(slot_key()->value()) +
+            return stringify(_imp->name) + ":" + stringify(slot_key()->parse_value()) +
                 "::" + stringify(_imp->repository_name);
 
         case idcf_version:
@@ -139,7 +139,7 @@ UnwrittenID::canonical_form(const PackageIDCanonicalForm f) const
 
         case idcf_no_name:
             return stringify(_imp->version) +
-                ":" + stringify(slot_key()->value()) + "::" + stringify(_imp->repository_name);
+                ":" + stringify(slot_key()->parse_value()) + "::" + stringify(_imp->repository_name);
 
         case last_idcf:
             break;
@@ -152,7 +152,7 @@ PackageDepSpec
 UnwrittenID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository_name()),
+            (slot_key() ? ":" + stringify(slot_key()->parse_value()) : "") + "::" + stringify(repository_name()),
             _imp->env, { });
 }
 
@@ -195,13 +195,13 @@ UnwrittenID::breaks_portage() const
 bool
 UnwrittenID::arbitrary_less_than_comparison(const PackageID & other) const
 {
-    return slot_key()->value().value() < (other.slot_key() ? stringify(other.slot_key()->value()) : "");
+    return slot_key()->parse_value().value() < (other.slot_key() ? stringify(other.slot_key()->parse_value()) : "");
 }
 
 std::size_t
 UnwrittenID::extra_hash_value() const
 {
-    return Hash<SlotName>()(slot_key()->value());
+    return Hash<SlotName>()(slot_key()->parse_value());
 }
 
 const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >

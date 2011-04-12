@@ -262,7 +262,7 @@ TEST(ERepository, InstallEAPI0)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/econf-source-0",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         ASSERT_THROW(id->perform_action(action), ActionFailedError);
     }
 
@@ -271,7 +271,7 @@ TEST(ERepository, InstallEAPI0)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/doman-0",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -280,7 +280,7 @@ TEST(ERepository, InstallEAPI0)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/src_prepare-0",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -289,7 +289,7 @@ TEST(ERepository, InstallEAPI0)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/src_configure-0",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -338,7 +338,7 @@ TEST(ERepository, InstallEAPI0)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/econf-disable-dependency-tracking-0",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 

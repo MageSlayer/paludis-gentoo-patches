@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,24 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/resolver/same_slot.hh>
-#include <paludis/util/wrapped_value.hh>
-#include <paludis/package_id.hh>
-#include <paludis/metadata_key.hh>
-#include <paludis/name.hh>
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_HAS_BEHAVIOUR_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_HAS_BEHAVIOUR_HH 1
 
-using namespace paludis;
-using namespace paludis::resolver;
+#include <paludis/resolver/has_behaviour-fwd.hh>
 
-bool
-paludis::resolver::same_slot(
-        const std::shared_ptr<const PackageID> & a,
-        const std::shared_ptr<const PackageID> & b)
-{
-    if (a->slot_key())
-        return b->slot_key() && a->slot_key()->parse_value() == b->slot_key()->parse_value();
-    else
-        return ! b->slot_key();
-}
-
-
+#endif

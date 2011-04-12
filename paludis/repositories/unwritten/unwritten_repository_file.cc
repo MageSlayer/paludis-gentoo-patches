@@ -134,7 +134,7 @@ namespace
         {
         }
 
-        const std::shared_ptr<const SimpleURISpecTree> value() const
+        const std::shared_ptr<const SimpleURISpecTree> parse_value() const
         {
             return vv;
         }
@@ -159,7 +159,7 @@ namespace
                 const PrettyPrintOptions &) const
         {
             UnwrittenHomepagePrettyPrinter p(pretty_printer);
-            value()->top()->accept(p);
+            parse_value()->top()->accept(p);
             return p.s.str();
         }
     };

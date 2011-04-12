@@ -43,17 +43,17 @@ namespace
 {
     bool handle_full(const std::string & q, const std::shared_ptr<const ContentsEntry> & e)
     {
-        return q == stringify(e->location_key()->value());
+        return q == stringify(e->location_key()->parse_value());
     }
 
     bool handle_basename(const std::string & q, const std::shared_ptr<const ContentsEntry> & e)
     {
-        return q == e->location_key()->value().basename();
+        return q == e->location_key()->parse_value().basename();
     }
 
     bool handle_partial(const std::string & q, const std::shared_ptr<const ContentsEntry> & e)
     {
-        return std::string::npos != stringify(e->location_key()->value()).find(q);
+        return std::string::npos != stringify(e->location_key()->parse_value()).find(q);
     }
 }
 
@@ -100,14 +100,14 @@ paludis::cave::owner_common(
     }
 
     std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(generator::All() |
-                filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
 
     for (PackageIDSequence::ConstIterator p(ids->begin()), p_end(ids->end()); p != p_end; ++p)
     {
         if (! (*p)->contents_key())
             continue;
 
-        std::shared_ptr<const Contents> contents((*p)->contents_key()->value());
+        std::shared_ptr<const Contents> contents((*p)->contents_key()->parse_value());
         if (contents->end() != std::find_if(contents->begin(), contents->end(), std::bind(handler, query,
                         std::placeholders::_1)))
         {

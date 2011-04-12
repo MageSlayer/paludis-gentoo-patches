@@ -325,19 +325,19 @@ module Paludis
             assert_respond_to env, :format_key
             assert_not_nil env.format_key
             assert_kind_of MetadataStringKey, env.format_key
-            assert_equal 'paludis', env.format_key.value
+            assert_equal 'paludis', env.format_key.parse_value
 
             assert_respond_to ncenv, :format_key
             assert_not_nil ncenv.format_key
             assert_kind_of MetadataStringKey, ncenv.format_key
-            assert_equal 'no_config', ncenv.format_key.value
+            assert_equal 'no_config', ncenv.format_key.parse_value
         end
 
         def test_config_location_key
             assert_respond_to env, :config_location_key
             assert_not_nil env.config_location_key
             assert_kind_of MetadataFSPathKey, env.config_location_key
-            assert_equal Dir.getwd().to_s + "/environment_TEST_dir/home/.paludis", env.config_location_key.value
+            assert_equal Dir.getwd().to_s + "/environment_TEST_dir/home/.paludis", env.config_location_key.parse_value
 
             assert_respond_to ncenv, :config_location_key
             assert_nil ncenv.config_location_key

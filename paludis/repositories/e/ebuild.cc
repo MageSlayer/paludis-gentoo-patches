@@ -96,8 +96,7 @@ namespace
     {
         std::shared_ptr<const ChoiceValue> choice;
         if (id->choices_key())
-            choice = id->choices_key()->value()->find_by_name_with_prefix(
-                    ELikeJobsChoiceValue::canonical_name_with_prefix());
+            choice = id->choices_key()->parse_value()->find_by_name_with_prefix(ELikeJobsChoiceValue::canonical_name_with_prefix());
         if (choice && choice->enabled())
             return choice->parameter();
         else
@@ -108,8 +107,7 @@ namespace
     {
         std::shared_ptr<const ChoiceValue> choice;
         if (id->choices_key())
-            choice = id->choices_key()->value()->find_by_name_with_prefix(
-                    ELikeTraceChoiceValue::canonical_name_with_prefix());
+            choice = id->choices_key()->parse_value()->find_by_name_with_prefix(ELikeTraceChoiceValue::canonical_name_with_prefix());
         return choice && choice->enabled();
     }
 }
@@ -298,9 +296,10 @@ EbuildCommand::operator() ()
 
     if (! params.package_id()->eapi()->supported()->ebuild_metadata_variables()->iuse_effective()->name().empty())
         if (params.package_id()->raw_iuse_effective_key())
-            process.setenv(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->iuse_effective()->name(),
-                    join(params.package_id()->raw_iuse_effective_key()->value()->begin(),
-                        params.package_id()->raw_iuse_effective_key()->value()->end(), " "));
+        {
+            auto iu(params.package_id()->raw_iuse_effective_key()->parse_value());
+            process.setenv(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->iuse_effective()->name(), join(iu->begin(), iu->end(), " "));
+        }
 
     if (params.package_id()->eapi()->supported()->ebuild_options()->support_eclasses())
         process
@@ -1059,14 +1058,16 @@ WriteVDBEntryCommand::operator() ()
 
     if (! params.package_id()->eapi()->supported()->ebuild_metadata_variables()->iuse_effective()->name().empty())
         if (params.package_id()->raw_iuse_effective_key())
+        {
+            auto iu(params.package_id()->raw_iuse_effective_key()->parse_value());
             process.setenv(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->iuse_effective()->name(),
-                    join(params.package_id()->raw_iuse_effective_key()->value()->begin(),
-                        params.package_id()->raw_iuse_effective_key()->value()->end(), " "));
+                    join(iu->begin(), iu->end(), " "));
+        }
 
     if (! params.package_id()->eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name().empty())
         if (params.package_id()->scm_revision_key())
             process.setenv(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name(),
-                    params.package_id()->scm_revision_key()->value());;
+                    params.package_id()->scm_revision_key()->parse_value());;
 
     if (params.maybe_output_manager())
         process
@@ -1077,8 +1078,10 @@ WriteVDBEntryCommand::operator() ()
     std::string defined_phases(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->defined_phases()->name());
     if (! defined_phases.empty())
         if (params.package_id()->defined_phases_key())
-            process.setenv(defined_phases, join(params.package_id()->defined_phases_key()->value()->begin(),
-                        params.package_id()->defined_phases_key()->value()->end(), " "));
+        {
+            auto dp(params.package_id()->defined_phases_key()->parse_value());
+            process.setenv(defined_phases, join(dp->begin(), dp->end(), " "));
+        }
 
     if (0 != process.run().wait())
         throw ActionFailedError("Write VDB Entry command failed");
@@ -1311,7 +1314,7 @@ WriteBinaryEbuildCommand::operator() ()
     if (! params.package_id()->eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name().empty())
         if (params.package_id()->scm_revision_key())
             process.setenv(params.package_id()->eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name(),
-                    params.package_id()->scm_revision_key()->value());;
+                    params.package_id()->scm_revision_key()->parse_value());;
 
     if (0 != process.run().wait())
         throw ActionFailedError("Write binary command failed");

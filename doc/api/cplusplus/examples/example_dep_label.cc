@@ -176,7 +176,7 @@ int main(int argc, char * argv[])
 
             /* Create a visitor that will collect distfiles, and do the collecting. */
             DistfilesCollector collector(results, is_initial_label_restricted.result);
-            (*i)->fetches_key()->value()->top()->accept(collector);
+            (*i)->fetches_key()->parse_value()->top()->accept(collector);
         }
 
         /* Display summary of results */

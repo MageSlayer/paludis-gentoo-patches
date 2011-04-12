@@ -28,6 +28,7 @@
 #include <paludis/repositories/e/can_skip_phase.hh>
 #include <paludis/repositories/e/e_stripper.hh>
 #include <paludis/repositories/e/ebuild.hh>
+#include <paludis/repositories/e/make_archive_strings.hh>
 
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
@@ -97,7 +98,7 @@ namespace
             const std::shared_ptr<const PackageID> & b)
     {
         if (a->slot_key())
-            return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
+            return b->slot_key() && a->slot_key()->parse_value() == b->slot_key()->parse_value();
         else
             return ! b->slot_key();
     }
@@ -133,7 +134,7 @@ paludis::erepository::do_install_action(
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env, id);
         if (id->restrict_key())
-            id->restrict_key()->value()->top()->accept(restricts);
+            id->restrict_key()->parse_value()->top()->accept(restricts);
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
@@ -153,59 +154,19 @@ paludis::erepository::do_install_action(
     }
 
     std::string archives, all_archives, accept_license;
+    std::tie(archives, all_archives) = make_archives_strings(env, id);
+
+    /* make ACCEPT_LICENSE */
+    if (! id->eapi()->supported()->ebuild_environment_variables()->env_accept_license().empty())
     {
-        std::set<std::string> already_in_archives;
+        AcceptLicenseFinder g(env, id);
+        if (id->license_key())
+            id->license_key()->parse_value()->top()->accept(g);
 
-        /* make A */
-        AFinder f(env, id);
-        if (id->fetches_key())
-            id->fetches_key()->value()->top()->accept(f);
-
-        for (AFinder::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
-        {
-            const FetchableURIDepSpec * const spec(static_cast<const FetchableURIDepSpec *>(i->first));
-
-            if (already_in_archives.end() == already_in_archives.find(spec->filename()))
-            {
-                archives.append(spec->filename());
-                already_in_archives.insert(spec->filename());
-            }
-            archives.append(" ");
-        }
-
-        /* make AA */
-        if (! id->eapi()->supported()->ebuild_environment_variables()->env_aa().empty())
-        {
-            AAVisitor g;
-            if (id->fetches_key())
-                id->fetches_key()->value()->top()->accept(g);
-            std::set<std::string> already_in_all_archives;
-
-            for (AAVisitor::ConstIterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
-            {
-                if (already_in_all_archives.end() == already_in_all_archives.find(*gg))
-                {
-                    all_archives.append(*gg);
-                    already_in_all_archives.insert(*gg);
-                }
-                all_archives.append(" ");
-            }
-        }
-        else
-            all_archives = "AA-not-set-for-this-EAPI";
-
-        /* make ACCEPT_LICENSE */
-        if (! id->eapi()->supported()->ebuild_environment_variables()->env_accept_license().empty())
-        {
-            AcceptLicenseFinder g(env, id);
-            if (id->license_key())
-                id->license_key()->value()->top()->accept(g);
-
-            accept_license = g.s.str();
-        }
-        else
-            accept_license = "ACCEPT_LICENSE-not-set-for-this-EAPI";
+        accept_license = g.s.str();
     }
+    else
+        accept_license = "ACCEPT_LICENSE-not-set-for-this-EAPI";
 
     /* Strip trailing space. Some ebuilds rely upon this. From kde-meta.eclass:
      *     [[ -n ${A/${TARBALL}/} ]] && unpack ${A/${TARBALL}/}
@@ -233,9 +194,8 @@ paludis::erepository::do_install_action(
     std::string used_config_protect;
     auto merged_entries(std::make_shared<FSPathSet>());
 
-    std::shared_ptr<const ChoiceValue> preserve_work_choice(
-            id->choices_key()->value()->find_by_name_with_prefix(
-                ELikePreserveWorkChoiceValue::canonical_name_with_prefix()));
+    auto choices(id->choices_key()->parse_value());
+    std::shared_ptr<const ChoiceValue> preserve_work_choice(choices->find_by_name_with_prefix(ELikePreserveWorkChoiceValue::canonical_name_with_prefix()));
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_install());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -313,7 +273,7 @@ paludis::erepository::do_install_action(
             {
                 std::string libdir("lib");
                 FSPath root(install_action.options.destination()->installed_root_key() ?
-                        stringify(install_action.options.destination()->installed_root_key()->value()) : "/");
+                        stringify(install_action.options.destination()->installed_root_key()->parse_value()) : "/");
                 if ((root / "usr" / "lib").stat().is_symlink())
                 {
                     libdir = (root / "usr" / "lib").readlink();
@@ -323,7 +283,7 @@ paludis::erepository::do_install_action(
 
                 Log::get_instance()->message("e.ebuild.libdir", ll_debug, lc_context) << "Using '" << libdir << "' for libdir";
 
-                std::shared_ptr<const ChoiceValue> symbols_choice(id->choices_key()->value()->find_by_name_with_prefix(
+                std::shared_ptr<const ChoiceValue> symbols_choice(choices->find_by_name_with_prefix(
                             ELikeSymbolsChoiceValue::canonical_name_with_prefix()));
 
                 EStripper stripper(make_named_values<EStripperOptions>(
@@ -348,7 +308,7 @@ paludis::erepository::do_install_action(
                 if (test_restrict)
                     continue;
 
-                std::shared_ptr<const ChoiceValue> choice(id->choices_key()->value()->find_by_name_with_prefix(
+                std::shared_ptr<const ChoiceValue> choice(choices->find_by_name_with_prefix(
                             ELikeOptionalTestsChoiceValue::canonical_name_with_prefix()));
                 if (choice && ! choice->enabled())
                     continue;
@@ -358,14 +318,14 @@ paludis::erepository::do_install_action(
                 if (test_restrict)
                     continue;
 
-                std::shared_ptr<const ChoiceValue> choice(id->choices_key()->value()->find_by_name_with_prefix(
+                std::shared_ptr<const ChoiceValue> choice(choices->find_by_name_with_prefix(
                             ELikeRecommendedTestsChoiceValue::canonical_name_with_prefix()));
                 if (choice && ! choice->enabled())
                     continue;
             }
             else if (phase->option("expensive_tests"))
             {
-                std::shared_ptr<const ChoiceValue> choice(id->choices_key()->value()->find_by_name_with_prefix(
+                std::shared_ptr<const ChoiceValue> choice(choices->find_by_name_with_prefix(
                             ELikeExpensiveTestsChoiceValue::canonical_name_with_prefix()));
                 if (choice && ! choice->enabled())
                     continue;
@@ -377,7 +337,7 @@ paludis::erepository::do_install_action(
                     n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
                     n::distdir() = repo->params().distdir(),
                     n::ebuild_dir() = repo->layout()->package_directory(id->name()),
-                    n::ebuild_file() = id->fs_location_key()->value(),
+                    n::ebuild_file() = id->fs_location_key()->parse_value(),
                     n::eclassdirs() = repo->params().eclassdirs(),
                     n::environment() = env,
                     n::exlibsdirs() = exlibsdirs,
@@ -389,7 +349,7 @@ paludis::erepository::do_install_action(
                         (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
                         (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
                     n::root() = install_action.options.destination()->installed_root_key() ?
-                        stringify(install_action.options.destination()->installed_root_key()->value()) :
+                        stringify(install_action.options.destination()->installed_root_key()->parse_value()) :
                         "/",
                     n::sandbox() = phase->option("sandbox"),
                     n::sydbox() = phase->option("sydbox"),
@@ -410,7 +370,7 @@ paludis::erepository::do_install_action(
                             n::profiles() = repo->params().profiles(),
                             n::profiles_with_parents() = repo->profile()->profiles_with_parents(),
                             n::replacing_ids() = install_action.options.replacing(),
-                            n::slot() = id->slot_key() ? stringify(id->slot_key()->value()) : "",
+                            n::slot() = id->slot_key() ? stringify(id->slot_key()->parse_value()) : "",
                             n::use() = use,
                             n::use_expand() = join(repo->profile()->use_expand()->begin(), repo->profile()->use_expand()->end(), " "),
                             n::use_expand_hidden() = join(repo->profile()->use_expand_hidden()->begin(), repo->profile()->use_expand_hidden()->end(), " ")

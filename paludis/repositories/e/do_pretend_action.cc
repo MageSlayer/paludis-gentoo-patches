@@ -66,7 +66,7 @@ paludis::erepository::do_pretend_action(
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env, id);
         if (id->restrict_key())
-            id->restrict_key()->value()->top()->accept(restricts);
+            id->restrict_key()->parse_value()->top()->accept(restricts);
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
@@ -88,7 +88,7 @@ paludis::erepository::do_pretend_action(
     if (id->raw_myoptions_key())
     {
         MyOptionsRequirementsVerifier verifier(env, id);
-        id->raw_myoptions_key()->value()->top()->accept(verifier);
+        id->raw_myoptions_key()->parse_value()->top()->accept(verifier);
 
         if (verifier.unmet_requirements() && ! verifier.unmet_requirements()->empty())
         {
@@ -108,7 +108,7 @@ paludis::erepository::do_pretend_action(
                             n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
                             n::distdir() = repo->params().distdir(),
                             n::ebuild_dir() = repo->layout()->package_directory(id->name()),
-                            n::ebuild_file() = id->fs_location_key()->value(),
+                            n::ebuild_file() = id->fs_location_key()->parse_value(),
                             n::eclassdirs() = repo->params().eclassdirs(),
                             n::environment() = env,
                             n::exlibsdirs() = exlibsdirs,
@@ -120,7 +120,7 @@ paludis::erepository::do_pretend_action(
                                 (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
                                 (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
                             n::root() = a.options.destination()->installed_root_key() ?
-                                stringify(a.options.destination()->installed_root_key()->value()) :
+                                stringify(a.options.destination()->installed_root_key()->parse_value()) :
                                 "/",
                             n::sandbox() = phase->option("sandbox"),
                             n::sydbox() = phase->option("sydbox"),
@@ -149,7 +149,7 @@ paludis::erepository::do_pretend_action(
     if (id->required_use_key())
     {
         RequiredUseVerifier verifier(env, id);
-        id->required_use_key()->value()->top()->accept(verifier);
+        id->required_use_key()->parse_value()->top()->accept(verifier);
 
         if (verifier.unmet_requirements() && ! verifier.unmet_requirements()->empty())
         {
@@ -169,7 +169,7 @@ paludis::erepository::do_pretend_action(
                             n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
                             n::distdir() = repo->params().distdir(),
                             n::ebuild_dir() = repo->layout()->package_directory(id->name()),
-                            n::ebuild_file() = id->fs_location_key()->value(),
+                            n::ebuild_file() = id->fs_location_key()->parse_value(),
                             n::eclassdirs() = repo->params().eclassdirs(),
                             n::environment() = env,
                             n::exlibsdirs() = exlibsdirs,
@@ -181,7 +181,7 @@ paludis::erepository::do_pretend_action(
                                 (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
                                 (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
                             n::root() = a.options.destination()->installed_root_key() ?
-                                stringify(a.options.destination()->installed_root_key()->value()) :
+                                stringify(a.options.destination()->installed_root_key()->parse_value()) :
                                 "/",
                             n::sandbox() = phase->option("sandbox"),
                             n::sydbox() = phase->option("sydbox"),
@@ -228,7 +228,7 @@ paludis::erepository::do_pretend_action(
                 n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
                 n::distdir() = repo->params().distdir(),
                 n::ebuild_dir() = repo->layout()->package_directory(id->name()),
-                n::ebuild_file() = id->fs_location_key()->value(),
+                n::ebuild_file() = id->fs_location_key()->parse_value(),
                 n::eclassdirs() = repo->params().eclassdirs(),
                 n::environment() = env,
                 n::exlibsdirs() = exlibsdirs,
@@ -240,7 +240,7 @@ paludis::erepository::do_pretend_action(
                     (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
                     (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
                 n::root() = a.options.destination()->installed_root_key() ?
-                    stringify(a.options.destination()->installed_root_key()->value()) :
+                    stringify(a.options.destination()->installed_root_key()->parse_value()) :
                     "/",
                 n::sandbox() = phase->option("sandbox"),
                 n::sydbox() = phase->option("sydbox"),

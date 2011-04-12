@@ -406,17 +406,17 @@ TEST(ERepository, MetadataUncached)
 
             EXPECT_TRUE(id1->end_metadata() != id1->find_metadata("EAPI"));
             EXPECT_TRUE(visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI")));
-            EXPECT_EQ("0", visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI"))->value());
+            EXPECT_EQ("0", visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI"))->parse_value());
             ASSERT_TRUE(bool(id1->short_description_key()));
-            EXPECT_EQ("The Description", id1->short_description_key()->value());
+            EXPECT_EQ("The Description", id1->short_description_key()->parse_value());
             UnformattedPrettyPrinter ff;
             erepository::SpecTreePrettyPrinter pd(ff, { });
             ASSERT_TRUE(bool(id1->build_dependencies_key()));
-            id1->build_dependencies_key()->value()->top()->accept(pd);
+            id1->build_dependencies_key()->parse_value()->top()->accept(pd);
             EXPECT_EQ("foo/bar", stringify(pd));
             erepository::SpecTreePrettyPrinter pr(ff, { });
             ASSERT_TRUE(bool(id1->run_dependencies_key()));
-            id1->run_dependencies_key()->value()->top()->accept(pr);
+            id1->run_dependencies_key()->parse_value()->top()->accept(pr);
             EXPECT_EQ("foo/bar", stringify(pr));
 
             const std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
@@ -425,14 +425,14 @@ TEST(ERepository, MetadataUncached)
 
             ASSERT_TRUE(id2->end_metadata() != id2->find_metadata("EAPI"));
             ASSERT_TRUE(bool(id2->short_description_key()));
-            EXPECT_EQ("dquote \" squote ' backslash \\ dollar $", id2->short_description_key()->value());
+            EXPECT_EQ("dquote \" squote ' backslash \\ dollar $", id2->short_description_key()->parse_value());
             erepository::SpecTreePrettyPrinter pd2(ff, { });
             ASSERT_TRUE(bool(id2->build_dependencies_key()));
-            id2->build_dependencies_key()->value()->top()->accept(pd2);
+            id2->build_dependencies_key()->parse_value()->top()->accept(pd2);
             EXPECT_EQ("foo/bar bar/baz", stringify(pd2));
             erepository::SpecTreePrettyPrinter pr2(ff, { });
             ASSERT_TRUE(bool(id2->run_dependencies_key()));
-            id2->run_dependencies_key()->value()->top()->accept(pr2);
+            id2->run_dependencies_key()->parse_value()->top()->accept(pr2);
             EXPECT_EQ("foo/bar", stringify(pr2));
 
             const std::shared_ptr<const PackageID> id3(*env[selection::RequireExactlyOne(generator::Matches(
@@ -441,9 +441,9 @@ TEST(ERepository, MetadataUncached)
 
             ASSERT_TRUE(id3->end_metadata() != id3->find_metadata("EAPI"));
             ASSERT_TRUE(bool(id3->short_description_key()));
-            EXPECT_EQ("This is the short description", id3->short_description_key()->value());
+            EXPECT_EQ("This is the short description", id3->short_description_key()->parse_value());
             ASSERT_TRUE(bool(id3->long_description_key()));
-            EXPECT_EQ("This is the long description", id3->long_description_key()->value());
+            EXPECT_EQ("This is the long description", id3->long_description_key()->parse_value());
         }
     }
 }
@@ -480,7 +480,7 @@ namespace
     {
         void test_choice(const std::shared_ptr<const PackageID> & p, const std::string & n, bool enabled, bool enabled_by_default, bool locked, const std::string & u = "")
         {
-            std::shared_ptr<const ChoiceValue> choice(p->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix(n)));
+            std::shared_ptr<const ChoiceValue> choice(p->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix(n)));
             ASSERT_TRUE(bool(choice));
             EXPECT_EQ(choice->unprefixed_name(), UnprefixedChoiceName(u.empty() ? n : u));
             EXPECT_EQ(enabled, choice->enabled());
@@ -783,7 +783,7 @@ TEST(ERepository, Fetch)
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(no_files_id));
         ASSERT_TRUE(bool(no_files_id->short_description_key()));
-        EXPECT_EQ("The Short Description", no_files_id->short_description_key()->value());
+        EXPECT_EQ("The Short Description", no_files_id->short_description_key()->parse_value());
         no_files_id->perform_action(action);
     }
 

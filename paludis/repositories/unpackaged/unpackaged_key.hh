@@ -42,7 +42,7 @@ namespace paludis
                         const std::string & v);
                 ~UnpackagedDependencyKey();
 
-                const std::shared_ptr<const DependencySpecTree> value() const;
+                const std::shared_ptr<const DependencySpecTree> parse_value() const;
 
                 virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -68,7 +68,7 @@ namespace paludis
                         const UnpackagedID * const id);
                 ~UnpackagedChoicesKey();
 
-                virtual const std::shared_ptr<const Choices> value() const;
+                virtual const std::shared_ptr<const Choices> parse_value() const;
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

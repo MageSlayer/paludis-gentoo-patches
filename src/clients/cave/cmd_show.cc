@@ -164,7 +164,7 @@ namespace
     std::string slot_as_string(const std::shared_ptr<const PackageID> & id)
     {
         if (id->slot_key())
-            return stringify(id->slot_key()->value());
+            return stringify(id->slot_key()->parse_value());
         else
             return "";
     }
@@ -280,23 +280,23 @@ namespace
 
         void visit(const ContentsFileEntry & e)
         {
-            s << fuc(fs_contents_file(), fv<'r'>(stringify(e.location_key()->value())), fv<'b'>(indent ? "true" : ""));
+            s << fuc(fs_contents_file(), fv<'r'>(stringify(e.location_key()->parse_value())), fv<'b'>(indent ? "true" : ""));
         }
 
         void visit(const ContentsDirEntry & e)
         {
-            s << fuc(fs_contents_dir(), fv<'r'>(stringify(e.location_key()->value())), fv<'b'>(indent ? "true" : ""));
+            s << fuc(fs_contents_dir(), fv<'r'>(stringify(e.location_key()->parse_value())), fv<'b'>(indent ? "true" : ""));
         }
 
         void visit(const ContentsSymEntry & e)
         {
-            s << fuc(fs_contents_sym(), fv<'r'>(stringify(e.location_key()->value())), fv<'b'>(indent ? "true" : ""),
-                    fv<'v'>(e.target_key()->value()));
+            s << fuc(fs_contents_sym(), fv<'r'>(stringify(e.location_key()->parse_value())), fv<'b'>(indent ? "true" : ""),
+                    fv<'v'>(e.target_key()->parse_value()));
         }
 
         void visit(const ContentsOtherEntry & e)
         {
-            s << fuc(fs_contents_other(), fv<'r'>(stringify(e.location_key()->value())), fv<'b'>(indent ? "true" : ""));
+            s << fuc(fs_contents_other(), fv<'r'>(stringify(e.location_key()->parse_value())), fv<'b'>(indent ? "true" : ""));
         }
     };
 
@@ -333,7 +333,7 @@ namespace
     {
         std::shared_ptr<const ChoiceValue> maybe_old_value;
         if (maybe_old_id && maybe_old_id->choices_key())
-            maybe_old_value = maybe_old_id->choices_key()->value()->find_by_name_with_prefix(value->name_with_prefix());
+            maybe_old_value = maybe_old_id->choices_key()->parse_value()->find_by_name_with_prefix(value->name_with_prefix());
 
         if (maybe_old_value)
         {
@@ -507,10 +507,11 @@ namespace
 
         void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
+            auto v(k.parse_value());
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(join(k.value()->begin(), k.value()->end(), ", ")),
+                    fv<'v'>(join(v->begin(), v->end(), ", ")),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -683,7 +684,7 @@ namespace
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(stringify(k.value())),
+                    fv<'v'>(stringify(k.parse_value())),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -695,7 +696,7 @@ namespace
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(stringify(k.value())),
+                    fv<'v'>(stringify(k.parse_value())),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -707,7 +708,7 @@ namespace
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(stringify(k.value())),
+                    fv<'v'>(stringify(k.parse_value())),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -719,7 +720,7 @@ namespace
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(stringify(k.value())),
+                    fv<'v'>(stringify(k.parse_value())),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -731,7 +732,7 @@ namespace
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(stringify(k.value())),
+                    fv<'v'>(stringify(k.parse_value())),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -743,7 +744,7 @@ namespace
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(stringify(*k.value())),
+                    fv<'v'>(stringify(*k.parse_value())),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")
@@ -752,13 +753,13 @@ namespace
 
         void visit(const MetadataValueKey<std::shared_ptr<const Contents> > & k)
         {
+            auto v(k.parse_value());
             if (cmdline.a_complex_keys.specified() || important)
             {
                 if (cmdline.a_flat.specified())
                 {
                     ContentsDisplayer d(0);
-                    std::for_each(indirect_iterator(k.value()->begin()),
-                            indirect_iterator(k.value()->end()), accept_visitor(d));
+                    std::for_each(indirect_iterator(v->begin()), indirect_iterator(v->end()), accept_visitor(d));
                     out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
@@ -771,8 +772,7 @@ namespace
                 else
                 {
                     ContentsDisplayer d(indent);
-                    std::for_each(indirect_iterator(k.value()->begin()),
-                            indirect_iterator(k.value()->end()), accept_visitor(d));
+                    std::for_each(indirect_iterator(v->begin()), indirect_iterator(v->end()), accept_visitor(d));
                     out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                             fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
@@ -788,11 +788,12 @@ namespace
 
         void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
+            auto choices(k.parse_value());
             if (cmdline.a_flat.specified())
             {
                 std::stringstream s;
                 bool empty_prefix(true);
-                for (Choices::ConstIterator c(k.value()->begin()), c_end(k.value()->end()) ;
+                for (Choices::ConstIterator c(choices->begin()), c_end(choices->end()) ;
                         c != c_end ; ++c)
                 {
                     if (! cmdline.a_internal_keys.specified())
@@ -873,7 +874,7 @@ namespace
                         fv<'p'>("")
                         );
 
-                for (Choices::ConstIterator c(k.value()->begin()), c_end(k.value()->end()) ;
+                for (Choices::ConstIterator c(choices->begin()), c_end(choices->end()) ;
                         c != c_end ; ++c)
                 {
                     if (! cmdline.a_internal_keys.specified())
@@ -994,7 +995,7 @@ namespace
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(pretty_print_time(k.value().seconds())),
+                    fv<'v'>(pretty_print_time(k.parse_value().seconds())),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")

@@ -109,7 +109,7 @@ PrintBestVersionCommand::run(
 
     auto s(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { }));
     auto ids((*env)[selection::BestVersionOnly(generator::Matches(s, make_null_shared_ptr(), { }) | filter::InstalledAtRoot(
-                    env->preferred_root_key()->value()))]);
+                    env->preferred_root_key()->parse_value()))]);
 
     if (ids->empty())
         return EXIT_FAILURE;

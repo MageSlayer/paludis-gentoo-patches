@@ -255,7 +255,7 @@ namespace
 }
 
 const std::shared_ptr<const Choices>
-EChoicesKey::value() const
+EChoicesKey::parse_value() const
 {
     Lock l(_imp->mutex);
     if (_imp->value)
@@ -293,15 +293,16 @@ EChoicesKey::populate_myoptions() const
 
     std::shared_ptr<const Set<std::string> > hidden;
     if (_imp->id->raw_use_expand_hidden_key())
-        hidden = _imp->id->raw_use_expand_hidden_key()->value();
+        hidden = _imp->id->raw_use_expand_hidden_key()->parse_value();
 
     /* yay. myoptions is easy. */
     MyOptionsFinder myoptions;
-    _imp->id->raw_myoptions_key()->value()->top()->accept(myoptions);
+    _imp->id->raw_myoptions_key()->parse_value()->top()->accept(myoptions);
 
     if (_imp->id->raw_use_expand_key())
-        for (Set<std::string>::ConstIterator u(_imp->id->raw_use_expand_key()->value()->begin()),
-                u_end(_imp->id->raw_use_expand_key()->value()->end()) ;
+    {
+        auto raw_use_expand(_imp->id->raw_use_expand_key()->parse_value());
+        for (Set<std::string>::ConstIterator u(raw_use_expand->begin()), u_end(raw_use_expand->end()) ;
                 u != u_end ; ++u)
         {
             Context local_local_context("When using raw_use_expand_key value '" + *u + "' to populate choices:");
@@ -328,6 +329,7 @@ EChoicesKey::populate_myoptions() const
                 myoptions.prefixes.erase(p);
             }
         }
+    }
 
     MyOptionsFinder::Prefixes::iterator p(myoptions.prefixes.find(ChoicePrefixName("")));
     if (myoptions.prefixes.end() != p)
@@ -369,7 +371,7 @@ EChoicesKey::populate_iuse() const
 
     std::shared_ptr<const Set<std::string> > hidden;
     if (_imp->id->raw_use_expand_hidden_key())
-        hidden = _imp->id->raw_use_expand_hidden_key()->value();
+        hidden = _imp->id->raw_use_expand_hidden_key()->parse_value();
 
     /* ugh. iuse and all that mess. */
 
@@ -383,15 +385,19 @@ EChoicesKey::populate_iuse() const
         std::map<ChoiceNameWithPrefix, ChoiceOptions> values;
 
         std::map<std::string, bool> iuse_with_implicit;
-        for (Set<std::string>::ConstIterator u(_imp->id->raw_iuse_key()->value()->begin()), u_end(_imp->id->raw_iuse_key()->value()->end()) ;
+        auto raw_iuse(_imp->id->raw_iuse_key()->parse_value());
+        for (Set<std::string>::ConstIterator u(raw_iuse->begin()), u_end(raw_iuse->end()) ;
                 u != u_end ; ++u)
             iuse_with_implicit.insert(std::make_pair(*u, false));
 
         if (_imp->id->raw_iuse_effective_key())
-            for (Set<std::string>::ConstIterator u(_imp->id->raw_iuse_effective_key()->value()->begin()),
-                    u_end(_imp->id->raw_iuse_effective_key()->value()->end()) ;
+        {
+            auto raw_iuse_effective(_imp->id->raw_iuse_effective_key()->parse_value());
+            for (Set<std::string>::ConstIterator u(raw_iuse_effective->begin()),
+                    u_end(raw_iuse_effective->end()) ;
                     u != u_end ; ++u)
                 iuse_with_implicit.insert(std::make_pair(*u, true));
+        }
 
         for (std::map<std::string, bool>::const_iterator u(iuse_with_implicit.begin()), u_end(iuse_with_implicit.end()) ;
                 u != u_end ; ++u)
@@ -403,13 +409,19 @@ EChoicesKey::populate_iuse() const
                         ));
 
             iuse_sanitised.insert(stringify(flag.first));
-            if (_imp->id->raw_use_expand_key() &&
-                    _imp->id->raw_use_expand_key()->value()->end() != std::find_if(
-                        _imp->id->raw_use_expand_key()->value()->begin(),
-                        _imp->id->raw_use_expand_key()->value()->end(),
-                        IsExpand(flag.first, delim)))
-                add_choice_to_map(i_values, flag_with_options, _imp->id->raw_iuse_key());
-            else
+
+            bool was_expand(false);
+            if (_imp->id->raw_use_expand_key())
+            {
+                auto raw_use_expand(_imp->id->raw_use_expand_key()->parse_value());
+                if (raw_use_expand->end() != std::find_if(raw_use_expand->begin(), raw_use_expand->end(), IsExpand(flag.first, delim)))
+                {
+                    add_choice_to_map(i_values, flag_with_options, _imp->id->raw_iuse_key());
+                    was_expand = true;
+                }
+            }
+
+            if (! was_expand)
             {
                 if (stringify(flag.first) == _imp->id->eapi()->supported()->choices_options()->fancy_test_flag())
                     /* have to add this right at the end, after build_options is there */
@@ -432,7 +444,8 @@ EChoicesKey::populate_iuse() const
          * even if x86 isn't listed in IUSE. */
         if (_imp->id->raw_use_key() && ! _imp->id->eapi()->supported()->choices_options()->profile_iuse_injection())
         {
-            for (Set<std::string>::ConstIterator u(_imp->id->raw_use_key()->value()->begin()), u_end(_imp->id->raw_use_key()->value()->end()) ;
+            auto raw_use(_imp->id->raw_use_key()->parse_value());
+            for (Set<std::string>::ConstIterator u(raw_use->begin()), u_end(raw_use->end()) ;
                     u != u_end ; ++u)
             {
                 if (iuse_sanitised.end() != iuse_sanitised.find(*u))
@@ -444,11 +457,15 @@ EChoicesKey::populate_iuse() const
                 else
                     flag = std::make_pair(ChoiceNameWithPrefix(*u), true);
 
-                if (_imp->id->raw_use_expand_key() &&
-                        _imp->id->raw_use_expand_key()->value()->end() != std::find_if(
-                            _imp->id->raw_use_expand_key()->value()->begin(),
-                            _imp->id->raw_use_expand_key()->value()->end(),
-                            IsExpand(flag.first, delim)))
+                bool was_expand(false);
+                if (_imp->id->raw_use_expand_key())
+                {
+                    auto raw_use_expand(_imp->id->raw_use_expand_key()->parse_value());
+                    if (raw_use_expand->end() != std::find_if(raw_use_expand->begin(), raw_use_expand->end(), IsExpand(flag.first, delim)))
+                        was_expand = true;
+                }
+
+                if (was_expand)
                 {
                     /* don't need to worry */
                 }
@@ -480,8 +497,8 @@ EChoicesKey::populate_iuse() const
 
     if (_imp->id->raw_use_expand_key())
     {
-        for (Set<std::string>::ConstIterator u(_imp->id->raw_use_expand_key()->value()->begin()),
-                u_end(_imp->id->raw_use_expand_key()->value()->end()) ;
+        auto raw_use_expand(_imp->id->raw_use_expand_key()->parse_value());
+        for (Set<std::string>::ConstIterator u(raw_use_expand->begin()), u_end(raw_use_expand->end()) ;
                 u != u_end ; ++u)
         {
             std::string lower_u;
@@ -513,8 +530,8 @@ EChoicesKey::populate_iuse() const
 
                 if (_imp->id->raw_use_key())
                 {
-                    for (Set<std::string>::ConstIterator it(_imp->id->raw_use_key()->value()->begin()),
-                             it_end(_imp->id->raw_use_key()->value()->end()); it_end != it; ++it)
+                    auto raw_use(_imp->id->raw_use_key()->parse_value());
+                    for (Set<std::string>::ConstIterator it(raw_use->begin()), it_end(raw_use->end()); it_end != it; ++it)
                     {
                         std::string flag(0 == it->compare(0, 1, "-", 0, 1) ? it->substr(1) : *it);
                         if (IsExpand(ChoiceNameWithPrefix(flag), delim)(*u))

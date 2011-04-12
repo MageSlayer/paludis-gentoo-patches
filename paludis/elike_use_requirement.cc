@@ -64,12 +64,12 @@ namespace
                 return c.is_true();
         }
 
-        const std::shared_ptr<const ChoiceValue> v(id->choices_key()->value()->find_by_name_with_prefix(f));
+        auto choices(id->choices_key()->parse_value());
+        auto v(choices->find_by_name_with_prefix(f));
         if (v)
             return v->enabled();
 
-        if (default_value.is_indeterminate() && ! id->choices_key()->value()->has_matching_contains_every_value_prefix(f) &&
-                options[euro_missing_is_qa])
+        if (default_value.is_indeterminate() && ! choices->has_matching_contains_every_value_prefix(f) && options[euro_missing_is_qa])
             Log::get_instance()->message("elike_use_requirement.query", ll_qa, lc_context) <<
                 "ID '" << *id << "' has no flag named '" << f << "'";
         return default_value.is_true();
@@ -121,8 +121,9 @@ namespace
                     ChoicePrefixName prefix((std::string::npos == p) ? "" : _flags.substr(0, p));
                     if (! id->choices_key())
                         return true;
-                    Choices::ConstIterator k(id->choices_key()->value()->find(prefix));
-                    if (id->choices_key()->value()->end() == k)
+                    auto choices(id->choices_key()->parse_value());
+                    Choices::ConstIterator k(choices->find(prefix));
+                    if (choices->end() == k)
                         return true;
                     if ((*k)->begin() == (*k)->end())
                         return true;
@@ -160,8 +161,9 @@ namespace
                     }
 
                     ChoicePrefixName prefix(_flags.substr(0, _flags.length() - 2));
-                    Choices::ConstIterator cc(from_id->choices_key()->value()->find(prefix));
-                    if (cc == from_id->choices_key()->value()->end())
+                    auto choices(from_id->choices_key()->parse_value());
+                    Choices::ConstIterator cc(choices->find(prefix));
+                    if (cc == choices->end())
                         Log::get_instance()->message("elike_use_requirement.prefix_star_unmatching", ll_warning, lc_context) <<
                             "ID '" << *from_id << "' uses requirement '" << _flags << "' but has no choice prefix '" << prefix << "'";
                     else
@@ -234,8 +236,9 @@ namespace
                     }
 
                     ChoicePrefixName prefix(_flags.substr(0, _flags.length() - 2));
-                    Choices::ConstIterator cc(from_id->choices_key()->value()->find(prefix));
-                    if (cc == from_id->choices_key()->value()->end())
+                    auto choices(from_id->choices_key()->parse_value());
+                    Choices::ConstIterator cc(choices->find(prefix));
+                    if (cc == choices->end())
                         Log::get_instance()->message("elike_use_requirement.prefix_star_unmatching", ll_warning, lc_context) <<
                             "ID '" << *from_id << "' uses requirement '" << _flags << "' but has no choice prefix '" << prefix << "'";
                     else
@@ -260,7 +263,7 @@ namespace
                     ChangedChoices & changed_choices,
                     const ChoiceNameWithPrefix & flag) const
             {
-                const std::shared_ptr<const ChoiceValue> v(id->choices_key()->value()->find_by_name_with_prefix(flag));
+                const std::shared_ptr<const ChoiceValue> v(id->choices_key()->parse_value()->find_by_name_with_prefix(flag));
 
                 if (! v)
                 {

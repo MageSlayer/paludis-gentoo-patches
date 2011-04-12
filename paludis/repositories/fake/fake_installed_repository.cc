@@ -103,7 +103,7 @@ FakeInstalledRepository::provided_packages() const
                     continue;
 
                 DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(environment(), *v);
-                (*v)->provide_key()->value()->top()->accept(f);
+                (*v)->provide_key()->parse_value()->top()->accept(f);
 
                 for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)
                     result->push_back(make_named_values<RepositoryProvidesEntry>(
@@ -120,7 +120,7 @@ FakeInstalledRepository::provided_packages() const
 bool
 FakeInstalledRepository::is_default_destination() const
 {
-    return environment()->preferred_root_key()->value() == installed_root_key()->value();
+    return environment()->preferred_root_key()->parse_value() == installed_root_key()->parse_value();
 }
 
 bool

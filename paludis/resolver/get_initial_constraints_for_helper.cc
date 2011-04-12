@@ -184,7 +184,7 @@ namespace
             static Timestamp current_time(Timestamp::now()); /* static to avoid weirdness */
             time_t installed_time(current_time.seconds());
             if (id->installed_time_key())
-                installed_time = id->installed_time_key()->value().seconds();
+                installed_time = id->installed_time_key()->parse_value().seconds();
 
             return (current_time.seconds() - installed_time) > (24 * 60 * 60 * n);
         }

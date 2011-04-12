@@ -476,7 +476,7 @@ PortageEnvironment::_add_installed_virtuals_repository()
 {
 #ifdef ENABLE_VIRTUALS_REPOSITORY
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-    keys->insert("root", stringify(preferred_root_key()->value()));
+    keys->insert("root", stringify(preferred_root_key()->parse_value()));
     keys->insert("format", "installed_virtuals");
     add_repository(-1, RepositoryFactory::get_instance()->create(this, std::bind(from_keys, keys, std::placeholders::_1)));
 #endif
@@ -494,7 +494,7 @@ PortageEnvironment::_add_ebuild_repository(const FSPath & portdir, const std::st
         const std::string & sync, int importance)
 {
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-    keys->insert("root", stringify(preferred_root_key()->value()));
+    keys->insert("root", stringify(preferred_root_key()->parse_value()));
     keys->insert("location", stringify(portdir));
     keys->insert("profiles", stringify((_imp->conf_dir / "make.profile").realpath()) + " " +
             ((_imp->conf_dir / "portage" / "profile").stat().is_directory() ?
@@ -525,8 +525,8 @@ PortageEnvironment::_add_vdb_repository()
     Context context("When creating vdb repository:");
 
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-    keys->insert("root", stringify(preferred_root_key()->value()));
-    keys->insert("location", stringify(preferred_root_key()->value() / "/var/db/pkg"));
+    keys->insert("root", stringify(preferred_root_key()->parse_value()));
+    keys->insert("location", stringify(preferred_root_key()->parse_value() / "/var/db/pkg"));
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
     keys->insert("provides_cache", "/var/empty");

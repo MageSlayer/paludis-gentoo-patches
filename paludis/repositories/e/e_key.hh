@@ -48,7 +48,7 @@ namespace paludis
                         const MetadataKeyType);
                 ~EDependenciesKey();
 
-                virtual const std::shared_ptr<const DependencySpecTree> value() const
+                virtual const std::shared_ptr<const DependencySpecTree> parse_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
@@ -77,7 +77,7 @@ namespace paludis
                         const MetadataKeyType);
                 ~EFetchableURIKey();
 
-                virtual const std::shared_ptr<const FetchableURISpecTree> value() const
+                virtual const std::shared_ptr<const FetchableURISpecTree> parse_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::shared_ptr<const URILabel> initial_label() const
@@ -106,7 +106,7 @@ namespace paludis
                         const bool is_installed);
                 ~ESimpleURIKey();
 
-                virtual const std::shared_ptr<const SimpleURISpecTree> value() const
+                virtual const std::shared_ptr<const SimpleURISpecTree> parse_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -132,7 +132,7 @@ namespace paludis
                         bool is_installed);
                 ~EPlainTextSpecKey();
 
-                virtual const std::shared_ptr<const PlainTextSpecTree> value() const
+                virtual const std::shared_ptr<const PlainTextSpecTree> parse_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -158,7 +158,7 @@ namespace paludis
                         bool);
                 ~EMyOptionsKey();
 
-                virtual const std::shared_ptr<const PlainTextSpecTree> value() const
+                virtual const std::shared_ptr<const PlainTextSpecTree> parse_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -184,7 +184,7 @@ namespace paludis
                         bool i);
                 ~ERequiredUseKey();
 
-                virtual const std::shared_ptr<const RequiredUseSpecTree> value() const
+                virtual const std::shared_ptr<const RequiredUseSpecTree> parse_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -210,7 +210,7 @@ namespace paludis
                         const bool is_installed);
                 ~EProvideKey();
 
-                virtual const std::shared_ptr<const ProvideSpecTree> value() const
+                virtual const std::shared_ptr<const ProvideSpecTree> parse_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -237,7 +237,7 @@ namespace paludis
                         bool is_installed);
                 ~ELicenseKey();
 
-                virtual const std::shared_ptr<const LicenseSpecTree> value() const
+                virtual const std::shared_ptr<const LicenseSpecTree> parse_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -259,7 +259,7 @@ namespace paludis
                 EContentsKey(const std::string &, const std::string &, const FSPath &, const MetadataKeyType);
                 ~EContentsKey();
 
-                const std::shared_ptr<const Contents> value() const
+                const std::shared_ptr<const Contents> parse_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -277,7 +277,7 @@ namespace paludis
                 EMTimeKey(const std::string &, const std::string &, const FSPath &, const MetadataKeyType);
                 ~EMTimeKey();
 
-                Timestamp value() const
+                Timestamp parse_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

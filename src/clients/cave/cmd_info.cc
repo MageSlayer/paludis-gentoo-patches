@@ -117,23 +117,23 @@ namespace
 
         void visit(const ContentsFileEntry & e)
         {
-            s << fuc(fs_contents_file(), fv<'r'>(stringify(e.location_key()->value())), fv<'b'>(indent ? "true" : ""));
+            s << fuc(fs_contents_file(), fv<'r'>(stringify(e.location_key()->parse_value())), fv<'b'>(indent ? "true" : ""));
         }
 
         void visit(const ContentsDirEntry & e)
         {
-            s << fuc(fs_contents_dir(), fv<'r'>(stringify(e.location_key()->value())), fv<'b'>(indent ? "true" : ""));
+            s << fuc(fs_contents_dir(), fv<'r'>(stringify(e.location_key()->parse_value())), fv<'b'>(indent ? "true" : ""));
         }
 
         void visit(const ContentsSymEntry & e)
         {
-            s << fuc(fs_contents_sym(), fv<'r'>(stringify(e.location_key()->value())), fv<'b'>(indent ? "true" : ""),
-                    fv<'v'>(e.target_key()->value()));
+            s << fuc(fs_contents_sym(), fv<'r'>(stringify(e.location_key()->parse_value())), fv<'b'>(indent ? "true" : ""),
+                    fv<'v'>(e.target_key()->parse_value()));
         }
 
         void visit(const ContentsOtherEntry & e)
         {
-            s << fuc(fs_contents_other(), fv<'r'>(stringify(e.location_key()->value())), fv<'b'>(indent ? "true" : ""));
+            s << fuc(fs_contents_other(), fv<'r'>(stringify(e.location_key()->parse_value())), fv<'b'>(indent ? "true" : ""));
         }
     };
 
@@ -194,8 +194,8 @@ namespace
 
         void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(
-                        join(k.value()->begin(), k.value()->end(), "  ")));
+            auto v(k.parse_value());
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(join(v->begin(), v->end(), "  ")));
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
@@ -243,37 +243,37 @@ namespace
         void visit(const MetadataValueKey<std::string> & k)
         {
             ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.parse_value())));
         }
 
         void visit(const MetadataValueKey<SlotName> & k)
         {
             ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.parse_value())));
         }
 
         void visit(const MetadataValueKey<long> & k)
         {
             ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.parse_value())));
         }
 
         void visit(const MetadataValueKey<bool> & k)
         {
             ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.parse_value())));
         }
 
         void visit(const MetadataValueKey<FSPath> & k)
         {
             ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.value())));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.parse_value())));
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
             ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(*k.value())));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(*k.parse_value())));
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)
@@ -286,7 +286,7 @@ namespace
 
         void visit(const MetadataTimeKey & k)
         {
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(pretty_print_time(k.value().seconds())));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(pretty_print_time(k.parse_value().seconds())));
         }
     };
 
@@ -376,12 +376,12 @@ namespace
         PackageDepSpec spec(parse_spec_with_nice_error(param, env.get(), { }, filter::All()));
 
         const std::shared_ptr<const PackageIDSequence> installed_ids((*env)[selection::AllVersionsSorted(generator::Matches(
-                        spec, make_null_shared_ptr(), { }) | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                        spec, make_null_shared_ptr(), { }) | filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
         const std::shared_ptr<const PackageIDSequence> installable_ids((*env)[selection::BestVersionOnly(generator::Matches(
                         spec, make_null_shared_ptr(), { }) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
 
         if (installed_ids->empty() && installable_ids->empty())
-            nothing_matching_error(env.get(), param, filter::InstalledAtRoot(env->preferred_root_key()->value()));
+            nothing_matching_error(env.get(), param, filter::InstalledAtRoot(env->preferred_root_key()->parse_value()));
 
         for (PackageIDSequence::ConstIterator i(installed_ids->begin()), i_end(installed_ids->end()) ;
                 i != i_end ; ++i)

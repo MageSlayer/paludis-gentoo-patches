@@ -57,7 +57,7 @@ paludis::erepository::do_info_action(
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env, id);
         if (id->restrict_key())
-            id->restrict_key()->value()->top()->accept(restricts);
+            id->restrict_key()->parse_value()->top()->accept(restricts);
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
@@ -91,7 +91,7 @@ paludis::erepository::do_info_action(
                 n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
                 n::distdir() = repo->params().distdir(),
                 n::ebuild_dir() = repo->layout()->package_directory(id->name()),
-                n::ebuild_file() = id->fs_location_key()->value(),
+                n::ebuild_file() = id->fs_location_key()->parse_value(),
                 n::eclassdirs() = repo->params().eclassdirs(),
                 n::environment() = env,
                 n::exlibsdirs() = exlibsdirs,
@@ -102,7 +102,7 @@ paludis::erepository::do_info_action(
                 n::portdir() =
                     (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
                     (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
-                n::root() = stringify(env->preferred_root_key()->value()),
+                n::root() = stringify(env->preferred_root_key()->parse_value()),
                 n::sandbox() = phase->option("sandbox"),
                 n::sydbox() = phase->option("sydbox"),
                 n::userpriv() = phase->option("userpriv") && userpriv_ok
@@ -112,7 +112,7 @@ paludis::erepository::do_info_action(
                 make_named_values<EbuildInfoCommandParams>(
                 n::expand_vars() = expand_vars,
                 n::info_vars() = repo->info_vars_key() ?
-                    repo->info_vars_key()->value() : std::make_shared<const Set<std::string>>(),
+                    repo->info_vars_key()->parse_value() : std::make_shared<const Set<std::string>>(),
                 n::load_environment() = static_cast<const FSPath *>(0),
                 n::profiles() = repo->params().profiles(),
                 n::profiles_with_parents() = repo->profile()->profiles_with_parents(),

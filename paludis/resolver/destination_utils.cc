@@ -38,7 +38,8 @@ paludis::resolver::can_make_binary_for(const std::shared_ptr<const PackageID> & 
 {
     if (! id->behaviours_key())
         return true;
-    return id->behaviours_key()->value()->end() == id->behaviours_key()->value()->find("unbinaryable");
+    auto v(id->behaviours_key()->parse_value());
+    return v->end() == v->find("unbinaryable");
 }
 
 bool
@@ -46,7 +47,8 @@ paludis::resolver::is_already_binary(const std::shared_ptr<const PackageID> & id
 {
     if (! id->behaviours_key())
         return false;
-    return id->behaviours_key()->value()->end() != id->behaviours_key()->value()->find("binary");
+    auto v(id->behaviours_key()->parse_value());
+    return v->end() != v->find("binary");
 }
 
 bool
@@ -54,7 +56,8 @@ paludis::resolver::can_chroot(const std::shared_ptr<const PackageID> & id)
 {
     if (! id->behaviours_key())
         return true;
-    return id->behaviours_key()->value()->end() == id->behaviours_key()->value()->find("unchrootable");
+    auto v(id->behaviours_key()->parse_value());
+    return v->end() == v->find("unchrootable");
 }
 
 namespace
@@ -102,10 +105,10 @@ paludis::resolver::destination_filtered_generator(
     switch (t)
     {
         case dt_install_to_slash:
-            return g | filter::InstalledAtRoot(env->system_root_key()->value());
+            return g | filter::InstalledAtRoot(env->system_root_key()->parse_value());
 
         case dt_install_to_chroot:
-            return g | filter::InstalledNotAtRoot(env->system_root_key()->value());
+            return g | filter::InstalledNotAtRoot(env->system_root_key()->parse_value());
 
         case dt_create_binary:
             return g & BinaryDestinationGenerator();

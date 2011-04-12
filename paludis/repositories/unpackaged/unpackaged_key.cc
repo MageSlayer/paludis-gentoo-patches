@@ -72,7 +72,7 @@ UnpackagedDependencyKey::~UnpackagedDependencyKey()
 }
 
 const std::shared_ptr<const DependencySpecTree>
-UnpackagedDependencyKey::value() const
+UnpackagedDependencyKey::parse_value() const
 {
     return _imp->value;
 }
@@ -148,7 +148,7 @@ UnpackagedChoicesKey::~UnpackagedChoicesKey()
 }
 
 const std::shared_ptr<const Choices>
-UnpackagedChoicesKey::value() const
+UnpackagedChoicesKey::parse_value() const
 {
     Lock lock(_imp->mutex);
     if (! _imp->value)
@@ -166,14 +166,14 @@ UnpackagedChoicesKey::value() const
 
         Tribool strip(indeterminate);
         if (_imp->id->strip_key())
-            strip = _imp->id->strip_key()->value();
+            strip = _imp->id->strip_key()->parse_value();
 
         build_options->add(std::make_shared<ELikeSymbolsChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options,
                     strip.is_true() ? escvp_strip : strip.is_false() ? escvp_preserve : last_escvp));
 
         Tribool preserve_work(indeterminate);
         if (_imp->id->preserve_work_key())
-            preserve_work = _imp->id->preserve_work_key()->value();
+            preserve_work = _imp->id->preserve_work_key()->parse_value();
 
         build_options->add(std::make_shared<ELikePreserveWorkChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options, preserve_work));
 

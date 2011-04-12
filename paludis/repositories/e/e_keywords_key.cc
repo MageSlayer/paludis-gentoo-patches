@@ -63,7 +63,7 @@ namespace
         {
         }
 
-        const std::shared_ptr<const Set<KeywordName> > value() const
+        const std::shared_ptr<const Set<KeywordName> > parse_value() const
         {
             return parsed_value;
         }
@@ -87,7 +87,7 @@ namespace
                 const PrettyPrinter & p,
                 const PrettyPrintOptions &) const
         {
-            return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
+            return join(parsed_value->begin(), parsed_value->end(), " ", CallPrettyPrinter(p));
         }
     };
 

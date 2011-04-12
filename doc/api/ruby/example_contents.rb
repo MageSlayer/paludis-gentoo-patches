@@ -30,20 +30,20 @@ ids.each do | id |
         puts "ID '#{id}' provides contents key:"
 
         # Contents is made up of a collection of ContentsEntry instances.
-        id.contents_key.value.each do | c |
+        id.contents_key.parse_value.each do | c |
 
             # Some ContentsEntry subclasses contain more information than others
             if c.kind_of? ContentsOtherEntry
-                puts "other     #{c.location_key.value}"
+                puts "other     #{c.location_key.parse_value}"
 
             elsif c.kind_of? ContentsFileEntry
-                puts "file      #{c.location_key.value}"
+                puts "file      #{c.location_key.parse_value}"
 
             elsif c.kind_of? ContentsDirEntry
-                puts "dir       #{c.location_key.value}"
+                puts "dir       #{c.location_key.parse_value}"
 
             elsif c.kind_of? ContentsSymEntry
-                puts "sym       #{c.location_key.value} -> #{c.target_key.value}"
+                puts "sym       #{c.location_key.parse_value} -> #{c.target_key.parse_value}"
 
             else
                 puts "unknown   #{c}"

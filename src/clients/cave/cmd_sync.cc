@@ -140,10 +140,15 @@ namespace
                 return "";
 
             const std::shared_ptr<const Repository> r(env->fetch_repository(name));
-            if (r->sync_host_key() && r->sync_host_key()->value()->end() != r->sync_host_key()->value()->find(cmdline.a_suffix.argument()))
-                return r->sync_host_key()->value()->find(cmdline.a_suffix.argument())->second;
-            else
-                return "";
+
+            if (r->sync_host_key())
+            {
+                auto sync_host(r->sync_host_key()->parse_value());
+                if (sync_host->end() != sync_host->find(cmdline.a_suffix.argument()))
+                    return sync_host->find(cmdline.a_suffix.argument())->second;
+            }
+
+            return "";
         }
 
         virtual std::string unique_id() const

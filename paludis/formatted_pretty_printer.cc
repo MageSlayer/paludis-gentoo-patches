@@ -64,7 +64,7 @@ FormattedPrettyPrinter::prettify(const PackageDepSpec & v) const
     {
         {
             auto ids((*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(v, _imp->package_id, { }) |
-                        filter::InstalledAtRoot(_imp->env->preferred_root_key()->value()))]);
+                        filter::InstalledAtRoot(_imp->env->preferred_root_key()->parse_value()))]);
             if (! ids->empty())
                 return format_installed(stringify(v));
         }
@@ -88,7 +88,7 @@ FormattedPrettyPrinter::prettify(const BlockDepSpec & v) const
     {
         {
             auto ids((*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(v.blocking(), _imp->package_id, { }) |
-                        filter::InstalledAtRoot(_imp->env->preferred_root_key()->value()))]);
+                        filter::InstalledAtRoot(_imp->env->preferred_root_key()->parse_value()))]);
             if (! ids->empty())
                 return format_masked(stringify(v));
         }

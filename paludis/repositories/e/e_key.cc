@@ -108,7 +108,7 @@ EDependenciesKey::~EDependenciesKey()
 }
 
 const std::shared_ptr<const DependencySpecTree>
-EDependenciesKey::value() const
+EDependenciesKey::parse_value() const
 {
     Lock l(_imp->value_mutex);
     if (_imp->value)
@@ -131,7 +131,7 @@ EDependenciesKey::pretty_print_value(
         const PrettyPrintOptions & options) const
 {
     SpecTreePrettyPrinter p(pretty_printer, options);
-    value()->top()->accept(p);
+    parse_value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -200,7 +200,7 @@ ELicenseKey::~ELicenseKey()
 }
 
 const std::shared_ptr<const LicenseSpecTree>
-ELicenseKey::value() const
+ELicenseKey::parse_value() const
 {
     Lock l(_imp->value_mutex);
     if (_imp->value)
@@ -217,7 +217,7 @@ ELicenseKey::pretty_print_value(
         const PrettyPrintOptions & options) const
 {
     SpecTreePrettyPrinter p(pretty_printer, options);
-    value()->top()->accept(p);
+    parse_value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -279,7 +279,7 @@ EFetchableURIKey::~EFetchableURIKey()
 }
 
 const std::shared_ptr<const FetchableURISpecTree>
-EFetchableURIKey::value() const
+EFetchableURIKey::parse_value() const
 {
     Lock l(_imp->value_mutex);
 
@@ -297,7 +297,7 @@ EFetchableURIKey::pretty_print_value(
         const PrettyPrintOptions & options) const
 {
     SpecTreePrettyPrinter p(pretty_printer, options);
-    value()->top()->accept(p);
+    parse_value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -310,7 +310,7 @@ EFetchableURIKey::initial_label() const
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> f(_imp->env, _imp->id);
         if (_imp->id->restrict_key())
-            _imp->id->restrict_key()->value()->top()->accept(f);
+            _imp->id->restrict_key()->parse_value()->top()->accept(f);
         for (DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIterator i(f.begin()), i_end(f.end()) ;
                 i != i_end ; ++i)
         {
@@ -399,7 +399,7 @@ ESimpleURIKey::~ESimpleURIKey()
 }
 
 const std::shared_ptr<const SimpleURISpecTree>
-ESimpleURIKey::value() const
+ESimpleURIKey::parse_value() const
 {
     Lock l(_imp->value_mutex);
 
@@ -417,7 +417,7 @@ ESimpleURIKey::pretty_print_value(
         const PrettyPrintOptions & options) const
 {
     SpecTreePrettyPrinter p(pretty_printer, options);
-    value()->top()->accept(p);
+    parse_value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -482,7 +482,7 @@ EPlainTextSpecKey::~EPlainTextSpecKey()
 }
 
 const std::shared_ptr<const PlainTextSpecTree>
-EPlainTextSpecKey::value() const
+EPlainTextSpecKey::parse_value() const
 {
     Lock l(_imp->value_mutex);
 
@@ -500,7 +500,7 @@ EPlainTextSpecKey::pretty_print_value(
         const PrettyPrintOptions & options) const
 {
     SpecTreePrettyPrinter p(pretty_printer, options);
-    value()->top()->accept(p);
+    parse_value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -568,7 +568,7 @@ EMyOptionsKey::~EMyOptionsKey()
 }
 
 const std::shared_ptr<const PlainTextSpecTree>
-EMyOptionsKey::value() const
+EMyOptionsKey::parse_value() const
 {
     Lock l(_imp->value_mutex);
     if (_imp->value)
@@ -585,7 +585,7 @@ EMyOptionsKey::pretty_print_value(
         const PrettyPrintOptions & options) const
 {
     SpecTreePrettyPrinter p(pretty_printer, options);
-    value()->top()->accept(p);
+    parse_value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -654,7 +654,7 @@ ERequiredUseKey::~ERequiredUseKey()
 }
 
 const std::shared_ptr<const RequiredUseSpecTree>
-ERequiredUseKey::value() const
+ERequiredUseKey::parse_value() const
 {
     Lock l(_imp->value_mutex);
     if (_imp->value)
@@ -671,7 +671,7 @@ ERequiredUseKey::pretty_print_value(
         const PrettyPrintOptions & options) const
 {
     SpecTreePrettyPrinter p(pretty_printer, options);
-    value()->top()->accept(p);
+    parse_value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -738,7 +738,7 @@ EProvideKey::~EProvideKey()
 }
 
 const std::shared_ptr<const ProvideSpecTree>
-EProvideKey::value() const
+EProvideKey::parse_value() const
 {
     Lock l(_imp->value_mutex);
     if (_imp->value)
@@ -755,7 +755,7 @@ EProvideKey::pretty_print_value(
         const PrettyPrintOptions & options) const
 {
     SpecTreePrettyPrinter p(pretty_printer, options);
-    value()->top()->accept(p);
+    parse_value()->top()->accept(p);
     return stringify(p);
 }
 
@@ -810,7 +810,7 @@ EContentsKey::~EContentsKey()
 }
 
 const std::shared_ptr<const Contents>
-EContentsKey::value() const
+EContentsKey::parse_value() const
 {
     Lock l(_imp->value_mutex);
 
@@ -927,7 +927,7 @@ EMTimeKey::~EMTimeKey()
 }
 
 Timestamp
-EMTimeKey::value() const
+EMTimeKey::parse_value() const
 {
     Lock l(_imp->value_mutex);
 

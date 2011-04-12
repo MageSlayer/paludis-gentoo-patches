@@ -72,7 +72,7 @@ namespace paludis
 
             ///\}
 
-            virtual const T_ value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const T_ parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -107,7 +107,7 @@ namespace paludis
 
             ///\}
 
-            virtual const std::shared_ptr<const FSPathSequence> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const FSPathSequence> parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -141,7 +141,7 @@ namespace paludis
 
             ///\}
 
-            virtual const std::shared_ptr<const Set<std::string> > value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const Set<std::string> > parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -175,7 +175,7 @@ namespace paludis
 
             ///\}
 
-            virtual const std::shared_ptr<const Sequence<std::string> > value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const Sequence<std::string> > parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -209,7 +209,7 @@ namespace paludis
 
             ///\}
 
-            virtual Timestamp value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual Timestamp parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -239,7 +239,7 @@ namespace paludis
 
             ///\}
 
-            virtual const std::shared_ptr<const Map<std::string, std::string> > value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const Map<std::string, std::string> > parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

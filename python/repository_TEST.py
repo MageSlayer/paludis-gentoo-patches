@@ -93,9 +93,9 @@ class TestCase_01_Repository(unittest.TestCase):
 
     def test_12_keys(self):
         self.assert_(repo.location_key())
-        self.assertEquals(repo.location_key().value(), repo_path)
+        self.assertEquals(repo.location_key().parse_value(), repo_path)
         self.assert_(repo.find_metadata("format"))
-        self.assertEquals(repo.find_metadata("format").value(), "e")
+        self.assertEquals(repo.find_metadata("format").parse_value(), "e")
         self.assert_(not repo.find_metadata("asdf"))
 
 class TestCase_02_RepositoryInterfaces(unittest.TestCase):

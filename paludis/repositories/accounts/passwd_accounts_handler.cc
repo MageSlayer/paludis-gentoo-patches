@@ -66,7 +66,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
         if (! k)
             throw ActionFailedError("Key 'username' for '" + stringify(*params.package_id()) + "' is not a string key");
 
-        username = k->value();
+        username = k->parse_value();
 
         if (0 != getpwnam(username.c_str()))
             throw ActionFailedError("User '" + username + "' already exists");
@@ -83,7 +83,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
         if (! k)
             throw ActionFailedError("Key 'gecos' for '" + stringify(*params.package_id()) + "' is not a string key");
 
-        gecos = k->value();
+        gecos = k->parse_value();
 
         if (std::string::npos != gecos.find('\''))
             throw ActionFailedError("Value for key 'gecos' for '" + stringify(*params.package_id()) + "' must not contain a quote");
@@ -103,7 +103,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
         if (! k)
             throw ActionFailedError("Key 'preferred_uid' for '" + stringify(*params.package_id()) + "' is not a string key");
 
-        preferred_uid = k->value();
+        preferred_uid = k->parse_value();
 
         if (std::string::npos != preferred_uid.find_first_not_of("0123456789"))
             throw ActionFailedError("Value for key 'preferred_uid' for '" + stringify(*params.package_id()) + "' must be a number");
@@ -130,7 +130,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
         if (! k)
             throw ActionFailedError("Key 'primary_group' for '" + stringify(*params.package_id()) + "' is not a string key");
 
-        primary_group = k->value();
+        primary_group = k->parse_value();
 
         if (std::string::npos != primary_group.find('\''))
             throw ActionFailedError("Value for key 'primary_group' for '" + stringify(*params.package_id()) + "' must not contain a quote");
@@ -150,7 +150,8 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
         if (! k)
             throw ActionFailedError("Key 'extra_groups' for '" + stringify(*params.package_id()) + "' is not a string set key");
 
-        extra_groups = join(k->value()->begin(), k->value()->end(), ",");
+        auto v(k->parse_value());
+        extra_groups = join(v->begin(), v->end(), ",");
 
         if (std::string::npos != extra_groups.find('\''))
             throw ActionFailedError("Value for key 'extra_groups' for '" + stringify(*params.package_id()) + "' must not contain a quote");
@@ -170,7 +171,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
         if (! k)
             throw ActionFailedError("Key 'shell' for '" + stringify(*params.package_id()) + "' is not a string key");
 
-        shell = k->value();
+        shell = k->parse_value();
 
         if (std::string::npos != shell.find('\''))
             throw ActionFailedError("Value for key 'shell' for '" + stringify(*params.package_id()) + "' must not contain a quote");
@@ -190,7 +191,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
         if (! k)
             throw ActionFailedError("Key 'home' for '" + stringify(*params.package_id()) + "' is not a string key");
 
-        home = k->value();
+        home = k->parse_value();
 
         if (std::string::npos != home.find('\''))
             throw ActionFailedError("Value for key 'home' for '" + stringify(*params.package_id()) + "' must not contain a quote");
@@ -222,7 +223,7 @@ PasswdAccountsHandler::merge_group(const MergeParams & params)
         if (! k)
             throw ActionFailedError("Key 'groupname' for '" + stringify(*params.package_id()) + "' is not a string key");
 
-        groupname = k->value();
+        groupname = k->parse_value();
 
         if (0 != getgrnam(groupname.c_str()))
             throw ActionFailedError("Group '" + groupname + "' already exists");
@@ -239,7 +240,7 @@ PasswdAccountsHandler::merge_group(const MergeParams & params)
         if (! k)
             throw ActionFailedError("Key 'preferred_gid' for '" + stringify(*params.package_id()) + "' is not a string key");
 
-        preferred_gid = k->value();
+        preferred_gid = k->parse_value();
 
         if (std::string::npos != preferred_gid.find_first_not_of("0123456789"))
             throw ActionFailedError("Value for key 'preferred_gid' for '" + stringify(*params.package_id()) + "' must be a number");

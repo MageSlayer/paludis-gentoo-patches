@@ -122,7 +122,7 @@ GemcutterURIKey::GemcutterURIKey(const std::string * const r, const std::string 
 GemcutterURIKey::~GemcutterURIKey() = default;
 
 const std::shared_ptr<const SimpleURISpecTree>
-GemcutterURIKey::value() const
+GemcutterURIKey::parse_value() const
 {
     return _imp->value;
 }

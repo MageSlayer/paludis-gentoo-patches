@@ -50,8 +50,8 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(self.ipid.version, VersionSpec("1"))
 
     def test_04_slot(self):
-        self.assertEquals(str(self.ipid.slot_key().value()), "test_slot")
-        self.assertEquals(str(self.pid.slot_key().value()), "0")
+        self.assertEquals(str(self.ipid.slot_key().parse_value()), "test_slot")
+        self.assertEquals(str(self.pid.slot_key().parse_value()), "0")
 
     def test_05_repository(self):
         self.assertEquals(str(self.pid.repository_name), "testrepo")
@@ -59,8 +59,8 @@ class TestCase_01_PackageID(unittest.TestCase):
 
     def test_07_canonical_form(self):
         # Load the metadata
-        self.pid.slot_key().value
-        self.ipid.slot_key().value
+        self.pid.slot_key().parse_value
+        self.ipid.slot_key().parse_value
 
         self.assertEquals(self.pid.canonical_form(PackageIDCanonicalForm.FULL), "foo/bar-1.0:0::testrepo")
         self.assertEquals(self.pid.canonical_form(PackageIDCanonicalForm.VERSION), "1.0")
@@ -74,8 +74,8 @@ class TestCase_01_PackageID(unittest.TestCase):
 
     def test_08_str(self):
         # Load the metadata
-        self.pid.slot_key().value
-        self.ipid.slot_key().value
+        self.pid.slot_key().parse_value
+        self.ipid.slot_key().parse_value
 
         self.assertEquals(str(self.pid), "foo/bar-1.0:0::testrepo")
         self.assertEquals(str(self.ipid), "cat-one/pkg-one-1:test_slot::installed")
@@ -108,7 +108,7 @@ class TestCase_01_PackageID(unittest.TestCase):
 
     def test_14_virtual_for_key(self):
         if os.environ.get("PALUDIS_ENABLE_VIRTUALS_REPOSITORY") == "yes":
-            self.assertEquals(self.vpid.virtual_for_key().value(), self.pid)
+            self.assertEquals(self.vpid.virtual_for_key().parse_value(), self.pid)
             self.assertEquals(self.pid.virtual_for_key(), None)
             self.assertEquals(self.ipid.virtual_for_key(), None)
 
@@ -149,8 +149,8 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(self.ipid.homepage_key(), None)
 
     def test_24_short_description_key(self):
-        self.assertEquals(self.pid.short_description_key().value(), "Test package")
-        self.assertEquals(self.ipid.short_description_key().value(), "a description")
+        self.assertEquals(self.pid.short_description_key().parse_value(), "Test package")
+        self.assertEquals(self.ipid.short_description_key().parse_value(), "a description")
 
     def test_25_long_description_key(self):
         self.assertEquals(self.pid.long_description_key(), None)
@@ -166,14 +166,14 @@ class TestCase_01_PackageID(unittest.TestCase):
 
     def test_28_from_repositories_key(self):
         self.assertEquals(self.pid.from_repositories_key(), None)
-        self.assertEquals(iter(self.ipid.from_repositories_key().value()).next(), "origin_test")
+        self.assertEquals(iter(self.ipid.from_repositories_key().parse_value()).next(), "origin_test")
 
     def test_30_fs_location_key(self):
         self.assert_(isinstance(self.ipid.fs_location_key(), MetadataFSPathKey))
         self.assert_(isinstance(self.ipid.fs_location_key(), MetadataFSPathKey))
 
     def test_31_choices_key(self):
-        self.assert_(isinstance(self.pid.choices_key().value(), Choices))
+        self.assert_(isinstance(self.pid.choices_key().parse_value(), Choices))
 
 
 if __name__ == "__main__":

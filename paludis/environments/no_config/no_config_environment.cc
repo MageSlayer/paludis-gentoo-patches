@@ -418,7 +418,7 @@ NoConfigEnvironment::accept_keywords(
 
     std::list<KeywordName> accepted;
     if (_imp->main_repo->accept_keywords_key())
-        tokenise_whitespace(_imp->main_repo->accept_keywords_key()->value(),
+        tokenise_whitespace(_imp->main_repo->accept_keywords_key()->parse_value(),
                 create_inserter<KeywordName>(std::back_inserter(accepted)));
 
     tokenise_whitespace(_imp->params.extra_accept_keywords(),

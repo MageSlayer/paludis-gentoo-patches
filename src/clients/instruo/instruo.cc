@@ -64,112 +64,112 @@ namespace
     {
         void visit(const MetadataValueKey<std::string> & k)
         {
-            const std::string & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::string & PALUDIS_ATTRIBUTE((unused)) s(k.parse_value());
         }
 
         void visit(const MetadataValueKey<SlotName> & k)
         {
-            const SlotName & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const SlotName & PALUDIS_ATTRIBUTE((unused)) s(k.parse_value());
         }
 
         void visit(const MetadataValueKey<long> & k)
         {
-            long PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            long PALUDIS_ATTRIBUTE((unused)) t(k.parse_value());
         }
 
         void visit(const MetadataValueKey<bool> & k)
         {
-            bool PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            bool PALUDIS_ATTRIBUTE((unused)) t(k.parse_value());
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
-            const std::shared_ptr<const PackageID> & PALUDIS_ATTRIBUTE((unused)) p(k.value());
+            const std::shared_ptr<const PackageID> & PALUDIS_ATTRIBUTE((unused)) p(k.parse_value());
         }
 
         void visit(const MetadataTimeKey & k)
         {
-            Timestamp PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            Timestamp PALUDIS_ATTRIBUTE((unused)) t(k.parse_value());
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const Contents> > & k)
         {
-            const std::shared_ptr<const Contents> & PALUDIS_ATTRIBUTE((unused)) c(k.value());
+            const std::shared_ptr<const Contents> & PALUDIS_ATTRIBUTE((unused)) c(k.parse_value());
         }
 
         void visit(const MetadataValueKey<FSPath> & k)
         {
-            const FSPath & PALUDIS_ATTRIBUTE((unused)) c(k.value());
+            const FSPath & PALUDIS_ATTRIBUTE((unused)) c(k.parse_value());
         }
 
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
-            const std::shared_ptr<const PlainTextSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::shared_ptr<const PlainTextSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.parse_value());
         }
 
         void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
         {
-            const std::shared_ptr<const RequiredUseSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::shared_ptr<const RequiredUseSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.parse_value());
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
-            const std::shared_ptr<const ProvideSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::shared_ptr<const ProvideSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.parse_value());
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
-            const std::shared_ptr<const FetchableURISpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::shared_ptr<const FetchableURISpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.parse_value());
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
-            const std::shared_ptr<const SimpleURISpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::shared_ptr<const SimpleURISpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.parse_value());
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
-            const std::shared_ptr<const LicenseSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::shared_ptr<const LicenseSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.parse_value());
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
-            const std::shared_ptr<const DependencySpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.value());
+            const std::shared_ptr<const DependencySpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.parse_value());
         }
 
         void visit(const MetadataCollectionKey<PackageIDSequence> & k)
         {
-            const std::shared_ptr<const PackageIDSequence> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::shared_ptr<const PackageIDSequence> & PALUDIS_ATTRIBUTE((unused)) s(k.parse_value());
         }
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
-            const std::shared_ptr<const Set<std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::shared_ptr<const Set<std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.parse_value());
         }
 
         void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
         {
-            const std::shared_ptr<const Map<std::string, std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::shared_ptr<const Map<std::string, std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.parse_value());
         }
 
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
-            const std::shared_ptr<const Sequence<std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::shared_ptr<const Sequence<std::string> > & PALUDIS_ATTRIBUTE((unused)) s(k.parse_value());
         }
 
         void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
-            const std::shared_ptr<const FSPathSequence> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::shared_ptr<const FSPathSequence> & PALUDIS_ATTRIBUTE((unused)) s(k.parse_value());
         }
 
         void visit(const MetadataCollectionKey<KeywordNameSet> & k)
         {
-            const std::shared_ptr<const KeywordNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::shared_ptr<const KeywordNameSet> & PALUDIS_ATTRIBUTE((unused)) s(k.parse_value());
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
-            const std::shared_ptr<const Choices> & PALUDIS_ATTRIBUTE((unused)) s(k.value());
+            const std::shared_ptr<const Choices> & PALUDIS_ATTRIBUTE((unused)) s(k.parse_value());
         }
 
         void visit(const MetadataSectionKey & k)
@@ -220,7 +220,7 @@ namespace
                     continue;
                 }
 
-                if (visitor_cast<const MetadataValueKey<std::string> >(**eapi_i)->value() == "UNKNOWN")
+                if (visitor_cast<const MetadataValueKey<std::string> >(**eapi_i)->parse_value() == "UNKNOWN")
                 {
                     Lock lock(mutex);
                     results.insert(std::make_pair(id, "EAPI is 'UNKNOWN'"));

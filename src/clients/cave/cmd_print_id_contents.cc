@@ -158,11 +158,11 @@ PrintIDContentsCommand::run(
         throw args::DoHelp("print-id-contents takes exactly one parameter");
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(),
-                { updso_allow_wildcards }, filter::InstalledAtRoot(env->preferred_root_key()->value())));
+                { updso_allow_wildcards }, filter::InstalledAtRoot(env->preferred_root_key()->parse_value())));
 
     std::shared_ptr<const PackageIDSequence> entries(
             (*env)[selection::AllVersionsSorted(generator::Matches(spec, make_null_shared_ptr(), { }) |
-                filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
 
     if (entries->empty())
         throw NothingMatching(spec);
@@ -177,7 +177,8 @@ PrintIDContentsCommand::run(
         if (! (*i)->contents_key())
             throw BadIDForCommand(spec, (*i), "does not support listing contents");
 
-        for (auto c((*i)->contents_key()->value()->begin()), c_end((*i)->contents_key()->value()->end()) ;
+        auto contents((*i)->contents_key()->parse_value());
+        for (auto c(contents->begin()), c_end(contents->end()) ;
                 c != c_end ; ++c)
             if (match_type(cmdline.a_type, *c))
                 cout << format_plain_contents_entry(*c, cmdline.a_format.argument());

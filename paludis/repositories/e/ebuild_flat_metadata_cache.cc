@@ -135,7 +135,7 @@ namespace
                     std::set<std::string> tokens;
                     tokenise_whitespace(lines[m.inherited()->flat_list_index()], std::inserter(tokens, tokens.begin()));
                     auto repo(_imp->env->fetch_repository(id->repository_name()));
-                    FSPath eclassdir((repo->location_key()->value() / "eclass").realpath_if_exists());
+                    FSPath eclassdir((repo->location_key()->parse_value() / "eclass").realpath_if_exists());
                     for (std::set<std::string>::const_iterator it(tokens.begin()),
                              it_end(tokens.end()); it_end != it; ++it)
                     {
@@ -403,7 +403,7 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                     std::vector<std::string> eclasses;
                     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(keys["_eclasses_"], "\t", "", std::back_inserter(eclasses));
                     auto repo(_imp->env->fetch_repository(id->repository_name()));
-                    FSPath eclassdir((repo->location_key()->value() / "eclass").realpath_if_exists());
+                    FSPath eclassdir((repo->location_key()->parse_value() / "eclass").realpath_if_exists());
                     for (std::vector<std::string>::const_iterator it(eclasses.begin()),
                              it_end(eclasses.end()); it_end != it; ++it)
                     {
@@ -742,8 +742,9 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
     if (id->eapi()->supported()->ebuild_options()->support_eclasses() && id->inherited_key())
     {
         std::vector<std::string> eclasses;
-        for (Set<std::string>::ConstIterator it(id->inherited_key()->value()->begin()),
-                 it_end(id->inherited_key()->value()->end()); it_end != it; ++it)
+        auto inherited(id->inherited_key()->parse_value());
+        for (auto it(inherited->begin()), it_end(inherited->end()) ;
+                it != it_end ; ++it)
         {
             auto eclass(_imp->eclass_mtimes->eclass(*it));
             if (! eclass)
@@ -758,8 +759,9 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
     else if (id->eapi()->supported()->ebuild_options()->support_exlibs() && id->inherited_key())
     {
         std::vector<std::string> exlibs;
-        for (Set<std::string>::ConstIterator it(id->inherited_key()->value()->begin()),
-                 it_end(id->inherited_key()->value()->end()); it_end != it; ++it)
+        auto inherited(id->inherited_key()->parse_value());
+        for (auto it(inherited->begin()), it_end(inherited->end()) ;
+                it != it_end ; ++it)
         {
             auto exlib(_imp->eclass_mtimes->exlib(*it, id->name()));
             if (! exlib)
@@ -780,104 +782,117 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
             std::string s;
 
             if (id->dependencies_key())
-                s.append(flatten(id->dependencies_key()->value()));
+                s.append(flatten(id->dependencies_key()->parse_value()));
             else
             {
                 if (id->build_dependencies_key())
-                    s.append(flatten(id->build_dependencies_key()->value()) + " ");
+                    s.append(flatten(id->build_dependencies_key()->parse_value()) + " ");
                 if (id->run_dependencies_key())
-                    s.append(flatten(id->run_dependencies_key()->value()) + " ");
+                    s.append(flatten(id->run_dependencies_key()->parse_value()) + " ");
                 if (id->post_dependencies_key())
-                    s.append(flatten(id->post_dependencies_key()->value()) + " ");
+                    s.append(flatten(id->post_dependencies_key()->parse_value()) + " ");
             }
 
             write_kv(cache, m.dependencies()->name(), s);
         }
 
         if (! m.use()->name().empty() && id->raw_use_key())
-            write_kv(cache, m.use()->name(), join(id->raw_use_key()->value()->begin(), id->raw_use_key()->value()->end(), " "));
+        {
+            auto v(id->raw_use_key()->parse_value());
+            write_kv(cache, m.use()->name(), join(v->begin(), v->end(), " "));
+        }
 
         if (! m.build_depend()->name().empty() && id->build_dependencies_key())
-            write_kv(cache, m.build_depend()->name(), flatten(id->build_dependencies_key()->value()));
+            write_kv(cache, m.build_depend()->name(), flatten(id->build_dependencies_key()->parse_value()));
 
         if (! m.run_depend()->name().empty() && id->run_dependencies_key())
-            write_kv(cache, m.run_depend()->name(), flatten(id->run_dependencies_key()->value()));
+            write_kv(cache, m.run_depend()->name(), flatten(id->run_dependencies_key()->parse_value()));
 
         if (! m.slot()->name().empty() && id->slot_key())
-            write_kv(cache, m.slot()->name(), normalise(id->slot_key()->value()));
+            write_kv(cache, m.slot()->name(), normalise(id->slot_key()->parse_value()));
 
         if (! m.src_uri()->name().empty() && id->fetches_key())
-            write_kv(cache, m.src_uri()->name(), flatten(id->fetches_key()->value()));
+            write_kv(cache, m.src_uri()->name(), flatten(id->fetches_key()->parse_value()));
 
         if (! m.restrictions()->name().empty() && id->restrict_key())
-            write_kv(cache, m.restrictions()->name(), flatten(id->restrict_key()->value()));
+            write_kv(cache, m.restrictions()->name(), flatten(id->restrict_key()->parse_value()));
 
         if (! m.properties()->name().empty() && id->properties_key())
-            write_kv(cache, m.properties()->name(), flatten(id->properties_key()->value()));
+            write_kv(cache, m.properties()->name(), flatten(id->properties_key()->parse_value()));
 
         if (! m.homepage()->name().empty() && id->homepage_key())
-            write_kv(cache, m.homepage()->name(), flatten(id->homepage_key()->value()));
+            write_kv(cache, m.homepage()->name(), flatten(id->homepage_key()->parse_value()));
 
         if (! m.license()->name().empty() && id->license_key())
-            write_kv(cache, m.license()->name(), flatten(id->license_key()->value()));
+            write_kv(cache, m.license()->name(), flatten(id->license_key()->parse_value()));
 
         if (! m.short_description()->name().empty() && id->short_description_key())
-            write_kv(cache, m.short_description()->name(), normalise(id->short_description_key()->value()));
+            write_kv(cache, m.short_description()->name(), normalise(id->short_description_key()->parse_value()));
 
         if (! m.keywords()->name().empty() && id->keywords_key())
-            write_kv(cache, m.keywords()->name(), join(id->keywords_key()->value()->begin(), id->keywords_key()->value()->end(), " "));
+        {
+            auto v(id->keywords_key()->parse_value());
+            write_kv(cache, m.keywords()->name(), join(v->begin(), v->end(), " "));
+        }
 
         if (! m.iuse()->name().empty() && id->raw_iuse_key())
-            write_kv(cache, m.iuse()->name(), join(id->raw_iuse_key()->value()->begin(), id->raw_iuse_key()->value()->end(), " "));
+        {
+            auto v(id->raw_iuse_key()->parse_value());
+            write_kv(cache, m.iuse()->name(), join(v->begin(), v->end(), " "));
+        }
 
         if (! m.myoptions()->name().empty() && id->raw_myoptions_key())
-            write_kv(cache, m.myoptions()->name(), flatten(id->raw_myoptions_key()->value()));
+            write_kv(cache, m.myoptions()->name(), flatten(id->raw_myoptions_key()->parse_value()));
 
         if (! m.required_use()->name().empty() && id->required_use_key())
-            write_kv(cache, m.required_use()->name(), flatten(id->required_use_key()->value()));
+            write_kv(cache, m.required_use()->name(), flatten(id->required_use_key()->parse_value()));
 
         if (! m.pdepend()->name().empty() && id->post_dependencies_key())
-            write_kv(cache, m.pdepend()->name(), flatten(id->post_dependencies_key()->value()));
+            write_kv(cache, m.pdepend()->name(), flatten(id->post_dependencies_key()->parse_value()));
 
         if (! m.provide()->name().empty() && id->provide_key())
-            write_kv(cache, m.provide()->name(), flatten(id->provide_key()->value()));
+            write_kv(cache, m.provide()->name(), flatten(id->provide_key()->parse_value()));
 
         write_kv(cache, "EAPI", normalise(id->eapi()->name()));
 
         if (! m.long_description()->name().empty() && id->long_description_key())
-            write_kv(cache, m.long_description()->name(), normalise(id->long_description_key()->value()));
+            write_kv(cache, m.long_description()->name(), normalise(id->long_description_key()->parse_value()));
 
         if (! m.bugs_to()->name().empty() && id->bugs_to_key())
-            write_kv(cache, m.bugs_to()->name(), flatten(id->bugs_to_key()->value()));
+            write_kv(cache, m.bugs_to()->name(), flatten(id->bugs_to_key()->parse_value()));
 
         if (! m.remote_ids()->name().empty() && id->remote_ids_key())
-            write_kv(cache, m.remote_ids()->name(), flatten(id->remote_ids_key()->value()));
+            write_kv(cache, m.remote_ids()->name(), flatten(id->remote_ids_key()->parse_value()));
 
         if (! m.generated_using()->name().empty() && id->generated_using_key())
-            write_kv(cache, m.generated_using()->name(), id->generated_using_key()->value());
+            write_kv(cache, m.generated_using()->name(), id->generated_using_key()->parse_value());
 
         if (! m.generated_time()->name().empty() && id->generated_time_key())
-            write_kv(cache, m.generated_time()->name(), stringify(id->generated_time_key()->value().seconds()));
+            write_kv(cache, m.generated_time()->name(), stringify(id->generated_time_key()->parse_value().seconds()));
 
         if (! m.generated_from()->name().empty() && id->generated_from_key())
-            write_kv(cache, m.generated_from()->name(), join(id->generated_from_key()->value()->begin(),
-                        id->generated_from_key()->value()->end(), " "));
+        {
+            auto v(id->generated_from_key()->parse_value());
+            write_kv(cache, m.generated_from()->name(), join(v->begin(), v->end(), " "));
+        }
 
         if (! m.upstream_changelog()->name().empty() && id->upstream_changelog_key())
-            write_kv(cache, m.upstream_changelog()->name(), flatten(id->upstream_changelog_key()->value()));
+            write_kv(cache, m.upstream_changelog()->name(), flatten(id->upstream_changelog_key()->parse_value()));
 
         if (! m.upstream_documentation()->name().empty() && id->upstream_documentation_key())
-            write_kv(cache, m.upstream_documentation()->name(), flatten(id->upstream_documentation_key()->value()));
+            write_kv(cache, m.upstream_documentation()->name(), flatten(id->upstream_documentation_key()->parse_value()));
 
         if (! m.upstream_release_notes()->name().empty() && id->upstream_release_notes_key())
-            write_kv(cache, m.upstream_release_notes()->name(), flatten(id->upstream_release_notes_key()->value()));
+            write_kv(cache, m.upstream_release_notes()->name(), flatten(id->upstream_release_notes_key()->parse_value()));
 
         if (! m.defined_phases()->name().empty() && id->defined_phases_key())
-            write_kv(cache, m.defined_phases()->name(), join(id->defined_phases_key()->value()->begin(),
-                        id->defined_phases_key()->value()->end(), " "));
+        {
+            auto v(id->defined_phases_key()->parse_value());
+            write_kv(cache, m.defined_phases()->name(), join(v->begin(), v->end(), " "));
+        }
 
         if (! m.scm_revision()->name().empty() && id->scm_revision_key())
-            write_kv(cache, m.scm_revision()->name(), id->scm_revision_key()->value());
+            write_kv(cache, m.scm_revision()->name(), id->scm_revision_key()->parse_value());
 
     }
     catch (const InternalError &)

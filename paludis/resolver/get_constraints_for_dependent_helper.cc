@@ -86,7 +86,7 @@ GetConstraintsForDependentHelper::operator() (
         MutablePackageDepSpecData partial_spec({ });
         partial_spec.require_package(id->name());
         if (id->slot_key())
-            partial_spec.require_exact_slot(id->slot_key()->value(), false);
+            partial_spec.require_exact_slot(id->slot_key()->parse_value(), false);
         spec = std::make_shared<PackageDepSpec>(partial_spec);
     }
 

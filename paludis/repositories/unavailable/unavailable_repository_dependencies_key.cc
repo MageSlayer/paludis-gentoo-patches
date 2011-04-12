@@ -84,7 +84,7 @@ UnavailableRepositoryDependenciesKey::~UnavailableRepositoryDependenciesKey()
 }
 
 const std::shared_ptr<const DependencySpecTree>
-UnavailableRepositoryDependenciesKey::value() const
+UnavailableRepositoryDependenciesKey::parse_value() const
 {
     return _imp->value;
 }

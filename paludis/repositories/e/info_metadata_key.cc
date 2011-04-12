@@ -99,7 +99,7 @@ InfoVarsMetadataKey::~InfoVarsMetadataKey()
 }
 
 const std::shared_ptr<const Set<std::string> >
-InfoVarsMetadataKey::value() const
+InfoVarsMetadataKey::parse_value() const
 {
     Lock l(_imp->mutex);
 
@@ -189,7 +189,7 @@ InfoPkgsMetadataKey::need_keys_added() const
                         generator::Matches(parse_elike_package_dep_spec(i->first,
                                 eapi->supported()->package_dep_spec_parse_options(),
                                 eapi->supported()->version_spec_options()), make_null_shared_ptr(), { }) |
-                        filter::InstalledAtRoot(_imp->env->preferred_root_key()->value()))]);
+                        filter::InstalledAtRoot(_imp->env->preferred_root_key()->parse_value()))]);
 
             if (q->empty())
                 key = std::make_shared<LiteralMetadataValueKey<std::string>>(i->first, i->first, mkt_normal, "(none)");
@@ -215,7 +215,8 @@ InfoVarsMetadataKey::pretty_print_value(
         const PrettyPrintOptions &) const
 {
     using namespace std::placeholders;
-    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(pretty_printer));
+    auto v(parse_value());
+    return join(v->begin(), v->end(), " ", CallPrettyPrinter(pretty_printer));
 }
 
 const std::string

@@ -106,7 +106,7 @@ namespace
                     break;
 
                 std::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
-                            generator::Matches(*node.spec(), id, { }) | filter::InstalledAtRoot(env->system_root_key()->value()))]);
+                            generator::Matches(*node.spec(), id, { }) | filter::InstalledAtRoot(env->system_root_key()->parse_value()))]);
                 if (matches->empty())
                     break;
 
@@ -114,7 +114,7 @@ namespace
                 {
                     PackageDepSpec new_s(MutablePackageDepSpecData(*node.spec()->data())
                             .unrequire_any_slot()
-                            .require_exact_slot((*matches->last())->slot_key()->value(), true));
+                            .require_exact_slot((*matches->last())->slot_key()->parse_value(), true));
                     c = std::make_shared<PackageDepSpec>(new_s);
                 }
             } while (false);

@@ -101,7 +101,7 @@ VDBUnmerger::extend_hook(const Hook & h) const
         std::string pn(stringify(_imp->options.package_id()->name().package()));
         std::string pvr(stringify(_imp->options.package_id()->version()));
         std::string pv(stringify(_imp->options.package_id()->version().remove_revision()));
-        std::string slot(_imp->options.package_id()->slot_key() ? stringify(_imp->options.package_id()->slot_key()->value()) : "");
+        std::string slot(_imp->options.package_id()->slot_key() ? stringify(_imp->options.package_id()->slot_key()->parse_value()) : "");
 
         return result
             ("P", pn + "-" + pv)
@@ -216,21 +216,21 @@ namespace
 bool
 VDBUnmerger::check_file(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    const FSPath f(e->location_key()->value());
+    const FSPath f(e->location_key()->parse_value());
     const FSPath root_f(_imp->options.root() / f);
     const FSStat root_f_stat(root_f);
     if (! root_f_stat.exists())
         display("--- [gone ] " + stringify(f));
     else if (! root_f_stat.is_regular_file())
         display("--- [!type] " + stringify(f));
-    else if (root_f_stat.mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").value().seconds())
+    else if (root_f_stat.mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").parse_value().seconds())
         display("--- [!time] " + stringify(f));
     else
     {
         try
         {
             SafeIFStream md5_file(_imp->options.root() / f);
-            if (MD5(md5_file).hexsum() != require_key<MetadataValueKey<std::string> >(*e, "md5").value())
+            if (MD5(md5_file).hexsum() != require_key<MetadataValueKey<std::string> >(*e, "md5").parse_value())
                 display("--- [!md5 ] " + stringify(f));
             else if (config_protected(_imp->options.root() / f))
                 display("--- [cfgpr] " + stringify(f));
@@ -251,7 +251,7 @@ VDBUnmerger::check_file(const std::shared_ptr<const ContentsEntry> & e) const
 bool
 VDBUnmerger::check_sym(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    const FSPath f(e->location_key()->value());
+    const FSPath f(e->location_key()->parse_value());
     const FSPath root_f(_imp->options.root() / f);
     const FSStat root_f_stat(root_f);
 
@@ -259,9 +259,9 @@ VDBUnmerger::check_sym(const std::shared_ptr<const ContentsEntry> & e) const
         display("--- [gone ] " + stringify(f));
     else if (! root_f_stat.is_symlink())
         display("--- [!type] " + stringify(f));
-    else if (root_f_stat.mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").value().seconds())
+    else if (root_f_stat.mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").parse_value().seconds())
         display("--- [!time] " + stringify(f));
-    else if (root_f.readlink() != require_key<MetadataValueKey<std::string> >(*e, "target").value())
+    else if (root_f.readlink() != require_key<MetadataValueKey<std::string> >(*e, "target").parse_value())
         display("--- [!dest] " + stringify(f));
     else
         return true;
@@ -272,7 +272,7 @@ VDBUnmerger::check_sym(const std::shared_ptr<const ContentsEntry> & e) const
 bool
 VDBUnmerger::check_misc(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    const FSPath f(e->location_key()->value());
+    const FSPath f(e->location_key()->parse_value());
     const FSPath root_f(_imp->options.root() / f);
     const FSStat root_f_stat(root_f);
 
@@ -284,7 +284,7 @@ VDBUnmerger::check_misc(const std::shared_ptr<const ContentsEntry> & e) const
 bool
 VDBUnmerger::check_dir(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    const FSPath f(e->location_key()->value());
+    const FSPath f(e->location_key()->parse_value());
     const FSPath root_f(_imp->options.root() / f);
     const FSStat root_f_stat(root_f);
 

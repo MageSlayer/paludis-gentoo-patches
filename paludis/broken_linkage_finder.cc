@@ -91,7 +91,7 @@ namespace paludis
 
         Imp(const Environment * the_env, const std::shared_ptr<const Sequence<std::string>> & the_libraries) :
             env(the_env),
-            config(the_env->preferred_root_key()->value()),
+            config(the_env->preferred_root_key()->parse_value()),
             libraries(the_libraries),
             has_files(false)
         {
@@ -145,16 +145,16 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::sha
 {
     using namespace std::placeholders;
 
-    Context ctx("When checking for broken linkage in '" + stringify(env->preferred_root_key()->value()) + "':");
+    Context ctx("When checking for broken linkage in '" + stringify(env->preferred_root_key()->parse_value()) + "':");
 
-    _imp->checkers.push_back(std::shared_ptr<LinkageChecker>(std::make_shared<ElfLinkageChecker>(env->preferred_root_key()->value(), libraries)));
+    _imp->checkers.push_back(std::shared_ptr<LinkageChecker>(std::make_shared<ElfLinkageChecker>(env->preferred_root_key()->parse_value(), libraries)));
     if (libraries->empty())
-        _imp->checkers.push_back(std::shared_ptr<LinkageChecker>(std::make_shared<LibtoolLinkageChecker>(env->preferred_root_key()->value())));
+        _imp->checkers.push_back(std::shared_ptr<LinkageChecker>(std::make_shared<LibtoolLinkageChecker>(env->preferred_root_key()->parse_value())));
 
     std::vector<FSPath> search_dirs_nosyms, search_dirs_pruned;
     std::transform(_imp->config.begin_search_dirs(), _imp->config.end_search_dirs(),
                    std::back_inserter(search_dirs_nosyms),
-                   std::bind(realpath_with_current_and_root, _1, FSPath("/"), env->preferred_root_key()->value()));
+                   std::bind(realpath_with_current_and_root, _1, FSPath("/"), env->preferred_root_key()->parse_value()));
     std::sort(search_dirs_nosyms.begin(), search_dirs_nosyms.end(), FSPathComparator());
 
     for (std::vector<FSPath>::const_iterator it(search_dirs_nosyms.begin()),
@@ -169,7 +169,7 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::sha
 
     std::transform(_imp->config.begin_ld_so_conf(), _imp->config.end_ld_so_conf(),
                    std::inserter(_imp->extra_lib_dirs, _imp->extra_lib_dirs.begin()),
-                   std::bind(realpath_with_current_and_root, _1, FSPath("/"), env->preferred_root_key()->value()));
+                   std::bind(realpath_with_current_and_root, _1, FSPath("/"), env->preferred_root_key()->parse_value()));
 
     std::for_each(search_dirs_pruned.begin(), search_dirs_pruned.end(),
                       std::bind(&Imp<BrokenLinkageFinder>::search_directory, _imp.get(), _1));
@@ -178,9 +178,9 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::sha
              it_end(_imp->extra_lib_dirs.end()); it_end != it; ++it)
     {
         Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
-            << "Need to check for extra libraries in '" << (env->preferred_root_key()->value() / *it) << "'";
+            << "Need to check for extra libraries in '" << (env->preferred_root_key()->parse_value() / *it) << "'";
         std::for_each(indirect_iterator(_imp->checkers.begin()), indirect_iterator(_imp->checkers.end()),
-                std::bind(&LinkageChecker::add_extra_lib_dir, _1, env->preferred_root_key()->value() / *it));
+                std::bind(&LinkageChecker::add_extra_lib_dir, _1, env->preferred_root_key()->parse_value() / *it));
     }
 
     std::function<void (const FSPath &, const std::string &)> callback(
@@ -213,7 +213,7 @@ Imp<BrokenLinkageFinder>::search_directory(const FSPath & directory)
     }
     while (FSPath("/") != dir);
 
-    FSPath with_root(env->preferred_root_key()->value() / directory);
+    FSPath with_root(env->preferred_root_key()->parse_value() / directory);
     if (with_root.stat().is_directory())
         walk_directory(with_root);
     else
@@ -226,7 +226,7 @@ Imp<BrokenLinkageFinder>::walk_directory(const FSPath & directory)
 {
     using namespace std::placeholders;
 
-    FSPath without_root(directory.strip_leading(env->preferred_root_key()->value()));
+    FSPath without_root(directory.strip_leading(env->preferred_root_key()->parse_value()));
     if (config.dir_is_masked(without_root))
     {
         Log::get_instance()->message("broken_linkage_finder.masked", ll_debug, lc_context)
@@ -263,7 +263,7 @@ Imp<BrokenLinkageFinder>::check_file(const FSPath & file)
 
         if (file_stat.is_symlink())
         {
-            FSPath target(dereference_with_root(file, env->preferred_root_key()->value()));
+            FSPath target(dereference_with_root(file, env->preferred_root_key()->parse_value()));
             if (target.stat().is_regular_file())
             {
                 std::for_each(indirect_iterator(checkers.begin()), indirect_iterator(checkers.end()),
@@ -306,13 +306,13 @@ Imp<BrokenLinkageFinder>::add_breakage(const FSPath & file, const std::string & 
         Context ctx("When building map from files to packages:");
 
         std::shared_ptr<const PackageIDSequence> pkgs((*env)[selection::AllVersionsUnsorted(
-                    generator::All() | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                    generator::All() | filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
 
         std::for_each(pkgs->begin(), pkgs->end(),
                 std::bind(&Imp<BrokenLinkageFinder>::gather_package, this, _1));
     }
 
-    FSPath without_root(file.strip_leading(env->preferred_root_key()->value()));
+    FSPath without_root(file.strip_leading(env->preferred_root_key()->parse_value()));
     std::pair<Files::const_iterator, Files::const_iterator> range(files.equal_range(without_root));
     if (range.first == range.second)
         orphan_breakage[without_root].insert(req);
@@ -334,7 +334,7 @@ Imp<BrokenLinkageFinder>::gather_package(const std::shared_ptr<const PackageID> 
     std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > > key(pkg->contents_key());
     if (! key)
         return;
-    std::shared_ptr<const Contents> contents(key->value());
+    std::shared_ptr<const Contents> contents(key->parse_value());
     if (! contents)
         return;
 
@@ -345,7 +345,7 @@ Imp<BrokenLinkageFinder>::gather_package(const std::shared_ptr<const PackageID> 
         if (0 != file)
         {
             Lock l(mutex);
-            files.insert(std::make_pair(file->location_key()->value(), pkg));
+            files.insert(std::make_pair(file->location_key()->parse_value(), pkg));
         }
     }
 

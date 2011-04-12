@@ -67,7 +67,7 @@ namespace
 
     bool get_use(const std::string & f, const Environment &, const std::shared_ptr<const PackageID> & id)
     {
-        const std::shared_ptr<const ChoiceValue> v(id->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix(f)));
+        const std::shared_ptr<const ChoiceValue> v(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix(f)));
         if (! v)
             throw InternalError(PALUDIS_HERE, "oops");
         return v->enabled();
@@ -112,7 +112,8 @@ TEST(PortageEnvironment, KnownUseFlagNames)
                     PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
     std::shared_ptr<const Choice> foo_cards;
-    for (Choices::ConstIterator c(id1->choices_key()->value()->begin()), c_end(id1->choices_key()->value()->end()) ;
+    auto choices(id1->choices_key()->parse_value());
+    for (Choices::ConstIterator c(choices->begin()), c_end(choices->end()) ;
             c != c_end ; ++c)
         if ((*c)->raw_name() == "FOO_CARDS")
             foo_cards = *c;

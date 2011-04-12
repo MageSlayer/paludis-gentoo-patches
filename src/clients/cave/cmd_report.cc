@@ -101,7 +101,8 @@ namespace
     {
         if (id->from_repositories_key())
         {
-            for (auto r(id->from_repositories_key()->value()->begin()), r_end(id->from_repositories_key()->value()->end()) ;
+            auto from_repositories(id->from_repositories_key()->parse_value());
+            for (auto r(from_repositories->begin()), r_end(from_repositories->end()) ;
                     r != r_end ; ++r)
             {
                 auto ids((*env)[selection::BestVersionOnly((
@@ -170,7 +171,7 @@ ReportCommand::run(
         throw args::DoHelp("report takes no parameters");
 
     auto ids((*env)[selection::AllVersionsSorted(
-                generator::All() | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                generator::All() | filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
 
     auto insecurity(env->set(SetName("insecurity")));
 
@@ -195,8 +196,15 @@ ReportCommand::run(
         auto origin(find_origin_for(env, *i));
         if (! origin)
         {
-            if ((*i)->behaviours_key() &&
-                    (*i)->behaviours_key()->value()->end() != (*i)->behaviours_key()->value()->find("transient"))
+            bool is_transient(false);
+
+            if ((*i)->behaviours_key())
+            {
+                auto behaviours((*i)->behaviours_key()->parse_value());
+                is_transient = behaviours->end() != behaviours->find("transient");
+            }
+
+            if (is_transient)
             {
                 /* that's ok */
             }
@@ -205,7 +213,10 @@ ReportCommand::run(
                 need_heading(done_heading, *i);
                 std::string repos;
                 if ((*i)->from_repositories_key())
-                    repos = join((*i)->from_repositories_key()->value()->begin(), (*i)->from_repositories_key()->value()->end(), ", ");
+                {
+                    auto from_repositories((*i)->from_repositories_key()->parse_value());
+                    repos = join(from_repositories->begin(), from_repositories->end(), ", ");
+                }
                 cout << fuc(fs_package_no_origin(), fv<'s'>(repos));
             }
         }
@@ -226,9 +237,15 @@ ReportCommand::run(
 
         if (unused->end() != unused->find(*i))
         {
-            if (((*i)->behaviours_key() && (*i)->behaviours_key()->value()->end() !=
-                        (*i)->behaviours_key()->value()->find("used")) ||
-                    (! (*i)->supports_action(SupportsActionTest<UninstallAction>())))
+            bool is_used(false);
+
+            if ((*i)->behaviours_key())
+            {
+                auto behaviours((*i)->behaviours_key()->parse_value());
+                is_used = behaviours->end() != behaviours->find("used");
+            }
+
+            if (is_used || (! (*i)->supports_action(SupportsActionTest<UninstallAction>())))
             {
                 /* ok, or weird */
             }

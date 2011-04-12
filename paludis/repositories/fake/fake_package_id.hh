@@ -43,7 +43,7 @@ namespace paludis
         public:
             ~FakeMetadataCollectionKey();
 
-            virtual const std::shared_ptr<const C_> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const C_> parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -80,7 +80,7 @@ namespace paludis
                     const std::function<const std::shared_ptr<const C_> (const std::string &)> &, const MetadataKeyType);
             ~FakeMetadataSpecTreeKey();
 
-            virtual const std::shared_ptr<const C_> value() const
+            virtual const std::shared_ptr<const C_> parse_value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void set_from_string(const std::string &);
@@ -107,7 +107,7 @@ namespace paludis
                     const MetadataKeyType);
             ~FakeMetadataSpecTreeKey();
 
-            virtual const std::shared_ptr<const FetchableURISpecTree> value() const
+            virtual const std::shared_ptr<const FetchableURISpecTree> parse_value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void set_from_string(const std::string &);
@@ -138,7 +138,7 @@ namespace paludis
                     const MetadataKeyType);
             ~FakeMetadataSpecTreeKey();
 
-            virtual const std::shared_ptr<const DependencySpecTree> value() const
+            virtual const std::shared_ptr<const DependencySpecTree> parse_value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void set_from_string(const std::string &);
@@ -168,7 +168,7 @@ namespace paludis
             ~FakeMetadataChoicesKey();
 
             void add(const std::string &, const std::string &);
-            const std::shared_ptr<const Choices> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const Choices> parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

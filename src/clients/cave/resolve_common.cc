@@ -185,7 +185,7 @@ namespace
 
         if (resolution_options.a_reinstall_dependents_of.specified())
         {
-            auto installed_filter(filter::InstalledAtRoot(env->system_root_key()->value()));
+            auto installed_filter(filter::InstalledAtRoot(env->system_root_key()->parse_value()));
             auto installed_ids((*env)[selection::AllVersionsSorted(
                         generator::All() |
                         installed_filter)]);
@@ -637,7 +637,7 @@ namespace
     {
         if (arg.argument() == "auto")
         {
-            if (env->preferred_root_key()->value() == FSPath("/"))
+            if (env->preferred_root_key()->parse_value() == FSPath("/"))
                 return dt_install_to_slash;
             else
                 return dt_install_to_chroot;

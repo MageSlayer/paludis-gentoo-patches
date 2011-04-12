@@ -94,8 +94,8 @@ module Paludis
         end
 
         def test_value
-            assert_respond_to mk, :value
-            assert_kind_of String, mk.value
+            assert_respond_to mk, :parse_value
+            assert_kind_of String, mk.parse_value
         end
     end
 
@@ -151,7 +151,7 @@ module Paludis
         end
 
         def test_subscript
-            assert_equal pid_testrepo["DESCRIPTION"].value, "Test package"
+            assert_equal pid_testrepo["DESCRIPTION"].parse_value, "Test package"
             assert_nil pid_testrepo["PRESCRIPTION"]
         end
 
@@ -161,7 +161,7 @@ module Paludis
                 "RESTRICT" => 1, "SRC_URI" => 1, "HOMEPAGE" => 1, "EBUILD" => 1, "PROPERTIES" => 1, "IUSE" => 1,
                 "PALUDIS_CHOICES" => 1, "DEFINED_PHASES" => 1, "SLOT" => 1 }
             pid_testrepo.each_metadata do | key |
-                assert keys.has_key?(key.raw_name), "no key #{key.raw_name} -> #{key.value}"
+                assert keys.has_key?(key.raw_name), "no key #{key.raw_name} -> #{key.parse_value}"
                 keys.delete key.raw_name
             end
             assert keys.empty?, "keys are #{keys.map { | k, v | k }.join ', '}"
@@ -223,13 +223,13 @@ module Paludis
         end
 
         def test_slot
-            assert_kind_of String, pid_testrepo.slot_key.value
-            assert_equal '0', pid_testrepo.slot_key.value
+            assert_kind_of String, pid_testrepo.slot_key.parse_value
+            assert_equal '0', pid_testrepo.slot_key.parse_value
         end
 
         def test_short_description
             assert_kind_of MetadataStringKey, pid_testrepo.short_description_key
-            assert_equal 'Test package', pid_testrepo.short_description_key.value
+            assert_equal 'Test package', pid_testrepo.short_description_key.parse_value
         end
 
         def test_long_description
@@ -247,23 +247,23 @@ module Paludis
 
         def test_keywords_key
             assert_kind_of MetadataKeywordNameSetKey, pid_testrepo.keywords_key
-            assert_kind_of Array, pid_testrepo.keywords_key.value
-            assert_equal ['~test'], pid_testrepo.keywords_key.value
+            assert_kind_of Array, pid_testrepo.keywords_key.parse_value
+            assert_equal ['~test'], pid_testrepo.keywords_key.parse_value
         end
 
         def test_build_dependencies_key
             assert_kind_of MetadataDependencySpecTreeKey, pid_testrepo.build_dependencies_key
-            assert_kind_of AllDepSpec, pid_testrepo.build_dependencies_key.value
+            assert_kind_of AllDepSpec, pid_testrepo.build_dependencies_key.parse_value
         end
 
         def test_homepage_key
             assert_kind_of MetadataSimpleURISpecTreeKey, pid_testrepo.homepage_key
-            assert_kind_of AllDepSpec, pid_testrepo.homepage_key.value
+            assert_kind_of AllDepSpec, pid_testrepo.homepage_key.parse_value
         end
 
         def test_fetches_key
             assert_kind_of MetadataFetchableURISpecTreeKey, pid_testrepo.fetches_key
-            assert_kind_of AllDepSpec, pid_testrepo.fetches_key.value
+            assert_kind_of AllDepSpec, pid_testrepo.fetches_key.parse_value
             assert_respond_to pid_testrepo.fetches_key, :initial_label
             assert_kind_of URILabel, pid_testrepo.fetches_key.initial_label
             assert_kind_of URIMirrorsThenListedLabel, pid_testrepo.fetches_key.initial_label
@@ -290,13 +290,13 @@ module Paludis
         end
 
         def test_slot
-            assert_kind_of String, pid_installed.slot_key.value
-            assert_equal 'test_slot', pid_installed.slot_key.value
+            assert_kind_of String, pid_installed.slot_key.parse_value
+            assert_equal 'test_slot', pid_installed.slot_key.parse_value
         end
 
         def test_short_description
             assert_kind_of MetadataStringKey, pid_installed.short_description_key
-            assert_equal 'a description', pid_installed.short_description_key.value
+            assert_equal 'a description', pid_installed.short_description_key.parse_value
         end
 
         def test_long_description
@@ -305,17 +305,17 @@ module Paludis
 
         def test_contents_key
             assert_kind_of MetadataContentsKey, pid_installed.contents_key
-            assert_kind_of Contents, pid_installed.contents_key.value
+            assert_kind_of Contents, pid_installed.contents_key.parse_value
         end
 
         def test_installed_time_key
             assert_kind_of MetadataTimeKey, pid_installed.installed_time_key
-            assert_kind_of Time, pid_installed.installed_time_key.value
+            assert_kind_of Time, pid_installed.installed_time_key.parse_value
         end
 
         def test_from_repositories_key
             assert_kind_of MetadataStringSetKey, pid_installed.from_repositories_key
-            assert_equal ['origin_test'], pid_installed.from_repositories_key.value
+            assert_equal ['origin_test'], pid_installed.from_repositories_key.parse_value
         end
 
         def test_keywords_key
@@ -328,13 +328,13 @@ module Paludis
 
         def test_keywords_key
             assert_raise NameError do
-                pid_bad.keywords_key.value
+                pid_bad.keywords_key.parse_value
             end
         end
 
         def test_build_dependencies_key
             assert_raise NameError do
-                pid_bad.build_dependencies_key.value
+                pid_bad.build_dependencies_key.parse_value
             end
         end
     end

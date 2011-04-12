@@ -226,7 +226,7 @@ ImportCommand::run(
             auto repo(env->fetch_repository((*i)->repository_name()));
             if (! repo->format_key())
                 continue;
-            if (repo->format_key()->value() != "installed_unpackaged")
+            if (repo->format_key()->parse_value() != "installed_unpackaged")
                 continue;
             old_id = *i;
             break;
@@ -237,7 +237,7 @@ ImportCommand::run(
                     "no old ID available");
 
         if (old_id->short_description_key())
-            description = old_id->short_description_key()->value();
+            description = old_id->short_description_key()->parse_value();
         if (old_id->build_dependencies_key())
             build_dependencies = old_id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { });
         if (old_id->run_dependencies_key())

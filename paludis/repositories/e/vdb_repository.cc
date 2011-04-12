@@ -469,7 +469,7 @@ VDBRepository::perform_uninstall(
 
             std::shared_ptr<const Contents> contents(a.options.override_contents());
             if (! contents)
-                contents = id->contents_key()->value();
+                contents = id->contents_key()->parse_value();
 
             /* unmerge */
             VDBUnmerger unmerger(
@@ -481,13 +481,13 @@ VDBRepository::perform_uninstall(
                         n::ignore() = a.options.ignore_for_unmerge(),
                         n::output_manager() = output_manager,
                         n::package_id() = id,
-                        n::root() = installed_root_key()->value()
+                        n::root() = installed_root_key()->parse_value()
                     ));
             unmerger.unmerge();
 
             VDBPostMergeUnmergeCommand post_unmerge_command(
                     make_named_values<VDBPostMergeUnmergeCommandParams>(
-                        n::root() = installed_root_key()->value()
+                        n::root() = installed_root_key()->parse_value()
                     ));
             post_unmerge_command();
         }
@@ -713,7 +713,7 @@ VDBRepository::provides_from_package_id(const std::shared_ptr<const PackageID> &
         if (! id->provide_key())
             return;
 
-        std::shared_ptr<const ProvideSpecTree> provide(id->provide_key()->value());
+        std::shared_ptr<const ProvideSpecTree> provide(id->provide_key()->parse_value());
         DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment(), id);
         provide->top()->accept(f);
 
@@ -871,7 +871,7 @@ namespace
             const std::shared_ptr<const PackageID> & b)
     {
         if (a->slot_key())
-            return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
+            return b->slot_key() && a->slot_key()->parse_value() == b->slot_key()->parse_value();
         else
             return ! b->slot_key();
     }
@@ -957,7 +957,7 @@ VDBRepository::merge(const MergeParams & m)
                 n::options() = m.options(),
                 n::output_manager() = m.output_manager(),
                 n::package_id() = m.package_id(),
-                n::root() = installed_root_key()->value()
+                n::root() = installed_root_key()->parse_value()
             ));
 
     (m.used_this_for_config_protect())(config_protect);
@@ -972,10 +972,7 @@ VDBRepository::merge(const MergeParams & m)
     std::shared_ptr<const Contents> is_replace_contents;
     if (is_replace)
     {
-        /* hack: before we nuke its vdb dir, preload CONTENTS */
-        if (! is_replace->contents_key())
-            throw InternalError(PALUDIS_HERE, "No contents key in " + stringify(*is_replace) + ". How did that happen?");
-        is_replace_contents = is_replace->contents_key()->value();
+        is_replace_contents = is_replace->contents_key()->parse_value();
 
         FSPath old_vdb_dir(_imp->params.location());
         old_vdb_dir /= stringify(is_replace->name().category());
@@ -1049,7 +1046,7 @@ VDBRepository::merge(const MergeParams & m)
 
     VDBPostMergeUnmergeCommand post_merge_command(
             make_named_values<VDBPostMergeUnmergeCommandParams>(
-                n::root() = installed_root_key()->value()
+                n::root() = installed_root_key()->parse_value()
             ));
     post_merge_command();
 
@@ -1314,7 +1311,7 @@ namespace
             const DepRewrites & rewrites)
     {
         DepRewriter v(rewrites);
-        key->value()->top()->accept(v);
+        key->parse_value()->top()->accept(v);
         if (v.changed)
         {
             std::cout << "    Rewriting " << f << std::endl;
@@ -1402,7 +1399,7 @@ VDBRepository::perform_updates()
                 continue;
             }
 
-            FSPath dir(k->value());
+            FSPath dir(k->parse_value());
             if (! dir.stat().is_directory_or_symlink_to_directory())
             {
                 Log::get_instance()->message("e.vdb.updates.bad_key", ll_warning, lc_context) <<
@@ -1410,7 +1407,7 @@ VDBRepository::perform_updates()
                 continue;
             }
 
-            for (FSIterator d(k->value(), { fsio_want_regular_files, fsio_deref_symlinks_for_wants }), d_end ; d != d_end ; ++d)
+            for (FSIterator d(k->parse_value(), { fsio_want_regular_files, fsio_deref_symlinks_for_wants }), d_end ; d != d_end ; ++d)
             {
                 Context context_3("When performing updates from '" + stringify(*d) + "':");
 
@@ -1517,7 +1514,7 @@ VDBRepository::perform_updates()
                 FSPath target_cat_dir(_imp->params.location() / stringify(m->second.category()));
                 target_cat_dir.mkdir(0755, { fspmkdo_ok_if_exists });
 
-                FSPath from_dir(m->first->fs_location_key()->value());
+                FSPath from_dir(m->first->fs_location_key()->parse_value());
                 FSPath to_dir(target_cat_dir / ((stringify(m->second.package()) + "-" + stringify(m->first->version()))));
 
                 if (to_dir.stat().exists())
@@ -1572,7 +1569,7 @@ VDBRepository::perform_updates()
             {
                 std::cout << "    " << *m->first << " to " << m->second << std::endl;
 
-                SafeOFStream f(m->first->fs_location_key()->value() / "SLOT", -1, true);
+                SafeOFStream f(m->first->fs_location_key()->parse_value() / "SLOT", -1, true);
                 f << m->second << std::endl;
             }
         }
@@ -1604,16 +1601,16 @@ VDBRepository::perform_updates()
                     i != i_end ; ++i)
             {
                 if ((*i)->build_dependencies_key())
-                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->build_dependencies_key()->raw_name(),
+                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->build_dependencies_key()->raw_name(),
                             (*i)->build_dependencies_key(), dep_rewrites);
                 if ((*i)->run_dependencies_key())
-                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->run_dependencies_key()->raw_name(),
+                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->run_dependencies_key()->raw_name(),
                             (*i)->run_dependencies_key(), dep_rewrites);
                 if ((*i)->post_dependencies_key())
-                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->post_dependencies_key()->raw_name(),
+                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->post_dependencies_key()->raw_name(),
                             (*i)->post_dependencies_key(), dep_rewrites);
                 if ((*i)->suggested_dependencies_key())
-                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->value() / (*i)->suggested_dependencies_key()->raw_name(),
+                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->suggested_dependencies_key()->raw_name(),
                             (*i)->suggested_dependencies_key(), dep_rewrites);
             }
 

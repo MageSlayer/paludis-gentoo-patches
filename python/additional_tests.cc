@@ -138,13 +138,13 @@ namespace metadata_key
     void test_metadata_package_id_key(const MetadataValueKey<std::shared_ptr<const PackageID> > & m)
     {
         test_metadata_key(m);
-        m.value();
+        m.parse_value();
     }
 
     void test_metadata_string_key(const MetadataValueKey<std::string> & m)
     {
         test_metadata_key(m);
-        m.value();
+        m.parse_value();
     }
 
     void test_metadata_section_key(const MetadataSectionKey & m)
@@ -157,40 +157,40 @@ namespace metadata_key
     void test_metadata_time_key(const MetadataTimeKey & m)
     {
         test_metadata_key(m);
-        Timestamp PALUDIS_ATTRIBUTE((unused)) t(m.value());
+        Timestamp PALUDIS_ATTRIBUTE((unused)) t(m.parse_value());
     }
 
     void test_metadata_contents_key(const MetadataValueKey<std::shared_ptr<const Contents> > & m)
     {
         test_metadata_key(m);
-        m.value();
+        m.parse_value();
     }
 
     void test_metadata_choices_key(const MetadataValueKey<std::shared_ptr<const Choices> > & m)
     {
         test_metadata_key(m);
-        m.value();
+        m.parse_value();
     }
 
     template <typename C_>
     void test_metadata_set_key(const MetadataCollectionKey<C_> & m)
     {
         test_metadata_key(m);
-        m.value();
+        m.parse_value();
     }
 
     template <typename C_>
     void test_metadata_spec_tree_key(const MetadataSpecTreeKey<C_> & m)
     {
         test_metadata_key(m);
-        m.value();
+        m.parse_value();
     }
 
     template <>
     void test_metadata_spec_tree_key(const MetadataSpecTreeKey<FetchableURISpecTree> & m)
     {
         test_metadata_key(m);
-        m.value();
+        m.parse_value();
         m.initial_label();
     }
 }

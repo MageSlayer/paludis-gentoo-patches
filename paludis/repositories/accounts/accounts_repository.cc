@@ -397,7 +397,7 @@ AccountsRepository::is_suitable_destination_for(const std::shared_ptr<const Pack
 {
     auto env(_imp->params_if_installed ? _imp->params_if_installed->environment() : _imp->params_if_not_installed->environment());
     auto repo(env->fetch_repository(id->repository_name()));
-    std::string f(repo->format_key() ? repo->format_key()->value() : "");
+    std::string f(repo->format_key() ? repo->format_key()->parse_value() : "");
     return _imp->handler_if_installed && f == "accounts";
 }
 
@@ -405,7 +405,7 @@ bool
 AccountsRepository::is_default_destination() const
 {
     return _imp->handler_if_installed &&
-        _imp->params_if_installed->environment()->preferred_root_key()->value() == installed_root_key()->value();
+        _imp->params_if_installed->environment()->preferred_root_key()->parse_value() == installed_root_key()->parse_value();
 }
 
 bool

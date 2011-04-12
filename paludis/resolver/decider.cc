@@ -40,6 +40,7 @@
 #include <paludis/resolver/same_slot.hh>
 #include <paludis/resolver/reason_utils.hh>
 #include <paludis/resolver/make_uninstall_blocker.hh>
+#include <paludis/resolver/has_behaviour-fwd.hh>
 
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
@@ -403,7 +404,7 @@ Decider::_collect_staying(const std::shared_ptr<const ChangeByResolventSequence>
     Context context("When collecting staying packages:");
 
     const std::shared_ptr<const PackageIDSequence> existing((*_imp->env)[selection::AllVersionsUnsorted(
-                generator::All() | filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
+                generator::All() | filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))]);
 
     const std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
     for (PackageIDSequence::ConstIterator x(existing->begin()), x_end(existing->end()) ;
@@ -1389,7 +1390,7 @@ Decider::find_any_score(
 
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, our_id, { }) |
-                    filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
+                    filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))]);
         if (! installed_ids->empty() ^ is_block)
             return std::make_pair(acs_already_installed, operator_bias);
     }
@@ -1421,7 +1422,7 @@ Decider::find_any_score(
 
         const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, our_id, { }) |
-                    filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
+                    filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))]);
         if (! installed_ids->empty())
             return std::make_pair(acs_blocks_installed, operator_bias);
     }
@@ -1515,7 +1516,7 @@ Decider::_get_error_resolvents_for(
             if (! ids->empty())
                 resolvent.slot() = make_named_values<SlotNameOrNull>(
                         n::name_or_null() = (*ids->rbegin())->slot_key() ?
-                            make_shared_copy((*ids->rbegin())->slot_key()->value()) :
+                            make_shared_copy((*ids->rbegin())->slot_key()->parse_value()) :
                             make_null_shared_ptr(),
                         n::null_means_unknown() = true
                         );
@@ -1574,8 +1575,7 @@ Decider::_try_to_find_decision_for(
     else if (existing_id && ! installable_id)
     {
         /* there's nothing installable. this may or may not be ok. */
-        bool is_transient(existing_id->behaviours_key() && existing_id->behaviours_key()->value()->end() !=
-                existing_id->behaviours_key()->value()->find("transient"));
+        bool is_transient(has_behaviour(existing_id, "transient"));
 
         switch (resolution->constraints()->strictest_use_existing())
         {
@@ -1633,11 +1633,16 @@ Decider::_try_to_find_decision_for(
             is_same = true;
 
             std::set<ChoiceNameWithPrefix> common;
+            std::shared_ptr<const Choices> installable_choices;
+            std::shared_ptr<const Choices> existing_choices;
+
             if (existing_id->choices_key() && installable_id->choices_key())
             {
+                installable_choices = installable_id->choices_key()->parse_value();
+                existing_choices = existing_id->choices_key()->parse_value();
+
                 std::set<ChoiceNameWithPrefix> i_common, u_common;
-                for (Choices::ConstIterator k(installable_id->choices_key()->value()->begin()),
-                        k_end(installable_id->choices_key()->value()->end()) ;
+                for (Choices::ConstIterator k(installable_choices->begin()), k_end(installable_choices->end()) ;
                         k != k_end ; ++k)
                 {
                     if (! (*k)->consider_added_or_changed())
@@ -1649,8 +1654,7 @@ Decider::_try_to_find_decision_for(
                             i_common.insert((*i)->name_with_prefix());
                 }
 
-                for (Choices::ConstIterator k(existing_id->choices_key()->value()->begin()),
-                        k_end(existing_id->choices_key()->value()->end()) ;
+                for (Choices::ConstIterator k(existing_choices->begin()), k_end(existing_choices->end()) ;
                         k != k_end ; ++k)
                 {
                     if (! (*k)->consider_added_or_changed())
@@ -1670,16 +1674,15 @@ Decider::_try_to_find_decision_for(
 
             for (std::set<ChoiceNameWithPrefix>::const_iterator f(common.begin()), f_end(common.end()) ;
                     f != f_end ; ++f)
-                if (installable_id->choices_key()->value()->find_by_name_with_prefix(*f)->enabled() !=
-                        existing_id->choices_key()->value()->find_by_name_with_prefix(*f)->enabled())
+                if (installable_choices->find_by_name_with_prefix(*f)->enabled() !=
+                        existing_choices->find_by_name_with_prefix(*f)->enabled())
                 {
                     is_same = false;
                     break;
                 }
         }
 
-        bool is_transient(existing_id->behaviours_key() && existing_id->behaviours_key()->value()->end() !=
-                existing_id->behaviours_key()->value()->find("transient"));
+        bool is_transient(has_behaviour(existing_id, "transient"));
 
         /* we've got existing and installable. do we have any reason not to pick the existing id? */
         const std::shared_ptr<Decision> existing(std::make_shared<ExistingNoChangeDecision>(
@@ -1971,8 +1974,7 @@ Decider::_get_unmatching_constraints(
 
         if (existing)
         {
-            bool is_transient(id->behaviours_key() && id->behaviours_key()->value()->end() !=
-                    id->behaviours_key()->value()->find("transient"));
+            bool is_transient(has_behaviour(id, "transient"));
             decision = std::make_shared<ExistingNoChangeDecision>(
                         resolution->resolvent(),
                         id,
@@ -2072,9 +2074,7 @@ Decider::purge()
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        if (((*i)->behaviours_key() && (*i)->behaviours_key()->value()->end() !=
-                    (*i)->behaviours_key()->value()->find("used")) ||
-                (! (*i)->supports_action(SupportsActionTest<UninstallAction>())))
+        if (has_behaviour(*i, "used") || ! (*i)->supports_action(SupportsActionTest<UninstallAction>()))
             continue;
 
         Resolvent resolvent(*i, dt_install_to_slash);
@@ -2140,7 +2140,7 @@ Decider::_package_dep_spec_already_met(const PackageDepSpec & spec, const std::s
 
     const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::AllVersionsUnsorted(
                 generator::Matches(spec, from_id, { }) |
-                filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
+                filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))]);
     if (installed_ids->empty())
         return false;
     else
@@ -2162,7 +2162,7 @@ Decider::_block_dep_spec_already_met(const BlockDepSpec & spec, const std::share
     const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::SomeArbitraryVersion(
                 generator::Matches(spec.blocking(), from_id, { }) |
                 make_slot_filter(resolvent) |
-                filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
+                filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))]);
     return installed_ids->empty();
 }
 
@@ -2341,8 +2341,7 @@ Decider::_resolve_purges()
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        if (((*i)->behaviours_key() && (*i)->behaviours_key()->value()->end() !=
-                    (*i)->behaviours_key()->value()->find("used")) ||
+        if (has_behaviour(*i, "used") ||
                 (! (*i)->supports_action(SupportsActionTest<UninstallAction>())))
             continue;
 

@@ -113,7 +113,7 @@ AccountsDepKey::type() const
 }
 
 const std::shared_ptr<const DependencySpecTree>
-AccountsDepKey::value() const
+AccountsDepKey::parse_value() const
 {
     return _imp->tree;
 }

@@ -336,7 +336,7 @@ bool
 RepositoryRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
     auto repo(_imp->params.environment()->fetch_repository(id->repository_name()));
-    std::string f(repo->format_key() ? repo->format_key()->value() : "");
+    std::string f(repo->format_key() ? repo->format_key()->parse_value() : "");
     return f == "unavailable";
 }
 
@@ -364,7 +364,7 @@ namespace
         if (! ii)
             return "";
 
-        return ii->value();
+        return ii->parse_value();
     }
 
     std::string replace_vars(
@@ -442,8 +442,8 @@ RepositoryRepository::merge(const MergeParams & m)
     if (repo_format.empty())
         throw InternalError(PALUDIS_HERE, "no REPOSITORY_FORMAT in " + stringify(*m.package_id()));
 
-    std::string config_template(_imp->config_template_key->value());
-    std::string config_filename(_imp->config_filename_key->value());
+    std::string config_template(_imp->config_template_key->parse_value());
+    std::string config_filename(_imp->config_filename_key->parse_value());
 
     config_template = replace_vars(config_template, repo_sync, repo_format, repo_name);
     config_filename = replace_vars(config_filename, repo_sync, repo_format, repo_name);

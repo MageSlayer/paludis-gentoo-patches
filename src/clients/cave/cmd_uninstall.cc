@@ -150,7 +150,7 @@ UninstallCommand::run(
                 qpns_being_changed.insert((*i)->name());
                 std::string target("!" + stringify((*i)->name()));
                 if ((*i)->slot_key())
-                    target.append(":" + stringify((*i)->slot_key()->value()));
+                    target.append(":" + stringify((*i)->slot_key()->parse_value()));
                 targets->push_back(std::make_pair(target, ""));
             }
 

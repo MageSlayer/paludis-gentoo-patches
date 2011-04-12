@@ -123,7 +123,7 @@ namespace
             unmerger = std::make_shared<VDBUnmergerNoDisplay>(make_named_values<VDBUnmergerOptions>(
                             n::config_protect() = "/protected_file /protected_dir",
                             n::config_protect_mask() = "/protected_dir/unprotected_file /protected_dir/unprotected_dir",
-                            n::contents() = id->contents_key()->value(),
+                            n::contents() = id->contents_key()->parse_value(),
                             n::environment() = &env,
                             n::ignore() = &ignore_nothing,
                             n::output_manager() = std::make_shared<StandardOutputManager>(),

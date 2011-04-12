@@ -99,7 +99,7 @@ FakeMetadataCollectionKey<C_>::~FakeMetadataCollectionKey()
 
 template <typename C_>
 const std::shared_ptr<const C_>
-FakeMetadataCollectionKey<C_>::value() const
+FakeMetadataCollectionKey<C_>::parse_value() const
 {
     return this->_imp->collection;
 }
@@ -131,7 +131,7 @@ FakeMetadataCollectionKey<C_>::pretty_print_value(
         const PrettyPrinter & pretty_printer,
         const PrettyPrintOptions &) const
 {
-    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(pretty_printer));
+    return join(_imp->collection->begin(), _imp->collection->end(), " ", CallPrettyPrinter(pretty_printer));
 }
 
 FakeMetadataKeywordSetKey::FakeMetadataKeywordSetKey(const std::string & r,
@@ -243,7 +243,7 @@ FakeMetadataSpecTreeKey<C_>::set_from_string(const std::string & s)
 
 template <typename C_>
 const std::shared_ptr<const C_>
-FakeMetadataSpecTreeKey<C_>::value() const
+FakeMetadataSpecTreeKey<C_>::parse_value() const
 {
     return _imp->value;
 }
@@ -314,7 +314,7 @@ FakeMetadataSpecTreeKey<FetchableURISpecTree>::type() const
 }
 
 const std::shared_ptr<const FetchableURISpecTree>
-FakeMetadataSpecTreeKey<FetchableURISpecTree>::value() const
+FakeMetadataSpecTreeKey<FetchableURISpecTree>::parse_value() const
 {
     return _imp->value;
 }
@@ -351,7 +351,7 @@ FakeMetadataSpecTreeKey<DependencySpecTree>::set_from_string(const std::string &
 }
 
 const std::shared_ptr<const DependencySpecTree>
-FakeMetadataSpecTreeKey<DependencySpecTree>::value() const
+FakeMetadataSpecTreeKey<DependencySpecTree>::parse_value() const
 {
     return _imp->value;
 }
@@ -507,7 +507,7 @@ FakeMetadataChoicesKey::add(const std::string & n, const std::string & v)
 }
 
 const std::shared_ptr<const Choices>
-FakeMetadataChoicesKey::value() const
+FakeMetadataChoicesKey::parse_value() const
 {
     return _imp->value;
 }
@@ -689,17 +689,17 @@ FakePackageID::canonical_form(const PackageIDCanonicalForm f) const
     switch (f)
     {
         case idcf_full:
-            return stringify(_imp->name) + "-" + stringify(_imp->version) + ":" + stringify(_imp->slot->value())
+            return stringify(_imp->name) + "-" + stringify(_imp->version) + ":" + stringify(_imp->slot->parse_value())
                 + "::" + stringify(repository_name());
 
         case idcf_version:
             return stringify(_imp->version);
 
         case idcf_no_version:
-            return stringify(_imp->name) + ":" + stringify(_imp->slot->value()) + "::" + stringify(repository_name());
+            return stringify(_imp->name) + ":" + stringify(_imp->slot->parse_value()) + "::" + stringify(repository_name());
 
         case idcf_no_name:
-            return stringify(_imp->version) + ":" + stringify(_imp->slot->value())
+            return stringify(_imp->version) + ":" + stringify(_imp->slot->parse_value())
                 + "::" + stringify(repository_name());
 
         case last_idcf:
@@ -713,7 +713,7 @@ PackageDepSpec
 FakePackageID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository_name()),
+            (slot_key() ? ":" + stringify(slot_key()->parse_value()) : "") + "::" + stringify(repository_name()),
             _imp->env, { });
 }
 
@@ -910,7 +910,7 @@ FakePackageID::set_slot(const SlotName & s)
 bool
 FakePackageID::arbitrary_less_than_comparison(const PackageID & other) const
 {
-    return slot_key()->value().value() < (other.slot_key() ? stringify(other.slot_key()->value()) : "");
+    return slot_key()->parse_value().value() < (other.slot_key() ? stringify(other.slot_key()->parse_value()) : "");
 }
 
 void
@@ -979,7 +979,7 @@ FakePackageID::need_keys_added() const
 std::size_t
 FakePackageID::extra_hash_value() const
 {
-    return Hash<SlotName>()(slot_key()->value());
+    return Hash<SlotName>()(slot_key()->parse_value());
 }
 
 bool
@@ -1060,13 +1060,13 @@ FakePackageID::need_masks_added() const
     Context context("When generating masks for ID '" + canonical_form(idcf_full) + "':");
 
     if (keywords_key())
-        if (! _imp->env->accept_keywords(keywords_key()->value(), shared_from_this()))
+        if (! _imp->env->accept_keywords(keywords_key()->parse_value(), shared_from_this()))
             add_mask(std::make_shared<FakeUnacceptedMask>('K', "keywords", keywords_key()->raw_name()));
 
     if (license_key())
     {
         LicenceChecker c(_imp->env, &Environment::accept_license, shared_from_this());
-        license_key()->value()->top()->accept(c);
+        license_key()->parse_value()->top()->accept(c);
         if (! c.ok)
             add_mask(std::make_shared<FakeUnacceptedMask>('L', "license", license_key()->raw_name()));
     }
@@ -1214,7 +1214,7 @@ const std::string
 FakeMetadataKeywordSetKey::pretty_print_value(
         const PrettyPrinter & pretty_printer, const PrettyPrintOptions &) const
 {
-    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(pretty_printer));
+    return join(_imp->collection->begin(), _imp->collection->end(), " ", CallPrettyPrinter(pretty_printer));
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >

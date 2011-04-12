@@ -259,7 +259,7 @@ namespace
 
     /*
      * call-seq:
-     *     value -> PackageID
+     *     parse_value -> PackageID
      *
      * Our Value.
      * */
@@ -270,7 +270,7 @@ namespace
         {
             std::shared_ptr<const MetadataKey> * self_ptr;
             Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-            return package_id_to_value((std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const PackageID> > >(*self_ptr))->value());
+            return package_id_to_value((std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const PackageID> > >(*self_ptr))->parse_value());
         }
         catch (const std::exception & e)
         {
@@ -280,7 +280,7 @@ namespace
 
     /*
      * call-seq:
-     *     value -> String
+     *     parse_value -> String
      *
      * Our Value.
      * */
@@ -291,7 +291,7 @@ namespace
         {
             std::shared_ptr<const MetadataKey> * self_ptr;
             Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-            return rb_str_new2((std::static_pointer_cast<const MetadataValueKey<std::string> >(*self_ptr))->value().c_str());
+            return rb_str_new2((std::static_pointer_cast<const MetadataValueKey<std::string> >(*self_ptr))->parse_value().c_str());
         }
         catch (const std::exception & e)
         {
@@ -301,7 +301,7 @@ namespace
 
     /*
      * call-seq:
-     *     value -> String
+     *     parse_value -> String
      *
      * Our Value.
      * */
@@ -312,7 +312,7 @@ namespace
         {
             std::shared_ptr<const MetadataKey> * self_ptr;
             Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-            return rb_str_new2(stringify((std::static_pointer_cast<const MetadataValueKey<SlotName> >(*self_ptr))->value()).c_str());
+            return rb_str_new2(stringify((std::static_pointer_cast<const MetadataValueKey<SlotName> >(*self_ptr))->parse_value()).c_str());
         }
         catch (const std::exception & e)
         {
@@ -322,7 +322,7 @@ namespace
 
     /*
      * call-seq:
-     *     value -> Numeric
+     *     parse_value -> Numeric
      *
      * Our Value.
      * */
@@ -333,7 +333,7 @@ namespace
         {
             std::shared_ptr<const MetadataKey> * self_ptr;
             Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-            return LONG2NUM((std::static_pointer_cast<const MetadataValueKey<long> >(*self_ptr))->value());
+            return LONG2NUM((std::static_pointer_cast<const MetadataValueKey<long> >(*self_ptr))->parse_value());
         }
         catch (const std::exception & e)
         {
@@ -343,7 +343,7 @@ namespace
 
     /*
      * call-seq:
-     *     value -> String
+     *     parse_value -> String
      *
      * Our Value.
      * */
@@ -354,7 +354,7 @@ namespace
         {
             std::shared_ptr<const MetadataKey> * self_ptr;
             Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-            return rb_str_new2(stringify((std::static_pointer_cast<const MetadataValueKey<FSPath> >(*self_ptr))->value()).c_str());
+            return rb_str_new2(stringify((std::static_pointer_cast<const MetadataValueKey<FSPath> >(*self_ptr))->parse_value()).c_str());
         }
         catch (const std::exception & e)
         {
@@ -364,7 +364,7 @@ namespace
 
     /*
      * call-seq:
-     *     value -> Time
+     *     parse_value -> Time
      *
      * Our Value.
      * */
@@ -375,7 +375,7 @@ namespace
         {
             std::shared_ptr<const MetadataKey> * self_ptr;
             Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-            return rb_time_new((std::static_pointer_cast<const MetadataTimeKey>(*self_ptr))->value().seconds(), 0);
+            return rb_time_new((std::static_pointer_cast<const MetadataTimeKey>(*self_ptr))->parse_value().seconds(), 0);
         }
         catch (const std::exception & e)
         {
@@ -385,7 +385,7 @@ namespace
 
     /*
      * call-seq:
-     *     value -> Contents
+     *     parse_value -> Contents
      *
      * Our Value.
      * */
@@ -396,8 +396,8 @@ namespace
         {
             std::shared_ptr<const MetadataKey> * self_ptr;
             Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-            if (std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const Contents> > >(*self_ptr)->value())
-                return contents_to_value(std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const Contents> > >(*self_ptr)->value());
+            if (std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const Contents> > >(*self_ptr)->parse_value())
+                return contents_to_value(std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const Contents> > >(*self_ptr)->parse_value());
             return Qnil;
         }
         catch (const std::exception & e)
@@ -408,7 +408,7 @@ namespace
 
     /*
      * call-seq:
-     *     value -> Choices
+     *     parse_value -> Choices
      *
      * Our Value.
      * */
@@ -419,7 +419,7 @@ namespace
         {
             std::shared_ptr<const MetadataKey> * self_ptr;
             Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-            return choices_to_value(std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const Choices> > >(*self_ptr)->value());
+            return choices_to_value(std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const Choices> > >(*self_ptr)->parse_value());
         }
         catch (const std::exception & e)
         {
@@ -429,7 +429,7 @@ namespace
 
     /*
      * call-seq:
-     *     value -> Array
+     *     parse_value -> Array
      *
      * Our Value.
      * */
@@ -443,7 +443,7 @@ namespace
             {
                 std::shared_ptr<const MetadataKey> * self_ptr;
                 Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-                std::shared_ptr<const T_> c = std::static_pointer_cast<const MetadataCollectionKey<T_> >(*self_ptr)->value();
+                std::shared_ptr<const T_> c = std::static_pointer_cast<const MetadataCollectionKey<T_> >(*self_ptr)->parse_value();
                 VALUE result (rb_ary_new());
                 for (typename T_::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                         rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
@@ -458,7 +458,7 @@ namespace
 
     /*
      * call-seq:
-     *     value -> Hash
+     *     parse_value -> Hash
      *
      * Our Value.
      * */
@@ -472,7 +472,7 @@ namespace
             {
                 std::shared_ptr<const MetadataKey> * self_ptr;
                 Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-                std::shared_ptr<const T_> c = std::static_pointer_cast<const MetadataCollectionKey<T_> >(*self_ptr)->value();
+                std::shared_ptr<const T_> c = std::static_pointer_cast<const MetadataCollectionKey<T_> >(*self_ptr)->parse_value();
                 VALUE result (rb_hash_new());
                 for (typename T_::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                         rb_hash_aset(result, rb_str_new2(stringify(i->first).c_str()), rb_str_new2(stringify(i->second).c_str()));
@@ -487,7 +487,7 @@ namespace
 
     /*
      * call-seq:
-     *     value -> Array
+     *     parse_value -> Array
      *
      * Our Value.
      * */
@@ -502,7 +502,7 @@ namespace
                 std::shared_ptr<const MetadataKey> * self_ptr;
                 Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
                 std::shared_ptr<const PackageIDSequence> c = std::static_pointer_cast<const MetadataCollectionKey<PackageIDSequence> >(
-                        *self_ptr)->value();
+                        *self_ptr)->parse_value();
                 VALUE result (rb_ary_new());
                 for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
                     rb_ary_push(result, package_id_to_value(*i));
@@ -517,7 +517,7 @@ namespace
 
     /*
      * call-seq:
-     *     value -> Array
+     *     parse_value -> spec tree
      *
      * Our Value.
      * */
@@ -531,7 +531,7 @@ namespace
             {
                 std::shared_ptr<const MetadataKey> * self_ptr;
                 Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-                std::shared_ptr<const T_> c = std::static_pointer_cast<const MetadataSpecTreeKey<T_> >(*self_ptr)->value();
+                std::shared_ptr<const T_> c = std::static_pointer_cast<const MetadataSpecTreeKey<T_> >(*self_ptr)->parse_value();
                 return dep_tree_to_value<T_>(c);
             }
             catch (const std::exception & e)
@@ -639,7 +639,7 @@ namespace
         /*
          * Document-class: Paludis::MetadataKey
          *
-         * Base metadata class, subclasses contain a "value" to return the contents of the key.
+         * Base metadata class, subclasses contain a "parse_value" to return the contents of the key.
          */
         c_metadata_key = rb_define_class_under(paludis_module(), "MetadataKey", rb_cObject);
         rb_funcall(c_metadata_key, rb_intern("private_class_method"), 1, rb_str_new2("new"));
@@ -653,7 +653,7 @@ namespace
          * Metadata class for a PackageId.
          */
         c_metadata_package_id_key = rb_define_class_under(paludis_module(), "MetadataPackageIDKey", c_metadata_key);
-        rb_define_method(c_metadata_package_id_key, "value", RUBY_FUNC_CAST(&metadata_package_id_key_value), 0);
+        rb_define_method(c_metadata_package_id_key, "parse_value", RUBY_FUNC_CAST(&metadata_package_id_key_value), 0);
 
         /*
          * Document-class: Paludis::MetadataStringKey
@@ -661,7 +661,7 @@ namespace
          * Metadata class for Strings.
          */
         c_metadata_string_key = rb_define_class_under(paludis_module(), "MetadataStringKey", c_metadata_key);
-        rb_define_method(c_metadata_string_key, "value", RUBY_FUNC_CAST(&metadata_string_key_value), 0);
+        rb_define_method(c_metadata_string_key, "parse_value", RUBY_FUNC_CAST(&metadata_string_key_value), 0);
 
         /*
          * Document-class: Paludis::MetadataSlotNameKey
@@ -669,7 +669,7 @@ namespace
          * Metadata class for SlotNames.
          */
         c_metadata_slot_key = rb_define_class_under(paludis_module(), "MetadataSlotNameKey", c_metadata_key);
-        rb_define_method(c_metadata_slot_key, "value", RUBY_FUNC_CAST(&metadata_slot_key_value), 0);
+        rb_define_method(c_metadata_slot_key, "parse_value", RUBY_FUNC_CAST(&metadata_slot_key_value), 0);
 
         /*
          * Document-class: Paludis::MetadataSizeKey
@@ -677,7 +677,7 @@ namespace
          * Metadata class for file sizes.
          */
         c_metadata_size_key = rb_define_class_under(paludis_module(), "MetadataSizeKey", c_metadata_key);
-        rb_define_method(c_metadata_size_key, "value", RUBY_FUNC_CAST(&metadata_size_key_value), 0);
+        rb_define_method(c_metadata_size_key, "parse_value", RUBY_FUNC_CAST(&metadata_size_key_value), 0);
 
         /*
          * Document-class: Paludis::MetadataFSPathKey
@@ -685,7 +685,7 @@ namespace
          * Metadata class for FSPath.
          */
         c_metadata_fsentry_key = rb_define_class_under(paludis_module(), "MetadataFSPathKey", c_metadata_key);
-        rb_define_method(c_metadata_fsentry_key, "value", RUBY_FUNC_CAST(&metadata_fsentry_key_value), 0);
+        rb_define_method(c_metadata_fsentry_key, "parse_value", RUBY_FUNC_CAST(&metadata_fsentry_key_value), 0);
 
         /*
          * Document-class: Paludis::MetadataTimeKey
@@ -693,7 +693,7 @@ namespace
          * Metadata class for Time.
          */
         c_metadata_time_key = rb_define_class_under(paludis_module(), "MetadataTimeKey", c_metadata_key);
-        rb_define_method(c_metadata_time_key, "value", RUBY_FUNC_CAST(&metadata_time_key_value), 0);
+        rb_define_method(c_metadata_time_key, "parse_value", RUBY_FUNC_CAST(&metadata_time_key_value), 0);
 
         /*
          * Document-class: Paludis::MetadataContentsKey
@@ -701,7 +701,7 @@ namespace
          * Metadata class for Contents.
          */
         c_metadata_contents_key = rb_define_class_under(paludis_module(), "MetadataContentsKey", c_metadata_key);
-        rb_define_method(c_metadata_contents_key, "value", RUBY_FUNC_CAST(&metadata_contents_key_value), 0);
+        rb_define_method(c_metadata_contents_key, "parse_value", RUBY_FUNC_CAST(&metadata_contents_key_value), 0);
 
         /*
          * Document-class: Paludis::MetadataChoicesKey
@@ -709,7 +709,7 @@ namespace
          * Metadata class for Contents.
          */
         c_metadata_choices_key = rb_define_class_under(paludis_module(), "MetadataChoicesKey", c_metadata_key);
-        rb_define_method(c_metadata_choices_key, "value", RUBY_FUNC_CAST(&metadata_choices_key_value), 0);
+        rb_define_method(c_metadata_choices_key, "parse_value", RUBY_FUNC_CAST(&metadata_choices_key_value), 0);
 
         /*
          * Document-class: Paludis::MetadataKeywordNameSetKey
@@ -717,7 +717,7 @@ namespace
          * Metadata class for keywords.
          */
         c_metadata_keyword_name_set_key = rb_define_class_under(paludis_module(), "MetadataKeywordNameSetKey", c_metadata_key);
-        rb_define_method(c_metadata_keyword_name_set_key, "value", RUBY_FUNC_CAST((&SetValue<KeywordNameSet>::fetch)), 0);
+        rb_define_method(c_metadata_keyword_name_set_key, "parse_value", RUBY_FUNC_CAST((&SetValue<KeywordNameSet>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataPackageIDSequenceKey
@@ -725,7 +725,7 @@ namespace
          * Metadata class for package IDs.
          */
         c_metadata_package_id_sequence_key = rb_define_class_under(paludis_module(), "MetadataPackageIDSequenceKey", c_metadata_key);
-        rb_define_method(c_metadata_package_id_sequence_key, "value", RUBY_FUNC_CAST((&SetValue<PackageIDSequence>::fetch)), 0);
+        rb_define_method(c_metadata_package_id_sequence_key, "parse_value", RUBY_FUNC_CAST((&SetValue<PackageIDSequence>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataFSPathSequenceKey
@@ -733,7 +733,7 @@ namespace
          * Metadata class for filesystem sequences.
          */
         c_metadata_fsentry_sequence_key = rb_define_class_under(paludis_module(), "MetadataFSPathSequenceKey", c_metadata_key);
-        rb_define_method(c_metadata_fsentry_sequence_key, "value", RUBY_FUNC_CAST((&SetValue<FSPathSequence>::fetch)), 0);
+        rb_define_method(c_metadata_fsentry_sequence_key, "parse_value", RUBY_FUNC_CAST((&SetValue<FSPathSequence>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataStringSetKey
@@ -741,7 +741,7 @@ namespace
          * Metadata class for String sets.
          */
         c_metadata_string_set_key = rb_define_class_under(paludis_module(), "MetadataStringSetKey", c_metadata_key);
-        rb_define_method(c_metadata_string_set_key, "value", RUBY_FUNC_CAST((&SetValue<Set<std::string> >::fetch)), 0);
+        rb_define_method(c_metadata_string_set_key, "parse_value", RUBY_FUNC_CAST((&SetValue<Set<std::string> >::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataStringStringMapKey
@@ -749,7 +749,7 @@ namespace
          * Metadata class for String to String maps.
          */
         c_metadata_string_string_map_key = rb_define_class_under(paludis_module(), "MetadataStringStringMapKey", c_metadata_key);
-        rb_define_method(c_metadata_string_string_map_key, "value", RUBY_FUNC_CAST((&MapValue<Map<std::string, std::string> >::fetch)), 0);
+        rb_define_method(c_metadata_string_string_map_key, "parse_value", RUBY_FUNC_CAST((&MapValue<Map<std::string, std::string> >::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataStringSequenceKey
@@ -757,7 +757,7 @@ namespace
          * Metadata class for String sequences.
          */
         c_metadata_string_sequence_key = rb_define_class_under(paludis_module(), "MetadataStringSequenceKey", c_metadata_key);
-        rb_define_method(c_metadata_string_sequence_key, "value", RUBY_FUNC_CAST((&SetValue<Sequence<std::string> >::fetch)), 0);
+        rb_define_method(c_metadata_string_sequence_key, "parse_value", RUBY_FUNC_CAST((&SetValue<Sequence<std::string> >::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataLicenseSpecTreeKey
@@ -765,7 +765,7 @@ namespace
          * Metadata class for license specs.
          */
         c_metadata_license_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataLicenseSpecTreeKey", c_metadata_key);
-        rb_define_method(c_metadata_license_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<LicenseSpecTree>::fetch)), 0);
+        rb_define_method(c_metadata_license_spec_tree_key, "parse_value", RUBY_FUNC_CAST((&SpecTreeValue<LicenseSpecTree>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataProvideSpecTreeKey
@@ -773,7 +773,7 @@ namespace
          * Metadata class for provide specs.
          */
         c_metadata_provide_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataProvideSpecTreeKey", c_metadata_key);
-        rb_define_method(c_metadata_provide_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<ProvideSpecTree>::fetch)), 0);
+        rb_define_method(c_metadata_provide_spec_tree_key, "parse_value", RUBY_FUNC_CAST((&SpecTreeValue<ProvideSpecTree>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataPlainTextSpecTreeKey
@@ -781,7 +781,7 @@ namespace
          * Metadata class for restrict specs.
          */
         c_metadata_plain_text_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataPlainTextSpecTreeKey", c_metadata_key);
-        rb_define_method(c_metadata_plain_text_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<PlainTextSpecTree>::fetch)), 0);
+        rb_define_method(c_metadata_plain_text_spec_tree_key, "parse_value", RUBY_FUNC_CAST((&SpecTreeValue<PlainTextSpecTree>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataRequiredUseSpecTreeKey
@@ -789,7 +789,7 @@ namespace
          * Metadata class for restrict specs.
          */
         c_metadata_required_use_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataRequiredUseSpecTreeKey", c_metadata_key);
-        rb_define_method(c_metadata_required_use_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<RequiredUseSpecTree>::fetch)), 0);
+        rb_define_method(c_metadata_required_use_spec_tree_key, "parse_value", RUBY_FUNC_CAST((&SpecTreeValue<RequiredUseSpecTree>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataDependencySpecTreeKey
@@ -797,7 +797,7 @@ namespace
          * Metadata class for dependency specs.
          */
         c_metadata_dependency_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataDependencySpecTreeKey", c_metadata_key);
-        rb_define_method(c_metadata_dependency_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<DependencySpecTree>::fetch)), 0);
+        rb_define_method(c_metadata_dependency_spec_tree_key, "parse_value", RUBY_FUNC_CAST((&SpecTreeValue<DependencySpecTree>::fetch)), 0);
         rb_define_method(c_metadata_dependency_spec_tree_key, "initial_labels", RUBY_FUNC_CAST(&metadata_dependency_spec_tree_key_initial_labels), 0);
 
         /*
@@ -806,7 +806,7 @@ namespace
          * Metadata class for fetchable uri specs.
          */
         c_metadata_fetchable_uri_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataFetchableURISpecTreeKey", c_metadata_key);
-        rb_define_method(c_metadata_fetchable_uri_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<FetchableURISpecTree>::fetch)), 0);
+        rb_define_method(c_metadata_fetchable_uri_spec_tree_key, "parse_value", RUBY_FUNC_CAST((&SpecTreeValue<FetchableURISpecTree>::fetch)), 0);
         rb_define_method(c_metadata_fetchable_uri_spec_tree_key, "initial_label", RUBY_FUNC_CAST(&metadata_fetchable_uri_spec_tree_key_initial_label), 0);
 
         /*
@@ -815,7 +815,7 @@ namespace
          * Metadata class for simple uri specs.
          */
         c_metadata_simple_uri_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataSimpleURISpecTreeKey", c_metadata_key);
-        rb_define_method(c_metadata_simple_uri_spec_tree_key, "value", RUBY_FUNC_CAST((&SpecTreeValue<SimpleURISpecTree>::fetch)), 0);
+        rb_define_method(c_metadata_simple_uri_spec_tree_key, "parse_value", RUBY_FUNC_CAST((&SpecTreeValue<SimpleURISpecTree>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataSectionKey

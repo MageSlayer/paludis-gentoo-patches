@@ -82,24 +82,24 @@ namespace
     {
         std::string visit(const ContentsFileEntry & e) const
         {
-            return fuc(fs_file(), fv<'s'>(stringify(e.location_key()->value())));
+            return fuc(fs_file(), fv<'s'>(stringify(e.location_key()->parse_value())));
         }
 
         std::string visit(const ContentsDirEntry & e) const
         {
-            return fuc(fs_dir(), fv<'s'>(stringify(e.location_key()->value())));
+            return fuc(fs_dir(), fv<'s'>(stringify(e.location_key()->parse_value())));
         }
 
         std::string visit(const ContentsSymEntry & e) const
         {
             return fuc(fs_sym(),
-                    fv<'s'>(stringify(e.location_key()->value())),
-                    fv<'t'>(stringify(e.target_key()->value())));
+                    fv<'s'>(stringify(e.location_key()->parse_value())),
+                    fv<'t'>(stringify(e.target_key()->parse_value())));
         }
 
         std::string visit(const ContentsOtherEntry & e) const
         {
-            return fuc(fs_other(), fv<'s'>(stringify(e.location_key()->value())));
+            return fuc(fs_other(), fv<'s'>(stringify(e.location_key()->parse_value())));
         }
     };
 
@@ -128,22 +128,23 @@ ContentsCommand::run(
         throw args::DoHelp("contents takes exactly one parameter");
 
     PackageDepSpec spec(parse_spec_with_nice_error(*cmdline.begin_parameters(), env.get(),
-                { }, filter::InstalledAtRoot(env->preferred_root_key()->value())));
+                { }, filter::InstalledAtRoot(env->preferred_root_key()->parse_value())));
 
     std::shared_ptr<const PackageIDSequence> entries(
             (*env)[selection::AllVersionsSorted(generator::Matches(spec, make_null_shared_ptr(), { })
-                | filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                | filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
 
     if (entries->empty())
-        nothing_matching_error(env.get(), *cmdline.begin_parameters(), filter::InstalledAtRoot(env->preferred_root_key()->value()));
+        nothing_matching_error(env.get(), *cmdline.begin_parameters(), filter::InstalledAtRoot(env->preferred_root_key()->parse_value()));
 
     const std::shared_ptr<const PackageID> id(*entries->last());
     if (! id->contents_key())
         throw BadIDForCommand(spec, id, "does not support listing contents");
 
+    auto contents(id->contents_key()->parse_value());
     std::transform(
-            id->contents_key()->value()->begin(),
-            id->contents_key()->value()->end(),
+            contents->begin(),
+            contents->end(),
             std::ostream_iterator<std::string>(cout, "\n"),
             std::bind(stringify_contents_entry, std::placeholders::_1));
 

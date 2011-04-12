@@ -244,7 +244,7 @@ GemcutterDependenciesKey::GemcutterDependenciesKey(const Environment * const e, 
 GemcutterDependenciesKey::~GemcutterDependenciesKey() = default;
 
 const std::shared_ptr<const DependencySpecTree>
-GemcutterDependenciesKey::value() const
+GemcutterDependenciesKey::parse_value() const
 {
     return _imp->value;
 }

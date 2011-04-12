@@ -47,7 +47,7 @@ paludis::resolver::collect_provided(
     if (id->provide_key())
     {
         DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(env, id);
-        id->provide_key()->value()->top()->accept(f);
+        id->provide_key()->parse_value()->top()->accept(f);
 
         for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator v(f.begin()), v_end(f.end()) ;
                 v != v_end ; ++v)

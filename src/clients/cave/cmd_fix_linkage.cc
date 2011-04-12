@@ -211,7 +211,7 @@ FixLinkageCommand::run(
         MutablePackageDepSpecData part_spec({ });
         part_spec.require_package((*pkg_it)->name());
         if ((*pkg_it)->slot_key())
-            part_spec.require_exact_slot((*pkg_it)->slot_key()->value(), false);
+            part_spec.require_exact_slot((*pkg_it)->slot_key()->parse_value(), false);
 
         if (cmdline.a_exact.specified())
             part_spec.require_version(vrc_and, vo_equal, (*pkg_it)->version());

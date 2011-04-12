@@ -157,18 +157,18 @@ UnpackagedID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             return stringify(_imp->name) + "-" + stringify(_imp->version) + ":" +
-                stringify(slot_key()->value()) + "::" + stringify(_imp->repository_name);
+                stringify(slot_key()->parse_value()) + "::" + stringify(_imp->repository_name);
 
         case idcf_version:
             return stringify(_imp->version);
 
         case idcf_no_version:
-            return stringify(_imp->name) + ":" + stringify(slot_key()->value()) + "::" +
+            return stringify(_imp->name) + ":" + stringify(slot_key()->parse_value()) + "::" +
                 stringify(_imp->repository_name);
 
         case idcf_no_name:
             return stringify(_imp->version) + ":" +
-                stringify(slot_key()->value()) + "::" + stringify(_imp->repository_name);
+                stringify(slot_key()->parse_value()) + "::" + stringify(_imp->repository_name);
 
         case last_idcf:
             break;
@@ -181,7 +181,7 @@ PackageDepSpec
 UnpackagedID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository_name()),
+            (slot_key() ? ":" + stringify(slot_key()->parse_value()) : "") + "::" + stringify(repository_name()),
             _imp->env, { });
 }
 
@@ -347,7 +347,7 @@ namespace
             const PackageID * const b)
     {
         if (a->slot_key())
-            return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
+            return b->slot_key() && a->slot_key()->parse_value() == b->slot_key()->parse_value();
         else
             return ! b->slot_key();
     }
@@ -390,7 +390,7 @@ UnpackagedID::perform_action(Action & action) const
 
     std::string libdir("lib");
     FSPath root(install_action->options.destination()->installed_root_key() ?
-            stringify(install_action->options.destination()->installed_root_key()->value()) : "/");
+            stringify(install_action->options.destination()->installed_root_key()->parse_value()) : "/");
     if ((root / "usr" / "lib").stat().is_symlink())
     {
         libdir = (root / "usr" / "lib").readlink();
@@ -400,10 +400,9 @@ UnpackagedID::perform_action(Action & action) const
 
     Log::get_instance()->message("unpackaged.libdir", ll_debug, lc_context) << "Using '" << libdir << "' for libdir";
 
-    std::shared_ptr<const ChoiceValue> symbols_choice(choices_key()->value()->find_by_name_with_prefix(
-                ELikeSymbolsChoiceValue::canonical_name_with_prefix()));
-    std::shared_ptr<const ChoiceValue> preserve_work_choice(choices_key()->value()->find_by_name_with_prefix(
-                ELikePreserveWorkChoiceValue::canonical_name_with_prefix()));
+    auto choices(choices_key()->parse_value());
+    auto symbols_choice(choices->find_by_name_with_prefix(ELikeSymbolsChoiceValue::canonical_name_with_prefix()));
+    auto preserve_work_choice(choices->find_by_name_with_prefix(ELikePreserveWorkChoiceValue::canonical_name_with_prefix()));
 
     std::string used_config_protect;
 
@@ -414,8 +413,8 @@ UnpackagedID::perform_action(Action & action) const
                 UnpackagedStripper stripper(make_named_values<UnpackagedStripperOptions>(
                             n::compress_splits() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_compress(
                                 symbols_choice->parameter()),
-                            n::debug_dir() = fs_location_key()->value() / "usr" / libdir / "debug",
-                            n::image_dir() = fs_location_key()->value(),
+                            n::debug_dir() = fs_location_key()->parse_value() / "usr" / libdir / "debug",
+                            n::image_dir() = fs_location_key()->parse_value(),
                             n::output_manager() = output_manager,
                             n::package_id() = shared_from_this(),
                             n::split() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_split(symbols_choice->parameter()),
@@ -444,7 +443,7 @@ UnpackagedID::perform_action(Action & action) const
                 n::build_start_time() = build_start_time,
                 n::check() = true,
                 n::environment_file() = FSPath("/dev/null"),
-                n::image_dir() = fs_location_key()->value(),
+                n::image_dir() = fs_location_key()->parse_value(),
                 n::merged_entries() = std::make_shared<FSPathSet>(),
                 n::options() = (MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs)
                 | extra_merger_options,
@@ -526,13 +525,13 @@ UnpackagedID::breaks_portage() const
 bool
 UnpackagedID::arbitrary_less_than_comparison(const PackageID & other) const
 {
-    return slot_key()->value().value() < (other.slot_key() ? stringify(other.slot_key()->value()) : "");
+    return slot_key()->parse_value().value() < (other.slot_key() ? stringify(other.slot_key()->parse_value()) : "");
 }
 
 std::size_t
 UnpackagedID::extra_hash_value() const
 {
-    return Hash<SlotName>()(slot_key()->value());
+    return Hash<SlotName>()(slot_key()->parse_value());
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >

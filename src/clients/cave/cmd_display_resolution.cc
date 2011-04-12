@@ -517,7 +517,7 @@ namespace
             const std::shared_ptr<const PackageID> & id,
             const bool is_new)
     {
-        if (id->short_description_key() && ! id->short_description_key()->value().empty())
+        if (id->short_description_key() && ! id->short_description_key()->parse_value().empty())
         {
             bool show(false);
             if (cmdline.display_options.a_show_descriptions.argument() == "none")
@@ -532,7 +532,7 @@ namespace
                         + cmdline.display_options.a_show_descriptions.long_name() + "'");
 
             if (show)
-                cout << fuc(fs_description(), fv<'s'>(id->short_description_key()->value()));
+                cout << fuc(fs_description(), fv<'s'>(id->short_description_key()->parse_value()));
         }
     }
 
@@ -552,11 +552,11 @@ namespace
 
         std::shared_ptr<const Choices> old_choices;
         if (old_id && old_id->choices_key())
-            old_choices = old_id->choices_key()->value();
+            old_choices = old_id->choices_key()->parse_value();
 
         std::pair<std::string, bool> changed_s_prefix("", false), unchanged_s_prefix("", false);
-        for (Choices::ConstIterator k(id->choices_key()->value()->begin()),
-                k_end(id->choices_key()->value()->end()) ;
+        auto choices(id->choices_key()->parse_value());
+        for (Choices::ConstIterator k(choices->begin()), k_end(choices->end()) ;
                 k != k_end ; ++k)
         {
             if ((*k)->hidden())
@@ -884,27 +884,27 @@ namespace
 
         void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(*k.value())));
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(*k.parse_value())));
         }
 
         void visit(const MetadataValueKey<std::string> & k)
         {
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.value())));
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.parse_value())));
         }
 
         void visit(const MetadataValueKey<SlotName> & k)
         {
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.value())));
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.parse_value())));
         }
 
         void visit(const MetadataValueKey<long> & k)
         {
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.value())));
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.parse_value())));
         }
 
         void visit(const MetadataValueKey<bool> & k)
         {
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.value())));
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.parse_value())));
         }
 
         void visit(const MetadataSectionKey & k)
@@ -914,7 +914,7 @@ namespace
 
         void visit(const MetadataTimeKey & k)
         {
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(pretty_print_time(k.value().seconds())));
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(pretty_print_time(k.parse_value().seconds())));
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const Contents> > & k)
@@ -924,7 +924,7 @@ namespace
 
         void visit(const MetadataValueKey<FSPath> & k)
         {
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.value())));
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.parse_value())));
         }
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
@@ -1250,16 +1250,13 @@ namespace
             cout << fuc(fs_change_not_best());
 
         if ((! decision.destination()->replacing()->empty()) &&
-                (*decision.destination()->replacing()->begin())->from_repositories_key() &&
-                ! (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->empty() &&
-                (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->end() ==
-                (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->find(stringify(
-                        decision.origin_id()->repository_name())))
+                (*decision.destination()->replacing()->begin())->from_repositories_key())
         {
-            cout << fuc(fs_change_formerly_from(), fv<'r'>(join(
-                            (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->begin(),
-                            (*decision.destination()->replacing()->begin())->from_repositories_key()->value()->end(),
-                            ", ::")));
+            auto from_repositories((*decision.destination()->replacing()->begin())->from_repositories_key()->parse_value());
+            if (! from_repositories->empty() && from_repositories->end() == from_repositories->find(stringify(decision.origin_id()->repository_name())))
+            {
+                cout << fuc(fs_change_formerly_from(), fv<'r'>(join(from_repositories->begin(), from_repositories->end(), ", ::")));
+            }
         }
 
         cout << fuc(fs_change_version(), fv<'v'>(decision.origin_id()->canonical_form(idcf_version)));
@@ -1457,11 +1454,11 @@ namespace
             {
                 bool all_same(true);
                 const std::shared_ptr<const ChoiceValue> first_choice_value(
-                        (*v->second->begin())->choices_key()->value()->find_by_name_with_prefix(v->first));
+                        (*v->second->begin())->choices_key()->parse_value()->find_by_name_with_prefix(v->first));
                 std::string description(first_choice_value->description());
                 for (PackageIDSequence::ConstIterator w(next(v->second->begin())), w_end(v->second->end()) ;
                         w != w_end ; ++w)
-                    if ((*w)->choices_key()->value()->find_by_name_with_prefix(v->first)->description() != description)
+                    if ((*w)->choices_key()->parse_value()->find_by_name_with_prefix(v->first)->description() != description)
                     {
                         all_same = false;
                         break;
@@ -1476,7 +1473,7 @@ namespace
                             w != w_end ; ++w)
                     {
                         const std::shared_ptr<const ChoiceValue> value(
-                                (*w)->choices_key()->value()->find_by_name_with_prefix(v->first));
+                                (*w)->choices_key()->parse_value()->find_by_name_with_prefix(v->first));
                         cout << fuc(fs_choice_to_explain_one(), fv<'s'>((*w)->canonical_form(idcf_no_version)), fv<'d'>(value->description()));
                     }
                 }

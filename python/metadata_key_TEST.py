@@ -71,7 +71,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def __init__(self):
                 MetadataPackageIDKey.__init__(self)
 
-            def value(self):
+            def parse_value(self):
                 e = NoConfigEnvironment(repo_path, "/var/empty")
                 pid = iter(e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
                 return pid
@@ -92,7 +92,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def __init__(self):
                 MetadataStringKey.__init__(self)
 
-            def value(self):
+            def parse_value(self):
                 return "str"
 
             def raw_name(self):
@@ -111,7 +111,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def __init__(self):
                 MetadataTimeKey.__init__(self)
 
-            def value(self):
+            def parse_value(self):
                 return 123
 
             def raw_name(self):
@@ -131,7 +131,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def __init__(self):
                 MetadataContentsKey.__init__(self)
 
-            def value(self):
+            def parse_value(self):
                 return Contents()
 
             def raw_name(self):
@@ -150,7 +150,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def __init__(self):
                 MetadataKeywordNameIterableKey.__init__(self)
 
-            def value(self):
+            def parse_value(self):
                 return ["keyword"]
 
             def pretty_print_flat(self, f):
@@ -173,7 +173,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def __init__(self):
                 MetadataStringIterableKey.__init__(self)
 
-            def value(self):
+            def parse_value(self):
                 return ["string"]
 
             def pretty_print_flat(self, f):
@@ -195,7 +195,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def __init__(self):
                 MetadataLicenseSpecTreeKey.__init__(self)
 
-            def value(self):
+            def parse_value(self):
                 return AllDepSpec()
 
             def pretty_print(self, f):
@@ -225,7 +225,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 MetadataProvideSpecTreeKey.__init__(self)
                 self.e = NoConfigEnvironment(repo_path, "/var/empty")
 
-            def value(self):
+            def parse_value(self):
                 return AllDepSpec()
 
             def pretty_print(self, f):
@@ -253,7 +253,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 self.e = NoConfigEnvironment(repo_path, "/var/empty")
                 MetadataDependencySpecTreeKey.__init__(self)
 
-            def value(self):
+            def parse_value(self):
                 return AllDepSpec()
 
             def pretty_print(self, f):
@@ -281,7 +281,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def __init__(self):
                 MetadataPlainTextSpecTreeKey.__init__(self)
 
-            def value(self):
+            def parse_value(self):
                 return AllDepSpec()
 
             def pretty_print(self, f):
@@ -310,7 +310,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def __init__(self):
                 MetadataFetchableURISpecTreeKey.__init__(self)
 
-            def value(self):
+            def parse_value(self):
                 return AllDepSpec()
 
             def pretty_print(self, f):
@@ -342,7 +342,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def __init__(self):
                 MetadataSimpleURISpecTreeKey.__init__(self)
 
-            def value(self):
+            def parse_value(self):
                 return AllDepSpec()
 
             def pretty_print(self, f):
@@ -393,7 +393,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
             def __init__(self):
                 MetadataChoicesKey.__init__(self)
 
-            def value(self):
+            def parse_value(self):
                 return Choices()
 
             def raw_name(self):

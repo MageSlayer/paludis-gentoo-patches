@@ -37,7 +37,7 @@ module Paludis
         end
 
         def choices
-            pid.choices_key.value
+            pid.choices_key.parse_value
         end
 
         def use_choice

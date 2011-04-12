@@ -272,9 +272,9 @@ ManageSearchIndexCommand::run(
 
             std::string name(stringify((*i)->name())), short_desc, long_desc;
             if ((*i)->short_description_key())
-                short_desc = (*i)->short_description_key()->value();
+                short_desc = (*i)->short_description_key()->parse_value();
             if ((*i)->long_description_key())
-                long_desc = (*i)->long_description_key()->value();
+                long_desc = (*i)->long_description_key()->parse_value();
 
             bool is_visible(! (*i)->masked());
 

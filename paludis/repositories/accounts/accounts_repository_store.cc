@@ -121,7 +121,7 @@ AccountsRepositoryStore::_load(const RepositoryName & repository_name)
             continue;
         }
 
-        FSPath dir(k->value());
+        FSPath dir(k->parse_value());
         if (! dir.stat().is_directory_or_symlink_to_directory())
         {
             Log::get_instance()->message("accounts.empty_key_from_repository", ll_warning, lc_context) <<

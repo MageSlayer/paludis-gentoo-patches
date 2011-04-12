@@ -121,7 +121,7 @@ namespace
                         MutablePackageDepSpecData part_spec(*s.spec()->data());
                         part_spec
                             .unrequire_exact_slot()
-                            .require_exact_slot(best_eventual_id->slot_key()->value(), false);
+                            .require_exact_slot(best_eventual_id->slot_key()->parse_value(), false);
                         spec = std::make_shared<PackageDepSpec>(part_spec);
                     }
                 }
@@ -184,17 +184,17 @@ paludis::resolver::dependent_upon(
 {
     DependentChecker<ChangeByResolventSequence> c(env, id, going_away, staying, not_changing_slots);
     if (id->dependencies_key())
-        id->dependencies_key()->value()->top()->accept(c);
+        id->dependencies_key()->parse_value()->top()->accept(c);
     else
     {
         if (id->build_dependencies_key())
-            id->build_dependencies_key()->value()->top()->accept(c);
+            id->build_dependencies_key()->parse_value()->top()->accept(c);
         if (id->run_dependencies_key())
-            id->run_dependencies_key()->value()->top()->accept(c);
+            id->run_dependencies_key()->parse_value()->top()->accept(c);
         if (id->post_dependencies_key())
-            id->post_dependencies_key()->value()->top()->accept(c);
+            id->post_dependencies_key()->parse_value()->top()->accept(c);
         if (id->suggested_dependencies_key())
-            id->suggested_dependencies_key()->value()->top()->accept(c);
+            id->suggested_dependencies_key()->parse_value()->top()->accept(c);
     }
 
     return c.result;
@@ -209,17 +209,17 @@ paludis::resolver::collect_depped_upon(
 {
     DependentChecker<PackageIDSequence> c(env, id, candidates, std::make_shared<PackageIDSequence>(), not_changing_slots);
     if (id->dependencies_key())
-        id->dependencies_key()->value()->top()->accept(c);
+        id->dependencies_key()->parse_value()->top()->accept(c);
     else
     {
         if (id->build_dependencies_key())
-            id->build_dependencies_key()->value()->top()->accept(c);
+            id->build_dependencies_key()->parse_value()->top()->accept(c);
         if (id->run_dependencies_key())
-            id->run_dependencies_key()->value()->top()->accept(c);
+            id->run_dependencies_key()->parse_value()->top()->accept(c);
         if (id->post_dependencies_key())
-            id->post_dependencies_key()->value()->top()->accept(c);
+            id->post_dependencies_key()->parse_value()->top()->accept(c);
         if (id->suggested_dependencies_key())
-            id->suggested_dependencies_key()->value()->top()->accept(c);
+            id->suggested_dependencies_key()->parse_value()->top()->accept(c);
     }
 
     const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
@@ -245,17 +245,17 @@ paludis::resolver::collect_dependents(
                 std::make_shared<PackageIDSequence>(), std::make_shared<PackageIDSequence>());
 
         if ((*i)->dependencies_key())
-            (*i)->dependencies_key()->value()->top()->accept(c);
+            (*i)->dependencies_key()->parse_value()->top()->accept(c);
         else
         {
             if ((*i)->build_dependencies_key())
-                (*i)->build_dependencies_key()->value()->top()->accept(c);
+                (*i)->build_dependencies_key()->parse_value()->top()->accept(c);
             if ((*i)->run_dependencies_key())
-                (*i)->run_dependencies_key()->value()->top()->accept(c);
+                (*i)->run_dependencies_key()->parse_value()->top()->accept(c);
             if ((*i)->post_dependencies_key())
-                (*i)->post_dependencies_key()->value()->top()->accept(c);
+                (*i)->post_dependencies_key()->parse_value()->top()->accept(c);
             if ((*i)->suggested_dependencies_key())
-                (*i)->suggested_dependencies_key()->value()->top()->accept(c);
+                (*i)->suggested_dependencies_key()->parse_value()->top()->accept(c);
         }
 
         if (! c.result->empty())

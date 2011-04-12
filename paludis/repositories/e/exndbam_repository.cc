@@ -316,7 +316,7 @@ namespace
             const std::shared_ptr<const PackageID> & b)
     {
         if (a->slot_key())
-            return b->slot_key() && a->slot_key()->value() == b->slot_key()->value();
+            return b->slot_key() && a->slot_key()->parse_value() == b->slot_key()->parse_value();
         else
             return ! b->slot_key();
     }
@@ -359,7 +359,7 @@ ExndbamRepository::merge(const MergeParams & m)
 
     FSPath uid_dir(_imp->params.location());
     if (if_same_name_id)
-        uid_dir = if_same_name_id->fs_location_key()->value().dirname();
+        uid_dir = if_same_name_id->fs_location_key()->parse_value().dirname();
     else
     {
         std::string uid(stringify(m.package_id()->name().category()) + "---" + stringify(m.package_id()->name().package()));
@@ -372,7 +372,7 @@ ExndbamRepository::merge(const MergeParams & m)
     }
 
     FSPath target_ver_dir(uid_dir);
-    target_ver_dir /= (stringify(m.package_id()->version()) + ":" + stringify(m.package_id()->slot_key()->value()) + ":" + cookie());
+    target_ver_dir /= (stringify(m.package_id()->version()) + ":" + stringify(m.package_id()->slot_key()->parse_value()) + ":" + cookie());
 
     if (target_ver_dir.stat().exists())
         throw ActionFailedError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "
@@ -433,7 +433,7 @@ ExndbamRepository::merge(const MergeParams & m)
                 n::options() = m.options(),
                 n::output_manager() = m.output_manager(),
                 n::package_id() = m.package_id(),
-                n::root() = installed_root_key()->value()
+                n::root() = installed_root_key()->parse_value()
             ));
 
     (m.used_this_for_config_protect())(config_protect);
@@ -471,7 +471,7 @@ ExndbamRepository::merge(const MergeParams & m)
                  it_end(replace_candidates->end()); it_end != it; ++it)
         {
             std::shared_ptr<const ERepositoryID> candidate(std::static_pointer_cast<const ERepositoryID>(*it));
-            if (candidate != if_overwritten_id && candidate->fs_location_key()->value() != target_ver_dir && slot_is_same(candidate, m.package_id()))
+            if (candidate != if_overwritten_id && candidate->fs_location_key()->parse_value() != target_ver_dir && slot_is_same(candidate, m.package_id()))
             {
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                             n::config_protect() = config_protect,
@@ -489,7 +489,7 @@ ExndbamRepository::merge(const MergeParams & m)
 
     VDBPostMergeUnmergeCommand post_merge_command(
             make_named_values<VDBPostMergeUnmergeCommandParams>(
-                n::root() = installed_root_key()->value()
+                n::root() = installed_root_key()->parse_value()
             ));
     post_merge_command();
 }
@@ -511,7 +511,7 @@ ExndbamRepository::perform_uninstall(
 
     std::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
-    FSPath ver_dir(id->fs_location_key()->value().realpath());
+    FSPath ver_dir(id->fs_location_key()->parse_value().realpath());
     std::shared_ptr<FSPath> load_env(std::make_shared<FSPath>(ver_dir / "environment.bz2"));
 
     auto eclassdirs(std::make_shared<FSPathSequence>());
@@ -566,14 +566,14 @@ ExndbamRepository::perform_uninstall(
                     n::ndbam() = &_imp->ndbam,
                     n::output_manager() = output_manager,
                     n::package_id() = id,
-                    n::root() = installed_root_key()->value()
+                    n::root() = installed_root_key()->parse_value()
                     ));
 
             unmerger.unmerge();
 
             VDBPostMergeUnmergeCommand post_unmerge_command(
                     make_named_values<VDBPostMergeUnmergeCommandParams>(
-                        n::root() = installed_root_key()->value()
+                        n::root() = installed_root_key()->parse_value()
                     ));
             post_unmerge_command();
         }

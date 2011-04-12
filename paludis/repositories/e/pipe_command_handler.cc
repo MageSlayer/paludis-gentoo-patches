@@ -155,8 +155,7 @@ namespace
 
             if ((! seen_description) && (id->choices_key()) && (! desc_from.empty()))
             {
-                const std::shared_ptr<const ChoiceValue> choice(
-                        id->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix(desc_from)));
+                auto choice(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix(desc_from)));
                 if (choice && (! choice->description().empty()) && (! description_annotation.empty()))
                 {
                     if (! done_brackets)
@@ -312,9 +311,9 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 Filter root((filter::All()));
                 if (tokens[2] == "--slash")
-                    root = filter::InstalledAtRoot(environment->system_root_key()->value());
+                    root = filter::InstalledAtRoot(environment->system_root_key()->parse_value());
                 else if (tokens[2] == "--root")
-                    root = filter::InstalledAtRoot(environment->preferred_root_key()->value());
+                    root = filter::InstalledAtRoot(environment->preferred_root_key()->parse_value());
                 else
                     return "Ebad BEST_VERSION " + tokens[2] + " argument";
 
@@ -328,10 +327,10 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 {
                     Log::get_instance()->message("e.pipe_commands.best_version.is_virtual", ll_qa, lc_context) << "best-version of '" << spec <<
                         "' resolves to '" << **entries->last() << "', which is a virtual for '"
-                        << *(*entries->last())->virtual_for_key()->value() << "'. This will break with "
+                        << *(*entries->last())->virtual_for_key()->parse_value() << "'. This will break with "
                         "new style virtuals.";
                     std::shared_ptr<PackageIDSequence> new_entries(std::make_shared<PackageIDSequence>());
-                    new_entries->push_back((*entries->last())->virtual_for_key()->value());
+                    new_entries->push_back((*entries->last())->virtual_for_key()->parse_value());
                     entries = new_entries;
                 }
 
@@ -361,9 +360,9 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 Filter root((filter::All()));
                 if (tokens[2] == "--slash")
-                    root = filter::InstalledAtRoot(environment->system_root_key()->value());
+                    root = filter::InstalledAtRoot(environment->system_root_key()->parse_value());
                 else if (tokens[2] == "--root")
-                    root = filter::InstalledAtRoot(environment->preferred_root_key()->value());
+                    root = filter::InstalledAtRoot(environment->preferred_root_key()->parse_value());
                 else
                     return "Ebad HAS_VERSION " + tokens[2] + " argument";
 
@@ -395,7 +394,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                             eapi->supported()->package_dep_spec_parse_options(),
                             eapi->supported()->version_spec_options()));
                 std::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
-                            generator::Matches(spec, package_id, { }) | filter::InstalledAtRoot(environment->preferred_root_key()->value()))]);
+                            generator::Matches(spec, package_id, { }) | filter::InstalledAtRoot(environment->preferred_root_key()->parse_value()))]);
                 if (eapi->supported()->pipe_commands()->rewrite_virtuals() && (! entries->empty()))
                 {
                     std::shared_ptr<PackageIDSequence> new_entries(std::make_shared<PackageIDSequence>());
@@ -406,9 +405,9 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                         {
                             Log::get_instance()->message("e.pipe_commands.match.is_virtual", ll_qa, lc_context) << "match of '" << spec <<
                                 "' resolves to '" << **i << "', which is a virtual for '"
-                                << *(*i)->virtual_for_key()->value() << "'. This will break with "
+                                << *(*i)->virtual_for_key()->parse_value() << "'. This will break with "
                                 "new style virtuals.";
-                            new_entries->push_back((*i)->virtual_for_key()->value());
+                            new_entries->push_back((*i)->virtual_for_key()->parse_value());
                         }
                         else
                             new_entries->push_back(*i);
@@ -444,7 +443,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     return "Einstalled repository has no location key";
                 if (! visitor_cast<const MetadataValueKey<FSPath> >(**key))
                     return "Einstalled repository location key is not a MetadataValueKey<FSPath> ";
-                return "O0;" + stringify(visitor_cast<const MetadataValueKey<FSPath> >(**key)->value());
+                return "O0;" + stringify(visitor_cast<const MetadataValueKey<FSPath> >(**key)->parse_value());
             }
         }
         else if (tokens[0] == "OPTIONQ")
@@ -467,10 +466,11 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     return "EOPTIONQ ID " + stringify(*package_id) + " has no choices";
 
                 ChoiceNameWithPrefix name(tokens[2]);
-                std::shared_ptr<const ChoiceValue> value(package_id->choices_key()->value()->find_by_name_with_prefix(name));
+                auto choices(package_id->choices_key()->parse_value());
+                auto value(choices->find_by_name_with_prefix(name));
                 if (! value)
                 {
-                    if (package_id->choices_key()->value()->has_matching_contains_every_value_prefix(name))
+                    if (choices->has_matching_contains_every_value_prefix(name))
                         return "O1;";
 
                     return "EOPTIONQ ID " + stringify(*package_id) + " has no choice named '" + stringify(name) + "'";
@@ -512,9 +512,8 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 if (! mm)
                     throw InternalError(PALUDIS_HERE, "oops. key '" + var + "' isn't a DependencySpecTree key");
 
-                std::shared_ptr<const DependencySpecTree> before(mm->value());
-                std::shared_ptr<const DependencySpecTree> after(fix_locked_dependencies(
-                            environment, *eapi, package_id, before));
+                std::shared_ptr<const DependencySpecTree> before(mm->parse_value());
+                std::shared_ptr<const DependencySpecTree> after(fix_locked_dependencies(environment, *eapi, package_id, before));
                 UnformattedPrettyPrinter ff;
                 SpecTreePrettyPrinter p(ff, { });
                 after->top()->accept(p);
@@ -536,7 +535,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 MyOptionsRewriter p(package_id,
                         eapi->supported()->annotations()->general_description(),
                         std::string(1, eapi->supported()->choices_options()->use_expand_separator()));
-                mm->value()->top()->accept(p);
+                mm->parse_value()->top()->accept(p);
                 return "O0;" + p.str.str();
             }
 

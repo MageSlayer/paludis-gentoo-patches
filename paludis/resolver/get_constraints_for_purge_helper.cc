@@ -81,7 +81,7 @@ GetConstraintsForPurgeHelper::operator() (
     MutablePackageDepSpecData partial_spec({ });
     partial_spec.require_package(id->name());
     if (id->slot_key())
-        partial_spec.require_exact_slot(id->slot_key()->value(), false);
+        partial_spec.require_exact_slot(id->slot_key()->parse_value(), false);
     PackageDepSpec spec(partial_spec);
 
     const std::shared_ptr<WasUsedByReason> reason(std::make_shared<WasUsedByReason>(was_used_by_ids));

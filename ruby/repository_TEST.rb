@@ -195,7 +195,7 @@ module Paludis
         include RepositoryTestCase
 
         def contents
-            contents = installed_pid.contents_key.value
+            contents = installed_pid.contents_key.parse_value
         end
 
         def entries
@@ -214,20 +214,20 @@ module Paludis
         def test_first_entry
             assert_kind_of ContentsEntry, entries[0]
             assert_kind_of ContentsDirEntry, entries[0]
-            assert_equal '/test', entries[0].location_key.value
+            assert_equal '/test', entries[0].location_key.parse_value
         end
 
         def test_second_entry
             assert_kind_of ContentsEntry, entries[1]
             assert_kind_of ContentsFileEntry, entries[1]
-            assert_equal '/test/test_file', entries[1].location_key.value
+            assert_equal '/test/test_file', entries[1].location_key.parse_value
         end
 
         def test_third_entry
             assert_kind_of ContentsEntry, entries[2]
             assert_kind_of ContentsSymEntry, entries[2]
-            assert_equal '/test/test_file', entries[2].target_key.value
-            assert_equal '/test/test_link', entries[2].location_key.value
+            assert_equal '/test/test_file', entries[2].target_key.parse_value
+            assert_equal '/test/test_link', entries[2].location_key.parse_value
         end
     end
 
@@ -380,15 +380,15 @@ module Paludis
 
         def test_format_key
             assert_kind_of MetadataStringKey, repo.format_key
-            assert_equal 'e', repo.format_key.value
+            assert_equal 'e', repo.format_key.parse_value
             assert_kind_of MetadataStringKey, installed_repo.format_key
-            assert_equal 'vdb', installed_repo.format_key.value
+            assert_equal 'vdb', installed_repo.format_key.parse_value
         end
 
         def test_installed_root_key
             assert_nil repo.installed_root_key
             assert_kind_of MetadataFSPathKey, installed_repo.installed_root_key
-            assert_equal '/', installed_repo.installed_root_key.value
+            assert_equal '/', installed_repo.installed_root_key.parse_value
         end
 
         def test_each_metadata
@@ -398,17 +398,17 @@ module Paludis
         def test_subscript
             assert_respond_to repo, :[]
             assert_kind_of MetadataStringKey, repo['format']
-            assert_equal 'e', repo['format'].value
+            assert_equal 'e', repo['format'].parse_value
             assert_nil repo['monkey']
         end
 
         def test_sync
             assert_kind_of MetadataStringStringMapKey, repo['sync']
-            assert_kind_of Hash, repo['sync'].value
-            assert_equal 3, repo['sync'].value.size
-            assert_equal 'normalsync', repo['sync'].value['']
-            assert_equal 'foosync', repo['sync'].value['foo']
-            assert_equal 'barsync', repo['sync'].value['bar']
+            assert_kind_of Hash, repo['sync'].parse_value
+            assert_equal 3, repo['sync'].parse_value.size
+            assert_equal 'normalsync', repo['sync'].parse_value['']
+            assert_equal 'foosync', repo['sync'].parse_value['foo']
+            assert_equal 'barsync', repo['sync'].parse_value['bar']
         end
     end
 end

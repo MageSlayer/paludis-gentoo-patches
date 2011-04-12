@@ -28,6 +28,7 @@
 #include <paludis/repositories/e/make_use.hh>
 #include <paludis/repositories/e/can_skip_phase.hh>
 #include <paludis/repositories/e/ebuild.hh>
+#include <paludis/repositories/e/make_archive_strings.hh>
 
 #include <paludis/util/strip.hh>
 #include <paludis/util/make_named_values.hh>
@@ -63,7 +64,7 @@ paludis::erepository::do_fetch_action(
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env, id);
         if (id->restrict_key())
-            id->restrict_key()->value()->top()->accept(restricts);
+            id->restrict_key()->parse_value()->top()->accept(restricts);
 
         for (DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIterator i(restricts.begin()), i_end(restricts.end()) ;
                 i != i_end ; ++i)
@@ -82,47 +83,7 @@ paludis::erepository::do_fetch_action(
                 id->eapi()->supported()->userpriv_cannot_use_root()));
 
     std::string archives, all_archives;
-    {
-        std::set<std::string> already_in_archives;
-
-        /* make A */
-        AFinder f(env, id);
-        if (id->fetches_key())
-            id->fetches_key()->value()->top()->accept(f);
-
-        for (AFinder::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
-        {
-            const FetchableURIDepSpec * const spec(static_cast<const FetchableURIDepSpec *>(i->first));
-
-            if (already_in_archives.end() == already_in_archives.find(spec->filename()))
-            {
-                archives.append(spec->filename());
-                already_in_archives.insert(spec->filename());
-            }
-            archives.append(" ");
-        }
-
-        /* make AA */
-        if (! id->eapi()->supported()->ebuild_environment_variables()->env_aa().empty())
-        {
-            AAVisitor g;
-            if (id->fetches_key())
-                id->fetches_key()->value()->top()->accept(g);
-            std::set<std::string> already_in_all_archives;
-
-            for (AAVisitor::ConstIterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
-            {
-                if (already_in_all_archives.end() == already_in_all_archives.find(*gg))
-                {
-                    all_archives.append(*gg);
-                    already_in_all_archives.insert(*gg);
-                }
-                all_archives.append(" ");
-            }
-        }
-        else
-            all_archives = "AA-not-set-for-this-EAPI";
-    }
+    std::tie(archives, all_archives) = make_archives_strings(env, id);
 
     /* Strip trailing space. Some ebuilds rely upon this. From kde-meta.eclass:
      *     [[ -n ${A/${TARBALL}/} ]] && unpack ${A/${TARBALL}/}
@@ -143,6 +104,8 @@ paludis::erepository::do_fetch_action(
 
     if (id->fetches_key())
     {
+        auto fetches(id->fetches_key()->parse_value());
+
         /* always use mirror://gentoo/, where gentoo is the name of our first master repository,
          * or our name if there's no master. */
         std::string mirrors_name(
@@ -157,10 +120,10 @@ paludis::erepository::do_fetch_action(
                     fetch_userpriv_ok, mirrors_name,
                     id->fetches_key()->initial_label(), fetch_action.options.safe_resume(),
                     output_manager, std::bind(&ERepository::get_mirrors, repo, std::placeholders::_1));
-            id->fetches_key()->value()->top()->accept(f);
+            fetches->top()->accept(f);
         }
 
-        id->fetches_key()->value()->top()->accept(c);
+        fetches->top()->accept(c);
     }
 
     if ( (fetch_action.options.fetch_parts()[fp_extras]) && ((c.need_nofetch()) ||
@@ -218,7 +181,7 @@ paludis::erepository::do_fetch_action(
                         n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
                         n::distdir() = repo->params().distdir(),
                         n::ebuild_dir() = repo->layout()->package_directory(id->name()),
-                        n::ebuild_file() = id->fs_location_key()->value(),
+                        n::ebuild_file() = id->fs_location_key()->parse_value(),
                         n::eclassdirs() = repo->params().eclassdirs(),
                         n::environment() = env,
                         n::exlibsdirs() = exlibsdirs,
@@ -242,7 +205,7 @@ paludis::erepository::do_fetch_action(
                             n::loadsaveenv_dir() = package_builddir / "temp",
                             n::profiles() = repo->params().profiles(),
                             n::profiles_with_parents() = repo->profile()->profiles_with_parents(),
-                            n::slot() = id->slot_key() ? stringify(id->slot_key()->value()) : "",
+                            n::slot() = id->slot_key() ? stringify(id->slot_key()->parse_value()) : "",
                             n::use() = use,
                             n::use_expand() = join(repo->profile()->use_expand()->begin(), repo->profile()->use_expand()->end(), " "),
                             n::use_expand_hidden() = join(repo->profile()->use_expand_hidden()->begin(), repo->profile()->use_expand_hidden()->end(), " ")
@@ -265,7 +228,7 @@ paludis::erepository::do_fetch_action(
                         n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
                         n::distdir() = repo->params().distdir(),
                         n::ebuild_dir() = repo->layout()->package_directory(id->name()),
-                        n::ebuild_file() = id->fs_location_key()->value(),
+                        n::ebuild_file() = id->fs_location_key()->parse_value(),
                         n::eclassdirs() = repo->params().eclassdirs(),
                         n::environment() = env,
                         n::exlibsdirs() = exlibsdirs,

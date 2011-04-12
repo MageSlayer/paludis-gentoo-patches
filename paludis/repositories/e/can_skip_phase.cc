@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -94,14 +94,15 @@ paludis::erepository::can_skip_phase(
             if (id->fetches_key())
             {
                 FindAnyFetchesFinder f(env, id);
-                id->fetches_key()->value()->top()->accept(f);
+                id->fetches_key()->parse_value()->top()->accept(f);
                 if (! f.result)
                     return false;
             }
         }
         else
         {
-            if (id->defined_phases_key()->value()->end() != id->defined_phases_key()->value()->find(*i))
+            auto d(id->defined_phases_key()->parse_value());
+            if (d->end() != d->find(*i))
                 return false;
         }
     }

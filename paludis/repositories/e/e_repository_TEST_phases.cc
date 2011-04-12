@@ -168,7 +168,7 @@ TEST_P(PhasesTest, Works)
                     PackageDepSpec(parse_user_package_dep_spec("cat/" + info.test,
                             &env, { })), make_null_shared_ptr(), { }))]->last());
     ASSERT_TRUE(bool(id));
-    EXPECT_EQ(info.expect_expensive_test, !! id->choices_key()->value()->find_by_name_with_prefix(
+    EXPECT_EQ(info.expect_expensive_test, !! id->choices_key()->parse_value()->find_by_name_with_prefix(
                 ChoiceNameWithPrefix("build_options:expensive_tests")));
 
     if (info.expect_pass)

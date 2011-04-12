@@ -68,22 +68,22 @@ namespace
 
         void visit(const ContentsFileEntry & f)
         {
-            s << "file<" << f.location_key()->value() << ">";
+            s << "file<" << f.location_key()->parse_value() << ">";
         }
 
         void visit(const ContentsDirEntry & f)
         {
-            s << "dir<" << f.location_key()->value() << ">";
+            s << "dir<" << f.location_key()->parse_value() << ">";
         }
 
         void visit(const ContentsSymEntry & f)
         {
-            s << "sym<" << f.location_key()->value() << "=" << f.target_key()->value() << ">";
+            s << "sym<" << f.location_key()->parse_value() << "=" << f.target_key()->parse_value() << ">";
 
         }
         void visit(const ContentsOtherEntry & f)
         {
-            s << "other<" << f.location_key()->value() << ">";
+            s << "other<" << f.location_key()->parse_value() << ">";
         }
     };
 
@@ -133,16 +133,16 @@ TEST(InstalledRepository, Metadata)
                         &env, { }), make_null_shared_ptr(), { }))]->begin());
 
     EXPECT_EQ(id1->version(), VersionSpec("1", { }));
-    EXPECT_EQ(SlotName("0"), id1->slot_key()->value());
+    EXPECT_EQ(SlotName("0"), id1->slot_key()->parse_value());
     EXPECT_EQ(QualifiedPackageName("cat-one/foo"), id1->name());
     EXPECT_EQ(RepositoryName("installed-unpackaged"), id1->repository_name());
     EXPECT_TRUE(bool(id1->fs_location_key()));
-    EXPECT_EQ(id1->fs_location_key()->value(), FSPath::cwd() / "installed_repository_TEST_dir/repo1/data/giant-space-weasel/1:0:foo/");
+    EXPECT_EQ(id1->fs_location_key()->parse_value(), FSPath::cwd() / "installed_repository_TEST_dir/repo1/data/giant-space-weasel/1:0:foo/");
 
     EXPECT_TRUE(bool(id1->contents_key()));
     ContentsDumper d1;
-    std::for_each(indirect_iterator(id1->contents_key()->value()->begin()),
-            indirect_iterator(id1->contents_key()->value()->end()), accept_visitor(d1));
+    auto contents1(id1->contents_key()->parse_value());
+    std::for_each(indirect_iterator(contents1->begin()), indirect_iterator(contents1->end()), accept_visitor(d1));
     EXPECT_EQ("dir</fnord>", d1.s.str());
 
     const std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(
@@ -150,16 +150,16 @@ TEST(InstalledRepository, Metadata)
                         &env, { }), make_null_shared_ptr(), { }))]->begin());
 
     EXPECT_EQ(id2->version(), VersionSpec("2", { }));
-    EXPECT_EQ(SlotName("1"), id2->slot_key()->value());
+    EXPECT_EQ(SlotName("1"), id2->slot_key()->parse_value());
     EXPECT_EQ(QualifiedPackageName("cat-one/foo"), id2->name());
     EXPECT_EQ(RepositoryName("installed-unpackaged"), id2->repository_name());
     EXPECT_TRUE(bool(id2->fs_location_key()));
-    EXPECT_EQ(id2->fs_location_key()->value(), FSPath::cwd() / "installed_repository_TEST_dir/repo1/data/giant-space-weasel/2:1:bar/");
+    EXPECT_EQ(id2->fs_location_key()->parse_value(), FSPath::cwd() / "installed_repository_TEST_dir/repo1/data/giant-space-weasel/2:1:bar/");
 
     EXPECT_TRUE(bool(id2->contents_key()));
     ContentsDumper d2;
-    std::for_each(indirect_iterator(id2->contents_key()->value()->begin()),
-            indirect_iterator(id2->contents_key()->value()->end()), accept_visitor(d2));
+    auto contents2(id2->contents_key()->parse_value());
+    std::for_each(indirect_iterator(contents2->begin()), indirect_iterator(contents2->end()), accept_visitor(d2));
     EXPECT_EQ("dir</stilton>file</stilton/cheese>file</stilton/is delicious>", d2.s.str());
 }
 

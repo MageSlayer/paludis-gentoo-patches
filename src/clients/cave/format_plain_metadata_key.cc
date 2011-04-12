@@ -42,7 +42,7 @@ namespace
 
         void visit(const MetadataTimeKey & k)
         {
-            s << k.value().seconds();
+            s << k.parse_value().seconds();
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)
@@ -57,32 +57,32 @@ namespace
 
         void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
-            s << *k.value();
+            s << *k.parse_value();
         }
 
         void visit(const MetadataValueKey<FSPath> & k)
         {
-            s << k.value();
+            s << k.parse_value();
         }
 
         void visit(const MetadataValueKey<bool> & k)
         {
-            s << (k.value() ? "true" : "false");
+            s << (k.parse_value() ? "true" : "false");
         }
 
         void visit(const MetadataValueKey<long> & k)
         {
-            s << k.value();
+            s << k.parse_value();
         }
 
         void visit(const MetadataValueKey<std::string> & k)
         {
-            s << k.value();
+            s << k.parse_value();
         }
 
         void visit(const MetadataValueKey<SlotName> & k)
         {
-            s << k.value();
+            s << k.parse_value();
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)

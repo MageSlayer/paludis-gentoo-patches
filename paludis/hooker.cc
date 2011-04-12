@@ -172,7 +172,7 @@ BashHookFile::run(
 
     Process process(ProcessCommand({ "bash", stringify(file_name()) }));
     process
-        .setenv("ROOT", stringify(_env->preferred_root_key()->value()))
+        .setenv("ROOT", stringify(_env->preferred_root_key()->parse_value()))
         .setenv("HOOK", hook.name())
         .setenv("HOOK_FILE", stringify(file_name()))
         .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
@@ -233,7 +233,7 @@ FancyHookFile::run(const Hook & hook,
                 "/hooker.bash '" + stringify(file_name()) + "' 'hook_run_" + stringify(hook.name()) + "'" }));
 
     process
-        .setenv("ROOT", stringify(_env->preferred_root_key()->value()))
+        .setenv("ROOT", stringify(_env->preferred_root_key()->parse_value()))
         .setenv("HOOK", hook.name())
         .setenv("HOOK_FILE", stringify(file_name()))
         .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
@@ -294,7 +294,7 @@ FancyHookFile::auto_hook_names() const
             "/hooker.bash '" + stringify(file_name()) + "' 'hook_auto_names'" }));
 
     process
-        .setenv("ROOT", stringify(_env->preferred_root_key()->value()))
+        .setenv("ROOT", stringify(_env->preferred_root_key()->parse_value()))
         .setenv("HOOK_FILE", stringify(file_name()))
         .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
         .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
@@ -351,7 +351,7 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
             stringify(hook.name()) + "'" }));
 
     process
-        .setenv("ROOT", stringify(_env->preferred_root_key()->value()))
+        .setenv("ROOT", stringify(_env->preferred_root_key()->parse_value()))
         .setenv("HOOK", hook.name())
         .setenv("HOOK_FILE", stringify(file_name()))
         .setenv("HOOK_LOG_LEVEL", stringify(Log::get_instance()->log_level()))

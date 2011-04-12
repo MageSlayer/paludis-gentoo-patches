@@ -85,7 +85,7 @@ TEST(EbuildFlatMetadataCache, FlatList)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("the-description-flat_list", id->short_description_key()->value());
+    EXPECT_EQ("the-description-flat_list", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, FlatListStale)
@@ -107,7 +107,7 @@ TEST(EbuildFlatMetadataCache, FlatListStale)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_list-stale", id1->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_list-stale", id1->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, GuessedEAPI)
@@ -130,7 +130,7 @@ TEST(EbuildFlatMetadataCache, GuessedEAPI)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_list-guessed-eapi", id1->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_list-guessed-eapi", id1->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, EclassCached)
@@ -152,10 +152,10 @@ TEST(EbuildFlatMetadataCache, EclassCached)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("the-description-flat_list-eclass", id->short_description_key()->value());
-    ASSERT_EQ("foo", join(
-        visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
-        visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "));
+    EXPECT_EQ("the-description-flat_list-eclass", id->short_description_key()->parse_value());
+
+    auto v(visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->parse_value());
+    ASSERT_EQ("foo", join(v->begin(), v->end(), " "));
 }
 
 TEST(EbuildFlatMetadataCache, EclassStale)
@@ -177,7 +177,7 @@ TEST(EbuildFlatMetadataCache, EclassStale)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_list-eclass-stale", id1->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_list-eclass-stale", id1->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, EclassWrong)
@@ -199,7 +199,7 @@ TEST(EbuildFlatMetadataCache, EclassWrong)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_list-eclass-wrong", id1->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_list-eclass-wrong", id1->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, EclassGone)
@@ -221,7 +221,7 @@ TEST(EbuildFlatMetadataCache, EclassGone)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_list-eclass-gone", id1->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_list-eclass-gone", id1->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, FlatListDetection)
@@ -243,7 +243,7 @@ TEST(EbuildFlatMetadataCache, FlatListDetection)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("the-description-flat_list-detection", id->short_description_key()->value());
+    EXPECT_EQ("the-description-flat_list-detection", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, FlatHash)
@@ -265,7 +265,7 @@ TEST(EbuildFlatMetadataCache, FlatHash)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("the-description-flat_hash", id->short_description_key()->value());
+    EXPECT_EQ("the-description-flat_hash", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, FlatHashGuessedEAPI)
@@ -288,7 +288,7 @@ TEST(EbuildFlatMetadataCache, FlatHashGuessedEAPI)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-guessed-eapi", id1->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-guessed-eapi", id1->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, FlatHashGuessedExtension)
@@ -310,7 +310,7 @@ TEST(EbuildFlatMetadataCache, FlatHashGuessedExtension)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-guessed-eapi-extension", id1->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-guessed-eapi-extension", id1->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, FlatHashNoGuessedEAPI)
@@ -332,7 +332,7 @@ TEST(EbuildFlatMetadataCache, FlatHashNoGuessedEAPI)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("the-description-flat_hash-no-guessed-eapi", id->short_description_key()->value());
+    EXPECT_EQ("the-description-flat_hash-no-guessed-eapi", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, EmptyValue)
@@ -354,8 +354,8 @@ TEST(EbuildFlatMetadataCache, EmptyValue)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("", id->short_description_key()->value());
-    EXPECT_EQ("the-slot", stringify(id->slot_key()->value()));
+    EXPECT_EQ("", id->short_description_key()->parse_value());
+    EXPECT_EQ("the-slot", stringify(id->slot_key()->parse_value()));
 }
 
 TEST(EbuildFlatMetadataCache, HashStale)
@@ -377,7 +377,7 @@ TEST(EbuildFlatMetadataCache, HashStale)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-stale", id1->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-stale", id1->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashNoMTime)
@@ -399,7 +399,7 @@ TEST(EbuildFlatMetadataCache, HashNoMTime)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
-    EXPECT_EQ("the-description-flat_hash-no-mtime", id1->short_description_key()->value());
+    EXPECT_EQ("the-description-flat_hash-no-mtime", id1->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashNoMTimeStale)
@@ -421,7 +421,7 @@ TEST(EbuildFlatMetadataCache, HashNoMTimeStale)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-no-mtime-stale", id1->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-no-mtime-stale", id1->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashBadMtime)
@@ -443,7 +443,7 @@ TEST(EbuildFlatMetadataCache, HashBadMtime)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-bad-mtime", id1->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-bad-mtime", id1->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashNoEAPI)
@@ -465,7 +465,7 @@ TEST(EbuildFlatMetadataCache, HashNoEAPI)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-no-eapi", id1->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-no-eapi", id1->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashDuplicateKey)
@@ -487,7 +487,7 @@ TEST(EbuildFlatMetadataCache, HashDuplicateKey)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-duplicate-key", id1->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-duplicate-key", id1->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashEclass)
@@ -509,10 +509,9 @@ TEST(EbuildFlatMetadataCache, HashEclass)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("the-description-flat_hash-eclass", id->short_description_key()->value());
-    ASSERT_EQ("foo", join(
-        visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
-        visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "));
+    EXPECT_EQ("the-description-flat_hash-eclass", id->short_description_key()->parse_value());
+    auto v(visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->parse_value());
+    ASSERT_EQ("foo", join(v->begin(), v->end(), " "));
 }
 
 TEST(EbuildFlatMetadataCache, HashEclassStale)
@@ -534,7 +533,7 @@ TEST(EbuildFlatMetadataCache, HashEclassStale)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-eclass-stale", id->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-eclass-stale", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashEclassWrong)
@@ -556,7 +555,7 @@ TEST(EbuildFlatMetadataCache, HashEclassWrong)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-eclass-wrong", id->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-eclass-wrong", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashEclassGone)
@@ -577,7 +576,7 @@ TEST(EbuildFlatMetadataCache, HashEclassGone)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-eclass-gone", id->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-eclass-gone", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashFullEclass)
@@ -599,10 +598,9 @@ TEST(EbuildFlatMetadataCache, HashFullEclass)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("the-description-flat_hash-full-eclass", id->short_description_key()->value());
-    ASSERT_EQ("foo", join(
-        visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
-        visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "));
+    EXPECT_EQ("the-description-flat_hash-full-eclass", id->short_description_key()->parse_value());
+    auto v(visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->parse_value());
+    ASSERT_EQ("foo", join(v->begin(), v->end(), " "));
 }
 
 TEST(EbuildFlatMetadataCache, HashFullEclassNonStandard)
@@ -624,10 +622,9 @@ TEST(EbuildFlatMetadataCache, HashFullEclassNonStandard)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("the-description-flat_hash-full-eclass-nonstandard", id->short_description_key()->value());
-    ASSERT_EQ("bar foo", join(
-        visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
-        visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "));
+    EXPECT_EQ("the-description-flat_hash-full-eclass-nonstandard", id->short_description_key()->parse_value());
+    auto v(visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->parse_value());
+    ASSERT_EQ("bar foo", join(v->begin(), v->end(), " "));
 }
 
 TEST(EbuildFlatMetadataCache, HashFullEclassStale)
@@ -649,7 +646,7 @@ TEST(EbuildFlatMetadataCache, HashFullEclassStale)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-full-eclass-stale", id->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-full-eclass-stale", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashFullEclassWrong)
@@ -671,7 +668,7 @@ TEST(EbuildFlatMetadataCache, HashFullEclassWrong)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-full-eclass-wrong", id->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-full-eclass-wrong", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashFullEclassGone)
@@ -693,7 +690,7 @@ TEST(EbuildFlatMetadataCache, HashFullEclassGone)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-full-eclass-gone", id->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-full-eclass-gone", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashEclassTruncated)
@@ -715,14 +712,14 @@ TEST(EbuildFlatMetadataCache, HashEclassTruncated)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-eclasses-truncated", id->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-eclasses-truncated", id->short_description_key()->parse_value());
 
     std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-truncated-2",
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id2->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-eclasses-truncated-2", id2->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-eclasses-truncated-2", id2->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashEclassBadMtime)
@@ -744,7 +741,7 @@ TEST(EbuildFlatMetadataCache, HashEclassBadMtime)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-eclasses-bad-mtime", id->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-eclasses-bad-mtime", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashEclassSpaces)
@@ -766,7 +763,7 @@ TEST(EbuildFlatMetadataCache, HashEclassSpaces)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-eclasses-spaces", id->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-eclasses-spaces", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashExlib)
@@ -789,10 +786,9 @@ TEST(EbuildFlatMetadataCache, HashExlib)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("the-description-flat_hash-exlib", id->short_description_key()->value());
-    ASSERT_EQ("foo", join(
-        visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
-        visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "));
+    EXPECT_EQ("the-description-flat_hash-exlib", id->short_description_key()->parse_value());
+    auto v(visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->parse_value());
+    ASSERT_EQ("foo", join(v->begin(), v->end(), " "));
 }
 
 TEST(EbuildFlatMetadataCache, HashExlibPerCategory)
@@ -815,10 +811,9 @@ TEST(EbuildFlatMetadataCache, HashExlibPerCategory)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("the-description-flat_hash-exlib-percat", id->short_description_key()->value());
-    ASSERT_EQ("bar foo", join(
-        visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->begin(),
-        visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->value()->end(), " "));
+    EXPECT_EQ("the-description-flat_hash-exlib-percat", id->short_description_key()->parse_value());
+    auto v(visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**id->find_metadata("INHERITED"))->parse_value());
+    ASSERT_EQ("bar foo", join(v->begin(), v->end(), " "));
 }
 
 TEST(EbuildFlatMetadataCache, HashExlibStale)
@@ -841,7 +836,7 @@ TEST(EbuildFlatMetadataCache, HashExlibStale)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-exlib-stale", id->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-exlib-stale", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashExlibWrong)
@@ -864,7 +859,7 @@ TEST(EbuildFlatMetadataCache, HashExlibWrong)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-exlib-wrong", id->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-exlib-wrong", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashExlibGone)
@@ -887,7 +882,7 @@ TEST(EbuildFlatMetadataCache, HashExlibGone)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-exlib-gone", id->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-exlib-gone", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashExlibTruncated)
@@ -910,14 +905,14 @@ TEST(EbuildFlatMetadataCache, HashExlibTruncated)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-exlibs-truncated", id->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-exlibs-truncated", id->short_description_key()->parse_value());
 
     std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-truncated-2",
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id2->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-exlibs-truncated-2", id2->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-exlibs-truncated-2", id2->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashExlibBadMtime)
@@ -940,7 +935,7 @@ TEST(EbuildFlatMetadataCache, HashExlibBadMtime)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-exlibs-bad-mtime", id->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-exlibs-bad-mtime", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashExlibSpaces)
@@ -963,7 +958,7 @@ TEST(EbuildFlatMetadataCache, HashExlibSpaces)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-exlibs-spaces", id->short_description_key()->value());
+    EXPECT_EQ("The Generated Description flat_hash-exlibs-spaces", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, Write)

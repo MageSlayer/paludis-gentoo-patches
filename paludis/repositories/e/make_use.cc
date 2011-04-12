@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,8 +45,8 @@ paludis::erepository::make_use(const Environment * const,
 
     if (id.choices_key())
     {
-        for (Choices::ConstIterator k(id.choices_key()->value()->begin()),
-                k_end(id.choices_key()->value()->end()) ;
+        auto choices(id.choices_key()->parse_value());
+        for (Choices::ConstIterator k(choices->begin()), k_end(choices->end()) ;
                 k != k_end ; ++k)
         {
             if ((*k)->prefix() == canonical_build_options_prefix())
@@ -82,15 +82,17 @@ paludis::erepository::make_expand(const Environment * const,
     if (! e.choices_key())
         return expand_vars;
 
+    auto choices(e.choices_key()->parse_value());
+
     for (Set<std::string>::ConstIterator x(profile->use_expand()->begin()), x_end(profile->use_expand()->end()) ;
             x != x_end ; ++x)
     {
         expand_vars->insert(stringify(*x), "");
 
-        Choices::ConstIterator k(std::find_if(e.choices_key()->value()->begin(), e.choices_key()->value()->end(),
+        Choices::ConstIterator k(std::find_if(choices->begin(), choices->end(),
                     std::bind(std::equal_to<std::string>(), *x,
                         std::bind(std::mem_fn(&Choice::raw_name), std::placeholders::_1))));
-        if (k == e.choices_key()->value()->end())
+        if (k == choices->end())
             continue;
 
         for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
@@ -113,3 +115,4 @@ paludis::erepository::make_expand(const Environment * const,
 
     return expand_vars;
 }
+

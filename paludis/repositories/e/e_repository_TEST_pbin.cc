@@ -164,7 +164,7 @@ TEST_P(ERepositoryInstallEAPIPBinTest, Works)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/simple-1",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ(base_eapi, visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ(base_eapi, visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(bin_action);
     }
 
@@ -184,7 +184,7 @@ TEST_P(ERepositoryInstallEAPIPBinTest, Works)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/simple-1::binrepo" + base_eapi,
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("pbin-1+" + base_eapi, visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("pbin-1+" + base_eapi, visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(install_action);
     }
 
@@ -264,7 +264,7 @@ TEST(Symlinks, Works)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/symlinks-1",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("exheres-0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("exheres-0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(bin_action);
     }
 
@@ -286,7 +286,7 @@ TEST(Symlinks, Works)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/symlinks-1::binrepoexheres-0",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("pbin-1+exheres-0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("pbin-1+exheres-0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(install_action);
     }
 

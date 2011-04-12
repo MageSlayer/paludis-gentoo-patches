@@ -59,7 +59,7 @@ module Paludis
 
         def test_name
             ce = get_ce
-            assert_equal 'test', ce.location_key.value
+            assert_equal 'test', ce.location_key.parse_value
         end
     end
 
@@ -93,7 +93,7 @@ module Paludis
 
         def test_name
             ce = get_ce
-            assert_equal 'test', ce.location_key.value
+            assert_equal 'test', ce.location_key.parse_value
         end
     end
 
@@ -127,7 +127,7 @@ module Paludis
 
         def test_name
             ce = get_ce
-            assert_equal 'test', ce.location_key.value
+            assert_equal 'test', ce.location_key.parse_value
         end
     end
 
@@ -170,12 +170,12 @@ module Paludis
 
         def test_name
             ce = get_ce
-            assert_equal 'test_name', ce.location_key.value
+            assert_equal 'test_name', ce.location_key.parse_value
         end
 
         def test_target
             ce = get_ce
-            assert_equal 'test_target', ce.target_key.value
+            assert_equal 'test_target', ce.target_key.parse_value
         end
     end
     class TestCase_Contents < Test::Unit::TestCase
@@ -216,13 +216,13 @@ module Paludis
             c.add(cfe)
 
             assert_equal 1, c.entries.length
-            assert_equal cfe.location_key.value, c.entries.first.location_key.value
+            assert_equal cfe.location_key.parse_value, c.entries.first.location_key.parse_value
 
             c.add(cse)
 
             assert_equal 2, c.entries.length
-            assert_equal cfe.location_key.value, c.entries.first.location_key.value
-            assert_equal cse.location_key.value, c.entries.last.location_key.value
+            assert_equal cfe.location_key.parse_value, c.entries.first.location_key.parse_value
+            assert_equal cse.location_key.parse_value, c.entries.last.location_key.parse_value
 
         end
     end

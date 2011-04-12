@@ -97,30 +97,30 @@ namespace
         void visit(const ContentsFileEntry & e)
         {
             _str += "file\n";
-            _str += stringify(e.location_key()->value());
+            _str += stringify(e.location_key()->parse_value());
             _str += '\n';
         }
 
         void visit(const ContentsDirEntry & e)
         {
             _str += "directory\n";
-            _str += stringify(e.location_key()->value());
+            _str += stringify(e.location_key()->parse_value());
             _str += '\n';
         }
 
         void visit(const ContentsSymEntry & e)
         {
             _str += "symlink\n";
-            _str += stringify(e.location_key()->value());
+            _str += stringify(e.location_key()->parse_value());
             _str += '\n';
-            _str += stringify(e.target_key()->value());
+            _str += stringify(e.target_key()->parse_value());
             _str += '\n';
         }
 
         void visit(const ContentsOtherEntry & e)
         {
             _str += "other\n";
-            _str += stringify(e.location_key()->value());
+            _str += stringify(e.location_key()->parse_value());
             _str += '\n';
         }
     };
@@ -197,15 +197,15 @@ TEST(VDBRepository, QueryUse)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(e1->choices_key()));
-    ASSERT_TRUE(bool(e1->choices_key()->value()));
-    ASSERT_TRUE(bool(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag1"))));
-    EXPECT_TRUE(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag1"))->enabled());
-    EXPECT_TRUE(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag2"))->enabled());
-    EXPECT_TRUE(! e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag3"))->enabled());
-    EXPECT_TRUE(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("test"))->enabled());
-    EXPECT_TRUE(e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("kernel_linux"))->enabled());
-    EXPECT_TRUE(! e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("test2")));
-    EXPECT_TRUE(! e1->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix("kernel_freebsd")));
+    ASSERT_TRUE(bool(e1->choices_key()->parse_value()));
+    ASSERT_TRUE(bool(e1->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag1"))));
+    EXPECT_TRUE(e1->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag1"))->enabled());
+    EXPECT_TRUE(e1->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag2"))->enabled());
+    EXPECT_TRUE(! e1->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("flag3"))->enabled());
+    EXPECT_TRUE(e1->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("test"))->enabled());
+    EXPECT_TRUE(e1->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("kernel_linux"))->enabled());
+    EXPECT_TRUE(! e1->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("test2")));
+    EXPECT_TRUE(! e1->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("kernel_freebsd")));
 }
 
 TEST(VDBRepository, Contents)
@@ -226,8 +226,9 @@ TEST(VDBRepository, Contents)
                     PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
     ContentsGatherer gatherer;
-    std::for_each(indirect_iterator(e1->contents_key()->value()->begin()),
-                  indirect_iterator(e1->contents_key()->value()->end()),
+    auto contents(e1->contents_key()->parse_value());
+    std::for_each(indirect_iterator(contents->begin()),
+                  indirect_iterator(contents->end()),
                   accept_visitor(gatherer));
     EXPECT_EQ(
             "directory\n/directory\n"

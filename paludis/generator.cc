@@ -184,9 +184,12 @@ namespace
                     std::shared_ptr<const PackageIDSequence> id(env->fetch_repository(*r)->package_ids(*q, x));
                     for (PackageIDSequence::ConstIterator i(id->begin()), i_end(id->end()) ;
                             i != i_end ; ++i)
-                        if ((*i)->from_repositories_key() && ((*i)->from_repositories_key()->value()->end() !=
-                                    (*i)->from_repositories_key()->value()->find(stringify(name))))
-                            result->insert(*i);
+                        if ((*i)->from_repositories_key())
+                        {
+                            auto v((*i)->from_repositories_key()->parse_value());
+                            if (v->end() != v->find(stringify(name)))
+                                result->insert(*i);
+                        }
                 }
             }
 
@@ -333,7 +336,7 @@ namespace
                         std::shared_ptr<const Repository> repo(env->fetch_repository(spec.in_repository_requirement()->name()));
                         if (! repo->installed_root_key())
                             return result;
-                        if (repo->installed_root_key()->value() != spec.installed_at_path_requirement()->path())
+                        if (repo->installed_root_key()->parse_value() != spec.installed_at_path_requirement()->path())
                             return result;
                     }
 
@@ -350,7 +353,7 @@ namespace
                         if (! (*i)->installed_root_key())
                             continue;
 
-                        if ((*i)->installed_root_key()->value() != spec.installed_at_path_requirement()->path())
+                        if ((*i)->installed_root_key()->parse_value() != spec.installed_at_path_requirement()->path())
                             continue;
 
                         result->insert((*i)->name());

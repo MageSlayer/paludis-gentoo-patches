@@ -355,7 +355,7 @@ bool
 InstalledVirtualsRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
     auto repo(_imp->env->fetch_repository(id->repository_name()));
-    std::string f(repo->format_key() ? repo->format_key()->value() : "");
+    std::string f(repo->format_key() ? repo->format_key()->parse_value() : "");
     return f == "virtuals";
 
 }

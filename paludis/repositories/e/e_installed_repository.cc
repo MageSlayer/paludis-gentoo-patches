@@ -143,14 +143,14 @@ bool
 EInstalledRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
     auto repo(_imp->params.environment()->fetch_repository(id->repository_name()));
-    std::string f(repo->format_key() ? repo->format_key()->value() : "");
+    std::string f(repo->format_key() ? repo->format_key()->parse_value() : "");
     return f == "e" || f == "ebuild" || f == "exheres" || f == "portage";
 }
 
 bool
 EInstalledRepository::is_default_destination() const
 {
-    return _imp->params.environment()->preferred_root_key()->value() == installed_root_key()->value();
+    return _imp->params.environment()->preferred_root_key()->parse_value() == installed_root_key()->parse_value();
 }
 
 bool
@@ -193,7 +193,7 @@ EInstalledRepository::get_environment_variable(
     Context context("When fetching environment variable '" + var + "' for '" +
             stringify(*id) + "':");
 
-    FSPath ver_dir(id->fs_location_key()->value());
+    FSPath ver_dir(id->fs_location_key()->parse_value());
 
     if (! ver_dir.stat().is_directory_or_symlink_to_directory())
         throw ActionFailedError("Could not find Exndbam entry for '" + stringify(*id) + "'");
@@ -235,7 +235,7 @@ EInstalledRepository::perform_config(
 
     std::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
-    FSPath ver_dir(id->fs_location_key()->value());
+    FSPath ver_dir(id->fs_location_key()->parse_value());
 
     std::shared_ptr<FSPathSequence> eclassdirs(std::make_shared<FSPathSequence>());
     eclassdirs->push_back(ver_dir);
@@ -290,7 +290,7 @@ EInstalledRepository::perform_info(
 
     std::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
 
-    FSPath ver_dir(id->fs_location_key()->value());
+    FSPath ver_dir(id->fs_location_key()->parse_value());
 
     auto eclassdirs(std::make_shared<FSPathSequence>());
     eclassdirs->push_back(ver_dir);
@@ -309,8 +309,8 @@ EInstalledRepository::perform_info(
         std::shared_ptr<const Set<std::string> > i;
         if (id->from_repositories_key())
         {
-            for (Set<std::string>::ConstIterator o(id->from_repositories_key()->value()->begin()),
-                    o_end(id->from_repositories_key()->value()->end()) ;
+            auto fr(id->from_repositories_key()->parse_value());
+            for (Set<std::string>::ConstIterator o(fr->begin()), o_end(fr->end()) ;
                     o != o_end ; ++o)
             {
                 RepositoryName rn(*o);
@@ -325,7 +325,7 @@ EInstalledRepository::perform_info(
                                 visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**m));
                         if (mm)
                         {
-                            i = mm->value();
+                            i = mm->parse_value();
                             break;
                         }
                     }
@@ -346,7 +346,7 @@ EInstalledRepository::perform_info(
                             visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**m));
                     if (mm)
                     {
-                        i = mm->value();
+                        i = mm->parse_value();
                         break;
                     }
                 }

@@ -102,7 +102,7 @@ PrintRepositoriesCommand::run(
             if (r->format_key())
             {
                 if (cmdline.a_repository_format.end_args() == std::find(cmdline.a_repository_format.begin_args(), cmdline.a_repository_format.end_args(),
-                        r->format_key()->value()))
+                        r->format_key()->parse_value()))
                     continue;
 
                 repository_names.insert(r->name());

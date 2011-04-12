@@ -134,13 +134,13 @@ ids.each do | id |
     [ :build_dependencies_key, :run_dependencies_key, :post_dependencies_key,
             :suggested_dependencies_key ].each do | key |
         if id.send(key)
-            collect_dependencies(env, id, id.send(key).value, results)
+            collect_dependencies(env, id, id.send(key).parse_value, results)
         end
     end
 
     # And the same for '.zip' file extensions
     if id.fetches_key
-        collect_extensions(env, id, id.fetches_key.value, results)
+        collect_extensions(env, id, id.fetches_key.parse_value, results)
     end
 end
 

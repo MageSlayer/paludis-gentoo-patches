@@ -135,7 +135,7 @@ TEST(ERepository, InstallEAPI4)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/pkg_pretend-4",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         ASSERT_TRUE(! pretend_action.failed());
     }
@@ -145,7 +145,7 @@ TEST(ERepository, InstallEAPI4)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/pkg_pretend-failure-4",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         ASSERT_TRUE(pretend_action.failed());
     }
@@ -155,7 +155,7 @@ TEST(ERepository, InstallEAPI4)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/default_src_install-4",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -164,7 +164,7 @@ TEST(ERepository, InstallEAPI4)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/docompress-4",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -173,7 +173,7 @@ TEST(ERepository, InstallEAPI4)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/dodoc-r-4",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -182,7 +182,7 @@ TEST(ERepository, InstallEAPI4)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/doins-symlink-4",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -191,7 +191,7 @@ TEST(ERepository, InstallEAPI4)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions-4",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         EXPECT_THROW(id->perform_action(action), ActionFailedError);
     }
 
@@ -200,7 +200,7 @@ TEST(ERepository, InstallEAPI4)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/econf-disable-dependency-tracking-4_beta",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -209,7 +209,7 @@ TEST(ERepository, InstallEAPI4)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/econf-disable-dependency-tracking-4",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -218,7 +218,7 @@ TEST(ERepository, InstallEAPI4)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/global-scope-use-4",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -227,7 +227,7 @@ TEST(ERepository, InstallEAPI4)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/doman-4",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -284,7 +284,7 @@ TEST(ERepository, EAPI4MergeType)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-4::test-repo",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 }
@@ -355,7 +355,7 @@ TEST(ERepository, EAPI4MergeTypeBin)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-bin-4::test-repo",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 
@@ -373,7 +373,7 @@ TEST(ERepository, EAPI4MergeTypeBin)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-bin-4::binrepo",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("pbin-1+4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("pbin-1+4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
     }
 }
@@ -420,7 +420,7 @@ TEST(ERepository, RequiredUse)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-all-good-4::test-repo",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         ASSERT_TRUE(! pretend_action.failed());
     }
@@ -436,7 +436,7 @@ TEST(ERepository, RequiredUse)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-all-empty-4::test-repo",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         ASSERT_TRUE(! pretend_action.failed());
     }
@@ -452,7 +452,7 @@ TEST(ERepository, RequiredUse)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-all-one-not-good-4::test-repo",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         ASSERT_TRUE(pretend_action.failed());
     }
@@ -468,7 +468,7 @@ TEST(ERepository, RequiredUse)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-any-good-4::test-repo",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         ASSERT_TRUE(! pretend_action.failed());
     }
@@ -484,7 +484,7 @@ TEST(ERepository, RequiredUse)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-any-empty-4::test-repo",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         ASSERT_TRUE(! pretend_action.failed());
     }
@@ -500,7 +500,7 @@ TEST(ERepository, RequiredUse)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-any-none-4::test-repo",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         ASSERT_TRUE(pretend_action.failed());
     }
@@ -516,7 +516,7 @@ TEST(ERepository, RequiredUse)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-one-none-4::test-repo",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         ASSERT_TRUE(pretend_action.failed());
     }
@@ -532,7 +532,7 @@ TEST(ERepository, RequiredUse)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-one-none-4::test-repo",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         ASSERT_TRUE(pretend_action.failed());
     }
@@ -548,7 +548,7 @@ TEST(ERepository, RequiredUse)
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-one-good-4::test-repo",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
-        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->value());
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         ASSERT_TRUE(! pretend_action.failed());
     }

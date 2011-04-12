@@ -99,8 +99,10 @@ namespace
             const ChoiceNameWithPrefix & name_with_prefix)
     {
         if (id->choices_key())
-            for (Choices::ConstIterator k(id->choices_key()->value()->begin()),
-                    k_end(id->choices_key()->value()->end()) ;
+        {
+            auto choices(id->choices_key()->parse_value());
+            for (Choices::ConstIterator k(choices->begin()),
+                    k_end(choices->end()) ;
                     k != k_end ; ++k)
             {
                 if ((*k)->prefix() != prefix)
@@ -111,6 +113,7 @@ namespace
                     if ((*i)->name_with_prefix() == name_with_prefix)
                         return *i;
             }
+        }
 
         return make_null_shared_ptr();
     }
@@ -192,8 +195,9 @@ MyOptionsRequirementsVerifier::verify_one(
 
                         std::shared_ptr<const ChoiceValue> choice_value;
                         if (_imp->id->choices_key())
-                            for (Choices::ConstIterator k(_imp->id->choices_key()->value()->begin()),
-                                    k_end(_imp->id->choices_key()->value()->end()) ;
+                        {
+                            auto choices(_imp->id->choices_key()->parse_value());
+                            for (Choices::ConstIterator k(choices->begin()), k_end(choices->end()) ;
                                     k != k_end && ! choice_value ; ++k)
                             {
                                 if ((*k)->prefix() != prefix)
@@ -204,6 +208,7 @@ MyOptionsRequirementsVerifier::verify_one(
                                     if ((*i)->unprefixed_name() == suffix)
                                         choice_value = *i;
                             }
+                        }
 
                         if (choice_value)
                         {

@@ -99,7 +99,7 @@ namespace
         m->insert('c', stringify(i->name().category()));
         m->insert('p', stringify(i->name().package()));
         m->insert('v', stringify(i->version()));
-        m->insert('s', i->slot_key() ? stringify(i->slot_key()->value()) : "");
+        m->insert('s', i->slot_key() ? stringify(i->slot_key()->parse_value()) : "");
         m->insert(':', i->slot_key() ? ":" : "");
         m->insert('r', stringify(i->repository_name()));
         m->insert('F', i->canonical_form(idcf_full));
@@ -128,7 +128,7 @@ PrintDependentIDsCommand::run(
     if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
         throw args::DoHelp("print-dependent-ids requires exactly one parameter");
 
-    auto installed_filter(filter::InstalledAtRoot(env->system_root_key()->value()));
+    auto installed_filter(filter::InstalledAtRoot(env->system_root_key()->parse_value()));
     auto spec(parse_spec_with_nice_error(*cmdline.begin_parameters(), env.get(), { }, installed_filter));
     auto ids((*env)[selection::AllVersionsSorted(
                 generator::Matches(spec, make_null_shared_ptr(), { }) |

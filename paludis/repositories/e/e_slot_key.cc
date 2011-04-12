@@ -53,7 +53,7 @@ namespace
         {
         }
 
-        virtual const SlotName value() const
+        virtual const SlotName parse_value() const
         {
             return slot_value;
         }

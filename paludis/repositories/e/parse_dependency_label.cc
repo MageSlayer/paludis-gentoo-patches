@@ -59,7 +59,7 @@ namespace
             return false;
         }
 
-        const std::shared_ptr<const ChoiceValue> v(id->choices_key()->value()->find_by_name_with_prefix(n));
+        const std::shared_ptr<const ChoiceValue> v(id->choices_key()->parse_value()->find_by_name_with_prefix(n));
         if (! v)
         {
             Log::get_instance()->message("e.dep_parser.label_enabled.no_choice", ll_warning, lc_context)

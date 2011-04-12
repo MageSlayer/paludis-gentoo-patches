@@ -46,7 +46,7 @@ namespace
 {
     std::string visit(const PackageID & id)
     {
-        return id.short_description_key()->value();
+        return id.short_description_key()->parse_value();
     }
 }
 

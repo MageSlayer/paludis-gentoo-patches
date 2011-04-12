@@ -173,7 +173,7 @@ namespace
         {
             try
             {
-                if ((! e.slot_key()) || (e.slot_key()->value() != SlotName(r.slot())))
+                if ((! e.slot_key()) || (e.slot_key()->parse_value() != SlotName(r.slot())))
                     return false;
             }
             catch (const SlotNameError &)
@@ -282,7 +282,7 @@ ERepositorySets::security_set(bool insecurity) const
                 else
                     candidates = (*_imp->environment)[selection::AllVersionsSorted(
                             generator::Package(glsa_pkg->name()) |
-                            filter::InstalledAtRoot(_imp->environment->preferred_root_key()->value()))];
+                            filter::InstalledAtRoot(_imp->environment->preferred_root_key()->parse_value()))];
 
                 for (PackageIDSequence::ConstIterator c(candidates->begin()), c_end(candidates->end()) ;
                         c != c_end ; ++c)
@@ -302,7 +302,7 @@ ERepositorySets::security_set(bool insecurity) const
                     else
                     {
                         Context local_local_local_context("When finding upgrade for '" + stringify(glsa_pkg->name()) + ":"
-                                + ((*c)->slot_key() ? stringify((*c)->slot_key()->value()) : "(none)") + "'");
+                                + ((*c)->slot_key() ? stringify((*c)->slot_key()->parse_value()) : "(none)") + "'");
 
                         /* we need to find the best not vulnerable installable package that isn't masked
                          * that's in the same slot as our vulnerable installed package. */

@@ -99,7 +99,7 @@ namespace
         template <typename T_>
         void visit(const T_ & k) const
         {
-            auto PALUDIS_ATTRIBUTE((unused)) v(k.value());
+            auto PALUDIS_ATTRIBUTE((unused)) v(k.parse_value());
         }
     };
 

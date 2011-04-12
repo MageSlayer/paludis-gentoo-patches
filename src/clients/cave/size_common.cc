@@ -70,7 +70,7 @@ namespace
 
         unsigned long visit(const ContentsFileEntry & e) const
         {
-            FSPath path(e.location_key()->value());
+            FSPath path(e.location_key()->parse_value());
             FSStat stat(path);
 
             if (stat.is_regular_file_or_symlink_to_regular_file())
@@ -95,7 +95,7 @@ paludis::cave::size_common(
 {
     PackageDepSpec spec(parse_spec_with_nice_error(q, env.get(), { }, filter::All()));
     std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(generator::Matches(spec, make_null_shared_ptr(), { }) |
-                filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
 
     if (entries->empty())
         return EXIT_FAILURE;
@@ -109,7 +109,8 @@ paludis::cave::size_common(
             throw BadIDForCommand(spec, (*i), "does not support listing contents");
 
         unsigned long size(0);
-        for (auto c((*i)->contents_key()->value()->begin()), c_end((*i)->contents_key()->value()->end()) ;
+        auto contents((*i)->contents_key()->parse_value());
+        for (auto c(contents->begin()), c_end(contents->end()) ;
                 c != c_end ; ++c)
             size += (*c)->accept_returning<unsigned long>(GetSize());
 

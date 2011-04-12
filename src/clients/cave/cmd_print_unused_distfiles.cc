@@ -158,7 +158,7 @@ PrintUnusedDistfilesCommand::run(
     std::set<std::string> used_distfiles;
 
     std::list<Selection> selections;
-    selections.push_back(selection::AllVersionsUnsorted(generator::All() | filter::InstalledAtRoot(env->preferred_root_key()->value())));
+    selections.push_back(selection::AllVersionsUnsorted(generator::All() | filter::InstalledAtRoot(env->preferred_root_key()->parse_value())));
 
     for (auto c(cmdline.a_include.begin_args()), c_end(cmdline.a_include.end_args()) ;
             c != c_end ; ++c)
@@ -179,7 +179,7 @@ PrintUnusedDistfilesCommand::run(
             if ((*iter)->fetches_key())
             {
                 DistfilesFilter filter(env.get(), *iter, used_distfiles);
-                (*iter)->fetches_key()->value()->top()->accept(filter);
+                (*iter)->fetches_key()->parse_value()->top()->accept(filter);
             }
         }
     }
@@ -198,7 +198,7 @@ PrintUnusedDistfilesCommand::run(
         {
             auto path_key(visitor_cast<const MetadataValueKey<FSPath>>(**distdir_metadata));
             if (path_key)
-                distdirs.insert(path_key->value().realpath());
+                distdirs.insert(path_key->parse_value().realpath());
         }
     }
 

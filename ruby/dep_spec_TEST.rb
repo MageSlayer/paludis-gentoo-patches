@@ -262,7 +262,7 @@ module Paludis
         end
 
         def test_composites
-            spec = env[Selection::RequireExactlyOne.new(Generator::Package.new("foo/bar"))].last.build_dependencies_key.value
+            spec = env[Selection::RequireExactlyOne.new(Generator::Package.new("foo/bar"))].last.build_dependencies_key.parse_value
             assert_kind_of AllDepSpec, spec
 
             assert_equal 2, spec.to_a.length
@@ -323,7 +323,7 @@ module Paludis
         end
 
         def test_uri_labels_dep_spec
-            specs = spec_key.value.to_a
+            specs = spec_key.parse_value.to_a
             assert_equal 6, specs.length
 
             specs.each do | spec |

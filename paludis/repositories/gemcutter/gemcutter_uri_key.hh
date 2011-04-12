@@ -44,7 +44,7 @@ namespace paludis
 
                 ///\}
 
-                virtual const std::shared_ptr<const SimpleURISpecTree> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                virtual const std::shared_ptr<const SimpleURISpecTree> parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

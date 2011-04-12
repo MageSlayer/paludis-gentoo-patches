@@ -41,7 +41,7 @@ paludis::cave::select_format_for_spec(
         const T_ & if_unavailable
         )
 {
-    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, from_id, { }) | filter::InstalledAtRoot(env->system_root_key()->value()))]->empty())
+    if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, from_id, { }) | filter::InstalledAtRoot(env->system_root_key()->parse_value()))]->empty())
         return if_installed;
     if (! (*env)[selection::SomeArbitraryVersion(generator::Matches(spec, from_id, { }) | filter::SupportsAction<InstallAction>()
                 | filter::NotMasked())]->empty())

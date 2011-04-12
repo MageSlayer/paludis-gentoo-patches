@@ -137,7 +137,7 @@ UpdateWorldCommand::run(
                 if (cmdline.a_if_nothing_left.specified())
                 {
                     auto ids((*env)[selection::SomeArbitraryVersion(generator::Package(q) |
-                                filter::InstalledAtRoot(env->preferred_root_key()->value()))]);
+                                filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
                     if (ids->empty())
                         result = env->remove_from_world(q);
                 }

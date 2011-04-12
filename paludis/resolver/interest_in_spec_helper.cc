@@ -206,7 +206,7 @@ namespace
                 const std::shared_ptr<const PackageIDSequence> installed_ids(
                         (*env)[selection::SomeArbitraryVersion(
                             generator::Matches(*dep.spec().if_package(), dep.from_id(), { }) |
-                            filter::InstalledAtRoot(env->system_root_key()->value()))]);
+                            filter::InstalledAtRoot(env->system_root_key()->parse_value()))]);
                 if (installed_ids->empty())
                     return false;
             }
@@ -344,7 +344,7 @@ InterestInSpecHelper::operator() (
             const std::shared_ptr<const PackageIDSequence> installed_ids(
                     (*_imp->env)[selection::SomeArbitraryVersion(
                         generator::Matches(*dep.spec().if_package(), dep.from_id(), { }) |
-                        filter::InstalledAtRoot(_imp->env->system_root_key()->value()))]);
+                        filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))]);
             if (! installed_ids->empty())
                 return si_take;
         }

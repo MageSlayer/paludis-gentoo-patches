@@ -244,37 +244,38 @@ namespace
 
         void visit(const MetadataValueKey<std::string> & k)
         {
-            texts.push_back(stringify(k.value()));
+            texts.push_back(stringify(k.parse_value()));
         }
 
         void visit(const MetadataValueKey<FSPath> & k)
         {
-            texts.push_back(stringify(k.value()));
+            texts.push_back(stringify(k.parse_value()));
         }
 
         void visit(const MetadataValueKey<SlotName> & k)
         {
-            texts.push_back(stringify(k.value()));
+            texts.push_back(stringify(k.parse_value()));
         }
 
         void visit(const MetadataValueKey<long> & k)
         {
-            texts.push_back(stringify(k.value()));
+            texts.push_back(stringify(k.parse_value()));
         }
 
         void visit(const MetadataValueKey<bool> & k)
         {
-            texts.push_back(stringify(k.value()));
+            texts.push_back(stringify(k.parse_value()));
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
         {
-            texts.push_back(stringify(*k.value()));
+            texts.push_back(stringify(*k.parse_value()));
         }
 
         void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
-            for (Choices::ConstIterator c(k.value()->begin()), c_end(k.value()->end()) ;
+            auto choices(k.parse_value());
+            for (Choices::ConstIterator c(choices->begin()), c_end(choices->end()) ;
                     c != c_end ; ++c)
                 for (Choice::ConstIterator i((*c)->begin()), i_end((*c)->end()) ;
                         i != i_end ; ++i)
@@ -287,7 +288,7 @@ namespace
 
         void visit(const MetadataTimeKey & k)
         {
-            texts.push_back(stringify(k.value().seconds()));
+            texts.push_back(stringify(k.parse_value().seconds()));
         }
 
         void visit(const MetadataSectionKey & k)
@@ -299,73 +300,79 @@ namespace
         void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
         {
             SpecTreeAsString m = { env, id, texts, match_options };
-            k.value()->top()->accept(m);
+            k.parse_value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
         {
             SpecTreeAsString m = { env, id, texts, match_options };
-            k.value()->top()->accept(m);
+            k.parse_value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
             SpecTreeAsString m = { env, id, texts, match_options };
-            k.value()->top()->accept(m);
+            k.parse_value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
             SpecTreeAsString m = { env, id, texts, match_options };
-            k.value()->top()->accept(m);
+            k.parse_value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
         {
             SpecTreeAsString m = { env, id, texts, match_options };
-            k.value()->top()->accept(m);
+            k.parse_value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
             SpecTreeAsString m = { env, id, texts, match_options };
-            k.value()->top()->accept(m);
+            k.parse_value()->top()->accept(m);
         }
 
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
             SpecTreeAsString m = { env, id, texts, match_options };
-            k.value()->top()->accept(m);
+            k.parse_value()->top()->accept(m);
         }
 
         void visit(const MetadataCollectionKey<Sequence<FSPath> > & k)
         {
-            std::transform(k.value()->begin(), k.value()->end(), std::back_inserter(texts), &stringify<FSPath>);
+            auto v(k.parse_value());
+            std::transform(v->begin(), v->end(), std::back_inserter(texts), &stringify<FSPath>);
         }
 
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
-            std::transform(k.value()->begin(), k.value()->end(), std::back_inserter(texts), &stringify<std::string>);
+            auto v(k.parse_value());
+            std::transform(v->begin(), v->end(), std::back_inserter(texts), &stringify<std::string>);
         }
 
         void visit(const MetadataCollectionKey<Set<std::string> > & k)
         {
-            std::transform(k.value()->begin(), k.value()->end(), std::back_inserter(texts), &stringify<std::string>);
+            auto v(k.parse_value());
+            std::transform(v->begin(), v->end(), std::back_inserter(texts), &stringify<std::string>);
         }
 
         void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
         {
-            std::transform(k.value()->begin(), k.value()->end(), std::back_inserter(texts), stringify_string_pair);
+            auto v(k.parse_value());
+            std::transform(v->begin(), v->end(), std::back_inserter(texts), stringify_string_pair);
         }
 
         void visit(const MetadataCollectionKey<Set<KeywordName> > & k)
         {
-            std::transform(k.value()->begin(), k.value()->end(), std::back_inserter(texts), &stringify<KeywordName>);
+            auto v(k.parse_value());
+            std::transform(v->begin(), v->end(), std::back_inserter(texts), &stringify<KeywordName>);
         }
 
         void visit(const MetadataCollectionKey<Sequence<std::shared_ptr<const PackageID> > > & k)
         {
-            std::transform(indirect_iterator(k.value()->begin()), indirect_iterator(k.value()->end()),
+            auto v(k.parse_value());
+            std::transform(indirect_iterator(v->begin()), indirect_iterator(v->end()),
                     std::back_inserter(texts), &stringify<PackageID>);
         }
 
@@ -420,9 +427,9 @@ MatchCommand::run_hosted(
     if (default_names_and_descriptions || match_options.a_description.specified())
     {
         if (id->short_description_key())
-            texts.push_back(stringify(id->short_description_key()->value()));
+            texts.push_back(stringify(id->short_description_key()->parse_value()));
         if (id->long_description_key())
-            texts.push_back(stringify(id->long_description_key()->value()));
+            texts.push_back(stringify(id->long_description_key()->parse_value()));
     }
 
     for (args::StringSetArg::ConstIterator a(match_options.a_key.begin_args()),

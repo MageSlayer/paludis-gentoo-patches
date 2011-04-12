@@ -60,7 +60,7 @@ int main(int argc, char * argv[])
                 DepSpecFlattener<ProvideSpecTree, PackageDepSpec> provides(env.get(), *i);
 
                 /* Populate it by making it visit the key's value */
-                (*i)->provide_key()->value()->top()->accept(provides);
+                (*i)->provide_key()->parse_value()->top()->accept(provides);
 
                 /* The results are available through DepSpecFlattener::begin()
                  * and ::end(). These return an iterator to a std::shared_ptr<>,
@@ -74,7 +74,7 @@ int main(int argc, char * argv[])
             if ((*i)->homepage_key())
             {
                 DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec> homepages(env.get(), *i);
-                (*i)->homepage_key()->value()->top()->accept(homepages);
+                (*i)->homepage_key()->parse_value()->top()->accept(homepages);
 
                 cout << "    " << left << setw(24) << "Homepages:" << " "
                     << join(indirect_iterator(homepages.begin()), indirect_iterator(homepages.end()), " ")
@@ -93,7 +93,7 @@ int main(int argc, char * argv[])
                 DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env.get(), *i);
 
                 visitor_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(
-                        **(*i)->find_metadata("RESTRICT"))->value()->top()->accept(restricts);
+                        **(*i)->find_metadata("RESTRICT"))->parse_value()->top()->accept(restricts);
 
                 cout << "    " << left << setw(24) << "Restricts:" << " "
                     << join(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()), " ")

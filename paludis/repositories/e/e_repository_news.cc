@@ -82,9 +82,9 @@ namespace paludis
             news_directory(EExtraDistributionData::get_instance()->data_from_distribution(
                         *DistributionData::get_instance()->distribution_from_string(
                             e->distribution()))->news_directory()),
-            skip_file(e->preferred_root_key()->value() / news_directory /
+            skip_file(e->preferred_root_key()->parse_value() / news_directory /
                     ("news-" + stringify(e_repository->name()) + ".skip")),
-            unread_file(e->preferred_root_key()->value() / news_directory /
+            unread_file(e->preferred_root_key()->parse_value() / news_directory /
                     ("news-" + stringify(e_repository->name()) + ".unread"))
         {
         }
@@ -178,7 +178,7 @@ ERepositoryNews::update_news() const
                                 generator::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
                                             eapi.supported()->package_dep_spec_parse_options(),
                                             eapi.supported()->version_spec_options())), make_null_shared_ptr(), { }) |
-                                filter::InstalledAtRoot(_imp->environment->preferred_root_key()->value()))]->empty())
+                                filter::InstalledAtRoot(_imp->environment->preferred_root_key()->parse_value()))]->empty())
                         local_show = true;
                 show &= local_show;
             }
@@ -205,7 +205,7 @@ ERepositoryNews::update_news() const
                 {
                     std::string profile(strip_leading_string(strip_trailing_string(
                                 strip_leading_string(stringify(p->realpath()),
-                                    stringify(_imp->e_repository->location_key()->value().realpath() / "profiles")), "/"), "/"));
+                                    stringify(_imp->e_repository->location_key()->parse_value().realpath() / "profiles")), "/"), "/"));
                     Log::get_instance()->message("e.news.profile_path", ll_debug, lc_no_context) <<
                         "Profile path is '" << profile << "'";
                     for (NewsFile::DisplayIfProfileConstIterator i(news.begin_display_if_profile()),

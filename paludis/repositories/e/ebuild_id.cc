@@ -258,7 +258,7 @@ EbuildID::need_keys_added() const
     bool ok(false);
     if (e_repo->params().cache().basename() != "empty")
     {
-        EbuildFlatMetadataCache metadata_cache(_imp->environment, cache_file, _imp->fs_location->value(), _imp->master_mtime, _imp->eclass_mtimes, false);
+        EbuildFlatMetadataCache metadata_cache(_imp->environment, cache_file, _imp->fs_location->parse_value(), _imp->master_mtime, _imp->eclass_mtimes, false);
         if (metadata_cache.load(shared_from_this(), false))
             ok = true;
     }
@@ -266,7 +266,7 @@ EbuildID::need_keys_added() const
     if ((! ok) && e_repo->params().write_cache().basename() != "empty")
     {
         EbuildFlatMetadataCache write_metadata_cache(_imp->environment,
-                write_cache_file, _imp->fs_location->value(), _imp->master_mtime, _imp->eclass_mtimes, true);
+                write_cache_file, _imp->fs_location->parse_value(), _imp->master_mtime, _imp->eclass_mtimes, true);
         if (write_metadata_cache.load(shared_from_this(), false))
             ok = true;
         else if (write_cache_file.stat().exists())
@@ -311,7 +311,7 @@ EbuildID::need_keys_added() const
                     n::commands() = join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "),
                     n::distdir() = e_repo->params().distdir(),
                     n::ebuild_dir() = e_repo->layout()->package_directory(name()),
-                    n::ebuild_file() = _imp->fs_location->value(),
+                    n::ebuild_file() = _imp->fs_location->parse_value(),
                     n::eclassdirs() = e_repo->params().eclassdirs(),
                     n::environment() = _imp->environment,
                     n::exlibsdirs() = e_repo->layout()->exlibsdirs(name()),
@@ -339,7 +339,7 @@ EbuildID::need_keys_added() const
 
             if (e_repo->params().write_cache().basename() != "empty" && _imp->eapi->supported())
             {
-                EbuildFlatMetadataCache metadata_cache(_imp->environment, write_cache_file, _imp->fs_location->value(), _imp->master_mtime,
+                EbuildFlatMetadataCache metadata_cache(_imp->environment, write_cache_file, _imp->fs_location->parse_value(), _imp->master_mtime,
                         _imp->eclass_mtimes, false);
                 metadata_cache.save(shared_from_this());
             }
@@ -368,7 +368,7 @@ EbuildID::need_keys_added() const
                     e_repo->profile()->use_expand_hidden());
 
         std::shared_ptr<const MetadataXML> m(MetadataXMLPool::get_instance()->metadata_if_exists(
-                    _imp->fs_location->value().dirname() / "metadata.xml"));
+                    _imp->fs_location->parse_value().dirname() / "metadata.xml"));
         if (m)
         {
             if (! m->long_description().empty())
@@ -387,7 +387,8 @@ EbuildID::need_keys_added() const
             if (! _imp->raw_iuse)
                 throw InternalError(PALUDIS_HERE, "no raw_iuse?");
 
-            std::copy(_imp->raw_iuse->value()->begin(), _imp->raw_iuse->value()->end(), iuse_effective->inserter());
+            auto iu(_imp->raw_iuse->parse_value());
+            std::copy(iu->begin(), iu->end(), iuse_effective->inserter());
             std::copy(e_repo->profile()->iuse_implicit()->begin(), e_repo->profile()->iuse_implicit()->end(),
                     iuse_effective->inserter());
 
@@ -532,14 +533,14 @@ EbuildID::need_masks_added() const
 
     if (keywords_key())
     {
-        if (! _imp->environment->accept_keywords(keywords_key()->value(), shared_from_this()))
+        auto keywords(keywords_key()->parse_value());
+        if (! _imp->environment->accept_keywords(keywords, shared_from_this()))
         {
             add_mask(create_e_unaccepted_mask('K',
                         DistributionData::get_instance()->distribution_from_string(
                             _imp->environment->distribution())->concept_keyword(), keywords_key()->raw_name()));
         }
-        else if (keywords_key()->value()->end() == std::find_if(keywords_key()->value()->begin(),
-                    keywords_key()->value()->end(), &is_stable_keyword))
+        else if (keywords->end() == std::find_if(keywords->begin(), keywords->end(), &is_stable_keyword))
         {
             add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
@@ -554,7 +555,7 @@ EbuildID::need_masks_added() const
     if (license_key())
     {
         LicenceChecker c(_imp->environment, &Environment::accept_license, shared_from_this());
-        license_key()->value()->top()->accept(c);
+        license_key()->parse_value()->top()->accept(c);
         if (! c.ok)
             add_mask(create_e_unaccepted_mask('L',
                         DistributionData::get_instance()->distribution_from_string(
@@ -621,14 +622,14 @@ EbuildID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             if (_imp->slot)
-                return stringify(name()) + "-" + stringify(version()) + ":" + stringify(_imp->slot->value()) +
+                return stringify(name()) + "-" + stringify(version()) + ":" + stringify(_imp->slot->parse_value()) +
                     "::" + stringify(repository_name());
 
             return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository_name());
 
         case idcf_no_version:
             if (_imp->slot)
-                return stringify(name()) + ":" + stringify(_imp->slot->value()) +
+                return stringify(name()) + ":" + stringify(_imp->slot->parse_value()) +
                     "::" + stringify(repository_name());
 
             return stringify(name()) + "::" + stringify(repository_name());
@@ -638,7 +639,7 @@ EbuildID::canonical_form(const PackageIDCanonicalForm f) const
 
         case idcf_no_name:
             if (_imp->slot)
-                return stringify(version()) + ":" + stringify(_imp->slot->value()) + "::" +
+                return stringify(version()) + ":" + stringify(_imp->slot->parse_value()) + "::" +
                     stringify(repository_name());
 
             return stringify(version()) + "::" + stringify(repository_name());
@@ -654,7 +655,7 @@ PackageDepSpec
 EbuildID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository_name()),
+            (slot_key() ? ":" + stringify(slot_key()->parse_value()) : "") + "::" + stringify(repository_name()),
             _imp->environment, { });
 }
 
@@ -1448,7 +1449,8 @@ EbuildID::make_choice_value(
     if (raw_use_key())
     {
         locked = true;
-        enabled = enabled_by_default = (raw_use_key()->value()->end() != raw_use_key()->value()->find(name_with_prefix_s));
+        auto raw_use(raw_use_key()->parse_value());
+        enabled = enabled_by_default = (raw_use->end() != raw_use->find(name_with_prefix_s));
     }
     else
     {
@@ -1558,7 +1560,7 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
             if (restrict_key())
             {
                 UnconditionalRestrictFinder f;
-                restrict_key()->value()->top()->accept(f);
+                restrict_key()->parse_value()->top()->accept(f);
                 may_be_unrestricted_test = f.s.end() == f.s.find("test");
                 may_be_unrestricted_strip = f.s.end() == f.s.find("strip");
             }
@@ -1586,7 +1588,8 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
                 {
                     if (phase->option("expensive_tests"))
                     {
-                        if (_imp->defined_phases->value()->end() != _imp->defined_phases->value()->find(phase->equal_option("skipname")))
+                        auto defined_phases(_imp->defined_phases->parse_value());
+                        if (defined_phases->end() != defined_phases->find(phase->equal_option("skipname")))
                         {
                             has_expensive_test_phase = true;
                             break;
@@ -1640,7 +1643,7 @@ EbuildID::purge_invalid_cache() const
         if (e_repo->params().write_cache().basename() != "empty")
         {
             EbuildFlatMetadataCache write_metadata_cache(_imp->environment,
-                    write_cache_file, _imp->fs_location->value(), _imp->master_mtime, _imp->eclass_mtimes, true);
+                    write_cache_file, _imp->fs_location->parse_value(), _imp->master_mtime, _imp->eclass_mtimes, true);
             if (! write_metadata_cache.load(shared_from_this(), true))
                 write_cache_file.unlink();
         }
@@ -1650,7 +1653,7 @@ EbuildID::purge_invalid_cache() const
 bool
 EbuildID::might_be_binary() const
 {
-    auto path(stringify(_imp->fs_location->value()));
+    auto path(stringify(_imp->fs_location->parse_value()));
     auto dot_pos(path.rfind('.'));
 
     if (std::string::npos != dot_pos)

@@ -136,7 +136,7 @@ LiteralMetadataFSPathSequenceKey::~LiteralMetadataFSPathSequenceKey()
 }
 
 const std::shared_ptr<const FSPathSequence>
-LiteralMetadataFSPathSequenceKey::value() const
+LiteralMetadataFSPathSequenceKey::parse_value() const
 {
     return _imp->value;
 }
@@ -145,7 +145,7 @@ const std::string
 LiteralMetadataFSPathSequenceKey::pretty_print_value(
         const PrettyPrinter & p, const PrettyPrintOptions &) const
 {
-    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
+    return join(_imp->value->begin(), _imp->value->end(), " ", CallPrettyPrinter(p));
 }
 
 const std::string
@@ -177,7 +177,7 @@ LiteralMetadataStringSetKey::~LiteralMetadataStringSetKey()
 }
 
 const std::shared_ptr<const Set<std::string> >
-LiteralMetadataStringSetKey::value() const
+LiteralMetadataStringSetKey::parse_value() const
 {
     return _imp->value;
 }
@@ -193,7 +193,7 @@ LiteralMetadataStringStringMapKey::~LiteralMetadataStringStringMapKey()
 }
 
 const std::shared_ptr<const Map<std::string, std::string> >
-LiteralMetadataStringStringMapKey::value() const
+LiteralMetadataStringStringMapKey::parse_value() const
 {
     return _imp->value;
 }
@@ -209,7 +209,7 @@ LiteralMetadataStringSequenceKey::~LiteralMetadataStringSequenceKey()
 }
 
 const std::shared_ptr<const Sequence<std::string> >
-LiteralMetadataStringSequenceKey::value() const
+LiteralMetadataStringSequenceKey::parse_value() const
 {
     return _imp->value;
 }
@@ -236,21 +236,21 @@ const std::string
 LiteralMetadataStringSetKey::pretty_print_value(
         const PrettyPrinter & p, const PrettyPrintOptions &) const
 {
-    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
+    return join(_imp->value->begin(), _imp->value->end(), " ", CallPrettyPrinter(p));
 }
 
 const std::string
 LiteralMetadataStringStringMapKey::pretty_print_value(
         const PrettyPrinter & p, const PrettyPrintOptions &) const
 {
-    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
+    return join(_imp->value->begin(), _imp->value->end(), " ", CallPrettyPrinter(p));
 }
 
 const std::string
 LiteralMetadataStringSequenceKey::pretty_print_value(
         const PrettyPrinter & p, const PrettyPrintOptions &) const
 {
-    return join(value()->begin(), value()->end(), " ", CallPrettyPrinter(p));
+    return join(_imp->value->begin(), _imp->value->end(), " ", CallPrettyPrinter(p));
 }
 
 const std::string
@@ -331,7 +331,7 @@ LiteralMetadataValueKey<T_>::~LiteralMetadataValueKey()
 
 template <typename T_>
 const T_
-LiteralMetadataValueKey<T_>::value() const
+LiteralMetadataValueKey<T_>::parse_value() const
 {
     return _imp->value;
 }
@@ -342,7 +342,7 @@ PrettyPrintableLiteralMetadataValueKey<T_>::pretty_print_value(
         const PrettyPrinter & printer,
         const PrettyPrintOptions &) const
 {
-    return printer.prettify(this->value());
+    return printer.prettify(this->parse_value());
 }
 
 namespace paludis
@@ -394,7 +394,7 @@ LiteralMetadataTimeKey::type() const
 }
 
 Timestamp
-LiteralMetadataTimeKey::value() const
+LiteralMetadataTimeKey::parse_value() const
 {
     return _imp->value;
 }

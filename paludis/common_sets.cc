@@ -59,7 +59,7 @@ namespace
                 result->top()->append(std::make_shared<PackageDepSpec>(
                                 MutablePackageDepSpecData({ })
                                 .require_package((*i)->name())
-                                .require_exact_slot((*i)->slot_key()->value(), false)
+                                .require_exact_slot((*i)->slot_key()->parse_value(), false)
                                 ));
             else
                 result->top()->append(std::make_shared<PackageDepSpec>(

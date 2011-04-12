@@ -98,8 +98,8 @@ paludis::match_package_with_maybe_changes(
         if (! id->from_repositories_key())
             return false;
 
-        if (id->from_repositories_key()->value()->end() == id->from_repositories_key()->value()->find(
-                    stringify(spec.from_repository_requirement()->name())))
+        auto v(id->from_repositories_key()->parse_value());
+        if (v->end() == v->find(stringify(spec.from_repository_requirement()->name())))
             return false;
     }
 
@@ -108,7 +108,7 @@ paludis::match_package_with_maybe_changes(
         auto repo(env.fetch_repository(id->repository_name()));
         if (! repo->installed_root_key())
             return false;
-        if (repo->installed_root_key()->value() != spec.installed_at_path_requirement()->path())
+        if (repo->installed_root_key()->parse_value() != spec.installed_at_path_requirement()->path())
             return false;
     }
 
@@ -144,7 +144,7 @@ paludis::match_package_with_maybe_changes(
                 continue;
             if (! (*d)->installed_root_key())
                 continue;
-            if ((*d)->installed_root_key()->value() != spec.installable_to_path_requirement()->path())
+            if ((*d)->installed_root_key()->parse_value() != spec.installable_to_path_requirement()->path())
                 continue;
             if (! (*d)->destination_interface()->is_suitable_destination_for(id))
                 continue;
@@ -159,7 +159,7 @@ paludis::match_package_with_maybe_changes(
 
     if (spec.exact_slot_requirement())
     {
-        if ((! id->slot_key()) || (id->slot_key()->value() != spec.exact_slot_requirement()->name()))
+        if ((! id->slot_key()) || (id->slot_key()->parse_value() != spec.exact_slot_requirement()->name()))
             return false;
     }
 

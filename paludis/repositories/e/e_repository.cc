@@ -150,7 +150,7 @@ namespace
             result = std::make_shared<FSPathSequence>();
             for (ERepositorySequence::ConstIterator e(r->begin()), e_end(r->end()) ;
                     e != e_end ; ++e)
-                result->push_back((*e)->location_key()->value());
+                result->push_back((*e)->location_key()->parse_value());
         }
 
         return result;
@@ -927,7 +927,7 @@ bool
 ERepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
 {
     auto repo(_imp->params.environment()->fetch_repository(id->repository_name()));
-    std::string f(repo->format_key() ? repo->format_key()->value() : "");
+    std::string f(repo->format_key() ? repo->format_key()->parse_value() : "");
     if (f == "e")
         return static_cast<const ERepositoryID &>(*id).eapi()->supported()->can_be_pbin();
     else
@@ -1082,7 +1082,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
         if (! id->fetches_key())
             continue;
         AAVisitor aa;
-        id->fetches_key()->value()->top()->accept(aa);
+        id->fetches_key()->parse_value()->top()->accept(aa);
 
         for (AAVisitor::ConstIterator d(aa.begin()) ;
                 d != aa.end() ; ++d)
@@ -1218,7 +1218,7 @@ ERepository::repository_factory_create(
 
         std::string format("unknown");
         if (master_repository_uncasted->format_key())
-            format = master_repository_uncasted->format_key()->value();
+            format = master_repository_uncasted->format_key()->parse_value();
 
         if (format != "e")
             throw ERepositoryConfigurationError("Master repository format is '" + stringify(format) + "', not 'ebuild'");
@@ -1252,7 +1252,7 @@ ERepository::repository_factory_create(
 
                 std::string format("unknown");
                 if (master_repository_uncasted->format_key())
-                    format = master_repository_uncasted->format_key()->value();
+                    format = master_repository_uncasted->format_key()->parse_value();
 
                 if (format != "e")
                     throw ERepositoryConfigurationError("Master repository format is '" + stringify(format) + "', not 'ebuild'");
@@ -1705,7 +1705,7 @@ ERepository::get_environment_variable(
 
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(_imp->params.environment(), id_uncasted);
         if (id->restrict_key())
-            id->restrict_key()->value()->top()->accept(restricts);
+            id->restrict_key()->parse_value()->top()->accept(restricts);
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
@@ -1724,7 +1724,7 @@ ERepository::get_environment_variable(
             n::commands() = join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "),
             n::distdir() = _imp->params.distdir(),
             n::ebuild_dir() = layout()->package_directory(id->name()),
-            n::ebuild_file() = id->fs_location_key()->value(),
+            n::ebuild_file() = id->fs_location_key()->parse_value(),
             n::eclassdirs() = _imp->params.eclassdirs(),
             n::environment() = _imp->params.environment(),
             n::exlibsdirs() = exlibsdirs,
@@ -1818,9 +1818,10 @@ ERepository::merge(const MergeParams & m)
     std::string binary_keywords;
     if (m.package_id()->keywords_key())
     {
-        for (auto k(m.package_id()->keywords_key()->value()->begin()), k_end(m.package_id()->keywords_key()->value()->end()) ;
-                k != k_end ; ++k)
-            if (_imp->binary_keywords_filter->value()->end() != _imp->binary_keywords_filter->value()->find(stringify(*k)))
+        auto kk(m.package_id()->keywords_key()->parse_value());
+        auto binary_keywords_filter(_imp->binary_keywords_filter->parse_value());
+        for (auto k(kk->begin()), k_end(kk->end()) ; k != k_end ; ++k)
+            if (binary_keywords_filter->end() != binary_keywords_filter->find(stringify(*k)))
             {
                 if (! binary_keywords.empty())
                     binary_keywords.append(" ");
@@ -1852,9 +1853,9 @@ ERepository::merge(const MergeParams & m)
     if (is_replace)
     {
         /* 0.1 replacing 00.1 etc */
-        if (is_replace->fs_location_key()->value() != binary_ebuild_location)
+        if (is_replace->fs_location_key()->parse_value() != binary_ebuild_location)
         {
-            FSPath p(is_replace->fs_location_key()->value());
+            FSPath p(is_replace->fs_location_key()->parse_value());
             m.output_manager()->stdout_stream() << "Deleting replaced pbin " << p << std::endl;
             p.unlink();
         }
@@ -1871,7 +1872,7 @@ ERepository::merge(const MergeParams & m)
         if ((*r)->repository_name() != name())
             continue;
 
-        FSPath p((*r)->fs_location_key()->value());
+        FSPath p((*r)->fs_location_key()->parse_value());
         FSStat p_stat(p);
         if (p_stat.exists())
         {

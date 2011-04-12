@@ -53,6 +53,6 @@ VDBID::contents_filename() const
 std::shared_ptr<MetadataValueKey<std::shared_ptr<const Contents> > >
 VDBID::make_contents_key() const
 {
-    return std::make_shared<EContentsKey>("CONTENTS", "Contents", fs_location_key()->value() / "CONTENTS", mkt_internal);
+    return std::make_shared<EContentsKey>("CONTENTS", "Contents", fs_location_key()->parse_value() / "CONTENTS", mkt_internal);
 }
 

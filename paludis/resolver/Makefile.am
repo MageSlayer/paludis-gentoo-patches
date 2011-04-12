@@ -61,6 +61,7 @@ noinst_HEADERS = \
 	get_initial_constraints_for_helper.hh get_initial_constraints_for_helper-fwd.hh \
 	get_resolvents_for_helper.hh get_resolvents_for_helper-fwd.hh \
 	get_use_existing_nothing_helper.hh get_use_existing_nothing_helper-fwd.hh \
+	has_behaviour.hh has_behaviour-fwd.hh \
 	interest_in_spec_helper.hh interest_in_spec_helper-fwd.hh \
 	job.hh job-fwd.hh \
 	job_list.hh job_list-fwd.hh \
@@ -134,6 +135,7 @@ libpaludisresolver_a_SOURCES = \
 	get_initial_constraints_for_helper.cc \
 	get_resolvents_for_helper.cc \
 	get_use_existing_nothing_helper.cc \
+	has_behaviour.cc \
 	interest_in_spec_helper.cc \
 	job.cc \
 	job_list.cc \

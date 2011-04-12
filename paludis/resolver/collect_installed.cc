@@ -39,7 +39,7 @@ paludis::resolver::collect_installed(
     Context context("When collecting installed packages:");
 
     const std::shared_ptr<const PackageIDSequence> q((*env)[selection::AllVersionsUnsorted(
-                generator::All() | filter::InstalledAtRoot(env->system_root_key()->value()))]);
+                generator::All() | filter::InstalledAtRoot(env->system_root_key()->parse_value()))]);
     const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
     std::copy(q->begin(), q->end(), result->inserter());

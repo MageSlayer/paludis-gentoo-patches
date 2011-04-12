@@ -491,7 +491,7 @@ SanitisedDependencies::_populate_one(
 
     Finder f(env, decider, resolution, id, changed, *this, ((*id).*pmf)()->initial_labels(), ((*id).*pmf)()->raw_name(),
             ((*id).*pmf)()->human_name(), "");
-    ((*id).*pmf)()->value()->top()->accept(f);
+    ((*id).*pmf)()->parse_value()->top()->accept(f);
 }
 
 void

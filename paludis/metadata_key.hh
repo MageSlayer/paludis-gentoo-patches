@@ -74,9 +74,8 @@ namespace paludis
      *   should be displayed when outputting information about a package ID
      *   or Repository.
      *
-     * Subclasses provide additional information, including the 'value' of the
-     * key. A ConstVisitor using MetadataKeyVisitorTypes can be used to get more
-     * detail.
+     * Subclasses provide additional information, including the value of the
+     * key via a 'parse_value' method. A visitor can be used to get more detail.
      *
      * The header \ref paludis/literal_metadata_key.hh "literal_metadata_key.hh"
      * contains various concrete implementations of MetadataKey subclasses.
@@ -231,8 +230,10 @@ namespace paludis
 
             /**
              * Fetch our value.
+             *
+             * \since 0.61 is called parse_value
              */
-            virtual const C_ value() const
+            virtual const C_ parse_value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
@@ -255,8 +256,9 @@ namespace paludis
              * Fetch our value.
              *
              * \since 0.44 Timestamp instead of time_t
+             * \since 0.61 is called parse_value
              */
-            virtual Timestamp value() const
+            virtual Timestamp parse_value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
@@ -277,9 +279,12 @@ namespace paludis
             virtual ~MetadataCollectionKey() = 0;
 
             /**
-             * Fetch our value.
+             * Fetch our value, parse not necessarily cached (so
+             * multiple calls may return different shared_ptrs).
+             *
+             * \since 0.61
              */
-            virtual const std::shared_ptr<const C_> value() const
+            virtual const std::shared_ptr<const C_> parse_value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
@@ -300,9 +305,12 @@ namespace paludis
             virtual ~MetadataSpecTreeKey() = 0;
 
             /**
-             * Fetch our value.
+             * Fetch our value, parse not necessarily cached (so
+             * multiple calls may return different shared_ptrs).
+             *
+             * \since 0.61
              */
-            virtual const std::shared_ptr<const C_> value() const
+            virtual const std::shared_ptr<const C_> parse_value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
@@ -326,9 +334,12 @@ namespace paludis
             virtual ~MetadataSpecTreeKey() = 0;
 
             /**
-             * Fetch our value.
+             * Fetch our value, parse not necessarily cached (so
+             * multiple calls may return different shared_ptrs).
+             *
+             * \since 0.61
              */
-            virtual const std::shared_ptr<const FetchableURISpecTree> value() const
+            virtual const std::shared_ptr<const FetchableURISpecTree> parse_value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
@@ -359,9 +370,12 @@ namespace paludis
             virtual ~MetadataSpecTreeKey() = 0;
 
             /**
-             * Fetch our value.
+             * Fetch our value, parse not necessarily cached (so
+             * multiple calls may return different shared_ptrs).
+             *
+             * \since 0.61
              */
-            virtual const std::shared_ptr<const DependencySpecTree> value() const
+            virtual const std::shared_ptr<const DependencySpecTree> parse_value() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**

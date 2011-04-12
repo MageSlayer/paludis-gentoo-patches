@@ -54,7 +54,7 @@ namespace paludis
 
                 ~EChoicesKey();
 
-                const std::shared_ptr<const Choices> value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Choices> parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

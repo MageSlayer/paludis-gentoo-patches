@@ -92,7 +92,7 @@ RequiredUseVerifier::matches(const std::string & s)
         return false;
     }
 
-    auto c(_imp->id->choices_key()->value()->find_by_name_with_prefix(ChoiceNameWithPrefix(s)));
+    auto c(_imp->id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix(s)));
     if (! c)
     {
         Log::get_instance()->message("e.required_use.no_choice", ll_warning, lc_context)

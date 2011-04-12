@@ -383,7 +383,7 @@ TEST(ProvidesCache, Works)
 
         for (auto i(seq->begin()), i_end(seq->end()) ;
                 i != i_end ; ++i)
-            ASSERT_TRUE(! stringify(i->provided_by()->slot_key()->value()).empty());
+            ASSERT_TRUE(! stringify(i->provided_by()->slot_key()->parse_value()).empty());
 
         RepositoryProvidesInterface::ProvidesSequence::ConstIterator it(seq->begin());
         EXPECT_EQ("virtual/foo", stringify(it->virtual_name()));

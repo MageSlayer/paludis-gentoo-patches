@@ -243,7 +243,7 @@ namespace
                     r != r_end ; ++r)
             {
                 const std::shared_ptr<const Repository> repo(env->fetch_repository(*r));
-                if (repo->installed_root_key() && (equal == (root == repo->installed_root_key()->value())))
+                if (repo->installed_root_key() && (equal == (root == repo->installed_root_key()->parse_value())))
                     result->insert(*r);
             }
 
@@ -348,7 +348,7 @@ namespace
                     i != i_end ; ++i)
                 if (as_id->slot_key())
                 {
-                    if ((*i)->slot_key() && (*i)->slot_key()->value() == as_id->slot_key()->value())
+                    if ((*i)->slot_key() && (*i)->slot_key()->parse_value() == as_id->slot_key()->parse_value())
                         result->insert(*i);
                 }
                 else
@@ -389,7 +389,7 @@ namespace
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
-                if ((*i)->slot_key() && (*i)->slot_key()->value() == slot)
+                if ((*i)->slot_key() && (*i)->slot_key()->parse_value() == slot)
                     result->insert(*i);
 
             return result;

@@ -343,7 +343,7 @@ namespace
 {
     std::string stringify_contents_entry(const ContentsEntry & e)
     {
-        return stringify(e.location_key()->value());
+        return stringify(e.location_key()->parse_value());
     }
 
     struct StringifyEqual
@@ -486,13 +486,13 @@ namespace
             switch (op)
             {
                 case kro_equals:
-                    return pattern == stringify(k.value().seconds());
+                    return pattern == stringify(k.parse_value().seconds());
                 case kro_tilde:
-                    return std::string::npos != stringify(k.value().seconds()).find(pattern);
+                    return std::string::npos != stringify(k.parse_value().seconds()).find(pattern);
                 case kro_less_than:
-                    return k.value().seconds() < destringify<time_t>(pattern);
+                    return k.parse_value().seconds() < destringify<time_t>(pattern);
                 case kro_greater_than:
-                    return k.value().seconds() > destringify<time_t>(pattern);
+                    return k.parse_value().seconds() > destringify<time_t>(pattern);
                 case kro_question:
                 case last_kro:
                     break;
@@ -506,9 +506,9 @@ namespace
             switch (op)
             {
                 case kro_equals:
-                    return pattern == stringify(k.value());
+                    return pattern == stringify(k.parse_value());
                 case kro_tilde:
-                    return std::string::npos != stringify(k.value()).find(pattern);
+                    return std::string::npos != stringify(k.parse_value()).find(pattern);
                 case kro_less_than:
                 case kro_greater_than:
                 case kro_question:
@@ -524,9 +524,9 @@ namespace
             switch (op)
             {
                 case kro_equals:
-                    return pattern == stringify(k.value());
+                    return pattern == stringify(k.parse_value());
                 case kro_tilde:
-                    return std::string::npos != stringify(k.value()).find(pattern);
+                    return std::string::npos != stringify(k.parse_value()).find(pattern);
                 case kro_less_than:
                 case kro_greater_than:
                 case kro_question:
@@ -542,9 +542,9 @@ namespace
             switch (op)
             {
                 case kro_equals:
-                    return pattern == stringify(k.value());
+                    return pattern == stringify(k.parse_value());
                 case kro_tilde:
-                    return std::string::npos != stringify(k.value()).find(pattern);
+                    return std::string::npos != stringify(k.parse_value()).find(pattern);
                 case kro_less_than:
                 case kro_greater_than:
                 case kro_question:
@@ -560,9 +560,9 @@ namespace
             switch (op)
             {
                 case kro_equals:
-                    return pattern == stringify(k.value());
+                    return pattern == stringify(k.parse_value());
                 case kro_tilde:
-                    return std::string::npos != stringify(k.value()).find(pattern);
+                    return std::string::npos != stringify(k.parse_value()).find(pattern);
                 case kro_less_than:
                 case kro_greater_than:
                 case kro_question:
@@ -578,13 +578,13 @@ namespace
             switch (op)
             {
                 case kro_equals:
-                    return pattern == stringify(k.value());
+                    return pattern == stringify(k.parse_value());
                 case kro_tilde:
-                    return std::string::npos != stringify(k.value()).find(pattern);
+                    return std::string::npos != stringify(k.parse_value()).find(pattern);
                 case kro_less_than:
-                    return k.value() < destringify<long>(pattern);
+                    return k.parse_value() < destringify<long>(pattern);
                 case kro_greater_than:
-                    return k.value() > destringify<long>(pattern);
+                    return k.parse_value() > destringify<long>(pattern);
                 case kro_question:
                 case last_kro:
                     break;
@@ -600,15 +600,16 @@ namespace
 
         bool visit(const MetadataValueKey<std::shared_ptr<const Contents> > & s) const
         {
+            auto v(s.parse_value());
             switch (op)
             {
                 case kro_equals:
-                    return pattern == join(indirect_iterator(s.value()->begin()), indirect_iterator(s.value()->end()), " ",
+                    return pattern == join(indirect_iterator(v->begin()), indirect_iterator(v->end()), " ",
                             stringify_contents_entry);
                 case kro_less_than:
-                    return indirect_iterator(s.value()->end()) != std::find_if(
-                            indirect_iterator(s.value()->begin()),
-                            indirect_iterator(s.value()->end()),
+                    return indirect_iterator(v->end()) != std::find_if(
+                            indirect_iterator(v->begin()),
+                            indirect_iterator(v->end()),
                             StringifyEqual(pattern));
 
                 case kro_greater_than:
@@ -626,9 +627,9 @@ namespace
             switch (op)
             {
                 case kro_equals:
-                    return pattern == stringify(*k.value());
+                    return pattern == stringify(*k.parse_value());
                 case kro_tilde:
-                    return std::string::npos != stringify(*k.value()).find(pattern);
+                    return std::string::npos != stringify(*k.parse_value()).find(pattern);
                 case kro_less_than:
                 case kro_greater_than:
                 case kro_question:
@@ -646,7 +647,7 @@ namespace
                 case kro_equals:
                     return false;
                 case kro_less_than:
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+                    return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
                 case kro_tilde:
                 case kro_greater_than:
@@ -665,7 +666,7 @@ namespace
                 case kro_equals:
                     return false;
                 case kro_less_than:
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+                    return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
                 case kro_tilde:
                 case kro_greater_than:
@@ -684,7 +685,7 @@ namespace
                 case kro_equals:
                     return false;
                 case kro_less_than:
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+                    return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
                 case kro_tilde:
                 case kro_greater_than:
@@ -703,7 +704,7 @@ namespace
                 case kro_equals:
                     return false;
                 case kro_less_than:
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+                    return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
                 case kro_tilde:
                 case kro_greater_than:
@@ -722,7 +723,7 @@ namespace
                 case kro_equals:
                     return false;
                 case kro_less_than:
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+                    return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
                 case kro_tilde:
                 case kro_greater_than:
@@ -741,7 +742,7 @@ namespace
                 case kro_equals:
                     return false;
                 case kro_less_than:
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+                    return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
                 case kro_tilde:
                 case kro_greater_than:
@@ -760,7 +761,7 @@ namespace
                 case kro_equals:
                     return false;
                 case kro_less_than:
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+                    return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
                 case kro_tilde:
                 case kro_greater_than:
@@ -779,7 +780,7 @@ namespace
                 case kro_equals:
                     return false;
                 case kro_less_than:
-                    return s.value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
+                    return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
 
                 case kro_tilde:
                 case kro_greater_than:
@@ -793,13 +794,13 @@ namespace
 
         bool visit(const MetadataCollectionKey<FSPathSequence> & s) const
         {
+            auto v(s.parse_value());
             switch (op)
             {
                 case kro_equals:
-                    return pattern == join(s.value()->begin(), s.value()->end(), " ");
+                    return pattern == join(v->begin(), v->end(), " ");
                 case kro_less_than:
-                    return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
-                            StringifyEqual(pattern));
+                    return v->end() != std::find_if(v->begin(), v->end(), StringifyEqual(pattern));
 
                 case kro_tilde:
                 case kro_greater_than:
@@ -813,14 +814,15 @@ namespace
 
         bool visit(const MetadataCollectionKey<PackageIDSequence> & s) const
         {
+            auto v(s.parse_value());
             switch (op)
             {
                 case kro_equals:
-                    return pattern == join(indirect_iterator(s.value()->begin()), indirect_iterator(s.value()->end()), " ");
+                    return pattern == join(indirect_iterator(v->begin()), indirect_iterator(v->end()), " ");
                 case kro_less_than:
-                    return indirect_iterator(s.value()->end()) != std::find_if(
-                            indirect_iterator(s.value()->begin()),
-                            indirect_iterator(s.value()->end()),
+                    return indirect_iterator(v->end()) != std::find_if(
+                            indirect_iterator(v->begin()),
+                            indirect_iterator(v->end()),
                             StringifyEqual(pattern));
 
                 case kro_tilde:
@@ -835,13 +837,13 @@ namespace
 
         bool visit(const MetadataCollectionKey<Sequence<std::string> > & s) const
         {
+            auto v(s.parse_value());
             switch (op)
             {
                 case kro_equals:
-                    return pattern == join(s.value()->begin(), s.value()->end(), " ");
+                    return pattern == join(v->begin(), v->end(), " ");
                 case kro_less_than:
-                    return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
-                            StringifyEqual(pattern));
+                    return v->end() != std::find_if(v->begin(), v->end(), StringifyEqual(pattern));
 
                 case kro_tilde:
                 case kro_greater_than:
@@ -855,13 +857,13 @@ namespace
 
         bool visit(const MetadataCollectionKey<Set<std::string> > & s) const
         {
+            auto v(s.parse_value());
             switch (op)
             {
                 case kro_equals:
-                    return pattern == join(s.value()->begin(), s.value()->end(), " ");
+                    return pattern == join(v->begin(), v->end(), " ");
                 case kro_less_than:
-                    return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
-                            StringifyEqual(pattern));
+                    return v->end() != std::find_if(v->begin(), v->end(), StringifyEqual(pattern));
 
                 case kro_tilde:
                 case kro_greater_than:
@@ -880,13 +882,13 @@ namespace
 
         bool visit(const MetadataCollectionKey<KeywordNameSet> & s) const
         {
+            auto v(s.parse_value());
             switch (op)
             {
                 case kro_equals:
-                    return pattern == join(s.value()->begin(), s.value()->end(), " ");
+                    return pattern == join(v->begin(), v->end(), " ");
                 case kro_less_than:
-                    return s.value()->end() != std::find_if(s.value()->begin(), s.value()->end(),
-                            StringifyEqual(pattern));
+                    return v->end() != std::find_if(v->begin(), v->end(), StringifyEqual(pattern));
 
                 case kro_tilde:
                 case kro_greater_than:

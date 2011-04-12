@@ -40,7 +40,7 @@ namespace paludis
                         const std::string & v);
                 ~UnavailableRepositoryDependenciesKey();
 
-                const std::shared_ptr<const DependencySpecTree> value() const;
+                const std::shared_ptr<const DependencySpecTree> parse_value() const;
 
                 virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));

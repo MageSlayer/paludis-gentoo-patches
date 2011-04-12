@@ -132,7 +132,7 @@ Resolvent::Resolvent(
     package(id->name()),
     slot(make_named_values<SlotNameOrNull>(
                 n::name_or_null() = id->slot_key() ?
-                    std::make_shared<SlotName>(id->slot_key()->value()) :
+                    std::make_shared<SlotName>(id->slot_key()->parse_value()) :
                     make_null_shared_ptr(),
                 n::null_means_unknown() = false
                 ))

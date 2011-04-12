@@ -44,7 +44,7 @@ namespace paludis
                 InfoVarsMetadataKey(const std::shared_ptr<const FSPathSequence> &);
                 ~InfoVarsMetadataKey();
 
-                const std::shared_ptr<const Set<std::string> > value() const;
+                const std::shared_ptr<const Set<std::string> > parse_value() const;
 
                 virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));

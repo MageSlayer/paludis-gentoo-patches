@@ -70,7 +70,7 @@ Unmerger::~Unmerger()
 void
 Unmerger::add_unmerge_entry(const EntryType et, const std::shared_ptr<const ContentsEntry> & e)
 {
-    _imp->unmerge_entries.insert(std::make_pair(stringify(e->location_key()->value()), std::make_pair(et, e)));
+    _imp->unmerge_entries.insert(std::make_pair(stringify(e->location_key()->parse_value()), std::make_pair(et, e)));
 }
 
 void
@@ -123,7 +123,7 @@ Unmerger::unmerge()
 void
 Unmerger::unmerge_file(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    FSPath f_real(_imp->options.root() / e->location_key()->value());
+    FSPath f_real(_imp->options.root() / e->location_key()->parse_value());
 
     HookResult hr(_imp->options.environment()->perform_hook(extend_hook(
                     Hook("unmerger_unlink_file_override")
@@ -132,19 +132,19 @@ Unmerger::unmerge_file(const std::shared_ptr<const ContentsEntry> & e) const
                 _imp->options.maybe_output_manager()));
 
     if (hr.max_exit_status() != 0)
-        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->value()) + "' aborted by hook");
+        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->parse_value()) + "' aborted by hook");
     else if (hr.output() == "skip")
-        display("--- [skip ] " + stringify(e->location_key()->value()));
+        display("--- [skip ] " + stringify(e->location_key()->parse_value()));
     else if (hr.output() == "force")
     {
-        display("<<< [force] " + stringify(e->location_key()->value()));
+        display("<<< [force] " + stringify(e->location_key()->parse_value()));
         unlink_file(f_real, e);
     }
     else if (_imp->options.ignore()(FSPath(stringify(f_real))))
-        display("--- [ignor] " + stringify(e->location_key()->value()));
+        display("--- [ignor] " + stringify(e->location_key()->parse_value()));
     else if (check_file(e))
     {
-        display("<<<         " + stringify(e->location_key()->value()));
+        display("<<<         " + stringify(e->location_key()->parse_value()));
         unlink_file(f_real, e);
     }
 }
@@ -152,7 +152,7 @@ Unmerger::unmerge_file(const std::shared_ptr<const ContentsEntry> & e) const
 void
 Unmerger::unmerge_sym(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    FSPath f_real(_imp->options.root() / e->location_key()->value());
+    FSPath f_real(_imp->options.root() / e->location_key()->parse_value());
 
     HookResult hr(_imp->options.environment()->perform_hook(extend_hook(
                     Hook("unmerger_unlink_sym_override")
@@ -161,19 +161,19 @@ Unmerger::unmerge_sym(const std::shared_ptr<const ContentsEntry> & e) const
                 _imp->options.maybe_output_manager()));
 
     if (hr.max_exit_status() != 0)
-        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->value()) + "' aborted by hook");
+        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->parse_value()) + "' aborted by hook");
     else if (hr.output() == "skip")
-        display("--- [skip ] " + stringify(e->location_key()->value()));
+        display("--- [skip ] " + stringify(e->location_key()->parse_value()));
     else if (hr.output() == "force")
     {
-        display("<<< [force] " + stringify(e->location_key()->value()));
+        display("<<< [force] " + stringify(e->location_key()->parse_value()));
         unlink_sym(f_real, e);
     }
     else if (_imp->options.ignore()(FSPath(stringify(f_real))))
-        display("--- [ignor] " + stringify(e->location_key()->value()));
+        display("--- [ignor] " + stringify(e->location_key()->parse_value()));
     else if (check_sym(e))
     {
-        display("<<<         " + stringify(e->location_key()->value()));
+        display("<<<         " + stringify(e->location_key()->parse_value()));
         unlink_sym(f_real, e);
     }
 }
@@ -181,7 +181,7 @@ Unmerger::unmerge_sym(const std::shared_ptr<const ContentsEntry> & e) const
 void
 Unmerger::unmerge_dir(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    FSPath f_real(_imp->options.root() / e->location_key()->value());
+    FSPath f_real(_imp->options.root() / e->location_key()->parse_value());
 
     HookResult hr(_imp->options.environment()->perform_hook(extend_hook(
                     Hook("unmerger_unlink_dir_override")
@@ -190,14 +190,14 @@ Unmerger::unmerge_dir(const std::shared_ptr<const ContentsEntry> & e) const
                 _imp->options.maybe_output_manager()));
 
     if (hr.max_exit_status() != 0)
-        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->value()) + "' aborted by hook");
+        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->parse_value()) + "' aborted by hook");
     else if (hr.output() == "skip")
-        display("--- [skip ] " + stringify(e->location_key()->value()));
+        display("--- [skip ] " + stringify(e->location_key()->parse_value()));
     else if (_imp->options.ignore()(FSPath(stringify(f_real))))
-        display("--- [ignor] " + stringify(e->location_key()->value()));
+        display("--- [ignor] " + stringify(e->location_key()->parse_value()));
     else if (check_dir(e))
     {
-        display("<<<         " + stringify(e->location_key()->value()));
+        display("<<<         " + stringify(e->location_key()->parse_value()));
         unlink_dir(f_real, e);
     }
 }
@@ -205,7 +205,7 @@ Unmerger::unmerge_dir(const std::shared_ptr<const ContentsEntry> & e) const
 void
 Unmerger::unmerge_misc(const std::shared_ptr<const ContentsEntry> & e) const
 {
-    FSPath f_real(_imp->options.root() / e->location_key()->value());
+    FSPath f_real(_imp->options.root() / e->location_key()->parse_value());
 
     HookResult hr(_imp->options.environment()->perform_hook(extend_hook(
                     Hook("unmerger_unlink_misc_override")
@@ -214,19 +214,19 @@ Unmerger::unmerge_misc(const std::shared_ptr<const ContentsEntry> & e) const
                 _imp->options.maybe_output_manager()));
 
     if (hr.max_exit_status() != 0)
-        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->value()) + "' aborted by hook");
+        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->parse_value()) + "' aborted by hook");
     else if (hr.output() == "skip")
-        display("--- [skip ] " + stringify(e->location_key()->value()));
+        display("--- [skip ] " + stringify(e->location_key()->parse_value()));
     else if (hr.output() == "force")
     {
-        display("<<< [force] " + stringify(e->location_key()->value()));
+        display("<<< [force] " + stringify(e->location_key()->parse_value()));
         unlink_misc(f_real, e);
     }
     else if (_imp->options.ignore()(FSPath(stringify(f_real))))
-        display("--- [ignor] " + stringify(e->location_key()->value()));
+        display("--- [ignor] " + stringify(e->location_key()->parse_value()));
     else if (check_misc(e))
     {
-        display("<<<         " + stringify(e->location_key()->value()));
+        display("<<<         " + stringify(e->location_key()->parse_value()));
         unlink_misc(f_real, e);
     }
 }
@@ -236,9 +236,9 @@ Unmerger::unlink_file(FSPath f, const std::shared_ptr<const ContentsEntry> & e) 
 {
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_file_pre")
-                         ("UNLINK_TARGET", stringify(e->location_key()->value()))),
+                         ("UNLINK_TARGET", stringify(e->location_key()->parse_value()))),
                 _imp->options.maybe_output_manager()).max_exit_status())
-        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->value()) + "' aborted by hook");
+        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->parse_value()) + "' aborted by hook");
 
     FSStat f_stat(f);
     if (f_stat.is_regular_file())
@@ -255,9 +255,9 @@ Unmerger::unlink_file(FSPath f, const std::shared_ptr<const ContentsEntry> & e) 
 
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_file_post")
-                         ("UNLINK_TARGET", stringify(e->location_key()->value()))),
+                         ("UNLINK_TARGET", stringify(e->location_key()->parse_value()))),
                 _imp->options.maybe_output_manager()).max_exit_status())
-        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->value()) + "' aborted by hook");
+        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->parse_value()) + "' aborted by hook");
 }
 
 void
@@ -265,17 +265,17 @@ Unmerger::unlink_sym(FSPath f, const std::shared_ptr<const ContentsEntry> & e) c
 {
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_sym_pre")
-                         ("UNLINK_TARGET", stringify(e->location_key()->value()))),
+                         ("UNLINK_TARGET", stringify(e->location_key()->parse_value()))),
                 _imp->options.maybe_output_manager()).max_exit_status())
-        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->value()) + "' aborted by hook");
+        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->parse_value()) + "' aborted by hook");
 
     f.unlink();
 
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_sym_post")
-                         ("UNLINK_TARGET", stringify(e->location_key()->value()))),
+                         ("UNLINK_TARGET", stringify(e->location_key()->parse_value()))),
                 _imp->options.maybe_output_manager()).max_exit_status())
-        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->value()) + "' aborted by hook");
+        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->parse_value()) + "' aborted by hook");
 }
 
 void
@@ -283,17 +283,17 @@ Unmerger::unlink_dir(FSPath f, const std::shared_ptr<const ContentsEntry> & e) c
 {
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_dir_pre")
-                         ("UNLINK_TARGET", stringify(e->location_key()->value()))),
+                         ("UNLINK_TARGET", stringify(e->location_key()->parse_value()))),
                 _imp->options.maybe_output_manager()).max_exit_status())
-        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->value()) + "' aborted by hook");
+        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->parse_value()) + "' aborted by hook");
 
     f.rmdir();
 
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_dir_post")
-                         ("UNLINK_TARGET", stringify(e->location_key()->value()))),
+                         ("UNLINK_TARGET", stringify(e->location_key()->parse_value()))),
                 _imp->options.maybe_output_manager()).max_exit_status())
-        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->value()) + "' aborted by hook");
+        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->parse_value()) + "' aborted by hook");
 }
 
 void
@@ -301,17 +301,17 @@ Unmerger::unlink_misc(FSPath f, const std::shared_ptr<const ContentsEntry> & e) 
 {
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_misc_pre")
-                         ("UNLINK_TARGET", stringify(e->location_key()->value()))),
+                         ("UNLINK_TARGET", stringify(e->location_key()->parse_value()))),
                 _imp->options.maybe_output_manager()).max_exit_status())
-        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->value()) + "' aborted by hook");
+        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->parse_value()) + "' aborted by hook");
 
     f.unlink();
 
     if (0 != _imp->options.environment()->perform_hook(extend_hook(
                          Hook("unmerger_unlink_misc_post")
-                         ("UNLINK_TARGET", stringify(e->location_key()->value()))),
+                         ("UNLINK_TARGET", stringify(e->location_key()->parse_value()))),
                 _imp->options.maybe_output_manager()).max_exit_status())
-        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->value()) + "' aborted by hook");
+        throw UnmergerError("Unmerge of '" + stringify(e->location_key()->parse_value()) + "' aborted by hook");
 }
 
 Hook

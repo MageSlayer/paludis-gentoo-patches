@@ -80,7 +80,7 @@ FindReplacingHelper::operator() (
         for (auto r(_imp->env->begin_repositories()), r_end(_imp->env->end_repositories()) ;
                 r != r_end ; ++r)
             if ((*r)->installed_root_key() &&
-                    (*r)->installed_root_key()->value() == repo->installed_root_key()->value())
+                    (*r)->installed_root_key()->parse_value() == repo->installed_root_key()->parse_value())
                 repos.insert((*r)->name());
     }
     else

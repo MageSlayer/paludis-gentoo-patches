@@ -35,23 +35,23 @@ namespace
         public:
             void visit(const ContentsFileEntry & d)
             {
-                cout << left << setw(10) << "file" << d.location_key()->value() << endl;
+                cout << left << setw(10) << "file" << d.location_key()->parse_value() << endl;
             }
 
             void visit(const ContentsDirEntry & d)
             {
-                cout << left << setw(10) << "dir" << d.location_key()->value() << endl;
+                cout << left << setw(10) << "dir" << d.location_key()->parse_value() << endl;
             }
 
             void visit(const ContentsSymEntry & d)
             {
-                cout << left << setw(10) << "sym" << d.location_key()->value()
-                    << " -> " << d.target_key()->value() << endl;
+                cout << left << setw(10) << "sym" << d.location_key()->parse_value()
+                    << " -> " << d.target_key()->parse_value() << endl;
             }
 
             void visit(const ContentsOtherEntry & d)
             {
-                cout << left << setw(10) << "other" << d.location_key()->value() << endl;
+                cout << left << setw(10) << "other" << d.location_key()->parse_value() << endl;
             }
 
     };
@@ -90,12 +90,13 @@ int main(int argc, char * argv[])
                 cout << "ID '" << **i << "' provides contents key:" << endl;
 
                 /* Visit the contents key's value's entries with our visitor. We use
-                 * indirect_iterator because value()->begin() and ->end() return
+                 * indirect_iterator because choices->begin() and ->end() return
                  * iterators to std::shared_ptr<>s rather than raw objects. */
                 ContentsPrinter p;
+                auto contents((*i)->contents_key()->parse_value());
                 std::for_each(
-                        indirect_iterator((*i)->contents_key()->value()->begin()),
-                        indirect_iterator((*i)->contents_key()->value()->end()),
+                        indirect_iterator(contents->begin()),
+                        indirect_iterator(contents->end()),
                         accept_visitor(p));
             }
 

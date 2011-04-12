@@ -73,7 +73,7 @@ namespace paludis
             fetch_unneeded(f),
             default_label(n),
             action(a),
-            manifest(id->fs_location_key()->value().dirname() / "Manifest")
+            manifest(id->fs_location_key()->parse_value().dirname() / "Manifest")
         {
             labels.push_front(default_label.get());
         }

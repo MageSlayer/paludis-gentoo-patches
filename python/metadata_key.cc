@@ -181,15 +181,15 @@ struct MetadataPackageIDKeyWrapper :
     MetadataValueKey<std::shared_ptr<const PackageID> > ,
     bp::wrapper<MetadataValueKey<std::shared_ptr<const PackageID> > >
 {
-    virtual const std::shared_ptr<const PackageID> value() const
+    virtual const std::shared_ptr<const PackageID> parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        if (bp::override f = get_override("value"))
+        if (bp::override f = get_override("parse_value"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataPackageIDKey", "value");
+            throw PythonMethodNotImplemented("MetadataPackageIDKey", "parse_value");
     }
 
     virtual const std::string raw_name() const
@@ -234,15 +234,15 @@ struct MetadataStringKeyWrapper :
     MetadataValueKey<std::string> ,
     bp::wrapper<MetadataValueKey<std::string> >
 {
-    virtual const std::string value() const
+    virtual const std::string parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        if (bp::override f = get_override("value"))
+        if (bp::override f = get_override("parse_value"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataStringKey", "value");
+            throw PythonMethodNotImplemented("MetadataStringKey", "parse_value");
     }
 
     virtual const std::string raw_name() const
@@ -280,15 +280,15 @@ struct MetadataSlotNameKeyWrapper :
     MetadataValueKey<SlotName> ,
     bp::wrapper<MetadataValueKey<SlotName> >
 {
-    virtual const SlotName value() const
+    virtual const SlotName parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        if (bp::override f = get_override("value"))
+        if (bp::override f = get_override("parse_value"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataSlotNameKey", "value");
+            throw PythonMethodNotImplemented("MetadataSlotNameKey", "parse_value");
     }
 
     virtual const std::string raw_name() const
@@ -391,15 +391,15 @@ struct MetadataTimeKeyWrapper :
     MetadataTimeKey,
     bp::wrapper<MetadataTimeKey>
 {
-    virtual Timestamp value() const
+    virtual Timestamp parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        if (bp::override f = get_override("value"))
+        if (bp::override f = get_override("parse_value"))
             return Timestamp(f(), 0);
         else
-            throw PythonMethodNotImplemented("MetadataTimeKey", "value");
+            throw PythonMethodNotImplemented("MetadataTimeKey", "parse_value");
     }
 
     virtual const std::string raw_name() const
@@ -437,15 +437,15 @@ struct MetadataContentsKeyWrapper :
     MetadataValueKey<std::shared_ptr<const Contents> > ,
     bp::wrapper<MetadataValueKey<std::shared_ptr<const Contents> > >
 {
-    virtual const std::shared_ptr<const Contents> value() const
+    virtual const std::shared_ptr<const Contents> parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        if (bp::override f = get_override("value"))
+        if (bp::override f = get_override("parse_value"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataContentsKey", "value");
+            throw PythonMethodNotImplemented("MetadataContentsKey", "parse_value");
     }
 
     virtual const std::string raw_name() const
@@ -483,15 +483,15 @@ struct MetadataChoicesKeyWrapper :
     MetadataValueKey<std::shared_ptr<const Choices> > ,
     bp::wrapper<MetadataValueKey<std::shared_ptr<const Choices> > >
 {
-    virtual const std::shared_ptr<const Choices> value() const
+    virtual const std::shared_ptr<const Choices> parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        if (bp::override f = get_override("value"))
+        if (bp::override f = get_override("parse_value"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataChoicesKey", "value");
+            throw PythonMethodNotImplemented("MetadataChoicesKey", "parse_value");
     }
 
     virtual const std::string raw_name() const
@@ -529,15 +529,15 @@ struct MetadataFSPathKeyWrapper :
     MetadataValueKey<FSPath> ,
     bp::wrapper<MetadataValueKey<FSPath> >
 {
-    virtual const FSPath value() const
+    virtual const FSPath parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        if (bp::override f = get_override("value"))
+        if (bp::override f = get_override("parse_value"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataValueKey<FSPath> ", "value");
+            throw PythonMethodNotImplemented("MetadataValueKey<FSPath> ", "parse_value");
     }
 
     virtual const std::string raw_name() const
@@ -576,15 +576,15 @@ struct MetadataCollectionKeyWrapper :
     MetadataCollectionKey<C_>,
     bp::wrapper<MetadataCollectionKey<C_> >
 {
-    virtual const std::shared_ptr<const C_> value() const
+    virtual const std::shared_ptr<const C_> parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        if (bp::override f = this->get_override("value"))
+        if (bp::override f = this->get_override("parse_value"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataCollectionKey", "value");
+            throw PythonMethodNotImplemented("MetadataCollectionKey", "parse_value");
     }
 
     virtual const std::string raw_name() const
@@ -630,15 +630,15 @@ struct MetadataSpecTreeKeyWrapper :
     MetadataSpecTreeKey<C_>,
     bp::wrapper<MetadataSpecTreeKey<C_> >
 {
-    virtual const std::shared_ptr<const C_> value() const
+    virtual const std::shared_ptr<const C_> parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        if (bp::override f = this->get_override("value"))
+        if (bp::override f = this->get_override("parse_value"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "parse_value");
     }
 
     virtual const std::string raw_name() const
@@ -684,15 +684,15 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
     MetadataSpecTreeKey<FetchableURISpecTree>,
     bp::wrapper<MetadataSpecTreeKey<FetchableURISpecTree> >
 {
-    virtual const std::shared_ptr<const FetchableURISpecTree> value() const
+    virtual const std::shared_ptr<const FetchableURISpecTree> parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        if (bp::override f = this->get_override("value"))
+        if (bp::override f = this->get_override("parse_value"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "parse_value");
     }
 
     virtual const std::shared_ptr<const URILabel> initial_label() const
@@ -749,15 +749,15 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
     MetadataSpecTreeKey<DependencySpecTree>,
     bp::wrapper<MetadataSpecTreeKey<DependencySpecTree> >
 {
-    virtual const std::shared_ptr<const DependencySpecTree> value() const
+    virtual const std::shared_ptr<const DependencySpecTree> parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
 
-        if (bp::override f = this->get_override("value"))
+        if (bp::override f = this->get_override("parse_value"))
             return f();
         else
-            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "value");
+            throw PythonMethodNotImplemented("MetadataSpecTreeKey", "parse_value");
     }
 
     virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
@@ -831,8 +831,8 @@ struct class_set_key :
         bp::implicitly_convertible<std::shared_ptr<MetadataCollectionKeyWrapper<C_> >,
                 std::shared_ptr<MetadataKey> >();
 
-        def("value", bp::pure_virtual(&MetadataCollectionKey<C_>::value),
-                ("value() -> " + set + "\n"
+        def("parse_value", bp::pure_virtual(&MetadataCollectionKey<C_>::parse_value),
+                ("parse_value() -> " + set + "\n"
                  "Fetch our value.").c_str()
            );
     }
@@ -860,8 +860,8 @@ struct class_spec_tree_key :
         bp::implicitly_convertible<std::shared_ptr<MetadataSpecTreeKeyWrapper<C_> >,
                 std::shared_ptr<MetadataKey> >();
 
-        def("value", bp::pure_virtual(&MetadataSpecTreeKey<C_>::value),
-                ("value() -> " + spec_tree + "\n"
+        def("parse_value", bp::pure_virtual(&MetadataSpecTreeKey<C_>::parse_value),
+                ("parse_value() -> " + spec_tree + "\n"
                  "Fetch our value").c_str()
            );
     }
@@ -891,8 +891,8 @@ struct class_spec_tree_key<FetchableURISpecTree> :
         bp::implicitly_convertible<std::shared_ptr<MetadataSpecTreeKeyWrapper<FetchableURISpecTree> >,
                 std::shared_ptr<MetadataKey> >();
 
-        def("value", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::value),
-                ("value() -> " + spec_tree + "\n"
+        def("parse_value", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::parse_value),
+                ("parse_value() -> " + spec_tree + "\n"
                  "Fetch our value").c_str()
            );
 
@@ -928,8 +928,8 @@ struct class_spec_tree_key<DependencySpecTree> :
         bp::implicitly_convertible<std::shared_ptr<MetadataSpecTreeKeyWrapper<DependencySpecTree> >,
                 std::shared_ptr<MetadataKey> >();
 
-        def("value", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::value),
-                ("value() -> " + spec_tree + "\n"
+        def("parse_value", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::parse_value),
+                ("parse_value() -> " + spec_tree + "\n"
                  "Fetch our value").c_str()
            );
 
@@ -1012,8 +1012,8 @@ void expose_metadata_key()
              "__init__()"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataValueKey<std::shared_ptr<const PackageID> > ::value),
-                "value() -> PackageID\n"
+        .def("parse_value", bp::pure_virtual(&MetadataValueKey<std::shared_ptr<const PackageID> > ::parse_value),
+                "parse_value() -> PackageID\n"
                 "Fetch our value."
                 )
         ;
@@ -1036,8 +1036,8 @@ void expose_metadata_key()
              "__init__()"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataValueKey<std::string> ::value),
-                "value() -> string\n"
+        .def("parse_value", bp::pure_virtual(&MetadataValueKey<std::string> ::parse_value),
+                "parse_value() -> string\n"
                 "Fetch our value."
                 )
         ;
@@ -1060,8 +1060,8 @@ void expose_metadata_key()
              "__init__()"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataValueKey<SlotName> ::value),
-                "value() -> SlotName\n"
+        .def("parse_value", bp::pure_virtual(&MetadataValueKey<SlotName> ::parse_value),
+                "parse_value() -> SlotName\n"
                 "Fetch our value."
                 )
         ;
@@ -1112,8 +1112,8 @@ void expose_metadata_key()
              "__init__()"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataTimeKey::value),
-                "value() -> int\n"
+        .def("parse_value", bp::pure_virtual(&MetadataTimeKey::parse_value),
+                "parse_value() -> int\n"
                 "Fetch our value."
                 )
         ;
@@ -1135,8 +1135,8 @@ void expose_metadata_key()
              "__init__()"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataValueKey<FSPath> ::value),
-                "value() -> FSPath\n"
+        .def("parse_value", bp::pure_virtual(&MetadataValueKey<FSPath> ::parse_value),
+                "parse_value() -> FSPath\n"
                 "Fetch our value."
                 )
         ;
@@ -1158,8 +1158,8 @@ void expose_metadata_key()
              "__init__()"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataValueKey<std::shared_ptr<const Contents> > ::value),
-                "value() -> Contents\n"
+        .def("parse_value", bp::pure_virtual(&MetadataValueKey<std::shared_ptr<const Contents> > ::parse_value),
+                "parse_value() -> Contents\n"
                 "Fetch our value."
                 )
 
@@ -1199,8 +1199,8 @@ void expose_metadata_key()
              "__init__()"
              )
         )
-        .def("value", bp::pure_virtual(&MetadataValueKey<std::shared_ptr<const Choices> > ::value),
-                "value() -> Choices\n"
+        .def("parse_value", bp::pure_virtual(&MetadataValueKey<std::shared_ptr<const Choices> > ::parse_value),
+                "parse_value() -> Choices\n"
                 "Fetch our value."
                 )
 

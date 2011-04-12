@@ -601,14 +601,14 @@ EInstalledRepositoryID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             if (_imp->keys && _imp->keys->slot)
-                return stringify(name()) + "-" + stringify(version()) + ":" + stringify(_imp->keys->slot->value()) + "::" +
+                return stringify(name()) + "-" + stringify(version()) + ":" + stringify(_imp->keys->slot->parse_value()) + "::" +
                     stringify(repository_name());
 
             return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository_name());
 
         case idcf_no_version:
             if (_imp->keys && _imp->keys->slot)
-                return stringify(name()) + ":" + stringify(_imp->keys->slot->value()) + "::" +
+                return stringify(name()) + ":" + stringify(_imp->keys->slot->parse_value()) + "::" +
                     stringify(repository_name());
 
             return stringify(name()) + "::" + stringify(repository_name());
@@ -618,7 +618,7 @@ EInstalledRepositoryID::canonical_form(const PackageIDCanonicalForm f) const
 
         case idcf_no_name:
             if (_imp->keys && _imp->keys->slot)
-                return stringify(version()) + ":" + stringify(_imp->keys->slot->value()) + "::" +
+                return stringify(version()) + ":" + stringify(_imp->keys->slot->parse_value()) + "::" +
                     stringify(repository_name());
 
             return stringify(version()) + "::" + stringify(repository_name());
@@ -634,7 +634,7 @@ PackageDepSpec
 EInstalledRepositoryID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository_name()),
+            (slot_key() ? ":" + stringify(slot_key()->parse_value()) : "") + "::" + stringify(repository_name()),
             _imp->environment, { });
 }
 
@@ -1060,7 +1060,10 @@ EInstalledRepositoryID::make_choice_value(const std::shared_ptr<const Choice> & 
 
     bool enabled(false);
     if (raw_use_key())
-        enabled = (raw_use_key()->value()->end() != raw_use_key()->value()->find(name_with_prefix));
+    {
+        auto ru(raw_use_key()->parse_value());
+        enabled = (ru->end() != ru->find(name_with_prefix));
+    }
 
     return create_e_choice_value(make_named_values<EChoiceValueParams>(
                 n::choice_name_with_prefix() = ChoiceNameWithPrefix(name_with_prefix),

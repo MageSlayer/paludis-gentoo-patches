@@ -285,8 +285,8 @@ GetResolventsForHelper::operator() (
     auto installed_ids((*_imp->env)[selection::BestVersionInEachSlot(
                 generator::Matches(spec, from_id, { }) |
                 (_imp->target_destination_type == dt_install_to_chroot ?
-                 Filter(filter::InstalledNotAtRoot(_imp->env->system_root_key()->value())) :
-                 Filter(filter::InstalledAtRoot(_imp->env->system_root_key()->value()))))]);
+                 Filter(filter::InstalledNotAtRoot(_imp->env->system_root_key()->parse_value())) :
+                 Filter(filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))))]);
 
     auto target(is_target(reason));
     auto want_installed(target ? _imp->want_installed_slots_for_targets : _imp->want_installed_slots_otherwise);

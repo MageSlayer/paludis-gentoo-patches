@@ -116,11 +116,11 @@ TEST(UnpackagedRepository, Metadata)
             *env[selection::RequireExactlyOne(generator::All())]->begin());
 
     EXPECT_EQ(id->version(), VersionSpec("1.0", { }));
-    EXPECT_EQ(SlotName("foo"), id->slot_key()->value());
+    EXPECT_EQ(SlotName("foo"), id->slot_key()->parse_value());
     EXPECT_EQ(QualifiedPackageName("cat/pkg"), id->name());
     EXPECT_EQ(RepositoryName("unpackaged"), id->repository_name());
     ASSERT_TRUE(bool(id->fs_location_key()));
-    EXPECT_EQ(FSPath("unpackaged_repository_TEST_dir/pkg"), id->fs_location_key()->value());
+    EXPECT_EQ(FSPath("unpackaged_repository_TEST_dir/pkg"), id->fs_location_key()->parse_value());
 }
 
 TEST(UnpackagedRepository, Masks)

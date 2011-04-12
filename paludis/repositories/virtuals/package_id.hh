@@ -41,7 +41,7 @@ namespace paludis
                         const bool);
                 ~VirtualsDepKey();
 
-                virtual const std::shared_ptr<const DependencySpecTree> value() const
+                virtual const std::shared_ptr<const DependencySpecTree> parse_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const

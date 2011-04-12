@@ -55,12 +55,13 @@ namespace
             return false;
         }
 
-        const std::shared_ptr<const ChoiceValue> v(id.choices_key()->value()->find_by_name_with_prefix(f));
+        auto choices(id.choices_key()->parse_value());
+        auto v(choices->find_by_name_with_prefix(f));
         if (v)
             return v->enabled();
 
         if (! no_warning_for_unlisted)
-            if (! id.choices_key()->value()->has_matching_contains_every_value_prefix(f))
+            if (! choices->has_matching_contains_every_value_prefix(f))
                 Log::get_instance()->message("elike_conditional_dep_spec.query", ll_warning, lc_context) <<
                     "ID '" << id << "' has no flag named '" << f << "'";
         return false;
@@ -75,12 +76,13 @@ namespace
             return false;
         }
 
-        const std::shared_ptr<const ChoiceValue> v(id.choices_key()->value()->find_by_name_with_prefix(f));
+        auto choices(id.choices_key()->parse_value());
+        auto v(choices->find_by_name_with_prefix(f));
         if (v)
             return v->locked();
 
         if (! no_warning_for_unlisted)
-            if (! id.choices_key()->value()->has_matching_contains_every_value_prefix(f))
+            if (! choices->has_matching_contains_every_value_prefix(f))
                 Log::get_instance()->message("elike_conditional_dep_spec.query", ll_warning, lc_context) <<
                     "ID '" << id << "' has no flag named '" << f << "'";
         return false;

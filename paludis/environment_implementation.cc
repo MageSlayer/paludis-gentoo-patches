@@ -444,7 +444,7 @@ namespace
         bool operator() (const QualifiedPackageName & qpn) const
         {
             return ! (*_env)[selection::SomeArbitraryVersion(generator::Package(qpn) |
-                    filter::InstalledAtRoot(_env->preferred_root_key()->value()))]->empty();
+                    filter::InstalledAtRoot(_env->preferred_root_key()->parse_value()))]->empty();
         }
     };
 

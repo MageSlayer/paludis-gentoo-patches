@@ -102,7 +102,7 @@ namespace
     std::string slot_as_string(const std::shared_ptr<const PackageID> & id)
     {
         if (id->slot_key())
-            return stringify(id->slot_key()->value());
+            return stringify(id->slot_key()->parse_value());
         else
             return "(none)";
     }

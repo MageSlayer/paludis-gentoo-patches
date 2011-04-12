@@ -106,22 +106,22 @@ UnavailablePackageID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             return stringify(_imp->name) + "-" + stringify(_imp->version) +
-                ":" + stringify(_imp->slot_key->value()) + "::" + stringify(_imp->repository_name) +
-                " (in ::" + *_imp->from_repositories_key->value()->begin() + ")";
+                ":" + stringify(_imp->slot_key->parse_value()) + "::" + stringify(_imp->repository_name) +
+                " (in ::" + *_imp->from_repositories_key->parse_value()->begin() + ")";
 
         case idcf_no_version:
-            return stringify(_imp->name) + ":" + stringify(_imp->slot_key->value()) +
+            return stringify(_imp->name) + ":" + stringify(_imp->slot_key->parse_value()) +
                 "::" + stringify(_imp->repository_name) +
-                " (in ::" + *_imp->from_repositories_key->value()->begin() + ")";
+                " (in ::" + *_imp->from_repositories_key->parse_value()->begin() + ")";
 
         case idcf_version:
             return stringify(_imp->version) +
-                " (in ::" + *_imp->from_repositories_key->value()->begin() + ")";
+                " (in ::" + *_imp->from_repositories_key->parse_value()->begin() + ")";
 
         case idcf_no_name:
             return stringify(_imp->version) +
-                ":" + stringify(_imp->slot_key->value()) + "::" + stringify(_imp->repository_name) +
-                " (in ::" + *_imp->from_repositories_key->value()->begin() + ")";
+                ":" + stringify(_imp->slot_key->parse_value()) + "::" + stringify(_imp->repository_name) +
+                " (in ::" + *_imp->from_repositories_key->parse_value()->begin() + ")";
 
         case last_idcf:
             break;
@@ -134,8 +134,8 @@ PackageDepSpec
 UnavailablePackageID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->value()) : "") + "::" + stringify(repository_name()) +
-            "[." + _imp->from_repositories_key->raw_name() + "=" + *_imp->from_repositories_key->value()->begin() + "]",
+            (slot_key() ? ":" + stringify(slot_key()->parse_value()) : "") + "::" + stringify(repository_name()) +
+            "[." + _imp->from_repositories_key->raw_name() + "=" + *_imp->from_repositories_key->parse_value()->begin() + "]",
             _imp->env, { });
 }
 
@@ -181,25 +181,27 @@ UnavailablePackageID::arbitrary_less_than_comparison(const PackageID & other) co
     if (! other.slot_key())
         return false;
 
-    if (slot_key()->value() < other.slot_key()->value())
+    if (slot_key()->parse_value() < other.slot_key()->parse_value())
         return true;
-    if (slot_key()->value() > other.slot_key()->value())
+    if (slot_key()->parse_value() > other.slot_key()->parse_value())
         return false;
 
     std::shared_ptr<const MetadataCollectionKey<Set<std::string > > > k(other.from_repositories_key());
     if (! k)
         throw InternalError(PALUDIS_HERE, "other has no from_repositories_key()");
-    if (1 != k->value()->size())
+
+    auto v(k->parse_value());
+    if (1 != v->size())
         throw InternalError(PALUDIS_HERE, "other has bad from_repositories_key");
 
-    return *_imp->from_repositories_key->value()->begin() < *k->value()->begin();
+    return *_imp->from_repositories_key->parse_value()->begin() < *v->begin();
 }
 
 std::size_t
 UnavailablePackageID::extra_hash_value() const
 {
     return Hash<std::pair<SlotName, std::string> >()(std::make_pair(
-                slot_key()->value(), *_imp->from_repositories_key->value()->begin()));
+                slot_key()->parse_value(), *_imp->from_repositories_key->parse_value()->begin()));
 }
 
 const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >

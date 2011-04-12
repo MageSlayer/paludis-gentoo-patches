@@ -444,7 +444,7 @@ NDBAM::parse_contents(const PackageID & id,
     if (! id.fs_location_key())
         throw InternalError(PALUDIS_HERE, "No id.fs_location_key");
 
-    FSPath ff(id.fs_location_key()->value() / "contents");
+    FSPath ff(id.fs_location_key()->parse_value() / "contents");
     if (! ff.stat().is_regular_file_or_symlink_to_regular_file())
     {
         Log::get_instance()->message("ndbam.contents.skipping", ll_warning, lc_context)
