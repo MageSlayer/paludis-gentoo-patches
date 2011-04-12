@@ -109,7 +109,7 @@ PackageMaskConf::add(const FSPath & filename)
         }
         catch (const GotASetNotAPackageDepSpec &)
         {
-            _imp->sets.push_back(std::make_pair(SetName(*line), std::make_pair(make_null_shared_ptr(), reasons)));
+            _imp->sets.push_back(std::make_pair(SetName(spec), std::make_pair(make_null_shared_ptr(), reasons)));
         }
     }
 }
