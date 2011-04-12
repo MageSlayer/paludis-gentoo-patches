@@ -21,6 +21,7 @@
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/dep_parser.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
@@ -36,6 +37,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/safe_ifstream.hh>
 
 #include <paludis/choice.hh>
 #include <paludis/environment.hh>
@@ -44,6 +46,8 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/paludislike_options_conf.hh>
+#include <paludis/dep_spec_flattener.hh>
+
 #include <unordered_map>
 #include <list>
 
@@ -177,19 +181,17 @@ ExheresProfile::_load_dir(const FSPath & f)
     {
         if ((f / "system.conf").stat().exists())
         {
+            SafeIFStream file(f / "system.conf");
+            std::string file_text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
             auto eapi(EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(f / "system.conf")));
+            auto specs(parse_commented_set(file_text, _imp->env, *EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(f / "system.conf"))));
 
-            LineConfigFile file(f / "system.conf", { });
-            for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
-                    line != line_end ; ++line)
-            {
-                std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
-                            parse_elike_package_dep_spec(*line,
-                                eapi->supported()->package_dep_spec_parse_options(),
-                                eapi->supported()->version_spec_options())));
+            DepSpecFlattener<SetSpecTree, PackageDepSpec> flat_specs(_imp->env, make_null_shared_ptr());
+            specs->top()->accept(flat_specs);
 
-                _imp->system_packages->top()->append(spec);
-            }
+            for (auto s(flat_specs.begin()), s_end(flat_specs.end()) ;
+                    s != s_end ; ++s)
+                _imp->system_packages->top()->append(std::make_shared<PackageDepSpec>(**s));
         }
     }
 
