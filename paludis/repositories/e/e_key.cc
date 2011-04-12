@@ -783,8 +783,6 @@ namespace paludis
     struct Imp<EContentsKey>
     {
         const FSPath filename;
-        mutable Mutex value_mutex;
-        mutable std::shared_ptr<Contents> value;
 
         const std::string raw_name;
         const std::string human_name;
@@ -812,21 +810,16 @@ EContentsKey::~EContentsKey()
 const std::shared_ptr<const Contents>
 EContentsKey::parse_value() const
 {
-    Lock l(_imp->value_mutex);
-
-    if (_imp->value)
-        return _imp->value;
-
     Context context("When creating contents from '" + stringify(_imp->filename) + "':");
 
-    _imp->value = std::make_shared<Contents>();
+    auto value(std::make_shared<Contents>());
 
     FSPath f(_imp->filename);
     if (! f.stat().is_regular_file_or_symlink_to_regular_file())
     {
         Log::get_instance()->message("e.contents.not_a_file", ll_warning, lc_context) << "Could not read CONTENTS file '" <<
             _imp->filename << "'";
-        return _imp->value;
+        return value;
     }
 
     SafeIFStream ff(f);
@@ -851,28 +844,28 @@ EContentsKey::parse_value() const
             e->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal,
                             Timestamp(destringify<time_t>(tokens.at(3)), 0)));
             e->add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("md5", "md5", mkt_normal, tokens.at(2)));
-            _imp->value->add(e);
+            value->add(e);
         }
         else if ("dir" == tokens.at(0))
         {
             std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsDirEntry>(FSPath(tokens.at(1))));
-            _imp->value->add(e);
+            value->add(e);
         }
         else if ("sym" == tokens.at(0))
         {
             std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsSymEntry>(FSPath(tokens.at(1)), tokens.at(2)));
             e->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal,
                             Timestamp(destringify<time_t>(tokens.at(3)), 0)));
-            _imp->value->add(e);
+            value->add(e);
         }
         else if ("misc" == tokens.at(0) || "fif" == tokens.at(0) || "dev" == tokens.at(0))
-            _imp->value->add(std::shared_ptr<ContentsEntry>(std::make_shared<ContentsOtherEntry>(FSPath(tokens.at(1)))));
+            value->add(std::shared_ptr<ContentsEntry>(std::make_shared<ContentsOtherEntry>(FSPath(tokens.at(1)))));
         else
             Log::get_instance()->message("e.contents.unknown", ll_warning, lc_context) << "CONTENTS has unsupported entry type '" <<
                 tokens.at(0) << "', skipping";
     }
 
-    return _imp->value;
+    return value;
 }
 
 const std::string
