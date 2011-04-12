@@ -33,6 +33,7 @@ namespace paludis
     {
         typedef Name<struct name_config_protect> config_protect;
         typedef Name<struct name_config_protect_mask> config_protect_mask;
+        typedef Name<struct name_contents> contents;
         typedef Name<struct name_environment> environment;
         typedef Name<struct name_ignore> ignore;
         typedef Name<struct name_output_manager> output_manager;
@@ -51,6 +52,7 @@ namespace paludis
     {
         NamedValue<n::config_protect, std::string> config_protect;
         NamedValue<n::config_protect_mask, std::string> config_protect_mask;
+        NamedValue<n::contents, std::shared_ptr<const Contents> > contents;
         NamedValue<n::environment, Environment *> environment;
         NamedValue<n::ignore, const std::function<bool (const FSPath &)> > ignore;
         NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;

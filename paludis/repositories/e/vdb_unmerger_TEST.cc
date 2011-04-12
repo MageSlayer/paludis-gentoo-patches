@@ -38,6 +38,7 @@
 #include <paludis/selection.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
+#include <paludis/metadata_key.hh>
 
 #include <algorithm>
 
@@ -116,14 +117,17 @@ namespace
             repo = VDBRepository::repository_factory_create(&env, std::bind(from_keys, keys, std::placeholders::_1));
             env.add_repository(0, repo);
 
+            auto id(*env[selection::RequireExactlyOne(generator::Matches(
+                            parse_user_package_dep_spec("cat/" + fix(what), &env, { }), make_null_shared_ptr(), { }))]->begin());
+
             unmerger = std::make_shared<VDBUnmergerNoDisplay>(make_named_values<VDBUnmergerOptions>(
                             n::config_protect() = "/protected_file /protected_dir",
                             n::config_protect_mask() = "/protected_dir/unprotected_file /protected_dir/unprotected_dir",
+                            n::contents() = id->contents_key()->value(),
                             n::environment() = &env,
                             n::ignore() = &ignore_nothing,
                             n::output_manager() = std::make_shared<StandardOutputManager>(),
-                            n::package_id() = *env[selection::RequireExactlyOne(generator::Matches(
-                                        parse_user_package_dep_spec("cat/" + fix(what), &env, { }), make_null_shared_ptr(), { }))]->begin(),
+                            n::package_id() = id,
                             n::root() = root_dir
                             ));
         }

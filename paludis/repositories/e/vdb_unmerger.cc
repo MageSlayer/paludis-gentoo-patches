@@ -191,11 +191,7 @@ namespace
 void
 VDBUnmerger::populate_unmerge_set()
 {
-    if (! _imp->options.package_id()->contents_key()->value())
-        throw VDBUnmergerError("Id '" + stringify(*_imp->options.package_id()) + "' has no contents key");
-
-    std::shared_ptr<const Contents> contents(_imp->options.package_id()->contents_key()->value());
-    for (Contents::ConstIterator c(contents->begin()), c_end(contents->end()) ;
+    for (Contents::ConstIterator c(_imp->options.contents()->begin()), c_end(_imp->options.contents()->end()) ;
             c != c_end ; ++c)
         add_unmerge_entry(get_et(**c), *c);
 }

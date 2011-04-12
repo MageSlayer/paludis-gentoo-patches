@@ -467,11 +467,16 @@ VDBRepository::perform_uninstall(
 
             std::string final_config_protect(config_protect + " " + a.options.config_protect());
 
+            std::shared_ptr<const Contents> contents(a.options.override_contents());
+            if (! contents)
+                contents = id->contents_key()->value();
+
             /* unmerge */
             VDBUnmerger unmerger(
                     make_named_values<VDBUnmergerOptions>(
                         n::config_protect() = final_config_protect,
                         n::config_protect_mask() = config_protect_mask,
+                        n::contents() = contents,
                         n::environment() = _imp->params.environment(),
                         n::ignore() = a.options.ignore_for_unmerge(),
                         n::output_manager() = output_manager,
