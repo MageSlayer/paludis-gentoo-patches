@@ -152,3 +152,30 @@ cp postinsttest_src1/cat/pkg/pkg-{0,1}.ebuild
 cp postinsttest_src1/cat/pkg/pkg-{0,1.1}.ebuild
 cp postinsttest_src1/cat/pkg/pkg-{0,2}.ebuild
 
+mkdir -p removestalefilesvdb removestalefiles/{eclass,profiles/profile,cat/pkg} || exit 1
+
+cat <<END > removestalefiles/profiles/profile/make.defaults
+ARCH=test
+USERLAND="GNU"
+KERNEL="linux"
+CHOST="i286-badger-linux-gnu"
+END
+echo removestalefiles >removestalefiles/profiles/repo_name
+echo cat >removestalefiles/profiles/categories
+
+cat <<'END' >removestalefiles/cat/pkg/pkg-0.ebuild
+SLOT="0"
+KEYWORDS="test"
+S="${WORKDIR}"
+
+src_unpack() {
+    touch stale-both
+    $VDB_REPOSITORY_TEST_STALE && touch stale-first
+}
+
+src_install() {
+    insinto /
+    doins stale-*
+}
+END
+

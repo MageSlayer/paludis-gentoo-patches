@@ -456,3 +456,63 @@ TEST(VDBRepository, PhaseOrdering)
     }
 }
 
+TEST(VDBRepository, RemoveStaleFiles)
+{
+    TestEnvironment env(FSPath(stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "root")).realpath());
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "removestalefiles"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "removestalefiles/profiles/profile"));
+    keys->insert("layout", "traditional");
+    keys->insert("eapi_when_unknown", "0");
+    keys->insert("eapi_when_unspecified", "0");
+    keys->insert("profile_eapi", "0");
+    keys->insert("distdir", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "build"));
+    keys->insert("root", stringify(FSPath("vdb_repository_TEST_dir/root").realpath()));
+    std::shared_ptr<Repository> repo1(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo1);
+
+    keys = std::make_shared<Map<std::string, std::string>>();
+    keys->insert("format", "vdb");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("provides_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "removestalefilesvdb"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "build"));
+    keys->insert("root", stringify(FSPath("vdb_repository_TEST_dir/root").realpath()));
+    std::shared_ptr<Repository> vdb_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(0, vdb_repo);
+
+    EXPECT_TRUE(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"), { })->empty());
+
+    EXPECT_FALSE((FSPath("vdb_repository_TEST_dir/root") / "stale-first").stat().exists());
+    EXPECT_FALSE((FSPath("vdb_repository_TEST_dir/root") / "stale-both").stat().exists());
+
+    {
+        ::setenv("VDB_REPOSITORY_TEST_STALE", "true", 1);
+        install(env, vdb_repo, "=cat/pkg-0::removestalefiles", "");
+        vdb_repo->invalidate();
+
+        std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"), { }));
+        EXPECT_EQ("cat/pkg-0::installed", join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "));
+    }
+
+    EXPECT_TRUE((FSPath("vdb_repository_TEST_dir/root") / "stale-first").stat().exists());
+    EXPECT_TRUE((FSPath("vdb_repository_TEST_dir/root") / "stale-both").stat().exists());
+
+    {
+        ::setenv("VDB_REPOSITORY_TEST_STALE", "false", 1);
+        install(env, vdb_repo, "=cat/pkg-0::removestalefiles", "=cat/pkg-0::installed");
+        vdb_repo->invalidate();
+
+        std::shared_ptr<const PackageIDSequence> ids(vdb_repo->package_ids(QualifiedPackageName("cat/pkg"), { }));
+        EXPECT_EQ("cat/pkg-0::installed", join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " "));
+    }
+
+    EXPECT_FALSE((FSPath("vdb_repository_TEST_dir/root") / "stale-first").stat().exists());
+    EXPECT_TRUE((FSPath("vdb_repository_TEST_dir/root") / "stale-both").stat().exists());
+}
+
