@@ -31,6 +31,8 @@ make_enum_DepSpecAnnotationRole()
 
     key dsar_suggestions_group_name           "Group name for suggestions"
 
+    key dsar_system_implicit                  "For system, whether a spec is an implicit dependency"
+
     want_destringify
 
     doxygen_comment << "END"

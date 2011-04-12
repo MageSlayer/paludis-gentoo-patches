@@ -107,6 +107,13 @@ paludis::erepository::parse_annotations(
                 role = dsar_suggestions_group_name;
         }
 
+        /* system */
+        if (dsar_none == role)
+        {
+            if (key == eapi.supported()->annotations()->system_implicit())
+                role = dsar_system_implicit;
+        }
+
         /* general */
         if (dsar_none == role)
         {

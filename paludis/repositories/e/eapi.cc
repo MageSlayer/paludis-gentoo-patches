@@ -272,7 +272,8 @@ namespace
                     n::myoptions_number_selected_at_most_one() = k.get("annotations_myoptions_number_selected_at_most_one"),
                     n::myoptions_number_selected_exactly_one() = k.get("annotations_myoptions_number_selected_exactly_one"),
                     n::myoptions_requires() = k.get("annotations_myoptions_requires"),
-                    n::suggestions_group_name() = k.get("annotations_suggesions_group_name")
+                    n::suggestions_group_name() = k.get("annotations_suggesions_group_name"),
+                    n::system_implicit() = k.get("system_implicit")
                     ));
     }
 

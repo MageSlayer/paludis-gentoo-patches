@@ -197,6 +197,7 @@ namespace paludis
         typedef Name<struct name_support_eclasses> support_eclasses;
         typedef Name<struct name_support_exlibs> support_exlibs;
         typedef Name<struct name_supported> supported;
+        typedef Name<struct name_system_implicit> system_implicit;
         typedef Name<struct name_tools_options> tools_options;
         typedef Name<struct name_unpack_fix_permissions> unpack_fix_permissions;
         typedef Name<struct name_unpack_suffixes> unpack_suffixes;
@@ -499,6 +500,7 @@ namespace paludis
             NamedValue<n::myoptions_number_selected_exactly_one, std::string> myoptions_number_selected_exactly_one;
             NamedValue<n::myoptions_requires, std::string> myoptions_requires;
             NamedValue<n::suggestions_group_name, std::string> suggestions_group_name;
+            NamedValue<n::system_implicit, std::string> system_implicit;
         };
     }
 }
