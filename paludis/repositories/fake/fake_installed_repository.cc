@@ -118,12 +118,6 @@ FakeInstalledRepository::provided_packages() const
 }
 
 bool
-FakeInstalledRepository::is_default_destination() const
-{
-    return environment()->preferred_root_key()->parse_value() == installed_root_key()->parse_value();
-}
-
-bool
 FakeInstalledRepository::want_pre_post_phases() const
 {
     return true;

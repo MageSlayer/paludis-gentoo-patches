@@ -610,12 +610,6 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
-             * Are we to be included in the Environment::default_destinations list?
-             */
-            virtual bool is_default_destination() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
              * If true, pre and post install phases will be used when writing to this
              * destination.
              *

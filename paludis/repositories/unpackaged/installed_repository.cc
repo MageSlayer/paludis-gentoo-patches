@@ -407,12 +407,6 @@ InstalledUnpackagedRepository::is_suitable_destination_for(const std::shared_ptr
 }
 
 bool
-InstalledUnpackagedRepository::is_default_destination() const
-{
-    return _imp->params.environment()->preferred_root_key()->parse_value() == installed_root_key()->parse_value();
-}
-
-bool
 InstalledUnpackagedRepository::want_pre_post_phases() const
 {
     return true;

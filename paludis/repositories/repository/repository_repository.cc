@@ -341,12 +341,6 @@ RepositoryRepository::is_suitable_destination_for(const std::shared_ptr<const Pa
 }
 
 bool
-RepositoryRepository::is_default_destination() const
-{
-    return false;
-}
-
-bool
 RepositoryRepository::want_pre_post_phases() const
 {
     return true;

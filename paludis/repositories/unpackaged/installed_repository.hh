@@ -68,9 +68,6 @@ namespace paludis
             virtual bool is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool is_default_destination() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-
             virtual bool want_pre_post_phases() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 

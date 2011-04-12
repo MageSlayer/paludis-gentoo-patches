@@ -402,13 +402,6 @@ AccountsRepository::is_suitable_destination_for(const std::shared_ptr<const Pack
 }
 
 bool
-AccountsRepository::is_default_destination() const
-{
-    return _imp->handler_if_installed &&
-        _imp->params_if_installed->environment()->preferred_root_key()->parse_value() == installed_root_key()->parse_value();
-}
-
-bool
 AccountsRepository::want_pre_post_phases() const
 {
     return true;

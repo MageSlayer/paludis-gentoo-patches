@@ -935,12 +935,6 @@ ERepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> 
 }
 
 bool
-ERepository::is_default_destination() const
-{
-    return false;
-}
-
-bool
 ERepository::want_pre_post_phases() const
 {
     return false;
