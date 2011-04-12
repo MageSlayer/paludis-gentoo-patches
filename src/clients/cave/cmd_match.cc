@@ -445,11 +445,11 @@ MatchCommand::run_hosted(
     }
 
     bool any(false), all(true);
-    for (std::list<std::string>::const_iterator t(texts.begin()), t_end(texts.end()) ;
-            t != t_end ; ++t)
+    for (auto p(patterns->begin()), p_end(patterns->end()) ;
+            p != p_end ; ++p)
     {
-        bool current(patterns->end() != std::find_if(patterns->begin(), patterns->end(),
-                    std::bind(&match, *t, std::placeholders::_1, match_options.a_type.argument())));
+        bool current(texts.end() != std::find_if(texts.begin(), texts.end(),
+                    std::bind(&match, std::placeholders::_1, *p, match_options.a_type.argument())));
 
         if (match_options.a_not.specified())
             current = ! current;
