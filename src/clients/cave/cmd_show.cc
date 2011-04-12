@@ -56,6 +56,7 @@
 #include <paludis/permitted_choice_value_parameter_values.hh>
 #include <paludis/contents.hh>
 #include <paludis/dep_spec_data.hh>
+#include <paludis/dep_spec_annotations.hh>
 
 #include <cstdlib>
 #include <iostream>
@@ -185,12 +186,22 @@ namespace
 
         void visit(const SetSpecTree::NodeType<PackageDepSpec>::Type & node)
         {
+            std::stringstream annotations;
+
+            if (node.spec()->maybe_annotations())
+            {
+                for (auto m(node.spec()->maybe_annotations()->begin()), m_end(node.spec()->maybe_annotations()->end()) ;
+                        m != m_end ; ++m)
+                    annotations << m->key() << " = [" << (m->value().empty() ? " " : " " + m->value() + " ") << "] ";
+            }
+
             out << fuc(select_format_for_spec(env, *node.spec(), make_null_shared_ptr(),
                         fs_set_spec_installed(),
                         fs_set_spec_installable(),
                         fs_set_spec_unavailable()),
                     fv<'s'>(stringify(*node.spec())),
-                    fv<'i'>(std::string(indent, ' ')));
+                    fv<'i'>(std::string(indent, ' ')),
+                    fv<'a'>(annotations.str()));
         }
 
         void visit(const SetSpecTree::NodeType<NamedSetDepSpec>::Type & node)

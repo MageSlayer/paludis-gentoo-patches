@@ -21,14 +21,17 @@ const auto fs_set_heading = make_format_string_fetcher("show/set_heading", 1)
 const auto fs_set_set = make_format_string_fetcher("show/set_set", 1)
     << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>() << c::blue_or_pink() << param<'s'>() << c::normal() << "\\n";
 
-const auto fs_set_spec_installed = make_format_string_fetcher("show/set_spec_installed", 1)
-    << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>() << c::bold_green_or_pink() << param<'s'>() << c::normal() << "\\n";
+const auto fs_set_spec_installed = make_format_string_fetcher("show/set_spec_installed", 2)
+    << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>() << c::bold_green_or_pink() << param<'s'>() << c::normal()
+    << param_if<'a'>() << " [[ " << param<'a'>() << "]]" << param_endif<'a'>() << "\\n";
 
-const auto fs_set_spec_installable = make_format_string_fetcher("show/set_spec_installable", 1)
-    << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>() << c::green_or_pink() << param<'s'>() << c::normal() << "\\n";
+const auto fs_set_spec_installable = make_format_string_fetcher("show/set_spec_installable", 2)
+    << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>() << c::green_or_pink() << param<'s'>() << c::normal()
+    << param_if<'a'>() << " [[ " << param<'a'>() << "]]" << param_endif<'a'>() << "\\n";
 
-const auto fs_set_spec_unavailable = make_format_string_fetcher("show/set_spec_unavailable", 1)
-    << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>() << c::bold_red() << param<'s'>() << c::normal() << "\\n";
+const auto fs_set_spec_unavailable = make_format_string_fetcher("show/set_spec_unavailable", 2)
+    << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>() << c::bold_red() << param<'s'>() << c::normal()
+    << param_if<'a'>() << " [[ " << param<'a'>() << "]]" << param_endif<'a'>() << "\\n";
 
 const auto fs_contents_file = make_format_string_fetcher("show/contents_file", 1)
     << param_if<'b'>() << "%{column 30}" << param_endif<'b'>() << param<'r'>() << param_if<'b'>() << "\\n" << param_else<'b'>() << " " << param_endif<'b'>();
