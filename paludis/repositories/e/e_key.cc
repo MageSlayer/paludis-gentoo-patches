@@ -69,8 +69,6 @@ namespace paludis
         const Environment * const env;
         const std::shared_ptr<const ERepositoryID> id;
         const std::string string_value;
-        mutable Mutex value_mutex;
-        mutable std::shared_ptr<const DependencySpecTree> value;
         const std::shared_ptr<const DependenciesLabelSequence> labels;
 
         const std::string raw_name;
@@ -110,13 +108,8 @@ EDependenciesKey::~EDependenciesKey()
 const std::shared_ptr<const DependencySpecTree>
 EDependenciesKey::parse_value() const
 {
-    Lock l(_imp->value_mutex);
-    if (_imp->value)
-        return _imp->value;
-
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_depend(_imp->string_value, _imp->env, *_imp->id->eapi(), _imp->id->is_installed());
-    return _imp->value;
+    return parse_depend(_imp->string_value, _imp->env, *_imp->id->eapi(), _imp->id->is_installed());
 }
 
 const std::shared_ptr<const DependenciesLabelSequence>
