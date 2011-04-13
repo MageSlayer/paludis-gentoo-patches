@@ -379,9 +379,13 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->restrictions()->name().empty())
         if ((_imp->dir / vars->restrictions()->name()).stat().exists())
         {
-            _imp->keys->restrictions = std::make_shared<EPlainTextSpecKey>(_imp->environment, vars->restrictions(),
-                        eapi(), file_contents(_imp->dir / vars->restrictions()->name()), mkt_internal, is_installed());
-            add_metadata_key(_imp->keys->restrictions);
+            std::string v(file_contents(_imp->dir / vars->restrictions()->name()));
+            if (! v.empty())
+            {
+                _imp->keys->restrictions = std::make_shared<EPlainTextSpecKey>(_imp->environment, vars->restrictions(),
+                            eapi(), v, mkt_internal, is_installed());
+                add_metadata_key(_imp->keys->restrictions);
+            }
         }
 
     if (! vars->properties()->name().empty())

@@ -1015,9 +1015,12 @@ EbuildID::load_license(const std::shared_ptr<const EAPIMetadataVariable> & m, co
 void
 EbuildID::load_restrict(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
-    Lock l(_imp->mutex);
-    _imp->restrictions = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal, is_installed());
-    add_metadata_key(_imp->restrictions);
+    if (! v.empty())
+    {
+        Lock l(_imp->mutex);
+        _imp->restrictions = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal, is_installed());
+        add_metadata_key(_imp->restrictions);
+    }
 }
 
 void
