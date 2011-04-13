@@ -391,9 +391,13 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->properties()->name().empty())
         if ((_imp->dir / vars->properties()->name()).stat().exists())
         {
-            _imp->keys->properties = std::make_shared<EPlainTextSpecKey>(_imp->environment, vars->properties(),
-                        eapi(), file_contents(_imp->dir / vars->properties()->name()), mkt_internal, is_installed());
-            add_metadata_key(_imp->keys->properties);
+            std::string v(file_contents(_imp->dir / vars->properties()->name()));
+            if (! v.empty())
+            {
+                _imp->keys->properties = std::make_shared<EPlainTextSpecKey>(_imp->environment, vars->properties(),
+                            eapi(), v, mkt_internal, is_installed());
+                add_metadata_key(_imp->keys->properties);
+            }
         }
 
     if (! vars->src_uri()->name().empty())
