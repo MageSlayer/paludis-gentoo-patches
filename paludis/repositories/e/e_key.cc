@@ -486,8 +486,6 @@ namespace paludis
     {
         const Environment * const env;
         const std::string string_value;
-        mutable Mutex value_mutex;
-        mutable std::shared_ptr<const PlainTextSpecTree> value;
 
         const std::shared_ptr<const EAPIMetadataVariable> variable;
         const std::shared_ptr<const EAPI> eapi;
@@ -527,13 +525,8 @@ EMyOptionsKey::~EMyOptionsKey()
 const std::shared_ptr<const PlainTextSpecTree>
 EMyOptionsKey::parse_value() const
 {
-    Lock l(_imp->value_mutex);
-    if (_imp->value)
-        return _imp->value;
-
     Context context("When parsing metadata key '" + raw_name() + "':");
-    _imp->value = parse_myoptions(_imp->string_value, _imp->env, *_imp->eapi, _imp->is_installed);
-    return _imp->value;
+    return parse_myoptions(_imp->string_value, _imp->env, *_imp->eapi, _imp->is_installed);
 }
 
 const std::string
