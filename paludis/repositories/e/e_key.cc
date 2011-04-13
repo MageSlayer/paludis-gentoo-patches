@@ -236,10 +236,6 @@ namespace paludis
         const std::string string_value;
         const MetadataKeyType type;
 
-        mutable Mutex value_mutex;
-        mutable std::shared_ptr<const FetchableURISpecTree> value;
-        mutable std::shared_ptr<const URILabel> initial_label;
-
         Imp(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i,
                 const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v,
                 const MetadataKeyType t) :
@@ -267,14 +263,8 @@ EFetchableURIKey::~EFetchableURIKey()
 const std::shared_ptr<const FetchableURISpecTree>
 EFetchableURIKey::parse_value() const
 {
-    Lock l(_imp->value_mutex);
-
-    if (_imp->value)
-        return _imp->value;
-
     Context context("When parsing metadata key '" + raw_name() + "' from '" + stringify(*_imp->id) + "':");
-    _imp->value = parse_fetchable_uri(_imp->string_value, _imp->env, *_imp->id->eapi(), _imp->id->is_installed());
-    return _imp->value;
+    return parse_fetchable_uri(_imp->string_value, _imp->env, *_imp->id->eapi(), _imp->id->is_installed());
 }
 
 const std::string
@@ -290,37 +280,35 @@ EFetchableURIKey::pretty_print_value(
 const std::shared_ptr<const URILabel>
 EFetchableURIKey::initial_label() const
 {
-    Lock l(_imp->value_mutex);
+    std::shared_ptr<const URILabel> result;
 
-    if (! _imp->initial_label)
+    DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> f(_imp->env, _imp->id);
+    if (_imp->id->restrict_key())
+        _imp->id->restrict_key()->parse_value()->top()->accept(f);
+
+    for (DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIterator i(f.begin()), i_end(f.end()) ;
+            i != i_end ; ++i)
     {
-        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> f(_imp->env, _imp->id);
-        if (_imp->id->restrict_key())
-            _imp->id->restrict_key()->parse_value()->top()->accept(f);
-        for (DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIterator i(f.begin()), i_end(f.end()) ;
-                i != i_end ; ++i)
-        {
-            if (_imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->end() !=
-                    std::find(_imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->begin(),
-                        _imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->end(), (*i)->text()))
-                _imp->initial_label = *parse_uri_label("default-restrict-fetch:", *_imp->id->eapi())->begin();
+        if (_imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->end() !=
+                std::find(_imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->begin(),
+                    _imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->end(), (*i)->text()))
+            result = *parse_uri_label("default-restrict-fetch:", *_imp->id->eapi())->begin();
 
-            else if (_imp->id->eapi()->supported()->ebuild_options()->restrict_mirror()->end() !=
-                    std::find(_imp->id->eapi()->supported()->ebuild_options()->restrict_mirror()->begin(),
-                        _imp->id->eapi()->supported()->ebuild_options()->restrict_mirror()->end(), (*i)->text()))
-                _imp->initial_label = *parse_uri_label("default-restrict-mirror:", *_imp->id->eapi())->begin();
+        else if (_imp->id->eapi()->supported()->ebuild_options()->restrict_mirror()->end() !=
+                std::find(_imp->id->eapi()->supported()->ebuild_options()->restrict_mirror()->begin(),
+                    _imp->id->eapi()->supported()->ebuild_options()->restrict_mirror()->end(), (*i)->text()))
+            result = *parse_uri_label("default-restrict-mirror:", *_imp->id->eapi())->begin();
 
-            else if (_imp->id->eapi()->supported()->ebuild_options()->restrict_primaryuri()->end() !=
-                    std::find(_imp->id->eapi()->supported()->ebuild_options()->restrict_primaryuri()->begin(),
-                        _imp->id->eapi()->supported()->ebuild_options()->restrict_primaryuri()->end(), (*i)->text()))
-                _imp->initial_label = *parse_uri_label("default-restrict-primaryuri:", *_imp->id->eapi())->begin();
-        }
-
-        if (! _imp->initial_label)
-            _imp->initial_label = *parse_uri_label("default:", *_imp->id->eapi())->begin();
+        else if (_imp->id->eapi()->supported()->ebuild_options()->restrict_primaryuri()->end() !=
+                std::find(_imp->id->eapi()->supported()->ebuild_options()->restrict_primaryuri()->begin(),
+                    _imp->id->eapi()->supported()->ebuild_options()->restrict_primaryuri()->end(), (*i)->text()))
+            result = *parse_uri_label("default-restrict-primaryuri:", *_imp->id->eapi())->begin();
     }
 
-    return _imp->initial_label;
+    if (! result)
+        result = *parse_uri_label("default:", *_imp->id->eapi())->begin();
+
+    return result;
 }
 
 const std::string
