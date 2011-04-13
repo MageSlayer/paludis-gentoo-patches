@@ -505,7 +505,10 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                  * ebuild env isn't modified for DEPEND=RDEPEND */
                 PackageID::MetadataConstIterator m(package_id->find_metadata(var));
                 if (m == package_id->end_metadata())
-                    throw InternalError(PALUDIS_HERE, "oops. can't find key '" + var + "'");
+                {
+                    /* no key is the same as empty */
+                    return "O0;";
+                }
 
                 const MetadataSpecTreeKey<DependencySpecTree> * mm(
                         visitor_cast<const MetadataSpecTreeKey<DependencySpecTree> >(**m));
@@ -525,7 +528,10 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                  * a local description so that descriptions carry on working for installed stuff. */
                 PackageID::MetadataConstIterator m(package_id->find_metadata(var));
                 if (m == package_id->end_metadata())
-                    throw InternalError(PALUDIS_HERE, "oops. can't find key '" + var + "'");
+                {
+                    /* no key is the same as empty */
+                    return "O0;";
+                }
 
                 const MetadataSpecTreeKey<PlainTextSpecTree> * mm(
                         visitor_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(**m));

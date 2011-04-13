@@ -340,10 +340,14 @@ EInstalledRepositoryID::need_keys_added() const
     {
         if ((_imp->dir / vars->dependencies()->name()).stat().exists())
         {
-            _imp->keys->dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name(),
-                        vars->dependencies()->description(), file_contents(_imp->dir / vars->dependencies()->name()),
-                        EInstalledRepositoryIDData::get_instance()->build_dependencies_labels, mkt_dependencies);
-            add_metadata_key(_imp->keys->dependencies);
+            std::string v(file_contents(_imp->dir / vars->dependencies()->name()));
+            if (! v.empty())
+            {
+                _imp->keys->dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name(),
+                            vars->dependencies()->description(), v,
+                            EInstalledRepositoryIDData::get_instance()->build_dependencies_labels, mkt_dependencies);
+                add_metadata_key(_imp->keys->dependencies);
+            }
         }
     }
     else
@@ -351,29 +355,43 @@ EInstalledRepositoryID::need_keys_added() const
         if (! vars->build_depend()->name().empty())
             if ((_imp->dir / vars->build_depend()->name()).stat().exists())
             {
-                _imp->keys->build_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->build_depend()->name(),
-                            vars->build_depend()->description(), file_contents(_imp->dir / vars->build_depend()->name()),
-                            EInstalledRepositoryIDData::get_instance()->build_dependencies_labels, mkt_dependencies);
-                add_metadata_key(_imp->keys->build_dependencies);
+                std::string v(file_contents(_imp->dir / vars->build_depend()->name()));
+                if (! v.empty())
+                {
+                    _imp->keys->build_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->build_depend()->name(),
+                                vars->build_depend()->description(), v,
+                                EInstalledRepositoryIDData::get_instance()->build_dependencies_labels, mkt_dependencies);
+                    add_metadata_key(_imp->keys->build_dependencies);
+                }
             }
 
         if (! vars->run_depend()->name().empty())
             if ((_imp->dir / vars->run_depend()->name()).stat().exists())
             {
-                _imp->keys->run_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->run_depend()->name(),
-                            vars->run_depend()->description(), file_contents(_imp->dir / vars->run_depend()->name()),
-                            EInstalledRepositoryIDData::get_instance()->run_dependencies_labels, mkt_dependencies);
-                add_metadata_key(_imp->keys->run_dependencies);
+                std::string v(file_contents(_imp->dir / vars->run_depend()->name()));
+                if (! v.empty())
+                {
+                    _imp->keys->run_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->run_depend()->name(),
+                                vars->run_depend()->description(), v,
+                                EInstalledRepositoryIDData::get_instance()->run_dependencies_labels, mkt_dependencies);
+                    add_metadata_key(_imp->keys->run_dependencies);
+                }
             }
 
         if (! vars->pdepend()->name().empty())
+        {
             if ((_imp->dir / vars->pdepend()->name()).stat().exists())
             {
-                _imp->keys->post_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->pdepend()->name(),
-                            vars->pdepend()->description(), file_contents(_imp->dir / vars->pdepend()->name()),
-                            EInstalledRepositoryIDData::get_instance()->post_dependencies_labels, mkt_dependencies);
-                add_metadata_key(_imp->keys->post_dependencies);
+                std::string v(file_contents(_imp->dir / vars->pdepend()->name()));
+                if (! v.empty())
+                {
+                    _imp->keys->post_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->pdepend()->name(),
+                                vars->pdepend()->description(), v,
+                                EInstalledRepositoryIDData::get_instance()->post_dependencies_labels, mkt_dependencies);
+                    add_metadata_key(_imp->keys->post_dependencies);
+                }
             }
+        }
     }
 
     if (! vars->restrictions()->name().empty())

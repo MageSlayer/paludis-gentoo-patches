@@ -171,7 +171,7 @@ TEST_P(DependRdependTest, Works)
         if (special)
             EXPECT_EQ("the/depend", v_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
         else
-            EXPECT_EQ("", v_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+            EXPECT_FALSE(v_id->run_dependencies_key());
     }
 
     {
@@ -189,7 +189,7 @@ TEST_P(DependRdependTest, Works)
                         QualifiedPackageName("cat/eapi" + eapi + "ronly")) |
                     filter::InstalledAtRoot(root))]->begin());
 
-        EXPECT_EQ("", v_id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        EXPECT_FALSE(v_id->build_dependencies_key());
         EXPECT_EQ("the/rdepend", v_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
     }
 

@@ -952,40 +952,52 @@ EbuildID::load_long_description(const std::string & r, const std::string & h, co
 void
 EbuildID::load_dependencies(const std::string & r, const std::string & h, const std::string & v) const
 {
-    Lock l(_imp->mutex);
-    _imp->dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
-                EbuildIDData::get_instance()->raw_dependencies_labels, mkt_dependencies);
-    add_metadata_key(_imp->dependencies);
+    if (! v.empty())
+    {
+        Lock l(_imp->mutex);
+        _imp->dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
+                    EbuildIDData::get_instance()->raw_dependencies_labels, mkt_dependencies);
+        add_metadata_key(_imp->dependencies);
+    }
 }
 
 void
 EbuildID::load_build_depend(const std::string & r, const std::string & h, const std::string & v,
         bool rewritten) const
 {
-    Lock l(_imp->mutex);
-    _imp->build_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
-                EbuildIDData::get_instance()->build_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies);
-    add_metadata_key(_imp->build_dependencies);
+    if (! v.empty())
+    {
+        Lock l(_imp->mutex);
+        _imp->build_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
+                    EbuildIDData::get_instance()->build_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies);
+        add_metadata_key(_imp->build_dependencies);
+    }
 }
 
 void
 EbuildID::load_run_depend(const std::string & r, const std::string & h, const std::string & v,
         bool rewritten) const
 {
-    Lock l(_imp->mutex);
-    _imp->run_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
-                EbuildIDData::get_instance()->run_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies);
-    add_metadata_key(_imp->run_dependencies);
+    if (! v.empty())
+    {
+        Lock l(_imp->mutex);
+        _imp->run_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
+                    EbuildIDData::get_instance()->run_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies);
+        add_metadata_key(_imp->run_dependencies);
+    }
 }
 
 void
 EbuildID::load_post_depend(const std::string & r, const std::string & h, const std::string & v,
         bool rewritten) const
 {
-    Lock l(_imp->mutex);
-    _imp->post_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
-                EbuildIDData::get_instance()->post_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies);
-    add_metadata_key(_imp->post_dependencies);
+    if (! v.empty())
+    {
+        Lock l(_imp->mutex);
+        _imp->post_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
+                    EbuildIDData::get_instance()->post_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies);
+        add_metadata_key(_imp->post_dependencies);
+    }
 }
 
 void
