@@ -32,7 +32,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/tribool.hh>
@@ -822,14 +821,37 @@ EContentsKey::type() const
     return _imp->type;
 }
 
+namespace
+{
+    Timestamp get_mtime(const FSPath & v)
+    {
+        try
+        {
+            FSStat s(v);
+            if (s.exists())
+                return s.mtim();
+            else
+            {
+                Log::get_instance()->message("e.contents.mtime_failure", ll_warning, lc_context) << "Couldn't get mtime for '"
+                    << v << "' because it does not exist";
+                return Timestamp::now();
+            }
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message("e.contents.mtime_failure", ll_warning, lc_context) << "Couldn't get mtime for '"
+                << v << "' due to exception '" << e.message() << "' (" << e.what() << ")";
+            return Timestamp::now();
+        }
+    }
+}
+
 namespace paludis
 {
     template <>
     struct Imp<EMTimeKey>
     {
-        const FSPath filename;
-        mutable Mutex value_mutex;
-        mutable std::shared_ptr<Timestamp> value;
+        Timestamp value;
 
         const std::string raw_name;
         const std::string human_name;
@@ -837,7 +859,7 @@ namespace paludis
 
         Imp(const FSPath & v,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
-            filename(v),
+            value(get_mtime(v)),
             raw_name(r),
             human_name(h),
             type(t)
@@ -858,24 +880,7 @@ EMTimeKey::~EMTimeKey()
 Timestamp
 EMTimeKey::parse_value() const
 {
-    Lock l(_imp->value_mutex);
-
-    if (_imp->value)
-        return *_imp->value;
-
-    _imp->value = std::make_shared<Timestamp>(Timestamp::now());
-
-    try
-    {
-        *_imp->value = _imp->filename.stat().mtim();
-    }
-    catch (const FSError & e)
-    {
-        Log::get_instance()->message("e.contents.mtime_failure", ll_warning, lc_context) << "Couldn't get mtime for '"
-            << _imp->filename << "' due to exception '" << e.message() << "' (" << e.what() << ")";
-    }
-
-    return *_imp->value;
+    return _imp->value;
 }
 
 const std::string
