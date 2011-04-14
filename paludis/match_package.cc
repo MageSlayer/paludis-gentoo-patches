@@ -44,6 +44,7 @@
 #include <algorithm>
 #include <istream>
 #include <ostream>
+#include <list>
 
 using namespace paludis;
 
@@ -54,13 +55,22 @@ namespace
     struct RequirementChecker
     {
         const Environment & env;
-        const ChangedChoices * const maybe_changes_to_owner;
         const std::shared_ptr<const PackageID> & id;
-        const std::shared_ptr<const PackageID> & from_id;
-        const ChangedChoices * const maybe_changes_to_target;
         const MatchPackageOptions & options;
 
         bool version_requirements_ok;
+        std::list<const ChoiceRequirement *> defer_choice_requirements;
+
+        RequirementChecker(
+                const Environment & e,
+                const std::shared_ptr<const PackageID> & i,
+                const MatchPackageOptions & o) :
+            env(e),
+            id(i),
+            options(o),
+            version_requirements_ok(true)
+        {
+        }
 
         bool visit(const NameRequirement & r)
         {
@@ -179,11 +189,8 @@ namespace
 
         bool visit(const ChoiceRequirement & r)
         {
-            if (options[mpo_ignore_choice_requirements])
-                return true;
-
-            if (! r.requirement_met(&env, maybe_changes_to_owner, id, from_id, maybe_changes_to_target).first)
-                return false;
+            if (! options[mpo_ignore_choice_requirements])
+                defer_choice_requirements.push_back(&r);
 
             return true;
         }
@@ -208,14 +215,23 @@ paludis::match_package_with_maybe_changes(
         const ChangedChoices * const maybe_changes_to_target,
         const MatchPackageOptions & options)
 {
-    RequirementChecker c{env, maybe_changes_to_owner, id, from_id, maybe_changes_to_target, options, true};
+    RequirementChecker c{env, id, options};
 
     for (auto r(spec.requirements()->begin()), r_end(spec.requirements()->end()) ;
             r != r_end ; ++r)
         if (! (*r)->accept_returning<bool>(c))
             return false;
 
-    return c.version_requirements_ok;
+    if (! c.version_requirements_ok)
+        return false;
+
+
+    for (auto r(c.defer_choice_requirements.begin()), r_end(c.defer_choice_requirements.end()) ;
+            r != r_end ; ++r)
+        if (! (*r)->requirement_met(&env, maybe_changes_to_owner, id, from_id, maybe_changes_to_target).first)
+            return false;
+
+    return true;
 }
 
 bool
