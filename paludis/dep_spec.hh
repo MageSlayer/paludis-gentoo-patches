@@ -268,7 +268,6 @@ namespace paludis
 
         private:
             const PackageDepSpec & operator= (const PackageDepSpec &);
-            std::string _as_string() const;
 
             Pimp<PackageDepSpec> _imp;
 

@@ -280,7 +280,7 @@ paludis::operator<< (std::ostream & s, const SimpleURIDepSpec & p)
 std::ostream &
 paludis::operator<< (std::ostream & s, const PackageDepSpec & a)
 {
-    s << a._as_string();
+    s << a.text();
     return s;
 }
 
@@ -574,6 +574,8 @@ namespace paludis
     struct Imp<PackageDepSpec>
     {
         const std::shared_ptr<const PackageDepSpecData> data;
+        std::string text;
+
         std::shared_ptr<VersionRequirementSequence> all_versions;
         std::shared_ptr<KeyRequirementSequence> all_keys;
         std::shared_ptr<ChoiceRequirementSequence> all_choices;
@@ -610,23 +612,6 @@ namespace paludis
 PackageDepSpec::PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> & d) :
     Cloneable<DepSpec>(),
     _imp(d)
-{
-}
-
-PackageDepSpec::~PackageDepSpec()
-{
-}
-
-PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
-    Cloneable<DepSpec>(d),
-    CloneUsingThis<DepSpec, PackageDepSpec>(d),
-    _imp(d._imp->data)
-{
-    set_annotations(d.maybe_annotations());
-}
-
-const std::string
-PackageDepSpec::text() const
 {
     std::ostringstream s;
 
@@ -808,7 +793,26 @@ PackageDepSpec::text() const
         for (auto u(all_key_requirements()->begin()), u_end(all_key_requirements()->end()) ; u != u_end ; ++u)
             s << (*u)->as_raw_string();
 
-    return s.str();
+    _imp->text = s.str();
+}
+
+PackageDepSpec::~PackageDepSpec()
+{
+}
+
+PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
+    Cloneable<DepSpec>(d),
+    CloneUsingThis<DepSpec, PackageDepSpec>(d),
+    _imp(d._imp->data)
+{
+    set_annotations(d.maybe_annotations());
+    _imp->text = d._imp->text;
+}
+
+const std::string
+PackageDepSpec::text() const
+{
+    return _imp->text;
 }
 
 const std::shared_ptr<const NameRequirement>
@@ -963,12 +967,6 @@ const std::shared_ptr<const PackageDepSpecRequirementSequence>
 PackageDepSpec::requirements() const
 {
     return _imp->data->requirements();
-}
-
-std::string
-PackageDepSpec::_as_string() const
-{
-    return text();
 }
 
 const std::shared_ptr<const PackageDepSpecData>
