@@ -127,7 +127,7 @@ MutablePackageDepSpecData::~MutablePackageDepSpecData() = default;
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_package(const QualifiedPackageName & name)
 {
-    _imp->requirements->push_back(NameRequirementPool::get_instance()->create(name));
+    _imp->requirements->push_front(NameRequirementPool::get_instance()->create(name));
     return *this;
 }
 
@@ -147,7 +147,7 @@ MutablePackageDepSpecData::unrequire_package()
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_package_name_part(const PackageNamePart & part)
 {
-    _imp->requirements->push_back(PackageNamePartRequirementPool::get_instance()->create(part));
+    _imp->requirements->push_front(PackageNamePartRequirementPool::get_instance()->create(part));
     return *this;
 }
 
@@ -167,7 +167,7 @@ MutablePackageDepSpecData::unrequire_package_name_part()
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_category_name_part(const CategoryNamePart & part)
 {
-    _imp->requirements->push_back(CategoryNamePartRequirementPool::get_instance()->create(part));
+    _imp->requirements->push_front(CategoryNamePartRequirementPool::get_instance()->create(part));
     return *this;
 }
 
