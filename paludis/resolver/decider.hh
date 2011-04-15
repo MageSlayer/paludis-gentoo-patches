@@ -185,13 +185,6 @@ namespace paludis
                 void _add_dependencies_if_necessary(
                         const std::shared_ptr<Resolution> & our_resolution);
 
-                SpecInterest _interest_in_spec(
-                        const std::shared_ptr<const Resolution> &,
-                        const std::shared_ptr<const PackageID> &,
-                        const SanitisedDependency &) const;
-
-                const std::shared_ptr<Constraints> _initial_constraints_for(const Resolvent &) const;
-
                 const std::shared_ptr<const PackageID> _find_existing_id_for(
                         const std::shared_ptr<const Resolution> &) const;
 

@@ -487,7 +487,7 @@ const std::shared_ptr<Resolution>
 Decider::_create_resolution_for_resolvent(const Resolvent & r) const
 {
     return std::make_shared<Resolution>(make_named_values<Resolution>(
-                    n::constraints() = _initial_constraints_for(r),
+                    n::constraints() = _imp->fns.get_initial_constraints_for_fn()(r),
                     n::decision() = make_null_shared_ptr(),
                     n::resolvent() = r
                     ));
@@ -1135,7 +1135,7 @@ Decider::_add_dependencies_if_necessary(
     {
         Context context_2("When handling dependency '" + stringify(s->spec()) + "':");
 
-        SpecInterest interest(_interest_in_spec(our_resolution, package_id, *s));
+        SpecInterest interest(_imp->fns.interest_in_spec_fn()(our_resolution, package_id, *s));
 
         switch (interest)
         {
@@ -1182,21 +1182,6 @@ Decider::_add_dependencies_if_necessary(
                 _apply_resolution_constraint(dep_resolution, *c);
         }
     }
-}
-
-SpecInterest
-Decider::_interest_in_spec(
-        const std::shared_ptr<const Resolution> & resolution,
-        const std::shared_ptr<const PackageID> & id,
-        const SanitisedDependency & dep) const
-{
-    return _imp->fns.interest_in_spec_fn()(resolution, id, dep);
-}
-
-const std::shared_ptr<Constraints>
-Decider::_initial_constraints_for(const Resolvent & r) const
-{
-    return _imp->fns.get_initial_constraints_for_fn()(r);
 }
 
 std::pair<AnyChildScore, OperatorScore>
