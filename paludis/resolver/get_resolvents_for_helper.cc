@@ -24,11 +24,16 @@
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/labels_classifier.hh>
 #include <paludis/resolver/destination_utils.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/enum_iterator.hh>
+#include <paludis/util/mutex.hh>
+#include <paludis/util/make_named_values.hh>
+#include <paludis/util/hashes.hh>
+
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/generator.hh>
@@ -37,10 +42,19 @@
 #include <paludis/selection.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/package_dep_spec_properties.hh>
+
 #include <algorithm>
+#include <tuple>
+#include <unordered_map>
 
 using namespace paludis;
 using namespace paludis::resolver;
+
+namespace
+{
+    typedef std::tuple<bool, bool, bool, std::string> CacheKey;
+}
 
 namespace paludis
 {
@@ -64,6 +78,12 @@ namespace paludis
         bool want_best_slot_otherwise;
         bool want_installed_slots_otherwise;
         bool fallback_to_other_slots_otherwise;
+
+        mutable Mutex cache_mutex;
+        mutable std::unordered_map<
+            CacheKey,
+            std::pair<std::shared_ptr<const Resolvents>, bool>,
+            Hash<CacheKey> > cache;
 
         Imp(const Environment * const e) :
             env(e),
@@ -259,6 +279,26 @@ namespace
             want_dependencies_on_slash, want_runtime_dependencies_on_slash, package_id};
         return reason->accept_returning<DestinationTypes>(f);
     }
+
+    bool can_use_cache(const PackageDepSpec & spec)
+    {
+        return package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
+                    n::has_any_slot_requirement() = indeterminate,
+                    n::has_category_name_part() = indeterminate,
+                    n::has_choice_requirements() = false,
+                    n::has_exact_slot_requirement() = indeterminate,
+                    n::has_from_repository() = indeterminate,
+                    n::has_in_repository() = indeterminate,
+                    n::has_installable_to_path() = indeterminate,
+                    n::has_installable_to_repository() = indeterminate,
+                    n::has_installed_at_path() = indeterminate,
+                    n::has_key_requirements() = indeterminate,
+                    n::has_package() = indeterminate,
+                    n::has_package_name_part() = indeterminate,
+                    n::has_tag() = indeterminate,
+                    n::has_version_requirements() = indeterminate
+                    ));
+    }
 }
 
 std::pair<std::shared_ptr<const Resolvents>, bool>
@@ -274,6 +314,17 @@ GetResolventsForHelper::operator() (
     auto want_installed(target ? _imp->want_installed_slots_for_targets : _imp->want_installed_slots_otherwise);
     auto want_best(target ? _imp->want_best_slot_for_targets : _imp->want_best_slot_otherwise);
     auto fallback(target ? _imp->fallback_to_other_slots_for_targets : _imp->fallback_to_other_slots_otherwise);
+
+    auto cache_ok(can_use_cache(spec));
+    auto cache_key(std::make_tuple(want_installed, want_best, fallback, stringify(spec)));
+
+    if (cache_ok)
+    {
+        Lock lock(_imp->cache_mutex);
+        auto c(_imp->cache.find(cache_key));
+        if (_imp->cache.end() != c)
+            return c->second;
+    }
 
     auto result_ids(std::make_shared<PackageIDSequence>());
     std::shared_ptr<const PackageID> best;
@@ -343,6 +394,12 @@ GetResolventsForHelper::operator() (
                         result.first->push_back(Resolvent(*i, *t));
             }
         }
+    }
+
+    if (cache_ok)
+    {
+        Lock lock(_imp->cache_mutex);
+        _imp->cache.insert(std::make_pair(cache_key, result));
     }
 
     return result;
