@@ -261,7 +261,7 @@ namespace
     }
 }
 
-std::pair<std::shared_ptr<Resolvents>, bool>
+std::pair<std::shared_ptr<const Resolvents>, bool>
 GetResolventsForHelper::operator() (
         const PackageDepSpec & spec,
         const std::shared_ptr<const PackageID> & from_id,
@@ -269,6 +269,11 @@ GetResolventsForHelper::operator() (
         const std::shared_ptr<const Reason> & reason) const
 {
     Context context("When determining resolvents for '" + stringify(spec) + "':");
+
+    auto target(is_target(reason));
+    auto want_installed(target ? _imp->want_installed_slots_for_targets : _imp->want_installed_slots_otherwise);
+    auto want_best(target ? _imp->want_best_slot_for_targets : _imp->want_best_slot_otherwise);
+    auto fallback(target ? _imp->fallback_to_other_slots_for_targets : _imp->fallback_to_other_slots_otherwise);
 
     auto result_ids(std::make_shared<PackageIDSequence>());
     std::shared_ptr<const PackageID> best;
@@ -287,11 +292,6 @@ GetResolventsForHelper::operator() (
                 (_imp->target_destination_type == dt_install_to_chroot ?
                  Filter(filter::InstalledNotAtRoot(_imp->env->system_root_key()->parse_value())) :
                  Filter(filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))))]);
-
-    auto target(is_target(reason));
-    auto want_installed(target ? _imp->want_installed_slots_for_targets : _imp->want_installed_slots_otherwise);
-    auto want_best(target ? _imp->want_best_slot_for_targets : _imp->want_best_slot_otherwise);
-    auto fallback(target ? _imp->fallback_to_other_slots_for_targets : _imp->fallback_to_other_slots_otherwise);
 
     if (! best)
         std::copy(installed_ids->begin(), installed_ids->end(), result_ids->back_inserter());

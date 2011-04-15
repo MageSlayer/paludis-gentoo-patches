@@ -57,7 +57,7 @@ namespace paludis
                 void set_slots(const bool best, const bool installed, const bool fallback);
                 void set_target_slots(const bool best, const bool installed, const bool fallback);
 
-                std::pair<std::shared_ptr<Resolvents>, bool> operator() (
+                std::pair<std::shared_ptr<const Resolvents>, bool> operator() (
                         const PackageDepSpec &,
                         const std::shared_ptr<const PackageID> & from_id,
                         const std::shared_ptr<const SlotName> &,

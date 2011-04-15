@@ -141,7 +141,7 @@ namespace paludis
                 const Resolvent &
                 )> GetInitialConstraintsForFunction;
 
-        typedef std::function<std::pair<std::shared_ptr<Resolvents>, bool> (
+        typedef std::function<std::pair<std::shared_ptr<const Resolvents>, bool> (
                 const PackageDepSpec &,
                 const std::shared_ptr<const PackageID> &,
                 const std::shared_ptr<const SlotName> &,
