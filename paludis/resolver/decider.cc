@@ -476,13 +476,6 @@ Decider::_make_change_type_for(
 }
 
 FilteredGenerator
-Decider::_make_destination_filtered_generator(const Generator & g,
-        const std::shared_ptr<const Resolution> & resolution) const
-{
-    return _imp->fns.make_destination_filtered_generator_fn()(g, resolution);
-}
-
-FilteredGenerator
 Decider::_make_origin_filtered_generator(const Generator & g) const
 {
     return _imp->fns.make_origin_filtered_generator_fn()(g);
@@ -1776,7 +1769,7 @@ Decider::_installed_ids(const std::shared_ptr<const Resolution> & resolution) co
     Context context("When finding installed IDs for '" + stringify(resolution->resolvent()) + "':");
 
     return (*_imp->env)[selection::AllVersionsSorted(
-            _make_destination_filtered_generator(generator::Package(resolution->resolvent().package()), resolution) |
+            _imp->fns.make_destination_filtered_generator_fn()(generator::Package(resolution->resolvent().package()), resolution) |
             make_slot_filter(resolution->resolvent())
             )];
 }

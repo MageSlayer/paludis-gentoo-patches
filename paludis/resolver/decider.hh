@@ -173,10 +173,6 @@ namespace paludis
                         const std::shared_ptr<const Resolution> & resolution,
                         const ChangesToMakeDecision &) const;
 
-                FilteredGenerator _make_destination_filtered_generator(
-                        const Generator &,
-                        const std::shared_ptr<const Resolution> &) const;
-
                 FilteredGenerator _make_origin_filtered_generator(
                         const Generator &) const;
 
