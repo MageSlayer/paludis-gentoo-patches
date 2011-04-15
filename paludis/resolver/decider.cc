@@ -475,12 +475,6 @@ Decider::_make_change_type_for(
     }
 }
 
-FilteredGenerator
-Decider::_make_origin_filtered_generator(const Generator & g) const
-{
-    return _imp->fns.make_origin_filtered_generator_fn()(g);
-}
-
 Filter
 Decider::_make_unmaskable_filter(const QualifiedPackageName & n) const
 {
@@ -1785,7 +1779,7 @@ Decider::_find_installable_id_candidates_for(
 
     return _imp->fns.remove_hidden_fn()(
             (*_imp->env)[selection::AllVersionsSorted(
-                _make_origin_filtered_generator(generator::Package(package)) |
+                _imp->fns.make_origin_filtered_generator_fn()(generator::Package(package)) |
                 slot_filter |
                 filter::SupportsAction<InstallAction>() |
                 (include_errors ? filter::All() : include_unmaskable ? _make_unmaskable_filter(package) : filter::NotMasked())

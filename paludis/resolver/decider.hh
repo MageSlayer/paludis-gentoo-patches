@@ -168,9 +168,6 @@ namespace paludis
                         const std::shared_ptr<const Resolution> & resolution,
                         const ChangesToMakeDecision &) const;
 
-                FilteredGenerator _make_origin_filtered_generator(
-                        const Generator &) const;
-
                 Filter _make_unmaskable_filter(
                         const QualifiedPackageName &) const;
 
