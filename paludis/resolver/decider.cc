@@ -475,12 +475,6 @@ Decider::_make_change_type_for(
     }
 }
 
-bool
-Decider::_allow_choice_changes_for(const std::shared_ptr<const Resolution> & resolution) const
-{
-    return _imp->fns.allow_choice_changes_fn()(resolution);
-}
-
 const std::shared_ptr<const PackageIDSequence>
 Decider::_find_replacing(
         const std::shared_ptr<const PackageID> & id,
@@ -957,7 +951,7 @@ Decider::_made_wrong_decision(
     if (_allowed_to_restart(adapted_resolution))
     {
         const std::shared_ptr<Decision> decision(_try_to_find_decision_for(
-                    adapted_resolution, _allow_choice_changes_for(resolution), false, true, false, true));
+                    adapted_resolution, _imp->fns.allow_choice_changes_fn()(resolution), false, true, false, true));
         if (decision)
         {
             resolution->decision()->accept(WrongDecisionVisitor(std::bind(
@@ -1039,7 +1033,7 @@ Decider::_decide(const std::shared_ptr<Resolution> & resolution)
     _copy_other_destination_constraints(resolution);
 
     std::shared_ptr<Decision> decision(_try_to_find_decision_for(
-                resolution, _allow_choice_changes_for(resolution), false, true, false, true));
+                resolution, _imp->fns.allow_choice_changes_fn()(resolution), false, true, false, true));
     if (decision)
         resolution->decision() = decision;
     else
