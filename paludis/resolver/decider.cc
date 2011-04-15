@@ -424,7 +424,7 @@ Decider::_make_destination_for(
                 + stringify(*decision.origin_id()));
 
     return std::make_shared<Destination>(make_named_values<Destination>(
-                    n::replacing() = _find_replacing(decision.origin_id(), repo),
+                    n::replacing() = _imp->fns.find_replacing_fn()(decision.origin_id(), repo),
                     n::repository() = repo->name()
                     ));
 }
@@ -473,14 +473,6 @@ Decider::_make_change_type_for(
 
         return result;
     }
-}
-
-const std::shared_ptr<const PackageIDSequence>
-Decider::_find_replacing(
-        const std::shared_ptr<const PackageID> & id,
-        const std::shared_ptr<const Repository> & repo) const
-{
-    return _imp->fns.find_replacing_fn()(id, repo);
 }
 
 const std::shared_ptr<Resolution>

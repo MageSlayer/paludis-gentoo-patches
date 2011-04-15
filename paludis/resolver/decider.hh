@@ -143,10 +143,6 @@ namespace paludis
                         const PackageDepSpec & spec,
                         const std::shared_ptr<const ChangedChoices> &) const;
 
-                const std::shared_ptr<const PackageIDSequence> _find_replacing(
-                        const std::shared_ptr<const PackageID> &,
-                        const std::shared_ptr<const Repository> &) const;
-
                 void _resolve_decide_with_dependencies();
                 bool _resolve_vias() PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool _resolve_dependents() PALUDIS_ATTRIBUTE((warn_unused_result));
