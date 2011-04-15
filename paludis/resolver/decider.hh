@@ -229,9 +229,6 @@ namespace paludis
 
                 void _confirm(const std::shared_ptr<const Resolution> & resolution);
 
-                bool _can_use(
-                        const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
             public:
                 Decider(const Environment * const,
                         const ResolverFunctions &,

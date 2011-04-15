@@ -2033,7 +2033,7 @@ Decider::_package_dep_spec_already_met(const PackageDepSpec & spec, const std::s
     else
     {
         if (installed_ids->end() == std::find_if(installed_ids->begin(), installed_ids->end(),
-                    std::bind(&Decider::_can_use, this, std::placeholders::_1)))
+                    _imp->fns.can_use_fn()))
             return false;
 
         return true;
@@ -2051,13 +2051,6 @@ Decider::_block_dep_spec_already_met(const BlockDepSpec & spec, const std::share
                 make_slot_filter(resolvent) |
                 filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))]);
     return installed_ids->empty();
-}
-
-bool
-Decider::_can_use(
-        const std::shared_ptr<const PackageID> & id) const
-{
-    return _imp->fns.can_use_fn()(id);
 }
 
 namespace
