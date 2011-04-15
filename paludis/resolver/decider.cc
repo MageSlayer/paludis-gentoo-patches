@@ -940,7 +940,7 @@ Decider::_made_wrong_decision(
     std::shared_ptr<Resolution> adapted_resolution(std::make_shared<Resolution>(*resolution));
     adapted_resolution->constraints()->add(constraint);
 
-    if (_allowed_to_restart(adapted_resolution))
+    if (_imp->fns.allowed_to_restart_fn()(adapted_resolution))
     {
         const std::shared_ptr<Decision> decision(_try_to_find_decision_for(
                     adapted_resolution, _imp->fns.allow_choice_changes_fn()(resolution), false, true, false, true));
@@ -965,13 +965,6 @@ Decider::_suggest_restart_with(
 {
     throw SuggestRestart(resolution->resolvent(), resolution->decision(), constraint, decision,
             _make_constraint_for_preloading(decision, constraint));
-}
-
-bool
-Decider::_allowed_to_restart(
-        const std::shared_ptr<const Resolution> & resolution) const
-{
-    return _imp->fns.allowed_to_restart_fn()(resolution);
 }
 
 const std::shared_ptr<const Constraint>
