@@ -173,7 +173,6 @@ namespace paludis
                 void _resolve_confirmations();
 
                 bool _via_binary(const std::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-                bool _always_via_binary(const std::shared_ptr<const Resolution> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 void _fixup_changes_to_make_decision(
                         const std::shared_ptr<const Resolution> &,

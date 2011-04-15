@@ -173,7 +173,7 @@ Decider::_resolve_vias()
         if ((*i)->resolvent().destination_type() == dt_create_binary)
             continue;
 
-        if (! _always_via_binary(*i))
+        if (! _imp->fns.always_via_binary_fn()(*i))
             continue;
 
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
@@ -208,12 +208,6 @@ Decider::_resolve_vias()
     }
 
     return changed;
-}
-
-bool
-Decider::_always_via_binary(const std::shared_ptr<const Resolution> & resolution) const
-{
-    return _imp->fns.always_via_binary_fn()(resolution);
 }
 
 const std::shared_ptr<ConstraintSequence>
