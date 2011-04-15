@@ -248,7 +248,7 @@ Decider::_resolve_dependents()
             changed = true;
 
         const std::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
-        const std::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_dependent(
+        const std::shared_ptr<const ConstraintSequence> constraints(_imp->fns.get_constraints_for_dependent_fn()(
                     resolution, *s, dependent_upon_ids));
         for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                 c != c_end ; ++c)
@@ -270,15 +270,6 @@ Decider::_resolve_dependents()
     }
 
     return changed;
-}
-
-const std::shared_ptr<ConstraintSequence>
-Decider::_make_constraints_for_dependent(
-        const std::shared_ptr<const Resolution> & resolution,
-        const std::shared_ptr<const PackageID> & id,
-        const std::shared_ptr<const ChangeByResolventSequence> & r) const
-{
-    return _imp->fns.get_constraints_for_dependent_fn()(resolution, id, r);
 }
 
 namespace
