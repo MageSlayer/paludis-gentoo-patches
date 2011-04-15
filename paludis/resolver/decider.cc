@@ -417,7 +417,7 @@ Decider::_make_destination_for(
         const std::shared_ptr<const Resolution> & resolution,
         const ChangesToMakeDecision & decision) const
 {
-    const std::shared_ptr<const Repository> repo(_find_repository_for(resolution, decision));
+    const std::shared_ptr<const Repository> repo(_imp->fns.find_repository_for_fn()(resolution, decision));
     if ((! repo->destination_interface()) ||
             (! repo->destination_interface()->is_suitable_destination_for(decision.origin_id())))
         throw InternalError(PALUDIS_HERE, stringify(repo->name()) + " is not a suitable destination for "
@@ -473,14 +473,6 @@ Decider::_make_change_type_for(
 
         return result;
     }
-}
-
-const std::shared_ptr<const Repository>
-Decider::_find_repository_for(
-        const std::shared_ptr<const Resolution> & resolution,
-        const ChangesToMakeDecision & decision) const
-{
-    return _imp->fns.find_repository_for_fn()(resolution, decision);
 }
 
 FilteredGenerator

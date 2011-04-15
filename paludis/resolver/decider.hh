@@ -152,10 +152,6 @@ namespace paludis
                         const std::shared_ptr<const PackageID> &,
                         const std::shared_ptr<const Repository> &) const;
 
-                const std::shared_ptr<const Repository> _find_repository_for(
-                        const std::shared_ptr<const Resolution> &,
-                        const ChangesToMakeDecision &) const;
-
                 void _resolve_decide_with_dependencies();
                 bool _resolve_vias() PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool _resolve_dependents() PALUDIS_ATTRIBUTE((warn_unused_result));
