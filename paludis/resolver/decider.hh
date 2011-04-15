@@ -121,10 +121,6 @@ namespace paludis
                         const std::shared_ptr<const Resolution> & from_resolution,
                         const std::shared_ptr<const Constraint> & from_constraint) const;
 
-                const std::shared_ptr<ConstraintSequence> _make_constraints_for_via_binary(
-                        const std::shared_ptr<const Resolution> & resolution,
-                        const std::shared_ptr<const Resolution> & from_resolution) const;
-
                 void _apply_resolution_constraint(
                         const std::shared_ptr<Resolution> &,
                         const std::shared_ptr<const Constraint> &);

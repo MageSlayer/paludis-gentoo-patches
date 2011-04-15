@@ -198,7 +198,7 @@ Decider::_resolve_vias()
 
         changed = true;
 
-        const std::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_via_binary(binary_resolution, *i));
+        const std::shared_ptr<const ConstraintSequence> constraints(_imp->fns.get_constraints_for_via_binary_fn()(binary_resolution, *i));
 
         for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                 c != c_end ; ++c)
@@ -208,14 +208,6 @@ Decider::_resolve_vias()
     }
 
     return changed;
-}
-
-const std::shared_ptr<ConstraintSequence>
-Decider::_make_constraints_for_via_binary(
-        const std::shared_ptr<const Resolution> & resolution,
-        const std::shared_ptr<const Resolution> & other_resolution) const
-{
-    return _imp->fns.get_constraints_for_via_binary_fn()(resolution, other_resolution);
 }
 
 bool
