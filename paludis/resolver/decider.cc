@@ -603,7 +603,7 @@ Decider::_make_constraints_from_blocker(
             throw InternalError(PALUDIS_HERE, "unexpected role");
     }
 
-    DestinationTypes destination_types(_get_destination_types_for_blocker(spec, reason));
+    DestinationTypes destination_types(_imp->fns.get_destination_types_for_blocker_fn()(spec, reason));
     for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
         if (destination_types[*t])
             result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
@@ -1355,7 +1355,7 @@ Decider::_get_resolvents_for_blocker(const BlockDepSpec & spec,
     if (spec.blocking().exact_slot_requirement())
         exact_slot = make_shared_copy(spec.blocking().exact_slot_requirement()->name());
 
-    DestinationTypes destination_types(_get_destination_types_for_blocker(spec, reason));
+    DestinationTypes destination_types(_imp->fns.get_destination_types_for_blocker_fn()(spec, reason));
     std::shared_ptr<Resolvents> result(std::make_shared<Resolvents>());
     if (exact_slot)
     {
@@ -1376,13 +1376,6 @@ Decider::_get_resolvents_for_blocker(const BlockDepSpec & spec,
     }
 
     return result;
-}
-
-const DestinationTypes
-Decider::_get_destination_types_for_blocker(const BlockDepSpec & spec,
-        const std::shared_ptr<const Reason> & reason) const
-{
-    return _imp->fns.get_destination_types_for_blocker_fn()(spec, reason);
 }
 
 const std::pair<std::shared_ptr<const Resolvents>, bool>

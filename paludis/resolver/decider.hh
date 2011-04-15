@@ -69,9 +69,6 @@ namespace paludis
                 const std::shared_ptr<const Resolvents> _get_resolvents_for_blocker(const BlockDepSpec &,
                         const std::shared_ptr<const Reason> & reason) const;
 
-                const DestinationTypes _get_destination_types_for_blocker(const BlockDepSpec &,
-                        const std::shared_ptr<const Reason> &) const;
-
                 const std::pair<std::shared_ptr<const Resolvents>, bool> _get_resolvents_for(
                         const PackageDepSpec & spec,
                         const std::shared_ptr<const Reason> & reason) const;
