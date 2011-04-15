@@ -220,8 +220,6 @@ namespace paludis
                         const std::shared_ptr<const Resolution> &,
                         const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                bool _remove_if_dependent(const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-
                 const std::pair<
                     std::shared_ptr<const ChangeByResolventSequence>,
                     std::shared_ptr<const ChangeByResolventSequence> > _collect_changing() const PALUDIS_ATTRIBUTE((warn_unused_result));

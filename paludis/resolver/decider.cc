@@ -239,7 +239,7 @@ Decider::_resolve_dependents()
             continue;
 
         Resolvent resolvent(*s, dt_install_to_slash);
-        bool remove(_remove_if_dependent(*s));
+        bool remove(_imp->fns.remove_if_dependent_fn()(*s));
 
         /* we've changed things if we've not already done anything for this
          * resolvent, but only if we're going to remove it rather than mark it
@@ -1692,12 +1692,6 @@ Decider::_allowed_to_remove(
         const std::shared_ptr<const PackageID> & id) const
 {
     return id->supports_action(SupportsActionTest<UninstallAction>()) && _imp->fns.allowed_to_remove_fn()(resolution, id);
-}
-
-bool
-Decider::_remove_if_dependent(const std::shared_ptr<const PackageID> & id) const
-{
-    return _imp->fns.remove_if_dependent_fn()(id);
 }
 
 const std::shared_ptr<const PackageIDSequence>
