@@ -106,11 +106,6 @@ namespace paludis
                         const BlockDepSpec & dep,
                         const std::shared_ptr<const Reason> & reason) const;
 
-                const std::shared_ptr<ConstraintSequence> _make_constraints_for_purge(
-                        const std::shared_ptr<const Resolution> & resolution,
-                        const std::shared_ptr<const PackageID> &,
-                        const std::shared_ptr<const ChangeByResolventSequence> &) const;
-
                 const std::shared_ptr<ConstraintSequence> _make_constraints_from_other_destination(
                         const std::shared_ptr<const Resolution> & resolution,
                         const std::shared_ptr<const Resolution> & from_resolution,

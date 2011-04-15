@@ -2053,7 +2053,7 @@ Decider::purge()
                                 ));
         }
 
-        const std::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_purge(resolution, *i, used_to_use));
+        const std::shared_ptr<const ConstraintSequence> constraints(_imp->fns.get_constraints_for_purge_fn()(resolution, *i, used_to_use));
         for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                 c != c_end ; ++c)
             _apply_resolution_constraint(resolution, *c);
@@ -2321,7 +2321,7 @@ Decider::_resolve_purges()
         if (resolution->decision())
             continue;
 
-        const std::shared_ptr<const ConstraintSequence> constraints(_make_constraints_for_purge(resolution, *i, used_to_use));
+        const std::shared_ptr<const ConstraintSequence> constraints(_imp->fns.get_constraints_for_purge_fn()(resolution, *i, used_to_use));
         for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                 c != c_end ; ++c)
             _apply_resolution_constraint(resolution, *c);
@@ -2333,15 +2333,6 @@ Decider::_resolve_purges()
     }
 
     return changed;
-}
-
-const std::shared_ptr<ConstraintSequence>
-Decider::_make_constraints_for_purge(
-        const std::shared_ptr<const Resolution> & resolution,
-        const std::shared_ptr<const PackageID> & id,
-        const std::shared_ptr<const ChangeByResolventSequence> & r) const
-{
-    return _imp->fns.get_constraints_for_purge_fn()(resolution, id, r);
 }
 
 namespace
