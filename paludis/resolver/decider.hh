@@ -168,9 +168,6 @@ namespace paludis
                         const std::shared_ptr<const Resolution> & resolution,
                         const ChangesToMakeDecision &) const;
 
-                Filter _make_unmaskable_filter(
-                        const QualifiedPackageName &) const;
-
                 bool _allow_choice_changes_for(
                         const std::shared_ptr<const Resolution> &) const;
 

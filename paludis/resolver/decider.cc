@@ -475,12 +475,6 @@ Decider::_make_change_type_for(
     }
 }
 
-Filter
-Decider::_make_unmaskable_filter(const QualifiedPackageName & n) const
-{
-    return _imp->fns.make_unmaskable_filter_fn()(n);
-}
-
 bool
 Decider::_allow_choice_changes_for(const std::shared_ptr<const Resolution> & resolution) const
 {
@@ -1782,7 +1776,7 @@ Decider::_find_installable_id_candidates_for(
                 _imp->fns.make_origin_filtered_generator_fn()(generator::Package(package)) |
                 slot_filter |
                 filter::SupportsAction<InstallAction>() |
-                (include_errors ? filter::All() : include_unmaskable ? _make_unmaskable_filter(package) : filter::NotMasked())
+                (include_errors ? filter::All() : include_unmaskable ? _imp->fns.make_unmaskable_filter_fn()(package) : filter::NotMasked())
                 )]);
 }
 
