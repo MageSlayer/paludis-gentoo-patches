@@ -1783,19 +1783,13 @@ Decider::_find_installable_id_candidates_for(
 {
     Context context("When finding installable ID candidates for '" + stringify(package) + "':");
 
-    return _remove_hidden(
+    return _imp->fns.remove_hidden_fn()(
             (*_imp->env)[selection::AllVersionsSorted(
                 _make_origin_filtered_generator(generator::Package(package)) |
                 slot_filter |
                 filter::SupportsAction<InstallAction>() |
                 (include_errors ? filter::All() : include_unmaskable ? _make_unmaskable_filter(package) : filter::NotMasked())
                 )]);
-}
-
-const std::shared_ptr<const PackageIDSequence>
-Decider::_remove_hidden(const std::shared_ptr<const PackageIDSequence> & ids) const
-{
-    return _imp->fns.remove_hidden_fn()(ids);
 }
 
 const Decider::FoundID

@@ -206,9 +206,6 @@ namespace paludis
 
                 const std::shared_ptr<Constraints> _initial_constraints_for(const Resolvent &) const;
 
-                const std::shared_ptr<const PackageIDSequence> _remove_hidden(
-                        const std::shared_ptr<const PackageIDSequence> & ids) const;
-
                 const std::shared_ptr<const PackageID> _find_existing_id_for(
                         const std::shared_ptr<const Resolution> &) const;
 
