@@ -68,36 +68,6 @@ int main(int argc, char * argv[])
             if (spec.package_name_part_requirement())
                 cout << "    " << left << setw(24) << "Package part:" << " " << spec.package_name_part_requirement()->name_part() << endl;
 
-            if (spec.all_version_requirements() && ! spec.all_version_requirements()->empty())
-            {
-                cout << "    " << left << setw(24) << "Version requirements:" << " ";
-                bool need_join(false);
-                for (auto r(spec.all_version_requirements()->begin()), r_end(spec.all_version_requirements()->end()) ;
-                        r != r_end ; ++r)
-                {
-                    if (need_join)
-                    {
-                        switch ((*r)->combiner())
-                        {
-                            case vrc_and:
-                                cout << " and ";
-                                break;
-
-                            case vrc_or:
-                                cout << " or ";
-                                break;
-
-                            case last_vrc:
-                                throw InternalError(PALUDIS_HERE, "Bad version_requirements_mode");
-                        }
-                    }
-
-                    cout << (*r)->version_operator() << (*r)->version_spec();
-                    need_join = true;
-                }
-                cout << endl;
-            }
-
             if (spec.exact_slot_requirement())
                 cout << "    " << left << setw(24) << "Slot:" << " " << spec.exact_slot_requirement()->name() << endl;
 
@@ -122,21 +92,6 @@ int main(int argc, char * argv[])
                 cout << "    " << left << setw(24) << "Installable to repository:" << " " <<
                     spec.installable_to_repository_requirement()->name() << ", " <<
                     spec.installable_to_repository_requirement()->include_masked() << endl;
-
-            if (spec.all_choice_requirements() && ! spec.all_choice_requirements()->empty())
-            {
-                cout << "    " << left << setw(24) << "Choice requirements:" << " ";
-                bool need_join(false);
-                for (auto u(spec.all_choice_requirements()->begin()), u_end(spec.all_choice_requirements()->end()) ; u != u_end ; ++u)
-                {
-                    if (need_join)
-                        cout << " and ";
-
-                    cout << (*u)->as_raw_string() + " (meaning: " + (*u)->as_human_string(make_null_shared_ptr()) + ")";
-                    need_join = true;
-                }
-                cout << endl;
-            }
 
             /* And display packages matching that spec */
             cout << "    " << left << setw(24) << "Matches:" << " ";

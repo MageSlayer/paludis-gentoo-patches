@@ -1418,15 +1418,34 @@ namespace
 
                 cout << fuc(fs_unable_unsuitable_did_not_meet(), fv<'s'>(s));
 
-                if ((*c)->spec().if_package() && (*c)->spec().if_package()->all_choice_requirements() &&
+                if ((*c)->spec().if_package() && package_dep_spec_has_properties(*(*c)->spec().if_package(), make_named_values<PackageDepSpecProperties>(
+                            n::has_any_slot_requirement() = indeterminate,
+                            n::has_category_name_part() = indeterminate,
+                            n::has_choice_requirements() = true,
+                            n::has_exact_slot_requirement() = indeterminate,
+                            n::has_from_repository() = indeterminate,
+                            n::has_in_repository() = indeterminate,
+                            n::has_installable_to_path() = indeterminate,
+                            n::has_installable_to_repository() = indeterminate,
+                            n::has_installed_at_path() = indeterminate,
+                            n::has_key_requirements() = indeterminate,
+                            n::has_package() = indeterminate,
+                            n::has_package_name_part() = indeterminate,
+                            n::has_tag() = indeterminate,
+                            n::has_version_requirements() = indeterminate
+                            )) &&
                         (! match_package(*env, *(*c)->spec().if_package(), u->package_id(), (*c)->from_id(), { })) &&
                         match_package(*env, *(*c)->spec().if_package(), u->package_id(), (*c)->from_id(), { mpo_ignore_choice_requirements }))
                 {
-                    for (auto a((*c)->spec().if_package()->all_choice_requirements()->begin()),
-                            a_end((*c)->spec().if_package()->all_choice_requirements()->end()) ;
+                    for (auto a((*c)->spec().if_package()->requirements()->begin()),
+                            a_end((*c)->spec().if_package()->requirements()->end()) ;
                             a != a_end ; ++a)
                     {
-                        const std::pair<bool, std::string> p((*a)->requirement_met(env.get(), 0, u->package_id(), (*c)->from_id(), 0));
+                        auto a_choice(visitor_cast<const ChoiceRequirement>(**a));
+                        if (! a_choice)
+                            continue;
+
+                        const std::pair<bool, std::string> p(a_choice->requirement_met(env.get(), 0, u->package_id(), (*c)->from_id(), 0));
                         if (p.first)
                             continue;
 

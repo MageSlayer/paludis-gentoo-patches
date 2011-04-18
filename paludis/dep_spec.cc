@@ -23,6 +23,7 @@
 #include <paludis/version_spec.hh>
 #include <paludis/dep_spec_data.hh>
 #include <paludis/package_dep_spec_requirement.hh>
+#include <paludis/package_dep_spec_properties.hh>
 
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/log.hh>
@@ -537,20 +538,6 @@ LabelsDepSpec<T_>::add_label(const std::shared_ptr<const T_> & item)
 
 namespace
 {
-    template <typename T_>
-    struct Detect
-    {
-        bool visit(const T_ &) const
-        {
-            return true;
-        }
-
-        bool visit(const PackageDepSpecRequirement &) const
-        {
-            return false;
-        }
-    };
-
     template <typename I_, typename P_>
     I_ find_unique_if(I_ cur, I_ end, P_ pred)
     {
@@ -576,35 +563,9 @@ namespace paludis
         const std::shared_ptr<const PackageDepSpecData> data;
         std::string text;
 
-        std::shared_ptr<VersionRequirementSequence> all_versions;
-        std::shared_ptr<KeyRequirementSequence> all_keys;
-        std::shared_ptr<ChoiceRequirementSequence> all_choices;
-
         Imp(const std::shared_ptr<const PackageDepSpecData> & d) :
             data(d)
         {
-            for (auto u(data->requirements()->begin()), u_end(data->requirements()->end()) ;
-                    u != u_end ; ++u)
-            {
-                if ((*u)->accept_returning<bool>(Detect<VersionRequirement>()))
-                {
-                    if (! all_versions)
-                        all_versions = std::make_shared<VersionRequirementSequence>();
-                    all_versions->push_back(std::static_pointer_cast<const VersionRequirement>(*u));
-                }
-                else if ((*u)->accept_returning<bool>(Detect<KeyRequirement>()))
-                {
-                    if (! all_keys)
-                        all_keys = std::make_shared<KeyRequirementSequence>();
-                    all_keys->push_back(std::static_pointer_cast<const KeyRequirement>(*u));
-                }
-                else if ((*u)->accept_returning<bool>(Detect<ChoiceRequirement>()))
-                {
-                    if (! all_choices)
-                        all_choices = std::make_shared<ChoiceRequirementSequence>();
-                    all_choices->push_back(std::static_pointer_cast<const ChoiceRequirement>(*u));
-                }
-            }
         }
     };
 }
@@ -615,19 +576,46 @@ PackageDepSpec::PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> &
 {
     std::ostringstream s;
 
-    if (all_version_requirements())
+    std::shared_ptr<VersionRequirementSequence> all_versions;
+    std::shared_ptr<KeyRequirementSequence> all_keys;
+    std::shared_ptr<ChoiceRequirementSequence> all_choices;
+
+    for (auto u(_imp->data->requirements()->begin()), u_end(_imp->data->requirements()->end()) ;
+            u != u_end ; ++u)
     {
-        if (all_version_requirements()->begin() == all_version_requirements()->end())
+        if ((*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<VersionRequirement>()))
+        {
+            if (! all_versions)
+                all_versions = std::make_shared<VersionRequirementSequence>();
+            all_versions->push_back(std::static_pointer_cast<const VersionRequirement>(*u));
+        }
+        else if ((*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<KeyRequirement>()))
+        {
+            if (! all_keys)
+                all_keys = std::make_shared<KeyRequirementSequence>();
+            all_keys->push_back(std::static_pointer_cast<const KeyRequirement>(*u));
+        }
+        else if ((*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<ChoiceRequirement>()))
+        {
+            if (! all_choices)
+                all_choices = std::make_shared<ChoiceRequirementSequence>();
+            all_choices->push_back(std::static_pointer_cast<const ChoiceRequirement>(*u));
+        }
+    }
+
+    if (all_versions)
+    {
+        if (all_versions->begin() == all_versions->end())
         {
         }
-        else if (next(all_version_requirements()->begin()) == all_version_requirements()->end() &&
+        else if (next(all_versions->begin()) == all_versions->end() &&
                 ! _imp->data->options()[pdsdo_always_use_ranged_deps])
         {
-            if ((*all_version_requirements()->begin())->version_operator() == vo_stupid_equal_star ||
-                    (*all_version_requirements()->begin())->version_operator() == vo_nice_equal_star)
+            if ((*all_versions->begin())->version_operator() == vo_stupid_equal_star ||
+                    (*all_versions->begin())->version_operator() == vo_nice_equal_star)
                 s << "=";
             else
-                s << (*all_version_requirements()->begin())->version_operator();
+                s << (*all_versions->begin())->version_operator();
         }
     }
 
@@ -648,17 +636,17 @@ PackageDepSpec::PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> &
             s << "*";
     }
 
-    if (all_version_requirements())
+    if (all_versions)
     {
-        if (all_version_requirements()->begin() == all_version_requirements()->end())
+        if (all_versions->begin() == all_versions->end())
         {
         }
-        else if (next(all_version_requirements()->begin()) == all_version_requirements()->end() &&
+        else if (next(all_versions->begin()) == all_versions->end() &&
                 ! _imp->data->options()[pdsdo_always_use_ranged_deps])
         {
-            s << "-" << (*all_version_requirements()->begin())->version_spec();
-            if ((*all_version_requirements()->begin())->version_operator() == vo_stupid_equal_star ||
-                    (*all_version_requirements()->begin())->version_operator() == vo_nice_equal_star)
+            s << "-" << (*all_versions->begin())->version_spec();
+            if ((*all_versions->begin())->version_operator() == vo_stupid_equal_star ||
+                    (*all_versions->begin())->version_operator() == vo_nice_equal_star)
                 s << "*";
         }
     }
@@ -733,12 +721,12 @@ PackageDepSpec::PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> &
     else if (! left.empty())
         s << "::" << left << "->";
 
-    if (all_version_requirements())
+    if (all_versions)
     {
-        if (all_version_requirements()->begin() == all_version_requirements()->end())
+        if (all_versions->begin() == all_versions->end())
         {
         }
-        else if (next(all_version_requirements()->begin()) == all_version_requirements()->end() &&
+        else if (next(all_versions->begin()) == all_versions->end() &&
                 ! _imp->data->options()[pdsdo_always_use_ranged_deps])
         {
         }
@@ -746,7 +734,7 @@ PackageDepSpec::PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> &
         {
             bool need_op(false);
             s << "[";
-            for (auto r(all_version_requirements()->begin()), r_end(all_version_requirements()->end()) ; r != r_end ; ++r)
+            for (auto r(all_versions->begin()), r_end(all_versions->end()) ; r != r_end ; ++r)
             {
                 if (need_op)
                 {
@@ -785,12 +773,12 @@ PackageDepSpec::PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> &
         }
     }
 
-    if (all_choice_requirements())
-        for (auto u(all_choice_requirements()->begin()), u_end(all_choice_requirements()->end()) ; u != u_end ; ++u)
+    if (all_choices)
+        for (auto u(all_choices->begin()), u_end(all_choices->end()) ; u != u_end ; ++u)
             s << (*u)->as_raw_string();
 
-    if (all_key_requirements())
-        for (auto u(all_key_requirements()->begin()), u_end(all_key_requirements()->end()) ; u != u_end ; ++u)
+    if (all_keys)
+        for (auto u(all_keys->begin()), u_end(all_keys->end()) ; u != u_end ; ++u)
             s << (*u)->as_raw_string();
 
     _imp->text = s.str();
@@ -818,7 +806,7 @@ PackageDepSpec::text() const
 const std::shared_ptr<const NameRequirement>
 PackageDepSpec::package_name_requirement() const
 {
-    Detect<NameRequirement> v;
+    DetectPackageDepSpecRequirement<NameRequirement> v;
     auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
                 indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
 
@@ -831,7 +819,7 @@ PackageDepSpec::package_name_requirement() const
 const std::shared_ptr<const PackageNamePartRequirement>
 PackageDepSpec::package_name_part_requirement() const
 {
-    Detect<PackageNamePartRequirement> v;
+    DetectPackageDepSpecRequirement<PackageNamePartRequirement> v;
     auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
                 indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
 
@@ -844,7 +832,7 @@ PackageDepSpec::package_name_part_requirement() const
 const std::shared_ptr<const CategoryNamePartRequirement>
 PackageDepSpec::category_name_part_requirement() const
 {
-    Detect<CategoryNamePartRequirement> v;
+    DetectPackageDepSpecRequirement<CategoryNamePartRequirement> v;
     auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
                 indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
 
@@ -854,16 +842,10 @@ PackageDepSpec::category_name_part_requirement() const
         return make_null_shared_ptr();
 }
 
-const std::shared_ptr<const VersionRequirementSequence>
-PackageDepSpec::all_version_requirements() const
-{
-    return _imp->all_versions;
-}
-
 const std::shared_ptr<const ExactSlotRequirement>
 PackageDepSpec::exact_slot_requirement() const
 {
-    Detect<ExactSlotRequirement> v;
+    DetectPackageDepSpecRequirement<ExactSlotRequirement> v;
     auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
                 indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
 
@@ -876,7 +858,7 @@ PackageDepSpec::exact_slot_requirement() const
 const std::shared_ptr<const AnySlotRequirement>
 PackageDepSpec::any_slot_requirement() const
 {
-    Detect<AnySlotRequirement> v;
+    DetectPackageDepSpecRequirement<AnySlotRequirement> v;
     auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
                 indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
 
@@ -889,7 +871,7 @@ PackageDepSpec::any_slot_requirement() const
 const std::shared_ptr<const InRepositoryRequirement>
 PackageDepSpec::in_repository_requirement() const
 {
-    Detect<InRepositoryRequirement> v;
+    DetectPackageDepSpecRequirement<InRepositoryRequirement> v;
     auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
                 indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
 
@@ -902,7 +884,7 @@ PackageDepSpec::in_repository_requirement() const
 const std::shared_ptr<const InstallableToRepositoryRequirement>
 PackageDepSpec::installable_to_repository_requirement() const
 {
-    Detect<InstallableToRepositoryRequirement> v;
+    DetectPackageDepSpecRequirement<InstallableToRepositoryRequirement> v;
     auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
                 indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
 
@@ -915,7 +897,7 @@ PackageDepSpec::installable_to_repository_requirement() const
 const std::shared_ptr<const FromRepositoryRequirement>
 PackageDepSpec::from_repository_requirement() const
 {
-    Detect<FromRepositoryRequirement> v;
+    DetectPackageDepSpecRequirement<FromRepositoryRequirement> v;
     auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
                 indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
 
@@ -928,7 +910,7 @@ PackageDepSpec::from_repository_requirement() const
 const std::shared_ptr<const InstalledAtPathRequirement>
 PackageDepSpec::installed_at_path_requirement() const
 {
-    Detect<InstalledAtPathRequirement> v;
+    DetectPackageDepSpecRequirement<InstalledAtPathRequirement> v;
     auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
                 indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
 
@@ -941,7 +923,7 @@ PackageDepSpec::installed_at_path_requirement() const
 const std::shared_ptr<const InstallableToPathRequirement>
 PackageDepSpec::installable_to_path_requirement() const
 {
-    Detect<InstallableToPathRequirement> v;
+    DetectPackageDepSpecRequirement<InstallableToPathRequirement> v;
     auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
                 indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
 
@@ -949,18 +931,6 @@ PackageDepSpec::installable_to_path_requirement() const
         return std::static_pointer_cast<const InstallableToPathRequirement>(*r.underlying_iterator());
     else
         return make_null_shared_ptr();
-}
-
-const std::shared_ptr<const KeyRequirementSequence>
-PackageDepSpec::all_key_requirements() const
-{
-    return _imp->all_keys;
-}
-
-const std::shared_ptr<const ChoiceRequirementSequence>
-PackageDepSpec::all_choice_requirements() const
-{
-    return _imp->all_choices;
 }
 
 const std::shared_ptr<const PackageDepSpecRequirementSequence>

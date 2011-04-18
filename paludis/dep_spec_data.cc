@@ -22,6 +22,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/package_dep_spec_properties.hh>
 
 #include <paludis/util/stringify.hh>
 #include <paludis/util/exception.hh>
@@ -90,23 +91,6 @@ PackageDepSpecData::options() const
     return _imp->options;
 }
 
-namespace
-{
-    template <typename T_>
-    struct Detect
-    {
-        bool visit(const T_ &) const
-        {
-            return true;
-        }
-
-        bool visit(const PackageDepSpecRequirement &) const
-        {
-            return false;
-        }
-    };
-}
-
 MutablePackageDepSpecData::MutablePackageDepSpecData(const PackageDepSpecDataOptions & o) :
     PackageDepSpecData(o)
 {
@@ -137,7 +121,7 @@ MutablePackageDepSpecData::unrequire_package()
     auto r(std::make_shared<PackageDepSpecRequirementSequence>());
     for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
             u != u_end ; ++u)
-        if (! (*u)->accept_returning<bool>(Detect<NameRequirement>()))
+        if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<NameRequirement>()))
             r->push_back(*u);
 
     _imp->requirements = r;
@@ -157,7 +141,7 @@ MutablePackageDepSpecData::unrequire_package_name_part()
     auto r(std::make_shared<PackageDepSpecRequirementSequence>());
     for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
             u != u_end ; ++u)
-        if (! (*u)->accept_returning<bool>(Detect<PackageNamePartRequirement>()))
+        if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<PackageNamePartRequirement>()))
             r->push_back(*u);
 
     _imp->requirements = r;
@@ -177,7 +161,7 @@ MutablePackageDepSpecData::unrequire_category_name_part()
     auto r(std::make_shared<PackageDepSpecRequirementSequence>());
     for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
             u != u_end ; ++u)
-        if (! (*u)->accept_returning<bool>(Detect<CategoryNamePartRequirement>()))
+        if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<CategoryNamePartRequirement>()))
             r->push_back(*u);
 
     _imp->requirements = r;
@@ -199,7 +183,7 @@ MutablePackageDepSpecData::unrequire_versions()
     auto r(std::make_shared<PackageDepSpecRequirementSequence>());
     for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
             u != u_end ; ++u)
-        if (! (*u)->accept_returning<bool>(Detect<VersionRequirement>()))
+        if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<VersionRequirement>()))
             r->push_back(*u);
 
     _imp->requirements = r;
@@ -219,7 +203,7 @@ MutablePackageDepSpecData::unrequire_exact_slot()
     auto r(std::make_shared<PackageDepSpecRequirementSequence>());
     for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
             u != u_end ; ++u)
-        if (! (*u)->accept_returning<bool>(Detect<ExactSlotRequirement>()))
+        if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<ExactSlotRequirement>()))
             r->push_back(*u);
 
     _imp->requirements = r;
@@ -239,7 +223,7 @@ MutablePackageDepSpecData::unrequire_in_repository()
     auto r(std::make_shared<PackageDepSpecRequirementSequence>());
     for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
             u != u_end ; ++u)
-        if (! (*u)->accept_returning<bool>(Detect<InRepositoryRequirement>()))
+        if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<InRepositoryRequirement>()))
             r->push_back(*u);
 
     _imp->requirements = r;
@@ -259,7 +243,7 @@ MutablePackageDepSpecData::unrequire_installable_to_path()
     auto r(std::make_shared<PackageDepSpecRequirementSequence>());
     for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
             u != u_end ; ++u)
-        if (! (*u)->accept_returning<bool>(Detect<InstallableToPathRequirement>()))
+        if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<InstallableToPathRequirement>()))
             r->push_back(*u);
 
     _imp->requirements = r;
@@ -279,7 +263,7 @@ MutablePackageDepSpecData::unrequire_installable_to_repository()
     auto r(std::make_shared<PackageDepSpecRequirementSequence>());
     for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
             u != u_end ; ++u)
-        if (! (*u)->accept_returning<bool>(Detect<InstallableToRepositoryRequirement>()))
+        if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<InstallableToRepositoryRequirement>()))
             r->push_back(*u);
 
     _imp->requirements = r;
@@ -299,7 +283,7 @@ MutablePackageDepSpecData::unrequire_from_repository()
     auto r(std::make_shared<PackageDepSpecRequirementSequence>());
     for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
             u != u_end ; ++u)
-        if (! (*u)->accept_returning<bool>(Detect<FromRepositoryRequirement>()))
+        if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<FromRepositoryRequirement>()))
             r->push_back(*u);
 
     _imp->requirements = r;
@@ -319,7 +303,7 @@ MutablePackageDepSpecData::unrequire_installed_at_path()
     auto r(std::make_shared<PackageDepSpecRequirementSequence>());
     for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
             u != u_end ; ++u)
-        if (! (*u)->accept_returning<bool>(Detect<InstalledAtPathRequirement>()))
+        if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<InstalledAtPathRequirement>()))
             r->push_back(*u);
 
     _imp->requirements = r;
@@ -339,7 +323,7 @@ MutablePackageDepSpecData::unrequire_any_slot()
     auto r(std::make_shared<PackageDepSpecRequirementSequence>());
     for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
             u != u_end ; ++u)
-        if (! (*u)->accept_returning<bool>(Detect<AnySlotRequirement>()))
+        if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<AnySlotRequirement>()))
             r->push_back(*u);
 
     _imp->requirements = r;
@@ -360,7 +344,7 @@ MutablePackageDepSpecData::unrequire_choices()
     auto r(std::make_shared<PackageDepSpecRequirementSequence>());
     for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
             u != u_end ; ++u)
-        if (! (*u)->accept_returning<bool>(Detect<ChoiceRequirement>()))
+        if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<ChoiceRequirement>()))
             r->push_back(*u);
 
     _imp->requirements = r;
@@ -383,7 +367,7 @@ MutablePackageDepSpecData::unrequire_keys()
     auto r(std::make_shared<PackageDepSpecRequirementSequence>());
     for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
             u != u_end ; ++u)
-        if (! (*u)->accept_returning<bool>(Detect<KeyRequirement>()))
+        if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<KeyRequirement>()))
             r->push_back(*u);
 
     _imp->requirements = r;

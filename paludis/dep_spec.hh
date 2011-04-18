@@ -320,14 +320,6 @@ namespace paludis
             const std::shared_ptr<const CategoryNamePartRequirement> category_name_part_requirement() const;
 
             /**
-             * Fetch all our VersionRequirements, if we have any, or
-             * a null pointer otherwise.
-             *
-             * \since 0.61
-             */
-            const std::shared_ptr<const VersionRequirementSequence> all_version_requirements() const;
-
-            /**
              * Fetch the single ExactSlotRequirement, if we have one, or
              * a null pointer otherwise.
              *
@@ -379,22 +371,6 @@ namespace paludis
              * \since 0.61
              */
             const std::shared_ptr<const InstallableToPathRequirement> installable_to_path_requirement() const;
-
-            /**
-             * Fetch all our KeyRequirements, if we have any, or
-             * a null pointer otherwise.
-             *
-             * \since 0.61
-             */
-            const std::shared_ptr<const KeyRequirementSequence> all_key_requirements() const;
-
-            /**
-             * Fetch all our ChoiceRequirements, if we have any, or
-             * a null pointer otherwise.
-             *
-             * \since 0.61
-             */
-            const std::shared_ptr<const ChoiceRequirementSequence> all_choice_requirements() const;
 
             /**
              * Fetch all our requirements.

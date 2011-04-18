@@ -33,6 +33,7 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/visitor_cast.hh>
 
 #include <paludis/environments/test/test_environment.hh>
 
@@ -126,21 +127,41 @@ UserDepSpecTest::check_spec(
 
     if (! version_requirement_mode.empty())
     {
-        ASSERT_TRUE(bool(spec.all_version_requirements()));
-        ASSERT_TRUE(! spec.all_version_requirements()->empty());
-        for (auto v(next(spec.all_version_requirements()->begin())), v_end(spec.all_version_requirements()->end()) ;
+        int n(0);
+        for (auto v(spec.requirements()->begin()), v_end(spec.requirements()->end()) ;
                 v != v_end ; ++v)
-            EXPECT_EQ(version_requirement_mode, stringify((*v)->combiner()));
+        {
+            auto v_ver(visitor_cast<const VersionRequirement>(**v));
+            if (! v_ver)
+                continue;
+            ++n;
+
+            if (1 != n)
+                EXPECT_EQ(version_requirement_mode, stringify(v_ver->combiner()));
+        }
+
+        EXPECT_GT(n, 0);
     }
 
-    if (version_requirements.empty())
-        EXPECT_TRUE((! spec.all_version_requirements()) || spec.all_version_requirements()->empty());
-    else
     {
-        ASSERT_TRUE(bool(spec.all_version_requirements()));
-        EXPECT_EQ(version_requirements, stringify(join(
-                        indirect_iterator(spec.all_version_requirements()->begin()),
-                        indirect_iterator(spec.all_version_requirements()->end()), ", ", &dump_version_requirement)));
+        std::string v_str;
+
+        for (auto v(spec.requirements()->begin()), v_end(spec.requirements()->end()) ;
+                v != v_end ; ++v)
+        {
+             auto v_ver(visitor_cast<const VersionRequirement>(**v));
+             if (! v_ver)
+                 continue;
+
+             if (! v_str.empty())
+                 v_str.append(", ");
+             v_str.append(dump_version_requirement(*v_ver));
+        }
+
+        if (version_requirements.empty())
+            EXPECT_TRUE(v_str.empty());
+        else
+            EXPECT_EQ(version_requirements, v_str);
     }
 
     if (slot_requirement.empty())
@@ -167,21 +188,33 @@ UserDepSpecTest::check_spec(
         EXPECT_EQ(in_repository, stringify(spec.in_repository_requirement()->name()));
     }
 
-    if (additional_requirement.empty())
-        EXPECT_TRUE((! spec.all_choice_requirements()) || spec.all_choice_requirements()->empty());
-    else
     {
-        ASSERT_TRUE(bool(spec.all_choice_requirements()) || bool(spec.all_key_requirements()));
-        std::string x;
-        if (spec.all_choice_requirements())
-            x.append(stringify(join(
-                            indirect_iterator(spec.all_choice_requirements()->begin()),
-                            indirect_iterator(spec.all_choice_requirements()->end()), ", ", &stringify_choice_requirement)));
-        if (spec.all_key_requirements())
-            x.append(stringify(join(
-                            indirect_iterator(spec.all_key_requirements()->begin()),
-                            indirect_iterator(spec.all_key_requirements()->end()), ", ", &stringify_key_requirement)));
-        EXPECT_EQ(additional_requirement, x);
+        std::string c_str;
+
+        for (auto v(spec.requirements()->begin()), v_end(spec.requirements()->end()) ;
+                v != v_end ; ++v)
+        {
+            auto v_choice(visitor_cast<const ChoiceRequirement>(**v));
+            if (v_choice)
+            {
+                if (! c_str.empty())
+                    c_str.append(", ");
+                c_str.append(stringify_choice_requirement(*v_choice));
+            }
+
+            auto v_key(visitor_cast<const KeyRequirement>(**v));
+            if (v_key)
+            {
+                if (! c_str.empty())
+                    c_str.append(", ");
+                c_str.append(stringify_key_requirement(*v_key));
+            }
+        }
+
+        if (additional_requirement.empty())
+            EXPECT_TRUE(c_str.empty());
+        else
+            EXPECT_EQ(additional_requirement, c_str);
     }
 
     if (installed_at_path.empty())

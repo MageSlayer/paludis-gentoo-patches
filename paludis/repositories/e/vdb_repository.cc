@@ -28,6 +28,7 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/extra_distribution_data.hh>
 #include <paludis/repositories/e/can_skip_phase.hh>
+#include <paludis/repositories/e/split_pn_v.hh>
 
 #include <paludis/action.hh>
 #include <paludis/util/config_file.hh>
@@ -1110,16 +1111,14 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
             if (std::string::npos == s.rfind('-'))
                 continue;
 
-            PackageDepSpec p(parse_user_package_dep_spec("=" + stringify(c) + "/" + s, _imp->params.environment(), { }));
-            q->insert(p.package_name_requirement()->name());
-            IDMap::iterator i(_imp->ids.find(p.package_name_requirement()->name()));
+            auto pn_v(split_pn_v(_imp->params.environment(), s));
+            auto qpn(c + pn_v.first);
+            q->insert(qpn);
+            IDMap::iterator i(_imp->ids.find(qpn));
             if (_imp->ids.end() == i)
-                i = _imp->ids.insert(std::make_pair(p.package_name_requirement()->name(), std::make_shared<PackageIDSequence>())).first;
+                i = _imp->ids.insert(std::make_pair(qpn, std::make_shared<PackageIDSequence>())).first;
 
-            if ((! bool(p.all_version_requirements())) || (std::distance(p.all_version_requirements()->begin(), p.all_version_requirements()->end()) != 1))
-                throw InternalError(PALUDIS_HERE, "didn't get a single version requirement");
-
-            i->second->push_back(make_id(p.package_name_requirement()->name(), (*p.all_version_requirements()->begin())->version_spec(), *d));
+            i->second->push_back(make_id(qpn, pn_v.second, *d));
         }
         catch (const InternalError &)
         {

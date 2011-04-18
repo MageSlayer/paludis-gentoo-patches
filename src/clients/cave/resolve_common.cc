@@ -106,6 +106,7 @@
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/elike_blocker.hh>
+#include <paludis/package_dep_spec_properties.hh>
 
 #include <algorithm>
 #include <iostream>
@@ -1124,7 +1125,23 @@ paludis::cave::resolve_common(
                                 if ('!' != t->at(0) && std::string::npos != t->find('/'))
                                 {
                                     PackageDepSpec ts(parse_spec_with_nice_error(*t, env.get(), { }, filter::All()));
-                                    if (ts.all_version_requirements() && ! ts.all_version_requirements()->empty())
+
+                                    if (package_dep_spec_has_properties(ts, make_named_values<PackageDepSpecProperties>(
+                                                    n::has_any_slot_requirement() = indeterminate,
+                                                    n::has_category_name_part() = indeterminate,
+                                                    n::has_choice_requirements() = indeterminate,
+                                                    n::has_exact_slot_requirement() = indeterminate,
+                                                    n::has_from_repository() = indeterminate,
+                                                    n::has_in_repository() = indeterminate,
+                                                    n::has_installable_to_path() = indeterminate,
+                                                    n::has_installable_to_repository() = indeterminate,
+                                                    n::has_installed_at_path() = indeterminate,
+                                                    n::has_key_requirements() = indeterminate,
+                                                    n::has_package() = indeterminate,
+                                                    n::has_package_name_part() = indeterminate,
+                                                    n::has_tag() = indeterminate,
+                                                    n::has_version_requirements() = true
+                                                    )))
                                     {
                                         confirm_helper.add_permit_downgrade_spec(ts);
                                         confirm_helper.add_permit_old_version_spec(ts);

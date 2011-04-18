@@ -57,6 +57,7 @@
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
 #include <paludis/dep_spec_data.hh>
+#include <paludis/package_dep_spec_properties.hh>
 
 #include <functional>
 #include <algorithm>
@@ -388,7 +389,22 @@ PortageEnvironment::_load_atom_file(const FSPath & f, I_ i, const std::string & 
 
             std::shared_ptr<PackageDepSpec> p(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
                             tokens.at(0), this, UserPackageDepSpecOptions() + updso_no_disambiguation)));
-            if (reject_choices && p->all_choice_requirements() && ! p->all_choice_requirements()->empty())
+            if (reject_choices && package_dep_spec_has_properties(*p, make_named_values<PackageDepSpecProperties>(
+                            n::has_any_slot_requirement() = indeterminate,
+                            n::has_category_name_part() = indeterminate,
+                            n::has_choice_requirements() = true,
+                            n::has_exact_slot_requirement() = indeterminate,
+                            n::has_from_repository() = indeterminate,
+                            n::has_in_repository() = indeterminate,
+                            n::has_installable_to_path() = indeterminate,
+                            n::has_installable_to_repository() = indeterminate,
+                            n::has_installed_at_path() = indeterminate,
+                            n::has_key_requirements() = indeterminate,
+                            n::has_package() = indeterminate,
+                            n::has_package_name_part() = indeterminate,
+                            n::has_tag() = indeterminate,
+                            n::has_version_requirements() = indeterminate
+                            )))
             {
                 Log::get_instance()->message("portage_environment.bad_spec", ll_warning, lc_context)
                     << "Dependency specification '" << stringify(*p)

@@ -21,6 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_PACKAGE_DEP_SPEC_PROPERTIES_HH 1
 
 #include <paludis/package_dep_spec_properties-fwd.hh>
+#include <paludis/package_dep_spec_requirement-fwd.hh>
+
 #include <paludis/util/named_value.hh>
 #include <paludis/util/tribool.hh>
 
@@ -66,6 +68,20 @@ namespace paludis
         NamedValue<n::has_package_name_part, Tribool> has_package_name_part;
         NamedValue<n::has_tag, Tribool> has_tag;
         NamedValue<n::has_version_requirements, Tribool> has_version_requirements;
+    };
+
+    template <typename T_>
+    struct DetectPackageDepSpecRequirement
+    {
+        bool visit(const T_ &) const
+        {
+            return true;
+        }
+
+        bool visit(const PackageDepSpecRequirement &) const
+        {
+            return false;
+        }
     };
 }
 

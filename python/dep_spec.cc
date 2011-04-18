@@ -40,6 +40,7 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/visitor_cast.hh>
 
 #include <type_traits>
 #include <list>
@@ -223,19 +224,39 @@ deep_copy(const std::shared_ptr<const T_> & x)
         return std::shared_ptr<T_>();
 }
 
+namespace
+{
+    template <typename T_>
+    std::shared_ptr<Sequence<std::shared_ptr<const T_> > > get_requirements(const std::shared_ptr<const PackageDepSpecRequirementSequence> & s)
+    {
+        auto result(std::make_shared<Sequence<std::shared_ptr<const T_> > >());
+        for (auto i(s->begin()), i_end(s->end()) ;
+                i != i_end ; ++i)
+        {
+            auto v(visitor_cast<const T_>(**i));
+            if (! v)
+                continue;
+
+            result->push_back(std::static_pointer_cast<const T_>(*i));
+        }
+
+        return result;
+    }
+}
+
 PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
     PythonStringDepSpec(p.text()),
     _imp(
             p.package_name_requirement(),
             p.category_name_part_requirement(),
             p.package_name_part_requirement(),
-            p.all_version_requirements(),
+            get_requirements<VersionRequirement>(p.requirements()),
             p.any_slot_requirement(),
             p.exact_slot_requirement(),
             p.in_repository_requirement(),
             p.from_repository_requirement(),
-            p.all_key_requirements(),
-            p.all_choice_requirements(),
+            get_requirements<KeyRequirement>(p.requirements()),
+            get_requirements<ChoiceRequirement>(p.requirements()),
             stringify(p))
 {
 }

@@ -73,6 +73,7 @@
 #include <paludis/package_dep_spec_requirement.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/dep_spec_data.hh>
+#include <paludis/package_dep_spec_properties.hh>
 
 #include <paludis/util/pimp-impl.hh>
 
@@ -1185,15 +1186,21 @@ Decider::find_any_score(
     // AnyDepSpecChildHandler::commit in satitised_dependencies.cc
     // matches this logic
     OperatorScore operator_bias(os_worse_than_worst);
-    if (spec.all_version_requirements() && ! spec.all_version_requirements()->empty())
+    bool any_version_requirements(false);
+
     {
         OperatorScore score(os_worse_than_worst);
-        for (auto v(spec.all_version_requirements()->begin()), v_end(spec.all_version_requirements()->end()) ;
+        for (auto v(spec.requirements()->begin()), v_end(spec.requirements()->end()) ;
                 v != v_end ; ++v)
         {
+            auto v_ver(visitor_cast<const VersionRequirement>(**v));
+            if (! v_ver)
+                continue;
+            any_version_requirements = true;
+
             OperatorScore local_score(os_worse_than_worst);
 
-            switch ((*v)->version_operator().value())
+            switch (v_ver->version_operator().value())
             {
                 case vo_greater:
                 case vo_greater_equal:
@@ -1221,7 +1228,7 @@ Decider::find_any_score(
             if (score == os_worse_than_worst)
                 score = local_score;
             else
-                switch ((*v)->combiner())
+                switch (v_ver->combiner())
                 {
                     case vrc_and:
                         score = is_block ? std::max(score, local_score) : std::min(score, local_score);
@@ -1237,7 +1244,8 @@ Decider::find_any_score(
         }
         operator_bias = score;
     }
-    else
+
+    if (! any_version_requirements)
     {
         /* don't bias no operator over a >= operator, so || ( >=foo-2 bar )
          * still likes foo. */
@@ -1782,8 +1790,22 @@ Decider::_find_id_for_from(
 
                     if (! (*c)->spec().if_package())
                     {
-                        if ((*c)->spec().if_block()->blocking().all_choice_requirements() &&
-                                ! (*c)->spec().if_block()->blocking().all_choice_requirements()->empty())
+                        if (package_dep_spec_has_properties((*c)->spec().if_block()->blocking(), make_named_values<PackageDepSpecProperties>(
+                                        n::has_any_slot_requirement() = indeterminate,
+                                        n::has_category_name_part() = indeterminate,
+                                        n::has_choice_requirements() = true,
+                                        n::has_exact_slot_requirement() = indeterminate,
+                                        n::has_from_repository() = indeterminate,
+                                        n::has_in_repository() = indeterminate,
+                                        n::has_installable_to_path() = indeterminate,
+                                        n::has_installable_to_repository() = indeterminate,
+                                        n::has_installed_at_path() = indeterminate,
+                                        n::has_key_requirements() = indeterminate,
+                                        n::has_package() = indeterminate,
+                                        n::has_package_name_part() = indeterminate,
+                                        n::has_tag() = indeterminate,
+                                        n::has_version_requirements() = indeterminate
+                                        )))
                         {
                             /* too complicated for now */
                             ok = false;
@@ -1791,17 +1813,15 @@ Decider::_find_id_for_from(
                         break;
                     }
 
-                    if (! (*c)->spec().if_package()->all_choice_requirements())
-                    {
-                        /* no additional requirements, so no tinkering required */
-                        continue;
-                    }
-
-                    for (auto a((*c)->spec().if_package()->all_choice_requirements()->begin()),
-                            a_end((*c)->spec().if_package()->all_choice_requirements()->end()) ;
+                    for (auto a((*c)->spec().if_package()->requirements()->begin()),
+                            a_end((*c)->spec().if_package()->requirements()->end()) ;
                             a != a_end ; ++a)
                     {
-                        auto b((*a)->accumulate_changes_to_make_met(_imp->env,
+                        auto a_choice(visitor_cast<const ChoiceRequirement>(**a));
+                        if (! a_choice)
+                            continue;
+
+                        auto b(a_choice->accumulate_changes_to_make_met(_imp->env,
                                     get_changed_choices_for(*c).get(), *i, (*c)->from_id(),
                                     *why_changed_choices->changed_choices()));
                         if (b.is_false())
