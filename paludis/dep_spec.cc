@@ -806,14 +806,7 @@ PackageDepSpec::text() const
 const std::shared_ptr<const NameRequirement>
 PackageDepSpec::package_name_requirement() const
 {
-    DetectPackageDepSpecRequirement<NameRequirement> v;
-    auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
-                indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
-
-    if (r != indirect_iterator(_imp->data->requirements()->end()))
-        return std::static_pointer_cast<const NameRequirement>(*r.underlying_iterator());
-    else
-        return make_null_shared_ptr();
+    return _imp->data->package_name_requirement();
 }
 
 const std::shared_ptr<const PackageNamePartRequirement>
@@ -845,14 +838,7 @@ PackageDepSpec::category_name_part_requirement() const
 const std::shared_ptr<const ExactSlotRequirement>
 PackageDepSpec::exact_slot_requirement() const
 {
-    DetectPackageDepSpecRequirement<ExactSlotRequirement> v;
-    auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
-                indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
-
-    if (r != indirect_iterator(_imp->data->requirements()->end()))
-        return std::static_pointer_cast<const ExactSlotRequirement>(*r.underlying_iterator());
-    else
-        return make_null_shared_ptr();
+    return _imp->data->exact_slot_requirement();
 }
 
 const std::shared_ptr<const AnySlotRequirement>

@@ -32,14 +32,12 @@ namespace
         bool has_any_slot_requirement;
         bool has_category_name_part;
         bool has_choice_requirements;
-        bool has_exact_slot_requirement;
         bool has_from_repository;
         bool has_in_repository;
         bool has_installable_to_path;
         bool has_installable_to_repository;
         bool has_installed_at_path;
         bool has_key_requirements;
-        bool has_package;
         bool has_package_name_part;
         bool has_tag;
         bool has_version_requirements;
@@ -48,14 +46,12 @@ namespace
             has_any_slot_requirement(false),
             has_category_name_part(false),
             has_choice_requirements(false),
-            has_exact_slot_requirement(false),
             has_from_repository(false),
             has_in_repository(false),
             has_installable_to_path(false),
             has_installable_to_repository(false),
             has_installed_at_path(false),
             has_key_requirements(false),
-            has_package(false),
             has_package_name_part(false),
             has_tag(false),
             has_version_requirements(false)
@@ -64,7 +60,6 @@ namespace
 
         void visit(const NameRequirement &)
         {
-            has_package = true;
         }
 
         void visit(const PackageNamePartRequirement &)
@@ -109,7 +104,6 @@ namespace
 
         void visit(const ExactSlotRequirement &)
         {
-            has_exact_slot_requirement = true;
         }
 
         void visit(const AnySlotRequirement &)
@@ -132,6 +126,14 @@ namespace
 bool
 paludis::package_dep_spec_has_properties(const PackageDepSpec & spec, const PackageDepSpecProperties & properties)
 {
+    if (! properties.has_package().is_indeterminate())
+        if (properties.has_package().is_true() != bool(spec.package_name_requirement()))
+            return false;
+
+    if (! properties.has_exact_slot_requirement().is_indeterminate())
+        if (properties.has_exact_slot_requirement().is_true() != bool(spec.exact_slot_requirement()))
+            return false;
+
     Finder f;
     for (auto r(spec.requirements()->begin()), r_end(spec.requirements()->end()) ;
             r != r_end ; ++r)
@@ -147,10 +149,6 @@ paludis::package_dep_spec_has_properties(const PackageDepSpec & spec, const Pack
 
     if (! properties.has_choice_requirements().is_indeterminate())
         if (properties.has_choice_requirements().is_true() != f.has_choice_requirements)
-            return false;
-
-    if (! properties.has_exact_slot_requirement().is_indeterminate())
-        if (properties.has_exact_slot_requirement().is_true() != f.has_exact_slot_requirement)
             return false;
 
     if (! properties.has_from_repository().is_indeterminate())
@@ -175,10 +173,6 @@ paludis::package_dep_spec_has_properties(const PackageDepSpec & spec, const Pack
 
     if (! properties.has_key_requirements().is_indeterminate())
         if (properties.has_key_requirements().is_true() != f.has_key_requirements)
-            return false;
-
-    if (! properties.has_package().is_indeterminate())
-        if (properties.has_package().is_true() != f.has_package)
             return false;
 
     if (! properties.has_package_name_part().is_indeterminate())

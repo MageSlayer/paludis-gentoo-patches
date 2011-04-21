@@ -296,8 +296,10 @@ namespace paludis
             virtual const std::string text() const;
 
             /**
-             * Fetch the single NameRequirement, if we have one, or
-             * a null pointer otherwise.
+             * Fetch our NameRequirement, if we have one, or a null pointer otherwise.
+             *
+             * If we have multiple NameRequirement requirements, returns one such
+             * requirement.
              *
              * \since 0.61
              */
@@ -320,8 +322,10 @@ namespace paludis
             const std::shared_ptr<const CategoryNamePartRequirement> category_name_part_requirement() const;
 
             /**
-             * Fetch the single ExactSlotRequirement, if we have one, or
-             * a null pointer otherwise.
+             * Fetch our ExactSlotRequirement, if we have one, or a null pointer otherwise.
+             *
+             * If we have multiple ExactSlotRequirement requirements, returns one such
+             * requirement.
              *
              * \since 0.61
              */

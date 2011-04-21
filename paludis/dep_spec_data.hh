@@ -126,6 +126,24 @@ namespace paludis
              * \since 0.61
              */
             const PackageDepSpecDataOptions options() const;
+
+            /**
+             * Fetch one of our NameRequirement requirements, if we have any, or
+             * a null pointer otherwise.
+             *
+             * \since 0.61
+             */
+            const std::shared_ptr<const NameRequirement> package_name_requirement() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Fetch our ExactSlotRequirement, if we have one, or a null pointer otherwise.
+             *
+             * If we have multiple ExactSlotRequirement requirements, returns one such
+             * requirement.
+             *
+             * \since 0.61
+             */
+            const std::shared_ptr<const ExactSlotRequirement> exact_slot_requirement() const;
     };
 
     /**

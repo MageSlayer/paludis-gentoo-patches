@@ -49,6 +49,8 @@ namespace paludis
     template <>
     struct Imp<PackageDepSpecData>
     {
+        std::shared_ptr<const NameRequirement> package_name_requirement;
+        std::shared_ptr<const ExactSlotRequirement> exact_slot_requirement;
         std::shared_ptr<PackageDepSpecRequirementSequence> requirements;
         PackageDepSpecDataOptions options;
 
@@ -59,6 +61,8 @@ namespace paludis
         }
 
         Imp(const PackageDepSpecData & other) :
+            package_name_requirement(other.package_name_requirement()),
+            exact_slot_requirement(other.exact_slot_requirement()),
             requirements(std::make_shared<PackageDepSpecRequirementSequence>()),
             options(other.options())
         {
@@ -91,6 +95,18 @@ PackageDepSpecData::options() const
     return _imp->options;
 }
 
+const std::shared_ptr<const NameRequirement>
+PackageDepSpecData::package_name_requirement() const
+{
+    return _imp->package_name_requirement;
+}
+
+const std::shared_ptr<const ExactSlotRequirement>
+PackageDepSpecData::exact_slot_requirement() const
+{
+    return _imp->exact_slot_requirement;
+}
+
 MutablePackageDepSpecData::MutablePackageDepSpecData(const PackageDepSpecDataOptions & o) :
     PackageDepSpecData(o)
 {
@@ -111,20 +127,28 @@ MutablePackageDepSpecData::~MutablePackageDepSpecData() = default;
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_package(const QualifiedPackageName & name)
 {
-    _imp->requirements->push_front(NameRequirementPool::get_instance()->create(name));
+    auto r(NameRequirementPool::get_instance()->create(name));
+    _imp->package_name_requirement = r;
+    _imp->requirements->push_front(r);
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::unrequire_package()
 {
-    auto r(std::make_shared<PackageDepSpecRequirementSequence>());
-    for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
-            u != u_end ; ++u)
-        if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<NameRequirement>()))
-            r->push_back(*u);
+    if (_imp->package_name_requirement)
+    {
+        _imp->package_name_requirement.reset();
 
-    _imp->requirements = r;
+        auto r(std::make_shared<PackageDepSpecRequirementSequence>());
+        for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
+                u != u_end ; ++u)
+            if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<NameRequirement>()))
+                r->push_back(*u);
+
+        _imp->requirements = r;
+    }
+
     return *this;
 }
 
@@ -193,20 +217,28 @@ MutablePackageDepSpecData::unrequire_versions()
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::require_exact_slot(const SlotName & n, const bool s)
 {
-    _imp->requirements->push_back(ExactSlotRequirementPool::get_instance()->create(n, s));
+    auto r(ExactSlotRequirementPool::get_instance()->create(n, s));
+    _imp->exact_slot_requirement = r;
+    _imp->requirements->push_back(r);
     return *this;
 }
 
 MutablePackageDepSpecData &
 MutablePackageDepSpecData::unrequire_exact_slot()
 {
-    auto r(std::make_shared<PackageDepSpecRequirementSequence>());
-    for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
-            u != u_end ; ++u)
-        if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<ExactSlotRequirement>()))
-            r->push_back(*u);
+    if (_imp->exact_slot_requirement)
+    {
+        _imp->exact_slot_requirement.reset();
 
-    _imp->requirements = r;
+        auto r(std::make_shared<PackageDepSpecRequirementSequence>());
+        for (auto u(_imp->requirements->begin()), u_end(_imp->requirements->end()) ;
+                u != u_end ; ++u)
+            if (! (*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<ExactSlotRequirement>()))
+                r->push_back(*u);
+
+        _imp->requirements = r;
+    }
+
     return *this;
 }
 
