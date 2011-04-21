@@ -36,6 +36,7 @@ KEYWORDS="~test"
 RESTRICT="monkey"
 DEPEND="foo/bar"
 RDEPEND=""
+PROVIDE="virtual/monkey"
 END
 
 cat <<"END" > bad/pkg/pkg-1.0.ebuild || exit 1

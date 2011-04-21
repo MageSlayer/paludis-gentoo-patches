@@ -34,6 +34,7 @@ KEYWORDS="test"
 RESTRICT="monkey"
 DEPEND="foo/bar"
 RDEPEND=""
+PROVIDE="virtual/monkey"
 END
 
 

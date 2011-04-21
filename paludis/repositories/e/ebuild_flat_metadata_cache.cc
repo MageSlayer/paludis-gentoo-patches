@@ -243,7 +243,11 @@ namespace
                 id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), lines.at(m.pdepend()->flat_list_index()), false);
 
             if (-1 != m.provide()->flat_list_index() && ! m.provide()->name().empty())
-                id->load_provide(m.provide(), lines.at(m.provide()->flat_list_index()));
+            {
+                std::string value(lines.at(m.provide()->flat_list_index()));
+                if (! value.empty())
+                    id->load_provide(m.provide(), value);
+            }
 
             if (-1 != m.use()->flat_list_index() && ! m.use()->name().empty())
                 id->load_use(m.use(), lines.at(m.use()->flat_list_index()));
@@ -586,7 +590,11 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                 id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), keys[m.pdepend()->name()], false);
 
             if (! m.provide()->name().empty())
-                id->load_provide(m.provide(), keys[m.provide()->name()]);
+            {
+                std::string value(keys[m.provide()->name()]);
+                if (! value.empty())
+                    id->load_provide(m.provide(), value);
+            }
 
             if (! m.use()->name().empty())
                 id->load_use(m.use(), keys[m.use()->name()]);
