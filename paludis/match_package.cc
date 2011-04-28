@@ -170,7 +170,7 @@ namespace
             if (! ok)
                 return false;
 
-            return false;
+            return true;
         }
 
         bool visit(const ExactSlotRequirement & r)
