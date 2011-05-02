@@ -130,16 +130,19 @@ AliasArg::forwardable_args() const
 }
 
 StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
-        const char our_short_name, const std::string & our_description) :
+        const char our_short_name, const std::string & our_description,
+        const bool can_be_negated) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
+    _can_be_negated(can_be_negated),
     _validator(0)
 {
 }
 
 StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
         const char our_short_name, const std::string & our_description,
-        void (* v) (const std::string &)) :
+        void (* v) (const std::string &), const bool can_be_negated) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
+    _can_be_negated(can_be_negated),
     _validator(v)
 {
 }
@@ -567,7 +570,7 @@ AliasArg::can_be_negated() const
 bool
 StringArg::can_be_negated() const
 {
-    return false;
+    return _can_be_negated;
 }
 
 bool

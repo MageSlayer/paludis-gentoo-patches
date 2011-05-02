@@ -219,6 +219,7 @@ namespace paludis
         {
             private:
                 std::string _argument;
+                bool _can_be_negated;
                 void (* _validator) (const std::string &);
 
             public:
@@ -226,14 +227,16 @@ namespace paludis
                 * Constructor
                 */
                 StringArg(ArgsGroup * const, const std::string & long_name,
-                       const char short_name, const std::string & description);
+                       const char short_name, const std::string & description,
+                       const bool can_be_negated = false);
 
                 /**
                  * Constructor with validator.
                  */
                 StringArg(ArgsGroup * const, const std::string & long_name,
                        const char short_name, const std::string & description,
-                       void (* validator) (const std::string &));
+                       void (* validator) (const std::string &),
+                       const bool can_be_negated = false);
 
                 /**
                  * Fetch the argument that was given to this option.

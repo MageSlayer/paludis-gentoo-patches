@@ -91,8 +91,14 @@ void ArgsVisitor::visit(StringArg & arg)
         if (! _imp->env_prefix.empty())
             setenv(env_name(arg.long_name()).c_str(), p.c_str(), 1);
     }
-    else
+    else if (! arg.can_be_negated())
         throw BadArgument("--no-" + arg.long_name());
+    else
+    {
+        arg.set_specified(false);
+        if (! _imp->env_prefix.empty())
+            unsetenv(env_name(arg.long_name()).c_str());
+    }
 }
 
 void ArgsVisitor::visit(AliasArg & arg)
