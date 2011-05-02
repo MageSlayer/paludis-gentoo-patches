@@ -368,7 +368,8 @@ ResolveCommandLineExecutionOptions::ResolveCommandLineExecutionOptions(args::Arg
             "never"),
     a_resume_file(&g_failure_options, "resume-file", '\0',
             "Write resume information to the specified file. If a build fails, or if '--execute' is not "
-            "specified, then 'cave resume' can resume execution from this file."),
+            "specified, then 'cave resume' can resume execution from this file.",
+            true),
 
     g_jobs_options(this, "Jobs Options", "Options controlling jobs and parallelism."),
     a_fetch(&g_jobs_options, "fetch", 'f', "Skip any jobs that are not fetch jobs. Should be combined with "
