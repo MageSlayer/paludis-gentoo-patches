@@ -403,7 +403,7 @@ namespace
          * Represents a /pkg name requirement in a PackageDepSpec.
          */
         c_from_repository_requirement = rb_define_class_under(
-                paludis_module(), "InRepositoryRequirement", c_package_dep_spec_requirement);
+                paludis_module(), "FromRepositoryRequirement", c_package_dep_spec_requirement);
         rb_funcall(c_from_repository_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_from_repository_requirement, "name", RUBY_FUNC_CAST(
                     &from_repository_requirement_name), 0);
@@ -414,7 +414,7 @@ namespace
          * Represents a ::/ path requirement in a PackageDepSpec.
          */
         c_installed_at_path_requirement = rb_define_class_under(
-                paludis_module(), "InRepositoryRequirement", c_package_dep_spec_requirement);
+                paludis_module(), "InstalledAtPathRequirement", c_package_dep_spec_requirement);
         rb_funcall(c_installed_at_path_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_installed_at_path_requirement, "path", RUBY_FUNC_CAST(
                     &installed_at_path_requirement_path), 0);
@@ -425,7 +425,7 @@ namespace
          * Represents a ::/? path requirement in a PackageDepSpec.
          */
         c_installable_to_path_requirement = rb_define_class_under(
-                paludis_module(), "InRepositoryRequirement", c_package_dep_spec_requirement);
+                paludis_module(), "InstallableToPathRequirement", c_package_dep_spec_requirement);
         rb_funcall(c_installable_to_path_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_define_method(c_installable_to_path_requirement, "path", RUBY_FUNC_CAST(
                     &installable_to_path_requirement_path), 0);
@@ -502,7 +502,7 @@ namespace
          * Represents a [flag] requirement in a PackageDepSpec.
          */
         c_choice_requirement = rb_define_class_under(
-                paludis_module(), "KeyRequirement", c_package_dep_spec_requirement);
+                paludis_module(), "ChoiceRequirement", c_package_dep_spec_requirement);
         rb_funcall(c_choice_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
     }
 }
