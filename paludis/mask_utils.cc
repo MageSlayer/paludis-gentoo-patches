@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,15 +20,44 @@
 #include <paludis/mask_utils.hh>
 #include <paludis/package_id.hh>
 #include <paludis/mask.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/name.hh>
 
 using namespace paludis;
 
 namespace
 {
+    struct WeaklyUnaccepted
+    {
+        bool visit(const MetadataCollectionKey<KeywordNameSet> & k) const
+        {
+            auto v(k.parse_value());
+
+            if (! v->empty())
+                return false;
+
+            if (v->end() != v->find(KeywordName("-*")))
+                return false;
+
+            return true;
+        }
+
+        bool visit(const MetadataKey &) const
+        {
+            return true;
+        }
+    };
+
     struct WeakMask
     {
-        bool visit(const UnacceptedMask &) const
+        const std::shared_ptr<const PackageID> id;
+
+        bool visit(const UnacceptedMask & m) const
         {
+            auto k(id->find_metadata(m.unaccepted_key_name()));
+            if (k != id->end_metadata())
+                return (*k)->accept_returning<bool>(WeaklyUnaccepted{});
+
             return true;
         }
 
@@ -59,7 +88,7 @@ paludis::not_strongly_masked(const std::shared_ptr<const PackageID> & id)
 {
     for (auto m(id->begin_masks()), m_end(id->end_masks()) ;
             m != m_end ; ++m)
-        if (! (*m)->accept_returning<bool>(WeakMask()))
+        if (! (*m)->accept_returning<bool>(WeakMask{id}))
             return false;
 
     return true;
