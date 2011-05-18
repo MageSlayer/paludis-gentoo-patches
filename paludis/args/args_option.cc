@@ -131,18 +131,18 @@ AliasArg::forwardable_args() const
 
 StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
         const char our_short_name, const std::string & our_description,
-        const bool can_be_negated) :
+        const bool neg) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
-    _can_be_negated(can_be_negated),
+    _can_be_negated(neg),
     _validator(0)
 {
 }
 
 StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
         const char our_short_name, const std::string & our_description,
-        void (* v) (const std::string &), const bool can_be_negated) :
+        void (* v) (const std::string &), const bool neg) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
-    _can_be_negated(can_be_negated),
+    _can_be_negated(neg),
     _validator(v)
 {
 }
