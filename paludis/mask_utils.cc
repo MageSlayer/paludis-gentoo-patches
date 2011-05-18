@@ -33,7 +33,7 @@ namespace
         {
             auto v(k.parse_value());
 
-            if (! v->empty())
+            if (v->empty())
                 return false;
 
             if (v->end() != v->find(KeywordName("-*")))
