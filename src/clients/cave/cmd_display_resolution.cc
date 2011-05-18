@@ -1404,21 +1404,31 @@ namespace
                     m != m_end ; ++m)
                 (*m)->accept(MaskedByVisitor{env.get(), u->package_id(), "", "        "});
 
-            std::set<std::string> duplicates;
+            std::map<std::string, std::pair<std::shared_ptr<const Constraint>, std::set<std::string> > > duplicates;
             for (Constraints::ConstIterator c(u->unmet_constraints()->begin()),
                     c_end(u->unmet_constraints()->end()) ;
                     c != c_end ; ++c)
             {
                 ReasonNameGetter g(false, true);
-                std::string s(constraint_as_string(**c) + " from " +
+                duplicates.insert(std::make_pair(constraint_as_string(**c), std::make_pair(*c, std::set<std::string>()))).first->second.second.insert(
                         (*c)->reason()->accept_returning<std::pair<std::string, Tribool> >(g).first);
+            }
 
-                if (! duplicates.insert(s).second)
-                    continue;
+            for (auto c(duplicates.begin()), c_end(duplicates.end()) ;
+                    c != c_end ; ++c)
+            {
+                auto constraint(c->second.first);
 
+                ReasonNameGetter g(false, true);
+                std::string s(constraint_as_string(*constraint) + " from " +
+                        constraint->reason()->accept_returning<std::pair<std::string, Tribool> >(g).first);
+
+                if (c->second.second.size() > 1)
+                    s.append(" (and " + stringify(c->second.second.size() - 1) + " more)");
                 cout << fuc(fs_unable_unsuitable_did_not_meet(), fv<'s'>(s));
 
-                if ((*c)->spec().if_package() && package_dep_spec_has_properties(*(*c)->spec().if_package(), make_named_values<PackageDepSpecProperties>(
+                if (constraint->spec().if_package() &&
+                        package_dep_spec_has_properties(*constraint->spec().if_package(), make_named_values<PackageDepSpecProperties>(
                             n::has_any_slot_requirement() = indeterminate,
                             n::has_category_name_part() = indeterminate,
                             n::has_choice_requirements() = true,
@@ -1434,18 +1444,18 @@ namespace
                             n::has_tag() = indeterminate,
                             n::has_version_requirements() = indeterminate
                             )) &&
-                        (! match_package(*env, *(*c)->spec().if_package(), u->package_id(), (*c)->from_id(), { })) &&
-                        match_package(*env, *(*c)->spec().if_package(), u->package_id(), (*c)->from_id(), { mpo_ignore_choice_requirements }))
+                        (! match_package(*env, *constraint->spec().if_package(), u->package_id(), constraint->from_id(), { })) &&
+                        match_package(*env, *constraint->spec().if_package(), u->package_id(), constraint->from_id(), { mpo_ignore_choice_requirements }))
                 {
-                    for (auto a((*c)->spec().if_package()->requirements()->begin()),
-                            a_end((*c)->spec().if_package()->requirements()->end()) ;
+                    for (auto a(constraint->spec().if_package()->requirements()->begin()),
+                            a_end(constraint->spec().if_package()->requirements()->end()) ;
                             a != a_end ; ++a)
                     {
                         auto a_choice(visitor_cast<const ChoiceRequirement>(**a));
                         if (! a_choice)
                             continue;
 
-                        const std::pair<bool, std::string> p(a_choice->requirement_met(env.get(), 0, u->package_id(), (*c)->from_id(), 0));
+                        const std::pair<bool, std::string> p(a_choice->requirement_met(env.get(), 0, u->package_id(), constraint->from_id(), 0));
                         if (p.first)
                             continue;
 
