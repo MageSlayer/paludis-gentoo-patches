@@ -114,8 +114,10 @@ const auto fs_metadata_subsection_raw = make_format_string_fetcher("show/metadat
     << "    " << param<'i'>() << param<'i'>() << param<'i'>() << param<'i'>()
     << c::bold_blue_or_pink() << param<'s'>() << c::normal() << "\\n";
 
-const auto fs_package_id_heading = make_format_string_fetcher("show/package_id_heading", 1)
-    << "    " << c::bold_blue_or_pink() << param<'s'>() << c::normal() << "\\n";
+const auto fs_package_id_heading = make_format_string_fetcher("show/package_id_heading", 2)
+    << "    " << c::bold_blue_or_pink() << param<'s'>() << c::normal()
+    << param_if<'t'>() << c::yellow() << " (" << param<'t'>() << ")" << c::normal() << param_endif<'t'>()
+    << "\\n";
 
 const auto fs_package_id_masks = make_format_string_fetcher("show/package_id_masks", 1)
     << "        " << c::bold_red() << param<'s'>() << c::normal() << "\\n";

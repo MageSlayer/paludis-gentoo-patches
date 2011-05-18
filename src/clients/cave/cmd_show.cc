@@ -57,6 +57,7 @@
 #include <paludis/contents.hh>
 #include <paludis/dep_spec_data.hh>
 #include <paludis/dep_spec_annotations.hh>
+#include <paludis/match_package.hh>
 
 #include <cstdlib>
 #include <iostream>
@@ -1145,7 +1146,20 @@ namespace
             const bool old_id_is_installed,
             std::ostream & out)
     {
-        out << fuc(fs_package_id_heading(), fv<'s'>(stringify(*best)));
+        std::string in_sets;
+        {
+            auto system(env->set(SetName("system")));
+            if (system && match_package_in_set(*env, *system, best, { }))
+                in_sets = "system";
+            else
+            {
+                auto world(env->set(SetName("world")));
+                if (world && match_package_in_set(*env, *world, best, { }))
+                    in_sets = "world";
+            }
+        }
+
+        out << fuc(fs_package_id_heading(), fv<'s'>(stringify(*best)), fv<'t'>(in_sets));
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(best->begin_metadata(), best->end_metadata());
         for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
