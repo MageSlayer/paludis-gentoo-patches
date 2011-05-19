@@ -31,6 +31,7 @@
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/contents.hh>
 #include <paludis/repository.hh>
+#include <paludis/mask.hh>
 
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
@@ -845,6 +846,71 @@ namespace
             return false;
         }
     };
+
+    struct AssociatedKeyFinder
+    {
+        const Environment * const env;
+        const std::shared_ptr<const PackageID> id;
+
+        const MetadataKey * const visit(const UserMask &) const
+        {
+            return 0;
+        }
+
+        const MetadataKey * const visit(const UnacceptedMask & m) const
+        {
+            auto k(id->find_metadata(m.unaccepted_key_name()));
+            if (k != id->end_metadata())
+                return &**k;
+            else
+                return 0;
+        }
+
+        const MetadataKey * const visit(const RepositoryMask &) const
+        {
+            return 0;
+        }
+
+        const MetadataKey * const visit(const UnsupportedMask &) const
+        {
+            return 0;
+        }
+
+        const MetadataKey * const visit(const AssociationMask &) const
+        {
+            return 0;
+        }
+    };
+
+    struct MaskChecker
+    {
+        const std::string key;
+
+        bool visit(const UserMask & m) const
+        {
+            return key == "*" || key == "user" || m.token() == key;
+        }
+
+        bool visit(const UnacceptedMask & m) const
+        {
+            return key == "*" || key == "unaccepted" || m.unaccepted_key_name() == key;
+        }
+
+        bool visit(const RepositoryMask & m) const
+        {
+            return key == "*" || key == "repository" || m.token() == key;
+        }
+
+        bool visit(const UnsupportedMask &) const
+        {
+            return key == "*" || key == "unsupported";
+        }
+
+        bool visit(const AssociationMask &) const
+        {
+            return key == "*" || key == "association";
+        }
+    };
 }
 
 const std::pair<bool, std::string>
@@ -858,6 +924,7 @@ UserKeyRequirement::requirement_met(
     Context context("When working out whether '" + stringify(*id) + "' matches " + as_raw_string() + ":");
 
     const MetadataKey * key(0);
+    const Mask * mask(0);
 
     auto repo(env->fetch_repository(id->repository_name()));
     if (0 == _imp->key.compare(0, 3, "::$"))
@@ -924,6 +991,18 @@ UserKeyRequirement::requirement_met(
         if (m != repo->end_metadata())
             key = m->get();
     }
+    else if (0 == _imp->key.compare(0, 1, "(") && ')' == _imp->key.at(_imp->key.length() - 1))
+    {
+        std::string mask_name(_imp->key.substr(1, _imp->key.length() - 2));
+        MaskChecker checker{mask_name};
+        for (auto m(id->begin_masks()), m_end(id->end_masks()) ;
+                m != m_end ; ++m)
+            if ((*m)->accept_returning<bool>(checker))
+            {
+                mask = &**m;
+                break;
+            }
+    }
     else
     {
         PackageID::MetadataConstIterator m(id->find_metadata(_imp->key));
@@ -931,16 +1010,22 @@ UserKeyRequirement::requirement_met(
             key = m->get();
     }
 
-    if (! key)
+    if ((! key) && (! mask))
         return std::make_pair(false, as_human_string(from_id));
 
     if (_imp->op == '?')
         return std::make_pair(true, as_human_string(from_id));
-    else
+
+    if (mask && ! key)
+        key = mask->accept_returning<const MetadataKey *>(AssociatedKeyFinder{env, id});
+
+    if (key)
     {
         KeyComparator c(env, id, _imp->value, _imp->op);
         return std::make_pair(key->accept_returning<bool>(c), as_human_string(from_id));
     }
+    else
+        return std::make_pair(false, as_human_string(from_id));
 }
 
 const std::string
