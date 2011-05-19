@@ -29,7 +29,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/hook.hh>
-#include <paludis/dep_spec_data.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/operators.hh>
@@ -160,7 +160,7 @@ VirtualsRepository::need_names() const
         for (RepositoryProvidesInterface::ProvidesSequence::ConstIterator p(provides->begin()),
                 p_end(provides->end()) ; p != p_end ; ++p)
             _imp->names.push_back(std::make_pair((*p).virtual_name(), std::shared_ptr<const PackageDepSpec>(
-                            std::make_shared<PackageDepSpec>(MutablePackageDepSpecData({ }).require_package((*p).provided_by()->name())))));
+                            std::make_shared<PackageDepSpec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package((*p).provided_by()->name())))));
     }
 
     std::sort(_imp->names.begin(), _imp->names.end(), NamesSortComparator());

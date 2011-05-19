@@ -36,6 +36,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/spec_tree.hh>
+#include <paludis/slot_requirement.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
 #include <paludis/elike_package_dep_spec.hh>
@@ -168,7 +169,7 @@ namespace
 
         void visit_package_spec(const PackageDepSpec & spec)
         {
-            if (spec.package_name_requirement())
+            if (spec.package_ptr())
                 visit_package_or_block_spec(PackageOrBlockDepSpec(spec));
             else
                 super_complicated = true;
@@ -176,7 +177,7 @@ namespace
 
         void visit_block_spec(const BlockDepSpec & spec)
         {
-            if (spec.blocking().package_name_requirement())
+            if (spec.blocking().package_ptr())
                 visit_package_or_block_spec(PackageOrBlockDepSpec(spec));
             else
                 super_complicated = true;

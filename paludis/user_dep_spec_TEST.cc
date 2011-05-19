@@ -20,8 +20,7 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/match_package.hh>
-#include <paludis/package_dep_spec_requirement.hh>
-#include <paludis/version_operator.hh>
+#include <paludis/version_requirements.hh>
 
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/sequence.hh>
@@ -33,7 +32,6 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/visitor_cast.hh>
 
 #include <paludis/environments/test/test_environment.hh>
 
@@ -50,16 +48,6 @@ namespace
     std::string dump_version_requirement(const VersionRequirement & v)
     {
         return stringify(v.version_operator()) + stringify(v.version_spec());
-    }
-
-    std::string stringify_key_requirement(const KeyRequirement & k)
-    {
-        return k.as_raw_string();
-    }
-
-    std::string stringify_choice_requirement(const ChoiceRequirement & k)
-    {
-        return k.as_raw_string();
     }
 
     class UserDepSpecTest :
@@ -102,136 +90,90 @@ UserDepSpecTest::check_spec(
 {
 
     if (package.empty())
-        EXPECT_TRUE(! spec.package_name_requirement());
+        EXPECT_TRUE(! spec.package_ptr());
     else
     {
-        ASSERT_TRUE(bool(spec.package_name_requirement()));
-        EXPECT_EQ(package, stringify(spec.package_name_requirement()->name()));
+        EXPECT_TRUE(bool(spec.package_ptr()));
+        EXPECT_EQ(package, stringify(*spec.package_ptr()));
     }
 
     if (category_name_part.empty())
-        EXPECT_TRUE(! spec.category_name_part_requirement());
+        EXPECT_TRUE(! spec.category_name_part_ptr());
     else
     {
-        ASSERT_TRUE(bool(spec.category_name_part_requirement()));
-        EXPECT_EQ(category_name_part, stringify(spec.category_name_part_requirement()->name_part()));
+        EXPECT_TRUE(bool(spec.category_name_part_ptr()));
+        EXPECT_EQ(category_name_part, stringify(*spec.category_name_part_ptr()));
     }
 
     if (package_name_part.empty())
-        EXPECT_TRUE(! spec.package_name_part_requirement());
+        EXPECT_TRUE(! spec.package_name_part_ptr());
     else
     {
-        ASSERT_TRUE(bool(spec.package_name_part_requirement()));
-        EXPECT_EQ(package_name_part, stringify(spec.package_name_part_requirement()->name_part()));
+        EXPECT_TRUE(bool(spec.package_name_part_ptr()));
+        EXPECT_EQ(package_name_part, stringify(*spec.package_name_part_ptr()));
     }
 
     if (! version_requirement_mode.empty())
+        EXPECT_EQ(version_requirement_mode, stringify(spec.version_requirements_mode()));
+
+    if (version_requirements.empty())
+        EXPECT_TRUE((! spec.version_requirements_ptr()) || spec.version_requirements_ptr()->empty());
+    else
     {
-        int n(0);
-        for (auto v(spec.requirements()->begin()), v_end(spec.requirements()->end()) ;
-                v != v_end ; ++v)
-        {
-            auto v_ver(visitor_cast<const VersionRequirement>(**v));
-            if (! v_ver)
-                continue;
-            ++n;
-
-            if (1 != n)
-                EXPECT_EQ(version_requirement_mode, stringify(v_ver->combiner()));
-        }
-
-        EXPECT_GT(n, 0);
-    }
-
-    {
-        std::string v_str;
-
-        for (auto v(spec.requirements()->begin()), v_end(spec.requirements()->end()) ;
-                v != v_end ; ++v)
-        {
-             auto v_ver(visitor_cast<const VersionRequirement>(**v));
-             if (! v_ver)
-                 continue;
-
-             if (! v_str.empty())
-                 v_str.append(", ");
-             v_str.append(dump_version_requirement(*v_ver));
-        }
-
-        if (version_requirements.empty())
-            EXPECT_TRUE(v_str.empty());
-        else
-            EXPECT_EQ(version_requirements, v_str);
+        EXPECT_TRUE(bool(spec.version_requirements_ptr()));
+        EXPECT_EQ(version_requirements, stringify(join(
+                        spec.version_requirements_ptr()->begin(), spec.version_requirements_ptr()->end(), ", ", &dump_version_requirement)));
     }
 
     if (slot_requirement.empty())
-        EXPECT_TRUE(! spec.exact_slot_requirement());
+        EXPECT_TRUE(! spec.slot_requirement_ptr());
     else
     {
-        ASSERT_TRUE(bool(spec.exact_slot_requirement()));
-        EXPECT_EQ(slot_requirement, ":" + stringify(spec.exact_slot_requirement()->name()));
+        EXPECT_TRUE(bool(spec.slot_requirement_ptr()));
+        EXPECT_EQ(slot_requirement, stringify(*spec.slot_requirement_ptr()));
     }
 
     if (from_repository.empty())
-        EXPECT_TRUE(! spec.from_repository_requirement());
+        EXPECT_TRUE(! spec.from_repository_ptr());
     else
     {
-        ASSERT_TRUE(bool(spec.from_repository_requirement()));
-        EXPECT_EQ(from_repository, stringify(spec.from_repository_requirement()->name()));
+        EXPECT_TRUE(bool(spec.from_repository_ptr()));
+        EXPECT_EQ(from_repository, stringify(*spec.from_repository_ptr()));
     }
 
     if (in_repository.empty())
-        EXPECT_TRUE(! spec.in_repository_requirement());
+        EXPECT_TRUE(! spec.in_repository_ptr());
     else
     {
-        ASSERT_TRUE(bool(spec.in_repository_requirement()));
-        EXPECT_EQ(in_repository, stringify(spec.in_repository_requirement()->name()));
+        EXPECT_TRUE(bool(spec.in_repository_ptr()));
+        EXPECT_EQ(in_repository, stringify(*spec.in_repository_ptr()));
     }
 
+    if (additional_requirement.empty())
+        EXPECT_TRUE((! spec.additional_requirements_ptr()) || spec.additional_requirements_ptr()->empty());
+    else
     {
-        std::string c_str;
-
-        for (auto v(spec.requirements()->begin()), v_end(spec.requirements()->end()) ;
-                v != v_end ; ++v)
-        {
-            auto v_choice(visitor_cast<const ChoiceRequirement>(**v));
-            if (v_choice)
-            {
-                if (! c_str.empty())
-                    c_str.append(", ");
-                c_str.append(stringify_choice_requirement(*v_choice));
-            }
-
-            auto v_key(visitor_cast<const KeyRequirement>(**v));
-            if (v_key)
-            {
-                if (! c_str.empty())
-                    c_str.append(", ");
-                c_str.append(stringify_key_requirement(*v_key));
-            }
-        }
-
-        if (additional_requirement.empty())
-            EXPECT_TRUE(c_str.empty());
-        else
-            EXPECT_EQ(additional_requirement, c_str);
+        EXPECT_TRUE(bool(spec.additional_requirements_ptr()));
+        EXPECT_EQ(additional_requirement, stringify(join(
+                        indirect_iterator(spec.additional_requirements_ptr()->begin()),
+                        indirect_iterator(spec.additional_requirements_ptr()->end()), ", ")));
     }
 
     if (installed_at_path.empty())
-        EXPECT_TRUE(! spec.installed_at_path_requirement());
+        EXPECT_TRUE(! spec.installed_at_path_ptr());
     else
     {
-        ASSERT_TRUE(bool(spec.installed_at_path_requirement()));
-        EXPECT_EQ(installed_at_path, stringify(spec.installed_at_path_requirement()->path()));
+        EXPECT_TRUE(bool(spec.installed_at_path_ptr()));
+        EXPECT_EQ(installed_at_path, stringify(*spec.installed_at_path_ptr()));
     }
 
     if (installable_to_path_f.empty())
-        EXPECT_TRUE(! spec.installable_to_path_requirement());
+        EXPECT_TRUE(! spec.installable_to_path_ptr());
     else
     {
-        ASSERT_TRUE(bool(spec.installable_to_path_requirement()));
-        EXPECT_EQ(installable_to_path_f, stringify(spec.installable_to_path_requirement()->path()));
-        EXPECT_EQ(installable_to_path_s, spec.installable_to_path_requirement()->include_masked());
+        EXPECT_TRUE(bool(spec.installable_to_path_ptr()));
+        EXPECT_EQ(installable_to_path_f, stringify(spec.installable_to_path_ptr()->path()));
+        EXPECT_EQ(installable_to_path_s, spec.installable_to_path_ptr()->include_masked());
     }
 
 }
@@ -302,9 +244,6 @@ TEST_F(UserDepSpecTest, Parsing)
 
     PackageDepSpec r(parse_user_package_dep_spec("foo/bar[.$short_description=value]", &env, { }));
     check_spec(r, "foo/bar", "", "", "", "", "", "", "", "[.$short_description=value]");
-
-    PackageDepSpec s(parse_user_package_dep_spec("=foo/bar-1-r0", &env, { }));
-    check_spec(s, "foo/bar", "", "", "=1-r0", "", "", "", "", "");
 }
 
 TEST_F(UserDepSpecTest, Unspecified)

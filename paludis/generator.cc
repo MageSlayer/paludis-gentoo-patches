@@ -29,7 +29,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/repository.hh>
-#include <paludis/package_dep_spec_requirement.hh>
 
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
@@ -308,18 +307,16 @@ namespace
                 const RepositoryContentMayExcludes & x) const
         {
             if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                            n::has_any_slot_requirement() = indeterminate,
+                            n::has_additional_requirements() = indeterminate,
                             n::has_category_name_part() = indeterminate,
-                            n::has_choice_requirements() = indeterminate,
-                            n::has_exact_slot_requirement() = indeterminate,
                             n::has_from_repository() = indeterminate,
                             n::has_in_repository() = false,
                             n::has_installable_to_path() = indeterminate,
                             n::has_installable_to_repository() = indeterminate,
                             n::has_installed_at_path() = false,
-                            n::has_key_requirements() = indeterminate,
                             n::has_package() = indeterminate,
                             n::has_package_name_part() = indeterminate,
+                            n::has_slot_requirement() = indeterminate,
                             n::has_tag() = indeterminate,
                             n::has_version_requirements() = indeterminate
                             )))
@@ -327,25 +324,26 @@ namespace
 
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
 
-            if (spec.in_repository_requirement())
+            if (spec.in_repository_ptr())
             {
-                if (env->has_repository_named(spec.in_repository_requirement()->name()))
+                if (env->has_repository_named(*spec.in_repository_ptr()))
                 {
-                    if (spec.installed_at_path_requirement())
+                    if (spec.installed_at_path_ptr())
                     {
-                        std::shared_ptr<const Repository> repo(env->fetch_repository(spec.in_repository_requirement()->name()));
+                        std::shared_ptr<const Repository> repo(env->fetch_repository(
+                                    *spec.in_repository_ptr()));
                         if (! repo->installed_root_key())
                             return result;
-                        if (repo->installed_root_key()->parse_value() != spec.installed_at_path_requirement()->path())
+                        if (repo->installed_root_key()->parse_value() != *spec.installed_at_path_ptr())
                             return result;
                     }
 
-                    result->insert(spec.in_repository_requirement()->name());
+                    result->insert(*spec.in_repository_ptr());
                 }
             }
             else
             {
-                if (spec.installed_at_path_requirement())
+                if (spec.installed_at_path_ptr())
                 {
                     for (auto i(env->begin_repositories()),
                             i_end(env->end_repositories()) ; i != i_end ; ++i)
@@ -353,7 +351,7 @@ namespace
                         if (! (*i)->installed_root_key())
                             continue;
 
-                        if ((*i)->installed_root_key()->parse_value() != spec.installed_at_path_requirement()->path())
+                        if ((*i)->installed_root_key()->parse_value() != *spec.installed_at_path_ptr())
                             continue;
 
                         result->insert((*i)->name());
@@ -371,45 +369,41 @@ namespace
                 const std::shared_ptr<const RepositoryNameSet> & repos,
                 const RepositoryContentMayExcludes & x) const
         {
-            auto category_name_part_requirement(spec.category_name_part_requirement());
-            if (category_name_part_requirement)
+            if (spec.category_name_part_ptr())
             {
                 std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
-                    if (env->fetch_repository(*r)->has_category_named(category_name_part_requirement->name_part(), x))
+                    if (env->fetch_repository(*r)->has_category_named(*spec.category_name_part_ptr(), x))
                     {
-                        result->insert(category_name_part_requirement->name_part());
+                        result->insert(*spec.category_name_part_ptr());
                         break;
                     }
 
                 return result;
             }
-
-            auto package_name_part_requirement(spec.package_name_part_requirement());
-            if (package_name_part_requirement)
+            else if (spec.package_name_part_ptr())
             {
                 std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
                 {
                     std::shared_ptr<const CategoryNamePartSet> cats(
-                        env->fetch_repository(*r)->category_names_containing_package(package_name_part_requirement->name_part(), x));
+                        env->fetch_repository(*r)
+                        ->category_names_containing_package(*spec.package_name_part_ptr(), x));
                     std::copy(cats->begin(), cats->end(), result->inserter());
                 }
 
                 return result;
             }
-
-            auto package_name_requirement(spec.package_name_requirement());
-            if (package_name_requirement)
+            else if (spec.package_ptr())
             {
                 std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
-                    if (env->fetch_repository(*r)->has_category_named(package_name_requirement->name().category(), x))
+                    if (env->fetch_repository(*r)->has_category_named(spec.package_ptr()->category(), x))
                     {
-                        result->insert(package_name_requirement->name().category());
+                        result->insert(spec.package_ptr()->category());
                         break;
                     }
 
@@ -425,29 +419,26 @@ namespace
                 const std::shared_ptr<const CategoryNamePartSet> & cats,
                 const RepositoryContentMayExcludes & x) const
         {
-            auto package_name_part_requirement(spec.package_name_part_requirement());
-            if (package_name_part_requirement)
+            if (spec.package_name_part_ptr())
             {
                 std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
                     for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
                             c != c_end ; ++c)
-                        if (env->fetch_repository(*r)->has_package_named(*c + package_name_part_requirement->name_part(), x))
-                            result->insert(*c + package_name_part_requirement->name_part());
+                        if (env->fetch_repository(*r)->has_package_named(*c + *spec.package_name_part_ptr(), x))
+                            result->insert(*c + *spec.package_name_part_ptr());
 
                 return result;
             }
-
-            auto package_name_requirement(spec.package_name_requirement());
-            if (package_name_requirement)
+            else if (spec.package_ptr())
             {
                 std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
                 for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
                         r != r_end ; ++r)
-                    if (env->fetch_repository(*r)->has_package_named(package_name_requirement->name(), x))
+                    if (env->fetch_repository(*r)->has_package_named(*spec.package_ptr(), x))
                     {
-                        result->insert(package_name_requirement->name());
+                        result->insert(*spec.package_ptr());
                         break;
                     }
 
@@ -486,8 +477,8 @@ namespace
         virtual std::string as_string() const
         {
             std::string suffix;
-            if (options[mpo_ignore_choice_requirements])
-                suffix = " (ignoring choice requirements)";
+            if (options[mpo_ignore_additional_requirements])
+                suffix = " (ignoring additional requirements)";
             return "packages matching " + stringify(spec) + suffix;
         }
     };

@@ -18,7 +18,6 @@
  */
 
 #include <paludis/environments/paludis/world.hh>
-
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
@@ -26,11 +25,9 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/fs_stat.hh>
-
 #include <paludis/set_file.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/dep_spec_data.hh>
-
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <functional>
 
 using namespace paludis;
@@ -169,10 +166,7 @@ void
 World::update_config_files_for_package_move(const PackageDepSpec & s, const QualifiedPackageName & n) const
 {
     if (_remove_string_from_world(stringify(s)))
-        _add_string_to_world(stringify(
-                    MutablePackageDepSpecData(*s.data())
-                    .unrequire_package()
-                    .require_package(n)));
+        _add_string_to_world(stringify(PartiallyMadePackageDepSpec(s).package(n)));
 }
 
 const std::shared_ptr<const SetSpecTree>

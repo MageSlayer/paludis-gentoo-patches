@@ -90,7 +90,6 @@ noinst_HEADERS = \
 	required_use_verifier.hh \
 	source_uri_finder.hh \
 	spec_tree_pretty_printer.hh \
-	split_pn_v.hh \
 	traditional_layout.hh \
 	traditional_mask_file.hh \
 	traditional_mask_store.hh \
@@ -171,7 +170,6 @@ libpaludiserepository_la_SOURCES = \
 	required_use_verifier.cc \
 	source_uri_finder.cc \
 	spec_tree_pretty_printer.cc \
-	split_pn_v.cc \
 	traditional_layout.cc \
 	traditional_mask_file.cc \
 	traditional_mask_store.cc \

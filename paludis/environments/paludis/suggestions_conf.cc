@@ -21,7 +21,6 @@
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/paludis_config.hh>
 #include <paludis/environments/paludis/bashable_conf.hh>
-
 #include <paludis/util/config_file.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
@@ -32,7 +31,6 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
-
 #include <paludis/environment.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
@@ -41,8 +39,6 @@
 #include <paludis/match_package.hh>
 #include <paludis/package_id.hh>
 #include <paludis/dep_spec_annotations.hh>
-#include <paludis/package_dep_spec_requirement.hh>
-
 #include <unordered_map>
 #include <list>
 #include <vector>
@@ -150,9 +146,9 @@ SuggestionsConf::add(const FSPath & filename)
             std::shared_ptr<PackageDepSpec> d(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
                             tokens.at(0), _imp->env,
                             { updso_allow_wildcards, updso_no_disambiguation, updso_throw_if_set })));
-            if (d->package_name_requirement())
+            if (d->package_ptr())
             {
-                ValuesList & k(_imp->qualified[d->package_name_requirement()->name()][d]);
+                ValuesList & k(_imp->qualified[*d->package_ptr()][d]);
                 for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                         t != t_end ; ++t)
                     k.push_back(ValueFlag(*t));
@@ -212,10 +208,10 @@ SuggestionsConf::interest_in_suggestion(
                     else
                     {
                         if (! l->pkg_requirement.empty())
-                            if (stringify(spec.package_name_requirement()->name().package()) != l->pkg_requirement)
+                            if (stringify(spec.package_ptr()->package()) != l->pkg_requirement)
                                 continue;
                         if (! l->cat_requirement.empty())
-                            if (stringify(spec.package_name_requirement()->name().category()) != l->cat_requirement)
+                            if (stringify(spec.package_ptr()->category()) != l->cat_requirement)
                                 continue;
 
                         return l->negated ? false : true;
@@ -256,10 +252,10 @@ SuggestionsConf::interest_in_suggestion(
                 else
                 {
                     if (! l->pkg_requirement.empty())
-                        if (stringify(spec.package_name_requirement()->name().package()) != l->pkg_requirement)
+                        if (stringify(spec.package_ptr()->package()) != l->pkg_requirement)
                             continue;
                     if (! l->cat_requirement.empty())
-                        if (stringify(spec.package_name_requirement()->name().category()) != l->cat_requirement)
+                        if (stringify(spec.package_ptr()->category()) != l->cat_requirement)
                             continue;
 
                     return l->negated ? false : true;
@@ -287,10 +283,10 @@ SuggestionsConf::interest_in_suggestion(
             else
             {
                 if (! l->pkg_requirement.empty())
-                    if (stringify(spec.package_name_requirement()->name().package()) != l->pkg_requirement)
+                    if (stringify(spec.package_ptr()->package()) != l->pkg_requirement)
                         continue;
                 if (! l->cat_requirement.empty())
-                    if (stringify(spec.package_name_requirement()->name().category()) != l->cat_requirement)
+                    if (stringify(spec.package_ptr()->category()) != l->cat_requirement)
                         continue;
 
                 return l->negated ? false : true;

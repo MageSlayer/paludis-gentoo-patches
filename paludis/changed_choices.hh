@@ -27,7 +27,7 @@
 #include <paludis/choice-fwd.hh>
 #include <paludis/serialise-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/dep_spec_data-fwd.hh>
+#include <paludis/partially_made_package_dep_spec-fwd.hh>
 #include <memory>
 
 namespace paludis
@@ -47,7 +47,7 @@ namespace paludis
 
             bool empty() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            void add_requirements_to(MutablePackageDepSpecData &) const;
+            void add_additional_requirements_to(PartiallyMadePackageDepSpec &) const;
 
             void serialise(Serialiser &) const;
 

@@ -64,6 +64,9 @@ namespace paludis
      */
     typedef LabelsDepSpec<DependenciesLabel> DependenciesLabelsDepSpec;
 
+    struct InstallableToRepository;
+    struct InstallableToPath;
+
     /**
      * A PlainTextDepSpec can be written to an ostream.
      *

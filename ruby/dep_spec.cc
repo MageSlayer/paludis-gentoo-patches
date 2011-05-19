@@ -19,12 +19,10 @@
  */
 
 #include <paludis_ruby.hh>
-
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/version_requirements.hh>
 #include <paludis/version_operator.hh>
-#include <paludis/package_dep_spec_requirement.hh>
-
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
@@ -33,7 +31,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/accept_visitor.hh>
-
 #include <algorithm>
 #include <list>
 #include <ruby.h>
@@ -63,6 +60,58 @@ namespace
     static VALUE c_any_dep_spec;
     static VALUE c_exactly_one_dep_spec;
     static VALUE c_conditional_dep_spec;
+
+    static VALUE c_version_requirements_mode;
+
+    static VALUE c_slot_requirement;
+    static VALUE c_slot_exact_requirement;
+    static VALUE c_slot_any_locked_requirement;
+    static VALUE c_slot_any_unlocked_requirement;
+
+    struct V
+    {
+        VALUE value;
+        std::shared_ptr<const SlotRequirement> mm;
+
+        V(std::shared_ptr<const SlotRequirement> _m) :
+            mm(_m)
+        {
+        }
+
+        void visit(const SlotExactRequirement &)
+        {
+            value = Data_Wrap_Struct(c_slot_exact_requirement, 0, &Common<std::shared_ptr<const SlotRequirement> >::free,
+                    new std::shared_ptr<const SlotRequirement>(mm));
+        }
+
+        void visit(const SlotAnyLockedRequirement &)
+        {
+            value = Data_Wrap_Struct(c_slot_any_locked_requirement, 0, &Common<std::shared_ptr<const SlotRequirement> >::free,
+                    new std::shared_ptr<const SlotRequirement>(mm));
+        }
+
+        void visit(const SlotAnyUnlockedRequirement &)
+        {
+            value = Data_Wrap_Struct(c_slot_any_unlocked_requirement, 0, &Common<std::shared_ptr<const SlotRequirement> >::free,
+                    new std::shared_ptr<const SlotRequirement>(mm));
+        }
+
+    };
+
+    VALUE
+    slot_requirement_to_value(std::shared_ptr<const SlotRequirement> m)
+    {
+        try
+        {
+            V v(m);
+            m->accept(v);
+            return v.value;
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+    }
 
     struct WrappedSpecBase;
     template <typename> struct WrappedSpec;
@@ -527,82 +576,52 @@ namespace
 
     /*
      * call-seq:
-     *     package_name_requirement -> NameRequirement or Nil
+     *     package -> QualifiedPackageName or Nil
      *
-     * Fetch the package name requirement (may be Nil).
+     * Fetch the package name.
      */
     VALUE
-    package_dep_spec_package_name_requirement(VALUE self)
+    package_dep_spec_package(VALUE self)
     {
         std::shared_ptr<WrappedSpecBase> * ptr;
         Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_name_requirement()))
+        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_ptr()))
             return Qnil;
-        return package_dep_spec_requirement_to_value(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_name_requirement());
+        return qualified_package_name_to_value(*std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_ptr());
     }
 
     /*
      * call-seq:
-     *     package_name_part_requirement -> PackageNamePartRequirement or Nil
+     *     package_name_part -> String or Nil
      *
-     * Fetch the package name part requirement (may be Nil).
+     * Fetch the package name part.
      */
     VALUE
-    package_dep_spec_package_name_part_requirement(VALUE self)
+    package_dep_spec_package_name_part(VALUE self)
     {
         std::shared_ptr<WrappedSpecBase> * ptr;
         Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_name_part_requirement()))
+        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_name_part_ptr()))
             return Qnil;
-        return package_dep_spec_requirement_to_value(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->package_name_part_requirement());
+        return rb_str_new2(stringify(*std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->
+                    package_name_part_ptr()).c_str());
     }
 
     /*
      * call-seq:
-     *     category_name_part_requirement -> CategoryNamePartRequirement or Nil
+     *     category_name_part -> String or Nil
      *
-     * Fetch the category name part requirement (may be Nil).
+     * Fetch the category name part.
      */
     VALUE
-    package_dep_spec_category_name_part_requirement(VALUE self)
+    package_dep_spec_category_name_part(VALUE self)
     {
         std::shared_ptr<WrappedSpecBase> * ptr;
         Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->category_name_part_requirement()))
+        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->category_name_part_ptr()))
             return Qnil;
-        return package_dep_spec_requirement_to_value(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->category_name_part_requirement());
-    }
-
-    /*
-     * call-seq:
-     *     any_slot_requirement -> AnySlotRequirement or Nil
-     *
-     * Fetch the any-slot requirement (may be Nil).
-     */
-    VALUE
-    package_dep_spec_any_slot_requirement(VALUE self)
-    {
-        std::shared_ptr<WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->any_slot_requirement()))
-            return Qnil;
-        return package_dep_spec_requirement_to_value(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->any_slot_requirement());
-    }
-
-    /*
-     * call-seq:
-     *     exact_slot_requirement -> ExactSlotRequirement or Nil
-     *
-     * Fetch the exact-slot requirement (may be Nil).
-     */
-    VALUE
-    package_dep_spec_exact_slot_requirement(VALUE self)
-    {
-        std::shared_ptr<WrappedSpecBase> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->exact_slot_requirement()))
-            return Qnil;
-        return package_dep_spec_requirement_to_value(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->exact_slot_requirement());
+        return rb_str_new2(stringify(*std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->
+                    category_name_part_ptr()).c_str());
     }
 
     /*
@@ -635,85 +654,139 @@ namespace
 
     /*
      * call-seq:
-     *     in_repository_requirement -> InRepositoryRequirement or Nil
+     *     slot_requirement -> SlotRequirement or Nil
+     *
+     * Fetch the slot requirement.
+     */
+    VALUE
+    package_dep_spec_slot_requirement_ptr(VALUE self)
+    {
+        std::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
+        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->slot_requirement_ptr()))
+            return Qnil;
+        return slot_requirement_to_value(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->slot_requirement_ptr());
+    }
+
+    /*
+     * call-seq:
+     *     in_repository -> String or Nil
      *
      * Fetch the in-repository name.
      */
     VALUE
-    package_dep_spec_in_repository_requirement(VALUE self)
+    package_dep_spec_in_repository_ptr(VALUE self)
     {
         std::shared_ptr<WrappedSpecBase> * ptr;
         Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->in_repository_requirement()))
+        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->in_repository_ptr()))
             return Qnil;
-        return package_dep_spec_requirement_to_value(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->in_repository_requirement());
+        return rb_str_new2(stringify((*std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->in_repository_ptr())).c_str());
     }
 
     /*
      * call-seq:
-     *     from_repository_requirement -> FromRepositoryRequirement or Nil
+     *     from_repository -> String or Nil
      *
-     * Fetch the from-repository requirement.
+     * Fetch the from-repository name.
      */
     VALUE
-    package_dep_spec_from_repository_requirement(VALUE self)
+    package_dep_spec_from_repository_ptr(VALUE self)
     {
         std::shared_ptr<WrappedSpecBase> * ptr;
         Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->from_repository_requirement()))
+        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->from_repository_ptr()))
             return Qnil;
-        return package_dep_spec_requirement_to_value(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->from_repository_requirement());
+        return rb_str_new2(stringify((*std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->from_repository_ptr())).c_str());
     }
 
     /*
      * call-seq:
-     *     installed_at_path_requirement ->
-     *     InstalledAtPathRequirement or Nil
+     *     installable_to_repository -> Hash or Nil
+     *
+     * Fetch the installable-to-repository requirement.
+     */
+    VALUE
+    package_dep_spec_installable_to_repository(VALUE self)
+    {
+        std::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
+        std::shared_ptr<const InstallableToRepository> i2r(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installable_to_repository_ptr());
+        if (! i2r)
+            return Qnil;
+        VALUE result(rb_hash_new());
+        rb_hash_aset(result, ID2SYM(rb_intern("repository")),
+            rb_str_new2(stringify(i2r->repository()).c_str()));
+        rb_hash_aset(result, ID2SYM(rb_intern("include_masked?")),
+            i2r->include_masked() ? Qtrue : Qfalse);
+        return result;
+    }
+
+    /*
+     * call-seq:
+     *     installed_at_path -> String or Nil
      *
      * Fetch the installed-at-path requirement.
      */
     VALUE
-    package_dep_spec_installed_at_path_requirement(VALUE self)
+    package_dep_spec_installed_at_path(VALUE self)
     {
         std::shared_ptr<WrappedSpecBase> * ptr;
         Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installed_at_path_requirement()))
+        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installed_at_path_ptr()))
             return Qnil;
-        return package_dep_spec_requirement_to_value(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installed_at_path_requirement());
+        return rb_str_new2(stringify((*std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installed_at_path_ptr())).c_str());
     }
 
     /*
      * call-seq:
-     *     installable_to_path_requirement -> InstallableToPathRequirement or Nil
+     *     installable_to_path -> Hash or Nil
      *
      * Fetch the installable-to-path requirement.
      */
     VALUE
-    package_dep_spec_installable_to_path_requirement(VALUE self)
+    package_dep_spec_installable_to_path(VALUE self)
     {
         std::shared_ptr<WrappedSpecBase> * ptr;
         Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installable_to_path_requirement()))
+        std::shared_ptr<const InstallableToPath> i2p(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installable_to_path_ptr());
+        if (! i2p)
             return Qnil;
-        return package_dep_spec_requirement_to_value(
-                std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installable_to_path_requirement());
+        VALUE result(rb_hash_new());
+        rb_hash_aset(result, ID2SYM(rb_intern("path")),
+            rb_str_new2(stringify(i2p->path()).c_str()));
+        rb_hash_aset(result, ID2SYM(rb_intern("include_masked?")),
+            i2p->include_masked() ? Qtrue : Qfalse);
+        return result;
     }
 
     /*
      * call-seq:
-     *     installable_to_path_requirement -> InstallableToRepositoryRequirement or Nil
+     *     version_requirements -> Array
      *
-     * Fetch the installable-to-path requirement.
+     * Fetch the version requirements. E.g. [ {:operator => '=', :spec => VersionSpec.new('0.1') } ]
      */
     VALUE
-    package_dep_spec_installable_to_repository_requirement(VALUE self)
+    package_dep_spec_version_requirements_ptr(VALUE self)
     {
         std::shared_ptr<WrappedSpecBase> * ptr;
         Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
-        if (! bool(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installable_to_repository_requirement()))
-            return Qnil;
-        return package_dep_spec_requirement_to_value(
-                std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->installable_to_repository_requirement());
+        VALUE result(rb_ary_new());
+        VALUE result_hash;
+        if (std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->version_requirements_ptr())
+            for (VersionRequirements::ConstIterator i(std::static_pointer_cast<const PackageDepSpec>((*ptr)->base_spec())->
+                        version_requirements_ptr()->begin()),
+                    i_end(std::static_pointer_cast<const PackageDepSpec>((*ptr)->base_spec())->version_requirements_ptr()->end()) ;
+                    i != i_end; ++i)
+            {
+                result_hash = rb_hash_new();
+                rb_hash_aset(result_hash, ID2SYM(rb_intern("operator")),
+                    rb_str_new2(stringify(i->version_operator()).c_str()));
+                rb_hash_aset(result_hash, ID2SYM(rb_intern("spec")),
+                    version_spec_to_value(i->version_spec()));
+                rb_ary_push(result, result_hash);
+            }
+        return result;
     }
 
 #ifdef CIARANM_REMOVED_THIS
@@ -747,6 +820,14 @@ namespace
         return result;
     }
 #endif
+
+    VALUE
+    package_dep_spec_version_requirements_mode(VALUE self)
+    {
+        std::shared_ptr<WrappedSpecBase> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
+        return INT2FIX(std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->version_requirements_mode());
+    }
 
     /*
      * Document-method: original_url
@@ -884,6 +965,14 @@ namespace
 
     }
 
+    VALUE
+    slot_exact_requirement_slot(VALUE self)
+    {
+        std::shared_ptr<const SlotExactRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const SlotExactRequirement>, ptr);
+        return rb_str_new2(stringify((*ptr)->slot()).c_str());
+    }
+
     void do_register_dep_spec()
     {
         /*
@@ -1018,16 +1107,17 @@ namespace
          * use Paludis::parse_user_package_dep_spec.
          */
         c_package_dep_spec = rb_define_class_under(paludis_module(), "PackageDepSpec", c_string_dep_spec);
-        rb_define_method(c_package_dep_spec, "package_name_requirement", RUBY_FUNC_CAST(&package_dep_spec_package_name_requirement), 0);
-        rb_define_method(c_package_dep_spec, "package_name_part_requirement", RUBY_FUNC_CAST(&package_dep_spec_package_name_part_requirement), 0);
-        rb_define_method(c_package_dep_spec, "category_name_part_requirement", RUBY_FUNC_CAST(&package_dep_spec_category_name_part_requirement), 0);
-        rb_define_method(c_package_dep_spec, "in_repository_requirement", RUBY_FUNC_CAST(&package_dep_spec_in_repository_requirement), 0);
-        rb_define_method(c_package_dep_spec, "from_repository_requirement", RUBY_FUNC_CAST(&package_dep_spec_from_repository_requirement), 0);
-        rb_define_method(c_package_dep_spec, "installable_to_repository_requirement", RUBY_FUNC_CAST(&package_dep_spec_installable_to_repository_requirement), 0);
-        rb_define_method(c_package_dep_spec, "installed_at_path_requirement", RUBY_FUNC_CAST(&package_dep_spec_installed_at_path_requirement), 0);
-        rb_define_method(c_package_dep_spec, "installable_to_path_requirement", RUBY_FUNC_CAST(&package_dep_spec_installable_to_path_requirement), 0);
-        rb_define_method(c_package_dep_spec, "any_slot_requirement", RUBY_FUNC_CAST(&package_dep_spec_any_slot_requirement), 0);
-        rb_define_method(c_package_dep_spec, "exact_slot_requirement", RUBY_FUNC_CAST(&package_dep_spec_exact_slot_requirement), 0);
+        rb_define_method(c_package_dep_spec, "package", RUBY_FUNC_CAST(&package_dep_spec_package), 0);
+        rb_define_method(c_package_dep_spec, "package_name_part", RUBY_FUNC_CAST(&package_dep_spec_package_name_part), 0);
+        rb_define_method(c_package_dep_spec, "category_name_part", RUBY_FUNC_CAST(&package_dep_spec_category_name_part), 0);
+        rb_define_method(c_package_dep_spec, "slot_requirement", RUBY_FUNC_CAST(&package_dep_spec_slot_requirement_ptr), 0);
+        rb_define_method(c_package_dep_spec, "in_repository", RUBY_FUNC_CAST(&package_dep_spec_in_repository_ptr), 0);
+        rb_define_method(c_package_dep_spec, "from_repository", RUBY_FUNC_CAST(&package_dep_spec_from_repository_ptr), 0);
+        rb_define_method(c_package_dep_spec, "installable_to_repository", RUBY_FUNC_CAST(&package_dep_spec_installable_to_repository), 0);
+        rb_define_method(c_package_dep_spec, "installed_at_path", RUBY_FUNC_CAST(&package_dep_spec_installed_at_path), 0);
+        rb_define_method(c_package_dep_spec, "installable_to_path", RUBY_FUNC_CAST(&package_dep_spec_installable_to_path), 0);
+        rb_define_method(c_package_dep_spec, "version_requirements", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_ptr), 0);
+        rb_define_method(c_package_dep_spec, "version_requirements_mode", RUBY_FUNC_CAST(&package_dep_spec_version_requirements_mode), 0);
 #ifdef CIARANM_REMOVED_THIS
         rb_define_method(c_package_dep_spec, "use_requirements", RUBY_FUNC_CAST(&package_dep_spec_use_requirements), 0);
 #endif
@@ -1093,7 +1183,52 @@ namespace
         VALUE (* block_dep_spec_to_s) (VALUE) = &dep_spec_to_s<BlockDepSpec>;
         rb_define_method(c_block_dep_spec, "to_s", RUBY_FUNC_CAST(block_dep_spec_to_s), 0);
 
+        /*
+         * Document-module: Paludis::VersionRequirementsMode
+         *
+         * What sort of VersionRequirements to we have.
+         *
+         */
+        c_version_requirements_mode = rb_define_module_under(paludis_module(), "VersionRequirementsMode");
+        for (VersionRequirementsMode l(static_cast<VersionRequirementsMode>(0)), l_end(last_vr) ; l != l_end ;
+                l = static_cast<VersionRequirementsMode>(static_cast<int>(l) + 1))
+            rb_define_const(c_version_requirements_mode, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+
+        // cc_enum_special<paludis/version_requirements.hh, VersionRequirementsMode, c_version_requirements_mode>
+
         rb_define_module_function(paludis_module(), "parse_user_package_dep_spec", RUBY_FUNC_CAST(&paludis_parse_user_dep_spec), -1);
+
+        /*
+         * Document-class: Paludis::SlotRequirement
+         *
+         * A SlotRequirement
+         */
+        c_slot_requirement = rb_define_class_under(paludis_module(), "SlotRequirement", rb_cObject);
+        rb_funcall(c_slot_requirement, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_define_method(c_slot_requirement, "as_string", RUBY_FUNC_CAST(&Common<std::shared_ptr<const SlotRequirement> >::to_s_via_ptr), 0);
+        rb_define_method(c_slot_requirement, "to_s", RUBY_FUNC_CAST(&Common<std::shared_ptr<const SlotRequirement> >::to_s_via_ptr), 0);
+
+        /*
+         * Document-class: Paludis::ExactSlotRequirement
+         *
+         * An exact slot requiremet (:)
+         */
+        c_slot_exact_requirement = rb_define_class_under(paludis_module(), "SlotExactRequirement", c_slot_requirement);
+        rb_define_method(c_slot_exact_requirement, "slot", RUBY_FUNC_CAST(&slot_exact_requirement_slot), 0);
+
+        /*
+         * Document-class: Paludis::SlotAnyLockedRequirement
+         *
+         * An any locked slot requiremet (:=)
+         */
+        c_slot_any_locked_requirement = rb_define_class_under(paludis_module(), "SlotAnyLockedRequirement", c_slot_requirement);
+
+        /*
+         * Document-class: Paludis::ExactSlotRequirement
+         *
+         * An any unlocked slot requiremet (:*)
+         */
+        c_slot_any_unlocked_requirement = rb_define_class_under(paludis_module(), "SlotAnyUnlockedRequirement", c_slot_requirement);
     }
 }
 

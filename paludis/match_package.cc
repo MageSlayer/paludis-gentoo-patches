@@ -21,13 +21,13 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
+#include <paludis/version_requirements.hh>
 #include <paludis/package_id.hh>
+#include <paludis/slot_requirement.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
-#include <paludis/package_dep_spec_requirement.hh>
-#include <paludis/contents.hh>
-#include <paludis/version_operator.hh>
+#include <paludis/additional_package_dep_spec_requirement.hh>
 
 #include <paludis/util/set.hh>
 #include <paludis/util/options.hh>
@@ -36,15 +36,11 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/accept_visitor.hh>
-#include <paludis/util/destringify.hh>
-#include <paludis/util/join.hh>
 
 #include <functional>
 #include <algorithm>
 #include <istream>
 #include <ostream>
-#include <list>
 
 using namespace paludis;
 
@@ -52,155 +48,30 @@ using namespace paludis;
 
 namespace
 {
-    struct RequirementChecker
+    struct SlotRequirementChecker
     {
-        const Environment & env;
-        const std::shared_ptr<const PackageID> & id;
-        const MatchPackageOptions & options;
+        const std::shared_ptr<const PackageID> id;
+        bool result;
 
-        bool version_requirements_ok;
-        std::list<const ChoiceRequirement *> defer_choice_requirements;
-
-        RequirementChecker(
-                const Environment & e,
-                const std::shared_ptr<const PackageID> & i,
-                const MatchPackageOptions & o) :
-            env(e),
+        SlotRequirementChecker(const std::shared_ptr<const PackageID> & i) :
             id(i),
-            options(o),
-            version_requirements_ok(true)
+            result(true)
         {
         }
 
-        bool visit(const NameRequirement & r)
+        void visit(const SlotExactRequirement & s)
         {
-            return r.name() == id->name();
+            result = id->slot_key() && id->slot_key()->parse_value() == s.slot();
         }
 
-        bool visit(const PackageNamePartRequirement & r)
+        void visit(const SlotAnyLockedRequirement &)
         {
-            return r.name_part() == id->name().package();
+            result = true;
         }
 
-        bool visit(const CategoryNamePartRequirement & r)
+        void visit(const SlotAnyUnlockedRequirement &)
         {
-            return r.name_part() == id->name().category();
-        }
-
-        bool visit(const VersionRequirement & r)
-        {
-            bool one(r.version_operator().as_version_spec_comparator()(id->version(), r.version_spec()));
-
-            switch (r.combiner())
-            {
-                case vrc_and:   version_requirements_ok &= one; break;
-                case vrc_or:    version_requirements_ok |= one; break;
-                case last_vrc:  throw InternalError(PALUDIS_HERE, "Bad vrc");
-            }
-
-            return true;
-        }
-
-        bool visit(const InRepositoryRequirement & r)
-        {
-            return r.name() == id->repository_name();
-        }
-
-        bool visit(const FromRepositoryRequirement & r)
-        {
-            if (! id->from_repositories_key())
-                return false;
-
-            auto v(id->from_repositories_key()->parse_value());
-            return v->end() != v->find(stringify(r.name()));
-        }
-
-        bool visit(const InstalledAtPathRequirement & r)
-        {
-            auto repo(env.fetch_repository(id->repository_name()));
-            if (! repo->installed_root_key())
-                return false;
-            if (repo->installed_root_key()->parse_value() != r.path())
-                return false;
-            return true;
-        }
-
-        bool visit(const InstallableToRepositoryRequirement & r)
-        {
-            if (! id->supports_action(SupportsActionTest<InstallAction>()))
-                return false;
-            if (! r.include_masked())
-                if (id->masked())
-                    return false;
-
-            const std::shared_ptr<const Repository> dest(env.fetch_repository(r.name()));
-            if (! dest->destination_interface())
-                return false;
-            if (! dest->destination_interface()->is_suitable_destination_for(id))
-                return false;
-
-            return true;
-        }
-
-        bool visit(const InstallableToPathRequirement & r)
-        {
-            if (! id->supports_action(SupportsActionTest<InstallAction>()))
-                return false;
-            if (! r.include_masked())
-                if (id->masked())
-                    return false;
-
-            bool ok(false);
-            for (auto d(env.begin_repositories()), d_end(env.end_repositories()) ;
-                    d != d_end ; ++d)
-            {
-                if (! (*d)->destination_interface())
-                    continue;
-                if (! (*d)->installed_root_key())
-                    continue;
-                if ((*d)->installed_root_key()->parse_value() != r.path())
-                    continue;
-                if (! (*d)->destination_interface()->is_suitable_destination_for(id))
-                    continue;
-
-                ok = true;
-                break;
-            }
-
-            if (! ok)
-                return false;
-
-            return true;
-        }
-
-        bool visit(const ExactSlotRequirement & r)
-        {
-            if ((! id->slot_key()) || (id->slot_key()->parse_value() != r.name()))
-                return false;
-
-            return true;
-        }
-
-        bool visit(const AnySlotRequirement &)
-        {
-            /* don't care */
-            return true;
-        }
-
-        bool visit(const ChoiceRequirement & r)
-        {
-            if (! options[mpo_ignore_choice_requirements])
-                defer_choice_requirements.push_back(&r);
-
-            return true;
-        }
-
-        bool visit(const KeyRequirement & r)
-        {
-            if (! r.matches(&env, id))
-                return false;
-
-            return true;
+            result = true;
         }
     };
 }
@@ -215,21 +86,131 @@ paludis::match_package_with_maybe_changes(
         const ChangedChoices * const maybe_changes_to_target,
         const MatchPackageOptions & options)
 {
-    RequirementChecker c{env, id, options};
-
-    for (auto r(spec.requirements()->begin()), r_end(spec.requirements()->end()) ;
-            r != r_end ; ++r)
-        if (! (*r)->accept_returning<bool>(c))
-            return false;
-
-    if (! c.version_requirements_ok)
+    if (spec.package_ptr() && *spec.package_ptr() != id->name())
         return false;
 
+    if (spec.package_name_part_ptr() && *spec.package_name_part_ptr() != id->name().package())
+        return false;
 
-    for (auto r(c.defer_choice_requirements.begin()), r_end(c.defer_choice_requirements.end()) ;
-            r != r_end ; ++r)
-        if (! (*r)->requirement_met(&env, maybe_changes_to_owner, id, from_id, maybe_changes_to_target).first)
+    if (spec.category_name_part_ptr() && *spec.category_name_part_ptr() != id->name().category())
+        return false;
+
+    if (spec.version_requirements_ptr())
+        switch (spec.version_requirements_mode())
+        {
+            case vr_and:
+                for (VersionRequirements::ConstIterator r(spec.version_requirements_ptr()->begin()),
+                        r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+                    if (! r->version_operator().as_version_spec_comparator()(id->version(), r->version_spec()))
+                        return false;
+                break;
+
+            case vr_or:
+                {
+                    bool matched(false);
+                    for (VersionRequirements::ConstIterator r(spec.version_requirements_ptr()->begin()),
+                            r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+                        if (r->version_operator().as_version_spec_comparator()(id->version(), r->version_spec()))
+                        {
+                            matched = true;
+                            break;
+                        }
+
+                    if (! matched)
+                        return false;
+                }
+                break;
+
+            case last_vr:
+                ;
+        }
+
+    if (spec.in_repository_ptr())
+        if (*spec.in_repository_ptr() != id->repository_name())
             return false;
+
+    if (spec.from_repository_ptr())
+    {
+        if (! id->from_repositories_key())
+            return false;
+
+        auto v(id->from_repositories_key()->parse_value());
+        if (v->end() == v->find(stringify(*spec.from_repository_ptr())))
+            return false;
+    }
+
+    if (spec.installed_at_path_ptr())
+    {
+        auto repo(env.fetch_repository(id->repository_name()));
+        if (! repo->installed_root_key())
+            return false;
+        if (repo->installed_root_key()->parse_value() != *spec.installed_at_path_ptr())
+            return false;
+    }
+
+    if (spec.installable_to_repository_ptr())
+    {
+        if (! id->supports_action(SupportsActionTest<InstallAction>()))
+            return false;
+        if (! spec.installable_to_repository_ptr()->include_masked())
+            if (id->masked())
+                return false;
+
+        const std::shared_ptr<const Repository> dest(env.fetch_repository(
+                    spec.installable_to_repository_ptr()->repository()));
+        if (! dest->destination_interface())
+            return false;
+        if (! dest->destination_interface()->is_suitable_destination_for(id))
+            return false;
+    }
+
+    if (spec.installable_to_path_ptr())
+    {
+        if (! id->supports_action(SupportsActionTest<InstallAction>()))
+            return false;
+        if (! spec.installable_to_path_ptr()->include_masked())
+            if (id->masked())
+                return false;
+
+        bool ok(false);
+        for (auto d(env.begin_repositories()), d_end(env.end_repositories()) ;
+                d != d_end ; ++d)
+        {
+            if (! (*d)->destination_interface())
+                continue;
+            if (! (*d)->installed_root_key())
+                continue;
+            if ((*d)->installed_root_key()->parse_value() != spec.installable_to_path_ptr()->path())
+                continue;
+            if (! (*d)->destination_interface()->is_suitable_destination_for(id))
+                continue;
+
+            ok = true;
+            break;
+        }
+
+        if (! ok)
+            return false;
+    }
+
+    if (spec.slot_requirement_ptr())
+    {
+        SlotRequirementChecker v(id);
+        spec.slot_requirement_ptr()->accept(v);
+        if (! v.result)
+            return false;
+    }
+
+    if (! options[mpo_ignore_additional_requirements])
+    {
+        if (spec.additional_requirements_ptr())
+        {
+            for (AdditionalPackageDepSpecRequirements::ConstIterator u(spec.additional_requirements_ptr()->begin()),
+                    u_end(spec.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
+                if (! (*u)->requirement_met(&env, maybe_changes_to_owner, id, from_id, maybe_changes_to_target).first)
+                    return false;
+        }
+    }
 
     return true;
 }

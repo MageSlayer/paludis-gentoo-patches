@@ -59,39 +59,85 @@ int main(int argc, char * argv[])
             /* Display information about the PackageDepSpec. */
             cout << "Information about '" << spec << "':" << endl;
 
-            if (spec.package_name_requirement())
-                cout << "    " << left << setw(24) << "Package:" << " " << spec.package_name_requirement()->name() << endl;
+            if (spec.package_ptr())
+                cout << "    " << left << setw(24) << "Package:" << " " << *spec.package_ptr() << endl;
 
-            if (spec.category_name_part_requirement())
-                cout << "    " << left << setw(24) << "Category part:" << " " << spec.category_name_part_requirement()->name_part() << endl;
+            if (spec.category_name_part_ptr())
+                cout << "    " << left << setw(24) << "Category part:" << " " << *spec.category_name_part_ptr() << endl;
 
-            if (spec.package_name_part_requirement())
-                cout << "    " << left << setw(24) << "Package part:" << " " << spec.package_name_part_requirement()->name_part() << endl;
+            if (spec.package_name_part_ptr())
+                cout << "    " << left << setw(24) << "Package part:" << " " << *spec.package_name_part_ptr() << endl;
 
-            if (spec.exact_slot_requirement())
-                cout << "    " << left << setw(24) << "Slot:" << " " << spec.exact_slot_requirement()->name() << endl;
+            if (spec.version_requirements_ptr() && ! spec.version_requirements_ptr()->empty())
+            {
+                cout << "    " << left << setw(24) << "Version requirements:" << " ";
+                bool need_join(false);
+                for (VersionRequirements::ConstIterator r(spec.version_requirements_ptr()->begin()),
+                        r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+                {
+                    if (need_join)
+                    {
+                        switch (spec.version_requirements_mode())
+                        {
+                            case vr_and:
+                                cout << " and ";
+                                break;
 
-            if (spec.in_repository_requirement())
+                            case vr_or:
+                                cout << " or ";
+                                break;
+
+                            case last_vr:
+                                throw InternalError(PALUDIS_HERE, "Bad version_requirements_mode");
+                        }
+                    }
+
+                    cout << r->version_operator() << r->version_spec();
+                    need_join = true;
+                }
+                cout << endl;
+            }
+
+            if (spec.slot_requirement_ptr())
+                cout << "    " << left << setw(24) << "Slot:" << " " << *spec.slot_requirement_ptr() << endl;
+
+            if (spec.in_repository_ptr())
                 cout << "    " << left << setw(24) << "In repository:" << " " <<
-                    spec.in_repository_requirement()->name() << endl;
+                    *spec.in_repository_ptr() << endl;
 
-            if (spec.from_repository_requirement())
+            if (spec.from_repository_ptr())
                 cout << "    " << left << setw(24) << "From repository:" << " " <<
-                    spec.from_repository_requirement()->name() << endl;
+                    *spec.from_repository_ptr() << endl;
 
-            if (spec.installed_at_path_requirement())
+            if (spec.installed_at_path_ptr())
                 cout << "    " << left << setw(24) << "Installed at path:" << " " <<
-                    spec.installed_at_path_requirement()->path() << endl;
+                    *spec.installed_at_path_ptr() << endl;
 
-            if (spec.installable_to_path_requirement())
+            if (spec.installable_to_path_ptr())
                 cout << "    " << left << setw(24) << "Installable to path:" << " " <<
-                    spec.installable_to_path_requirement()->path() << ", " <<
-                    spec.installable_to_path_requirement()->include_masked() << endl;
+                    spec.installable_to_path_ptr()->path() << ", " <<
+                    spec.installable_to_path_ptr()->include_masked() << endl;
 
-            if (spec.installable_to_repository_requirement())
+            if (spec.installable_to_repository_ptr())
                 cout << "    " << left << setw(24) << "Installable to repository:" << " " <<
-                    spec.installable_to_repository_requirement()->name() << ", " <<
-                    spec.installable_to_repository_requirement()->include_masked() << endl;
+                    spec.installable_to_repository_ptr()->repository() << ", " <<
+                    spec.installable_to_repository_ptr()->include_masked() << endl;
+
+            if (spec.additional_requirements_ptr() && ! spec.additional_requirements_ptr()->empty())
+            {
+                cout << "    " << left << setw(24) << "Additional requirements:" << " ";
+                bool need_join(false);
+                for (AdditionalPackageDepSpecRequirements::ConstIterator u(spec.additional_requirements_ptr()->begin()),
+                        u_end(spec.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
+                {
+                    if (need_join)
+                        cout << " and ";
+
+                    cout << (*u)->as_raw_string() + " (meaning: " + (*u)->as_human_string(make_null_shared_ptr()) + ")";
+                    need_join = true;
+                }
+                cout << endl;
+            }
 
             /* And display packages matching that spec */
             cout << "    " << left << setw(24) << "Matches:" << " ";

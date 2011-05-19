@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,19 +21,18 @@
 #define PALUDIS_GUARD_PALUDIS_DEP_SPEC_DATA_HH 1
 
 #include <paludis/dep_spec_data-fwd.hh>
+#include <paludis/util/attributes.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/changed_choices-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/version_operator-fwd.hh>
+#include <paludis/version_requirements-fwd.hh>
+#include <paludis/slot_requirement-fwd.hh>
+#include <paludis/additional_package_dep_spec_requirement-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
+#include <paludis/partially_made_package_dep_spec-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-#include <paludis/package_dep_spec_requirement-fwd.hh>
-#include <paludis/version_spec-fwd.hh>
-
-#include <paludis/util/attributes.hh>
-#include <paludis/util/fs_path-fwd.hh>
-#include <paludis/util/pimp.hh>
-
 #include <string>
 #include <memory>
 
@@ -93,268 +92,95 @@ namespace paludis
      * Data for a PackageDepSpec.
      *
      * \since 0.26
-     * \since 0.61 is not abstract
      * \ingroup g_dep_spec
      */
     class PALUDIS_VISIBLE PackageDepSpecData
     {
-        protected:
-            Pimp<PackageDepSpecData> _imp;
-
-            PackageDepSpecData(const PackageDepSpecData &);
-
         public:
             ///\name Basic operations
             ///\{
-
-            explicit PackageDepSpecData(const PackageDepSpecDataOptions &);
 
             virtual ~PackageDepSpecData();
 
             ///\}
 
             /**
-             * All our requirements.
-             *
-             * \since 0.61
+             * Fetch ourself as a string.
              */
-            const std::shared_ptr<const PackageDepSpecRequirementSequence> requirements() const;
+            virtual std::string as_string() const = 0;
 
             /**
-             * Our options.
-             *
-             * \since 0.61
+             * Fetch the package name (may be a zero pointer).
              */
-            const PackageDepSpecDataOptions options() const;
+            virtual std::shared_ptr<const QualifiedPackageName> package_ptr() const = 0;
 
             /**
-             * Fetch one of our NameRequirement requirements, if we have any, or
-             * a null pointer otherwise.
-             *
-             * \since 0.61
+             * Fetch the package name part, if wildcarded, or a zero pointer otherwise.
              */
-            const std::shared_ptr<const NameRequirement> package_name_requirement() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual std::shared_ptr<const PackageNamePart> package_name_part_ptr() const = 0;
 
             /**
-             * Fetch our ExactSlotRequirement, if we have one, or a null pointer otherwise.
-             *
-             * If we have multiple ExactSlotRequirement requirements, returns one such
-             * requirement.
-             *
-             * \since 0.61
+             * Fetch the category name part, if wildcarded, or a zero pointer otherwise.
              */
-            const std::shared_ptr<const ExactSlotRequirement> exact_slot_requirement() const;
-    };
-
-    /**
-     * Partially constructed PackageDepSpecData, which can be used to build up a
-     * PackageDepSpec.
-     *
-     * \since 0.61
-     * \ingroup g_dep_spec
-     */
-    class PALUDIS_VISIBLE MutablePackageDepSpecData :
-        private PackageDepSpecData
-    {
-        public:
-            explicit MutablePackageDepSpecData(const PackageDepSpecDataOptions &);
-
-            MutablePackageDepSpecData(const PackageDepSpecData &);
-
-            MutablePackageDepSpecData(const MutablePackageDepSpecData &);
-
-            ~MutablePackageDepSpecData();
+            virtual std::shared_ptr<const CategoryNamePart> category_name_part_ptr() const = 0;
 
             /**
-             * Add a package requirement.
-             *
-             * \return *this
+             * Fetch the version requirements (may be a zero pointer).
              */
-            MutablePackageDepSpecData & require_package(const QualifiedPackageName &);
+            virtual std::shared_ptr<const VersionRequirements> version_requirements_ptr() const = 0;
 
             /**
-             * Clear any package requirements.
-             *
-             * \return *this
+             * Fetch the version requirements mode.
              */
-            MutablePackageDepSpecData & unrequire_package();
+            virtual VersionRequirementsMode version_requirements_mode() const = 0;
 
             /**
-             * Add a package name part requirement.
-             *
-             * \return *this
+             * Fetch the slot name (may be a zero pointer).
              */
-            MutablePackageDepSpecData & require_package_name_part(const PackageNamePart &);
+            virtual std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const = 0;
 
             /**
-             * Clear any package name part requirements.
-             *
-             * \return *this
+             * Fetch the from-repository requirement (may be a zero pointer).
              */
-            MutablePackageDepSpecData & unrequire_package_name_part();
+            virtual std::shared_ptr<const RepositoryName> in_repository_ptr() const = 0;
 
             /**
-             * Add a category name part requirement.
+             * Fetch the installable-to-repository requirement (may be a zero pointer).
              *
-             * \return *this
+             * \since 0.32
              */
-            MutablePackageDepSpecData & require_category_name_part(const CategoryNamePart &);
+            virtual std::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const = 0;
 
             /**
-             * Clear any category name part requirements.
-             *
-             * \return *this
+             * Fetch the from-repository requirement (may be a zero pointer).
              */
-            MutablePackageDepSpecData & unrequire_category_name_part();
+            virtual std::shared_ptr<const RepositoryName> from_repository_ptr() const = 0;
 
             /**
-             * Add a version requirement.
+             * Fetch the installed-at-path requirement (may be a zero pointer).
              *
-             * The combiner must be vcc_and if this is the first version
-             * requirement.
-             *
-             * \return *this
+             * \since 0.32
              */
-            MutablePackageDepSpecData & require_version(const VersionRequirementCombiner, const VersionOperator &, const VersionSpec &);
+            virtual std::shared_ptr<const FSPath> installed_at_path_ptr() const = 0;
 
             /**
-             * Clear any version requirements.
+             * Fetch the installable-to-path requirement (may be a zero pointer).
              *
-             * \return *this
+             * \since 0.32
              */
-            MutablePackageDepSpecData & unrequire_versions();
+            virtual std::shared_ptr<const InstallableToPath> installable_to_path_ptr() const = 0;
 
             /**
-             * Add an exact slot requirement.
-             *
-             * \return *this
+             * Fetch the additional requirements (may be a zero pointer).
              */
-            MutablePackageDepSpecData & require_exact_slot(const SlotName &, const bool locked);
+            virtual std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const = 0;
 
             /**
-             * Clear any exact slot requirements.
+             * Fetch options if we're being used to construct a new PartiallyMadePackageDepSpec.
              *
-             * \return *this
+             * \since 0.38
              */
-            MutablePackageDepSpecData & unrequire_exact_slot();
-
-            /**
-             * Add an in repository requirement.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & require_in_repository(const RepositoryName &);
-
-            /**
-             * Clear any in repository requirement.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & unrequire_in_repository();
-
-            /**
-             * Add an installable to path requirement.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & require_installable_to_path(const FSPath &, const bool);
-
-            /**
-             * Clear any installable to path requirement.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & unrequire_installable_to_path();
-
-            /**
-             * Add an installable to repository requirement.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & require_installable_to_repository(const RepositoryName &, const bool);
-
-            /**
-             * Clear any installable to repository requirement.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & unrequire_installable_to_repository();
-
-            /**
-             * Add a from repository requirement.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & require_from_repository(const RepositoryName &);
-
-            /**
-             * Clear any from repository requirement.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & unrequire_from_repository();
-
-            /**
-             * Add an installed at path requirement.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & require_installed_at_path(const FSPath &);
-
-            /**
-             * Clear any installed at path requirement.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & unrequire_installed_at_path();
-
-            /**
-             * Add an any slot requirement.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & require_any_slot(const bool);
-
-            /**
-             * Clear our AnySlotRequirement, if we have one.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & unrequire_any_slot();
-
-            /**
-             * Add a choice requirement.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & require_choice(const std::shared_ptr<const ChoiceRequirement> &);
-
-            /**
-             * Clear any choice requirements.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & unrequire_choices();
-
-            /**
-             * Add a key requirement.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & require_key(
-                    const KeyRequirementKeyType, const std::string &, const KeyRequirementOperation, const std::string &);
-
-            /**
-             * Clear any key requirements.
-             *
-             * \return *this
-             */
-            MutablePackageDepSpecData & unrequire_keys();
-
-            /**
-             * Convert ourself to a PackageDepSpec.
-             */
-            operator PackageDepSpec() const;
+            virtual const PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec() const = 0;
     };
 }
 

@@ -32,12 +32,15 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/version_operator-fwd.hh>
+#include <paludis/version_requirements-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
+#include <paludis/slot_requirement-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
+#include <paludis/additional_package_dep_spec_requirement-fwd.hh>
+#include <paludis/partially_made_package_dep_spec-fwd.hh>
 #include <paludis/dep_spec_data-fwd.hh>
 #include <paludis/dep_spec_annotations-fwd.hh>
-#include <paludis/package_dep_spec_requirement-fwd.hh>
 
 #include <memory>
 
@@ -236,11 +239,60 @@ namespace paludis
     class PALUDIS_VISIBLE StringDepSpec :
         public DepSpec
     {
+        private:
+            std::string _str;
+
+        protected:
+            ///\name Basic operations
+            ///\{
+
+            StringDepSpec(const std::string &);
+
+            ~StringDepSpec();
+
+            ///\}
+
+            /**
+             * Change our text.
+             */
+            void set_text(const std::string &);
+
         public:
             /**
              * Fetch our text.
              */
-            virtual const std::string text() const = 0;
+            std::string text() const;
+    };
+
+    namespace n
+    {
+        typedef Name<struct name_include_masked> include_masked;
+        typedef Name<struct name_path> path;
+        typedef Name<struct name_repository> repository;
+    }
+
+    /**
+     * Data for PackageDepSpec.installable_to_repository_ptr() etc.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.32
+     */
+    struct InstallableToRepository
+    {
+        NamedValue<n::include_masked, bool> include_masked;
+        NamedValue<n::repository, RepositoryName> repository;
+    };
+
+    /**
+     * Data for PackageDepSpec.installable_to_path_ptr() etc.
+     *
+     * \ingroup g_dep_spec
+     * \since 0.32
+     */
+    struct InstallableToPath
+    {
+        NamedValue<n::include_masked, bool> include_masked;
+        NamedValue<n::path, FSPath> path;
     };
 
     /**
@@ -268,6 +320,7 @@ namespace paludis
 
         private:
             const PackageDepSpec & operator= (const PackageDepSpec &);
+            std::string _as_string() const;
 
             Pimp<PackageDepSpec> _imp;
 
@@ -293,100 +346,76 @@ namespace paludis
 
             ///\}
 
-            virtual const std::string text() const;
+            /**
+             * Fetch the package name (may be a zero pointer).
+             */
+            std::shared_ptr<const QualifiedPackageName> package_ptr() const;
 
             /**
-             * Fetch our NameRequirement, if we have one, or a null pointer otherwise.
-             *
-             * If we have multiple NameRequirement requirements, returns one such
-             * requirement.
-             *
-             * \since 0.61
+             * Fetch the package name part, if wildcarded, or a zero pointer otherwise.
              */
-            const std::shared_ptr<const NameRequirement> package_name_requirement() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<const PackageNamePart> package_name_part_ptr() const;
 
             /**
-             * Fetch the single PackageNamePartRequirement, if we have one, or
-             * a null pointer otherwise.
-             *
-             * \since 0.61
+             * Fetch the category name part, if wildcarded, or a zero pointer otherwise.
              */
-            const std::shared_ptr<const PackageNamePartRequirement> package_name_part_requirement() const;
+            std::shared_ptr<const CategoryNamePart> category_name_part_ptr() const;
 
             /**
-             * Fetch the single CategoryNamePartRequirement, if we have one, or
-             * a null pointer otherwise.
-             *
-             * \since 0.61
+             * Fetch the version requirements (may be a zero pointer).
              */
-            const std::shared_ptr<const CategoryNamePartRequirement> category_name_part_requirement() const;
+            std::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
 
             /**
-             * Fetch our ExactSlotRequirement, if we have one, or a null pointer otherwise.
-             *
-             * If we have multiple ExactSlotRequirement requirements, returns one such
-             * requirement.
-             *
-             * \since 0.61
+             * Fetch the version requirements mode.
              */
-            const std::shared_ptr<const ExactSlotRequirement> exact_slot_requirement() const;
+            VersionRequirementsMode version_requirements_mode() const;
 
             /**
-             * Fetch the single AnySlotRequirement, if we have one, or
-             * a null pointer otherwise.
-             *
-             * \since 0.61
+             * Fetch the slot requirement (may be a zero pointer).
              */
-            const std::shared_ptr<const AnySlotRequirement> any_slot_requirement() const;
+            std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const;
 
             /**
-             * Fetch the single InRepositoryRequirement, if we have one, or
-             * a null pointer otherwise.
-             *
-             * \since 0.61
+             * Fetch the in-repository requirement (may be a zero pointer).
              */
-            const std::shared_ptr<const InRepositoryRequirement> in_repository_requirement() const;
+            std::shared_ptr<const RepositoryName> in_repository_ptr() const;
 
             /**
-             * Fetch the single InstallableToRepositoryRequirement, if we have one, or
+             * Fetch the installable-to-repository requirement (may be a zero pointer).
              *
-             * \since 0.61
+             * \since 0.32
              */
-            const std::shared_ptr<const InstallableToRepositoryRequirement> installable_to_repository_requirement() const;
+            std::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const;
 
             /**
-             * Fetch the single FromRepositoryRequirement, if we have one, or
-             * a null pointer otherwise.
+             * Fetch the from-repository requirement (may be a zero pointer).
              */
-            const std::shared_ptr<const FromRepositoryRequirement> from_repository_requirement() const;
+            std::shared_ptr<const RepositoryName> from_repository_ptr() const;
 
             /**
-             * Fetch the single InstalledAtPathRequirement, if we have one, or
-             * a null pointer otherwise.
+             * Fetch the installed-at-path requirement (may be a zero pointer).
              *
-             * \since 0.61
+             * \since 0.32
              */
-            const std::shared_ptr<const InstalledAtPathRequirement> installed_at_path_requirement() const;
+            std::shared_ptr<const FSPath> installed_at_path_ptr() const;
 
             /**
-             * Fetch the single InstallableToPathRequirement, if we have one, or
-             * a null pointer otherwise.
+             * Fetch the installable-to-path requirement (may be a zero pointer).
              *
-             * \since 0.61
+             * \since 0.32
              */
-            const std::shared_ptr<const InstallableToPathRequirement> installable_to_path_requirement() const;
+            std::shared_ptr<const InstallableToPath> installable_to_path_ptr() const;
 
             /**
-             * Fetch all our requirements.
-             *
-             * \since 0.61
+             * Fetch any additional requirements (may be a zero pointer).
              */
-            const std::shared_ptr<const PackageDepSpecRequirementSequence> requirements() const;
+            std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
 
             /**
              * Access to our data.
              */
-            const std::shared_ptr<const PackageDepSpecData> data() const;
+            std::shared_ptr<const PackageDepSpecData> data() const;
     };
 
     /**
@@ -398,9 +427,6 @@ namespace paludis
     class PALUDIS_VISIBLE PlainTextDepSpec :
         public StringDepSpec
     {
-        private:
-            std::string _text;
-
         public:
             ///\name Basic operations
             ///\{
@@ -408,8 +434,6 @@ namespace paludis
             PlainTextDepSpec(const std::string &);
 
             ///\}
-
-            virtual const std::string text() const;
 
             virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
@@ -434,8 +458,6 @@ namespace paludis
 
             ///\}
 
-            virtual const std::string text() const;
-
             /// Fetch the name of our set.
             const SetName name() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -452,9 +474,6 @@ namespace paludis
     class PALUDIS_VISIBLE LicenseDepSpec :
         public StringDepSpec
     {
-        private:
-            std::string _text;
-
         public:
             ///\name Basic operations
             ///\{
@@ -462,8 +481,6 @@ namespace paludis
             LicenseDepSpec(const std::string &);
 
             ///\}
-
-            virtual const std::string text() const;
 
             virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
@@ -482,9 +499,6 @@ namespace paludis
     class PALUDIS_VISIBLE FetchableURIDepSpec :
         public StringDepSpec
     {
-        private:
-            std::string _text;
-
         public:
             ///\name Basic operations
             ///\{
@@ -492,8 +506,6 @@ namespace paludis
             FetchableURIDepSpec(const std::string &);
 
             ///\}
-
-            virtual const std::string text() const;
 
             /**
              * The original URL (that is, the text to the left of the arrow, if present,
@@ -528,9 +540,6 @@ namespace paludis
     class PALUDIS_VISIBLE SimpleURIDepSpec :
         public StringDepSpec
     {
-        private:
-            std::string _text;
-
         public:
             ///\name Basic operations
             ///\{
@@ -538,8 +547,6 @@ namespace paludis
             SimpleURIDepSpec(const std::string &);
 
             ///\}
-
-            virtual const std::string text() const;
 
             virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
@@ -575,7 +582,6 @@ namespace paludis
         public StringDepSpec
     {
         private:
-            std::string _text;
             PackageDepSpec _spec;
 
         public:
@@ -587,8 +593,6 @@ namespace paludis
             BlockDepSpec(const BlockDepSpec &);
 
             ///\}
-
-            virtual const std::string text() const;
 
             /**
              * Fetch the spec we're blocking.
@@ -646,9 +650,6 @@ namespace paludis
     class PALUDIS_VISIBLE PlainTextLabelDepSpec :
         public StringDepSpec
     {
-        private:
-            std::string _text;
-
         public:
             ///\name Basic operations
             ///\{
@@ -657,8 +658,6 @@ namespace paludis
             ~PlainTextLabelDepSpec();
 
             ///\}
-
-            virtual const std::string text() const;
 
             virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

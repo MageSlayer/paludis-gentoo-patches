@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2011 Ciaran McCreesh
+ * Copyright (c) 2008 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,23 +17,20 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_SPLIT_PN_V_HH
-#define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_SPLIT_PN_V_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_SLOT_REQUIREMENT_FWD_HH
+#define PALUDIS_GUARD_PALUDIS_SLOT_REQUIREMENT_FWD_HH 1
 
-#include <paludis/name.hh>
-#include <paludis/version_spec.hh>
-#include <paludis/environment-fwd.hh>
-
-#include <string>
-#include <utility>
+#include <iosfwd>
+#include <paludis/util/attributes.hh>
 
 namespace paludis
 {
-    namespace erepository
-    {
-        std::pair<PackageNamePart, VersionSpec> split_pn_v(
-                const Environment * const, const std::string &);
-    }
+    struct SlotRequirement;
+    struct SlotExactRequirement;
+    struct SlotAnyLockedRequirement;
+    struct SlotAnyUnlockedRequirement;
+
+    std::ostream & operator<< (std::ostream &, const SlotRequirement &) PALUDIS_VISIBLE;
 }
 
 #endif

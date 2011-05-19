@@ -27,7 +27,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
-
 #include <paludis/spec_tree.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
@@ -37,10 +36,8 @@
 #include <paludis/filter.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/elike_blocker.hh>
-#include <paludis/package_dep_spec_requirement.hh>
-#include <paludis/dep_spec_data.hh>
-
 #include <map>
 #include <set>
 
@@ -95,13 +92,13 @@ SpecRewriter::~SpecRewriter() = default;
 const std::shared_ptr<const RewrittenSpec>
 SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::shared_ptr<const Resolvent> & maybe_our_resolvent) const
 {
-    if (s.if_package() && s.if_package()->package_name_requirement())
+    if (s.if_package() && s.if_package()->package_ptr())
     {
-        if (s.if_package()->package_name_requirement()->name().category() != CategoryNamePart("virtual"))
+        if (s.if_package()->package_ptr()->category() != CategoryNamePart("virtual"))
             return make_null_shared_ptr();
         _need_rewrites();
 
-        Rewrites::const_iterator r(_imp->rewrites.find(s.if_package()->package_name_requirement()->name()));
+        Rewrites::const_iterator r(_imp->rewrites.find(*s.if_package()->package_ptr()));
         if (r == _imp->rewrites.end())
             return make_null_shared_ptr();
 
@@ -111,19 +108,17 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::sha
 
         for (std::set<QualifiedPackageName>::const_iterator n(r->second.begin()), n_end(r->second.end()) ;
                 n != n_end ; ++n)
-            result->specs()->push_back(PackageOrBlockDepSpec(MutablePackageDepSpecData(*s.if_package()->data())
-                        .unrequire_package()
-                        .require_package(*n)));
+            result->specs()->push_back(PackageOrBlockDepSpec(PartiallyMadePackageDepSpec(*s.if_package()).package(*n)));
 
         return result;
     }
-    else if (s.if_block() && s.if_block()->blocking().package_name_requirement())
+    else if (s.if_block() && s.if_block()->blocking().package_ptr())
     {
-        if (s.if_block()->blocking().package_name_requirement()->name().category() != CategoryNamePart("virtual"))
+        if (s.if_block()->blocking().package_ptr()->category() != CategoryNamePart("virtual"))
             return make_null_shared_ptr();
         _need_rewrites();
 
-        Rewrites::const_iterator r(_imp->rewrites.find(s.if_block()->blocking().package_name_requirement()->name()));
+        Rewrites::const_iterator r(_imp->rewrites.find(*s.if_block()->blocking().package_ptr()));
         if (r == _imp->rewrites.end())
             return make_null_shared_ptr();
 
@@ -137,9 +132,7 @@ SpecRewriter::rewrite_if_special(const PackageOrBlockDepSpec & s, const std::sha
             if (maybe_our_resolvent && (*n == maybe_our_resolvent->package()))
                 continue;
 
-            PackageDepSpec spec(MutablePackageDepSpecData(*s.if_block()->blocking().data())
-                    .unrequire_package()
-                    .require_package(*n));
+            PackageDepSpec spec(PartiallyMadePackageDepSpec(s.if_block()->blocking()).package(*n));
             auto p(split_elike_blocker(s.if_block()->text()));
             BlockDepSpec b(std::get<1>(p) + stringify(spec), spec);
             b.set_annotations(s.if_block()->maybe_annotations());

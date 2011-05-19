@@ -2,7 +2,7 @@
 # vim: set fileencoding=utf-8 sw=4 sts=4 et :
 
 #
-# Copyright (c) 2008, 2011 Ciaran McCreesh
+# Copyright (c) 2008 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,8 +35,8 @@ class TestCase_01_Generator(unittest.TestCase):
         self.assertEquals(str(Generator.Matches(parse_user_package_dep_spec("foo/bar",
             env, []), MatchPackageOptions())), "packages matching foo/bar")
         self.assertEquals(str(Generator.Matches(parse_user_package_dep_spec("foo/bar",
-            env, []), [MatchPackageOption.IGNORE_CHOICE_REQUIREMENTS])),
-            "packages matching foo/bar (ignoring choice requirements)")
+            env, []), [MatchPackageOption.IGNORE_ADDITIONAL_REQUIREMENTS])),
+            "packages matching foo/bar (ignoring additional requirements)")
 
 
 if __name__ == "__main__":

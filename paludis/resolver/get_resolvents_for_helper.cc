@@ -283,18 +283,16 @@ namespace
     bool can_use_cache(const PackageDepSpec & spec)
     {
         return package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                    n::has_any_slot_requirement() = indeterminate,
+                    n::has_additional_requirements() = false,
                     n::has_category_name_part() = indeterminate,
-                    n::has_choice_requirements() = false,
-                    n::has_exact_slot_requirement() = indeterminate,
                     n::has_from_repository() = indeterminate,
                     n::has_in_repository() = indeterminate,
                     n::has_installable_to_path() = indeterminate,
                     n::has_installable_to_repository() = indeterminate,
                     n::has_installed_at_path() = indeterminate,
-                    n::has_key_requirements() = indeterminate,
                     n::has_package() = indeterminate,
                     n::has_package_name_part() = indeterminate,
+                    n::has_slot_requirement() = indeterminate,
                     n::has_tag() = indeterminate,
                     n::has_version_requirements() = indeterminate
                     ));
@@ -330,7 +328,7 @@ GetResolventsForHelper::operator() (
     std::shared_ptr<const PackageID> best;
 
     auto ids((*_imp->env)[selection::BestVersionOnly(
-                generator::Matches(spec, from_id, { mpo_ignore_choice_requirements }) |
+                generator::Matches(spec, from_id, { mpo_ignore_additional_requirements }) |
                 filter::SupportsAction<InstallAction>() |
                 filter::NotMasked() |
                 (maybe_slot ? Filter(filter::Slot(*maybe_slot)) : Filter(filter::All())))]);

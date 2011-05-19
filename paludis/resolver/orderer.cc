@@ -35,7 +35,6 @@
 #include <paludis/resolver/orderer_notes.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/resolver/labels_classifier.hh>
-
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
@@ -46,12 +45,10 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/enum_iterator.hh>
-
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/package_id.hh>
-#include <paludis/dep_spec_data.hh>
-
 #include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
@@ -819,12 +816,10 @@ namespace
 {
     PackageDepSpec make_origin_spec(const ChangesToMakeDecision & changes_to_make_decision)
     {
-        MutablePackageDepSpecData result(*changes_to_make_decision.origin_id()->uniquely_identifying_spec().data());
+        PartiallyMadePackageDepSpec result(changes_to_make_decision.origin_id()->uniquely_identifying_spec());
 
         if (changes_to_make_decision.if_via_new_binary_in())
-            result
-                .unrequire_in_repository()
-                .require_in_repository(*changes_to_make_decision.if_via_new_binary_in());
+            result.in_repository(*changes_to_make_decision.if_via_new_binary_in());
 
         return result;
     }

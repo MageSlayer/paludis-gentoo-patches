@@ -25,10 +25,8 @@
 #include "colours.hh"
 #include "resume_data.hh"
 #include "format_user_config.hh"
-
 #include <paludis/args/do_help.hh>
 #include <paludis/args/escape.hh>
-
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/system.hh>
@@ -50,7 +48,6 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/process.hh>
-
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
@@ -65,7 +62,6 @@
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/job_state.hh>
 #include <paludis/resolver/job_requirements.hh>
-
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -84,7 +80,6 @@
 #include <paludis/filter.hh>
 #include <paludis/elike_blocker.hh>
 #include <paludis/repository.hh>
-#include <paludis/package_dep_spec_requirement.hh>
 
 #include <set>
 #include <iterator>
@@ -328,7 +323,7 @@ namespace
                 const auto replacing_ids((*env)[selection::BestVersionOnly(generator::Matches(*i, make_null_shared_ptr(), { }))]);
                 if (replacing_ids->empty())
                     r.append(stringify(*i));
-                else if (id_specs->empty() || id_specs->begin()->package_name_requirement()->name() != (*replacing_ids->begin())->name())
+                else if (id_specs->empty() || *id_specs->begin()->package_ptr() != (*replacing_ids->begin())->name())
                     r.append(stringify(**replacing_ids->begin()));
                 else
                     r.append((*replacing_ids->begin())->canonical_form(idcf_no_name));
@@ -685,18 +680,16 @@ namespace
 
                 PackageDepSpec spec(parse_user_package_dep_spec(std::get<2>(p), env.get(), { updso_no_disambiguation }));
                 if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                                n::has_any_slot_requirement() = false,
+                                n::has_additional_requirements() = false,
                                 n::has_category_name_part() = false,
-                                n::has_choice_requirements() = false,
-                                n::has_exact_slot_requirement() = false,
                                 n::has_from_repository() = false,
                                 n::has_in_repository() = false,
                                 n::has_installable_to_path() = false,
                                 n::has_installable_to_repository() = false,
                                 n::has_installed_at_path() = false,
-                                n::has_key_requirements() = false,
                                 n::has_package() = true,
                                 n::has_package_name_part() = false,
+                                n::has_slot_requirement() = false,
                                 n::has_tag() = indeterminate,
                                 n::has_version_requirements() = false
                                 )))

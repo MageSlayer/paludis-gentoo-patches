@@ -20,7 +20,6 @@
 #include <paludis/repositories/virtuals/package_id.hh>
 #include <paludis/repositories/virtuals/installed_virtuals_repository.hh>
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
-
 #include <paludis/util/stringify.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
@@ -29,12 +28,11 @@
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/singleton-impl.hh>
-
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/version_operator.hh>
 #include <paludis/environment.hh>
+#include <paludis/version_requirements.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/mask.hh>
@@ -44,9 +42,9 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/always_enabled_dependency_label.hh>
 #include <paludis/pretty_printer.hh>
-#include <paludis/dep_spec_data.hh>
 
 using namespace paludis;
 using namespace paludis::virtuals;
@@ -72,15 +70,18 @@ namespace paludis
             labels(l),
             spec(exact ?
                     std::make_shared<PackageDepSpec>(
-                            MutablePackageDepSpecData({ })
-                            .require_package(v->name())
-                            .require_version(vrc_and, vo_equal, v->version())
-                            .require_exact_slot(v->slot_key() ? v->slot_key()->parse_value() : SlotName("UNKNOWN"), false)
-                            .require_in_repository(v->repository_name()))
+                            make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                            .package(v->name())
+                            .version_requirement(make_named_values<VersionRequirement>(
+                                    n::version_operator() = vo_equal,
+                                    n::version_spec() = v->version()))
+                            .slot_requirement(std::make_shared<UserSlotExactRequirement>(
+                                        v->slot_key() ? v->slot_key()->parse_value() : SlotName("UNKNOWN")))
+                            .in_repository(v->repository_name()))
                     :
                     std::make_shared<PackageDepSpec>(
-                            MutablePackageDepSpecData({ })
-                            .require_package(v->name())
+                            make_package_dep_spec(PartiallyMadePackageDepSpecOptions())
+                            .package(v->name())
                             )
                 ),
             raw_name(r),

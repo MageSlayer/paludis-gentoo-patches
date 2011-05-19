@@ -21,10 +21,7 @@
 #include <paludis/environment.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/dep_spec_data.hh>
-#include <paludis/package_dep_spec_requirement.hh>
-#include <paludis/package_dep_spec_properties.hh>
-
+#include <paludis/version_requirements.hh>
 #include <paludis/util/clone-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
@@ -37,8 +34,8 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/accept_visitor.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/additional_package_dep_spec_requirement.hh>
+#include <paludis/dep_spec_data.hh>
 
 #include <functional>
 #include <algorithm>
@@ -188,7 +185,14 @@ ConditionalDepSpec::_as_string() const
     return _imp->data->as_string();
 }
 
+std::string
+StringDepSpec::text() const
+{
+    return _str;
+}
+
 NamedSetDepSpec::NamedSetDepSpec(const SetName & n) :
+    StringDepSpec(stringify(n)),
     _name(n)
 {
 }
@@ -197,12 +201,6 @@ const SetName
 NamedSetDepSpec::name() const
 {
     return _name;
-}
-
-const std::string
-NamedSetDepSpec::text() const
-{
-    return stringify(_name);
 }
 
 std::shared_ptr<DepSpec>
@@ -214,22 +212,16 @@ NamedSetDepSpec::clone() const
 }
 
 BlockDepSpec::BlockDepSpec(const std::string & s, const PackageDepSpec & p) :
-    _text(s),
+    StringDepSpec(s),
     _spec(p)
 {
 }
 
 BlockDepSpec::BlockDepSpec(const BlockDepSpec & other) :
-    _text(other._text),
+    StringDepSpec(other.text()),
     _spec(other._spec)
 {
     set_annotations(other.maybe_annotations());
-}
-
-const std::string
-BlockDepSpec::text() const
-{
-    return _text;
 }
 
 std::ostream &
@@ -281,7 +273,7 @@ paludis::operator<< (std::ostream & s, const SimpleURIDepSpec & p)
 std::ostream &
 paludis::operator<< (std::ostream & s, const PackageDepSpec & a)
 {
-    s << a.text();
+    s << a._as_string();
     return s;
 }
 
@@ -318,8 +310,18 @@ PackageDepSpecError::PackageDepSpecError(const std::string & msg) throw () :
 {
 }
 
+StringDepSpec::StringDepSpec(const std::string & s) :
+    _str(s)
+{
+}
+
+StringDepSpec::~StringDepSpec()
+{
+}
+
+
 PlainTextDepSpec::PlainTextDepSpec(const std::string & s) :
-    _text(s)
+    StringDepSpec(s)
 {
 }
 
@@ -331,14 +333,8 @@ PlainTextDepSpec::clone() const
     return result;
 }
 
-const std::string
-PlainTextDepSpec::text() const
-{
-    return _text;
-}
-
 PlainTextLabelDepSpec::PlainTextLabelDepSpec(const std::string & s) :
-    _text(s)
+    StringDepSpec(s)
 {
 }
 
@@ -355,19 +351,13 @@ PlainTextLabelDepSpec::clone() const
 }
 
 const std::string
-PlainTextLabelDepSpec::text() const
-{
-    return _text;
-}
-
-const std::string
 PlainTextLabelDepSpec::label() const
 {
     return text().substr(0, text().length() - 1);
 }
 
 LicenseDepSpec::LicenseDepSpec(const std::string & s) :
-    _text(s)
+    StringDepSpec(s)
 {
 }
 
@@ -379,14 +369,8 @@ LicenseDepSpec::clone() const
     return result;
 }
 
-const std::string
-LicenseDepSpec::text() const
-{
-    return _text;
-}
-
 SimpleURIDepSpec::SimpleURIDepSpec(const std::string & s) :
-    _text(s)
+    StringDepSpec(s)
 {
 }
 
@@ -396,12 +380,6 @@ SimpleURIDepSpec::clone() const
     std::shared_ptr<SimpleURIDepSpec> result(std::make_shared<SimpleURIDepSpec>(text()));
     result->set_annotations(maybe_annotations());
     return result;
-}
-
-const std::string
-SimpleURIDepSpec::text() const
-{
-    return _text;
 }
 
 const PackageDepSpec
@@ -419,7 +397,7 @@ BlockDepSpec::clone() const
 }
 
 FetchableURIDepSpec::FetchableURIDepSpec(const std::string & s) :
-    _text(s)
+    StringDepSpec(s)
 {
 }
 
@@ -464,12 +442,6 @@ FetchableURIDepSpec::clone() const
     std::shared_ptr<FetchableURIDepSpec> result(std::make_shared<FetchableURIDepSpec>(text()));
     result->set_annotations(maybe_annotations());
     return result;
-}
-
-const std::string
-FetchableURIDepSpec::text() const
-{
-    return _text;
 }
 
 namespace paludis
@@ -536,32 +508,12 @@ LabelsDepSpec<T_>::add_label(const std::shared_ptr<const T_> & item)
     _imp->items.push_back(item);
 }
 
-namespace
-{
-    template <typename I_, typename P_>
-    I_ find_unique_if(I_ cur, I_ end, P_ pred)
-    {
-        I_ result(end);
-        for ( ; cur != end ; ++cur)
-            if (pred(*cur))
-            {
-                if (result != end)
-                    return end;
-                else
-                    result = cur;
-            }
-
-        return result;
-    }
-}
-
 namespace paludis
 {
     template <>
     struct Imp<PackageDepSpec>
     {
         const std::shared_ptr<const PackageDepSpecData> data;
-        std::string text;
 
         Imp(const std::shared_ptr<const PackageDepSpecData> & d) :
             data(d)
@@ -572,216 +524,9 @@ namespace paludis
 
 PackageDepSpec::PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> & d) :
     Cloneable<DepSpec>(),
+    StringDepSpec(d->as_string()),
     _imp(d)
 {
-    std::ostringstream s;
-
-    std::shared_ptr<VersionRequirementSequence> all_versions;
-    std::shared_ptr<KeyRequirementSequence> all_keys;
-    std::shared_ptr<ChoiceRequirementSequence> all_choices;
-
-    for (auto u(_imp->data->requirements()->begin()), u_end(_imp->data->requirements()->end()) ;
-            u != u_end ; ++u)
-    {
-        if ((*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<VersionRequirement>()))
-        {
-            if (! all_versions)
-                all_versions = std::make_shared<VersionRequirementSequence>();
-            all_versions->push_back(std::static_pointer_cast<const VersionRequirement>(*u));
-        }
-        else if ((*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<KeyRequirement>()))
-        {
-            if (! all_keys)
-                all_keys = std::make_shared<KeyRequirementSequence>();
-            all_keys->push_back(std::static_pointer_cast<const KeyRequirement>(*u));
-        }
-        else if ((*u)->accept_returning<bool>(DetectPackageDepSpecRequirement<ChoiceRequirement>()))
-        {
-            if (! all_choices)
-                all_choices = std::make_shared<ChoiceRequirementSequence>();
-            all_choices->push_back(std::static_pointer_cast<const ChoiceRequirement>(*u));
-        }
-    }
-
-    if (all_versions)
-    {
-        if (all_versions->begin() == all_versions->end())
-        {
-        }
-        else if (next(all_versions->begin()) == all_versions->end() &&
-                ! _imp->data->options()[pdsdo_always_use_ranged_deps])
-        {
-            if ((*all_versions->begin())->version_operator() == vo_stupid_equal_star ||
-                    (*all_versions->begin())->version_operator() == vo_nice_equal_star)
-                s << "=";
-            else
-                s << (*all_versions->begin())->version_operator();
-        }
-    }
-
-    if (package_name_requirement())
-        s << package_name_requirement()->name();
-    else
-    {
-        if (category_name_part_requirement())
-            s << category_name_part_requirement()->name_part();
-        else
-            s << "*";
-
-        s << "/";
-
-        if (package_name_part_requirement())
-            s << package_name_part_requirement()->name_part();
-        else
-            s << "*";
-    }
-
-    if (all_versions)
-    {
-        if (all_versions->begin() == all_versions->end())
-        {
-        }
-        else if (next(all_versions->begin()) == all_versions->end() &&
-                ! _imp->data->options()[pdsdo_always_use_ranged_deps])
-        {
-            s << "-" << (*all_versions->begin())->version_spec();
-            if ((*all_versions->begin())->version_operator() == vo_stupid_equal_star ||
-                    (*all_versions->begin())->version_operator() == vo_nice_equal_star)
-                s << "*";
-        }
-    }
-
-    if (exact_slot_requirement())
-    {
-        if (exact_slot_requirement()->locked())
-            s << ":=";
-        else
-            s << ":";
-
-        s << stringify(exact_slot_requirement()->name());
-    }
-
-    if (any_slot_requirement())
-    {
-        if (any_slot_requirement()->locking())
-            s << ":=";
-        else
-            s << ":*";
-    }
-
-    std::string left, right;
-    bool need_arrow(false);
-
-    if (from_repository_requirement())
-        left = stringify(from_repository_requirement()->name());
-
-    if (in_repository_requirement())
-        right = stringify(in_repository_requirement()->name());
-
-    if (installed_at_path_requirement())
-    {
-        if (! right.empty())
-        {
-            need_arrow = true;
-            right.append("->");
-        }
-        right.append(stringify(installed_at_path_requirement()->path()));
-    }
-
-    if (installable_to_repository_requirement())
-    {
-        if (! right.empty())
-        {
-            need_arrow = true;
-            right.append("->");
-        }
-        if (installable_to_repository_requirement()->include_masked())
-            right.append(stringify(installable_to_repository_requirement()->name()) + "??");
-        else
-            right.append(stringify(installable_to_repository_requirement()->name()) + "?");
-    }
-
-    if (installable_to_path_requirement())
-    {
-        if (! right.empty())
-        {
-            need_arrow = true;
-            right.append("->");
-        }
-        if (installable_to_path_requirement()->include_masked())
-            right.append(stringify(installable_to_path_requirement()->path()) + "??");
-        else
-            right.append(stringify(installable_to_path_requirement()->path()) + "?");
-    }
-
-    if (need_arrow || ((! left.empty()) && (! right.empty())))
-        s << "::" << left << "->" << right;
-    else if (! right.empty())
-        s << "::" << right;
-    else if (! left.empty())
-        s << "::" << left << "->";
-
-    if (all_versions)
-    {
-        if (all_versions->begin() == all_versions->end())
-        {
-        }
-        else if (next(all_versions->begin()) == all_versions->end() &&
-                ! _imp->data->options()[pdsdo_always_use_ranged_deps])
-        {
-        }
-        else
-        {
-            bool need_op(false);
-            s << "[";
-            for (auto r(all_versions->begin()), r_end(all_versions->end()) ; r != r_end ; ++r)
-            {
-                if (need_op)
-                {
-                    do
-                    {
-                        switch ((*r)->combiner())
-                        {
-                            case vrc_and:
-                                s << "&";
-                                continue;
-
-                            case vrc_or:
-                                s << "|";
-                                continue;
-
-                            case last_vrc:
-                                ;
-                        }
-                        throw InternalError(PALUDIS_HERE, "Bad version_requirements_mode");
-                    } while (false);
-                }
-
-                if ((*r)->version_operator() == vo_stupid_equal_star || (*r)->version_operator() == vo_nice_equal_star)
-                    s << "=";
-                else
-                    s << (*r)->version_operator();
-
-                s << (*r)->version_spec();
-
-                if ((*r)->version_operator() == vo_stupid_equal_star || (*r)->version_operator() == vo_nice_equal_star)
-                    s << "*";
-
-                need_op = true;
-            }
-            s << "]";
-        }
-    }
-
-    if (all_choices)
-        for (auto u(all_choices->begin()), u_end(all_choices->end()) ; u != u_end ; ++u)
-            s << (*u)->as_raw_string();
-
-    if (all_keys)
-        for (auto u(all_keys->begin()), u_end(all_keys->end()) ; u != u_end ; ++u)
-            s << (*u)->as_raw_string();
-
-    _imp->text = s.str();
 }
 
 PackageDepSpec::~PackageDepSpec()
@@ -790,142 +535,92 @@ PackageDepSpec::~PackageDepSpec()
 
 PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
     Cloneable<DepSpec>(d),
+    StringDepSpec(d._imp->data->as_string()),
     CloneUsingThis<DepSpec, PackageDepSpec>(d),
     _imp(d._imp->data)
 {
     set_annotations(d.maybe_annotations());
-    _imp->text = d._imp->text;
 }
 
-const std::string
-PackageDepSpec::text() const
+std::shared_ptr<const QualifiedPackageName>
+PackageDepSpec::package_ptr() const
 {
-    return _imp->text;
+    return _imp->data->package_ptr();
 }
 
-const std::shared_ptr<const NameRequirement>
-PackageDepSpec::package_name_requirement() const
+std::shared_ptr<const PackageNamePart>
+PackageDepSpec::package_name_part_ptr() const
 {
-    return _imp->data->package_name_requirement();
+    return _imp->data->package_name_part_ptr();
 }
 
-const std::shared_ptr<const PackageNamePartRequirement>
-PackageDepSpec::package_name_part_requirement() const
+std::shared_ptr<const CategoryNamePart>
+PackageDepSpec::category_name_part_ptr() const
 {
-    DetectPackageDepSpecRequirement<PackageNamePartRequirement> v;
-    auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
-                indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
-
-    if (r != indirect_iterator(_imp->data->requirements()->end()))
-        return std::static_pointer_cast<const PackageNamePartRequirement>(*r.underlying_iterator());
-    else
-        return make_null_shared_ptr();
+    return _imp->data->category_name_part_ptr();
 }
 
-const std::shared_ptr<const CategoryNamePartRequirement>
-PackageDepSpec::category_name_part_requirement() const
+std::shared_ptr<const VersionRequirements>
+PackageDepSpec::version_requirements_ptr() const
 {
-    DetectPackageDepSpecRequirement<CategoryNamePartRequirement> v;
-    auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
-                indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
-
-    if (r != indirect_iterator(_imp->data->requirements()->end()))
-        return std::static_pointer_cast<const CategoryNamePartRequirement>(*r.underlying_iterator());
-    else
-        return make_null_shared_ptr();
+    return _imp->data->version_requirements_ptr();
 }
 
-const std::shared_ptr<const ExactSlotRequirement>
-PackageDepSpec::exact_slot_requirement() const
+VersionRequirementsMode
+PackageDepSpec::version_requirements_mode() const
 {
-    return _imp->data->exact_slot_requirement();
+    return _imp->data->version_requirements_mode();
 }
 
-const std::shared_ptr<const AnySlotRequirement>
-PackageDepSpec::any_slot_requirement() const
+std::shared_ptr<const SlotRequirement>
+PackageDepSpec::slot_requirement_ptr() const
 {
-    DetectPackageDepSpecRequirement<AnySlotRequirement> v;
-    auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
-                indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
-
-    if (r != indirect_iterator(_imp->data->requirements()->end()))
-        return std::static_pointer_cast<const AnySlotRequirement>(*r.underlying_iterator());
-    else
-        return make_null_shared_ptr();
+    return _imp->data->slot_requirement_ptr();
 }
 
-const std::shared_ptr<const InRepositoryRequirement>
-PackageDepSpec::in_repository_requirement() const
+std::shared_ptr<const RepositoryName>
+PackageDepSpec::in_repository_ptr() const
 {
-    DetectPackageDepSpecRequirement<InRepositoryRequirement> v;
-    auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
-                indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
-
-    if (r != indirect_iterator(_imp->data->requirements()->end()))
-        return std::static_pointer_cast<const InRepositoryRequirement>(*r.underlying_iterator());
-    else
-        return make_null_shared_ptr();
+    return _imp->data->in_repository_ptr();
 }
 
-const std::shared_ptr<const InstallableToRepositoryRequirement>
-PackageDepSpec::installable_to_repository_requirement() const
+std::shared_ptr<const InstallableToRepository>
+PackageDepSpec::installable_to_repository_ptr() const
 {
-    DetectPackageDepSpecRequirement<InstallableToRepositoryRequirement> v;
-    auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
-                indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
-
-    if (r != indirect_iterator(_imp->data->requirements()->end()))
-        return std::static_pointer_cast<const InstallableToRepositoryRequirement>(*r.underlying_iterator());
-    else
-        return make_null_shared_ptr();
+    return _imp->data->installable_to_repository_ptr();
 }
 
-const std::shared_ptr<const FromRepositoryRequirement>
-PackageDepSpec::from_repository_requirement() const
+std::shared_ptr<const RepositoryName>
+PackageDepSpec::from_repository_ptr() const
 {
-    DetectPackageDepSpecRequirement<FromRepositoryRequirement> v;
-    auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
-                indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
-
-    if (r != indirect_iterator(_imp->data->requirements()->end()))
-        return std::static_pointer_cast<const FromRepositoryRequirement>(*r.underlying_iterator());
-    else
-        return make_null_shared_ptr();
+    return _imp->data->from_repository_ptr();
 }
 
-const std::shared_ptr<const InstalledAtPathRequirement>
-PackageDepSpec::installed_at_path_requirement() const
+std::shared_ptr<const FSPath>
+PackageDepSpec::installed_at_path_ptr() const
 {
-    DetectPackageDepSpecRequirement<InstalledAtPathRequirement> v;
-    auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
-                indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
-
-    if (r != indirect_iterator(_imp->data->requirements()->end()))
-        return std::static_pointer_cast<const InstalledAtPathRequirement>(*r.underlying_iterator());
-    else
-        return make_null_shared_ptr();
+    return _imp->data->installed_at_path_ptr();
 }
 
-const std::shared_ptr<const InstallableToPathRequirement>
-PackageDepSpec::installable_to_path_requirement() const
+std::shared_ptr<const InstallableToPath>
+PackageDepSpec::installable_to_path_ptr() const
 {
-    DetectPackageDepSpecRequirement<InstallableToPathRequirement> v;
-    auto r(find_unique_if(indirect_iterator(_imp->data->requirements()->begin()),
-                indirect_iterator(_imp->data->requirements()->end()), accept_visitor_returning<bool>(v)));
-
-    if (r != indirect_iterator(_imp->data->requirements()->end()))
-        return std::static_pointer_cast<const InstallableToPathRequirement>(*r.underlying_iterator());
-    else
-        return make_null_shared_ptr();
+    return _imp->data->installable_to_path_ptr();
 }
 
-const std::shared_ptr<const PackageDepSpecRequirementSequence>
-PackageDepSpec::requirements() const
+std::shared_ptr<const AdditionalPackageDepSpecRequirements>
+PackageDepSpec::additional_requirements_ptr() const
 {
-    return _imp->data->requirements();
+    return _imp->data->additional_requirements_ptr();
 }
 
-const std::shared_ptr<const PackageDepSpecData>
+std::string
+PackageDepSpec::_as_string() const
+{
+    return _imp->data->as_string();
+}
+
+std::shared_ptr<const PackageDepSpecData>
 PackageDepSpec::data() const
 {
     return _imp->data;

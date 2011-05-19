@@ -19,25 +19,22 @@
 
 #include <paludis/repositories/e/fix_locked_dependencies.hh>
 #include <paludis/repositories/e/eapi.hh>
-
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
-
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
+#include <paludis/elike_slot_requirement.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/package_dep_spec_requirement.hh>
-#include <paludis/dep_spec_data.hh>
-
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <functional>
 #include <algorithm>
 #include <list>
@@ -102,7 +99,11 @@ namespace
 
             do
             {
-                if ((! node.spec()->any_slot_requirement()) || (! node.spec()->any_slot_requirement()->locking()))
+                if (! node.spec()->slot_requirement_ptr())
+                    break;
+
+                const SlotAnyLockedRequirement * const r(visitor_cast<const SlotAnyLockedRequirement>(*node.spec()->slot_requirement_ptr()));
+                if (! r)
                     break;
 
                 std::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
@@ -112,9 +113,8 @@ namespace
 
                 if ((*matches->last())->slot_key())
                 {
-                    PackageDepSpec new_s(MutablePackageDepSpecData(*node.spec()->data())
-                            .unrequire_any_slot()
-                            .require_exact_slot((*matches->last())->slot_key()->parse_value(), true));
+                    PackageDepSpec new_s(PartiallyMadePackageDepSpec(*node.spec()).slot_requirement(
+                                std::make_shared<ELikeSlotExactRequirement>((*matches->last())->slot_key()->parse_value(), true)));
                     c = std::make_shared<PackageDepSpec>(new_s);
                 }
             } while (false);

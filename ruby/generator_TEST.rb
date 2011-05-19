@@ -59,8 +59,8 @@ module Paludis
             assert_equal Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", env, []), nil, []).to_s,
                 "packages matching a/b"
             assert_equal Generator::Matches.new(Paludis::parse_user_package_dep_spec("a/b", env, []),
-                                               nil, [:ignore_choice_requirements]).to_s,
-                "packages matching a/b (ignoring choice requirements)"
+                                               nil, [:ignore_additional_requirements]).to_s,
+                "packages matching a/b (ignoring additional requirements)"
         end
     end
 

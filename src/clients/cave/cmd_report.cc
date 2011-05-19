@@ -37,9 +37,9 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
 #include <paludis/match_package.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/version_requirements.hh>
 #include <paludis/action.hh>
-#include <paludis/version_operator.hh>
-#include <paludis/dep_spec_data.hh>
 
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -107,9 +107,11 @@ namespace
             {
                 auto ids((*env)[selection::BestVersionOnly((
                                 generator::InRepository(RepositoryName(*r)) &
-                                generator::Matches(MutablePackageDepSpecData({ })
-                                    .require_package(id->name())
-                                    .require_version(vrc_and, vo_equal, id->version()),
+                                generator::Matches(make_package_dep_spec({ })
+                                    .package(id->name())
+                                    .version_requirement(make_named_values<VersionRequirement>(
+                                            n::version_operator() = vo_equal,
+                                            n::version_spec() = id->version())),
                                     make_null_shared_ptr(), { })) |
                             filter::SupportsAction<InstallAction>())]);
 

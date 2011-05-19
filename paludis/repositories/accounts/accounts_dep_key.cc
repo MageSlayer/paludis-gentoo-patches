@@ -18,23 +18,20 @@
  */
 
 #include <paludis/repositories/accounts/accounts_dep_key.hh>
-
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/singleton-impl.hh>
-#include <paludis/util/pimp-impl.hh>
-
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
+#include <paludis/util/pimp-impl.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/always_enabled_dependency_label.hh>
 #include <paludis/pretty_printer.hh>
-#include <paludis/dep_spec_data.hh>
-
 #include <sstream>
 #include <list>
 
@@ -74,9 +71,8 @@ namespace paludis
             for (Set<std::string>::ConstIterator i(s->begin()), i_end(s->end()) ;
                     i != i_end ; ++i)
             {
-                std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
-                            MutablePackageDepSpecData({ })
-                            .require_package(CategoryNamePart("group") + PackageNamePart(*i))));
+                std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(make_package_dep_spec({ })
+                                .package(CategoryNamePart("group") + PackageNamePart(*i))));
                 specs->push_back(spec);
                 tree->top()->append(spec);
             }

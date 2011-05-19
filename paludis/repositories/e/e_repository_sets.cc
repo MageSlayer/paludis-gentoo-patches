@@ -26,17 +26,19 @@
 
 #include <paludis/action-fwd.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/elike_slot_requirement.hh>
 #include <paludis/environment.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/generator.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/selection.hh>
 #include <paludis/set_file.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/version_operator.hh>
-#include <paludis/dep_spec_data.hh>
+#include <paludis/version_requirements.hh>
 
 #include <paludis/util/config_file.hh>
 #include <paludis/util/is_file_with_extension.hh>
@@ -293,10 +295,12 @@ ERepositorySets::security_set(bool insecurity) const
                     if (insecurity)
                     {
                         std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
-                                    MutablePackageDepSpecData({ })
-                                    .require_package((*c)->name())
-                                    .require_version(vrc_and, vo_equal, (*c)->version())
-                                    .require_in_repository((*c)->repository_name())));
+                                    make_package_dep_spec({ })
+                                    .package((*c)->name())
+                                    .version_requirement(make_named_values<VersionRequirement>(
+                                            n::version_operator() = vo_equal,
+                                            n::version_spec() = (*c)->version()))
+                                    .in_repository((*c)->repository_name())));
                         security_packages->top()->append(spec);
                     }
                     else
@@ -323,10 +327,12 @@ ERepositorySets::security_set(bool insecurity) const
                                 continue;
                             }
 
-                            std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(MutablePackageDepSpecData({ })
-                                        .require_package((*r)->name())
-                                        .require_version(vrc_and, vo_equal, (*r)->version())
-                                        .require_in_repository((*r)->repository_name())));
+                            std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(make_package_dep_spec({ })
+                                        .package((*r)->name())
+                                        .version_requirement(make_named_values<VersionRequirement>(
+                                                n::version_operator() = vo_equal,
+                                                n::version_spec() = (*r)->version()))
+                                        .in_repository((*r)->repository_name())));
                             security_packages->top()->append(spec);
                             ok = true;
                             break;

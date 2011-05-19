@@ -20,10 +20,8 @@
 #include "cmd_print_spec.hh"
 #include "exceptions.hh"
 #include "format_string.hh"
-
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
-
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/iterator_funcs.hh>
@@ -34,16 +32,14 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
-
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/additional_package_dep_spec_requirement.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/version_operator.hh>
-#include <paludis/version_spec.hh>
-#include <paludis/elike_use_requirement.hh>
-#include <paludis/dep_spec_data.hh>
-
+#include <paludis/version_requirements.hh>
 #include <iostream>
 #include <algorithm>
 
@@ -122,43 +118,45 @@ namespace
             const PrintSpecCommandLine & cmdline
             )
     {
-        MutablePackageDepSpecData s(*spec.data());
+        PartiallyMadePackageDepSpec s(spec);
 
         if (cmdline.a_package.specified())
         {
-            s.unrequire_package();
-            s.unrequire_package_name_part();
-            s.unrequire_category_name_part();
-            if (! cmdline.a_package.argument().empty())
-                s.require_package(QualifiedPackageName(cmdline.a_package.argument()));
+            if (cmdline.a_package.argument().empty())
+                s.clear_package();
+            else
+                s.package(QualifiedPackageName(cmdline.a_package.argument()));
         }
 
         if (cmdline.a_slot_requirement.specified())
         {
-            s.unrequire_exact_slot();
-            s.unrequire_any_slot();
-            if (! cmdline.a_slot_requirement.argument().empty())
-                s.require_exact_slot(SlotName(cmdline.a_slot_requirement.argument()), false);
+            if (cmdline.a_slot_requirement.argument().empty())
+                s.clear_slot_requirement();
+            else
+                s.slot_requirement(std::make_shared<UserSlotExactRequirement>(SlotName(cmdline.a_slot_requirement.argument())));
         }
 
         if (cmdline.a_in_repository.specified())
         {
-            s.unrequire_in_repository();
-            if (! cmdline.a_in_repository.argument().empty())
-                s.require_in_repository(RepositoryName(cmdline.a_in_repository.argument()));
+            if (cmdline.a_in_repository.argument().empty())
+                s.clear_in_repository();
+            else
+                s.in_repository(RepositoryName(cmdline.a_in_repository.argument()));
         }
 
         if (cmdline.a_from_repository.specified())
         {
-            s.unrequire_from_repository();
-            if (! cmdline.a_from_repository.argument().empty())
-                s.require_from_repository(RepositoryName(cmdline.a_from_repository.argument()));
+            if (cmdline.a_from_repository.argument().empty())
+                s.clear_from_repository();
+            else
+                s.from_repository(RepositoryName(cmdline.a_from_repository.argument()));
         }
 
         if (cmdline.a_installable_to_repository.specified())
         {
-            s.unrequire_installable_to_repository();
-            if (! cmdline.a_installable_to_repository.argument().empty())
+            if (cmdline.a_installable_to_repository.argument().empty())
+                s.clear_installable_to_repository();
+            else
             {
                 std::string repo(cmdline.a_installable_to_repository.argument());
                 bool include_masked(false);
@@ -168,21 +166,26 @@ namespace
                     include_masked = true;
                 }
 
-                s.require_installable_to_repository(RepositoryName(repo), include_masked);
+                s.installable_to_repository(make_named_values<InstallableToRepository>(
+                            n::include_masked() = include_masked,
+                            n::repository() = RepositoryName(repo)
+                            ));
             }
         }
 
         if (cmdline.a_installed_at_path.specified())
         {
-            s.unrequire_installed_at_path();
-            if (! cmdline.a_installed_at_path.argument().empty())
-                s.require_installed_at_path(FSPath(cmdline.a_installed_at_path.argument()));
+            if (cmdline.a_installed_at_path.argument().empty())
+                s.clear_installed_at_path();
+            else
+                s.installed_at_path(FSPath(cmdline.a_installed_at_path.argument()));
         }
 
         if (cmdline.a_installable_to_path.specified())
         {
-            s.unrequire_installable_to_path();
-            if (! cmdline.a_installable_to_path.argument().empty())
+            if (cmdline.a_installable_to_path.argument().empty())
+                s.clear_installable_to_path();
+            else
             {
                 std::string path(cmdline.a_installable_to_path.argument());
                 bool include_masked(false);
@@ -192,43 +195,32 @@ namespace
                     include_masked = true;
                 }
 
-                s.require_installable_to_path(FSPath(path), include_masked);
+                s.installable_to_path(make_named_values<InstallableToPath>(
+                            n::include_masked() = include_masked,
+                            n::path() = FSPath(path)
+                            ));
             }
-        }
-
-        if (cmdline.a_package_part.specified() || cmdline.a_category_part.specified())
-        {
-            s.unrequire_package();
-            s.unrequire_package_name_part();
-            s.unrequire_category_name_part();
         }
 
         if (cmdline.a_package_part.specified())
         {
-            if (! cmdline.a_package_part.argument().empty())
-                s.require_package_name_part(PackageNamePart(cmdline.a_package_part.argument()));
+            if (cmdline.a_package_part.argument().empty())
+                s.clear_package_name_part();
+            else
+                s.package_name_part(PackageNamePart(cmdline.a_package_part.argument()));
         }
 
         if (cmdline.a_category_part.specified())
         {
-            if (! cmdline.a_category_part.argument().empty())
-                s.require_category_name_part(CategoryNamePart(cmdline.a_category_part.argument()));
-        }
-
-        VersionRequirementCombiner vrc(vrc_and);
-        if (cmdline.a_version_requirements_mode.specified())
-        {
-            if (cmdline.a_version_requirements_mode.argument() == "and")
-                vrc = vrc_and;
-            else if (cmdline.a_version_requirements_mode.argument() == "or")
-                vrc = vrc_or;
+            if (cmdline.a_category_part.argument().empty())
+                s.clear_category_name_part();
             else
-                throw args::DoHelp("Argument for --" + cmdline.a_version_requirements_mode.long_name() + " unrecognised");
+                s.category_name_part(CategoryNamePart(cmdline.a_category_part.argument()));
         }
 
         if (cmdline.a_version_requirement.specified())
         {
-            s.unrequire_versions();
+            s.clear_version_requirements();
 
             for (args::StringSetArg::ConstIterator a(cmdline.a_version_requirement.begin_args()),
                     a_end(cmdline.a_version_requirement.end_args()) ;
@@ -240,22 +232,33 @@ namespace
                         throw args::DoHelp("--" + cmdline.a_version_requirement.long_name() + " arguments should be in the form =1.23");
 
                     std::string op(a->substr(0, p)), ver(a->substr(p));
-                    s.require_version(vrc, VersionOperator(op), VersionSpec(ver, {}));
+
+                    s.version_requirement(make_named_values<VersionRequirement>(
+                                n::version_operator() = VersionOperator(op),
+                                n::version_spec() = VersionSpec(ver, {})
+                                ));
                 }
+        }
+
+        if (cmdline.a_version_requirements_mode.specified())
+        {
+            if (cmdline.a_version_requirements_mode.argument() == "and")
+                s.version_requirements_mode(vr_and);
+            else if (cmdline.a_version_requirements_mode.argument() == "or")
+                s.version_requirements_mode(vr_or);
+            else
+                throw args::DoHelp("Argument for --" + cmdline.a_version_requirements_mode.long_name() + " unrecognised");
         }
 
         if (cmdline.a_additional_requirement.specified())
         {
-            s.unrequire_choices();
+            s.clear_additional_requirements();
 
             for (args::StringSetArg::ConstIterator a(cmdline.a_additional_requirement.begin_args()),
                     a_end(cmdline.a_additional_requirement.end_args()) ;
                     a != a_end ; ++a)
                 if (! a->empty())
-                {
-                    auto k(parse_elike_use_requirement(*a, { }));
-                    s.require_choice(k);
-                }
+                    s.additional_requirement(std::make_shared<UserKeyRequirement>(*a));
         }
 
         cout << PackageDepSpec(s) << endl;

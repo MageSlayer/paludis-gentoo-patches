@@ -37,9 +37,8 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/package_dep_spec_requirement.hh>
-#include <paludis/dep_spec_data.hh>
 
 #include <list>
 #include <vector>
@@ -169,18 +168,6 @@ namespace
         }
     };
 
-    PackageDepSpec name_and_slot(const PackageDepSpec & spec)
-    {
-        if (spec.exact_slot_requirement())
-            return MutablePackageDepSpecData({ })
-                .require_package(spec.package_name_requirement()->name())
-                .require_exact_slot(spec.exact_slot_requirement()->name(), spec.exact_slot_requirement()->locked())
-                ;
-        else
-            return MutablePackageDepSpecData({ })
-                .require_package(spec.package_name_requirement()->name());
-    }
-
     void
     do_one_conf_line(const std::string & line, std::shared_ptr<SetSpecTree> result,
             const SetFileParams & params)
@@ -251,13 +238,13 @@ namespace
                 }
 
                 std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(params.parser()(tokens.at(1))));
-                if (spec->package_name_requirement())
+                if (spec->package_ptr())
                 {
                     if (! params.environment())
                         Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
                             << "Line '" << line << "' uses ? operator but no environment is available";
                     else if (! (*params.environment())[selection::SomeArbitraryVersion(
-                                generator::Package(spec->package_name_requirement()->name()) |
+                                generator::Package(*spec->package_ptr()) |
                                 filter::InstalledAtRoot(params.environment()->preferred_root_key()->parse_value()))]->empty())
                         result->top()->append(spec);
                 }
@@ -275,13 +262,16 @@ namespace
                 }
 
                 std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(params.parser()(tokens.at(1))));
-                if (spec->package_name_requirement())
+                if (spec->package_ptr())
                 {
                     if (! params.environment())
                         Log::get_instance()->message("set_file.bad_operator", ll_warning, lc_context)
                             << "Line '" << line << "' uses ?: operator but no environment is available";
                     else if (! (*params.environment())[selection::SomeArbitraryVersion(generator::Matches(
-                                    name_and_slot(*spec), make_null_shared_ptr(), { }) |
+                                    make_package_dep_spec({ })
+                                    .package(*spec->package_ptr())
+                                    .slot_requirement(spec->slot_requirement_ptr()),
+                                    make_null_shared_ptr(), { }) |
                                 filter::InstalledAtRoot(params.environment()->preferred_root_key()->parse_value()))]->empty())
                         result->top()->append(spec);
                 }

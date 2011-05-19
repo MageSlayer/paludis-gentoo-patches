@@ -28,7 +28,6 @@
 #include <paludis/filter_handler.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
-#include <paludis/package_dep_spec_requirement.hh>
 
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -144,17 +143,17 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
     {
         PackageDepSpec pds(parse_user_package_dep_spec(name, &e, { }));
 
-        if (pds.package_name_requirement())
+        if (pds.package_ptr())
         {
-            g = g & generator::Category(pds.package_name_requirement()->name().category());
-            package = stringify(pds.package_name_requirement()->name().package());
+            g = g & generator::Category(pds.package_ptr()->category());
+            package = stringify(pds.package_ptr()->package());
         }
 
-        if (pds.in_repository_requirement())
-            g = g & generator::InRepository(pds.in_repository_requirement()->name());
+        if (pds.in_repository_ptr())
+            g = g & generator::InRepository(*pds.in_repository_ptr());
 
-        if (pds.from_repository_requirement())
-            g = g & generator::FromRepository(pds.from_repository_requirement()->name());
+        if (pds.from_repository_ptr())
+            g = g & generator::FromRepository(*pds.from_repository_ptr());
     }
 
     std::shared_ptr<const PackageIDSequence> ids(e[selection::BestVersionOnly(g | FuzzyPackageName(package) | filter)]);

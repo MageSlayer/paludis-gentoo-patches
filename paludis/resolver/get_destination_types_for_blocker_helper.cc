@@ -31,6 +31,8 @@
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_dep_spec_collection.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/elike_slot_requirement.hh>
 #include <paludis/metadata_key.hh>
 
 using namespace paludis;

@@ -36,7 +36,6 @@
 #include <paludis/match_package.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/dep_spec_annotations.hh>
-#include <paludis/package_dep_spec_requirement.hh>
 
 #include <algorithm>
 #include <unordered_map>
@@ -164,8 +163,8 @@ ExheresMaskStore::_populate()
             for (auto s(flat_specs.begin()), s_end(flat_specs.end()) ;
                     s != s_end ; ++s)
             {
-                if ((*s)->package_name_requirement())
-                    _imp->repo_mask[(*s)->package_name_requirement()->name()].push_back(std::make_pair(**s, make_mask_info(**s, *f)));
+                if ((*s)->package_ptr())
+                    _imp->repo_mask[*(*s)->package_ptr()].push_back(std::make_pair(**s, make_mask_info(**s, *f)));
                 else
                     Log::get_instance()->message("e.package_mask.bad_spec", ll_warning, lc_context)
                         << "Loading package mask spec '" << **s << "' failed because specification does not restrict to a "

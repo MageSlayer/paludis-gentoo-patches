@@ -27,7 +27,7 @@
 #include <paludis/generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
-#include <paludis/dep_spec_data.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>
@@ -499,7 +499,7 @@ EnvironmentImplementation::fetch_unique_qualified_package_name(const PackageName
     std::set<std::pair<CategoryNamePart, RepositoryName>, CategoryRepositoryNamePairComparator> checked;
 
     std::shared_ptr<const PackageIDSequence> pkgs((*this)[selection::AllVersionsUnsorted(
-                generator::Matches(MutablePackageDepSpecData({ }).require_package_name_part(p), make_null_shared_ptr(), { }) | f)]);
+                generator::Matches(make_package_dep_spec({ }).package_name_part(p), make_null_shared_ptr(), { }) | f)]);
 
     for (IndirectIterator<PackageIDSequence::ConstIterator> it(pkgs->begin()),
              it_end(pkgs->end()); it_end != it; ++it)

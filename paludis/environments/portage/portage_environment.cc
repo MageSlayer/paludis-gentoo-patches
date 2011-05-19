@@ -56,8 +56,7 @@
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
-#include <paludis/dep_spec_data.hh>
-#include <paludis/package_dep_spec_properties.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 
 #include <functional>
 #include <algorithm>
@@ -361,7 +360,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
 
 template<typename I_>
 void
-PortageEnvironment::_load_atom_file(const FSPath & f, I_ i, const std::string & def_value, const bool reject_choices)
+PortageEnvironment::_load_atom_file(const FSPath & f, I_ i, const std::string & def_value, const bool reject_additional)
 {
     using namespace std::placeholders;
 
@@ -373,7 +372,7 @@ PortageEnvironment::_load_atom_file(const FSPath & f, I_ i, const std::string & 
     if (f.stat().is_directory())
     {
         std::for_each(FSIterator(f, { }), FSIterator(), std::bind(
-                    &PortageEnvironment::_load_atom_file<I_>, this, _1, i, def_value, reject_choices));
+                    &PortageEnvironment::_load_atom_file<I_>, this, _1, i, def_value, reject_additional));
     }
     else
     {
@@ -389,22 +388,7 @@ PortageEnvironment::_load_atom_file(const FSPath & f, I_ i, const std::string & 
 
             std::shared_ptr<PackageDepSpec> p(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
                             tokens.at(0), this, UserPackageDepSpecOptions() + updso_no_disambiguation)));
-            if (reject_choices && package_dep_spec_has_properties(*p, make_named_values<PackageDepSpecProperties>(
-                            n::has_any_slot_requirement() = indeterminate,
-                            n::has_category_name_part() = indeterminate,
-                            n::has_choice_requirements() = true,
-                            n::has_exact_slot_requirement() = indeterminate,
-                            n::has_from_repository() = indeterminate,
-                            n::has_in_repository() = indeterminate,
-                            n::has_installable_to_path() = indeterminate,
-                            n::has_installable_to_repository() = indeterminate,
-                            n::has_installed_at_path() = indeterminate,
-                            n::has_key_requirements() = indeterminate,
-                            n::has_package() = indeterminate,
-                            n::has_package_name_part() = indeterminate,
-                            n::has_tag() = indeterminate,
-                            n::has_version_requirements() = indeterminate
-                            )))
+            if (reject_additional && p->additional_requirements_ptr())
             {
                 Log::get_instance()->message("portage_environment.bad_spec", ll_warning, lc_context)
                     << "Dependency specification '" << stringify(*p)
@@ -955,10 +939,7 @@ void
 PortageEnvironment::update_config_files_for_package_move(const PackageDepSpec & s, const QualifiedPackageName & n) const
 {
     if (_remove_string_from_world(stringify(s)))
-        _add_string_to_world(stringify(
-                    MutablePackageDepSpecData(*s.data())
-                    .unrequire_package()
-                    .require_package(n)));
+        _add_string_to_world(stringify(PartiallyMadePackageDepSpec(s).package(n)));
 }
 
 void

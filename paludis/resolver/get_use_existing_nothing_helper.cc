@@ -34,7 +34,6 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/environment.hh>
-#include <paludis/package_dep_spec_requirement.hh>
 #include <list>
 
 using namespace paludis;
@@ -217,11 +216,11 @@ GetUseExistingNothingHelper::operator() (
 {
     Context context("When determining use existing for '" + stringify(spec) + "':");
 
-    if (spec.package_name_requirement())
+    if (spec.package_ptr())
     {
-        if (use_existing_from_withish(_imp->env, spec.package_name_requirement()->name(), _imp->without_specs))
+        if (use_existing_from_withish(_imp->env, *spec.package_ptr(), _imp->without_specs))
             return std::make_pair(ue_if_possible, true);
-        if (use_existing_from_withish(_imp->env, spec.package_name_requirement()->name(), _imp->with_specs))
+        if (use_existing_from_withish(_imp->env, *spec.package_ptr(), _imp->with_specs))
             return std::make_pair(ue_never, false);
     }
 

@@ -18,7 +18,6 @@
  */
 
 #include <paludis/paludislike_options_conf.hh>
-
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/named_value.hh>
@@ -34,7 +33,6 @@
 #include <paludis/util/active_object_ptr.hh>
 #include <paludis/util/deferred_construction_ptr.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
-
 #include <paludis/choice.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
@@ -44,8 +42,6 @@
 #include <paludis/environment.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/package_dep_spec_properties.hh>
-#include <paludis/package_dep_spec_requirement.hh>
-
 #include <unordered_map>
 #include <unordered_set>
 #include <list>
@@ -204,22 +200,7 @@ PaludisLikeOptionsConf::add_file(const FSPath & f)
                             tokens.at(0), _imp->params.environment(),
                             { updso_allow_wildcards, updso_no_disambiguation, updso_throw_if_set })));
 
-            if (package_dep_spec_has_properties(*d, make_named_values<PackageDepSpecProperties>(
-                            n::has_any_slot_requirement() = indeterminate,
-                            n::has_category_name_part() = indeterminate,
-                            n::has_choice_requirements() = true,
-                            n::has_exact_slot_requirement() = indeterminate,
-                            n::has_from_repository() = indeterminate,
-                            n::has_in_repository() = indeterminate,
-                            n::has_installable_to_path() = indeterminate,
-                            n::has_installable_to_repository() = indeterminate,
-                            n::has_installed_at_path() = indeterminate,
-                            n::has_key_requirements() = indeterminate,
-                            n::has_package() = indeterminate,
-                            n::has_package_name_part() = indeterminate,
-                            n::has_tag() = indeterminate,
-                            n::has_version_requirements() = indeterminate
-                            )))
+            if (d->additional_requirements_ptr())
             {
                 Log::get_instance()->message("paludislike_options_conf.bad_spec", ll_warning, lc_context)
                     << "Dependency specification '" << stringify(*d)
@@ -227,10 +208,10 @@ PaludisLikeOptionsConf::add_file(const FSPath & f)
                 continue;
             }
 
-            if (d->package_name_requirement())
+            if (d->package_ptr())
             {
                 SpecificSpecs::iterator i(_imp->specific_specs.insert(std::make_pair(
-                                d->package_name_requirement()->name(),
+                                *d->package_ptr(),
                                 SpecsWithValuesGroups())).first);
                 values_groups = &i->second.insert(i->second.end(),
                         make_named_values<SpecWithValuesGroups>(
@@ -356,18 +337,16 @@ namespace
     bool match_anything(const PackageDepSpec & spec)
     {
         return package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
-                    n::has_any_slot_requirement() = indeterminate,
+                    n::has_additional_requirements() = false,
                     n::has_category_name_part() = false,
-                    n::has_choice_requirements() = false,
-                    n::has_exact_slot_requirement() = false,
                     n::has_from_repository() = false,
                     n::has_in_repository() = false,
                     n::has_installable_to_path() = false,
                     n::has_installable_to_repository() = false,
                     n::has_installed_at_path() = false,
-                    n::has_key_requirements() = false,
                     n::has_package() = false,
                     n::has_package_name_part() = false,
+                    n::has_slot_requirement() = false,
                     n::has_tag() = false,
                     n::has_version_requirements() = false
                     ));

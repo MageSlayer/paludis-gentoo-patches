@@ -21,9 +21,7 @@
 #include "resolve_cmdline.hh"
 #include "exceptions.hh"
 #include "command_command_line.hh"
-
 #include <paludis/args/do_help.hh>
-
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_shared_copy.hh>
@@ -33,16 +31,13 @@
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/process.hh>
-
 #include <paludis/resolver/job_list.hh>
 #include <paludis/resolver/job_lists.hh>
 #include <paludis/resolver/job.hh>
 #include <paludis/resolver/job_requirements.hh>
-
 #include <paludis/serialise-impl.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
-#include <paludis/package_dep_spec_requirement.hh>
 
 #include <iostream>
 #include <cstdlib>
@@ -91,15 +86,15 @@ namespace
 
     std::string short_spec(const PackageDepSpec & p, bool full)
     {
-        if (full || ! p.package_name_requirement())
+        if (full || ! p.package_ptr())
             return stringify(p);
         else
         {
-            std::string result(stringify(p.package_name_requirement()->name().package()));
-            if (p.exact_slot_requirement())
-                result = result + ":" + stringify(p.exact_slot_requirement()->name());
-            if (p.in_repository_requirement())
-                result = result + "::" + stringify(p.in_repository_requirement()->name());
+            std::string result(stringify(p.package_ptr()->package()));
+            if (p.slot_requirement_ptr())
+                result = result + stringify(*p.slot_requirement_ptr());
+            if (p.in_repository_ptr())
+                result = result + "::" + stringify(*p.in_repository_ptr());
             return result;
         }
     }

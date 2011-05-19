@@ -18,7 +18,6 @@
  */
 
 #include <paludis/repositories/gemcutter/gemcutter_dependencies_key.hh>
-
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/pimp-impl.hh>
@@ -28,20 +27,19 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>
-
 #include <paludis/always_enabled_dependency_label.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
+#include <paludis/version_requirements.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/pretty_printer.hh>
-#include <paludis/dep_spec_data.hh>
-
 #include <sstream>
 #include <algorithm>
 #include <vector>
@@ -175,9 +173,12 @@ namespace
 
         VersionSpec ver(tokens[1], { });
 
-        return make_shared_copy(PackageDepSpec(MutablePackageDepSpecData({ pdsdo_always_use_ranged_deps })
-                    .require_package(QualifiedPackageName("gem/" + dep.name()))
-                    .require_version(vrc_and, op, ver)
+        return make_shared_copy(PackageDepSpec(make_package_dep_spec({ pmpdso_always_use_ranged_deps })
+                    .package(QualifiedPackageName("gem/" + dep.name()))
+                    .version_requirement(make_named_values<VersionRequirement>(
+                            n::version_operator() = op,
+                            n::version_spec() = ver
+                            ))
                     ));
     }
 

@@ -42,6 +42,7 @@ IF_PYTHON_TESTS = \
 	repository_TEST.py \
 	selection_TEST.py \
 	version_operator_TEST.py \
+	version_requirements_TEST.py \
 	version_spec_TEST.py
 
 IF_PYTHON_SOURCES = \
@@ -69,10 +70,10 @@ IF_PYTHON_SOURCES = \
 	nice_names-nn.hh nice_names-nn.cc \
 	log.cc \
 	package_id.cc \
-	package_dep_spec_constraint.cc \
 	repository.cc \
 	selection.cc \
 	version_operator.cc \
+	version_requirements.cc \
 	version_spec.cc
 
 BUILT_SOURCES = \

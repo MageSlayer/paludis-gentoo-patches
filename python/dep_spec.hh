@@ -172,16 +172,16 @@ namespace paludis
                 operator PackageDepSpec() const;
                 operator std::shared_ptr<PackageDepSpec>() const;
 
-                const std::shared_ptr<const NameRequirement> package_name_requirement() const;
-                const std::shared_ptr<const PackageNamePartRequirement> package_name_part_requirement() const;
-                const std::shared_ptr<const CategoryNamePartRequirement> category_name_part_requirement() const;
-                const std::shared_ptr<const VersionRequirementSequence> all_version_requirements() const;
-                const std::shared_ptr<const InRepositoryRequirement> in_repository_requirement() const;
-                const std::shared_ptr<const FromRepositoryRequirement> from_repository_requirement() const;
-                const std::shared_ptr<const ExactSlotRequirement> exact_slot_requirement() const;
-                const std::shared_ptr<const AnySlotRequirement> any_slot_requirement() const;
-                const std::shared_ptr<const KeyRequirementSequence> all_key_requirements() const;
-                const std::shared_ptr<const ChoiceRequirementSequence> all_choice_requirements() const;
+                std::shared_ptr<const QualifiedPackageName> package_ptr() const;
+                std::shared_ptr<const PackageNamePart> package_name_part_ptr() const;
+                std::shared_ptr<const CategoryNamePart> category_name_part_ptr() const;
+                std::shared_ptr<const VersionRequirements> version_requirements_ptr() const;
+                VersionRequirementsMode version_requirements_mode() const;
+                void set_version_requirements_mode(const VersionRequirementsMode m);
+                std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const;
+                std::shared_ptr<const RepositoryName> in_repository_ptr() const;
+                std::shared_ptr<const RepositoryName> from_repository_ptr() const;
+                std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const;
 
                 std::string py_str() const;
         };

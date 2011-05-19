@@ -24,19 +24,18 @@
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision.hh>
 #include <paludis/resolver/make_uninstall_blocker.hh>
-
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
-
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_dep_spec_collection.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/elike_slot_requirement.hh>
 #include <paludis/metadata_key.hh>
-#include <paludis/dep_spec_data.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -78,10 +77,10 @@ GetConstraintsForPurgeHelper::operator() (
 {
     const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
-    MutablePackageDepSpecData partial_spec({ });
-    partial_spec.require_package(id->name());
+    PartiallyMadePackageDepSpec partial_spec({ });
+    partial_spec.package(id->name());
     if (id->slot_key())
-        partial_spec.require_exact_slot(id->slot_key()->parse_value(), false);
+        partial_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(id->slot_key()->parse_value(), false));
     PackageDepSpec spec(partial_spec);
 
     const std::shared_ptr<WasUsedByReason> reason(std::make_shared<WasUsedByReason>(was_used_by_ids));

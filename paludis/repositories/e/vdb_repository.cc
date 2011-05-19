@@ -28,7 +28,6 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/extra_distribution_data.hh>
 #include <paludis/repositories/e/can_skip_phase.hh>
-#include <paludis/repositories/e/split_pn_v.hh>
 
 #include <paludis/action.hh>
 #include <paludis/util/config_file.hh>
@@ -46,15 +45,15 @@
 #include <paludis/repository_name_cache.hh>
 #include <paludis/set_file.hh>
 #include <paludis/version_operator.hh>
+#include <paludis/version_requirements.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/output_manager.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/unformatted_pretty_printer.hh>
-#include <paludis/package_dep_spec_requirement.hh>
-#include <paludis/dep_spec_data.hh>
 
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/mutex.hh>
@@ -1111,14 +1110,13 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
             if (std::string::npos == s.rfind('-'))
                 continue;
 
-            auto pn_v(split_pn_v(_imp->params.environment(), s));
-            auto qpn(c + pn_v.first);
-            q->insert(qpn);
-            IDMap::iterator i(_imp->ids.find(qpn));
+            PackageDepSpec p(parse_user_package_dep_spec("=" + stringify(c) + "/" + s,
+                        _imp->params.environment(), { }));
+            q->insert(*p.package_ptr());
+            IDMap::iterator i(_imp->ids.find(*p.package_ptr()));
             if (_imp->ids.end() == i)
-                i = _imp->ids.insert(std::make_pair(qpn, std::make_shared<PackageIDSequence>())).first;
-
-            i->second->push_back(make_id(qpn, pn_v.second, *d));
+                i = _imp->ids.insert(std::make_pair(*p.package_ptr(), std::make_shared<PackageIDSequence>())).first;
+            i->second->push_back(make_id(*p.package_ptr(), p.version_requirements_ptr()->begin()->version_spec(), *d));
         }
         catch (const InternalError &)
         {
@@ -1276,12 +1274,11 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            if (node.spec()->package_name_requirement() && rewrites.end() != rewrites.find(node.spec()->package_name_requirement()->name()))
+            if (node.spec()->package_ptr() && rewrites.end() != rewrites.find(*node.spec()->package_ptr()))
             {
                 changed = true;
-                str << f.prettify(MutablePackageDepSpecData(*node.spec()->data())
-                        .unrequire_package()
-                        .require_package(rewrites.find(node.spec()->package_name_requirement()->name())->second)) << " ";
+                str << f.prettify(PartiallyMadePackageDepSpec(*node.spec())
+                        .package(rewrites.find(*node.spec()->package_ptr())->second)) << " ";
             }
             else
                 str << f.prettify(*node.spec()) << " ";
@@ -1618,9 +1615,7 @@ VDBRepository::perform_updates()
             for (DepRewrites::const_iterator i(dep_rewrites.begin()), i_end(dep_rewrites.end()) ;
                     i != i_end ; ++i)
                 _imp->params.environment()->update_config_files_for_package_move(
-                        MutablePackageDepSpecData({ })
-                        .unrequire_package()
-                        .require_package(i->first),
+                        make_package_dep_spec({ }).package(i->first),
                         i->second
                         );
         }

@@ -12,12 +12,12 @@ def get_contents(pids, directories, root)
     in_contents= []
     pids.each do |pid|
         next if pid.contents_key.nil?
-        contents = pid.contents_key.parse_value
+        contents = pid.contents_key.value
         contents.each do |entry|
             next if entry.kind_of? ContentsOtherEntry
             directories.each do |directory|
-                if (root + entry.location_key.parse_value)[0,directory.length] == directory
-                    in_contents << root + entry.location_key.parse_value
+                if (root + entry.location_key.value)[0,directory.length] == directory
+                    in_contents << root + entry.location_key.value
                     break;
                 end
             end
@@ -72,7 +72,7 @@ opts.each do | opt, arg |
 end
 
 env = Paludis::EnvironmentFactory.instance.create env_spec
-root = env.preferred_root_key.parse_value[-1] == ?/ ? env.preferred_root_key.parse_value.chop : env.preferred_root_key.parse_value
+root = env.preferred_root_key.value[-1] == ?/ ? env.preferred_root_key.value.chop : env.preferred_root_key.value
 
 directories = []
 

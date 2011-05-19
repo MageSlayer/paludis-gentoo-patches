@@ -19,23 +19,20 @@
 
 #include <paludis/resolver/collect_depped_upon.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
-
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
-
 #include <paludis/spec_tree.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/elike_slot_requirement.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/match_package.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/package_dep_spec_requirement.hh>
-#include <paludis/dep_spec_data.hh>
-
 #include <algorithm>
 
 using namespace paludis;
@@ -111,17 +108,16 @@ namespace
             {
                 auto spec(s.spec());
 
-                if (s.spec()->any_slot_requirement() && ! s.spec()->any_slot_requirement()->locking())
+                if (s.spec()->slot_requirement_ptr() && visitor_cast<const SlotAnyUnlockedRequirement>(
+                            *s.spec()->slot_requirement_ptr()))
                 {
                     auto best_eventual_id(best_eventual(env, *s.spec(), id_for_specs, newly_available));
                     if (! best_eventual_id)
                         best_eventual_id = best_eventual(env, *s.spec(), id_for_specs, not_changing_slots);
                     if (best_eventual_id && best_eventual_id->slot_key())
                     {
-                        MutablePackageDepSpecData part_spec(*s.spec()->data());
-                        part_spec
-                            .unrequire_exact_slot()
-                            .require_exact_slot(best_eventual_id->slot_key()->parse_value(), false);
+                        PartiallyMadePackageDepSpec part_spec(*s.spec());
+                        part_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(best_eventual_id->slot_key()->parse_value(), false));
                         spec = std::make_shared<PackageDepSpec>(part_spec);
                     }
                 }

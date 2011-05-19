@@ -130,77 +130,97 @@ module Paludis
         end
 
         def test_slot
-            assert_equal "100", pda.exact_slot_requirement.name
-            assert_nil pdb.exact_slot_requirement
-            assert_nil pdc.exact_slot_requirement
-            assert_nil pdd.exact_slot_requirement
-            assert_nil pde.exact_slot_requirement
+            assert_kind_of SlotExactRequirement, pda.slot_requirement
+            assert_equal ":100", pda.slot_requirement.to_s
+            assert_equal "100", pda.slot_requirement.slot
+            assert_nil pdb.slot_requirement
+            assert_nil pdc.slot_requirement
+            assert_nil pdd.slot_requirement
+            assert_nil pde.slot_requirement
         end
 
         def test_package
-            assert_equal QualifiedPackageName.new("foo/bar"), pda.package_name_requirement.name
-            assert_nil pdb.package_name_requirement
-            assert_equal QualifiedPackageName.new("foo/bar"), pdc.package_name_requirement.name
-            assert_nil pdd.package_name_requirement
-            assert_equal QualifiedPackageName.new("foo/bar"), pde.package_name_requirement.name
+            assert_equal QualifiedPackageName.new("foo/bar"), pda.package
+            assert_nil pdb.package
+            assert_equal QualifiedPackageName.new("foo/bar"), pdc.package
+            assert_nil pdd.package
+            assert_equal QualifiedPackageName.new("foo/bar"), pde.package
         end
 
         def test_from_repository
-            assert_nil pda.from_repository_requirement
-            assert_nil pdb.from_repository_requirement
-            assert_nil pdc.from_repository_requirement
-            assert_nil pdd.from_repository_requirement
-            assert_equal "testrepo", pde.from_repository_requirement.name
+            assert_nil pda.from_repository
+            assert_nil pdb.from_repository
+            assert_nil pdc.from_repository
+            assert_nil pdd.from_repository
+            assert_equal "testrepo", pde.from_repository
         end
 
         def test_in_repository
-            assert_equal "testrepo", pda.in_repository_requirement.name
-            assert_nil pdb.in_repository_requirement
-            assert_nil pdc.in_repository_requirement
-            assert_nil pdd.in_repository_requirement
-            assert_nil pde.in_repository_requirement
+            assert_equal "testrepo", pda.in_repository
+            assert_nil pdb.in_repository
+            assert_nil pdc.in_repository
+            assert_nil pdd.in_repository
+            assert_nil pde.in_repository
         end
 
         def test_installable_to_repository
-            assert_nil pda.installable_to_repository_requirement
-            assert_nil pdb.installable_to_repository_requirement
-            assert_equal "installed", pdc.installable_to_repository_requirement.name
-            assert ! pdc.installable_to_repository_requirement.include_masked?
-            assert_nil pdd.installable_to_repository_requirement
-            assert_nil pde.installable_to_repository_requirement
+            assert_nil pda.installable_to_repository
+            assert_nil pdb.installable_to_repository
+            assert_kind_of Hash, pdc.installable_to_repository
+            assert_equal "installed", pdc.installable_to_repository[:repository]
+            assert ! pdc.installable_to_repository[:include_masked?]
+            assert_nil pdd.installable_to_repository
+            assert_nil pde.installable_to_repository
         end
 
         def test_installed_at_path
-            assert_nil pda.installed_at_path_requirement
-            assert_nil pdb.installed_at_path_requirement
-            assert_nil pdc.installed_at_path_requirement
-            assert_nil pdd.installed_at_path_requirement
-            assert_equal "/mychroot", pde.installed_at_path_requirement.path
+            assert_nil pda.installed_at_path
+            assert_nil pdb.installed_at_path
+            assert_nil pdc.installed_at_path
+            assert_nil pdd.installed_at_path
+            assert_equal "/mychroot", pde.installed_at_path
         end
 
         def test_installable_to_path
-            assert_nil pda.installable_to_path_requirement
-            assert_nil pdb.installable_to_path_requirement
-            assert_nil pdc.installable_to_path_requirement
-            assert_equal "/", pdd.installable_to_path_requirement.path
-            assert pdd.installable_to_path_requirement.include_masked?
-            assert_nil pde.installable_to_path_requirement
+            assert_nil pda.installable_to_path
+            assert_nil pdb.installable_to_path
+            assert_nil pdc.installable_to_path
+            assert_kind_of Hash, pdd.installable_to_path
+            assert_equal "/", pdd.installable_to_path[:path]
+            assert pdd.installable_to_path[:include_masked?]
+            assert_nil pde.installable_to_path
         end
 
         def test_package_name_part
-            assert_nil pda.package_name_part_requirement
-            assert_equal "bar", pdb.package_name_part_requirement.name_part
-            assert_nil pdc.package_name_part_requirement
-            assert_nil pdd.package_name_part_requirement
-            assert_nil pde.package_name_part_requirement
+            assert_nil pda.package_name_part
+            assert_equal "bar", pdb.package_name_part
+            assert_nil pdc.package_name_part
+            assert_nil pdd.package_name_part
+            assert_nil pde.package_name_part
         end
 
         def test_category_name_part
-            assert_nil pda.category_name_part_requirement
-            assert_nil pdb.category_name_part_requirement
-            assert_nil pdc.category_name_part_requirement
-            assert_equal "foo", pdd.category_name_part_requirement.name_part
-            assert_nil pde.category_name_part_requirement
+            assert_nil pda.category_name_part
+            assert_nil pdb.category_name_part
+            assert_nil pdc.category_name_part
+            assert_equal "foo", pdd.category_name_part
+            assert_nil pde.category_name_part
+        end
+
+        def test_version_requirements
+            assert_kind_of Array, pda.version_requirements
+            assert_equal 1, pda.version_requirements.size
+            assert_equal VersionSpec.new('1'), pda.version_requirements.first[:spec]
+            assert_equal ">=", pda.version_requirements.first[:operator]
+            assert_equal 0, pdb.version_requirements.size
+            assert_equal 0, pdc.version_requirements.size
+            assert_equal 0, pdd.version_requirements.size
+            assert_equal 0, pde.version_requirements.size
+        end
+
+        def test_version_requirements_mode
+            assert_kind_of Fixnum, pda.version_requirements_mode
+            assert_equal VersionRequirementsMode::And, pda.version_requirements_mode
         end
 
 ###        def test_use_requirements

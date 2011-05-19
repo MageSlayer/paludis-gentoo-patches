@@ -26,7 +26,6 @@
 #include <paludis/resolver/destination_utils.hh>
 #include <paludis/resolver/match_qpns.hh>
 #include <paludis/resolver/suggest_restart.hh>
-
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_shared_copy.hh>
@@ -36,7 +35,6 @@
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/enum_iterator.hh>
-
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/selection.hh>
@@ -46,8 +44,7 @@
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/version_spec.hh>
-#include <paludis/dep_spec_data.hh>
-
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <list>
 #include <unordered_map>
 
@@ -243,7 +240,7 @@ GetInitialConstraintsForHelper::_make_initial_constraints_for(
                         n::from_id() = make_null_shared_ptr(),
                         n::nothing_is_fine_too() = true,
                         n::reason() = std::make_shared<PresetReason>("is scm", make_null_shared_ptr()),
-                        n::spec() = MutablePackageDepSpecData({ }).require_package(resolvent.package()),
+                        n::spec() = make_package_dep_spec({ }).package(resolvent.package()),
                         n::untaken() = false,
                         n::use_existing() = ue_only_if_transient
                         )));

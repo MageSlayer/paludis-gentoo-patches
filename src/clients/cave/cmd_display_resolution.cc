@@ -79,7 +79,6 @@
 #include <paludis/changed_choices.hh>
 #include <paludis/mask_utils.hh>
 #include <paludis/dep_spec_annotations.hh>
-#include <paludis/package_dep_spec_requirement.hh>
 
 #include <set>
 #include <iterator>
@@ -1427,35 +1426,15 @@ namespace
                     s.append(" (and " + stringify(c->second.second.size() - 1) + " more)");
                 cout << fuc(fs_unable_unsuitable_did_not_meet(), fv<'s'>(s));
 
-                if (constraint->spec().if_package() &&
-                        package_dep_spec_has_properties(*constraint->spec().if_package(), make_named_values<PackageDepSpecProperties>(
-                            n::has_any_slot_requirement() = indeterminate,
-                            n::has_category_name_part() = indeterminate,
-                            n::has_choice_requirements() = true,
-                            n::has_exact_slot_requirement() = indeterminate,
-                            n::has_from_repository() = indeterminate,
-                            n::has_in_repository() = indeterminate,
-                            n::has_installable_to_path() = indeterminate,
-                            n::has_installable_to_repository() = indeterminate,
-                            n::has_installed_at_path() = indeterminate,
-                            n::has_key_requirements() = indeterminate,
-                            n::has_package() = indeterminate,
-                            n::has_package_name_part() = indeterminate,
-                            n::has_tag() = indeterminate,
-                            n::has_version_requirements() = indeterminate
-                            )) &&
+                if (constraint->spec().if_package() && constraint->spec().if_package()->additional_requirements_ptr() &&
                         (! match_package(*env, *constraint->spec().if_package(), u->package_id(), constraint->from_id(), { })) &&
-                        match_package(*env, *constraint->spec().if_package(), u->package_id(), constraint->from_id(), { mpo_ignore_choice_requirements }))
+                        match_package(*env, *constraint->spec().if_package(), u->package_id(), constraint->from_id(), { mpo_ignore_additional_requirements }))
                 {
-                    for (auto a(constraint->spec().if_package()->requirements()->begin()),
-                            a_end(constraint->spec().if_package()->requirements()->end()) ;
+                    for (AdditionalPackageDepSpecRequirements::ConstIterator a(constraint->spec().if_package()->additional_requirements_ptr()->begin()),
+                            a_end(constraint->spec().if_package()->additional_requirements_ptr()->end()) ;
                             a != a_end ; ++a)
                     {
-                        auto a_choice(visitor_cast<const ChoiceRequirement>(**a));
-                        if (! a_choice)
-                            continue;
-
-                        const std::pair<bool, std::string> p(a_choice->requirement_met(env.get(), 0, u->package_id(), constraint->from_id(), 0));
+                        const std::pair<bool, std::string> p((*a)->requirement_met(env.get(), 0, u->package_id(), constraint->from_id(), 0));
                         if (p.first)
                             continue;
 

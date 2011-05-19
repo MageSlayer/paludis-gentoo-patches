@@ -19,6 +19,7 @@
 
 #include <paludis/dep_spec.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/version_requirements.hh>
 #include <paludis/environments/test/test_environment.hh>
 
 #include <paludis/util/clone-impl.hh>

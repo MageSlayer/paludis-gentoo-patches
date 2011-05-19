@@ -48,6 +48,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/action.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 
 #include <cstdlib>
 #include <iostream>

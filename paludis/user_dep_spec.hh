@@ -22,12 +22,10 @@
 
 #include <paludis/user_dep_spec-fwd.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/slot_requirement.hh>
 #include <paludis/filter.hh>
-#include <paludis/package_dep_spec_requirement-fwd.hh>
-
+#include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/util/pimp.hh>
-
-#include <tuple>
 
 namespace paludis
 {
@@ -55,14 +53,65 @@ namespace paludis
     PackageDepSpec envless_parse_package_dep_spec_for_tests(
             const std::string &) PALUDIS_VISIBLE;
 
+    class PALUDIS_VISIBLE UserSlotExactRequirement :
+        public SlotExactRequirement
+    {
+        private:
+            const SlotName _s;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            UserSlotExactRequirement(const SlotName &);
+
+            ///\}
+
+            virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
     /**
-     * Split up a [.key=value] into its component parts.
+     * A key requirement for a user PackageDepSpec.
      *
+     * \since 0.36
      * \ingroup g_dep_spec
-     * \since 0.61
      */
-    std::tuple<KeyRequirementKeyType, std::string, KeyRequirementOperation, std::string> parse_user_key_requirement(
-            const std::string &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
+    class PALUDIS_VISIBLE UserKeyRequirement :
+        public AdditionalPackageDepSpecRequirement
+    {
+        private:
+            Pimp<UserKeyRequirement> _imp;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            UserKeyRequirement(const std::string &);
+            ~UserKeyRequirement();
+
+            ///\}
+
+            virtual const std::pair<bool, std::string> requirement_met(
+                    const Environment * const, const ChangedChoices *,
+                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> &,
+                    const ChangedChoices * const) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual Tribool accumulate_changes_to_make_met(
+                    const Environment * const,
+                    const ChangedChoices * const,
+                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> &,
+                    ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    extern template class Pimp<UserKeyRequirement>;
 }
 
 #endif
