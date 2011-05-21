@@ -129,11 +129,11 @@ HELP
 end
 
 $env = EnvironmentFactory.instance.create($envspec)
-if $env.format_key.value != "paludis" then
+if $env.format_key.parse_value != "paludis" then
     $stderr.puts "#$0: --environment must specify class 'paludis'"
     exit 1
 end
-$config_dir = $env.config_location_key.value
+$config_dir = $env.config_location_key.parse_value
 
 if $mode.empty?
     $stderr.puts "You must choose a mode of operation."
