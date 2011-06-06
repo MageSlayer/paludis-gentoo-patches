@@ -4,6 +4,15 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.62.0:
+    * New package dep spec syntax for matching masks: '[.(mask)?]'.
+
+    * Added 'cave sync --revision', currently only for Git syncs.
+
+    * We now use Google's 'gtest' for unit tests.
+
+    * Fairly hefty code cleanups.
+
 0.60.4:
     * 'cave search --and' now works as documented.
 
