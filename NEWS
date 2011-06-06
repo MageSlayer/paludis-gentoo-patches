@@ -4,6 +4,33 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.60.4:
+    * 'cave search --and' now works as documented.
+
+    * Previously pbins had problems with symlinks due to oddities in libarchive.
+      This is now worked around.
+
+    * We now treat invalid cached metadata slightly differently, to avoid
+      problems with Gentoo shipping broken metadata due to lack of validation in
+      Portage.
+
+0.60.3:
+    * Second attempt at getting '--enable-prebuilt-documentation' to work
+      reliably.
+
+0.60.2:
+    * A new configure option, '--enable-prebuilt-documentation', can be used to
+      avoid requiring Asciidoc, since on Gentoo Asciidoc has several bogus
+      dependencies that pull in a lot of unwanted packages on X-less systems.
+
+0.60.1:
+    * 'cave resolve --reinstall-dependents-of' now does what the documentation
+      says it does.
+
+    * 'cave help' no longer explodes if script commands are present.
+
+    * We now work with Jansson 2.0 too.
+
 0.60.0:
     * 'cave resolve' can now '--reinstall-dependents-of'
 
