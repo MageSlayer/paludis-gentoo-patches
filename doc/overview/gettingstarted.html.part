@@ -139,6 +139,8 @@ that would be handled by <code>USE_EXPAND</code> by Portage, and the explicit <c
 app-editors/vim -nls
 </pre>
 
+<h3>licenses.conf</h3>
+
 <p>And you will need <code>/etc/paludis/licenses.conf</code>, which for most people would look like:</p>
 
 <pre>
