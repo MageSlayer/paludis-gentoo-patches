@@ -42,7 +42,7 @@ no_config_environment_TEST_LDADD = \
 
 no_config_environment_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
-no_config_environment_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+no_config_environment_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 BUILT_SOURCES = \
 	no_config_environment-se.hh \

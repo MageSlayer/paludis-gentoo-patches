@@ -38,7 +38,7 @@ portage_environment_TEST_LDADD = \
 
 portage_environment_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
-portage_environment_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+portage_environment_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 check_PROGRAMS = $(TESTS)
 check_SCRIPTS = portage_environment_TEST_setup.sh portage_environment_TEST_cleanup.sh

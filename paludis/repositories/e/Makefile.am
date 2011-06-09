@@ -191,7 +191,7 @@ e_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-e_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+e_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 e_repository_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -203,7 +203,7 @@ depend_rdepend_TEST_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-depend_rdepend_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+depend_rdepend_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 depend_rdepend_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -215,7 +215,7 @@ e_repository_TEST_ever_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-e_repository_TEST_ever_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+e_repository_TEST_ever_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 e_repository_TEST_ever_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -227,7 +227,7 @@ e_repository_TEST_exheres_0_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-e_repository_TEST_exheres_0_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+e_repository_TEST_exheres_0_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 e_repository_TEST_exheres_0_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -239,7 +239,7 @@ e_repository_TEST_3_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-e_repository_TEST_3_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+e_repository_TEST_3_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 e_repository_TEST_3_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -251,7 +251,7 @@ e_repository_TEST_4_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-e_repository_TEST_4_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+e_repository_TEST_4_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 e_repository_TEST_4_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -263,7 +263,7 @@ e_repository_TEST_2_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-e_repository_TEST_2_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+e_repository_TEST_2_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 e_repository_TEST_2_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -275,7 +275,7 @@ e_repository_TEST_1_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-e_repository_TEST_1_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+e_repository_TEST_1_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 e_repository_TEST_1_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -287,7 +287,7 @@ e_repository_TEST_0_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-e_repository_TEST_0_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+e_repository_TEST_0_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 e_repository_TEST_0_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -299,7 +299,7 @@ e_repository_TEST_phases_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-e_repository_TEST_phases_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+e_repository_TEST_phases_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 e_repository_TEST_phases_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -311,7 +311,7 @@ e_repository_TEST_exlibs_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-e_repository_TEST_exlibs_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+e_repository_TEST_exlibs_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 e_repository_TEST_exlibs_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -323,7 +323,7 @@ e_repository_TEST_replacing_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-e_repository_TEST_replacing_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+e_repository_TEST_replacing_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 e_repository_TEST_replacing_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -335,7 +335,7 @@ e_repository_TEST_symlink_rewriting_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-e_repository_TEST_symlink_rewriting_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+e_repository_TEST_symlink_rewriting_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 e_repository_TEST_symlink_rewriting_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -347,7 +347,7 @@ vdb_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-vdb_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+vdb_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 vdb_repository_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -359,7 +359,7 @@ vdb_repository_TEST_eapis_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-vdb_repository_TEST_eapis_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+vdb_repository_TEST_eapis_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 vdb_repository_TEST_eapis_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -371,7 +371,7 @@ vdb_repository_TEST_cache_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-vdb_repository_TEST_cache_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+vdb_repository_TEST_cache_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 vdb_repository_TEST_cache_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -383,7 +383,7 @@ exndbam_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-exndbam_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+exndbam_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 exndbam_repository_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -395,7 +395,7 @@ vdb_merger_TEST_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-vdb_merger_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+vdb_merger_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 vdb_merger_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -409,7 +409,7 @@ vdb_unmerger_TEST_LDADD = \
 
 vdb_unmerger_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
-vdb_unmerger_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+vdb_unmerger_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 e_repository_sets_TEST_SOURCES = e_repository_sets_TEST.cc
 
@@ -419,7 +419,7 @@ e_repository_sets_TEST_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-e_repository_sets_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+e_repository_sets_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 e_repository_sets_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -431,7 +431,7 @@ dep_parser_TEST_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-dep_parser_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+dep_parser_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 dep_parser_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -443,7 +443,7 @@ aa_visitor_TEST_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-aa_visitor_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+aa_visitor_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 aa_visitor_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -455,7 +455,7 @@ fetch_visitor_TEST_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-fetch_visitor_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+fetch_visitor_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 fetch_visitor_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -467,7 +467,7 @@ source_uri_finder_TEST_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-source_uri_finder_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+source_uri_finder_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 source_uri_finder_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -479,7 +479,7 @@ fix_locked_dependencies_TEST_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-fix_locked_dependencies_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+fix_locked_dependencies_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 fix_locked_dependencies_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -491,7 +491,7 @@ ebuild_flat_metadata_cache_TEST_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-ebuild_flat_metadata_cache_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+ebuild_flat_metadata_cache_TEST_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 ebuild_flat_metadata_cache_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -651,7 +651,7 @@ xml_things_TEST_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-xml_things_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+xml_things_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 xml_things_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
 endif
@@ -668,7 +668,7 @@ e_repository_TEST_pbin_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-e_repository_TEST_pbin_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+e_repository_TEST_pbin_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 e_repository_TEST_pbin_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 

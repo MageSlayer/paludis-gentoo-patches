@@ -39,7 +39,7 @@ unpackaged_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-unpackaged_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+unpackaged_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 unpackaged_repository_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
@@ -52,7 +52,7 @@ installed_repository_TEST_LDADD = \
 	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
 	$(DYNAMIC_LD_LIBS)
 
-installed_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@
+installed_repository_TEST_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 installed_repository_TEST_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
