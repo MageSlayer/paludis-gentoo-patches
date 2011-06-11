@@ -59,62 +59,11 @@ namespace paludis
     template<>
     struct Imp<VirtualsRepository>
     {
-        const Environment * const env;
-
-        const std::shared_ptr<Mutex> big_nasty_mutex;
-
-        mutable std::vector<std::pair<QualifiedPackageName, std::shared_ptr<const PackageDepSpec> > > names;
-        mutable bool has_names;
-
-        mutable IDMap ids;
-        mutable bool has_ids;
-
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
-        Imp(const Environment * const e, std::shared_ptr<Mutex> m = std::make_shared<Mutex>()) :
-            env(e),
-            big_nasty_mutex(m),
-            has_names(false),
-            has_ids(false),
+        Imp() :
             format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format", mkt_significant, "virtuals"))
         {
-        }
-    };
-}
-
-namespace
-{
-    struct NamesNameComparator
-    {
-        bool
-        operator() (const std::pair<QualifiedPackageName, std::shared_ptr<const PackageDepSpec> > & a,
-                const std::pair<QualifiedPackageName, std::shared_ptr<const PackageDepSpec> > & b) const
-        {
-            return a.first < b.first;
-        }
-    };
-
-    struct NamesSortComparator
-    {
-        bool
-        operator() (const std::pair<QualifiedPackageName, std::shared_ptr<const PackageDepSpec> > & a,
-                const std::pair<QualifiedPackageName, std::shared_ptr<const PackageDepSpec> > & b) const
-        {
-            if (a.first < b.first)
-                return true;
-            if (a.first > b.first)
-                return false;
-            return stringify(*a.second) < stringify(*b.second);
-        }
-    };
-
-    struct NamesUniqueComparator
-    {
-        bool
-        operator() (const std::pair<QualifiedPackageName, std::shared_ptr<const PackageDepSpec> > & a,
-                const std::pair<QualifiedPackageName, std::shared_ptr<const PackageDepSpec> > & b) const
-        {
-            return a.first == b.first && stringify(*a.second) == stringify(*b.second);
         }
     };
 }
@@ -125,7 +74,7 @@ VirtualsRepository::VirtualsRepository(const Environment * const env) :
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
                 n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0)
             )),
-    _imp(env)
+    _imp()
 {
     add_metadata_key(_imp->format_key);
 }
@@ -134,108 +83,40 @@ VirtualsRepository::~VirtualsRepository()
 {
 }
 
-void
-VirtualsRepository::need_names() const
-{
-    Lock l(*_imp->big_nasty_mutex);
-
-    if (_imp->has_names)
-        return;
-
-    Context context("When loading names for virtuals repository:");
-
-    Log::get_instance()->message("virtuals.need_names", ll_debug, lc_context) << "VirtualsRepository need_names";
-
-    std::sort(_imp->names.begin(), _imp->names.end(), NamesSortComparator());
-    _imp->names.erase(std::unique(_imp->names.begin(), _imp->names.end(), NamesUniqueComparator()), _imp->names.end());
-
-    std::vector<std::pair<QualifiedPackageName, std::shared_ptr<const PackageDepSpec> > > new_names;
-
-    std::copy(new_names.begin(), new_names.end(), std::back_inserter(_imp->names));
-    std::sort(_imp->names.begin(), _imp->names.end(), NamesSortComparator());
-    _imp->names.erase(std::unique(_imp->names.begin(), _imp->names.end(), NamesUniqueComparator()), _imp->names.end());
-
-    _imp->has_names = true;
-}
-
-void
-VirtualsRepository::need_ids() const
-{
-    Lock l(*_imp->big_nasty_mutex);
-
-    if (_imp->has_ids)
-        return;
-
-    _imp->has_ids = true;
-}
-
 std::shared_ptr<const PackageIDSequence>
-VirtualsRepository::package_ids(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const
+VirtualsRepository::package_ids(const QualifiedPackageName &, const RepositoryContentMayExcludes &) const
 {
-    if (q.category().value() != "virtual")
-        return std::make_shared<PackageIDSequence>();
-
-    need_ids();
-
-    IDMap::const_iterator i(_imp->ids.find(q));
-    if (i == _imp->ids.end())
-        return std::make_shared<PackageIDSequence>();
-
-    return i->second;
+    return std::make_shared<PackageIDSequence>();
 }
 
 std::shared_ptr<const QualifiedPackageNameSet>
-VirtualsRepository::package_names(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
+VirtualsRepository::package_names(const CategoryNamePart &, const RepositoryContentMayExcludes &) const
 {
-    if (c.value() != "virtual")
-        return std::make_shared<QualifiedPackageNameSet>();
-
-    need_ids();
-
-    std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
-    std::transform(_imp->ids.begin(), _imp->ids.end(), result->inserter(),
-            std::mem_fn(&std::pair<const QualifiedPackageName, std::shared_ptr<PackageIDSequence> >::first));
-
-    return result;
+    return std::make_shared<QualifiedPackageNameSet>();
 }
 
 std::shared_ptr<const CategoryNamePartSet>
 VirtualsRepository::category_names(const RepositoryContentMayExcludes &) const
 {
     std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
-    result->insert(CategoryNamePart("virtual"));
     return result;
 }
 
 bool
-VirtualsRepository::has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const
+VirtualsRepository::has_package_named(const QualifiedPackageName &, const RepositoryContentMayExcludes &) const
 {
-    if (q.category().value() != "virtual")
-        return false;
-
-    need_names();
-
-    std::pair<
-        std::vector<std::pair<QualifiedPackageName, std::shared_ptr<const PackageDepSpec> > >::const_iterator,
-        std::vector<std::pair<QualifiedPackageName, std::shared_ptr<const PackageDepSpec> > >::const_iterator> p(
-            std::equal_range(_imp->names.begin(), _imp->names.end(),
-                std::make_pair(q, std::shared_ptr<const PackageDepSpec>()),
-                NamesNameComparator()));
-
-    return p.first != p.second;
+    return false;
 }
 
 bool
-VirtualsRepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
+VirtualsRepository::has_category_named(const CategoryNamePart &, const RepositoryContentMayExcludes &) const
 {
-    return (c.value() == "virtual");
+    return false;
 }
 
 void
 VirtualsRepository::invalidate()
 {
-    Lock l(*_imp->big_nasty_mutex);
-    _imp.reset(new Imp<VirtualsRepository>(_imp->env, _imp->big_nasty_mutex));
 }
 
 const bool
@@ -244,52 +125,10 @@ VirtualsRepository::is_unimportant() const
     return false;
 }
 
-namespace
-{
-    struct SupportsActionQuery
-    {
-        bool visit(const SupportsActionTest<InstallAction> &) const
-        {
-            return true;
-        }
-
-        bool visit(const SupportsActionTest<ConfigAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<FetchAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<InfoAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<UninstallAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendFetchAction> &) const
-        {
-            return false;
-        }
-    };
-}
-
 bool
-VirtualsRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
+VirtualsRepository::some_ids_might_support_action(const SupportsActionTestBase &) const
 {
-    SupportsActionQuery q;
-    return a.accept_returning<bool>(q);
+    return false;
 }
 
 bool
@@ -302,7 +141,6 @@ std::shared_ptr<const CategoryNamePartSet>
 VirtualsRepository::unimportant_category_names(const RepositoryContentMayExcludes &) const
 {
     std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
-    result->insert(CategoryNamePart("virtual"));
     return result;
 }
 

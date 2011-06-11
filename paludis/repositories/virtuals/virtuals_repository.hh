@@ -38,9 +38,6 @@ namespace paludis
         private:
             Pimp<VirtualsRepository> _imp;
 
-            void need_names() const;
-            void need_ids() const;
-
         protected:
             virtual void need_keys_added() const;
 
