@@ -632,8 +632,6 @@ namespace
 
         rb_define_method(c_repository, "environment_variable_interface", RUBY_FUNC_CAST((&Interface<
                         n::environment_variable_interface, RepositoryEnvironmentVariableInterface, &Repository::environment_variable_interface>::fetch)), 0);
-        rb_define_method(c_repository, "virtuals_interface", RUBY_FUNC_CAST((&Interface<
-                        n::virtuals_interface, RepositoryVirtualsInterface, &Repository::virtuals_interface>::fetch)), 0);
         rb_define_method(c_repository, "some_ids_might_support_action", RUBY_FUNC_CAST(&repository_some_ids_might_support_action), 1);
 
         rb_define_method(c_repository, "[]", RUBY_FUNC_CAST(&repository_subscript), 1);

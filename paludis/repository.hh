@@ -94,23 +94,7 @@ namespace paludis
     {
         NamedValue<n::destination_interface, RepositoryDestinationInterface *> destination_interface;
         NamedValue<n::environment_variable_interface, RepositoryEnvironmentVariableInterface *> environment_variable_interface;
-        NamedValue<n::make_virtuals_interface, RepositoryMakeVirtualsInterface *> make_virtuals_interface;
         NamedValue<n::manifest_interface, RepositoryManifestInterface *> manifest_interface;
-        NamedValue<n::virtuals_interface, RepositoryVirtualsInterface *> virtuals_interface;
-    };
-
-    /**
-     * A virtuals entry in a Repository implementing RepositoryVirtualsInterface.
-     *
-     * \see Repository
-     * \see RepositoryVirtualsInterface
-     * \ingroup g_repository
-     * \since 0.30
-     */
-    struct RepositoryVirtualsEntry
-    {
-        NamedValue<n::provided_by_spec, std::shared_ptr<const PackageDepSpec> > provided_by_spec;
-        NamedValue<n::virtual_name, QualifiedPackageName> virtual_name;
     };
 
     /**
@@ -495,52 +479,6 @@ namespace paludis
             ///\}
 
             virtual ~RepositoryEnvironmentVariableInterface();
-    };
-
-    /**
-     * Interface for repositories that define virtuals.
-     *
-     * \see Repository
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryVirtualsInterface
-    {
-        public:
-            ///\name Virtuals functionality
-            ///\{
-
-            /**
-             * A collection of virtuals.
-             */
-            typedef Sequence<RepositoryVirtualsEntry> VirtualsSequence;
-
-            /**
-             * Fetch our virtual packages.
-             */
-            virtual std::shared_ptr<const VirtualsSequence> virtual_packages() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            ///\}
-
-            virtual ~RepositoryVirtualsInterface();
-    };
-
-    /**
-     * Interface for repositories that can make virtuals on the fly.
-     *
-     * \see Repository
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryMakeVirtualsInterface
-    {
-        public:
-            virtual ~RepositoryMakeVirtualsInterface();
-
-            virtual const std::shared_ptr<const PackageID> make_virtual_package_id(
-                    const QualifiedPackageName & virtual_name, const std::shared_ptr<const PackageID> & provider) const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     /**

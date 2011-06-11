@@ -51,8 +51,7 @@ namespace paludis
      * \ingroup grpfakerepository
      */
     class PALUDIS_VISIBLE FakeRepository :
-        public FakeRepositoryBase,
-        public RepositoryVirtualsInterface
+        public FakeRepositoryBase
     {
         private:
             Pimp<FakeRepository> _imp;
@@ -67,16 +66,6 @@ namespace paludis
             ~FakeRepository();
 
             ///\}
-
-            /**
-             * Add a virtual package.
-             */
-            void add_virtual_package(const QualifiedPackageName &, const std::shared_ptr<const PackageDepSpec> &);
-
-            /* RepositoryVirtualsInterface */
-
-            virtual std::shared_ptr<const VirtualsSequence> virtual_packages() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
 

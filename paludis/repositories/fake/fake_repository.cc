@@ -40,11 +40,9 @@ namespace paludis
     template<>
     struct Imp<FakeRepository>
     {
-        std::shared_ptr<FakeRepository::VirtualsSequence> virtual_packages;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
         Imp() :
-            virtual_packages(std::make_shared<FakeRepository::VirtualsSequence>()),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "format", "format", mkt_significant, "fake"))
         {
@@ -56,10 +54,7 @@ FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
     FakeRepositoryBase(params.environment(), params.name(), make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = static_cast<RepositoryDestinationInterface *>(0),
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
-                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
-                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
-                n::virtuals_interface() = (*DistributionData::get_instance()->distribution_from_string(
-                            params.environment()->distribution())).support_old_style_virtuals() ? this : 0
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0)
                 )),
     _imp()
 {
@@ -68,21 +63,6 @@ FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
 
 FakeRepository::~FakeRepository()
 {
-}
-
-std::shared_ptr<const FakeRepository::VirtualsSequence>
-FakeRepository::virtual_packages() const
-{
-    return _imp->virtual_packages;
-}
-
-void
-FakeRepository::add_virtual_package(const QualifiedPackageName & q, const std::shared_ptr<const PackageDepSpec> & p)
-{
-    _imp->virtual_packages->push_back(make_named_values<RepositoryVirtualsEntry>(
-                n::provided_by_spec() = p,
-                n::virtual_name() = q
-                ));
 }
 
 namespace paludis

@@ -86,22 +86,6 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assertEquals(m.description(), "eapi")
         self.assertEquals(m.explanation(), "Unsupported EAPI 'unsupported'")
 
-    def test_05_association_mask(self):
-        if os.environ.get("PALUDIS_ENABLE_VIRTUALS_REPOSITORY") == "yes":
-            q = Selection.RequireExactlyOne(Generator.Matches(
-                parse_user_package_dep_spec("=virtual/association-1.0", self.e, []), []))
-            pid = iter(self.e[q]).next()
-            m = iter(pid.masks).next()
-
-            self.assert_(isinstance(m, Mask))
-            self.assert_(isinstance(m, AssociationMask))
-
-            self.assertEquals(m.key(), "A")
-            self.assertEquals(m.description(), "by association")
-            self.assertEquals(m.associated_package_spec().package, "masked/repo")
-        elif os.environ.get("PALUDIS_ENABLE_VIRTUALS_REPOSITORY") != "no":
-            raise "oops"
-
 class TestCase_02_Masks_subclassing(unittest.TestCase):
     def test_01_user_mask(self):
         class TestUserMask(UserMask):

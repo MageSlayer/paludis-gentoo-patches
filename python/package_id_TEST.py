@@ -33,8 +33,6 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.e = NoConfigEnvironment(repo_path, "/var/empty")
         self.ie = NoConfigEnvironment(irepo_path)
         self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
-        if os.environ.get("PALUDIS_ENABLE_VIRTUALS_REPOSITORY") == "yes":
-            self.vpid = iter(self.e.fetch_repository("virtuals").package_ids("virtual/bar", [])).next()
         self.ipid = iter(self.ie.fetch_repository("installed").package_ids("cat-one/pkg-one", [])).next()
         self.mpid = iter(self.e.fetch_repository("testrepo").package_ids("cat/masked", [])).next()
 
@@ -105,12 +103,6 @@ class TestCase_01_PackageID(unittest.TestCase):
     def test_13_masks(self):
         mask = iter(self.mpid.masks).next()
         self.assert_(isinstance(mask, UnacceptedMask))
-
-    def test_14_virtual_for_key(self):
-        if os.environ.get("PALUDIS_ENABLE_VIRTUALS_REPOSITORY") == "yes":
-            self.assertEquals(self.vpid.virtual_for_key().parse_value(), self.pid)
-            self.assertEquals(self.pid.virtual_for_key(), None)
-            self.assertEquals(self.ipid.virtual_for_key(), None)
 
     def test_15_provide_key(self):
         self.assert_(isinstance(self.pid.provide_key(), MetadataProvideSpecTreeKey))

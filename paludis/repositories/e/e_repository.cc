@@ -128,7 +128,6 @@ using namespace paludis;
 using namespace paludis::erepository;
 
 typedef std::unordered_map<std::string, std::shared_ptr<MirrorsSequence> > MirrorMap;
-typedef std::unordered_map<QualifiedPackageName, std::shared_ptr<const PackageDepSpec>, Hash<QualifiedPackageName> > VirtualsMap;
 
 typedef std::map<FSPath, std::string, FSPathComparator> EAPIForFileMap;
 
@@ -520,9 +519,7 @@ ERepository::ERepository(const ERepositoryParams & p) :
             make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = p.binary_destination() ? this : 0,
                 n::environment_variable_interface() = this,
-                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
-                n::manifest_interface() = this,
-                n::virtuals_interface() = (*DistributionData::get_instance()->distribution_from_string(p.environment()->distribution())).support_old_style_virtuals() ? this : 0
+                n::manifest_interface() = this
                 )),
     _imp(this, p)
 {
@@ -875,26 +872,6 @@ ERepository::environment_updated_profile_variable(const std::string & var) const
     last = std::unique(values.begin(), values.end());
 
     return join(values.begin(), last, " ");
-}
-
-std::shared_ptr<const ERepository::VirtualsSequence>
-ERepository::virtual_packages() const
-{
-    Context context("When loading virtual packages for repository '" +
-            stringify(name()) + "'");
-
-    _imp->need_profiles();
-
-    std::shared_ptr<VirtualsSequence> result(std::make_shared<VirtualsSequence>());
-
-    for (Map<QualifiedPackageName, PackageDepSpec>::ConstIterator i(_imp->profile_ptr->virtuals()->begin()),
-            i_end(_imp->profile_ptr->virtuals()->end()) ; i != i_end ; ++i)
-        result->push_back(make_named_values<RepositoryVirtualsEntry>(
-                    n::provided_by_spec() = make_shared_copy(i->second),
-                    n::virtual_name() = i->first
-                ));
-
-    return result;
 }
 
 void

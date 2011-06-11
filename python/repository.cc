@@ -47,12 +47,6 @@ struct RepositoryWrapper :
         return self.environment_variable_interface();
     }
 
-    static RepositoryVirtualsInterface *
-    get_virtuals_interface(const Repository & self)
-    {
-        return self.virtuals_interface();
-    }
-
     static RepositoryDestinationInterface *
     get_destination_interface(const Repository & self)
     {
@@ -172,11 +166,6 @@ void expose_repository()
                 "[ro] RepositoryEnvironmentInterface"
                 )
 
-        .add_property("virtuals_interface", bp::make_function(&RepositoryWrapper::get_virtuals_interface,
-                    bp::return_internal_reference<>()),
-                "[ro] RepositoryVirtualsInterface"
-                )
-
         .add_property("destination_interface", bp::make_function(&RepositoryWrapper::get_destination_interface,
                     bp::return_internal_reference<>()),
                 "[ro] RepositoryDestinationInterface"
@@ -214,16 +203,6 @@ void expose_repository()
         (
          "RepositoryEnvironmentVariableInterface",
          "Interface for environment variable querying for repositories.",
-         bp::no_init
-        );
-
-    /**
-     * RepositoryVirtualsInterface
-     */
-    bp::class_<RepositoryVirtualsInterface, boost::noncopyable>
-        (
-         "RepositoryVirtualsInterface",
-         "Interface for repositories that define virtuals.",
          bp::no_init
         );
 

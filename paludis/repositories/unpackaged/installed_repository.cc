@@ -93,9 +93,7 @@ InstalledUnpackagedRepository::InstalledUnpackagedRepository(
     Repository(p.environment(), n, make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = this,
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
-                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
-                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
-                n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0)
             )),
     _imp(p)
 {

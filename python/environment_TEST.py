@@ -80,14 +80,6 @@ class TestCase_01_Environments(unittest.TestCase):
         self.assertRaises(NoSuchPackageError, self.e.fetch_unique_qualified_package_name, "bar",
                 Filter.SupportsUninstallAction())
 
-    def test_26_repositories(self):
-        if os.environ.get("PALUDIS_ENABLE_VIRTUALS_REPOSITORY") == "yes":
-            self.assert_(self.e.more_important_than("testrepo", "virtuals"))
-            self.assert_(not self.e.more_important_than("virtuals", "testrepo"))
-            self.assertRaises(NoSuchRepositoryError, self.e.fetch_repository, "blah")
-
-            self.assertEqual(len(list(self.e.repositories)), 3)
-
 class TestCase_03_TestEnvironment(unittest.TestCase):
     def test_01_create(self):
         e = TestEnvironment()

@@ -177,10 +177,6 @@ libpaludisresolver_a_SOURCES = \
 	use_existing.cc \
 	why_changed_choices.cc
 
-if ENABLE_VIRTUALS_REPOSITORY
-virtuals_tests = resolver_TEST_virtuals
-endif
-
 noinst_LIBRARIES = libpaludisresolver.a
 
 TESTS = \
@@ -194,8 +190,7 @@ TESTS = \
 	resolver_TEST_continue_on_failure \
 	resolver_TEST_uninstalls \
 	resolver_TEST_fetches \
-	resolver_TEST_purges \
-	$(virtuals_tests)
+	resolver_TEST_purges
 
 check_PROGRAMS = $(TESTS)
 
@@ -205,7 +200,6 @@ check_SCRIPTS = \
 	resolver_TEST_serialisation_setup.sh resolver_TEST_serialisation_cleanup.sh \
 	resolver_TEST_suggestions_setup.sh resolver_TEST_suggestions_cleanup.sh \
 	resolver_TEST_simple_setup.sh resolver_TEST_simple_cleanup.sh \
-	resolver_TEST_virtuals_setup.sh resolver_TEST_virtuals_cleanup.sh \
 	resolver_TEST_any_setup.sh resolver_TEST_any_cleanup.sh \
 	resolver_TEST_errors_setup.sh resolver_TEST_errors_cleanup.sh \
 	resolver_TEST_continue_on_failure_setup.sh resolver_TEST_continue_on_failure_cleanup.sh \
@@ -246,20 +240,6 @@ resolver_TEST_cycles_LDADD = \
 resolver_TEST_cycles_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 resolver_TEST_cycles_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
-
-resolver_TEST_virtuals_SOURCES = resolver_TEST_virtuals.cc
-
-resolver_TEST_virtuals_LDADD = \
-	libpaludisresolvertest.a \
-	$(top_builddir)/paludis/util/gtest_runner.o \
-	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
-	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
-	libpaludisresolver.a \
-	$(DYNAMIC_LD_LIBS)
-
-resolver_TEST_virtuals_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
-
-resolver_TEST_virtuals_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
 resolver_TEST_suggestions_SOURCES = resolver_TEST_suggestions.cc
 

@@ -112,9 +112,7 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
     Repository(env, RepositoryName(make_name(r)), make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = static_cast<RepositoryDestinationInterface *>(this),
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
-                n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
-                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
-                n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0)
             )),
     _imp(env, r)
 {

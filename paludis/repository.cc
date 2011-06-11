@@ -49,10 +49,6 @@ template class Set<std::shared_ptr<Repository> >;
 template class WrappedForwardIterator<Set<std::shared_ptr<Repository> >::ConstIteratorTag, const std::shared_ptr<Repository> >;
 template class WrappedOutputIterator<Set<std::shared_ptr<Repository> >::InserterTag, std::shared_ptr<Repository> >;
 
-template class Sequence<RepositoryVirtualsEntry>;
-template class WrappedForwardIterator<Sequence<RepositoryVirtualsEntry>::ConstIteratorTag, const RepositoryVirtualsEntry>;
-template class WrappedOutputIterator<Sequence<RepositoryVirtualsEntry>::InserterTag, RepositoryVirtualsEntry>;
-
 NoSuchSetError::NoSuchSetError(const std::string & our_name) throw () :
     Exception("Could not find '" + our_name + "'"),
     _name(our_name)
@@ -181,15 +177,7 @@ RepositoryEnvironmentVariableInterface::~RepositoryEnvironmentVariableInterface(
 {
 }
 
-RepositoryVirtualsInterface::~RepositoryVirtualsInterface()
-{
-}
-
 RepositoryDestinationInterface::~RepositoryDestinationInterface()
-{
-}
-
-RepositoryMakeVirtualsInterface::~RepositoryMakeVirtualsInterface()
 {
 }
 

@@ -363,8 +363,6 @@ paludis-*.*.*.tar.bz2
 /paludis/repositories/unpackaged/installed_repository_TEST
 /paludis/repositories/unpackaged/unpackaged_repository_TEST
 /paludis/repositories/unwritten/unwritten_repository_TEST
-/paludis/repositories/virtuals/installed_virtuals_repository_TEST
-/paludis/repositories/virtuals/virtuals_repository_TEST
 /paludis/repository_name_cache_TEST
 /paludis/resolver/resolver_TEST_any
 /paludis/resolver/resolver_TEST_blockers
@@ -377,7 +375,6 @@ paludis-*.*.*.tar.bz2
 /paludis/resolver/resolver_TEST_simple
 /paludis/resolver/resolver_TEST_suggestions
 /paludis/resolver/resolver_TEST_uninstalls
-/paludis/resolver/resolver_TEST_virtuals
 /paludis/selection_TEST
 /paludis/set_file_TEST
 /paludis/stringify_formatter_TEST
@@ -480,7 +477,6 @@ paludis-*.*.*.tar.bz2
 /paludis/util/tokeniser_TEST
 /paludis/util/tribool_TEST
 /paludis/util/util.hh
-/paludis/util/virtual_constructor_TEST
 /paludis/util/visitor_TEST
 /paludis/util/visitor_cast_TEST
 /paludis/util/wildcard_expander_TEST

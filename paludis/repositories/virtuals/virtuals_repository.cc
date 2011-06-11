@@ -123,9 +123,7 @@ VirtualsRepository::VirtualsRepository(const Environment * const env) :
     Repository(env, RepositoryName("virtuals"), make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = static_cast<RepositoryDestinationInterface *>(0),
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
-                n::make_virtuals_interface() = this,
-                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
-                n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0)
             )),
     _imp(env)
 {
@@ -153,28 +151,6 @@ VirtualsRepository::need_names() const
 
     std::vector<std::pair<QualifiedPackageName, std::shared_ptr<const PackageDepSpec> > > new_names;
 
-    for (auto r(_imp->env->begin_repositories()), r_end(_imp->env->end_repositories()) ; r != r_end ; ++r)
-    {
-        if (! (**r).virtuals_interface())
-            continue;
-
-        std::shared_ptr<const RepositoryVirtualsInterface::VirtualsSequence> virtuals(
-                (**r).virtuals_interface()->virtual_packages());
-        for (RepositoryVirtualsInterface::VirtualsSequence::ConstIterator v(virtuals->begin()),
-                v_end(virtuals->end()) ; v != v_end ; ++v)
-        {
-            std::pair<
-                std::vector<std::pair<QualifiedPackageName, std::shared_ptr<const PackageDepSpec> > >::const_iterator,
-                std::vector<std::pair<QualifiedPackageName, std::shared_ptr<const PackageDepSpec> > >::const_iterator> p(
-                        std::equal_range(_imp->names.begin(), _imp->names.end(),
-                            std::make_pair((*v).virtual_name(), std::shared_ptr<const PackageDepSpec>()),
-                            NamesNameComparator()));
-
-            if (p.first == p.second)
-                new_names.push_back(std::make_pair((*v).virtual_name(), (*v).provided_by_spec()));
-        }
-    }
-
     std::copy(new_names.begin(), new_names.end(), std::back_inserter(_imp->names));
     std::sort(_imp->names.begin(), _imp->names.end(), NamesSortComparator());
     _imp->names.erase(std::unique(_imp->names.begin(), _imp->names.end(), NamesUniqueComparator()), _imp->names.end());
@@ -191,42 +167,6 @@ VirtualsRepository::need_ids() const
         return;
 
     _imp->has_ids = true;
-
-    Context context("When loading entries for virtuals repository:");
-    need_names();
-
-    Log::get_instance()->message("virtuals.need_entries", ll_debug, lc_context) << "VirtualsRepository need_entries";
-
-    IDMap my_ids;
-
-    /* Populate our _imp->entries. */
-    for (std::vector<std::pair<QualifiedPackageName, std::shared_ptr<const PackageDepSpec> > >::const_iterator
-            v(_imp->names.begin()), v_end(_imp->names.end()) ; v != v_end ; ++v)
-    {
-        std::shared_ptr<const PackageIDSequence> matches((*_imp->env)[selection::AllVersionsSorted(
-                    generator::Matches(*v->second, make_null_shared_ptr(), { }) |
-                    filter::SupportsAction<InstallAction>())]);
-
-        if (matches->empty())
-            Log::get_instance()->message("virtuals.no_match", ll_warning, lc_context) << "No packages matching '"
-                    << *v->second << "' for virtual '" << v->first << "'";
-
-        for (PackageIDSequence::ConstIterator m(matches->begin()), m_end(matches->end()) ;
-                m != m_end ; ++m)
-        {
-            IDMap::iterator i(my_ids.find(v->first));
-            if (my_ids.end() == i)
-                i = my_ids.insert(std::make_pair(v->first, std::make_shared<PackageIDSequence>())).first;
-
-            std::shared_ptr<const PackageID> id(make_virtual_package_id(QualifiedPackageName(v->first), *m));
-            if (stringify(id->name().category()) != "virtual")
-                throw InternalError(PALUDIS_HERE, "Got bad id '" + stringify(*id) + "'");
-            i->second->push_back(id);
-        }
-    }
-
-    using std::swap;
-    swap(my_ids, _imp->ids);
 }
 
 std::shared_ptr<const PackageIDSequence>
@@ -296,17 +236,6 @@ VirtualsRepository::invalidate()
 {
     Lock l(*_imp->big_nasty_mutex);
     _imp.reset(new Imp<VirtualsRepository>(_imp->env, _imp->big_nasty_mutex));
-}
-
-const std::shared_ptr<const PackageID>
-VirtualsRepository::make_virtual_package_id(
-        const QualifiedPackageName & virtual_name, const std::shared_ptr<const PackageID> & provider) const
-{
-    if (virtual_name.category().value() != "virtual")
-        throw InternalError(PALUDIS_HERE, "tried to make a virtual package id using '" + stringify(virtual_name) + "', '"
-                + stringify(*provider) + "'");
-
-    return std::make_shared<virtuals::VirtualsPackageID>(_imp->env, name(), virtual_name, provider, true);
 }
 
 const bool

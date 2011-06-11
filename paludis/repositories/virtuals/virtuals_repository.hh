@@ -33,7 +33,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE VirtualsRepository :
         public Repository,
-        public RepositoryMakeVirtualsInterface,
         public std::enable_shared_from_this<VirtualsRepository>
     {
         private:
@@ -105,12 +104,6 @@ namespace paludis
             virtual bool some_ids_might_not_be_masked() const;
 
             virtual bool sync(const std::string &, const std::string &, const std::shared_ptr<OutputManager> &) const;
-
-            /* RepositoryMakeVirtualsInterface */
-
-            virtual const std::shared_ptr<const PackageID> make_virtual_package_id(
-                    const QualifiedPackageName & virtual_name, const std::shared_ptr<const PackageID> & provider) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* Keys */
 

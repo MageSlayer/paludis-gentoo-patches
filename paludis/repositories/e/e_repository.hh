@@ -51,7 +51,6 @@ namespace paludis
     class PALUDIS_VISIBLE ERepository :
         public Repository,
         public RepositoryEnvironmentVariableInterface,
-        public RepositoryVirtualsInterface,
         public RepositoryDestinationInterface,
         public RepositoryManifestInterface,
         public std::enable_shared_from_this<ERepository>
@@ -80,11 +79,6 @@ namespace paludis
             virtual void invalidate();
 
             virtual void purge_invalid_cache() const;
-
-            /* RepositoryVirtualsInterface */
-
-            virtual std::shared_ptr<const VirtualsSequence> virtual_packages() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryDestinationInterface */
 
