@@ -34,7 +34,7 @@
 #include <paludis/resolver/collect_depped_upon.hh>
 #include <paludis/resolver/collect_installed.hh>
 #include <paludis/resolver/collect_purges.hh>
-#include <paludis/resolver/accumulate_deps_and_provides.hh>
+#include <paludis/resolver/accumulate_deps.hh>
 #include <paludis/resolver/why_changed_choices.hh>
 #include <paludis/resolver/same_slot.hh>
 #include <paludis/resolver/reason_utils.hh>
@@ -2146,9 +2146,9 @@ Decider::_resolve_purges()
     const std::shared_ptr<PackageIDSequence> will_eventually_have(std::make_shared<PackageIDSequence>());
     std::copy(will_eventually_have_set->begin(), will_eventually_have_set->end(), will_eventually_have->back_inserter());
 
-    const std::shared_ptr<const PackageIDSet> used_originally(accumulate_deps_and_provides(_imp->env, going_away, will_eventually_have, false,
+    const std::shared_ptr<const PackageIDSet> used_originally(accumulate_deps(_imp->env, going_away, will_eventually_have, false,
                 std::bind(&Environment::trigger_notifier_callback, _imp->env, NotifierCallbackResolverStepEvent())));
-    const std::shared_ptr<const PackageIDSet> used_afterwards(accumulate_deps_and_provides(_imp->env, newly_available, will_eventually_have, false,
+    const std::shared_ptr<const PackageIDSet> used_afterwards(accumulate_deps(_imp->env, newly_available, will_eventually_have, false,
                 std::bind(&Environment::trigger_notifier_callback, _imp->env, NotifierCallbackResolverStepEvent())));
 
     const std::shared_ptr<PackageIDSet> used_originally_and_not_going_away(std::make_shared<PackageIDSet>());

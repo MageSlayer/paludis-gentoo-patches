@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,9 +17,9 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_COLLECT_PROVIDED_HH
-#define PALUDIS_GUARD_PALUDIS_RESOLVER_COLLECT_PROVIDED_HH 1
+#ifndef PALUDIS_GUARD_PALUDIS_RESOLVER_ACCUMULATE_DEPS_HH
+#define PALUDIS_GUARD_PALUDIS_RESOLVER_ACCUMULATE_DEPS_HH 1
 
-#include <paludis/resolver/collect_provided-fwd.hh>
+#include <paludis/resolver/accumulate_deps-fwd.hh>
 
 #endif

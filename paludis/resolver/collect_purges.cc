@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,7 +19,7 @@
 
 #include <paludis/resolver/collect_purges.hh>
 #include <paludis/resolver/collect_world.hh>
-#include <paludis/resolver/accumulate_deps_and_provides.hh>
+#include <paludis/resolver/accumulate_deps.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -38,7 +38,7 @@ paludis::resolver::collect_purges(
         const std::function<void ()> & step)
 {
     const std::shared_ptr<const PackageIDSet> world(collect_world(env, have_now));
-    const std::shared_ptr<const PackageIDSet> world_plus_deps(accumulate_deps_and_provides(env, world, have_now_seq, true, step));
+    const std::shared_ptr<const PackageIDSet> world_plus_deps(accumulate_deps(env, world, have_now_seq, true, step));
 
     const std::shared_ptr<PackageIDSet> unused(std::make_shared<PackageIDSet>());
     std::set_difference(have_now->begin(), have_now->end(),

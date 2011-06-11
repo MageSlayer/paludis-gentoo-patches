@@ -28,7 +28,7 @@ BUILT_SOURCES = \
 	use_existing-se.hh use_existing-se.cc
 
 noinst_HEADERS = \
-	accumulate_deps_and_provides.hh accumulate_deps_and_provides-fwd.hh \
+	accumulate_deps.hh accumulate_deps-fwd.hh \
 	allow_choice_changes_helper.hh allow_choice_changes_helper-fwd.hh \
 	allowed_to_remove_helper.hh allowed_to_remove_helper-fwd.hh \
 	allowed_to_restart_helper.hh allowed_to_restart_helper-fwd.hh \
@@ -39,7 +39,6 @@ noinst_HEADERS = \
 	change_type.hh change_type-fwd.hh change_type-se.hh \
 	collect_depped_upon.hh collect_depped_upon-fwd.hh \
 	collect_installed.hh collect_installed-fwd.hh \
-	collect_provided.hh collect_provided-fwd.hh \
 	collect_purges.hh collect_purges-fwd.hh \
 	collect_world.hh collect_world-fwd.hh \
 	confirm_helper.hh confirm_helper-fwd.hh \
@@ -102,7 +101,7 @@ noinst_HEADERS = \
 	why_changed_choices.hh why_changed_choices-fwd.hh
 
 libpaludisresolver_a_SOURCES = \
-	accumulate_deps_and_provides.cc \
+	accumulate_deps.cc \
 	allow_choice_changes_helper.cc \
 	allowed_to_remove_helper.cc \
 	allowed_to_restart_helper.cc \
@@ -113,7 +112,6 @@ libpaludisresolver_a_SOURCES = \
 	change_type.cc \
 	collect_depped_upon.cc \
 	collect_installed.cc \
-	collect_provided.cc \
 	collect_purges.cc \
 	collect_world.cc \
 	confirm_helper.cc \

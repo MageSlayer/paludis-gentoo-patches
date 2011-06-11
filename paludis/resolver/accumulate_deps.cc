@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,9 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <paludis/resolver/accumulate_deps_and_provides.hh>
+#include <paludis/resolver/accumulate_deps.hh>
 #include <paludis/resolver/collect_depped_upon.hh>
-#include <paludis/resolver/collect_provided.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
@@ -30,7 +29,7 @@ using namespace paludis;
 using namespace paludis::resolver;
 
 const std::shared_ptr<const PackageIDSet>
-paludis::resolver::accumulate_deps_and_provides(
+paludis::resolver::accumulate_deps(
         const Environment * const env,
         const std::shared_ptr<const PackageIDSet> & start,
         const std::shared_ptr<const PackageIDSequence> & will_eventually_have,
@@ -55,9 +54,6 @@ paludis::resolver::accumulate_deps_and_provides(
             const std::shared_ptr<const PackageIDSet> depped_upon(collect_depped_upon(
                         env, *i, will_eventually_have, std::make_shared<PackageIDSequence>()));
             std::copy(depped_upon->begin(), depped_upon->end(), result->inserter());
-
-            const std::shared_ptr<const PackageIDSet> provided(collect_provided(env, *i));
-            std::copy(provided->begin(), provided->end(), result->inserter());
         }
 
         if (! recurse)
