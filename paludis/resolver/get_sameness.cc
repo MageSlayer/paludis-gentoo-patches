@@ -19,16 +19,65 @@
 
 #include <paludis/resolver/get_sameness.hh>
 
+#include <paludis/util/log.hh>
+#include <paludis/util/visitor_cast.hh>
+
 #include <paludis/package_id.hh>
 #include <paludis/choice.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/unformatted_pretty_printer.hh>
+#include <paludis/name.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/slot_requirement.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/elike_slot_requirement.hh>
 
 #include <set>
 #include <algorithm>
 
 using namespace paludis;
 using namespace paludis::resolver;
+
+namespace
+{
+    struct ComparingPrettyPrinter :
+        UnformattedPrettyPrinter
+    {
+        using UnformattedPrettyPrinter::prettify;
+
+        const std::string prettify(const PackageDepSpec & s) const
+        {
+            if (s.slot_requirement_ptr())
+            {
+                auto r(visitor_cast<const SlotExactRequirement>(*s.slot_requirement_ptr()));
+                if (r && r->from_any_locked())
+                    return prettify(PartiallyMadePackageDepSpec(s).slot_requirement(std::make_shared<ELikeSlotAnyLockedRequirement>()));
+            }
+
+            return UnformattedPrettyPrinter::prettify(s);
+        }
+    };
+
+    bool is_same_dependencies(
+        const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > & a,
+        const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > & b)
+    {
+        if (! a)
+            return ! b;
+        else if (! b)
+            return false;
+
+        auto sa(a->pretty_print_value(ComparingPrettyPrinter(), { }));
+        auto sb(b->pretty_print_value(ComparingPrettyPrinter(), { }));
+
+        if (sa != sb)
+            Log::get_instance()->message("resolver.get_sameness", ll_debug, lc_context) <<
+                "Not same: [" << sa << "] [" << sb << "]";
+
+        return sa == sb;
+    }
+}
 
 std::tuple<bool, bool, bool>
 paludis::resolver::get_sameness(
@@ -93,6 +142,14 @@ paludis::resolver::get_sameness(
                 is_same_metadata = false;
                 break;
             }
+    }
+
+    if (is_same_metadata)
+    {
+        is_same_metadata = is_same_metadata && is_same_dependencies(existing_id->build_dependencies_key(), installable_id->build_dependencies_key());
+        is_same_metadata = is_same_metadata && is_same_dependencies(existing_id->run_dependencies_key(), installable_id->run_dependencies_key());
+        is_same_metadata = is_same_metadata && is_same_dependencies(existing_id->post_dependencies_key(), installable_id->post_dependencies_key());
+        is_same_metadata = is_same_metadata && is_same_dependencies(existing_id->dependencies_key(), installable_id->dependencies_key());
     }
 
     return std::make_tuple(is_same_version, is_same, is_same_metadata);
