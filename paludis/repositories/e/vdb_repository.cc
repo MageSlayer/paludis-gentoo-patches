@@ -114,8 +114,6 @@ namespace paludis
         mutable bool has_category_names;
         mutable IDMap ids;
 
-        mutable std::shared_ptr<ProvidesMap> provides_map;
-        mutable bool tried_provides_cache, used_provides_cache;
         std::shared_ptr<RepositoryNameCache> names_cache;
 
         Imp(const VDBRepository * const, const VDBRepositoryParams &, std::shared_ptr<Mutex> = std::make_shared<Mutex>());
@@ -124,7 +122,6 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<FSPath> > location_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > root_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        std::shared_ptr<const MetadataValueKey<FSPath> > provides_cache_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > names_cache_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > builddir_key;
         std::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unknown_key;
@@ -135,8 +132,6 @@ namespace paludis
         params(p),
         big_nasty_mutex(m),
         has_category_names(false),
-        tried_provides_cache(false),
-        used_provides_cache(false),
         names_cache(std::make_shared<RepositoryNameCache>(p.names_cache(), r)),
         location_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("location", "location",
                     mkt_significant, params.location())),
@@ -144,8 +139,6 @@ namespace paludis
                     mkt_normal, params.root())),
         format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format",
                     mkt_significant, "vdb")),
-        provides_cache_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("provides_cache", "provides_cache",
-                    mkt_normal, params.provides_cache())),
         names_cache_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("names_cache", "names_cache",
                     mkt_normal, params.names_cache())),
         builddir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("builddir", "builddir",
@@ -189,7 +182,6 @@ VDBRepository::_add_metadata_keys() const
     add_metadata_key(_imp->location_key);
     add_metadata_key(_imp->root_key);
     add_metadata_key(_imp->format_key);
-    add_metadata_key(_imp->provides_cache_key);
     add_metadata_key(_imp->names_cache_key);
     add_metadata_key(_imp->builddir_key);
     add_metadata_key(_imp->eapi_when_unknown_key);
@@ -303,20 +295,6 @@ VDBRepository::repository_factory_create(
     if (root.empty())
         root = "/";
 
-    std::string provides_cache(f("provides_cache"));
-    if (provides_cache.empty())
-    {
-        provides_cache = EExtraDistributionData::get_instance()->data_from_distribution(*DistributionData::get_instance()->distribution_from_string(
-                    env->distribution()))->default_provides_cache();
-        if (provides_cache.empty())
-        {
-            Log::get_instance()->message("e.vdb.configuration.no_provides_cache", ll_warning, lc_no_context)
-                << "The provides_cache key is not set in '" << f("repo_file")
-                << "'. You should read the Paludis documentation and select an appropriate value.";
-            provides_cache = "/var/empty";
-        }
-    }
-
     std::string names_cache(f("names_cache"));
     if (names_cache.empty())
     {
@@ -353,7 +331,6 @@ VDBRepository::repository_factory_create(
                 n::location() = location,
                 n::name() = RepositoryName(name),
                 n::names_cache() = names_cache,
-                n::provides_cache() = provides_cache,
                 n::root() = root
                 ));
 }
@@ -556,12 +533,6 @@ VDBRepository::perform_uninstall(
         if (only)
             _imp->names_cache->remove(id->name());
     }
-
-    if (_imp->used_provides_cache || (! _imp->tried_provides_cache && load_provided_using_cache()))
-    {
-        _imp->provides_map->erase(std::make_pair(id->name(), id->version()));
-        write_provides_cache();
-    }
 }
 
 void
@@ -572,239 +543,12 @@ VDBRepository::invalidate()
     _add_metadata_keys();
 }
 
-bool
-VDBRepository::load_provided_using_cache() const
-{
-    Lock l(*_imp->big_nasty_mutex);
-    _imp->tried_provides_cache = true;
-
-    if (_imp->params.provides_cache() == FSPath("/var/empty"))
-        return false;
-
-    Context context("When loading VDB PROVIDEs map using '" + stringify(_imp->params.provides_cache()) + "':");
-
-    if (! _imp->params.provides_cache().stat().is_regular_file())
-    {
-        Log::get_instance()->message("e.vdb.provides_cache.not_regular_file", ll_warning, lc_no_context)
-            << "Provides cache at '" << _imp->params.provides_cache() << "' is not a regular file. Perhaps you need to regenerate "
-            "the cache using 'cave fix-cache'?";
-        return false;
-    }
-
-    SafeIFStream provides_cache(_imp->params.provides_cache());
-
-    std::string version;
-    std::getline(provides_cache, version);
-
-    if (version != "paludis-3")
-    {
-        Log::get_instance()->message("e.vdb.provides_cache.unsupported", ll_warning, lc_no_context) << "Can't use provides cache at '"
-            << _imp->params.provides_cache() << "' because format '" << version << "' is not 'paludis-3'. Perhaps you need to regenerate "
-            "the cache using 'cave fix-cache'?";
-        return false;
-    }
-
-    std::string for_name;
-    std::getline(provides_cache, for_name);
-    if (for_name != stringify(name()))
-    {
-        Log::get_instance()->message("e.vdb.provides_cache.unusable", ll_warning, lc_no_context)
-            << "Can't use provides cache at '" << _imp->params.provides_cache() << "' because it was generated for repository '"
-            << for_name << "'. You must not have multiple provides caches at the same location.";
-        return false;
-    }
-
-    _imp->provides_map = std::make_shared<ProvidesMap>();
-
-    std::string line;
-    while (std::getline(provides_cache, line))
-    {
-        try
-        {
-            std::vector<std::string> tokens;
-            tokenise_whitespace(line, std::back_inserter(tokens));
-            if (tokens.size() < 3)
-            {
-                Log::get_instance()->message("e.vdb.provides_cache.malformed", ll_warning, lc_context)
-                    << "Not using PROVIDES cache line '" << line << "' as it contains fewer than three tokens";
-                continue;
-            }
-
-            QualifiedPackageName q(tokens.at(0));
-            VersionSpec v(tokens.at(1), EAPIData::get_instance()->eapi_from_string(
-                        _imp->params.eapi_when_unknown())->supported()->version_spec_options());
-
-            std::shared_ptr<std::list<QualifiedPackageName> > qpns(std::make_shared<std::list<QualifiedPackageName>>());
-            std::copy(tokens.begin() + 2, tokens.end(), create_inserter<QualifiedPackageName>(
-                        std::back_inserter(*qpns)));
-
-            if (_imp->provides_map->end() != _imp->provides_map->find(std::make_pair(q, v)))
-                Log::get_instance()->message("e.vdb.provides_cache.duplicate", ll_warning, lc_context)
-                    << "Not using PROVIDES cache line '" << line << "' as it names a package that has already been specified";
-            else
-                _imp->provides_map->insert(std::make_pair(std::make_pair(q, v), qpns));
-        }
-        catch (const InternalError &)
-        {
-            throw;
-        }
-        catch (const Exception & e)
-        {
-            Log::get_instance()->message("e.vdb.provides_cache.unusable", ll_warning, lc_context)
-                << "Not using PROVIDES cache line '" << line << "' due to exception '" << e.message() << "' (" << e.what() << ")";
-        }
-    }
-
-    _imp->used_provides_cache = true;
-    return true;
-}
-
-void
-VDBRepository::provides_from_package_id(const std::shared_ptr<const PackageID> & id) const
-{
-    Context context("When loading VDB PROVIDEs entry for '" + stringify(*id) + "':");
-
-    try
-    {
-        if (! id->provide_key())
-            return;
-
-        std::shared_ptr<const ProvideSpecTree> provide(id->provide_key()->parse_value());
-        DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(_imp->params.environment(), id);
-        provide->top()->accept(f);
-
-        std::shared_ptr<std::list<QualifiedPackageName> > qpns(std::make_shared<std::list<QualifiedPackageName>>());
-
-        for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator
-                 p(f.begin()), p_end(f.end()) ; p != p_end ; ++p)
-        {
-            QualifiedPackageName pp((*p)->text());
-
-            if (pp.category() != CategoryNamePart("virtual"))
-                Log::get_instance()->message("e.vdb.provide.non_virtual", ll_warning, lc_no_context)
-                    << "PROVIDE of non-virtual '" << pp << "' from '" << *id << "' will not work as expected";
-
-            qpns->push_back(pp);
-        }
-
-        ProvidesMap::iterator it(_imp->provides_map->find(std::make_pair(id->name(), id->version())));
-        if (qpns->empty())
-        {
-            if (_imp->provides_map->end() != it)
-                _imp->provides_map->erase(it);
-        }
-        else
-        {
-            if (_imp->provides_map->end() == it)
-                _imp->provides_map->insert(std::make_pair(std::make_pair(id->name(), id->version()), qpns));
-            else
-                it->second = qpns;
-        }
-    }
-    catch (const InternalError &)
-    {
-        throw;
-    }
-    catch (const Exception & ee)
-    {
-        Log::get_instance()->message("e.vdb.provides.failure", ll_warning, lc_no_context) << "Skipping VDB PROVIDE entry for '"
-            << *id << "' due to exception '" << ee.message() << "' (" << ee.what() << ")";
-    }
-}
-
-void
-VDBRepository::load_provided_the_slow_way() const
-{
-    Lock l(*_imp->big_nasty_mutex);
-
-    using namespace std::placeholders;
-
-    Context context("When loading VDB PROVIDEs map the slow way:");
-
-    Log::get_instance()->message("e.vdb.provides.starting", ll_debug, lc_no_context) << "Starting VDB PROVIDEs map creation";
-    _imp->provides_map = std::make_shared<ProvidesMap>();
-
-    need_category_names();
-    std::for_each(_imp->categories.begin(), _imp->categories.end(),
-            std::bind(std::mem_fn(&VDBRepository::need_package_ids), this,
-                std::bind<CategoryNamePart>(std::mem_fn(
-                        &std::pair<const CategoryNamePart, std::shared_ptr<QualifiedPackageNameSet> >::first), _1)));
-
-
-    for (IDMap::const_iterator i(_imp->ids.begin()), i_end(_imp->ids.end()) ;
-            i != i_end ; ++i)
-        for (PackageIDSequence::ConstIterator e(i->second->begin()), e_end(i->second->end()) ;
-                e != e_end ; ++e)
-            provides_from_package_id(*e);
-
-    Log::get_instance()->message("e.vdb.provides.done", ll_debug, lc_no_context) << "Done VDB PROVIDEs map creation";
-}
-
-void
-VDBRepository::write_provides_cache() const
-{
-    Context context("When saving provides cache to '" + stringify(_imp->params.provides_cache()) + "':");
-
-    if (! _imp->params.provides_cache().dirname().stat().exists())
-    {
-        Log::get_instance()->message("e.vdb.provides.no_dir", ll_warning, lc_no_context) << "Directory '"
-            << _imp->params.provides_cache().dirname() << "' does not exist, so cannot save cache file '"
-            << _imp->params.provides_cache() << "' "
-            << "(see the faq for why this directory will not be created automatically)";
-        return;
-    }
-
-    try
-    {
-        SafeOFStream f(_imp->params.provides_cache(), -1, true);
-
-        f << "paludis-3" << std::endl;
-        f << name() << std::endl;
-
-        for (ProvidesMap::const_iterator it(_imp->provides_map->begin()),
-                 it_end(_imp->provides_map->end()); it_end != it; ++it)
-        {
-            f << it->first.first << " " << it->first.second;
-            for (std::list<QualifiedPackageName>::const_iterator it2(it->second->begin()),
-                     it2_end(it->second->end()); it2_end != it2; ++it2)
-                f << " " << *it2;
-            f << std::endl;
-        }
-    }
-    catch (const SafeOFStreamError & e)
-    {
-        Log::get_instance()->message("e.vdb.provides.write_failed", ll_warning, lc_context) << "Cannot write to '" <<
-                _imp->params.provides_cache() << "': '" << e.message() << "' (" << e.what() << ")";
-        return;
-    }
-}
-
 void
 VDBRepository::regenerate_cache() const
 {
     Lock l(*_imp->big_nasty_mutex);
 
-    regenerate_provides_cache();
     _imp->names_cache->regenerate_cache();
-}
-
-void
-VDBRepository::regenerate_provides_cache() const
-{
-    Lock l(*_imp->big_nasty_mutex);
-
-    using namespace std::placeholders;
-
-    if (_imp->params.provides_cache() == FSPath("/var/empty"))
-        return;
-
-    Context context("When generating VDB repository provides cache at '"
-            + stringify(_imp->params.provides_cache()) + "':");
-
-    FSPath(_imp->params.provides_cache()).unlink();
-
-    load_provided_the_slow_way();
-    write_provides_cache();
 }
 
 std::shared_ptr<const CategoryNamePartSet>
@@ -1007,12 +751,6 @@ VDBRepository::merge(const MergeParams & m)
     post_merge_command();
 
     _imp->names_cache->add(m.package_id()->name());
-
-    if (_imp->used_provides_cache || (! _imp->tried_provides_cache && load_provided_using_cache()))
-    {
-        provides_from_package_id(m.package_id());
-        write_provides_cache();
-    }
 }
 
 void
@@ -1528,14 +1266,6 @@ VDBRepository::perform_updates()
         if ((! moves.empty()) || (! slot_moves.empty()))
         {
             invalidate();
-
-            if (_imp->params.provides_cache() != FSPath("/var/empty"))
-                if (_imp->params.provides_cache().stat().is_regular_file_or_symlink_to_regular_file())
-                {
-                    std::cout << std::endl << "Invalidating provides cache following updates" << std::endl;
-                    _imp->params.provides_cache().unlink();
-                    regenerate_provides_cache();
-                }
 
             std::cout << std::endl << "Invalidating names cache following updates" << std::endl;
             _imp->names_cache->regenerate_cache();

@@ -45,7 +45,6 @@ namespace paludis
         typedef Name<struct name_location> location;
         typedef Name<struct name_name> name;
         typedef Name<struct name_names_cache> names_cache;
-        typedef Name<struct name_provides_cache> provides_cache;
         typedef Name<struct name_root> root;
     }
 
@@ -59,7 +58,6 @@ namespace paludis
             NamedValue<n::location, FSPath> location;
             NamedValue<n::name, RepositoryName> name;
             NamedValue<n::names_cache, FSPath> names_cache;
-            NamedValue<n::provides_cache, FSPath> provides_cache;
             NamedValue<n::root, FSPath> root;
         };
     }
@@ -80,13 +78,6 @@ namespace paludis
             Pimp<VDBRepository> _imp;
 
             void _add_metadata_keys() const;
-
-            bool load_provided_using_cache() const;
-            void provides_from_package_id(const std::shared_ptr<const PackageID> &) const;
-            void load_provided_the_slow_way() const;
-
-            void write_provides_cache() const;
-            void regenerate_provides_cache() const;
 
             void need_category_names() const;
             void need_package_ids(const CategoryNamePart &) const;
