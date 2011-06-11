@@ -114,7 +114,6 @@ namespace paludis
         mutable bool has_category_names;
         mutable IDMap ids;
 
-        mutable std::shared_ptr<RepositoryProvidesInterface::ProvidesSequence> provides;
         mutable std::shared_ptr<ProvidesMap> provides_map;
         mutable bool tried_provides_cache, used_provides_cache;
         std::shared_ptr<RepositoryNameCache> names_cache;
@@ -174,7 +173,6 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
                 n::environment_variable_interface() = this,
                 n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
                 n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
-                n::provides_interface() = this,
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
     _imp(this, p)
@@ -565,7 +563,6 @@ VDBRepository::perform_uninstall(
     {
         _imp->provides_map->erase(std::make_pair(id->name(), id->version()));
         write_provides_cache();
-        _imp->provides.reset();
     }
 }
 
@@ -575,45 +572,6 @@ VDBRepository::invalidate()
     Lock l(*_imp->big_nasty_mutex);
     _imp.reset(new Imp<VDBRepository>(this, _imp->params, _imp->big_nasty_mutex));
     _add_metadata_keys();
-}
-
-std::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence>
-VDBRepository::provided_packages() const
-{
-    Lock l(*_imp->big_nasty_mutex);
-
-    if (_imp->provides)
-        return _imp->provides;
-
-    Context context("When finding provided packages for '" + stringify(name()) + "':");
-
-    if (! _imp->provides_map)
-    {
-        if (! load_provided_using_cache())
-            load_provided_the_slow_way();
-    }
-
-    _imp->provides = std::make_shared<RepositoryProvidesInterface::ProvidesSequence>();
-    for (ProvidesMap::const_iterator it(_imp->provides_map->begin()),
-             it_end(_imp->provides_map->end()); it_end != it; ++it)
-    {
-        std::shared_ptr<const ERepositoryID> id(package_id_if_exists(it->first.first, it->first.second));
-        if (! id)
-        {
-            Log::get_instance()->message("e.vdb.provides.no_package", ll_warning, lc_context) <<
-                "No package available for '" << it->first.first <<  " " << it->first.second << "'";
-            continue;
-        }
-
-        for (std::list<QualifiedPackageName>::const_iterator it2(it->second->begin()),
-                 it2_end(it->second->end()); it2_end != it2; ++it2)
-            _imp->provides->push_back(make_named_values<RepositoryProvidesEntry>(
-                        n::provided_by() = id,
-                        n::virtual_name() = *it2
-                    ));
-    }
-
-    return _imp->provides;
 }
 
 bool
@@ -1056,7 +1014,6 @@ VDBRepository::merge(const MergeParams & m)
     {
         provides_from_package_id(m.package_id());
         write_provides_cache();
-        _imp->provides.reset();
     }
 }
 

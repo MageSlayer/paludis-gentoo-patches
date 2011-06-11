@@ -114,7 +114,6 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
                 n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
                 n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
-                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
     _imp(env, r)
@@ -134,31 +133,6 @@ InstalledVirtualsRepository::need_ids() const
 
     if (_imp->has_ids)
         return;
-
-    /* Populate our _imp->entries. We need to iterate over each repository in
-     * our env's package database, see if it has a provides interface, and if it
-     * does create an entry for each provided package. */
-    for (auto r(_imp->env->begin_repositories()),
-            r_end(_imp->env->end_repositories()) ; r != r_end ; ++r)
-    {
-        if (! (**r).provides_interface())
-            continue;
-
-        std::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> pp(
-                (**r).provides_interface()->provided_packages());
-
-        for (RepositoryProvidesInterface::ProvidesSequence::ConstIterator p(
-                    pp->begin()), p_end(pp->end()) ; p != p_end ; ++p)
-        {
-            IDMap::iterator i(_imp->ids.find((*p).virtual_name()));
-            if (i == _imp->ids.end())
-                i = _imp->ids.insert(std::make_pair((*p).virtual_name(), std::make_shared<PackageIDSequence>())).first;
-
-            std::shared_ptr<const PackageID> id(std::make_shared<virtuals::VirtualsPackageID>(
-                        _imp->env, name(), (*p).virtual_name(), (*p).provided_by(), false));
-            i->second->push_back(id);
-        }
-    }
 
     _imp->has_ids = true;
 }

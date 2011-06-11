@@ -76,7 +76,6 @@ namespace paludis
         typedef Name<struct name_profile> profile;
         typedef Name<struct name_provided_by> provided_by;
         typedef Name<struct name_provided_by_spec> provided_by_spec;
-        typedef Name<struct name_provides_interface> provides_interface;
         typedef Name<struct name_replacing> replacing;
         typedef Name<struct name_status> status;
         typedef Name<struct name_used_this_for_config_protect> used_this_for_config_protect;
@@ -97,22 +96,7 @@ namespace paludis
         NamedValue<n::environment_variable_interface, RepositoryEnvironmentVariableInterface *> environment_variable_interface;
         NamedValue<n::make_virtuals_interface, RepositoryMakeVirtualsInterface *> make_virtuals_interface;
         NamedValue<n::manifest_interface, RepositoryManifestInterface *> manifest_interface;
-        NamedValue<n::provides_interface, RepositoryProvidesInterface *> provides_interface;
         NamedValue<n::virtuals_interface, RepositoryVirtualsInterface *> virtuals_interface;
-    };
-
-    /**
-     * A provides entry in a Repository implementing RepositoryProvidesInterface.
-     *
-     * \see Repository
-     * \see RepositoryProvidesInterface
-     * \ingroup g_repository
-     * \since 0.30
-     */
-    struct RepositoryProvidesEntry
-    {
-        NamedValue<n::provided_by, std::shared_ptr<const PackageID> > provided_by;
-        NamedValue<n::virtual_name, QualifiedPackageName> virtual_name;
     };
 
     /**
@@ -557,35 +541,6 @@ namespace paludis
             virtual const std::shared_ptr<const PackageID> make_virtual_package_id(
                     const QualifiedPackageName & virtual_name, const std::shared_ptr<const PackageID> & provider) const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-    };
-
-    /**
-     * Interface for repositories that provide packages.
-     *
-     * \see Repository
-     * \ingroup g_repository
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE RepositoryProvidesInterface
-    {
-        public:
-            ///\name Provides functionality
-            ///\{
-
-            /**
-             * A collection of provided packages.
-             */
-            typedef Sequence<RepositoryProvidesEntry> ProvidesSequence;
-
-            /**
-             * Fetch our provided packages.
-             */
-            virtual std::shared_ptr<const ProvidesSequence> provided_packages() const
-                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            ///\}
-
-            virtual ~RepositoryProvidesInterface();
     };
 
     /**

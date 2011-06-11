@@ -26,10 +26,6 @@ END
 mkdir -p repo/{profiles/profile,metadata,eclass} || exit 1
 cd repo || exit 1
 echo "test-repo" >> profiles/repo_name || exit 1
-cat <<END > profiles/profile/virtuals
-virtual/virtual-pretend-installed cat/pretend-installed
-virtual/virtual-doesnotexist cat/doesnotexist
-END
 echo "cat" >> metadata/categories.conf || exit 1
 cat <<END > profiles/profile/make.defaults
 CHOST="i286-badger-linux-gnu"
@@ -812,23 +808,6 @@ pkg_setup() {
 
     BV2=$(best_version cat/doesnotexist )
     [[ "$BV2" == "" ]] || die "BV2 is $BV2"
-
-    if [[ -n "$PALUDIS_ENABLE_VIRTUALS_REPOSITORY" ]] ; then
-        if ! best_version virtual/virtual-pretend-installed >/dev/null ; then
-            die "failed virtual/virtual-pretend-installed"
-        fi
-
-        BV3=$(best_version virtual/virtual-pretend-installed )
-        [[ "$BV3" == "virtual/virtual-pretend-installed-1::installed-virtuals (virtual for cat/pretend-installed-1:0::installed)" ]] \
-            || die "BV3 is $BV3"
-
-        if best_version virtual/virtual-doesnotexist >/dev/null ; then
-            die "not failed virtual/virtual-doesnotexist"
-        fi
-
-        BV2=$(best_version virtual/virtual-doesnotexist )
-        [[ "$BV4" == "" ]] || die "BV4 is $BV4"
-    fi
 }
 END
 mkdir -p "packages/cat/has-version"

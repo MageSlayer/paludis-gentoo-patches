@@ -50,8 +50,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE FakeInstalledRepository :
         public FakeRepositoryBase,
-        public RepositoryDestinationInterface,
-        public RepositoryProvidesInterface
+        public RepositoryDestinationInterface
     {
         private:
             Pimp<FakeInstalledRepository> _imp;
@@ -66,11 +65,6 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             virtual void merge(const MergeParams &);
-
-            /* RepositoryProvidesInterface */
-
-            virtual std::shared_ptr<const ProvidesSequence> provided_packages() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
         public:
             ///\name Basic operations

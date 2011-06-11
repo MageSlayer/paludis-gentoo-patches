@@ -168,14 +168,13 @@ module Paludis
         def test_responds
             repo = no_config_testrepo.main_repository
             [
-                :environment_variable_interface,
-                :provides_interface, :virtuals_interface].each do |sym|
+                :environment_variable_interface, :virtuals_interface].each do |sym|
                 assert_respond_to repo, sym
             end
         end
 
         def test_interfaces
-            assert_equal installed_repo.name, installed_repo.provides_interface.name
+            assert_equal installed_repo.name, installed_repo.environment_variable_interface.name
             assert_nil installed_repo.virtuals_interface
         end
 

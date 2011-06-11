@@ -111,7 +111,6 @@ ExndbamRepository::ExndbamRepository(const RepositoryName & n, const ExndbamRepo
                 n::environment_variable_interface() = this,
                 n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
                 n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
-                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
     _imp(p)

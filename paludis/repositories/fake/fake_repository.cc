@@ -58,7 +58,6 @@ FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
                 n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
                 n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
-                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = (*DistributionData::get_instance()->distribution_from_string(
                             params.environment()->distribution())).support_old_style_virtuals() ? this : 0
                 )),

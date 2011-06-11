@@ -53,10 +53,6 @@ template class Sequence<RepositoryVirtualsEntry>;
 template class WrappedForwardIterator<Sequence<RepositoryVirtualsEntry>::ConstIteratorTag, const RepositoryVirtualsEntry>;
 template class WrappedOutputIterator<Sequence<RepositoryVirtualsEntry>::InserterTag, RepositoryVirtualsEntry>;
 
-template class Sequence<RepositoryProvidesEntry>;
-template class WrappedForwardIterator<Sequence<RepositoryProvidesEntry>::ConstIteratorTag, const RepositoryProvidesEntry>;
-template class WrappedOutputIterator<Sequence<RepositoryProvidesEntry>::InserterTag, RepositoryProvidesEntry>;
-
 NoSuchSetError::NoSuchSetError(const std::string & our_name) throw () :
     Exception("Could not find '" + our_name + "'"),
     _name(our_name)
@@ -182,10 +178,6 @@ Repository::purge_invalid_cache() const
 }
 
 RepositoryEnvironmentVariableInterface::~RepositoryEnvironmentVariableInterface()
-{
-}
-
-RepositoryProvidesInterface::~RepositoryProvidesInterface()
 {
 }
 

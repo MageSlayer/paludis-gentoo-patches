@@ -47,12 +47,6 @@ struct RepositoryWrapper :
         return self.environment_variable_interface();
     }
 
-    static RepositoryProvidesInterface *
-    get_provides_interface(const Repository & self)
-    {
-        return self.provides_interface();
-    }
-
     static RepositoryVirtualsInterface *
     get_virtuals_interface(const Repository & self)
     {
@@ -183,11 +177,6 @@ void expose_repository()
                 "[ro] RepositoryVirtualsInterface"
                 )
 
-        .add_property("provides_interface", bp::make_function(&RepositoryWrapper::get_provides_interface,
-                    bp::return_internal_reference<>()),
-                "[ro] RepositoryProvidesInterface"
-                )
-
         .add_property("destination_interface", bp::make_function(&RepositoryWrapper::get_destination_interface,
                     bp::return_internal_reference<>()),
                 "[ro] RepositoryDestinationInterface"
@@ -235,16 +224,6 @@ void expose_repository()
         (
          "RepositoryVirtualsInterface",
          "Interface for repositories that define virtuals.",
-         bp::no_init
-        );
-
-    /**
-     * RepositoryProvidesInterface
-     */
-    bp::class_<RepositoryProvidesInterface, boost::noncopyable>
-        (
-         "RepositoryProvidesInterface",
-         "Interface for repositories that provide packages.",
          bp::no_init
         );
 

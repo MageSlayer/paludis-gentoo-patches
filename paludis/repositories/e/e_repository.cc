@@ -522,7 +522,6 @@ ERepository::ERepository(const ERepositoryParams & p) :
                 n::environment_variable_interface() = this,
                 n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
                 n::manifest_interface() = this,
-                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = (*DistributionData::get_instance()->distribution_from_string(p.environment()->distribution())).support_old_style_virtuals() ? this : 0
                 )),
     _imp(this, p)

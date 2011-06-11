@@ -74,7 +74,6 @@ namespace paludis
      */
     class PALUDIS_VISIBLE VDBRepository :
         public erepository::EInstalledRepository,
-        public RepositoryProvidesInterface,
         public std::enable_shared_from_this<VDBRepository>
     {
         private:
@@ -121,11 +120,6 @@ namespace paludis
             virtual void perform_uninstall(
                     const std::shared_ptr<const erepository::ERepositoryID> & id,
                     const UninstallAction &) const;
-
-            /* RepositoryProvidesInterface */
-
-            virtual std::shared_ptr<const ProvidesSequence> provided_packages() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* RepositoryDestinationInterface */
 

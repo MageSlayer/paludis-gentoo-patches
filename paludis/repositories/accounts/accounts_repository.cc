@@ -113,7 +113,6 @@ AccountsRepository::AccountsRepository(const AccountsRepositoryParams & p) :
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
                 n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
                 n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
-                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
     _imp(p.name(), p)
@@ -130,7 +129,6 @@ AccountsRepository::AccountsRepository(const InstalledAccountsRepositoryParams &
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
                 n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
                 n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
-                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
     _imp(p.name(), p)

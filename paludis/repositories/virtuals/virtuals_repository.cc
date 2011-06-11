@@ -125,7 +125,6 @@ VirtualsRepository::VirtualsRepository(const Environment * const env) :
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
                 n::make_virtuals_interface() = this,
                 n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
-                n::provides_interface() = static_cast<RepositoryProvidesInterface *>(0),
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
             )),
     _imp(env)
@@ -148,20 +147,6 @@ VirtualsRepository::need_names() const
     Context context("When loading names for virtuals repository:");
 
     Log::get_instance()->message("virtuals.need_names", ll_debug, lc_context) << "VirtualsRepository need_names";
-
-    /* Determine our virtual name -> package mappings. */
-    for (auto r(_imp->env->begin_repositories()), r_end(_imp->env->end_repositories()) ; r != r_end ; ++r)
-    {
-        if (! (**r).provides_interface())
-            continue;
-
-        std::shared_ptr<const RepositoryProvidesInterface::ProvidesSequence> provides(
-                (**r).provides_interface()->provided_packages());
-        for (RepositoryProvidesInterface::ProvidesSequence::ConstIterator p(provides->begin()),
-                p_end(provides->end()) ; p != p_end ; ++p)
-            _imp->names.push_back(std::make_pair((*p).virtual_name(), std::shared_ptr<const PackageDepSpec>(
-                            std::make_shared<PackageDepSpec>(make_package_dep_spec(PartiallyMadePackageDepSpecOptions()).package((*p).provided_by()->name())))));
-    }
 
     std::sort(_imp->names.begin(), _imp->names.end(), NamesSortComparator());
     _imp->names.erase(std::unique(_imp->names.begin(), _imp->names.end(), NamesUniqueComparator()), _imp->names.end());

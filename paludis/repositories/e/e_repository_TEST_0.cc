@@ -120,8 +120,8 @@ TEST(ERepository, InstallEAPI0)
                     n::suitable_destination() = true,
                     n::supports_uninstall() = true
                     )));
-    installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
-    installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
+    installed_repo->add_version("cat", "pretend-installed", "0");
+    installed_repo->add_version("cat", "pretend-installed", "1");
     env.add_repository(2, installed_repo);
 
 #ifdef ENABLE_VIRTUALS_REPOSITORY
@@ -143,15 +143,6 @@ TEST(ERepository, InstallEAPI0)
                 n::replacing() = std::make_shared<PackageIDSequence>(),
                 n::want_phase() = &want_all_phases
             ));
-
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-    {
-        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                        PackageDepSpec(parse_user_package_dep_spec("=virtual/virtual-pretend-installed-0",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
-        ASSERT_TRUE(bool(id));
-    }
-#endif
 
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(

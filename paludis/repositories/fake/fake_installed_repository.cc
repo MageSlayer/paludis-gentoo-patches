@@ -63,7 +63,6 @@ FakeInstalledRepository::FakeInstalledRepository(const FakeInstalledRepositoryPa
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
                 n::make_virtuals_interface() = static_cast<RepositoryMakeVirtualsInterface *>(0),
                 n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0),
-                n::provides_interface() = this,
                 n::virtuals_interface() = static_cast<RepositoryVirtualsInterface *>(0)
                 )),
     _imp(p.supports_uninstall(), p.suitable_destination())
@@ -80,41 +79,6 @@ bool
 FakeInstalledRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const
 {
     return _imp->is_suitable_destination;
-}
-
-std::shared_ptr<const FakeInstalledRepository::ProvidesSequence>
-FakeInstalledRepository::provided_packages() const
-{
-    std::shared_ptr<ProvidesSequence> result(std::make_shared<ProvidesSequence>());
-
-    std::shared_ptr<const CategoryNamePartSet> cats(category_names({ }));
-    for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
-            c != c_end ; ++c)
-    {
-        std::shared_ptr<const QualifiedPackageNameSet> pkgs(package_names(*c, { }));
-        for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
-                p != p_end ; ++p)
-        {
-            std::shared_ptr<const PackageIDSequence> vers(package_ids(*p, { }));
-            for (PackageIDSequence::ConstIterator v(vers->begin()), v_end(vers->end()) ;
-                    v != v_end ; ++v)
-            {
-                if (! (*v)->provide_key())
-                    continue;
-
-                DepSpecFlattener<ProvideSpecTree, PackageDepSpec> f(environment(), *v);
-                (*v)->provide_key()->parse_value()->top()->accept(f);
-
-                for (DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIterator q(f.begin()), q_end(f.end()) ; q != q_end ; ++q)
-                    result->push_back(make_named_values<RepositoryProvidesEntry>(
-                            n::provided_by() = *v,
-                            n::virtual_name() = QualifiedPackageName((*q)->text())
-                            ));
-            }
-        }
-    }
-
-    return result;
 }
 
 bool

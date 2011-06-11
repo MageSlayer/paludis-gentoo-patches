@@ -42,7 +42,6 @@ namespace paludis
 
     class Repository;
     class RepositoryEnvironmentVariableInterface;
-    class RepositoryProvidesInterface;
     class RepositoryVirtualsInterface;
     class RepositoryMakeVirtualsInterface;
     class RepositoryDestinationInterface;
