@@ -1469,7 +1469,7 @@ AC_ARG_WITH([repositories],
 			  unavailable     Unavailable
 			  unpackaged      Unpackaged (for cave import)
 			  unwritten       Unwritten
-			  virtuals        Old style Gentoo virtuals],
+			  virtuals        Old style Gentoo virtuals (non-functional, for backwards compatibility)],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
 			[repositories="$DEFAULT_REPOSITORIES"])
 repositories=`echo $repositories | tr ' ' '\n' \
