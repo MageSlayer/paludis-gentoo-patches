@@ -62,12 +62,6 @@ namespace paludis
                 const Environment * const, const EAPI &) PALUDIS_VISIBLE;
 
         /**
-         * Parse a provide heirarchy.
-         */
-        std::shared_ptr<ProvideSpecTree> parse_provide(const std::string & s,
-                const Environment * const, const EAPI &, const bool is_installed) PALUDIS_VISIBLE;
-
-        /**
          * Parse a restrict or plain text heirarchy.
          */
         std::shared_ptr<PlainTextSpecTree> parse_plain_text(const std::string & s,

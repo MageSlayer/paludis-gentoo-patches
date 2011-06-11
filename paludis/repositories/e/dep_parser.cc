@@ -590,52 +590,6 @@ paludis::erepository::parse_commented_set(const std::string & s, const Environme
     return top;
 }
 
-std::shared_ptr<ProvideSpecTree>
-paludis::erepository::parse_provide(const std::string & s, const Environment * const env, const EAPI & eapi, const bool is_installed)
-{
-    using namespace std::placeholders;
-
-    ParseStackTypes<ProvideSpecTree>::Stack stack;
-    std::shared_ptr<AllDepSpec> spec(std::make_shared<AllDepSpec>());
-    std::shared_ptr<DepSpec> thing_to_annotate(spec);
-    std::list<std::shared_ptr<DepSpec> > thing_to_star_annotate;
-    std::shared_ptr<ProvideSpecTree> top(std::make_shared<ProvideSpecTree>(spec));
-    stack.push_front(make_named_values<ParseStackTypes<ProvideSpecTree>::Item>(
-                n::block_children() = std::list<std::pair<std::shared_ptr<BlockDepSpec>, BlockFixOp> >(),
-                n::children() = std::list<std::shared_ptr<DepSpec> >(),
-                n::item() = top->top(),
-                n::spec() = spec
-            ));
-
-    ELikeDepParserCallbacks callbacks(
-            make_named_values<ELikeDepParserCallbacks>(
-                n::on_all() = std::bind(&any_all_handler<ProvideSpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), std::cref(thing_to_star_annotate), _1),
-                n::on_any() = std::bind(&any_not_allowed_handler, s),
-                n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
-                n::on_error() = std::bind(&error_handler, s, _1),
-                n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
-                n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
-                n::on_no_annotations() = &do_nothing,
-                n::on_pop() = std::bind(&pop_handler<ProvideSpecTree>, std::ref(stack),
-                    ParseStackTypes<ProvideSpecTree>::AnnotationsGoHere(std::bind(
-                            &set_thing_to_annotate, std::ref(thing_to_annotate), _1)),
-                    ParseStackTypes<ProvideSpecTree>::StarAnnotationsGoHere(std::bind(
-                            &set_thing_to_star_annotate, std::ref(thing_to_star_annotate), _1)),
-                    s),
-                n::on_should_be_empty() = std::bind(&should_be_empty_handler<ProvideSpecTree>, std::ref(stack), s),
-                n::on_string() = std::bind(&package_dep_spec_string_handler<ProvideSpecTree>, std::ref(stack),
-                    ParseStackTypes<ProvideSpecTree>::AnnotationsGoHere(std::bind(
-                            &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1, std::cref(eapi)),
-                n::on_use() = std::bind(&use_handler<ProvideSpecTree>, std::ref(stack), _1, env, std::cref(eapi), is_installed),
-                n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
-            ));
-
-    parse_elike_dependencies(s, callbacks, { });
-
-    return top;
-}
-
 std::shared_ptr<FetchableURISpecTree>
 paludis::erepository::parse_fetchable_uri(const std::string & s, const Environment * const env, const EAPI & eapi, const bool is_installed)
 {

@@ -79,7 +79,6 @@ namespace
         std::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_use_expand_hidden;
         std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices;
         std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license;
-        std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide;
         std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies;
         std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
         std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
@@ -330,14 +329,6 @@ EInstalledRepositoryID::need_keys_added() const
             _imp->keys->license = std::make_shared<ELicenseKey>(_imp->environment, vars->license(), eapi(),
                         file_contents(_imp->dir / vars->license()->name()), mkt_normal, is_installed());
             add_metadata_key(_imp->keys->license);
-        }
-
-    if (! vars->provide()->name().empty())
-        if ((_imp->dir / vars->provide()->name()).stat().exists())
-        {
-            _imp->keys->provide = std::make_shared<EProvideKey>(_imp->environment, vars->provide(), eapi(),
-                        file_contents(_imp->dir / vars->provide()->name()), mkt_internal, is_installed());
-            add_metadata_key(_imp->keys->provide);
         }
 
     if (! vars->dependencies()->name().empty())

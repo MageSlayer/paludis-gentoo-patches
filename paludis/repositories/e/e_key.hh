@@ -196,32 +196,6 @@ namespace paludis
                         const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
-        class EProvideKey :
-            public MetadataSpecTreeKey<ProvideSpecTree>
-        {
-            private:
-                Pimp<EProvideKey> _imp;
-
-            public:
-                EProvideKey(const Environment * const,
-                        const std::shared_ptr<const EAPIMetadataVariable> &,
-                        const std::shared_ptr<const EAPI> &,
-                        const std::string &, const MetadataKeyType,
-                        const bool is_installed);
-                ~EProvideKey();
-
-                virtual const std::shared_ptr<const ProvideSpecTree> parse_value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual const std::string pretty_print_value(
-                        const PrettyPrinter &,
-                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
         class ELicenseKey :
             public MetadataSpecTreeKey<LicenseSpecTree>
         {
