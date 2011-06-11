@@ -90,11 +90,6 @@ namespace
             s << k.pretty_print_value(UnformattedPrettyPrinter(), { });
         }
 
-        void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
-        {
-            s << k.pretty_print_value(UnformattedPrettyPrinter(), { });
-        }
-
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
             s << k.pretty_print_value(UnformattedPrettyPrinter(), { });

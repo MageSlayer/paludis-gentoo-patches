@@ -96,7 +96,6 @@ namespace paludis
                 MetadataSpecTreeKey<LicenseSpecTree>,
                 MetadataSpecTreeKey<FetchableURISpecTree>,
                 MetadataSpecTreeKey<SimpleURISpecTree>,
-                MetadataSpecTreeKey<ProvideSpecTree>,
                 MetadataSpecTreeKey<PlainTextSpecTree>,
                 MetadataSpecTreeKey<RequiredUseSpecTree>,
                 MetadataValueKey<std::string>,

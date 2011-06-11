@@ -228,12 +228,6 @@ namespace
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_value(printer, { })));
         }
 
-        void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
-        {
-            ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.pretty_print_value(printer, { })));
-        }
-
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
             ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);

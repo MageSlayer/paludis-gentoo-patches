@@ -50,7 +50,6 @@ namespace
     static VALUE c_metadata_fsentry_key;
     static VALUE c_metadata_fsentry_sequence_key;
     static VALUE c_metadata_key_type;
-    static VALUE c_metadata_provide_spec_tree_key;
     static VALUE c_metadata_license_spec_tree_key;
     static VALUE c_metadata_fetchable_uri_spec_tree_key;
     static VALUE c_metadata_simple_uri_spec_tree_key;
@@ -203,12 +202,6 @@ namespace
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> &)
         {
             value = Data_Wrap_Struct(c_metadata_license_spec_tree_key, 0, &Common<std::shared_ptr<const MetadataKey> >::free,
-                    new std::shared_ptr<const MetadataKey>(mm));
-        }
-
-        void visit(const MetadataSpecTreeKey<ProvideSpecTree> &)
-        {
-            value = Data_Wrap_Struct(c_metadata_provide_spec_tree_key, 0, &Common<std::shared_ptr<const MetadataKey> >::free,
                     new std::shared_ptr<const MetadataKey>(mm));
         }
 
@@ -766,14 +759,6 @@ namespace
          */
         c_metadata_license_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataLicenseSpecTreeKey", c_metadata_key);
         rb_define_method(c_metadata_license_spec_tree_key, "parse_value", RUBY_FUNC_CAST((&SpecTreeValue<LicenseSpecTree>::fetch)), 0);
-
-        /*
-         * Document-class: Paludis::MetadataProvideSpecTreeKey
-         *
-         * Metadata class for provide specs.
-         */
-        c_metadata_provide_spec_tree_key = rb_define_class_under(paludis_module(), "MetadataProvideSpecTreeKey", c_metadata_key);
-        rb_define_method(c_metadata_provide_spec_tree_key, "parse_value", RUBY_FUNC_CAST((&SpecTreeValue<ProvideSpecTree>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataPlainTextSpecTreeKey

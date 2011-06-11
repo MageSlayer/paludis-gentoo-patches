@@ -321,12 +321,6 @@ namespace
             k.parse_value()->top()->accept(m);
         }
 
-        void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
-        {
-            SpecTreeAsString m = { env, id, texts, match_options };
-            k.parse_value()->top()->accept(m);
-        }
-
         void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
         {
             SpecTreeAsString m = { env, id, texts, match_options };

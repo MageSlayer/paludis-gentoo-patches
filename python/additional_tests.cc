@@ -222,7 +222,6 @@ void expose_additional_tests()
     bp::def("test_metadata_keyword_name_set_key", &metadata_key::test_metadata_set_key<KeywordNameSet>);
     bp::def("test_metadata_string_set_key", &metadata_key::test_metadata_set_key<Set<std::string> >);
     bp::def("test_metadata_license_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<LicenseSpecTree>);
-    bp::def("test_metadata_provide_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<ProvideSpecTree>);
     bp::def("test_metadata_dependency_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<DependencySpecTree>);
     bp::def("test_metadata_plain_text_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<PlainTextSpecTree>);
     bp::def("test_metadata_fetchable_uri_spec_tree_key", &metadata_key::test_metadata_spec_tree_key<FetchableURISpecTree>);

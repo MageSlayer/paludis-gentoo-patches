@@ -219,34 +219,6 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
 
         test_metadata_license_spec_tree_key(TestKey())
 
-    def test_11_provide_spec_tree(self):
-        class TestKey(MetadataProvideSpecTreeKey):
-            def __init__(self):
-                MetadataProvideSpecTreeKey.__init__(self)
-                self.e = NoConfigEnvironment(repo_path, "/var/empty")
-
-            def parse_value(self):
-                return AllDepSpec()
-
-            def pretty_print(self, f):
-                pds = parse_user_package_dep_spec("cat/pkg", self.e, [])
-                return f.format_package_dep_spec_plain(pds)
-
-            def pretty_print_flat(self, f):
-                pds = parse_user_package_dep_spec("cat/pkg", self.e, [])
-                return f.format_package_dep_spec_plain(pds)
-
-            def raw_name(self):
-                return "raw"
-
-            def human_name(self):
-                return "human"
-
-            def type(self):
-                return MetadataKeyType.NORMAL
-
-        test_metadata_provide_spec_tree_key(TestKey())
-
     def test_12_dependency_spec_tree(self):
         class TestKey(MetadataDependencySpecTreeKey):
             def __init__(self):

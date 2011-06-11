@@ -128,12 +128,6 @@ namespace
                 cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_value(UnformattedPrettyPrinter(), { }) << endl;
             }
 
-            void visit(const MetadataSpecTreeKey<ProvideSpecTree> & key)
-            {
-                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<ProvideSpecTree>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.pretty_print_value(UnformattedPrettyPrinter(), { }) << endl;
-            }
-
             void visit(const MetadataSpecTreeKey<LicenseSpecTree> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataSpecTreeKey<LicenseSpecTree>" << endl;

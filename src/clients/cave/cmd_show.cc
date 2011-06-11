@@ -644,22 +644,6 @@ namespace
             }
         }
 
-        void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
-        {
-            if (cmdline.a_complex_keys.specified() || important)
-            {
-                ColourPrettyPrinter printer(env.get(), maybe_current_id, indent);
-                out << fuc(
-                        (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
-                        fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                        fv<'v'>(k.pretty_print_value(printer, basic_ppos)),
-                        fv<'i'>(std::string(indent, ' ')),
-                        fv<'b'>(important ? "true" : ""),
-                        fv<'p'>("")
-                        );
-            }
-        }
-
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
         {
             if (cmdline.a_complex_keys.specified() || important)

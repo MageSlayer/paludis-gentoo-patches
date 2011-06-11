@@ -718,19 +718,6 @@ namespace
             return false;
         }
 
-        bool visit(const MetadataSpecTreeKey<ProvideSpecTree> & s) const
-        {
-            switch (op)
-            {
-                case '=':
-                    return false;
-                case '<':
-                    return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
-            }
-
-            return false;
-        }
-
         bool visit(const MetadataSpecTreeKey<SimpleURISpecTree> & s) const
         {
             switch (op)

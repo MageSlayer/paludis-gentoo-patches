@@ -112,11 +112,6 @@ namespace
             const std::shared_ptr<const RequiredUseSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.parse_value());
         }
 
-        void visit(const MetadataSpecTreeKey<ProvideSpecTree> & k)
-        {
-            const std::shared_ptr<const ProvideSpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.parse_value());
-        }
-
         void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
         {
             const std::shared_ptr<const FetchableURISpecTree> & PALUDIS_ATTRIBUTE((unused)) t(k.parse_value());
