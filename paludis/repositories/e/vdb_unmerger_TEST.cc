@@ -111,7 +111,6 @@ namespace
             std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
             keys->insert("format", "vdb");
             keys->insert("names_cache", "/var/empty");
-            keys->insert("provides_cache", "/var/empty");
             keys->insert("location", stringify(FSPath::cwd() / "vdb_unmerger_TEST_dir" / "repo"));
             keys->insert("builddir", stringify(FSPath::cwd() / "vdb_unmerger_TEST_dir" / "build"));
             repo = VDBRepository::repository_factory_create(&env, std::bind(from_keys, keys, std::placeholders::_1));

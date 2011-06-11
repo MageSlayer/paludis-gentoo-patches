@@ -43,7 +43,6 @@ cat <<END > config/.paludis-continue-on-failure-test/repositories/installed.conf
 location = `pwd`/root/var/db/pkg
 format = vdb
 names_cache = /var/empty
-provides_cache = /var/empty
 builddir = `pwd`/build
 END
 

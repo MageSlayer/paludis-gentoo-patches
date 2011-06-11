@@ -505,7 +505,6 @@ PortageEnvironment::_add_vdb_repository()
     keys->insert("location", stringify(preferred_root_key()->parse_value() / "/var/db/pkg"));
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("provides_cache", "/var/empty");
     std::string builddir(_imp->vars->get("PORTAGE_TMPDIR"));
     if (! builddir.empty())
         builddir.append("/portage");

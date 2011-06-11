@@ -119,7 +119,6 @@ ResolverTestData::ResolverTestData(const std::string & t, const std::string & e,
     keys = std::make_shared<Map<std::string, std::string>>();
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("provides_cache", "/var/empty");
     keys->insert("location", stringify(FSPath::cwd() / ("resolver_TEST_" + t + "_dir") / "installed"));
     keys->insert("builddir", stringify(FSPath::cwd() / ("resolver_TEST_" + t + "_dir") / "build"));
     inst_repo = RepositoryFactory::get_instance()->create(&env,

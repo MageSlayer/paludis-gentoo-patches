@@ -325,7 +325,6 @@ Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
         keys->insert("format", "vdb");
         keys->insert("names_cache", "/var/empty");
-        keys->insert("provides_cache", "/var/empty");
         keys->insert("location", stringify(top_level_dir.realpath()));
 
         env->add_repository(1, RepositoryFactory::get_instance()->create(env,

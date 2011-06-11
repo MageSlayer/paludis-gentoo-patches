@@ -20,7 +20,6 @@ cat <<END > home/.paludis/repositories/installed.conf
 location = `pwd`/installed
 format = vdb
 names_cache = /var/empty
-provides_cache = /var/empty
 builddir = `pwd`
 END
 

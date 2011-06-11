@@ -263,7 +263,6 @@ TEST(ERepository, EAPI4MergeType)
     std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
     v_keys->insert("format", "vdb");
     v_keys->insert("names_cache", "/var/empty");
-    v_keys->insert("provides_cache", "/var/empty");
     v_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "vdb"));
     v_keys->insert("root", stringify(root));
     std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
@@ -334,7 +333,6 @@ TEST(ERepository, EAPI4MergeTypeBin)
     std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
     v_keys->insert("format", "vdb");
     v_keys->insert("names_cache", "/var/empty");
-    v_keys->insert("provides_cache", "/var/empty");
     v_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "vdb"));
     v_keys->insert("root", stringify(root));
     std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,

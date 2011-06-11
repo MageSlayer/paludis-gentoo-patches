@@ -154,7 +154,6 @@ TEST(NamesCache, Incremental)
     keys = std::make_shared<Map<std::string, std::string>>();
     keys->insert("format", "vdb");
     keys->insert("names_cache", stringify(names_cache.dirname()));
-    keys->insert("provides_cache", "/var/empty");
     keys->insert("location", stringify(FSPath::cwd() / "vdb_repository_TEST_cache_dir" / "namesincrtest"));
     keys->insert("builddir", stringify(FSPath::cwd() / "vdb_repository_TEST_cache_dir" / "build"));
     keys->insert("root", stringify(FSPath("vdb_repository_TEST_cache_dir/root").realpath()));

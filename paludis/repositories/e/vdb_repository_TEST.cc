@@ -154,7 +154,6 @@ TEST(VDBRepository, RepoName)
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("provides_cache", "/var/empty");
     keys->insert("location", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "repo1"));
     keys->insert("builddir", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "build"));
     std::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
@@ -168,7 +167,6 @@ TEST(VDBRepository, HasCategoryNamed)
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("provides_cache", "/var/empty");
     keys->insert("location", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "repo1"));
     keys->insert("builddir", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "build"));
     std::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
@@ -185,7 +183,6 @@ TEST(VDBRepository, QueryUse)
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("provides_cache", "/var/empty");
     keys->insert("location", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "repo1"));
     keys->insert("builddir", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "build"));
     std::shared_ptr<Repository> repo(VDBRepository::VDBRepository::repository_factory_create(&env,
@@ -214,7 +211,6 @@ TEST(VDBRepository, Contents)
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("provides_cache", "/var/empty");
     keys->insert("location", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "repo1"));
     keys->insert("builddir", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "build"));
     keys->insert("world", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "world-no-match-no-eol"));
@@ -297,7 +293,6 @@ TEST(VDBRepository, Reinstall)
     keys = std::make_shared<Map<std::string, std::string>>();
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("provides_cache", "/var/empty");
     keys->insert("location", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "reinstalltest"));
     keys->insert("builddir", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "build"));
     keys->insert("root", stringify(FSPath("vdb_repository_TEST_dir/root").realpath()));
@@ -371,7 +366,6 @@ TEST(VDBRepository, PhaseOrdering)
     keys = std::make_shared<Map<std::string, std::string>>();
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("provides_cache", "/var/empty");
     keys->insert("location", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "postinsttest"));
     keys->insert("builddir", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "build"));
     keys->insert("root", stringify(FSPath("vdb_repository_TEST_dir/root").realpath()));
@@ -479,7 +473,6 @@ TEST(VDBRepository, RemoveStaleFiles)
     keys = std::make_shared<Map<std::string, std::string>>();
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("provides_cache", "/var/empty");
     keys->insert("location", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "removestalefilesvdb"));
     keys->insert("builddir", stringify(FSPath::cwd() / "vdb_repository_TEST_dir" / "build"));
     keys->insert("root", stringify(FSPath("vdb_repository_TEST_dir/root").realpath()));

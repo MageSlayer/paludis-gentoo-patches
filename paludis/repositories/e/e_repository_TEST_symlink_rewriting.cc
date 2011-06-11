@@ -111,7 +111,6 @@ TEST(ERepository, SymlinkRewriting)
     keys = std::make_shared<Map<std::string, std::string>>();
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("provides_cache", "/var/empty");
     keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "vdb"));
     keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "build"));
     keys->insert("root", stringify(FSPath(stringify(FSPath::cwd() / "e_repository_TEST_symlink_rewriting_dir" / "root")).realpath()));

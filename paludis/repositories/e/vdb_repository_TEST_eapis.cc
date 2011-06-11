@@ -123,7 +123,6 @@ TEST_P(PhasesTest, Works)
     keys = std::make_shared<Map<std::string, std::string>>();
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("provides_cache", "/var/empty");
     keys->insert("location", stringify(FSPath::cwd() / "vdb_repository_TEST_eapis_dir" / "dstrepo"));
     keys->insert("builddir", stringify(FSPath::cwd() / "vdb_repository_TEST_eapis_dir" / "build"));
     keys->insert("root", stringify(FSPath("vdb_repository_TEST_eapis_dir/root").realpath()));
@@ -249,7 +248,6 @@ TEST_P(VarsTest, Works)
     keys = std::make_shared<Map<std::string, std::string>>();
     keys->insert("format", "vdb");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("provides_cache", "/var/empty");
     keys->insert("location", stringify(FSPath::cwd() / "vdb_repository_TEST_eapis_dir" / "dstrepo"));
     keys->insert("builddir", stringify(FSPath::cwd() / "vdb_repository_TEST_eapis_dir" / "build"));
     keys->insert("root", stringify(FSPath("vdb_repository_TEST_eapis_dir/root").realpath()));
