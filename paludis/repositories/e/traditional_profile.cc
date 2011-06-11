@@ -107,7 +107,6 @@ namespace paludis
         const bool has_master_repositories;
 
         TraditionalProfileFile<LineConfigFile> packages_file;
-        TraditionalProfileFile<LineConfigFile> virtuals_file;
         TraditionalProfileFile<TraditionalMaskFile> package_mask_file;
 
         std::shared_ptr<FSPathSequence> profiles_with_parents;
@@ -115,8 +114,6 @@ namespace paludis
         EnvironmentVariablesMap environment_variables;
 
         std::shared_ptr<SetSpecTree> system_packages;
-
-        std::shared_ptr<Map<QualifiedPackageName, PackageDepSpec> > virtuals;
 
         std::set<std::pair<ChoicePrefixName, UnprefixedChoiceName> > use;
         std::shared_ptr<Set<std::string> > use_expand;
@@ -141,11 +138,9 @@ namespace paludis
             is_arch_flag(a),
             has_master_repositories(h),
             packages_file(eapi_for_file),
-            virtuals_file(eapi_for_file),
             package_mask_file(eapi_for_file),
             profiles_with_parents(std::make_shared<FSPathSequence>()),
             system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>())),
-            virtuals(std::make_shared<Map<QualifiedPackageName, PackageDepSpec>>()),
             use_expand(std::make_shared<Set<std::string>>()),
             use_expand_hidden(std::make_shared<Set<std::string>>()),
             use_expand_unprefixed(std::make_shared<Set<std::string>>()),
@@ -981,12 +976,6 @@ const std::shared_ptr<const SetSpecTree>
 TraditionalProfile::system_packages() const
 {
     return _imp->system_packages;
-}
-
-const std::shared_ptr<const Map<QualifiedPackageName, PackageDepSpec> >
-TraditionalProfile::virtuals() const
-{
-    return _imp->virtuals;
 }
 
 const std::shared_ptr<const MasksInfo>

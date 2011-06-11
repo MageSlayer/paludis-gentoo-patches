@@ -332,9 +332,3 @@ ExheresProfile::system_packages() const
     return _imp->system_packages;
 }
 
-const std::shared_ptr<const Map<QualifiedPackageName, PackageDepSpec> >
-ExheresProfile::virtuals() const
-{
-    return std::make_shared<Map<QualifiedPackageName, PackageDepSpec>>();
-}
-

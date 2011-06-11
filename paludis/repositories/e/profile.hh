@@ -98,9 +98,6 @@ namespace paludis
                 virtual const std::shared_ptr<const MasksInfo> profile_masks(const std::shared_ptr<const PackageID> &) const = 0;
 
                 virtual const std::shared_ptr<const SetSpecTree> system_packages() const = 0;
-
-                virtual const std::shared_ptr<const Map<QualifiedPackageName, PackageDepSpec> >
-                    virtuals() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
         };
 
         class PALUDIS_VISIBLE ProfileFactory :
