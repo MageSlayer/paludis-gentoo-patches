@@ -13,13 +13,11 @@ noinst_LTLIBRARIES = libpaludisvirtualsrepository.la
 
 noinst_HEADERS = \
 	virtuals_repository.hh \
-	installed_virtuals_repository.hh \
-	package_id.hh
+	installed_virtuals_repository.hh
 
 libpaludisvirtualsrepository_la_SOURCES = \
 	virtuals_repository.cc \
 	installed_virtuals_repository.cc \
-	package_id.cc \
 	registration.cc \
 	$(noinst_HEADERS)
 

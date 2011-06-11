@@ -18,7 +18,6 @@
  */
 
 #include <paludis/repositories/virtuals/virtuals_repository.hh>
-#include <paludis/repositories/virtuals/package_id.hh>
 
 #include <paludis/environment.hh>
 #include <paludis/match_package.hh>
