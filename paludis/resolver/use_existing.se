@@ -9,6 +9,7 @@ make_enum_UseExisting()
     # must be kept in strictness order
     key ue_never               "Never"
     key ue_only_if_transient   "Only if it is transient"
+    key ue_if_same_metadata    "If it is the same, including metadata"
     key ue_if_same             "If it is the same"
     key ue_if_same_version     "If it is the same version"
     key ue_if_possible         "If possible"

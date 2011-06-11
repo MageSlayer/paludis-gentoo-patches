@@ -732,6 +732,11 @@ namespace
                         return false;
                     break;
 
+                case ue_if_same_metadata:
+                    if (! decision.is_same_metadata())
+                        return false;
+                    break;
+
                 case ue_if_same_version:
                     if (! decision.is_same_version())
                         return false;
@@ -1510,6 +1515,7 @@ Decider::_try_to_find_decision_for(
                 break;
 
             case ue_only_if_transient:
+            case ue_if_same_metadata:
             case ue_if_same:
             case ue_if_same_version:
                 if (! is_transient)
@@ -1526,6 +1532,7 @@ Decider::_try_to_find_decision_for(
         return std::make_shared<ExistingNoChangeDecision>(
                     resolution->resolvent(),
                     existing_id,
+                    true,
                     true,
                     true,
                     is_transient,
@@ -1554,10 +1561,12 @@ Decider::_try_to_find_decision_for(
     {
         bool is_same_version(existing_id->version() == installable_id->version());
         bool is_same(false);
+        bool is_same_metadata(false);
 
         if (is_same_version)
         {
             is_same = true;
+            is_same_metadata = true;
 
             std::set<ChoiceNameWithPrefix> common;
             std::shared_ptr<const Choices> installable_choices;
@@ -1605,6 +1614,7 @@ Decider::_try_to_find_decision_for(
                         existing_choices->find_by_name_with_prefix(*f)->enabled())
                 {
                     is_same = false;
+                    is_same_metadata = false;
                     break;
                 }
         }
@@ -1615,6 +1625,7 @@ Decider::_try_to_find_decision_for(
         const std::shared_ptr<Decision> existing(std::make_shared<ExistingNoChangeDecision>(
                     resolution->resolvent(),
                     existing_id,
+                    is_same_metadata,
                     is_same,
                     is_same_version,
                     is_transient,
@@ -1636,6 +1647,12 @@ Decider::_try_to_find_decision_for(
             case ue_only_if_transient:
             case ue_never:
                 return changes_to_make;
+
+            case ue_if_same_metadata:
+                if (is_same_metadata)
+                    return existing;
+                else
+                    return changes_to_make;
 
             case ue_if_same:
                 if (is_same)
@@ -1893,6 +1910,7 @@ Decider::_get_unmatching_constraints(
             decision = std::make_shared<ExistingNoChangeDecision>(
                         resolution->resolvent(),
                         id,
+                        true,
                         true,
                         true,
                         is_transient,

@@ -85,6 +85,7 @@ namespace paludis
                 ExistingNoChangeDecision(
                         const Resolvent &,
                         const std::shared_ptr<const PackageID> &,
+                        const bool is_same_metadata,
                         const bool is_same,
                         const bool is_same_version,
                         const bool is_transient,
@@ -95,6 +96,7 @@ namespace paludis
                 const std::shared_ptr<const PackageID> existing_id() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                bool is_same_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool is_same() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool is_same_version() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool is_transient() const PALUDIS_ATTRIBUTE((warn_unused_result));

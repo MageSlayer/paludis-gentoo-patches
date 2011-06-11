@@ -118,6 +118,9 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             ("never",                 'n', "Never")
             ("if-transient",          't', "Only if the installed package is transient "
                                            "(e.g. from 'cave import')")
+            ("if-same-metadata",      'm', "If it is the same as the proposed replacement (that is, if it has the same "
+             "version, and no non-special use flags or choices have had their values changed), and if significant "
+             "metadata has not been modified")
             ("if-same",               's', "If it is the same as the proposed replacement (that is, if it has the same "
              "version, and no non-special use flags or choices have had their values changed)")
             ("if-same-version",       'v', "If it is the same version as the proposed replacement")
@@ -131,6 +134,9 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             ("never",                 'n', "Never")
             ("if-transient",          't', "Only if the installed package is transient "
                                            "(e.g. from 'cave import') (default if --everything)")
+            ("if-same-metadata",      'm', "If it is the same as the proposed replacement (that is, if it has the same "
+             "version, and no non-special use flags or choices have had their values changed), and if significant "
+             "metadata has not been modified")
             ("if-same",               's', "If it is the same as the proposed replacement (that is, if it has the same "
              "version, and no non-special use flags or choices have had their values changed) (default if --complete)")
             ("if-same-version",       'v', "If it is the same version as the proposed replacement")

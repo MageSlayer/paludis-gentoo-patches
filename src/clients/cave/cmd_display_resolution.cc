@@ -354,6 +354,9 @@ namespace
             case ue_only_if_transient:
                 result << ", using existing only if transient";
                 break;
+            case ue_if_same_metadata:
+                result << ", use existing if same metadata";
+                break;
             case ue_if_same_version:
                 result << ", use existing if same version";
                 break;

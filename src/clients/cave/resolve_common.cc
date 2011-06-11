@@ -620,6 +620,8 @@ namespace
             return ue_never;
         else if (arg.argument() == "if-transient")
             return ue_only_if_transient;
+        else if (arg.argument() == "if-same-metadata")
+            return ue_if_same_metadata;
         else if (arg.argument() == "if-same")
             return ue_if_same;
         else if (arg.argument() == "if-same-version")
