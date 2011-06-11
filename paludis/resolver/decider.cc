@@ -41,6 +41,7 @@
 #include <paludis/resolver/reason_utils.hh>
 #include <paludis/resolver/make_uninstall_blocker.hh>
 #include <paludis/resolver/has_behaviour-fwd.hh>
+#include <paludis/resolver/get_sameness.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
@@ -1559,65 +1560,8 @@ Decider::_try_to_find_decision_for(
     }
     else if (existing_id && installable_id)
     {
-        bool is_same_version(existing_id->version() == installable_id->version());
-        bool is_same(false);
-        bool is_same_metadata(false);
-
-        if (is_same_version)
-        {
-            is_same = true;
-            is_same_metadata = true;
-
-            std::set<ChoiceNameWithPrefix> common;
-            std::shared_ptr<const Choices> installable_choices;
-            std::shared_ptr<const Choices> existing_choices;
-
-            if (existing_id->choices_key() && installable_id->choices_key())
-            {
-                installable_choices = installable_id->choices_key()->parse_value();
-                existing_choices = existing_id->choices_key()->parse_value();
-
-                std::set<ChoiceNameWithPrefix> i_common, u_common;
-                for (Choices::ConstIterator k(installable_choices->begin()), k_end(installable_choices->end()) ;
-                        k != k_end ; ++k)
-                {
-                    if (! (*k)->consider_added_or_changed())
-                        continue;
-
-                    for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
-                            i != i_end ; ++i)
-                        if ((*i)->explicitly_listed())
-                            i_common.insert((*i)->name_with_prefix());
-                }
-
-                for (Choices::ConstIterator k(existing_choices->begin()), k_end(existing_choices->end()) ;
-                        k != k_end ; ++k)
-                {
-                    if (! (*k)->consider_added_or_changed())
-                        continue;
-
-                    for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
-                            i != i_end ; ++i)
-                        if ((*i)->explicitly_listed())
-                            u_common.insert((*i)->name_with_prefix());
-                }
-
-                std::set_intersection(
-                        i_common.begin(), i_common.end(),
-                        u_common.begin(), u_common.end(),
-                        std::inserter(common, common.begin()));
-            }
-
-            for (std::set<ChoiceNameWithPrefix>::const_iterator f(common.begin()), f_end(common.end()) ;
-                    f != f_end ; ++f)
-                if (installable_choices->find_by_name_with_prefix(*f)->enabled() !=
-                        existing_choices->find_by_name_with_prefix(*f)->enabled())
-                {
-                    is_same = false;
-                    is_same_metadata = false;
-                    break;
-                }
-        }
+        bool is_same_version, is_same, is_same_metadata;
+        std::tie(is_same_version, is_same, is_same_metadata) = get_sameness(existing_id, installable_id);
 
         bool is_transient(has_behaviour(existing_id, "transient"));
 
