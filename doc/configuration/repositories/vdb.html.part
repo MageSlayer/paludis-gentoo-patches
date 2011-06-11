@@ -14,7 +14,7 @@ for <code>vdb</code> format repositories:</p>
     avoid problems with broken ebuilds that illegally access the VDB.</dd>
 
     <dt><code>provides_cache</code></dt>
-    <dd>The directory to use for reading and writing a cache of providers of old-style virtuals. See <a
+    <dd>The file to use for reading and writing a cache of providers of old-style virtuals. See <a
         href="../../overview/gettingstarted.html">Getting Started</a> for notes. Optional, set to <code>/var/empty</code>
     to disable.</dd>
 
