@@ -182,7 +182,6 @@ namespace paludis
         typedef Name<struct name_restrict_mirror> restrict_mirror;
         typedef Name<struct name_restrict_primaryuri> restrict_primaryuri;
         typedef Name<struct name_restrictions> restrictions;
-        typedef Name<struct name_rewrite_virtuals> rewrite_virtuals;
         typedef Name<struct name_run_depend> run_depend;
         typedef Name<struct name_save_base_variables> save_base_variables;
         typedef Name<struct name_save_unmodifiable_variables> save_unmodifiable_variables;
@@ -477,7 +476,6 @@ namespace paludis
         struct EAPIPipeCommands
         {
             NamedValue<n::no_slot_or_repo, bool> no_slot_or_repo;
-            NamedValue<n::rewrite_virtuals, bool> rewrite_virtuals;
         };
 
         struct EAPIAnnotations

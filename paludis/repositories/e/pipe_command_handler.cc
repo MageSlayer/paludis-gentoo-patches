@@ -322,17 +322,6 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                             eapi->supported()->version_spec_options()));
                 std::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
                             generator::Matches(spec, package_id, { }) | root)]);
-                if (eapi->supported()->pipe_commands()->rewrite_virtuals() && (! entries->empty()) &&
-                        (*entries->last())->virtual_for_key())
-                {
-                    Log::get_instance()->message("e.pipe_commands.best_version.is_virtual", ll_qa, lc_context) << "best-version of '" << spec <<
-                        "' resolves to '" << **entries->last() << "', which is a virtual for '"
-                        << *(*entries->last())->virtual_for_key()->parse_value() << "'. This will break with "
-                        "new style virtuals.";
-                    std::shared_ptr<PackageIDSequence> new_entries(std::make_shared<PackageIDSequence>());
-                    new_entries->push_back((*entries->last())->virtual_for_key()->parse_value());
-                    entries = new_entries;
-                }
 
                 if (entries->empty())
                     return "O1;";
@@ -395,25 +384,6 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                             eapi->supported()->version_spec_options()));
                 std::shared_ptr<const PackageIDSequence> entries((*environment)[selection::AllVersionsSorted(
                             generator::Matches(spec, package_id, { }) | filter::InstalledAtRoot(environment->preferred_root_key()->parse_value()))]);
-                if (eapi->supported()->pipe_commands()->rewrite_virtuals() && (! entries->empty()))
-                {
-                    std::shared_ptr<PackageIDSequence> new_entries(std::make_shared<PackageIDSequence>());
-                    for (PackageIDSequence::ConstIterator i(entries->begin()), i_end(entries->end()) ;
-                            i != i_end ; ++i)
-                    {
-                        if ((*i)->virtual_for_key())
-                        {
-                            Log::get_instance()->message("e.pipe_commands.match.is_virtual", ll_qa, lc_context) << "match of '" << spec <<
-                                "' resolves to '" << **i << "', which is a virtual for '"
-                                << *(*i)->virtual_for_key()->parse_value() << "'. This will break with "
-                                "new style virtuals.";
-                            new_entries->push_back((*i)->virtual_for_key()->parse_value());
-                        }
-                        else
-                            new_entries->push_back(*i);
-                    }
-                    entries = new_entries;
-                }
 
                 if (entries->empty())
                     return "O1;";

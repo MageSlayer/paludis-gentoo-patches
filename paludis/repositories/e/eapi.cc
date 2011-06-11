@@ -229,8 +229,7 @@ namespace
     std::shared_ptr<const EAPIPipeCommands> make_pipe_commands(const KeyValueConfigFile & k)
     {
         return std::make_shared<EAPIPipeCommands>(make_named_values<EAPIPipeCommands>(
-                        n::no_slot_or_repo() = destringify_key<bool>(k, "pipe_commands_no_slot_or_repo"),
-                        n::rewrite_virtuals() = destringify_key<bool>(k, "pipe_commands_rewrite_virtuals")
+                        n::no_slot_or_repo() = destringify_key<bool>(k, "pipe_commands_no_slot_or_repo")
                         ));
     }
 
