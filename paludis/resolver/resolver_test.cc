@@ -75,31 +75,6 @@ paludis::resolver::resolver_test::from_keys(const std::shared_ptr<const Map<std:
         return mm->second;
 }
 
-namespace
-{
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-    std::string virtuals_repo_keys(const std::string & k)
-    {
-        if (k == "format")
-            return "virtuals";
-        else if (k == "root")
-            return "/";
-        else
-            return "";
-    }
-
-    std::string installed_virtuals_repo_keys(const std::string & k)
-    {
-        if (k == "format")
-            return "installed_virtuals";
-        else if (k == "root")
-            return "/";
-        else
-            return "";
-    }
-#endif
-}
-
 ResolverTestData::ResolverTestData(const std::string & t, const std::string & e, const std::string & l) :
     allow_choice_changes_helper(&env),
     allowed_to_remove_helper(&env),
@@ -159,11 +134,6 @@ ResolverTestData::ResolverTestData(const std::string & t, const std::string & e,
                     n::supports_uninstall() = true
                     ));
     env.add_repository(1, fake_inst_repo);
-
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-    env.add_repository(0, RepositoryFactory::get_instance()->create(&env, virtuals_repo_keys));
-    env.add_repository(0, RepositoryFactory::get_instance()->create(&env, installed_virtuals_repo_keys));
-#endif
 
     interest_in_spec_helper.set_follow_installed_dependencies(true);
     interest_in_spec_helper.set_follow_installed_build_dependencies(true);

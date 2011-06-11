@@ -124,18 +124,6 @@ TEST(ERepository, InstallEAPI0)
     installed_repo->add_version("cat", "pretend-installed", "1");
     env.add_repository(2, installed_repo);
 
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-    std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
-    iv_keys->insert("root", "/");
-    iv_keys->insert("format", "installed_virtuals");
-    env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
-                std::bind(from_keys, iv_keys, std::placeholders::_1)));
-    std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
-    v_keys->insert("format", "virtuals");
-    env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
-                std::bind(from_keys, v_keys, std::placeholders::_1)));
-#endif
-
     InstallAction action(make_named_values<InstallActionOptions>(
                 n::destination() = installed_repo,
                 n::make_output_manager() = &make_standard_output_manager,

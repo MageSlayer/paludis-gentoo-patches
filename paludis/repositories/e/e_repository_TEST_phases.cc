@@ -141,18 +141,6 @@ TEST_P(PhasesTest, Works)
     installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
     env.add_repository(2, installed_repo);
 
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-    std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
-    iv_keys->insert("root", "/");
-    iv_keys->insert("format", "installed_virtuals");
-    env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
-                std::bind(from_keys, iv_keys, std::placeholders::_1)));
-    std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
-    v_keys->insert("format", "virtuals");
-    env.add_repository(-2, RepositoryFactory::get_instance()->create(&env,
-                std::bind(from_keys, v_keys, std::placeholders::_1)));
-#endif
-
     if (info.enable_expensive_tests)
         env.set_want_choice_enabled(ChoicePrefixName("build_options"), UnprefixedChoiceName("expensive_tests"), true);
 

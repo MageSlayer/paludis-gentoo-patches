@@ -314,14 +314,6 @@ Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
         if ((! params.master_repository_name().empty()) && (! master_repo) &&
                 (params.master_repository_name() != stringify(main_repo->name())))
             throw ConfigurationError("Can't find repository '" + params.master_repository_name() + "'");
-
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-        std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
-        v_keys->insert("format", "virtuals");
-        if ((*DistributionData::get_instance()->distribution_from_string(env->distribution())).support_old_style_virtuals())
-            env->add_repository(-2, RepositoryFactory::get_instance()->create(env,
-                        std::bind(from_keys, v_keys, std::placeholders::_1)));
-#endif
     }
     else
     {
@@ -338,16 +330,6 @@ Imp<NoConfigEnvironment>::initialise(NoConfigEnvironment * const env)
 
         env->add_repository(1, RepositoryFactory::get_instance()->create(env,
                     std::bind(from_keys, keys, std::placeholders::_1)));
-
-        std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
-        iv_keys->insert("root", "/");
-        iv_keys->insert("format", "installed_virtuals");
-
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-        if ((*DistributionData::get_instance()->distribution_from_string(env->distribution())).support_old_style_virtuals())
-            env->add_repository(-2, RepositoryFactory::get_instance()->create(env,
-                        std::bind(from_keys, iv_keys, std::placeholders::_1)));
-#endif
     }
 }
 

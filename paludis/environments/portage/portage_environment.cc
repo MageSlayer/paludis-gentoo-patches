@@ -264,9 +264,6 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     /* TODO: load USE etc from env? */
 
     /* repositories */
-
-    _add_virtuals_repository();
-    _add_installed_virtuals_repository();
     if (_imp->vars->get("PORTDIR").empty())
         throw PortageEnvironmentConfigurationError("PORTDIR empty or unset");
     _add_portdir_repository(FSPath(_imp->vars->get("PORTDIR")));
@@ -459,27 +456,6 @@ PortageEnvironment::_load_profile(const FSPath & d)
                     std::bind(&predefined, _imp->vars, std::placeholders::_1, std::placeholders::_2),
                     &do_incremental);
 
-}
-
-void
-PortageEnvironment::_add_virtuals_repository()
-{
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-    keys->insert("format", "virtuals");
-    add_repository(-2, RepositoryFactory::get_instance()->create(this, std::bind(from_keys, keys, std::placeholders::_1)));
-#endif
-}
-
-void
-PortageEnvironment::_add_installed_virtuals_repository()
-{
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-    keys->insert("root", stringify(preferred_root_key()->parse_value()));
-    keys->insert("format", "installed_virtuals");
-    add_repository(-1, RepositoryFactory::get_instance()->create(this, std::bind(from_keys, keys, std::placeholders::_1)));
-#endif
 }
 
 void

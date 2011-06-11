@@ -654,21 +654,6 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
         if (_imp->repos.empty())
             throw PaludisConfigError("No repositories specified");
-
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-        /* add virtuals repositories */
-        if ((*DistributionData::get_instance()->distribution_from_string(distribution())).support_old_style_virtuals())
-        {
-            std::shared_ptr<Map<std::string, std::string> > iv_keys(std::make_shared<Map<std::string, std::string>>());
-            iv_keys->insert("root", _imp->root_prefix.empty() ? "/" : _imp->root_prefix);
-            iv_keys->insert("format", "installed_virtuals");
-            _imp->repos.push_back(std::bind(&from_keys, iv_keys, std::placeholders::_1));
-
-            std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
-            v_keys->insert("format", "virtuals");
-            _imp->repos.push_back(std::bind(&from_keys, v_keys, std::placeholders::_1));
-        }
-#endif
     }
 
     /* keywords */

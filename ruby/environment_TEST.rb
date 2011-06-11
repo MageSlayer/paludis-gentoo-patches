@@ -391,11 +391,7 @@ module Paludis
         end
 
         def test_repositories
-            if ENV["PALUDIS_ENABLE_VIRTUALS_REPOSITORY"] == "yes" then
-                assert_equal 3, env.repositories.length
-            else
-                assert_equal 1, env.repositories.length
-            end
+            assert_equal 1, env.repositories.length
 
             a = env.repositories.find_all do | repo |
                 repo.name == "testrepo"
@@ -418,23 +414,8 @@ module Paludis
             end
         end
 
-        def test_more_important_than
-            if ENV["PALUDIS_ENABLE_VIRTUALS_REPOSITORY"] == "yes" then
-                assert env.more_important_than('testrepo', 'virtuals')
-                assert ! env.more_important_than('virtuals', 'testrepo')
-            elsif ENV["PALUDIS_ENABLE_VIRTUALS_REPOSITORY"] == "no" then
-            else
-                throw "oops"
-            end
-        end
-
         def test_has_repository_named?
             assert env.has_repository_named?('testrepo')
-            if ENV["PALUDIS_ENABLE_VIRTUALS_REPOSITORY"] == "yes" then
-                assert env.has_repository_named?('virtuals')
-            else
-                assert ! env.has_repository_named?('virtuals')
-            end
             assert ! env.has_repository_named?('foobarbaz')
         end
     end

@@ -61,8 +61,6 @@ namespace paludis
             Pimp<PortageEnvironment> _imp;
 
             void _load_profile(const FSPath &);
-            void _add_virtuals_repository();
-            void _add_installed_virtuals_repository();
             void _add_portdir_repository(const FSPath &);
             void _add_portdir_overlay_repository(const FSPath &);
             void _add_ebuild_repository(const FSPath &, const std::string &,
