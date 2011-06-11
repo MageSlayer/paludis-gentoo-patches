@@ -67,9 +67,6 @@ namespace paludis
 
                  const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
                  const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
-                 const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const;
-                 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
-                     contained_in_key() const;
                  const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
                      dependencies_key() const;
                  const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >

@@ -191,17 +191,6 @@ namespace paludis
             virtual const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const = 0;
 
             /**
-             * The contains_key, if non-zero, indicates that a package contains
-             * other packages. This affects dependency resolution. */
-            virtual const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const = 0;
-
-            /**
-             * The contained_in_key, if non-zero, indicates that a package is
-             * contained in another package. This affects dependency resolution.
-             */
-            virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > > contained_in_key() const = 0;
-
-            /**
              * The dependencies_key, if non-zero, provides all of a package's
              * dependencies.
              *

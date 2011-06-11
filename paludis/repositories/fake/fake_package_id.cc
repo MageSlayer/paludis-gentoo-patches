@@ -1126,18 +1126,6 @@ FakePackageID::breaks_portage() const
     return std::shared_ptr<const Set<std::string> >();
 }
 
-const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
-FakePackageID::contains_key() const
-{
-    return std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
-}
-
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
-FakePackageID::contained_in_key() const
-{
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
-}
-
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 FakePackageID::fs_location_key() const
 {

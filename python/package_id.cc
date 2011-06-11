@@ -113,16 +113,6 @@ void expose_package_id()
                 "to determine whether a package is unused."
             )
 
-        .def("contains_key", &PackageID::contains_key,
-                "The contains_key, if not None, indicates that a package contains\n"
-                "other packages. This affects dependency resolution."
-            )
-
-        .def("contained_in_key", &PackageID::contained_in_key,
-                "The contained_in_key, if not None, indicates that a package is\n"
-                "contained in another package. This affects dependency resolution."
-            )
-
         .def("build_dependencies_key", &PackageID::build_dependencies_key,
                 "The build_dependencies_key, if not None, indicates a package's\n"
                 "build-time dependencies."

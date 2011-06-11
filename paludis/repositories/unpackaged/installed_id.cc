@@ -550,18 +550,6 @@ InstalledUnpackagedID::keywords_key() const
     return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
-InstalledUnpackagedID::contains_key() const
-{
-    return std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
-}
-
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
-InstalledUnpackagedID::contained_in_key() const
-{
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
-}
-
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 InstalledUnpackagedID::dependencies_key() const
 {

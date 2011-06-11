@@ -204,18 +204,6 @@ UnwrittenID::extra_hash_value() const
     return Hash<SlotName>()(slot_key()->parse_value());
 }
 
-const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
-UnwrittenID::contains_key() const
-{
-    return std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
-}
-
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
-UnwrittenID::contained_in_key() const
-{
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
-}
-
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnwrittenID::fs_location_key() const
 {

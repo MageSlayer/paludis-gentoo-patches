@@ -104,14 +104,6 @@ class TestCase_01_PackageID(unittest.TestCase):
         mask = iter(self.mpid.masks).next()
         self.assert_(isinstance(mask, UnacceptedMask))
 
-    def test_16_contains_key(self):
-        self.assertEquals(self.pid.contains_key(), None)
-        self.assertEquals(self.ipid.contains_key(), None)
-
-    def test_17_contained_in_key(self):
-        self.assertEquals(self.pid.contained_in_key(), None)
-        self.assertEquals(self.ipid.contained_in_key(), None)
-
     def test_18_build_dependencies_key(self):
         self.assert_(isinstance(self.pid.build_dependencies_key(), MetadataDependencySpecTreeKey))
         self.assertEquals(self.ipid.build_dependencies_key(), None)

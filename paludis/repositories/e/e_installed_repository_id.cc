@@ -1032,18 +1032,6 @@ EInstalledRepositoryID::perform_action(Action & a) const
     a.accept(b);
 }
 
-const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
-EInstalledRepositoryID::contains_key() const
-{
-    return std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
-}
-
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
-EInstalledRepositoryID::contained_in_key() const
-{
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
-}
-
 const std::shared_ptr<const MetadataValueKey<SlotName> >
 EInstalledRepositoryID::slot_key() const
 {

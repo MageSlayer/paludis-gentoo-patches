@@ -954,10 +954,6 @@ UserKeyRequirement::requirement_met(
             key = id->build_dependencies_key().get();
         else if (_imp->key == "$choices")
             key = id->choices_key().get();
-        else if (_imp->key == "$contained_in")
-            key = id->contained_in_key().get();
-        else if (_imp->key == "$contains")
-            key = id->contains_key().get();
         else if (_imp->key == "$contents")
             key = id->contents_key().get();
         else if (_imp->key == "$dependencies")

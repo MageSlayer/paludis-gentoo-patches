@@ -311,18 +311,6 @@ UnavailableRepositoryID::extra_hash_value() const
     return 0;
 }
 
-const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
-UnavailableRepositoryID::contains_key() const
-{
-    return std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
-}
-
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
-UnavailableRepositoryID::contained_in_key() const
-{
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
-}
-
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnavailableRepositoryID::fs_location_key() const
 {

@@ -251,8 +251,6 @@ namespace paludis
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > > contents_key() const;
             virtual const std::shared_ptr<const MetadataTimeKey> installed_time_key() const;
-            virtual const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> > contains_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > > contained_in_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<FSPath> > fs_location_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<long> > size_of_download_required_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<long> > size_of_all_distfiles_key() const;

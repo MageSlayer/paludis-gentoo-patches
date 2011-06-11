@@ -204,18 +204,6 @@ UnavailablePackageID::extra_hash_value() const
                 slot_key()->parse_value(), *_imp->from_repositories_key->parse_value()->begin()));
 }
 
-const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
-UnavailablePackageID::contains_key() const
-{
-    return std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >();
-}
-
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
-UnavailablePackageID::contained_in_key() const
-{
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
-}
-
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnavailablePackageID::fs_location_key() const
 {
