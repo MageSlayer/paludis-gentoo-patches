@@ -122,28 +122,6 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
         di = irepo.destination_interface
         self.assert_(isinstance(di, RepositoryDestinationInterface))
 
-    def test_12_qa_interface(self):
-        if hasattr(paludis, "QAReporter"):
-            class PyQAR(QAReporter):
-                def __init__(self):
-                    QAReporter.__init__(self)
-                    self.messages = 0
-
-                def message(self, msg):
-                    self.messages += 1
-
-                def status(self, msg):
-                    return
-
-            qi = repo.qa_interface
-            self.assert_(isinstance(qi, RepositoryQAInterface))
-
-            qr = PyQAR()
-
-            qi.check_qa(qr, QACheckProperties(), QACheckProperties(),
-                    QAMessageLevel.DEBUG, "repository_TEST_dir/testrepo")
-            self.assertEquals(qr.messages > 0, True)
-
 class TestCase_03_FakeRepository(unittest.TestCase):
     def setUp(self):
         global e, f

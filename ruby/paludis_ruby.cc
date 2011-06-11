@@ -401,30 +401,3 @@ paludis::ruby::match_package_options_to_value(const MatchPackageOptions & o)
     return a;
 }
 
-#ifdef ENABLE_RUBY_QA
-paludis::ruby::RubyQAReporter::RubyQAReporter(VALUE* ruby_reporter)
-{
-    this->reporter = ruby_reporter;
-}
-
-void
-paludis::ruby::RubyQAReporter::message(const QAMessage & msg)
-{
-    try
-    {
-        ID message_id = rb_intern("message");
-        VALUE msg_val = qa_message_to_value(msg);
-        rb_funcall(*(this->reporter), message_id, 1, msg_val);
-    }
-    catch (const std::exception & e)
-    {
-        exception_to_ruby_exception(e);
-    }
-}
-
-void
-paludis::ruby::RubyQAReporter::status(const std::string &)
-{
-}
-#endif
-

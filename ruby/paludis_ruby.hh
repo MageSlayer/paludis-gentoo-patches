@@ -42,10 +42,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/hashes.hh>
 
-#ifdef ENABLE_RUBY_QA
-#include <paludis/qa.hh>
-#endif
-
 #include <ruby.h>
 
 #define RUBY_FUNC_CAST(x) reinterpret_cast<VALUE (*)(...)>(x)
@@ -57,19 +53,6 @@ namespace paludis
 
     namespace ruby
     {
-
-#ifdef ENABLE_RUBY_QA
-        class RubyQAReporter : public QAReporter
-        {
-            VALUE* reporter;
-
-            public:
-                RubyQAReporter(VALUE*);
-                void message(const QAMessage &);
-                void status(const std::string &);
-        };
-#endif
-
         /* general utilities */
 
         void exception_to_ruby_exception(const std::exception &) PALUDIS_ATTRIBUTE((noreturn));
@@ -90,9 +73,7 @@ namespace paludis
         VALUE generator_to_value(const Generator &);
         VALUE filter_to_value(const Filter &);
         VALUE filtered_generator_to_value(const FilteredGenerator &);
-#ifdef ENABLE_RUBY_QA
-        VALUE qa_message_to_value(const QAMessage &);
-#endif
+
         template <typename T_> VALUE dep_tree_to_value(const std::shared_ptr<const T_> &);
         template <typename T_> std::shared_ptr<const T_> value_to_dep_tree(VALUE);
         VALUE package_dep_spec_to_value(const PackageDepSpec &);
@@ -137,10 +118,6 @@ namespace paludis
         VALUE * pretend_action_value_ptr();
         VALUE * pretend_fetch_action_value_ptr();
         VALUE * dependencies_labels_dep_spec_value_ptr();
-
-#ifdef ENABLE_RUBY_QA
-        QACheckProperties value_to_qa_check_properties(VALUE);
-#endif
 
         /* registration */
 
