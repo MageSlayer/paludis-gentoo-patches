@@ -643,14 +643,6 @@ struct AllowedTypes<SimpleURISpecTree>
 };
 
 template<>
-struct AllowedTypes<ProvideSpecTree>
-{
-    AllowedTypes(const AllDepSpec &) {};
-    AllowedTypes(const ConditionalDepSpec &) {};
-    AllowedTypes(const PackageDepSpec &) {};
-};
-
-template<>
 struct AllowedTypes<PlainTextSpecTree>
 {
     AllowedTypes(const AllDepSpec &) {};
@@ -1068,7 +1060,6 @@ void expose_dep_spec()
             "Options for parse_user_package_dep_spec.");
 
     RegisterSpecTreeToPython<DependencySpecTree>();
-    RegisterSpecTreeToPython<ProvideSpecTree>();
     RegisterSpecTreeToPython<PlainTextSpecTree>();
     RegisterSpecTreeToPython<RequiredUseSpecTree>();
     RegisterSpecTreeToPython<FetchableURISpecTree>();
@@ -1077,7 +1068,6 @@ void expose_dep_spec()
     RegisterSpecTreeToPython<SetSpecTree>();
 
     RegisterSpecTreeSharedPtrFromPython<DependencySpecTree>();
-    RegisterSpecTreeSharedPtrFromPython<ProvideSpecTree>();
     RegisterSpecTreeSharedPtrFromPython<PlainTextSpecTree>();
     RegisterSpecTreeSharedPtrFromPython<RequiredUseSpecTree>();
     RegisterSpecTreeSharedPtrFromPython<FetchableURISpecTree>();

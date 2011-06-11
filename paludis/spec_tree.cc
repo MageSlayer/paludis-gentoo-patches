@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -421,30 +421,6 @@ template class InnerNode<RequiredUseSpecTree, AnyDepSpec>;
 template class InnerNode<RequiredUseSpecTree, ExactlyOneDepSpec>;
 template class InnerNode<RequiredUseSpecTree, ConditionalDepSpec>;
 
-/* ProvideSpecTree */
-
-template const std::shared_ptr<ProvideSpecTree::NodeType<PackageDepSpec>::Type>
-    BasicInnerNode<ProvideSpecTree>::append<PackageDepSpec>(const std::shared_ptr<const PackageDepSpec> &);
-template const std::shared_ptr<ProvideSpecTree::NodeType<PackageDepSpec>::Type>
-    BasicInnerNode<ProvideSpecTree>::append<PackageDepSpec>(const std::shared_ptr<PackageDepSpec> &);
-
-template const std::shared_ptr<ProvideSpecTree::NodeType<ConditionalDepSpec>::Type>
-    BasicInnerNode<ProvideSpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<const ConditionalDepSpec> &);
-template const std::shared_ptr<ProvideSpecTree::NodeType<ConditionalDepSpec>::Type>
-    BasicInnerNode<ProvideSpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<ConditionalDepSpec> &);
-
-template const std::shared_ptr<ProvideSpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<ProvideSpecTree>::append<AllDepSpec>(const std::shared_ptr<const AllDepSpec> &);
-template const std::shared_ptr<ProvideSpecTree::NodeType<AllDepSpec>::Type>
-    BasicInnerNode<ProvideSpecTree>::append<AllDepSpec>(const std::shared_ptr<AllDepSpec> &);
-
-template class BasicInnerNode<ProvideSpecTree>;
-template class WrappedForwardIterator<BasicInnerNode<ProvideSpecTree>::ConstIteratorTag,
-         const std::shared_ptr<const BasicNode<ProvideSpecTree> > >;
-template class LeafNode<ProvideSpecTree, PackageDepSpec>;
-template class InnerNode<ProvideSpecTree, ConditionalDepSpec>;
-template class InnerNode<ProvideSpecTree, AllDepSpec>;
-
 /* SimpleURISpecTree */
 
 template const std::shared_ptr<SimpleURISpecTree::NodeType<SimpleURIDepSpec>::Type>
@@ -587,10 +563,4 @@ template InnerNode<RequiredUseSpecTree, AnyDepSpec>::operator InnerNode<GenericS
 template InnerNode<RequiredUseSpecTree, ExactlyOneDepSpec>::operator InnerNode<GenericSpecTree, ExactlyOneDepSpec> () const;
 template InnerNode<RequiredUseSpecTree, ConditionalDepSpec>::operator InnerNode<GenericSpecTree, ConditionalDepSpec> () const;
 template LeafNode<RequiredUseSpecTree, PlainTextDepSpec>::operator LeafNode<GenericSpecTree, PlainTextDepSpec> () const;
-
-/* ProvideSpecTree -> GenericSpecTree */
-
-template InnerNode<ProvideSpecTree, AllDepSpec>::operator InnerNode<GenericSpecTree, AllDepSpec> () const;
-template InnerNode<ProvideSpecTree, ConditionalDepSpec>::operator InnerNode<GenericSpecTree, ConditionalDepSpec> () const;
-template LeafNode<ProvideSpecTree, PackageDepSpec>::operator LeafNode<GenericSpecTree, PackageDepSpec> () const;
 

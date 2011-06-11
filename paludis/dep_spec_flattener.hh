@@ -49,7 +49,6 @@ namespace paludis
      *
      * This template can be instantiated as:
      *
-     * - DepSpecFlattener<ProvideSpecTree, PackageDepSpec>
      * - DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>
      * - DepSpecFlattener<SetSpecTree, PackageDepSpec>
      * - DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>
@@ -119,13 +118,10 @@ namespace paludis
             ///\}
     };
 
-    extern template class DepSpecFlattener<ProvideSpecTree, PackageDepSpec>;
     extern template class DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>;
     extern template class DepSpecFlattener<SetSpecTree, PackageDepSpec>;
     extern template class DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>;
 
-    extern template class WrappedForwardIterator<DepSpecFlattener<ProvideSpecTree, PackageDepSpec>::ConstIteratorTag,
-           const std::shared_ptr<const PackageDepSpec> >;
     extern template class WrappedForwardIterator<DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIteratorTag,
            const std::shared_ptr<const PlainTextDepSpec> >;
     extern template class WrappedForwardIterator<DepSpecFlattener<SetSpecTree, PackageDepSpec>::ConstIteratorTag,

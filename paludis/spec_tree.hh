@@ -187,8 +187,6 @@ namespace paludis
              const std::shared_ptr<const spec_tree_internals::BasicNode<PlainTextSpecTree> > >;
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<RequiredUseSpecTree>::ConstIteratorTag,
              const std::shared_ptr<const spec_tree_internals::BasicNode<RequiredUseSpecTree> > >;
-    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<ProvideSpecTree>::ConstIteratorTag,
-             const std::shared_ptr<const spec_tree_internals::BasicNode<ProvideSpecTree> > >;
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<SimpleURISpecTree>::ConstIteratorTag,
              const std::shared_ptr<const spec_tree_internals::BasicNode<SimpleURISpecTree> > >;
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<FetchableURISpecTree>::ConstIteratorTag,
