@@ -19,7 +19,6 @@
 
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolver_functions.hh>
-#include <paludis/resolver/spec_rewriter.hh>
 #include <paludis/resolver/decider.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/reason.hh>

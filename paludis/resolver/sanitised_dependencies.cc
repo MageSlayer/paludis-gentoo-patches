@@ -20,7 +20,6 @@
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolution.hh>
-#include <paludis/resolver/spec_rewriter.hh>
 #include <paludis/resolver/decider.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/save.hh>
@@ -150,20 +149,13 @@ namespace
         {
             seen_any = true;
 
-            const std::shared_ptr<const RewrittenSpec> if_rewritten(decider.rewrite_if_special(spec,
-                        make_shared_copy(our_resolution->resolvent())));
-            if (if_rewritten)
-                if_rewritten->as_spec_tree()->top()->accept(*this);
+            if (active_sublist)
+                active_sublist->push_back(spec);
             else
             {
-                if (active_sublist)
-                    active_sublist->push_back(spec);
-                else
-                {
-                    std::list<PackageOrBlockDepSpec> l;
-                    l.push_back(spec);
-                    child_groups.push_back(l);
-                }
+                std::list<PackageOrBlockDepSpec> l;
+                l.push_back(spec);
+                child_groups.push_back(l);
             }
         }
 
@@ -351,12 +343,7 @@ namespace
 
         void add(const SanitisedDependency & dep)
         {
-            const std::shared_ptr<const RewrittenSpec> if_rewritten(decider.rewrite_if_special(dep.spec(),
-                        make_shared_copy(our_resolution->resolvent())));
-            if (if_rewritten)
-                if_rewritten->as_spec_tree()->top()->accept(*this);
-            else
-                sanitised_dependencies.add(dep);
+            sanitised_dependencies.add(dep);
         }
 
         SanitisedDependency make_sanitised(const PackageOrBlockDepSpec & spec)

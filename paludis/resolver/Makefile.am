@@ -95,7 +95,6 @@ noinst_HEADERS = \
 	same_slot.hh same_slot-fwd.hh \
 	sanitised_dependencies.hh sanitised_dependencies-fwd.hh \
 	slot_name_or_null.hh slot_name_or_null-fwd.hh \
-	spec_rewriter.hh spec_rewriter-fwd.hh \
 	strongly_connected_component.hh strongly_connected_component-fwd.hh \
 	suggest_restart.hh suggest_restart-fwd.hh \
 	unsuitable_candidates.hh unsuitable_candidates-fwd.hh \
@@ -170,7 +169,6 @@ libpaludisresolver_a_SOURCES = \
 	same_slot.cc \
 	sanitised_dependencies.cc \
 	slot_name_or_null.cc \
-	spec_rewriter.cc \
 	strongly_connected_component.cc \
 	suggest_restart.cc \
 	unsuitable_candidates.cc \

@@ -30,7 +30,6 @@
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/resolver/destination-fwd.hh>
 #include <paludis/resolver/unsuitable_candidates-fwd.hh>
-#include <paludis/resolver/spec_rewriter-fwd.hh>
 #include <paludis/resolver/resolver_functions-fwd.hh>
 #include <paludis/resolver/resolver-fwd.hh>
 #include <paludis/resolver/any_child_score-fwd.hh>
@@ -245,9 +244,6 @@ namespace paludis
                         const std::shared_ptr<const Resolution> &,
                         const std::shared_ptr<const PackageID> &,
                         const SanitisedDependency &) const;
-
-                const std::shared_ptr<const RewrittenSpec> rewrite_if_special(const PackageOrBlockDepSpec &,
-                        const std::shared_ptr<const Resolvent> & maybe_from) const;
         };
     }
 }

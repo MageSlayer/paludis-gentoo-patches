@@ -19,7 +19,6 @@
 
 #include <paludis/resolver/decider.hh>
 #include <paludis/resolver/resolver_functions.hh>
-#include <paludis/resolver/spec_rewriter.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/constraint.hh>
@@ -91,7 +90,6 @@ namespace paludis
     {
         const Environment * const env;
         const ResolverFunctions fns;
-        SpecRewriter rewriter;
 
         const std::shared_ptr<ResolutionsByResolvent> resolutions_by_resolvent;
 
@@ -99,7 +97,6 @@ namespace paludis
                 const std::shared_ptr<ResolutionsByResolvent> & l) :
             env(e),
             fns(f),
-            rewriter(env),
             resolutions_by_resolvent(l)
         {
         }
@@ -1879,14 +1876,6 @@ Decider::_get_unmatching_constraints(
     return result;
 }
 
-const std::shared_ptr<const RewrittenSpec>
-Decider::rewrite_if_special(
-        const PackageOrBlockDepSpec & spec,
-        const std::shared_ptr<const Resolvent> & maybe_from) const
-{
-    return _imp->rewriter.rewrite_if_special(spec, maybe_from);
-}
-
 void
 Decider::add_target_with_reason(const PackageOrBlockDepSpec & spec, const std::shared_ptr<const Reason> & reason)
 {
@@ -1894,41 +1883,31 @@ Decider::add_target_with_reason(const PackageOrBlockDepSpec & spec, const std::s
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-    const std::shared_ptr<const RewrittenSpec> if_rewritten(rewrite_if_special(spec, make_null_shared_ptr()));
-    if (if_rewritten)
-    {
-        for (Sequence<PackageOrBlockDepSpec>::ConstIterator i(if_rewritten->specs()->begin()), i_end(if_rewritten->specs()->end()) ;
-                i != i_end ; ++i)
-            add_target_with_reason(*i, reason);
-    }
+    /* empty resolvents is always ok for blockers, since blocking on things
+     * that don't exist is fine */
+    bool empty_is_ok(spec.if_block());
+    std::shared_ptr<const Resolvents> resolvents;
+
+    if (spec.if_package())
+        std::tie(resolvents, empty_is_ok) = _get_resolvents_for(*spec.if_package(), reason);
     else
+        resolvents = _get_resolvents_for_blocker(*spec.if_block(), reason);
+
+    if ((! empty_is_ok) && resolvents->empty())
+        resolvents = _get_error_resolvents_for(*spec.if_package(), reason);
+
+    for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
+            r != r_end ; ++r)
     {
-        /* empty resolvents is always ok for blockers, since blocking on things
-         * that don't exist is fine */
-        bool empty_is_ok(spec.if_block());
-        std::shared_ptr<const Resolvents> resolvents;
+        Context context_2("When adding constraints from target '" + stringify(spec) + "' to resolvent '"
+                + stringify(*r) + "':");
 
-        if (spec.if_package())
-            std::tie(resolvents, empty_is_ok) = _get_resolvents_for(*spec.if_package(), reason);
-        else
-            resolvents = _get_resolvents_for_blocker(*spec.if_block(), reason);
+        const std::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(*r, true));
+        const std::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_target(dep_resolution, spec, reason));
 
-        if ((! empty_is_ok) && resolvents->empty())
-            resolvents = _get_error_resolvents_for(*spec.if_package(), reason);
-
-        for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
-                r != r_end ; ++r)
-        {
-            Context context_2("When adding constraints from target '" + stringify(spec) + "' to resolvent '"
-                    + stringify(*r) + "':");
-
-            const std::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(*r, true));
-            const std::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_target(dep_resolution, spec, reason));
-
-            for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
-                    c != c_end ; ++c)
-                _apply_resolution_constraint(dep_resolution, *c);
-        }
+        for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
+                c != c_end ; ++c)
+            _apply_resolution_constraint(dep_resolution, *c);
     }
 }
 
