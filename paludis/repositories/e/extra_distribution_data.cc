@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -58,7 +58,6 @@ namespace paludis
                             n::default_names_cache() = k->get("default_names_cache"),
                             n::default_profile_eapi() = k->get("default_profile_eapi"),
                             n::default_profile_layout() = k->get("default_profile_layout"),
-                            n::default_provides_cache() = k->get("default_provides_cache"),
                             n::default_write_cache() = k->get("default_write_cache"),
                             n::news_directory() = FSPath(k->get("news_directory")),
                             n::qa_category_dir_checks() = make_set(k->get("qa_category_dir_checks")),
