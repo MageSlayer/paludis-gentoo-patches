@@ -639,7 +639,6 @@ namespace paludis
         mutable std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot;
         mutable std::shared_ptr<FakeMetadataKeywordSetKey> keywords;
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<LicenseSpecTree> > license;
-        mutable std::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> > provide;
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
@@ -745,13 +744,6 @@ FakePackageID::license_key() const
     return _imp->license;
 }
 
-const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
-FakePackageID::provide_key() const
-{
-    need_keys_added();
-    return _imp->provide;
-}
-
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 FakePackageID::build_dependencies_key() const
 {
@@ -778,13 +770,6 @@ FakePackageID::keywords_key()
 {
     need_keys_added();
     return _imp->keywords;
-}
-
-const std::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> >
-FakePackageID::provide_key()
-{
-    need_keys_added();
-    return _imp->provide;
 }
 
 const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> >
@@ -919,9 +904,6 @@ FakePackageID::need_keys_added() const
         _imp->license = std::make_shared<FakeMetadataSpecTreeKey<LicenseSpecTree>>("LICENSE", "License",
                     "", std::bind(&parse_license, _1, _imp->env), mkt_normal);
 
-        _imp->provide = std::make_shared<FakeMetadataSpecTreeKey<ProvideSpecTree>>("PROVIDE", "Provide",
-                    "", std::bind(&parse_provide, _1, _imp->env), mkt_normal);
-
         _imp->choices = std::make_shared<FakeMetadataChoicesKey>(_imp->env, shared_from_this());
 
         _imp->behaviours = std::make_shared<LiteralMetadataStringSetKey>("BEHAVIOURS", "Behaviours",
@@ -938,7 +920,6 @@ FakePackageID::need_keys_added() const
         add_metadata_key(_imp->post_dependencies);
         add_metadata_key(_imp->src_uri);
         add_metadata_key(_imp->homepage);
-        add_metadata_key(_imp->provide);
         add_metadata_key(_imp->license);
         add_metadata_key(_imp->choices);
         add_metadata_key(_imp->behaviours);

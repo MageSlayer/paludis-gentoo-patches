@@ -210,12 +210,6 @@ RepositoryID::keywords_key() const
     return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
-RepositoryID::provide_key() const
-{
-    return std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
-}
-
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 RepositoryID::dependencies_key() const
 {

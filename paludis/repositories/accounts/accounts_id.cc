@@ -313,12 +313,6 @@ AccountsID::keywords_key() const
     return make_null_shared_ptr();
 }
 
-const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
-AccountsID::provide_key() const
-{
-    return make_null_shared_ptr();
-}
-
 const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 AccountsID::contains_key() const
 {

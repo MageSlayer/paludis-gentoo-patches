@@ -209,12 +209,6 @@ UnpackagedID::keywords_key() const
     return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
-UnpackagedID::provide_key() const
-{
-    return std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
-}
-
 const std::shared_ptr<const MetadataCollectionKey<PackageIDSequence> >
 UnpackagedID::contains_key() const
 {

@@ -113,11 +113,6 @@ void expose_package_id()
                 "to determine whether a package is unused."
             )
 
-        .def("provide_key", &PackageID::provide_key,
-                "The provide_key, if not None, indicates that a package provides\n"
-                "certain old-style virtuals. This affects dependency resolution."
-            )
-
         .def("contains_key", &PackageID::contains_key,
                 "The contains_key, if not None, indicates that a package contains\n"
                 "other packages. This affects dependency resolution."

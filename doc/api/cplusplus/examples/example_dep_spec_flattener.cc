@@ -52,25 +52,8 @@ int main(int argc, char * argv[])
         {
             cout << "Information about '" << **i << "':" << endl;
 
-            /* Do we have a provides key? All PackageID key methods may return a
-             * zero pointer. */
-            if ((*i)->provide_key())
-            {
-                /* Create our flattener... */
-                DepSpecFlattener<ProvideSpecTree, PackageDepSpec> provides(env.get(), *i);
-
-                /* Populate it by making it visit the key's value */
-                (*i)->provide_key()->parse_value()->top()->accept(provides);
-
-                /* The results are available through DepSpecFlattener::begin()
-                 * and ::end(). These return an iterator to a std::shared_ptr<>,
-                 * so we use indirect_iterator to add a level of dereferencing.*/
-                cout << "    " << left << setw(24) << "Provides:" << " "
-                    << join(indirect_iterator(provides.begin()), indirect_iterator(provides.end()), " ")
-                    << endl;
-            }
-
-            /* Again for homepage */
+            /* Do we have a homepage? All PackageID key methods may return a
+             * null pointer. */
             if ((*i)->homepage_key())
             {
                 DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec> homepages(env.get(), *i);

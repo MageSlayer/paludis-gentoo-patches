@@ -155,7 +155,6 @@ namespace paludis
         mutable std::shared_ptr<const EDependenciesKey> build_dependencies;
         mutable std::shared_ptr<const EDependenciesKey> run_dependencies;
         mutable std::shared_ptr<const EDependenciesKey> post_dependencies;
-        mutable std::shared_ptr<const EProvideKey> provide;
         mutable std::shared_ptr<const EPlainTextSpecKey> restrictions;
         mutable std::shared_ptr<const EPlainTextSpecKey> properties;
         mutable std::shared_ptr<const EFetchableURIKey> src_uri;
@@ -761,13 +760,6 @@ EbuildID::license_key() const
     return _imp->license;
 }
 
-const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
-EbuildID::provide_key() const
-{
-    need_keys_added();
-    return _imp->provide;
-}
-
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EbuildID::dependencies_key() const
 {
@@ -1032,14 +1024,6 @@ EbuildID::load_properties(const std::shared_ptr<const EAPIMetadataVariable> & m,
         _imp->properties = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal, is_installed());
         add_metadata_key(_imp->properties);
     }
-}
-
-void
-EbuildID::load_provide(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
-{
-    Lock l(_imp->mutex);
-    _imp->provide = std::make_shared<EProvideKey>(_imp->environment, m, eapi(), v, mkt_internal, is_installed());
-    add_metadata_key(_imp->provide);
 }
 
 void

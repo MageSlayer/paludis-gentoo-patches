@@ -506,8 +506,6 @@ namespace
         rb_define_method(c_package_id, "breaks_portage", RUBY_FUNC_CAST(&package_id_breaks_portage), 0);
 
         rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);
-        rb_define_method(c_package_id, "provide_key", RUBY_FUNC_CAST((
-                        &KeyValue<MetadataSpecTreeKey<ProvideSpecTree>, &PackageID::provide_key>::fetch)), 0);
         rb_define_method(c_package_id, "dependencies_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::dependencies_key>::fetch)), 0);
         rb_define_method(c_package_id, "build_dependencies_key", RUBY_FUNC_CAST((

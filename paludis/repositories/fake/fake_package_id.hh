@@ -241,7 +241,6 @@ namespace paludis
 
             virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
             virtual const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
-            virtual const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
             virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const;
             virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
             virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
@@ -267,7 +266,6 @@ namespace paludis
             ///\{
 
             const std::shared_ptr<FakeMetadataKeywordSetKey> keywords_key();
-            const std::shared_ptr<FakeMetadataSpecTreeKey<ProvideSpecTree> > provide_key();
             const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key();
             const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key();
             const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key();

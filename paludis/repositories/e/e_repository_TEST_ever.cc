@@ -123,8 +123,8 @@ TEST_P(EverTest, Works)
                     n::suitable_destination() = true,
                     n::supports_uninstall() = true
                     )));
-    installed_repo->add_version("cat", "pretend-installed", "0")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
-    installed_repo->add_version("cat", "pretend-installed", "1")->provide_key()->set_from_string("virtual/virtual-pretend-installed");
+    installed_repo->add_version("cat", "pretend-installed", "0");
+    installed_repo->add_version("cat", "pretend-installed", "1");
     env.add_repository(2, installed_repo);
 
     InstallAction action(make_named_values<InstallActionOptions>(

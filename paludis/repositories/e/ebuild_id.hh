@@ -66,7 +66,6 @@ namespace paludis
 
                 virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
-                virtual const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> > provide_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
@@ -131,7 +130,6 @@ namespace paludis
                 void load_src_uri(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_homepage(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_license(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
-                void load_provide(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_iuse(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_myoptions(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;
                 void load_required_use(const std::shared_ptr<const EAPIMetadataVariable> &, const std::string &) const;

@@ -978,8 +978,6 @@ UserKeyRequirement::requirement_met(
             key = id->long_description_key().get();
         else if (_imp->key == "$post_dependencies")
             key = id->post_dependencies_key().get();
-        else if (_imp->key == "$provide")
-            key = id->provide_key().get();
         else if (_imp->key == "$run_dependencies")
             key = id->run_dependencies_key().get();
         else if (_imp->key == "$short_description")

@@ -234,12 +234,6 @@ UnavailablePackageID::keywords_key() const
     return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
 }
 
-const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
-UnavailablePackageID::provide_key() const
-{
-    return std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >();
-}
-
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailablePackageID::dependencies_key() const
 {

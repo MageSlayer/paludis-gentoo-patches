@@ -792,13 +792,6 @@ EInstalledRepositoryID::defined_phases_key() const
     return _imp->keys->defined_phases;
 }
 
-const std::shared_ptr<const MetadataSpecTreeKey<ProvideSpecTree> >
-EInstalledRepositoryID::provide_key() const
-{
-    need_keys_added();
-    return _imp->keys->provide;
-}
-
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EInstalledRepositoryID::dependencies_key() const
 {
