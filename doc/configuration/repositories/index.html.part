@@ -74,19 +74,6 @@ other keys.</p>
     <li><a href="vdb.html">VDB</a>, for tracking installed ebuilds.</li>
 </ul>
 
-<p>In addition, the following repositories are magically defined on Gentoo and derived distributions that make use of
-old-style virtuals:</p>
-
-<dl>
-    <dt><code>virtuals</code></dt>
-    <dd>A special repository that contains special package entries for old style virtuals, mapping them to their
-    providers.</dd>
-
-    <dt><code>installed-virtuals</code></dt>
-    <dd>A special repository that contains special package entries for installed old style virtuals (provided
-    packages).</dd>
-</dl>
-
 <h3>Exherbo</h3>
 
 <ul>

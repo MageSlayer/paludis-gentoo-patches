@@ -229,7 +229,6 @@ via <code>--sync</code>) modify a repository.</p>
 location = /var/db/pkg/
 format = vdb
 names_cache = (see below)
-provides_cache = (see below)
 </pre>
 
 <p>The <code>names_cache = </code> option, if set to (for example) <code>/var/cache/paludis/names</code>, can be used to
@@ -237,12 +236,6 @@ make resolving <code>pkg</code> to <code>cat/pkg</code> much faster (a lot less 
 seconds on typical hardware). Most users will benefit hugely from this option. However, Portage will not update or use
 this cache, so if for any reason you use Portage for any operation, you must then run <code>cave
 fix-cache</code>.</p>
-
-<p>The <code>provides_cache = </code> option, if set to (for example) <code>/var/cache/paludis/provides</code>, can be
-used to make resolving an old style virtual to its providers much faster (a lot less of a second, as opposed to anywhere
-up to a minute if many packages are installed). Because many common operations require a virtual resolution, using this
-option can give huge speedups. Again, however, Portage will not use this cache, so you will need to regenerate it
-manually if you install or uninstall any package using Portage.</p>
 
 <p>To disable either cache, use <code>/var/empty</code> as the value.</p>
 

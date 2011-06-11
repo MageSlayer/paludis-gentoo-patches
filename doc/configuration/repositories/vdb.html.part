@@ -13,11 +13,6 @@ for <code>vdb</code> format repositories:</p>
     <dd>The location of the repository. Mandatory. On Gentoo systems, this must be <code>${root}/var/db/pkg</code> to
     avoid problems with broken ebuilds that illegally access the VDB.</dd>
 
-    <dt><code>provides_cache</code></dt>
-    <dd>The file to use for reading and writing a cache of providers of old-style virtuals. See <a
-        href="../../overview/gettingstarted.html">Getting Started</a> for notes. Optional, set to <code>/var/empty</code>
-    to disable.</dd>
-
     <dt><code>names_cache</code></dt>
     <dd>The directory in which to look for a names cache, and in which to generate a names cache. A names cache will
     significantly speed up converting a <code>pkg</code> into a <code>cat/pkg</code>. See <a
