@@ -257,12 +257,6 @@ UnpackagedID::post_dependencies_key() const
     return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-UnpackagedID::suggested_dependencies_key() const
-{
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
-}
-
 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 UnpackagedID::fetches_key() const
 {

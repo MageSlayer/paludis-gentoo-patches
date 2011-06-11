@@ -282,12 +282,6 @@ InstalledAccountsID::dependencies_key() const
     return _imp->dependencies_key;
 }
 
-const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-InstalledAccountsID::suggested_dependencies_key() const
-{
-    return make_null_shared_ptr();
-}
-
 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 InstalledAccountsID::fetches_key() const
 {

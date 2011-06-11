@@ -149,11 +149,6 @@ void expose_package_id()
                 "post-merge dependencies."
             )
 
-        .def("suggested_dependencies_key", &PackageID::suggested_dependencies_key,
-                "The suggested_dependencies_key, if not None, indicates a package's\n"
-                "suggested post-merge dependencies."
-            )
-
         .def("fetches_key", &PackageID::fetches_key,
                 "The fetches_key, if not None, indicates files that have to be fetched\n"
                 "in order to install a package."

@@ -64,7 +64,6 @@ namespace paludis
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
-                virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > restrict_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > properties_key() const;

@@ -515,8 +515,6 @@ SanitisedDependencies::populate(
             _populate_one(env, decider, resolution, id, changed, &PackageID::run_dependencies_key);
         if (id->post_dependencies_key())
             _populate_one(env, decider, resolution, id, changed, &PackageID::post_dependencies_key);
-        if (id->suggested_dependencies_key())
-            _populate_one(env, decider, resolution, id, changed, &PackageID::suggested_dependencies_key);
     }
 }
 

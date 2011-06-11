@@ -1605,9 +1605,6 @@ VDBRepository::perform_updates()
                 if ((*i)->post_dependencies_key())
                     rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->post_dependencies_key()->raw_name(),
                             (*i)->post_dependencies_key(), dep_rewrites);
-                if ((*i)->suggested_dependencies_key())
-                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->suggested_dependencies_key()->raw_name(),
-                            (*i)->suggested_dependencies_key(), dep_rewrites);
             }
 
             std::cout << std::endl << "Updating configuration files" << std::endl;

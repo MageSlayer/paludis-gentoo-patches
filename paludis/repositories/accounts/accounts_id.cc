@@ -358,12 +358,6 @@ AccountsID::post_dependencies_key() const
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-AccountsID::suggested_dependencies_key() const
-{
-    return make_null_shared_ptr();
-}
-
-const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 AccountsID::dependencies_key() const
 {
     _need_file_keys();

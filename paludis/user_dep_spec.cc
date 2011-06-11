@@ -980,8 +980,6 @@ UserKeyRequirement::requirement_met(
             key = id->short_description_key().get();
         else if (_imp->key == "$slot")
             key = id->slot_key().get();
-        else if (_imp->key == "$suggested_dependencies")
-            key = id->suggested_dependencies_key().get();
         else if (_imp->key == "$virtual_for")
             key = id->virtual_for_key().get();
     }

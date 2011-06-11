@@ -136,10 +136,6 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assert_(isinstance(self.pid.post_dependencies_key(), MetadataDependencySpecTreeKey))
         self.assertEquals(self.ipid.post_dependencies_key(), None)
 
-    def test_21_suggested_dependencies_key(self):
-        self.assertEquals(self.pid.suggested_dependencies_key(), None)
-        self.assertEquals(self.ipid.suggested_dependencies_key(), None)
-
     def test_22_fetches_key(self):
         self.assert_(isinstance(self.pid.fetches_key(), MetadataFetchableURISpecTreeKey))
         self.assertEquals(self.ipid.fetches_key(), None)

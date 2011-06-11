@@ -131,8 +131,7 @@ ids.each do | id |
 
     # IDs can potentially have four dependency-related keys. Each of thse keys
     # may return nil. If it doesn't, collect 'app-arch/unzip' dependencies.
-    [ :build_dependencies_key, :run_dependencies_key, :post_dependencies_key,
-            :suggested_dependencies_key ].each do | key |
+    [ :build_dependencies_key, :run_dependencies_key, :post_dependencies_key ].each do | key |
         if id.send(key)
             collect_dependencies(env, id, id.send(key).parse_value, results)
         end

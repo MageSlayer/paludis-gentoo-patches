@@ -219,8 +219,7 @@ namespace paludis
              * dependencies.
              *
              * If dependencies_key is used, the client should ignore
-             * build_dependencies_key, run_dependencies_key,
-             * post_dependencies_key and suggested_dependencies_key.
+             * build_dependencies_key, run_dependencies_key and post_dependencies_key.
              *
              * Repositories that support this key must also provide the old
              * split out keys.
@@ -246,12 +245,6 @@ namespace paludis
              * post-merge dependencies.
              */
             virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const = 0;
-
-            /**
-             * The suggested_dependencies_key, if non-zero, indicates a package's
-             * suggested post-merge dependencies.
-             */
-            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const = 0;
 
             /**
              * The fetches_key, if non-zero, indicates files that have to be fetched

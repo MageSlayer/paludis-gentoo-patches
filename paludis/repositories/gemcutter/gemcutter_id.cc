@@ -383,12 +383,6 @@ GemcutterID::post_dependencies_key() const
     return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-GemcutterID::suggested_dependencies_key() const
-{
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
-}
-
 const std::shared_ptr<const MetadataValueKey<std::string> >
 GemcutterID::short_description_key() const
 {

@@ -609,18 +609,15 @@ namespace
         std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
         std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
         std::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
-        std::shared_ptr<DependenciesLabelSequence> suggested_dependencies_labels;
 
         FakePackageIDData() :
             build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
             run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
-            post_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
-            suggested_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
+            post_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
         {
             build_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("DEPEND"));
             run_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("RDEPEND"));
             post_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesPostLabelTag> >("PDEPEND"));
-            suggested_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesSuggestionLabelTag> >("SDEPEND"));
         }
     };
 }
@@ -646,7 +643,6 @@ namespace paludis
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
-        mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies;
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<PlainTextSpecTree> > restrictions;
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > src_uri;
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage;
@@ -783,13 +779,6 @@ FakePackageID::post_dependencies_key() const
     return _imp->post_dependencies;
 }
 
-const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-FakePackageID::suggested_dependencies_key() const
-{
-    need_keys_added();
-    return _imp->suggested_dependencies;
-}
-
 const std::shared_ptr<FakeMetadataKeywordSetKey>
 FakePackageID::keywords_key()
 {
@@ -823,13 +812,6 @@ FakePackageID::post_dependencies_key()
 {
     need_keys_added();
     return _imp->post_dependencies;
-}
-
-const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> >
-FakePackageID::suggested_dependencies_key()
-{
-    need_keys_added();
-    return _imp->suggested_dependencies;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -934,10 +916,6 @@ FakePackageID::need_keys_added() const
                     "", std::bind(&parse_depend, _1, _imp->env),
                     FakePackageIDData::get_instance()->post_dependencies_labels, mkt_dependencies);
 
-        _imp->suggested_dependencies = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("SDEPEND", "Suggested dependencies",
-                    "", std::bind(&parse_depend, _1, _imp->env),
-                    FakePackageIDData::get_instance()->suggested_dependencies_labels, mkt_dependencies);
-
         _imp->src_uri = std::make_shared<FakeMetadataSpecTreeKey<FetchableURISpecTree>>("SRC_URI", "Source URI",
                     "", std::bind(&parse_fetchable_uri, _1, _imp->env), mkt_normal);
 
@@ -964,7 +942,6 @@ FakePackageID::need_keys_added() const
         add_metadata_key(_imp->build_dependencies);
         add_metadata_key(_imp->run_dependencies);
         add_metadata_key(_imp->post_dependencies);
-        add_metadata_key(_imp->suggested_dependencies);
         add_metadata_key(_imp->src_uri);
         add_metadata_key(_imp->homepage);
         add_metadata_key(_imp->provide);

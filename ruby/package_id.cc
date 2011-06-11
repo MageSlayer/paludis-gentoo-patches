@@ -437,14 +437,6 @@ namespace
      * Our post dependencies
      */
     /*
-     * Document-method: suggested_dependencies_key
-     *
-     * call-seq:
-     *     suggested_dependencies_key -> MetadataDependencySpecTreeKey
-     *
-     * Our suggested dependencies
-     */
-    /*
      * Document-method: homepage_key
      *
      * call-seq:
@@ -533,8 +525,6 @@ namespace
                         &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::run_dependencies_key>::fetch)), 0);
         rb_define_method(c_package_id, "post_dependencies_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::post_dependencies_key>::fetch)), 0);
-        rb_define_method(c_package_id, "suggested_dependencies_key", RUBY_FUNC_CAST((
-                        &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::suggested_dependencies_key>::fetch)), 0);
         rb_define_method(c_package_id, "homepage_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataSpecTreeKey<SimpleURISpecTree>, &PackageID::homepage_key>::fetch)), 0);
         rb_define_method(c_package_id, "short_description_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::string>,

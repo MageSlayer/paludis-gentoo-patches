@@ -377,12 +377,6 @@ UnavailableRepositoryID::post_dependencies_key() const
     return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-UnavailableRepositoryID::suggested_dependencies_key() const
-{
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
-}
-
 const std::shared_ptr<const MetadataValueKey<std::string> >
 UnavailableRepositoryID::short_description_key() const
 {

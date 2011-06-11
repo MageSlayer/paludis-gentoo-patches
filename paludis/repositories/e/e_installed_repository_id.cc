@@ -833,12 +833,6 @@ EInstalledRepositoryID::post_dependencies_key() const
     return _imp->keys->post_dependencies;
 }
 
-const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-EInstalledRepositoryID::suggested_dependencies_key() const
-{
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
-}
-
 const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EInstalledRepositoryID::restrict_key() const
 {

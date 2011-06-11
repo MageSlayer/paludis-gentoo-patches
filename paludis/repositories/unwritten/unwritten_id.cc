@@ -270,12 +270,6 @@ UnwrittenID::post_dependencies_key() const
     return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
 }
 
-const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-UnwrittenID::suggested_dependencies_key() const
-{
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
-}
-
 const std::shared_ptr<const MetadataValueKey<SlotName> >
 UnwrittenID::slot_key() const
 {

@@ -189,8 +189,6 @@ paludis::resolver::dependent_upon(
             id->run_dependencies_key()->parse_value()->top()->accept(c);
         if (id->post_dependencies_key())
             id->post_dependencies_key()->parse_value()->top()->accept(c);
-        if (id->suggested_dependencies_key())
-            id->suggested_dependencies_key()->parse_value()->top()->accept(c);
     }
 
     return c.result;
@@ -214,8 +212,6 @@ paludis::resolver::collect_depped_upon(
             id->run_dependencies_key()->parse_value()->top()->accept(c);
         if (id->post_dependencies_key())
             id->post_dependencies_key()->parse_value()->top()->accept(c);
-        if (id->suggested_dependencies_key())
-            id->suggested_dependencies_key()->parse_value()->top()->accept(c);
     }
 
     const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
@@ -250,8 +246,6 @@ paludis::resolver::collect_dependents(
                 (*i)->run_dependencies_key()->parse_value()->top()->accept(c);
             if ((*i)->post_dependencies_key())
                 (*i)->post_dependencies_key()->parse_value()->top()->accept(c);
-            if ((*i)->suggested_dependencies_key())
-                (*i)->suggested_dependencies_key()->parse_value()->top()->accept(c);
         }
 
         if (! c.result->empty())

@@ -247,7 +247,6 @@ namespace paludis
             virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
             virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
             virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
-            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key() const;
             virtual const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const;
             virtual const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const;
@@ -273,7 +272,6 @@ namespace paludis
             const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key();
             const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key();
             const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key();
-            const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > suggested_dependencies_key();
             const std::shared_ptr<FakeMetadataSpecTreeKey<FetchableURISpecTree> > fetches_key();
             const std::shared_ptr<FakeMetadataSpecTreeKey<SimpleURISpecTree> > homepage_key();
             const std::shared_ptr<FakeMetadataChoicesKey> choices_key();

@@ -802,12 +802,6 @@ EbuildID::post_dependencies_key() const
     return _imp->post_dependencies;
 }
 
-const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-EbuildID::suggested_dependencies_key() const
-{
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
-}
-
 const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EbuildID::restrict_key() const
 {
