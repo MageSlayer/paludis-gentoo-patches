@@ -90,11 +90,6 @@ namespace
 
 TEST(ERepository, InstallExheres0)
 {
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-    ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "yes", 1);
-#else
-    ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "", 1);
-#endif
     TestEnvironment env;
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");

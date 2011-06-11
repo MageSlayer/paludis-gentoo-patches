@@ -426,22 +426,6 @@ pkg_setup() {
 
     BV2=$(best_version cat/doesnotexist )
     [[ "$BV2" == "" ]] || die "BV2 is $BV2"
-
-    if [[ -n "$PALUDIS_ENABLE_VIRTUALS_REPOSITORY" ]] ; then
-        if ! best_version virtual/virtual-pretend-installed >/dev/null ; then
-            die "failed virtual/virtual-pretend-installed"
-        fi
-
-        BV3=$(best_version virtual/virtual-pretend-installed )
-        [[ "$BV3" == "cat/pretend-installed-1" ]] || die "BV3 is $BV3"
-
-        if best_version virtual/virtual-doesnotexist >/dev/null ; then
-            die "not failed virtual/virtual-doesnotexist"
-        fi
-
-        BV2=$(best_version virtual/virtual-doesnotexist )
-        [[ "$BV4" == "" ]] || die "BV4 is $BV4"
-    fi
 }
 END
 mkdir -p "cat/has-version"

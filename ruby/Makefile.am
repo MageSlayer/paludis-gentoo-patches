@@ -72,12 +72,6 @@ EXTRA_DIST = $(IF_RUBY_TESTS) $(IF_RUBY_SOURCES) \
 	repository_TEST_setup.sh repository_TEST_cleanup.sh \
 	action_TEST_setup.sh action_TEST_cleanup.sh
 
-if ENABLE_VIRTUALS_REPOSITORY
-PALUDIS_ENABLE_VIRTUALS_REPOSITORY_VALUE=yes
-else
-PALUDIS_ENABLE_VIRTUALS_REPOSITORY_VALUE=no
-endif
-
 if ENABLE_RUBY
 
 lib_LTLIBRARIES = libpaludisruby_@PALUDIS_PC_SLOT@.la

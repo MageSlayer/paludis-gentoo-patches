@@ -93,12 +93,6 @@ namespace
 
 TEST_P(DependRdependTest, Works)
 {
-#ifdef ENABLE_VIRTUALS_REPOSITORY
-    ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "yes", 1);
-#else
-    ::setenv("PALUDIS_ENABLE_VIRTUALS_REPOSITORY", "", 1);
-#endif
-
     TestEnvironment env;
 
     FSPath root(FSPath::cwd() / "depend_rdepend_TEST_dir" / "root");

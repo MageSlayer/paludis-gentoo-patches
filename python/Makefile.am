@@ -91,12 +91,6 @@ EXTRA_DIST = $(IF_PYTHON_TESTS) $(IF_PYTHON_SOURCES) \
 	repository_TEST_setup.sh repository_TEST_cleanup.sh \
 	paludis_output_wrapper.py
 
-if ENABLE_VIRTUALS_REPOSITORY
-PALUDIS_ENABLE_VIRTUALS_REPOSITORY_VALUE=yes
-else
-PALUDIS_ENABLE_VIRTUALS_REPOSITORY_VALUE=no
-endif
-
 if ENABLE_PYTHON
 
 lib_LTLIBRARIES = libpaludispython_@PALUDIS_PC_SLOT@.la
