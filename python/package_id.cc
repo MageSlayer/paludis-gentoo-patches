@@ -108,12 +108,6 @@ void expose_package_id()
                 "NEED_DOC"
                 )
 
-        .def("virtual_for_key", &PackageID::virtual_for_key,
-                "The virtual_for_key, if not None, indicates that we are an\n"
-                "(old-style) virtual for another package. This affects dependency\n"
-                " resolution."
-            )
-
         .def("keywords_key", &PackageID::keywords_key,
                 "The keywords_key, if not None, is used by FindUnusedPackagesTask\n"
                 "to determine whether a package is unused."

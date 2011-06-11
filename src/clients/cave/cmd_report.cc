@@ -187,12 +187,6 @@ ReportCommand::run(
     for (auto i(ids->begin()), i_end(ids->end()) ;
             i != i_end ; ++i)
     {
-        if ((*i)->virtual_for_key())
-        {
-            /* too weird */
-            continue;
-        }
-
         bool done_heading(false), done_heading_origin(false);
 
         auto origin(find_origin_for(env, *i));

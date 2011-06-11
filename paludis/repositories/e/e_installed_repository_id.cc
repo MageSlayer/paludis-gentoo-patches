@@ -710,12 +710,6 @@ EInstalledRepositoryID::eapi() const
     return _imp->eapi;
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
-EInstalledRepositoryID::virtual_for_key() const
-{
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
-}
-
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 EInstalledRepositoryID::keywords_key() const
 {

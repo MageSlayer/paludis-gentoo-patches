@@ -123,9 +123,6 @@ results = { }
 
 # For each ID:
 ids.each do | id |
-    # Ignore old-style virtuals
-    next if id.virtual_for_key
-
     # Make a default result for this ID.
     results[id.to_s] = { :has_dep => false, :has_ext => false }
 

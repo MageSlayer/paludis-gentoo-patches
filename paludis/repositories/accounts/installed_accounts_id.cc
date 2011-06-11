@@ -226,12 +226,6 @@ InstalledAccountsID::uniquely_identifying_spec() const
     return parse_user_package_dep_spec(stringify(name()) + "::" + stringify(repository_name()), _imp->env, { });
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
-InstalledAccountsID::virtual_for_key() const
-{
-    return make_null_shared_ptr();
-}
-
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 InstalledAccountsID::keywords_key() const
 {

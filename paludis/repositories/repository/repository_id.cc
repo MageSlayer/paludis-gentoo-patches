@@ -204,12 +204,6 @@ RepositoryID::behaviours_key() const
     return _imp->behaviours_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
-RepositoryID::virtual_for_key() const
-{
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
-}
-
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 RepositoryID::keywords_key() const
 {

@@ -307,12 +307,6 @@ AccountsID::uniquely_identifying_spec() const
             _imp->env, { });
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
-AccountsID::virtual_for_key() const
-{
-    return make_null_shared_ptr();
-}
-
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 AccountsID::keywords_key() const
 {

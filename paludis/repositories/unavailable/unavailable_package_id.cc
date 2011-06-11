@@ -228,12 +228,6 @@ UnavailablePackageID::behaviours_key() const
     return make_null_shared_ptr();
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
-UnavailablePackageID::virtual_for_key() const
-{
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >();
-}
-
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 UnavailablePackageID::keywords_key() const
 {

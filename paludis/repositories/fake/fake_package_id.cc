@@ -731,12 +731,6 @@ FakePackageID::repository_name() const
     return _imp->repository_name;
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > >
-FakePackageID::virtual_for_key() const
-{
-    return make_null_shared_ptr();
-}
-
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 FakePackageID::keywords_key() const
 {

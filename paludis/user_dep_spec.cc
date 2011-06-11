@@ -986,8 +986,6 @@ UserKeyRequirement::requirement_met(
             key = id->short_description_key().get();
         else if (_imp->key == "$slot")
             key = id->slot_key().get();
-        else if (_imp->key == "$virtual_for")
-            key = id->virtual_for_key().get();
     }
     else if (0 == _imp->key.compare(0, 2, "::"))
     {

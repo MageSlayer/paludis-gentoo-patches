@@ -397,14 +397,6 @@ namespace
      * Our source origin repository
      */
     /*
-     * Document-method: virtual_for_key
-     *
-     * call-seq:
-     *     virtual_for_key -> MetadataPackageIDKey
-     *
-     * What we are a virtual for
-     */
-    /*
      * Document-method: dependencies_key
      *
      * call-seq:
@@ -513,7 +505,6 @@ namespace
         rb_define_method(c_package_id, "masked?", RUBY_FUNC_CAST((&PackageIDBool<&PackageID::masked>::fetch)), 0);
         rb_define_method(c_package_id, "breaks_portage", RUBY_FUNC_CAST(&package_id_breaks_portage), 0);
 
-        rb_define_method(c_package_id, "virtual_for_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::shared_ptr<const PackageID> > , &PackageID::virtual_for_key>::fetch)), 0);
         rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);
         rb_define_method(c_package_id, "provide_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataSpecTreeKey<ProvideSpecTree>, &PackageID::provide_key>::fetch)), 0);

@@ -185,13 +185,6 @@ namespace paludis
             virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const = 0;
 
             /**
-             * The virtual_for_key, if non-zero, indicates that we are an
-             * (old-style) virtual for another package. This affects dependency
-             * resolution.
-             */
-            virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const PackageID> > > virtual_for_key() const = 0;
-
-            /**
              * The keywords_key, if non-zero, is used by FindUnusedPackagesTask
              * to determine whether a package is unused.
              */
