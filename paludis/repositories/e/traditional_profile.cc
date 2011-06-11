@@ -233,8 +233,6 @@ namespace
         load_spec_use_file(*eapi, dir / "package.use.force", _imp->stacked_values_list.back().package_use_force);
 
         _imp->packages_file.add_file(dir / "packages");
-        if ((*DistributionData::get_instance()->distribution_from_string(_imp->env->distribution())).support_old_style_virtuals())
-            _imp->virtuals_file.add_file(dir / "virtuals");
         _imp->package_mask_file.add_file(dir / "package.mask");
 
         _imp->profiles_with_parents->push_back(dir);
@@ -317,35 +315,6 @@ namespace
             Log::get_instance()->message("e.profile.packages.failure", ll_warning, lc_context) << "Loading packages "
                     " failed due to exception: " << e.message() << " (" << e.what() << ")";
         }
-
-        if ((*DistributionData::get_instance()->distribution_from_string(
-                    _imp->env->distribution())).support_old_style_virtuals())
-            try
-            {
-                for (TraditionalProfileFile<LineConfigFile>::ConstIterator line(_imp->virtuals_file.begin()), line_end(_imp->virtuals_file.end()) ;
-                        line != line_end ; ++line)
-                {
-                    std::vector<std::string> tokens;
-                    tokenise_whitespace(line->second, std::back_inserter(tokens));
-                    if (tokens.size() < 2)
-                        continue;
-
-                    QualifiedPackageName v(tokens[0]);
-                    _imp->virtuals->erase(v);
-                    _imp->virtuals->insert(v, parse_elike_package_dep_spec(tokens[1],
-                                line->first->supported()->package_dep_spec_parse_options(),
-                                line->first->supported()->version_spec_options()));
-                }
-            }
-            catch (const InternalError &)
-            {
-                throw;
-            }
-            catch (const Exception & e)
-            {
-                Log::get_instance()->message("e.profile.virtuals.failure", ll_warning, lc_context)
-                    << "Loading virtuals failed due to exception: " << e.message() << " (" << e.what() << ")";
-            }
 
         for (TraditionalProfileFile<TraditionalMaskFile>::ConstIterator line(_imp->package_mask_file.begin()), line_end(_imp->package_mask_file.end()) ;
                 line != line_end ; ++line)

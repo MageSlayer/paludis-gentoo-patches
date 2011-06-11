@@ -75,8 +75,7 @@ namespace paludis
                                         n::extra_data_dir() = FSPath(strip_trailing_string(stringify(d->realpath()), ".conf")),
                                         n::fallback_environment() = k.get("fallback_environment"),
                                         n::name() = strip_trailing_string(d->basename(), ".conf"),
-                                        n::paludis_package() = k.get("paludis_package"),
-                                        n::support_old_style_virtuals() = destringify<bool>(k.get("support_old_style_virtuals"))
+                                        n::paludis_package() = k.get("paludis_package")
                                         ))));
             }
         }

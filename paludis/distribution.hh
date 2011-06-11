@@ -52,7 +52,6 @@ namespace paludis
         typedef Name<struct name_fallback_environment> fallback_environment;
         typedef Name<struct name_name> name;
         typedef Name<struct name_paludis_package> paludis_package;
-        typedef Name<struct name_support_old_style_virtuals> support_old_style_virtuals;
     }
 
     /**
@@ -76,7 +75,6 @@ namespace paludis
         NamedValue<n::fallback_environment, std::string> fallback_environment;
         NamedValue<n::name, std::string> name;
         NamedValue<n::paludis_package, std::string> paludis_package;
-        NamedValue<n::support_old_style_virtuals, bool> support_old_style_virtuals;
     };
 
     /**
