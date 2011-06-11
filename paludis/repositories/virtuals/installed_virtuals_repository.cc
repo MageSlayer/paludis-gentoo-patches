@@ -35,6 +35,7 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/log.hh>
 
 #include <functional>
 #include <unordered_map>
@@ -216,6 +217,9 @@ InstalledVirtualsRepository::repository_factory_create(
 {
     if (f("root").empty())
         throw ConfigurationError("Key 'root' unspecified or empty");
+
+    Log::get_instance()->message("installed_virtuals.deprecated", ll_warning, lc_no_context)
+        << "Old-style virtuals no longer exist. You should remove " << f("repo_file");
 
     return std::make_shared<InstalledVirtualsRepository>(env, FSPath(f("root")));
 }

@@ -177,8 +177,11 @@ VirtualsRepository::repository_factory_name(
 std::shared_ptr<Repository>
 VirtualsRepository::repository_factory_create(
         const Environment * const env,
-        const std::function<std::string (const std::string &)> &)
+        const std::function<std::string (const std::string &)> & f)
 {
+    Log::get_instance()->message("virtuals.deprecated", ll_warning, lc_no_context)
+        << "Old-style virtuals no longer exist. You should remove " << f("repo_file");
+
     return std::make_shared<VirtualsRepository>(env);
 }
 
