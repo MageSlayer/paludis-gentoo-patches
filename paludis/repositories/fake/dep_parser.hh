@@ -49,12 +49,6 @@ namespace paludis
                 const Environment * const) PALUDIS_VISIBLE;
 
         /**
-         * Parse a provide heirarchy.
-         */
-        std::shared_ptr<ProvideSpecTree> parse_provide(const std::string & s,
-                const Environment * const) PALUDIS_VISIBLE;
-
-        /**
          * Parse a fetchable uri heirarchy.
          */
         std::shared_ptr<FetchableURISpecTree> parse_fetchable_uri(const std::string & s,

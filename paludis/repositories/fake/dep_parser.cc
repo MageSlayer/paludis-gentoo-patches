@@ -196,37 +196,6 @@ paludis::fakerepository::parse_depend(const std::string & s, const Environment *
     return top;
 }
 
-std::shared_ptr<ProvideSpecTree>
-paludis::fakerepository::parse_provide(const std::string & s, const Environment * const)
-{
-    using namespace std::placeholders;
-
-    ParseStackTypes<ProvideSpecTree>::Stack stack;
-    std::shared_ptr<ProvideSpecTree> top(std::make_shared<ProvideSpecTree>(std::make_shared<AllDepSpec>()));
-    stack.push_front(top->top());
-
-    ELikeDepParserCallbacks callbacks(
-            make_named_values<ELikeDepParserCallbacks>(
-                n::on_all() = std::bind(&any_all_handler<ProvideSpecTree, AllDepSpec>, std::ref(stack)),
-                n::on_annotations() = &discard_annotations,
-                n::on_any() = std::bind(&any_not_allowed_handler, s),
-                n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
-                n::on_error() = std::bind(&error_handler, s, _1),
-                n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
-                n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
-                n::on_no_annotations() = &do_nothing,
-                n::on_pop() = std::bind(&pop_handler<ProvideSpecTree>, std::ref(stack), s),
-                n::on_should_be_empty() = std::bind(&should_be_empty_handler<ProvideSpecTree>, std::ref(stack), s),
-                n::on_string() = std::bind(&package_dep_spec_string_handler<ProvideSpecTree>, std::ref(stack), _1),
-                n::on_use() = std::bind(&use_handler<ProvideSpecTree>, std::ref(stack), _1),
-                n::on_use_under_any() = &do_nothing
-                ));
-
-    parse_elike_dependencies(s, callbacks, { });
-
-    return top;
-}
-
 std::shared_ptr<FetchableURISpecTree>
 paludis::fakerepository::parse_fetchable_uri(const std::string & s, const Environment * const)
 {

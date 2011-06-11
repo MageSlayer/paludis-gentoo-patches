@@ -1192,7 +1192,6 @@ FakePackageID::behaviours_set()
 }
 
 template class FakeMetadataSpecTreeKey<LicenseSpecTree>;
-template class FakeMetadataSpecTreeKey<ProvideSpecTree>;
 template class FakeMetadataSpecTreeKey<PlainTextSpecTree>;
 #ifndef PALUDIS_NO_EXPLICIT_FULLY_SPECIALISED
 template class FakeMetadataSpecTreeKey<FetchableURISpecTree>;
