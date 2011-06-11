@@ -401,6 +401,12 @@ UserSlotExactRequirement::as_string() const
     return ":" + stringify(_s);
 }
 
+bool
+UserSlotExactRequirement::from_any_locked() const
+{
+    return false;
+}
+
 GotASetNotAPackageDepSpec::GotASetNotAPackageDepSpec(const std::string & s) throw () :
     Exception("'" + s + "' is a set, not a package")
 {

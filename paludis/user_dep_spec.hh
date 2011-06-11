@@ -69,6 +69,7 @@ namespace paludis
 
             virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool from_any_locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**

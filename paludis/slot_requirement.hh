@@ -41,6 +41,7 @@ namespace paludis
     {
         public:
             virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual bool from_any_locked() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     class PALUDIS_VISIBLE SlotAnyLockedRequirement :

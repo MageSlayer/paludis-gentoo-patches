@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,6 +38,7 @@ namespace paludis
 
             virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual bool from_any_locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE ELikeSlotAnyUnlockedRequirement :

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008 Ciaran McCreesh
+ * Copyright (c) 2008, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,6 +38,12 @@ const SlotName
 ELikeSlotExactRequirement::slot() const
 {
     return _s;
+}
+
+bool
+ELikeSlotExactRequirement::from_any_locked() const
+{
+    return _e;
 }
 
 const std::string
