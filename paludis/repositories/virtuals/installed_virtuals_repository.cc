@@ -44,32 +44,17 @@
 
 using namespace paludis;
 
-typedef std::unordered_map<QualifiedPackageName, std::shared_ptr<PackageIDSequence>, Hash<QualifiedPackageName> > IDMap;
-
 namespace paludis
 {
     template<>
     struct Imp<InstalledVirtualsRepository>
     {
-        const Environment * const env;
-        const FSPath root;
-
-        const std::shared_ptr<Mutex> ids_mutex;
-        mutable IDMap ids;
-        mutable bool has_ids;
-
         std::shared_ptr<const MetadataValueKey<FSPath> > root_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
 
-        Imp(const Environment * const e, const FSPath & r, std::shared_ptr<Mutex> m = std::make_shared<Mutex>()) :
-            env(e),
-            root(r),
-            ids_mutex(m),
-            has_ids(false),
-            root_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
-                        "root", "root", mkt_normal, root)),
-            format_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
-                        "format", "format", mkt_significant, "installed_virtuals"))
+        Imp(const FSPath & r) :
+            root_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("root", "root", mkt_normal, r)),
+            format_key(std::make_shared<LiteralMetadataValueKey<std::string> >("format", "format", mkt_significant, "installed_virtuals"))
         {
         }
     };
@@ -114,7 +99,7 @@ InstalledVirtualsRepository::InstalledVirtualsRepository(const Environment * con
                 n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
                 n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0)
             )),
-    _imp(env, r)
+    _imp(r)
 {
     add_metadata_key(_imp->root_key);
     add_metadata_key(_imp->format_key);
@@ -124,76 +109,40 @@ InstalledVirtualsRepository::~InstalledVirtualsRepository()
 {
 }
 
-void
-InstalledVirtualsRepository::need_ids() const
-{
-    Lock l(*_imp->ids_mutex);
-
-    if (_imp->has_ids)
-        return;
-
-    _imp->has_ids = true;
-}
-
 std::shared_ptr<const PackageIDSequence>
-InstalledVirtualsRepository::package_ids(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const
+InstalledVirtualsRepository::package_ids(const QualifiedPackageName &, const RepositoryContentMayExcludes &) const
 {
-    if (q.category().value() != "virtual")
-        return std::make_shared<PackageIDSequence>();
-
-    need_ids();
-
-    IDMap::const_iterator i(_imp->ids.find(q));
-    if (i == _imp->ids.end())
-        return std::make_shared<PackageIDSequence>();
-
-    return i->second;
+    return std::make_shared<PackageIDSequence>();
 }
 
 std::shared_ptr<const QualifiedPackageNameSet>
-InstalledVirtualsRepository::package_names(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
+InstalledVirtualsRepository::package_names(const CategoryNamePart &, const RepositoryContentMayExcludes &) const
 {
-    if (c.value() != "virtual")
-        return std::make_shared<QualifiedPackageNameSet>();
-
-    need_ids();
-
-    std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
-    std::transform(_imp->ids.begin(), _imp->ids.end(), result->inserter(),
-            std::mem_fn(&std::pair<const QualifiedPackageName, std::shared_ptr<PackageIDSequence> >::first));
-
-    return result;
+    return std::make_shared<QualifiedPackageNameSet>();
 }
 
 std::shared_ptr<const CategoryNamePartSet>
 InstalledVirtualsRepository::category_names(const RepositoryContentMayExcludes &) const
 {
     std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
-    result->insert(CategoryNamePart("virtual"));
     return result;
 }
 
 bool
-InstalledVirtualsRepository::has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const
+InstalledVirtualsRepository::has_package_named(const QualifiedPackageName &, const RepositoryContentMayExcludes &) const
 {
-    if (q.category().value() != "virtual")
-        return false;
-
-    need_ids();
-
-    return _imp->ids.end() != _imp->ids.find(q);
+    return false;
 }
 
 bool
-InstalledVirtualsRepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
+InstalledVirtualsRepository::has_category_named(const CategoryNamePart &, const RepositoryContentMayExcludes &) const
 {
-    return (c.value() == "virtual");
+    return false;
 }
 
 void
 InstalledVirtualsRepository::invalidate()
 {
-    _imp.reset(new Imp<InstalledVirtualsRepository>(_imp->env, _imp->root, _imp->ids_mutex));
 }
 
 HookResult
@@ -211,65 +160,22 @@ InstalledVirtualsRepository::is_unimportant() const
     return false;
 }
 
-namespace
-{
-    struct SupportsActionQuery
-    {
-        bool visit(const SupportsActionTest<InstallAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<ConfigAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<FetchAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendFetchAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<InfoAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<UninstallAction> &) const
-        {
-            return false;
-        }
-    };
-}
-
 bool
-InstalledVirtualsRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
+InstalledVirtualsRepository::some_ids_might_support_action(const SupportsActionTestBase &) const
 {
-    SupportsActionQuery q;
-    return a.accept_returning<bool>(q);
+    return false;
 }
 
 bool
 InstalledVirtualsRepository::some_ids_might_not_be_masked() const
 {
-    return true;
+    return false;
 }
 
 std::shared_ptr<const CategoryNamePartSet>
 InstalledVirtualsRepository::unimportant_category_names(const RepositoryContentMayExcludes &) const
 {
     std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
-    result->insert(CategoryNamePart("virtual"));
     return result;
 }
 
@@ -324,12 +230,9 @@ InstalledVirtualsRepository::repository_factory_dependencies(
 }
 
 bool
-InstalledVirtualsRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> & id) const
+InstalledVirtualsRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const
 {
-    auto repo(_imp->env->fetch_repository(id->repository_name()));
-    std::string f(repo->format_key() ? repo->format_key()->parse_value() : "");
-    return f == "virtuals";
-
+    return false;
 }
 
 bool
