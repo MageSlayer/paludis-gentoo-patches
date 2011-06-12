@@ -74,8 +74,6 @@ namespace paludis
         typedef Name<struct name_path> path;
         typedef Name<struct name_perform_uninstall> perform_uninstall;
         typedef Name<struct name_profile> profile;
-        typedef Name<struct name_provided_by> provided_by;
-        typedef Name<struct name_provided_by_spec> provided_by_spec;
         typedef Name<struct name_replacing> replacing;
         typedef Name<struct name_status> status;
         typedef Name<struct name_used_this_for_config_protect> used_this_for_config_protect;
