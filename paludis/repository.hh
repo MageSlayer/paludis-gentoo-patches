@@ -65,7 +65,6 @@ namespace paludis
         typedef Name<struct name_environment_file> environment_file;
         typedef Name<struct name_environment_variable_interface> environment_variable_interface;
         typedef Name<struct name_image_dir> image_dir;
-        typedef Name<struct name_make_virtuals_interface> make_virtuals_interface;
         typedef Name<struct name_manifest_interface> manifest_interface;
         typedef Name<struct name_merged_entries> merged_entries;
         typedef Name<struct name_options> options;
@@ -77,8 +76,6 @@ namespace paludis
         typedef Name<struct name_replacing> replacing;
         typedef Name<struct name_status> status;
         typedef Name<struct name_used_this_for_config_protect> used_this_for_config_protect;
-        typedef Name<struct name_virtual_name> virtual_name;
-        typedef Name<struct name_virtuals_interface> virtuals_interface;
     }
 
     /**
