@@ -90,7 +90,6 @@ ResolverTestData::ResolverTestData(const std::string & t, const std::string & e,
     get_destination_types_for_blocker_helper(&env),
     get_destination_types_for_error_helper(&env),
     get_initial_constraints_for_helper(&env),
-    get_resolvents_for_helper(&env),
     get_use_existing_nothing_helper(&env),
     interest_in_spec_helper(&env),
     make_destination_filtered_generator_helper(&env),
@@ -99,7 +98,8 @@ ResolverTestData::ResolverTestData(const std::string & t, const std::string & e,
     order_early_helper(&env),
     prefer_or_avoid_helper(&env),
     remove_hidden_helper(&env),
-    remove_if_dependent_helper(&env)
+    remove_if_dependent_helper(&env),
+    get_resolvents_for_helper(&env, std::cref(remove_hidden_helper))
 {
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");

@@ -62,6 +62,7 @@ namespace paludis
     struct Imp<GetResolventsForHelper>
     {
         const Environment * const env;
+        const RemoveHiddenFunction remove_hidden;
 
         DestinationType target_destination_type;
 
@@ -85,8 +86,9 @@ namespace paludis
             std::pair<std::shared_ptr<const Resolvents>, bool>,
             Hash<CacheKey> > cache;
 
-        Imp(const Environment * const e) :
+        Imp(const Environment * const e, const RemoveHiddenFunction & h) :
             env(e),
+            remove_hidden(h),
             target_destination_type(dt_install_to_slash),
             want_target_dependencies(true),
             want_target_runtime_dependencies(true),
@@ -103,8 +105,8 @@ namespace paludis
     };
 }
 
-GetResolventsForHelper::GetResolventsForHelper(const Environment * const e) :
-    _imp(e)
+GetResolventsForHelper::GetResolventsForHelper(const Environment * const e, const RemoveHiddenFunction & h) :
+    _imp(e, h)
 {
 }
 
@@ -327,20 +329,20 @@ GetResolventsForHelper::operator() (
     auto result_ids(std::make_shared<PackageIDSequence>());
     std::shared_ptr<const PackageID> best;
 
-    auto ids((*_imp->env)[selection::BestVersionOnly(
-                generator::Matches(spec, from_id, { mpo_ignore_additional_requirements }) |
-                filter::SupportsAction<InstallAction>() |
-                filter::NotMasked() |
-                (maybe_slot ? Filter(filter::Slot(*maybe_slot)) : Filter(filter::All())))]);
+    auto ids(_imp->remove_hidden((*_imp->env)[selection::BestVersionOnly(
+                    generator::Matches(spec, from_id, { mpo_ignore_additional_requirements }) |
+                    filter::SupportsAction<InstallAction>() |
+                    filter::NotMasked() |
+                    (maybe_slot ? Filter(filter::Slot(*maybe_slot)) : Filter(filter::All())))]));
 
     if (! ids->empty())
         best = *ids->begin();
 
-    auto installed_ids((*_imp->env)[selection::BestVersionInEachSlot(
-                generator::Matches(spec, from_id, { }) |
-                (_imp->target_destination_type == dt_install_to_chroot ?
-                 Filter(filter::InstalledNotAtRoot(_imp->env->system_root_key()->parse_value())) :
-                 Filter(filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))))]);
+    auto installed_ids(_imp->remove_hidden((*_imp->env)[selection::BestVersionInEachSlot(
+                    generator::Matches(spec, from_id, { }) |
+                    (_imp->target_destination_type == dt_install_to_chroot ?
+                     Filter(filter::InstalledNotAtRoot(_imp->env->system_root_key()->parse_value())) :
+                     Filter(filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))))]));
 
     if (! best)
         std::copy(installed_ids->begin(), installed_ids->end(), result_ids->back_inserter());

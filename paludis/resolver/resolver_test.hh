@@ -107,7 +107,6 @@ namespace paludis
                 GetDestinationTypesForBlockerHelper get_destination_types_for_blocker_helper;
                 GetDestinationTypesForErrorHelper get_destination_types_for_error_helper;
                 GetInitialConstraintsForHelper get_initial_constraints_for_helper;
-                GetResolventsForHelper get_resolvents_for_helper;
                 GetUseExistingNothingHelper get_use_existing_nothing_helper;
                 InterestInSpecHelper interest_in_spec_helper;
                 MakeDestinationFilteredGeneratorHelper make_destination_filtered_generator_helper;
@@ -117,6 +116,7 @@ namespace paludis
                 PreferOrAvoidHelper prefer_or_avoid_helper;
                 RemoveHiddenHelper remove_hidden_helper;
                 RemoveIfDependentHelper remove_if_dependent_helper;
+                GetResolventsForHelper get_resolvents_for_helper;
 
                 ResolverTestData(const std::string & group, const std::string & eapi, const std::string & layout);
 

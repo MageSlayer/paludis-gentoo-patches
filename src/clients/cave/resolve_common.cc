@@ -835,7 +835,13 @@ paludis::cave::resolve_common(
 
     get_initial_constraints_for_helper.set_reinstall_scm_days(reinstall_scm_days(resolution_options));
 
-    GetResolventsForHelper get_resolvents_for_helper(env.get());
+    RemoveHiddenHelper remove_hidden_helper(env.get());
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_hide.begin_args()),
+            i_end(resolution_options.a_hide.end_args()) ;
+            i != i_end ; ++i)
+        remove_hidden_helper.add_hide_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+
+    GetResolventsForHelper get_resolvents_for_helper(env.get(), std::cref(remove_hidden_helper));
     get_resolvents_for_helper.set_target_destination_type(destination_type_from_arg(env.get(), resolution_options.a_make));
 
     if (resolution_options.a_make_dependencies.argument() == "auto")
@@ -962,12 +968,6 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_avoid.end_args()) ;
             i != i_end ; ++i)
         prefer_or_avoid_helper.add_avoid_name(disambiguate_if_necessary(env.get(), *i));
-
-    RemoveHiddenHelper remove_hidden_helper(env.get());
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_hide.begin_args()),
-            i_end(resolution_options.a_hide.end_args()) ;
-            i != i_end ; ++i)
-        remove_hidden_helper.add_hide_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
 
     RemoveIfDependentHelper remove_if_dependent_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_remove_if_dependent.begin_args()),

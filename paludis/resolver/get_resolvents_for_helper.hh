@@ -25,6 +25,7 @@
 #include <paludis/resolver/reason-fwd.hh>
 #include <paludis/resolver/destination_types-fwd.hh>
 #include <paludis/resolver/resolvent-fwd.hh>
+#include <paludis/resolver/resolver_functions.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/package_id-fwd.hh>
@@ -43,7 +44,7 @@ namespace paludis
                 Pimp<GetResolventsForHelper> _imp;
 
             public:
-                explicit GetResolventsForHelper(const Environment * const);
+                explicit GetResolventsForHelper(const Environment * const, const RemoveHiddenFunction &);
                 ~GetResolventsForHelper();
 
                 void set_target_destination_type(const DestinationType);
