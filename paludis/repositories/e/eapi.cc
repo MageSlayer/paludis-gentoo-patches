@@ -140,7 +140,6 @@ namespace
             n::myoptions() = make_metadata_variable(k, "myoptions"),
             n::pdepend() = make_metadata_variable(k, "pdepend"),
             n::properties() = make_metadata_variable(k, "properties"),
-            n::provide() = make_metadata_variable(k, "provide"),
             n::remote_ids() = make_metadata_variable(k, "remote_ids"),
             n::required_use() = make_metadata_variable(k, "required_use"),
             n::restrictions() = make_metadata_variable(k, "restrict"),

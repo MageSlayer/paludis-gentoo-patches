@@ -173,7 +173,6 @@ namespace paludis
         typedef Name<struct name_pipe_commands> pipe_commands;
         typedef Name<struct name_profile_iuse_injection> profile_iuse_injection;
         typedef Name<struct name_properties> properties;
-        typedef Name<struct name_provide> provide;
         typedef Name<struct name_rdepend_defaults_to_depend> rdepend_defaults_to_depend;
         typedef Name<struct name_remote_ids> remote_ids;
         typedef Name<struct name_require_use_expand_in_iuse> require_use_expand_in_iuse;
@@ -383,7 +382,6 @@ namespace paludis
             NamedValue<n::myoptions, std::shared_ptr<const EAPIMetadataVariable> > myoptions;
             NamedValue<n::pdepend, std::shared_ptr<const EAPIMetadataVariable> > pdepend;
             NamedValue<n::properties, std::shared_ptr<const EAPIMetadataVariable> > properties;
-            NamedValue<n::provide, std::shared_ptr<const EAPIMetadataVariable> > provide;
             NamedValue<n::remote_ids, std::shared_ptr<const EAPIMetadataVariable> > remote_ids;
             NamedValue<n::required_use, std::shared_ptr<const EAPIMetadataVariable> > required_use;
             NamedValue<n::restrictions, std::shared_ptr<const EAPIMetadataVariable> > restrictions;

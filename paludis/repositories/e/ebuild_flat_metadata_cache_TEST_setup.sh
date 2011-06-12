@@ -50,7 +50,7 @@ the-keywords
 the-iuse
 unused
 the/pdepend
-the/provide
+
 0
 the-properties
 
@@ -81,7 +81,7 @@ the-keywords
 the-iuse
 unused
 the/pdepend
-the/provide
+
 0
 the-properties
 
@@ -113,7 +113,7 @@ the-keywords
 the-iuse
 unused
 the/pdepend
-the/provide
+
 0
 the-properties
 
@@ -136,7 +136,7 @@ foo
 the-iuse
 unused
 the/pdepend
-the/provide
+
 0
 the-properties
 
@@ -167,7 +167,7 @@ foo
 the-iuse
 unused
 the/pdepend
-the/provide
+
 0
 the-properties
 
@@ -200,7 +200,7 @@ bar
 the-iuse
 unused
 the/pdepend
-the/provide
+
 0
 the-properties
 
@@ -231,7 +231,7 @@ baz
 the-iuse
 unused
 the/pdepend
-the/provide
+
 0
 the-properties
 
@@ -254,7 +254,7 @@ the-keywords
 the-iuse
 unused
 the/pdepend
-the/provide
+
 0
 the-properties
 
@@ -277,7 +277,6 @@ DESCRIPTION=the-description-flat_hash
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -308,7 +307,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -343,7 +341,6 @@ DESCRIPTION=the-description-flat_hash-no-guessed-eapi
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -366,7 +363,6 @@ LICENSE=the-license
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -397,7 +393,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -417,7 +412,6 @@ DESCRIPTION=the-description-flat_hash-no-mtime
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -447,7 +441,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -478,7 +471,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -510,7 +502,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-no-eapi/flat_hash-no-eapi-1.ebuild || exit 2
 
@@ -539,7 +530,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 FOO=bar
 FOO=bar
@@ -564,7 +554,6 @@ DESCRIPTION=the-description-flat_hash-eclass
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -596,7 +585,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -628,7 +616,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -660,7 +647,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -684,7 +670,6 @@ DESCRIPTION=the-description-flat_hash-full-eclass
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -708,7 +693,6 @@ DESCRIPTION=the-description-flat_hash-full-eclass-nonstandard
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -740,7 +724,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -772,7 +755,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -804,7 +786,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -836,7 +817,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -866,7 +846,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -898,7 +877,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
@@ -930,7 +908,6 @@ DESCRIPTION=The Stale Description
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend
-PROVIDE=the/provide
 EAPI=0
 PROPERTIES=the-properties
 END
