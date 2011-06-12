@@ -272,82 +272,10 @@ namespace
     }
 
     /*
-     * Document-method: installable_interface
-     *
-     * call-seq:
-     *     installable_interface -> self or Nil
-     *
-     * Returns self if the repository supports the interface, otherwise Nil.
-     */
-    /*
-     * Document-method: installed_interface
-     *
-     * call-seq:
-     *     installed_interface -> self or Nil
-     *
-     * Returns self if the repository supports the interface, otherwise Nil.
-     */
-    /*
-     * Document-method: mask_interface
-     *
-     * call-seq:
-     *     mask_interface -> self or Nil
-     *
-     * Returns self if the repository supports the interface, otherwise Nil.
-     */
-    /*
-     * Document-method: news_interface
-     *
-     * call-seq:
-     *     news_interface -> self or Nil
-     *
-     * Returns self if the repository supports the interface, otherwise Nil.
-     */
-    /*
-     * Document-method: uninstallable_interface
-     *
-     * call-seq:
-     *     uninstallable_interface -> self or Nil
-     *
-     * Returns self if the repository supports the interface, otherwise Nil.
-     */
-    /*
-     * Document-method: use_interface
-     *
-     * call-seq:
-     *     use_interface -> self or Nil
-     *
-     * Returns self if the repository supports the interface, otherwise Nil.
-     */
-    /*
      * Document-method: environment_variable_interface
      *
      * call-seq:
      *     environment_variable_interface -> self or Nil
-     *
-     * Returns self if the repository supports the interface, otherwise Nil.
-     */
-    /*
-     * Document-method: provides_interface
-     *
-     * call-seq:
-     *     provides_interface -> self or Nil
-     *
-     * Returns self if the repository supports the interface, otherwise Nil.
-     */
-    /*
-     * Document-method: virtuals_interface
-     *
-     * call-seq:
-     *     virtuals_interface -> self or Nil
-     *
-     * Returns self if the repository supports the interface, otherwise Nil.
-     */
-    /*
-     * Document-method: e_interface
-     *
-     * call-seq:
-     *     e_interface -> self or Nil
      *
      * Returns self if the repository supports the interface, otherwise Nil.
      */
