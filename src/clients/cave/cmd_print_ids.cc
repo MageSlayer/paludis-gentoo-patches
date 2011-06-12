@@ -105,7 +105,6 @@ namespace
                     ("unaccepted",    "masked by unaccepted key")
                     ("repository",    "masked by repository")
                     ("unsupported",   "masked because it is unsupported")
-                    ("association",   "masked by association")
                    ),
             g_display_options(main_options_section(), "Display Options", "Controls the output format."),
             a_format(&g_display_options, "format", 'f', "Select the output format. Special tokens recognised are "
@@ -218,16 +217,6 @@ namespace
                     for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
                             m != m_end ; ++m)
                         if (visitor_cast<const UnsupportedMask>(**m))
-                        {
-                            result->insert(*i);
-                            break;
-                        }
-                }
-                else if (mask == "association")
-                {
-                    for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
-                            m != m_end ; ++m)
-                        if (visitor_cast<const AssociationMask>(**m))
                         {
                             result->insert(*i);
                             break;

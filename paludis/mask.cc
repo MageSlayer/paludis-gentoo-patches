@@ -60,11 +60,6 @@ namespace
         {
             return "";
         }
-
-        std::string visit(const AssociationMask &) const
-        {
-            return "";
-        }
     };
 }
 

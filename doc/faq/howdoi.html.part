@@ -82,11 +82,6 @@ reasons:</p>
     <dt>license</dt>
 
     <dd>Accept the appropriate licences in <code>licenses.conf</code>.</dd>
-
-    <dt>by association</dt>
-
-    <dd>Unmask the associated package. This mask reason is currently only used
-    for old style virtuals.</dd>
 </dl>
 
 <h2 id="syncfromcvs">Sync from CVS</h2>

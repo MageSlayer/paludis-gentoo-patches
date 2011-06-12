@@ -133,20 +133,6 @@ class TestCase_02_Masks_subclassing(unittest.TestCase):
 
         test_unsupported_mask(TestUnsupportedMask())
 
-    def test_05_association_mask(self):
-        class TestAssociationMask(AssociationMask):
-            def key(self):
-                return "T"
-
-            def description(self):
-                return "test"
-
-            def associated_package_spec(self):
-                e = EnvironmentFactory.instance.create("")
-                return parse_user_package_dep_spec("=masked/user-1.0", e, [])
-
-        test_association_mask(TestAssociationMask())
-
 
 if __name__ == "__main__":
     unittest.main()

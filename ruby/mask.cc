@@ -32,7 +32,6 @@ namespace
     static VALUE c_unaccepted_mask;
     static VALUE c_repository_mask;
     static VALUE c_unsupported_mask;
-    static VALUE c_association_mask;
     static VALUE c_overridden_mask;
     static VALUE c_mask_override_reason;
 
@@ -67,12 +66,6 @@ namespace
         void visit(const RepositoryMask &)
         {
             value = Data_Wrap_Struct(c_repository_mask, 0, &Common<std::shared_ptr<const Mask> >::free,
-                    new std::shared_ptr<const Mask>(mm));
-        }
-
-        void visit(const AssociationMask &)
-        {
-            value = Data_Wrap_Struct(c_association_mask, 0, &Common<std::shared_ptr<const Mask> >::free,
                     new std::shared_ptr<const Mask>(mm));
         }
     };
@@ -159,21 +152,6 @@ namespace
 
     /*
      * call-seq:
-     *     associated_package_spec -> PackageDepSpec
-     *
-     * Fetch the associated package.
-     */
-    VALUE
-    association_mask_associated_package(VALUE self)
-    {
-        std::shared_ptr<const Mask> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const Mask>, ptr);
-        std::shared_ptr<const AssociationMask> cast_ptr(std::static_pointer_cast<const AssociationMask>(*ptr));
-        return package_dep_spec_to_value((cast_ptr)->associated_package_spec());
-    }
-
-    /*
-     * call-seq:
      *     mask -> Mask
      */
     VALUE
@@ -251,18 +229,6 @@ namespace
         c_unsupported_mask = rb_define_class_under(paludis_module(), "UnsupportedMask", c_mask);
         rb_define_method(c_unsupported_mask, "explanation",
                 RUBY_FUNC_CAST((&MaskStringKey<UnsupportedMask,&UnsupportedMask::explanation>::fetch)), 0);
-
-        /*
-         * Document-class: Paludis::AssociationMask
-         *
-         * An AssociationMask is a Mask that signifies that a PackageID is masked because of its association with
-         * another PackageID that is itself masked.
-         *
-         * This is used by old-style virtuals. If the provider of a virtual is masked then the virtual itself is
-         * masked by association.
-         */
-        c_association_mask = rb_define_class_under(paludis_module(), "AssociationMask", c_mask);
-        rb_define_method(c_association_mask, "associated_package_spec", RUBY_FUNC_CAST(&association_mask_associated_package), 0);
 
         /*
          * Document-class: Paludis::OverriddenMask

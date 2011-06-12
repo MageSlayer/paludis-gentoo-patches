@@ -23,10 +23,6 @@ USERLAND=test
 KERNEL=test
 END
 
-cat <<END > profiles/testprofile/virtuals
-virtual/association masked/repo
-END
-
 cat <<"END" > masked/repo/repo-1.0.ebuild || exit 1
 DESCRIPTION="RepositoryMask"
 HOMEPAGE="http://paludis.pioto.org/"

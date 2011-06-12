@@ -1053,19 +1053,6 @@ namespace
                     );
         }
 
-        void visit(const AssociationMask & m)
-        {
-            out << fuc(
-                    (cmdline.a_raw_names.specified() ? fs_mask_value_raw() : fs_mask_value_human()),
-                    fv<'s'>(cmdline.a_raw_names.specified() ? stringify(m.key()) : "by " + m.description()),
-                    fv<'v'>(stringify(m.associated_package_spec())),
-                    fv<'t'>(""),
-                    fv<'i'>(std::string(indent, ' ')),
-                    fv<'b'>(""),
-                    fv<'p'>("")
-                    );
-        }
-
         void visit(const UserMask & m)
         {
             out << fuc(

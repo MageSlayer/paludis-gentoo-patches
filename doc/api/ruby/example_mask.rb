@@ -39,9 +39,6 @@ ids.each do | id |
         elsif mask.kind_of? UnsupportedMask
             puts "    Class: ".ljust(31) + 'UnsupportedMask'
             puts "    Explanation: ".ljust(31) + mask.explanation
-        elsif mask.kind_of? AssociationMask
-            puts "    Class: ".ljust(31) + 'AssociationMask'
-            puts "    Associated package: ".ljust(31) + mask.associated_package_spec.to_s
         else
             puts "    Class: ".ljust(31) + 'Unknown'
         end

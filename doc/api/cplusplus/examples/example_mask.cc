@@ -61,12 +61,6 @@ namespace
                 cout << left << setw(30) << "    Class:" << " " << "UnsupportedMask" << endl;
                 cout << left << setw(30) << "    Explanation:" << " " << mask.explanation() << endl;
             }
-
-            void visit(const AssociationMask & mask)
-            {
-                cout << left << setw(30) << "    Class:" << " " << "AssociationMask" << endl;
-                cout << left << setw(30) << "    Associated package:" << " " << mask.associated_package_spec() << endl;
-            }
     };
 }
 

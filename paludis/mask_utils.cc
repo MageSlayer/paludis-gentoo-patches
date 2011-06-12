@@ -75,11 +75,6 @@ namespace
         {
             return false;
         }
-
-        bool visit(const AssociationMask &) const
-        {
-            return false;
-        }
     };
 }
 

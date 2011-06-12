@@ -1039,12 +1039,6 @@ namespace
         {
             cout << fuc(fs_masked_by_explanation(), fv<'i'>(indent), fv<'c'>(colour), fv<'d'>(m.description()), fv<'x'>(m.explanation()));
         }
-
-        void visit(const AssociationMask & m) const
-        {
-            cout << fuc(fs_masked_by_explanation(), fv<'i'>(indent), fv<'c'>(colour), fv<'d'>(m.description()),
-                    fv<'x'>("associated package '" + stringify(m.associated_package_spec()) + "'"));
-        }
     };
 
     void display_masks(

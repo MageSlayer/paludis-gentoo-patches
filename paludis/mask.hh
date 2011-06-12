@@ -71,7 +71,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE Mask :
         public virtual DeclareAbstractAcceptMethods<Mask, MakeTypeList<
-            UserMask, UnacceptedMask, RepositoryMask, UnsupportedMask, AssociationMask>::Type>
+            UserMask, UnacceptedMask, RepositoryMask, UnsupportedMask>::Type>
     {
         public:
             ///\name Basic operations
@@ -190,30 +190,6 @@ namespace paludis
              * An explanation of why we are unsupported.
              */
             virtual const std::string explanation() const = 0;
-    };
-
-    /**
-     * An AssociationMask is a Mask that signifies that a PackageID is masked
-     * because of its association with another PackageID that is itself masked.
-     *
-     * This is used by old-style virtuals. If the provider of a virtual is
-     * masked then the virtual itself is masked by association.
-     *
-     * \ingroup g_mask
-     * \since 0.26
-     * \nosubgrouping
-     */
-    class PALUDIS_VISIBLE AssociationMask :
-        public Mask,
-        public ImplementAcceptMethods<Mask, AssociationMask>
-    {
-        public:
-            /**
-             * Fetch a spec identifying the associated package.
-             *
-             * \since 0.59
-             */
-            virtual const PackageDepSpec associated_package_spec() const = 0;
     };
 
     /**

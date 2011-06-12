@@ -36,7 +36,6 @@ namespace paludis
     class UnacceptedMask;
     class RepositoryMask;
     class UnsupportedMask;
-    class AssociationMask;
 
     struct OverriddenMask;
 

@@ -122,11 +122,6 @@ namespace
         {
             return std::make_pair("", "");
         }
-
-        const std::pair<std::string, std::string> visit(const AssociationMask & m) const
-        {
-            return std::make_pair("", stringify(m.associated_package_spec()));
-        }
     };
 
     void do_one_mask(

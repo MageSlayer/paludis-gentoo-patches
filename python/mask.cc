@@ -60,11 +60,6 @@ class MaskSptrToPythonVisitor
         {
             obj = bp::object(std::static_pointer_cast<const UnsupportedMask>(_m_ptr));
         }
-
-        void visit(const AssociationMask & m)
-        {
-            obj = bp::object(std::static_pointer_cast<const AssociationMask>(_m_ptr));
-        }
 };
 
 struct MaskSptrToPython
@@ -268,42 +263,6 @@ struct UnsupportedMaskWrapper :
     }
 };
 
-struct AssociationMaskWrapper :
-    AssociationMask,
-    bp::wrapper<AssociationMask>
-{
-    virtual const PackageDepSpec associated_package_spec() const
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = get_override("associated_package_spec"))
-            return f();
-        else
-            throw PythonMethodNotImplemented("AssociationMask", "associated_package_spec");
-    }
-
-    virtual char key() const
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = get_override("key"))
-            return f();
-        else
-            throw PythonMethodNotImplemented("AssociationMask", "key");
-    }
-
-    virtual const std::string description() const
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = get_override("description"))
-            return f();
-        else
-            throw PythonMethodNotImplemented("AssociationMask", "description");
-    }
-};
-
-
 void expose_mask()
 {
     /**
@@ -444,41 +403,6 @@ void expose_mask()
         .def("explanation", bp::pure_virtual(&UnsupportedMask::explanation),
                 "explanation() -> str\n"
                 "An explanation of why we are unsupported."
-                )
-
-        .def("key", bp::pure_virtual(&Mask::key),
-                "key() -> string\n"
-                "A single character key, which can be used by clients if they need\n"
-                "a very compact way of representing a mask."
-                )
-
-        .def("description", bp::pure_virtual(&Mask::description),
-                "description() -> string\n"
-                "A description of the mask."
-                )
-        ;
-
-    /**
-     * AssociationMask
-     */
-    bp::register_ptr_to_python<std::shared_ptr<const AssociationMask> >();
-    bp::implicitly_convertible<std::shared_ptr<AssociationMaskWrapper>, std::shared_ptr<Mask> >();
-    bp::class_<AssociationMaskWrapper, std::shared_ptr<AssociationMaskWrapper>,
-            bp::bases<Mask>, boost::noncopyable>
-        (
-         "AssociationMask",
-         "An AssociationMask is a Mask that signifies that a PackageID is masked\n"
-         "because of its association with another PackageID that is itself masked.\n\n"
-
-         "This is used by old-style virtuals. If the provider of a virtual is\n"
-         "masked then the virtual itself is masked by association.\n\n"
-
-         "Can be subclassed in Python.",
-         bp::init<>()
-        )
-        .def("associated_package_spec", bp::pure_virtual(&AssociationMask::associated_package_spec),
-                "associated_package_spec() -> PackageDepSpec\n"
-                "Fetch a spec for the associated package."
                 )
 
         .def("key", bp::pure_virtual(&Mask::key),

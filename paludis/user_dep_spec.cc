@@ -868,11 +868,6 @@ namespace
         {
             return 0;
         }
-
-        const MetadataKey * const visit(const AssociationMask &) const
-        {
-            return 0;
-        }
     };
 
     struct MaskChecker
@@ -897,11 +892,6 @@ namespace
         bool visit(const UnsupportedMask &) const
         {
             return key == "*" || key == "unsupported";
-        }
-
-        bool visit(const AssociationMask &) const
-        {
-            return key == "*" || key == "association";
         }
     };
 }

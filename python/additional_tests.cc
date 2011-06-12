@@ -118,12 +118,6 @@ namespace mask
         test_mask(m);
         m.explanation();
     }
-
-    void test_association_mask(AssociationMask & m)
-    {
-        test_mask(m);
-        m.associated_package_spec();
-    }
 }
 
 namespace metadata_key
@@ -209,7 +203,6 @@ void expose_additional_tests()
     bp::def("test_unaccepted_mask", &mask::test_unaccepted_mask);
     bp::def("test_repository_mask", &mask::test_repository_mask);
     bp::def("test_unsupported_mask", &mask::test_unsupported_mask);
-    bp::def("test_association_mask", &mask::test_association_mask);
 
     /**
      * MetadataKey tests

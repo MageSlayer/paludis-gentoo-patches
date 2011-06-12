@@ -555,7 +555,7 @@ _cave_cmd_print-ids()
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '*'{--matching,-m}'[Show only IDs matching this spec]:package spec: ' \
     '*'{--supporting,-s}'[Show only IDs supporting this action]:supporting action:((install uninstall pretend config fetch pretend-fetch info))' \
-    '(--with-mask -M)'{--with-mask,-M}'[Show only IDs with this kind of mask]:with mask:((none any user unaccepted repository unsupported association))' \
+    '(--with-mask -M)'{--with-mask,-M}'[Show only IDs with this kind of mask]:with mask:((none any user unaccepted repository unsupported))' \
     '(--format -f)'{--format,-f}'[Select the output format]:output format: '
 }
 
