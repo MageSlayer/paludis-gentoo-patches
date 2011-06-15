@@ -455,3 +455,20 @@ TEST(KeyValueConfigFile, EnvVars)
     EXPECT_EQ("BRRRRGH", ff.get("b"));
 }
 
+TEST(KeyValueConfigFile, AnnoyingLibtoolQuotes)
+{
+    std::stringstream s1;
+    s1 << "x='foo 'bar' baz'\ny=z" << std::endl;
+    EXPECT_THROW(KeyValueConfigFile ff(s1, { },
+                &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation), ConfigurationError);
+
+    std::stringstream s2;
+    s2 << "x='foo 'bar' baz'\ny=z" << std::endl;
+    KeyValueConfigFile ff(s2, { kvcfo_ignore_single_quotes_inside_strings },
+            &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
+
+    ASSERT_EQ(2, std::distance(ff.begin(), ff.end()));
+    EXPECT_EQ("foo 'bar' baz", ff.get("x"));
+    EXPECT_EQ("z", ff.get("y"));
+}
+

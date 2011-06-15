@@ -389,7 +389,10 @@ namespace
                 parse_after_continuation(sr, parser, ! k.options()[kvcfo_disallow_comments]);
                 continue;
             }
-            else if (parser.consume(simple_parser::exact("'")))
+            else if ((! k.options()[kvcfo_ignore_single_quotes_inside_strings]) && parser.consume(simple_parser::exact("'")))
+                break;
+            else if ((k.options()[kvcfo_ignore_single_quotes_inside_strings]) && parser.lookahead(simple_parser::exact("'\n"))
+                    && parser.consume(simple_parser::exact("'")))
                 break;
             else if (parser.consume((simple_parser::any_except("") & *simple_parser::any_except("\\'")) >> s))
                 result.append(s);

@@ -42,6 +42,7 @@ make_enum_KeyValueConfigFileOption()
     key kvcfo_allow_sections                         "Allow [sections] \since 0.44"
     key kvcfo_allow_fancy_assigns                    "Allow ?= assignments \since 0.54.1"
     key kvcfo_allow_env                              "Allow \${ENV{blah}} \since 0.54.1"
+    key kvcfo_ignore_single_quotes_inside_strings    "Allow 'broken 'quoted' strings' (for libtool) \since 0.62.1"
 
     doxygen_comment << "END"
         /**
