@@ -71,7 +71,7 @@ namespace
             graph_jobs_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineGraphJobsOptions>(this)),
             program_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineProgramOptions>(this))
         {
-            add_usage_line("[ -x|--execute ] [ --uninstalls-may-break */* ] [ --remove-if-dependent */* ] spec ...");
+            add_usage_line("[ -x|--execute ] spec ...");
             add_note("All options available for 'cave resolve' are also permitted. See 'man cave-resolve' for details.");
         }
 
