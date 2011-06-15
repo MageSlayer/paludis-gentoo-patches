@@ -28,6 +28,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/create_iterator-impl.hh>
+#include <paludis/util/log.hh>
 #include <paludis/broken_linkage_finder.hh>
 #include <paludis/package_id.hh>
 #include <paludis/name.hh>
@@ -164,8 +165,16 @@ FixLinkageCommand::run(
         resolve_cmdline.resolution_options.a_execute.set_specified(true);
 
     auto libraries(std::make_shared<Sequence<std::string>>());
-    std::copy(cmdline.a_libraries.begin_args(), cmdline.a_libraries.end_args(),
-              std::back_inserter(*libraries));
+    for (auto l(cmdline.a_libraries.begin_args()), l_end(cmdline.a_libraries.end_args()) ;
+            l != l_end ; ++l)
+    {
+        libraries->push_back(*l);
+        if (std::string::npos != l->find('/'))
+            Log::get_instance()->message("cave.fix_linkage.library_path", ll_warning, lc_no_context)
+                << "Argument --" << cmdline.a_libraries.long_name() << " '" << *l << "' includes a '/', which "
+                "probably does not do what you want. Generally you should not specify a path to a library.";
+    }
+
     std::shared_ptr<BrokenLinkageFinder> finder;
     {
         DisplayCallback display_callback("Searching: ");
