@@ -95,6 +95,7 @@ LibtoolLinkageChecker::check_file(const FSPath & file)
     KeyValueConfigFileOptions opts;
     opts += kvcfo_disallow_space_around_equals;
     opts += kvcfo_disallow_space_inside_unquoted_values;
+    opts += kvcfo_ignore_single_quotes_inside_strings;
 
     std::vector<std::string> deps;
 
