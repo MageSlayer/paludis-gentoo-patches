@@ -18,14 +18,14 @@ DESCRIPTION
 -----------
 The front-end to a number of commands.
 
-For the COMMAND argument, see \'cave help' for a list of common commands, or
-\'cave help --all' for all commands. To see documentation for a command named
-\'foo', use \'man cave-foo'.
+For the COMMAND argument, see 'cave help' for a list of common commands, or
+'cave help --all' for all commands. To see documentation for a command named
+'foo', use 'man cave-foo'.
 
 
 In addition to built-in commands, cave will also look in the directories named
 in the colon-separated CAVE_COMMANDS_PATH environment variable, or, if unset,
-\'/usr/libexec/cave/commands'. Any executables in this path will also be
+'/usr/libexec/cave/commands'. Any executables in this path will also be
 available as commands (with any file extension stripped); these executables
 may use the $CAVE environment variable to get access to the main cave program.
 
@@ -111,8 +111,8 @@ owner::
 Shows package IDs owning a given file.
 
 purge::
-Uninstalls any package that is not either in \'world' or a dependency of a
-package in \'world'.
+Uninstalls any package that is not either in 'world' or a dependency of a
+package in 'world'.
 
 report::
 Displays a formatted summary of potential problems with installed packages.
@@ -122,8 +122,8 @@ Displays how to resolve one or more targets. If instructed, then executes the
 relevant install and uninstall actions to perform that resolution.
 
 resume::
-Resumes a failed resultion from \'cave resolve'. To enable resumes, use \'cave
-resolve --resume-file state --execute', and then if errors occur, use \'cave
+Resumes a failed resultion from 'cave resolve'. To enable resumes, use 'cave
+resolve --resume-file state --execute', and then if errors occur, use 'cave
 resume --resume-file state [ --retry-failed ] [ --retry-skipped ]' to try
 again.
 
@@ -142,9 +142,9 @@ Syncs repositories. If any repository names are specified, these repositories
 are synced. Otherwise, all syncable repositories are synced.
 
 uninstall::
-Uninstalls one or more packages. Note that \'cave uninstall' simply rewrites
-the supplied dependency specifications and then uses \'cave resolve' to do the
-work; \'cave uninstall foo' is the same as \'cave resolve !foo'.
+Uninstalls one or more packages. Note that 'cave uninstall' simply rewrites
+the supplied dependency specifications and then uses 'cave resolve' to do the
+work; 'cave uninstall foo' is the same as 'cave resolve !foo'.
 
 SUPPLEMENTAL COMMANDS
 ---------------------
@@ -299,27 +299,27 @@ INTERNAL COMMANDS
 -----------------
 
 display-resolution::
-Displays a dependency resolution created using \'cave resolve'. Mostly for
+Displays a dependency resolution created using 'cave resolve'. Mostly for
 internal use; most users will not use this command directly.
 
 execute-resolution::
-Execute a dependency resolution created using \'cave resolve'. Mostly for
+Execute a dependency resolution created using 'cave resolve'. Mostly for
 internal use; most users will not use this command directly.
 
 find-candidates::
-Finds a list of candidate packages for a search. Used by \'cave search'; not
+Finds a list of candidate packages for a search. Used by 'cave search'; not
 generally called directly by end users. Note that this command will often
 select candidates that do not actually match some of the supplied
-restrictions; use \'cave match' to obtain accurate results.
+restrictions; use 'cave match' to obtain accurate results.
 
 graph-jobs::
-Creates a Graphviz graph for jobs in a resolution created using \'cave
+Creates a Graphviz graph for jobs in a resolution created using 'cave
 resolve'. Mostly for internal use; most users will not use this command
 directly.
 
 match::
 Determines whether a particular package version has certain properties. Mostly
-for use by \'cave search'; not generally for use by end users.
+for use by 'cave search'; not generally for use by end users.
 
 perform::
 Perform an action upon a package. Not suitable for direct use, although it may

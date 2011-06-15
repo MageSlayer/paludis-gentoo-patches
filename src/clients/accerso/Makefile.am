@@ -28,7 +28,7 @@ $(man_MANS_txts) : man-accerso
 	if ! ./man-accerso `echo $@ | sed -e 's.^accerso-*..' -e 's,\.txt$$,,'` > $@ ; then rm -f $@ ; exit 1 ; fi
 
 .txt.xml : $(man_MANS_txts)
-	asciidoc --doctype=manpage --backend=docbook --out-file=$@ $<
+	asciidoc --doctype=manpage --backend=docbook --out-file=$@ --conf=$(top_srcdir)/misc/asciidoc.conf $<
 
 .xml.1 : $(man_MANS_xmls)
 	xmlto man $<

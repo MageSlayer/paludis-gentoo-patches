@@ -208,40 +208,20 @@ namespace
 {
     void escape_asciidoc(std::ostream & stream, const std::string & s)
     {
-        // escape the n-th char unless n = 0 (start of string) or if n-1 = \s \t or \n
-        auto t(s.begin()), t_end(s.end());
         char previous('\0');
-
-        if (t != t_end)
-        {
-            switch (*t)
-            {
-                case '\'':
-                    stream << "\\'";
-                    ++t;
-                    break;
-                case '*':
-                    stream << "\\*";
-                    ++t;
-                    break;
-            }
-        }
-
-        for ( ; t != t_end ; ++t)
+        for (auto t(s.begin()), t_end(s.end()) ; t != t_end ; ++t)
         {
             switch (previous)
             {
+                case '\0':
                 case ' ':
                 case '\n':
                 case '\t':
-                    if ('\'' == *t or '*' == *t)
-                        stream << '\\';
-                    break;
-                // Escape '*/*' -> \'\*/*'
                 case '\'':
                     if ('*' == *t)
                         stream << '\\';
                     break;
+                // Escape '*/*' -> '\*/*'
             }
             stream << *t;
             previous = *t;
