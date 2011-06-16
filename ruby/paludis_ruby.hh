@@ -28,7 +28,6 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/environment.hh>
-#include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/repository.hh>
 #include <paludis/contents.hh>
 #include <paludis/mask-fwd.hh>
@@ -94,7 +93,6 @@ namespace paludis
         std::shared_ptr<const DepSpec> value_to_dep_spec(VALUE v);
         QualifiedPackageName value_to_qualified_package_name(VALUE v);
         std::shared_ptr<Environment> value_to_environment(VALUE v);
-        std::shared_ptr<NoConfigEnvironment> value_to_no_config_environment(VALUE v);
         std::shared_ptr<Repository> value_to_repository(VALUE);
         std::shared_ptr<const SupportsActionTestBase> value_to_supports_action_test_base(VALUE v);
         std::shared_ptr<Action> value_to_action(VALUE v);

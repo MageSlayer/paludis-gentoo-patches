@@ -19,8 +19,7 @@ namespace examples
      *
      * Most Paludis clients should support at least '--help', '--version'
      * and '--log-level'. If paludis::EnvironmentFactory is used to create
-     * the environment (as opposed to, say, paludis::NoConfigEnvironment),
-     * then '--environment' must also be an option.
+     * the environment then '--environment' must also be an option.
      *
      * Clients are free to use whichever command line handling library they
      * prefer, but for convenience all Paludis core clients use a common utility

@@ -1518,17 +1518,16 @@ fi
 dnl }}}
 
 dnl {{{ environments
-m4_define(ALL_ENVIRONMENTS_m4, [no_config,paludis,portage,test])
+m4_define(ALL_ENVIRONMENTS_m4, [paludis,portage,test])
 ALL_ENVIRONMENTS=`echo ALL_ENVIRONMENTS_m4 | tr , ' '`
-DEFAULT_ENVIRONMENTS="no_config paludis test"
+DEFAULT_ENVIRONMENTS="paludis test"
 AC_MSG_CHECKING([which environments to build...])
 AC_ARG_WITH([environments],
 			[  --with-environments=foo,bar,...
 			  Build the specified environments:
 			  all             All available environments
-			  default         Equivalent to no_config,paludis,test
+			  default         Equivalent to paludis,test
 
-			  no_config       Configurationless environment
 			  paludis         Standard Paludis environments
 			  portage         Portage configuration (dodgy)
 			  test            For test cases],
@@ -1833,7 +1832,6 @@ AC_CONFIG_FILES([
 	paludis/distributions/exherbo/Makefile
 	paludis/distributions/gentoo/Makefile
 	paludis/environments/Makefile
-	paludis/environments/no_config/Makefile
 	paludis/environments/paludis/Makefile
 	paludis/environments/portage/Makefile
 	paludis/environments/test/Makefile

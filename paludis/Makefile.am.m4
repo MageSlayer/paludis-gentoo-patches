@@ -115,7 +115,6 @@ endif
 ')
 
 condenv(dummy)
-condenv(no_config)
 condenv(paludis)
 condenv(portage)
 condenv(test)

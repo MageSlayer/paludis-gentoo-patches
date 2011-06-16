@@ -86,8 +86,6 @@ using namespace paludis;
  *
  * An Environment subclass is the starting point for most programs. For programs
  * that use user configuration, EnvironmentMaker is used to obtain an instance.
- * For programs that operate without configuration, NoConfigEnvironment should
- * be used instead.
  *
  * \section Examples
  *

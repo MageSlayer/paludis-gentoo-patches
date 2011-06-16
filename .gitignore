@@ -245,7 +245,6 @@ paludis-*.*.*.tar.bz2
 /paludis/elike_use_requirement_TEST
 /paludis/environment_implementation_TEST
 /paludis/environments/adapted/adapted_environment_TEST
-/paludis/environments/no_config/no_config_environment_TEST
 /paludis/environments/paludis/paludis_environment_TEST
 /paludis/environments/paludis/world_TEST
 /paludis/environments/portage/portage_environment_TEST

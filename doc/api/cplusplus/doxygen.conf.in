@@ -555,7 +555,6 @@ WARN_LOGFILE           =
 INPUT                  = ../../../paludis \
                          ../../../paludis/args \
                          ../../../paludis/environments \
-                         ../../../paludis/environments/no_config \
                          ../../../paludis/environments/test \
                          ../../../paludis/fetchers \
                          ../../../paludis/repositories/fake \

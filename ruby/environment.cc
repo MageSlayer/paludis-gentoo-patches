@@ -20,7 +20,6 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/environments/paludis/paludis_environment.hh>
-#include <paludis/environments/no_config/no_config_environment.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/environment_factory.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
@@ -36,7 +35,6 @@ namespace
 {
     static VALUE c_environment;
     static VALUE c_paludis_environment;
-    static VALUE c_no_config_environment;
     static VALUE c_test_environment;
     static VALUE c_environment_factory;
 
@@ -271,129 +269,6 @@ namespace
         return rb_str_new2(value_to_paludis_environment(self)->config_dir().c_str());
     }
 
-    VALUE
-    no_config_environment_init(int, VALUE*, VALUE self)
-    {
-        return self;
-    }
-
-    /*
-     * call-seq:
-     *     NoConfigEnvironment.new(environment_dir) -> NoConfigEnvironment
-     *     NoConfigEnvironment.new(environment_dir, write_cache_dir) -> NoConfigEnvironment
-     *     NoConfigEnvironment.new(environment_dir, write_cache_dir, master_repository_name) -> NoConfigEnvironment
-     *     NoConfigEnvironment.new(environment_dir, write_cache_dir, master_repository_name, [extra_repository_dirs]) -> NoConfigEnvironment
-     *
-     * Create a new NoConfigEnvironment from the specified directory. A write cache, master repository name
-     * and extra repository dirs may also be specified.
-     */
-    VALUE
-    no_config_environment_new(int argc, VALUE* argv, VALUE self)
-    {
-        try
-        {
-            std::string write_cache, master_repository_name;
-            std::shared_ptr<FSPathSequence> extra_repository_dirs(std::make_shared<FSPathSequence>());
-            if (1 == argc)
-            {
-                write_cache = "/var/empty/";
-                master_repository_name = "";
-            }
-            else if (2 == argc)
-            {
-                write_cache = StringValuePtr(argv[1]);
-                master_repository_name = "";
-            }
-            else if (3 == argc)
-            {
-                write_cache = StringValuePtr(argv[1]);
-                master_repository_name = StringValuePtr(argv[2]);
-            }
-            else if (4 == argc)
-            {
-                write_cache = StringValuePtr(argv[1]);
-                master_repository_name = StringValuePtr(argv[2]);
-
-                Check_Type(argv[3], T_ARRAY);
-                for (int i(0) ; i < RARRAY_LEN(argv[3]) ; ++i)
-                {
-                    VALUE entry(rb_ary_entry(argv[3], i));
-                    extra_repository_dirs->push_back(FSPath(stringify(StringValuePtr(entry))));
-                }
-            }
-            else
-                rb_raise(rb_eArgError, "NoConfigEnvironment.new expects one to four arguments, but got %d", argc);
-
-            std::string path;
-            if (rb_obj_is_kind_of(argv[0], rb_cDir))
-            {
-                VALUE v = rb_funcall(argv[0], rb_intern("path"), 0);
-                path = StringValuePtr(v);
-            }
-            else
-                path = StringValuePtr(argv[0]);
-
-            std::shared_ptr<Environment> * e = new std::shared_ptr<Environment>(new
-                    NoConfigEnvironment(make_named_values<no_config_environment::Params>(
-                            n::accept_unstable() = false,
-                            n::disable_metadata_cache() = false,
-                            n::extra_accept_keywords() = "",
-                            n::extra_params() = std::shared_ptr<Map<std::string, std::string> >(),
-                            n::extra_repository_dirs() = extra_repository_dirs,
-                            n::master_repository_name() = master_repository_name,
-                            n::profiles_if_not_auto() = "",
-                            n::repository_dir() = FSPath(path),
-                            n::repository_type() = no_config_environment::ncer_auto,
-                            n::write_cache() = write_cache
-                            )));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Environment> >::free, e));
-            rb_obj_call_init(tdata, argc, argv);
-            return tdata;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     main_repository -> Repository
-     *
-     * Return the main Repository in this environment
-     */
-    VALUE
-    no_config_environment_main_repository(VALUE self)
-    {
-        try
-        {
-            return repository_to_value(value_to_no_config_environment(self)->main_repository());
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     master_repository -> PortageRepository
-     *
-     * Return the master repository in this environment
-     */
-    VALUE
-    no_config_environment_master_repository(VALUE self)
-    {
-        try
-        {
-            return repository_to_value(value_to_no_config_environment(self)->master_repository());
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
     /*
      * call-seq:
      *     create(spec) -> Environment
@@ -626,17 +501,6 @@ namespace
         rb_define_method(c_paludis_environment, "config_dir", RUBY_FUNC_CAST(&paludis_environment_config_dir), 0);
 
         /*
-         * Document-class: Paludis::NoConfigEnvironment
-         *
-         * An environment that uses a single repository, with no user configuration.
-         */
-        c_no_config_environment = rb_define_class_under(paludis_module(), "NoConfigEnvironment", c_environment);
-        rb_define_singleton_method(c_no_config_environment, "new", RUBY_FUNC_CAST(&no_config_environment_new), -1);
-        rb_define_method(c_no_config_environment, "initialize", RUBY_FUNC_CAST(&no_config_environment_init), -1);
-        rb_define_method(c_no_config_environment, "main_repository", RUBY_FUNC_CAST(&no_config_environment_main_repository), 0);
-        rb_define_method(c_no_config_environment, "master_repository", RUBY_FUNC_CAST(&no_config_environment_master_repository), 0);
-
-        /*
          * Document-class: Paludis::TestEnvironment
          *
          * A crude test environment.
@@ -669,21 +533,6 @@ paludis::ruby::value_to_environment(VALUE v)
     else
     {
         rb_raise(rb_eTypeError, "Can't convert %s into Environment", rb_obj_classname(v));
-    }
-}
-
-std::shared_ptr<NoConfigEnvironment>
-paludis::ruby::value_to_no_config_environment(VALUE v)
-{
-    if (rb_obj_is_kind_of(v, c_no_config_environment))
-    {
-        std::shared_ptr<Environment> * v_ptr;
-        Data_Get_Struct(v, std::shared_ptr<Environment>, v_ptr);
-        return std::static_pointer_cast<NoConfigEnvironment>(*v_ptr);
-    }
-    else
-    {
-        rb_raise(rb_eTypeError, "Can't convert %s into NoConfigEnvironment", rb_obj_classname(v));
     }
 }
 

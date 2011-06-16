@@ -24,8 +24,6 @@
 #include <paludis/environments/paludis/paludis_environment.hh>
 #include <paludis/environments/paludis/paludis_config.hh>
 
-#include <paludis/environments/no_config/no_config_environment.hh>
-
 #include <paludis/environments/test/test_environment.hh>
 
 #include <paludis/hook.hh>
@@ -428,28 +426,6 @@ class EnvironmentImplementationWrapper :
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(fetch_unique_qualified_package_name_overloads, fetch_unique_qualified_package_name, 1, 3)
 
-struct NoConfigEnvironmentWrapper :
-    NoConfigEnvironment
-{
-    NoConfigEnvironmentWrapper(const FSPath & env_dir, const FSPath & cache_dir,
-            const std::string & master_repo_name, const std::shared_ptr<const FSPathSequence> & extra_repository_dirs
-            ) :
-        NoConfigEnvironment(make_named_values<no_config_environment::Params>(
-                    n::accept_unstable() = false,
-                    n::disable_metadata_cache() = false,
-                    n::extra_accept_keywords() = "",
-                    n::extra_params() = make_null_shared_ptr(),
-                    n::extra_repository_dirs() = extra_repository_dirs,
-                    n::master_repository_name() = master_repo_name,
-                    n::profiles_if_not_auto() = "",
-                    n::repository_dir() = env_dir,
-                    n::repository_type() = no_config_environment::ncer_auto,
-                    n::write_cache() = cache_dir
-                ))
-    {
-    }
-};
-
 void expose_environment()
 {
     /**
@@ -687,36 +663,6 @@ void expose_environment()
         .add_property("config_dir", &PaludisEnvironment::config_dir,
                 "[ro] string\n"
                 "The config directory."
-                )
-        ;
-
-    /**
-     * NoConfigEnvironment
-     */
-    std::shared_ptr<Repository> (NoConfigEnvironment::*main_repository)()
-        = &NoConfigEnvironment::main_repository;
-    std::shared_ptr<Repository> (NoConfigEnvironment::*master_repository)()
-        = &NoConfigEnvironment::master_repository;
-    bp::class_<NoConfigEnvironmentWrapper, bp::bases<Environment>, boost::noncopyable>
-        (
-         "NoConfigEnvironment",
-         "An environment that uses a single repository, with no user configuration.",
-         bp::init<const FSPath &, const FSPath &, const std::string &, const std::shared_ptr<const FSPathSequence> &>(
-             (bp::arg("environment_dir"), bp::arg("write_cache_dir")="/var/empty",
-              bp::arg("master_repository_name")="",
-              bp::arg("extra_repository_dirs") = std::make_shared<FSPathSequence>()),
-             "__init__(environment_dir, write_cache_dir=\"/var/empty\", "
-             "master_repository_name=\"\", extra_repository_dirs=[])"
-             )
-        )
-        .add_property("main_repository", main_repository,
-                "[ro] Repository\n"
-                "Main repository."
-                )
-
-        .add_property("master_repository", master_repository,
-                "[ro] Repository\n"
-                "Master repository."
                 )
         ;
 
