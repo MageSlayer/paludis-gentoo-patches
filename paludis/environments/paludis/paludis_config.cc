@@ -613,7 +613,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             {
                 if (*d == r->first)
                 {
-                    Log::get_instance()->message("no_config_environment.repositories.self_dependent", ll_warning, lc_context)
+                    Log::get_instance()->message("paludis_environment.repositories.self_dependent", ll_warning, lc_context)
                         << "Repository '" + stringify(r->first) + "' incorrectly requires itself";
                     continue;
                 }
