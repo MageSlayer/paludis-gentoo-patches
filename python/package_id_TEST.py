@@ -22,6 +22,8 @@ import os
 
 repo_path = os.path.join(os.getcwd(), "package_id_TEST_dir/testrepo")
 irepo_path = os.path.join(os.getcwd(), "package_id_TEST_dir/installed")
+ph = os.path.join(os.getcwd(), "package_id_TEST_dir/home")
+os.environ["PALUDIS_HOME"] = ph
 
 from paludis import *
 import unittest
@@ -30,10 +32,9 @@ Log.instance.log_level = LogLevel.WARNING
 
 class TestCase_01_PackageID(unittest.TestCase):
     def setUp(self):
-        self.e = NoConfigEnvironment(repo_path, "/var/empty")
-        self.ie = NoConfigEnvironment(irepo_path)
+        self.e = EnvironmentFactory.instance.create("")
         self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
-        self.ipid = iter(self.ie.fetch_repository("installed").package_ids("cat-one/pkg-one", [])).next()
+        self.ipid = iter(self.e.fetch_repository("installed").package_ids("cat-one/pkg-one", [])).next()
         self.mpid = iter(self.e.fetch_repository("testrepo").package_ids("cat/masked", [])).next()
 
     def test_01_get(self):

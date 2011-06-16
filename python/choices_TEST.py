@@ -21,6 +21,8 @@
 import os
 
 repo_path = os.path.join(os.getcwd(), "choices_TEST_dir/testrepo")
+ph = os.path.join(os.getcwd(), "choices_TEST_dir/home")
+os.environ["PALUDIS_HOME"] = ph
 
 from paludis import *
 from additional_tests import *
@@ -31,7 +33,7 @@ Log.instance.log_level = LogLevel.WARNING
 
 class TestCase_01_Choices(unittest.TestCase):
     def setUp(self):
-        self.e = NoConfigEnvironment(repo_path, "/var/empty")
+        self.e = EnvironmentFactory.instance.create("")
         self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
         self.choices = self.pid.find_metadata("PALUDIS_CHOICES").parse_value()
 
@@ -57,7 +59,7 @@ class TestCase_01_Choices(unittest.TestCase):
 
 class TestCase_02_Choice(unittest.TestCase):
     def setUp(self):
-        self.e = NoConfigEnvironment(repo_path, "/var/empty")
+        self.e = EnvironmentFactory.instance.create("")
         self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
         self.choices = self.pid.find_metadata("PALUDIS_CHOICES").parse_value()
         self.use = None
@@ -106,7 +108,7 @@ class TestCase_02_Choice(unittest.TestCase):
 
 class TestCase_03_ChoiceValue(unittest.TestCase):
     def setUp(self):
-        self.e = NoConfigEnvironment(repo_path, "/var/empty")
+        self.e = EnvironmentFactory.instance.create("")
         self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
         self.choices = self.pid.find_metadata("PALUDIS_CHOICES").parse_value()
         self.use_testflag = self.choices.find_by_name_with_prefix("testflag")

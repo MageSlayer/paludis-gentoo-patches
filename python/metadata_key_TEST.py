@@ -22,6 +22,8 @@ import os
 
 repo_path = os.path.join(os.getcwd(), "metadata_key_TEST_dir/testrepo")
 irepo_path = os.path.join(os.getcwd(), "metadata_key_TEST_dir/installed")
+ph = os.path.join(os.getcwd(), "metadata_key_TEST_dir/home")
+os.environ["PALUDIS_HOME"] = ph
 
 from paludis import *
 from additional_tests import *
@@ -32,10 +34,9 @@ Log.instance.log_level = LogLevel.WARNING
 
 class TestCase_01_MetadataKeys(unittest.TestCase):
     def setUp(self):
-        self.e = NoConfigEnvironment(repo_path, "/var/empty")
-        self.ie = NoConfigEnvironment(irepo_path)
+        self.e = EnvironmentFactory.instance.create("")
         self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
-        self.ipid = iter(self.ie.fetch_repository("installed").package_ids("cat-one/pkg-one", [])).next()
+        self.ipid = iter(self.e.fetch_repository("installed").package_ids("cat-one/pkg-one", [])).next()
 
     def test_01_contents(self):
         self.assertEquals(self.pid.find_metadata("CONTENTS"), None)
@@ -72,7 +73,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 MetadataPackageIDKey.__init__(self)
 
             def parse_value(self):
-                e = NoConfigEnvironment(repo_path, "/var/empty")
+                e = EnvironmentFactory.instance.create("")
                 pid = iter(e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
                 return pid
 
@@ -222,7 +223,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
     def test_12_dependency_spec_tree(self):
         class TestKey(MetadataDependencySpecTreeKey):
             def __init__(self):
-                self.e = NoConfigEnvironment(repo_path, "/var/empty")
+                self.e = EnvironmentFactory.instance.create("")
                 MetadataDependencySpecTreeKey.__init__(self)
 
             def parse_value(self):

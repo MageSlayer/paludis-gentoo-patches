@@ -35,41 +35,18 @@ Log.instance.log_level = LogLevel.WARNING
 class TestCase_01_Environments(unittest.TestCase):
     def setUp(self):
         self.e = EnvironmentFactory.instance.create("")
-        self.nce = NoConfigEnvironment(repo)
-
-    def test_01_create(self):
-        NoConfigEnvironment(repo)
-        NoConfigEnvironment(repo, "/var/empty")
-        NoConfigEnvironment(repo, "/var/empty", "")
-        NoConfigEnvironment(repo, master_repository_name="")
-        NoConfigEnvironment(repo, write_cache_dir="/var/empty")
 
     def test_02_create_error(self):
         self.assertRaises(Exception, Environment)
-        self.assertRaises(Exception, NoConfigEnvironment)
-
-    def test_03_subclass(self):
-        self.assert_(isinstance(NoConfigEnvironment(repo), Environment))
 
     def test_07_sets(self):
         self.assert_(isinstance(self.e.set("everything"), AllDepSpec))
-        self.assert_(isinstance(self.nce.set("everything"), AllDepSpec))
-
         self.assert_(isinstance(self.e.set_names, SetNameIterable))
-        self.assert_(isinstance(self.nce.set_names, SetNameIterable))
-
-    def test_08_repositories(self):
-        nce2 = NoConfigEnvironment(repo, master_repository_name="slaverepo", extra_repository_dirs=[slaverepo])
-
-        self.assert_(isinstance(self.nce.main_repository, Repository))
-        self.assertEquals(self.nce.master_repository, None)
-        self.assert_(isinstance(nce2.main_repository, Repository))
-        self.assert_(isinstance(nce2.master_repository, Repository))
 
     def test_12_config_dir(self):
         self.assert_(isinstance(self.e.config_dir, str))
 
-    def test_23_fech_unique_qpn(self):
+    def test_23_fetch_unique_qpn(self):
         self.assertEqual(str(QualifiedPackageName("foo/bar")), str(self.e.fetch_unique_qualified_package_name("bar")))
         self.assertEqual(str(QualifiedPackageName("foo/bar")), str(self.e.fetch_unique_qualified_package_name("bar",
             Filter.SupportsInstallAction())))
