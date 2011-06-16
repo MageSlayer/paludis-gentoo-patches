@@ -88,7 +88,6 @@ the exheres repository format.</p>
 
 <ul>
     <li><a href="clients/accerso.html">accerso</a>, the mirror client.</li>
-    <li><a href="clients/instruo.html">instruo</a>, the metadata generation client.</li>
     <li><a href="clients/appareo.html">appareo</a>, a Manifest generation tool.</li>
 </ul>
 

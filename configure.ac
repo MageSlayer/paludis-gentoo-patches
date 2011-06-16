@@ -1582,7 +1582,7 @@ AC_DEFINE_UNQUOTED([DEFAULT_DISTRIBUTION], "$DEFAULT_DISTRIBUTION", [Default dis
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="accerso appareo cave instruo"
+ALL_CLIENTS="accerso appareo cave"
 ALL_CLIENTS_HTML=""
 for a in $ALL_CLIENTS ; do
 	ALL_CLIENTS_HTML="$ALL_CLIENTS_HTML $a.html"
@@ -1597,8 +1597,7 @@ AC_ARG_WITH([clients],
 
 			  accerso         A fetch / mirror client
 			  appareo         A tool for generating manifests
-			  cave            The modular Paludis client
-			  instruo         A metadata generation client],
+			  cave            The modular Paludis client],
 			[clients="`echo $with_clients | tr ',' ' '`"],
 			[clients="$DEFAULT_CLIENTS"])
 clients=`echo $clients | tr ' ' '\n' \
@@ -1879,7 +1878,6 @@ AC_CONFIG_FILES([
 	src/clients/accerso/Makefile
 	src/clients/appareo/Makefile
 	src/clients/cave/Makefile
-	src/clients/instruo/Makefile
 	src/output/Makefile
 	vim/Makefile
 	vim/ftdetect/Makefile

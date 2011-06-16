@@ -147,18 +147,6 @@ $(CAVE_COMMANDS_HTML) : header.html.part footer.html.part
 	    fi ; } \
 	    && cat footer.html.part ; } > $@
 
-instruo.html : header.html.part footer.html.part
-	{ cat header.html.part && { \
-	    echo "<h1>instruo</h1>"; \
-	    if test -f $(top_builddir)/src/clients/instruo/instruo.html-man-fragment ; then \
-	        cat $(top_builddir)/src/clients/instruo/instruo.html-man-fragment ; \
-	    elif test -f $(top_srcdir)/src/clients/instruo/instruo.html-man-fragment ; then \
-	        cat $(top_srcdir)/src/clients/instruo/instruo.html-man-fragment ; \
-	    else \
-	        echo "<p>Sorry, documentation was generated without support for the instruo client.</p>" ; \
-	    fi ; } \
-	    && cat footer.html.part ; } > $@
-
 header.html.part : $(srcdir)/../header.html.part.in toplinks.html.part
 	sed \
 	    -e 's,###TOPURI###,../,g' \

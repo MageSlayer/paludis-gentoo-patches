@@ -138,7 +138,6 @@ paludis-*.*.*.tar.bz2
 /doc/clients/footer.html.part
 /doc/clients/header.html.part
 /doc/clients/index.html
-/doc/clients/instruo.html
 /doc/clients/toplinks.html.part
 /doc/configuration/bashrc.html
 /doc/configuration/bashrc.html.part
@@ -498,10 +497,6 @@ paludis-*.*.*.tar.bz2
 !/src/clients/cave/cave.txt
 /src/clients/cave/*.xml
 /src/clients/cave/*.html-man-fragment
-/src/clients/instruo/instruo
-/src/clients/instruo/*.txt
-/src/clients/instruo/*.xml
-/src/clients/instruo/*.html-man-fragment
 /stamp-h1
 /test/test_fail_TEST
 /test/test_pass_TEST

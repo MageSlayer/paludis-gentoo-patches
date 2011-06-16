@@ -1,5 +1,5 @@
 MAINTAINERCLEANFILES = Makefile.in
-noinst_DATA = accerso instruo cave
+noinst_DATA = accerso cave
 EXTRA_DIST = $(noinst_DATA)
 
 AUTOMAKE_OPTIONS = 1.11 parallel-tests
