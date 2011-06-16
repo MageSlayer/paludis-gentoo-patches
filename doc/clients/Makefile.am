@@ -97,18 +97,6 @@ HTML_LOG_COMPILER = $(LOG_COMPILER)
 index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
 
-appareo.html : header.html.part footer.html.part
-	{ cat header.html.part && { \
-	    echo "<h1>appareo</h1>"; \
-	    if test -f $(top_builddir)/src/clients/appareo/appareo.html-man-fragment ; then \
-	        cat $(top_builddir)/src/clients/appareo/appareo.html-man-fragment ; \
-	    elif test -f $(top_srcdir)/src/clients/appareo/appareo.html-man-fragment ; then \
-	        cat $(top_srcdir)/src/clients/appareo/appareo.html-man-fragment ; \
-	    else \
-	        echo "<p>Sorry, documentation was generated without support for the appareo client.</p>" ; \
-	    fi ; } \
-	    && cat footer.html.part ; } > $@
-
 cave.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
 	    echo "<h1>cave</h1>"; \

@@ -84,12 +84,6 @@ the exheres repository format.</p>
     management client.</li>
 </ul>
 
-<p>For ebuild developers and distribution maintainers:</p>
-
-<ul>
-    <li><a href="clients/appareo.html">appareo</a>, a Manifest generation tool.</li>
-</ul>
-
 <h2>API Documentation</h2>
 
 <ul>

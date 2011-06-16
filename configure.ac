@@ -1582,7 +1582,7 @@ AC_DEFINE_UNQUOTED([DEFAULT_DISTRIBUTION], "$DEFAULT_DISTRIBUTION", [Default dis
 dnl }}}
 
 dnl {{{ clients
-ALL_CLIENTS="appareo cave"
+ALL_CLIENTS="cave"
 ALL_CLIENTS_HTML=""
 for a in $ALL_CLIENTS ; do
 	ALL_CLIENTS_HTML="$ALL_CLIENTS_HTML $a.html"
@@ -1595,7 +1595,6 @@ AC_ARG_WITH([clients],
 			  all             All available clients
 			  default         Equivalent to cave
 
-			  appareo         A tool for generating manifests
 			  cave            The modular Paludis client],
 			[clients="`echo $with_clients | tr ',' ' '`"],
 			[clients="$DEFAULT_CLIENTS"])
@@ -1874,7 +1873,6 @@ AC_CONFIG_FILES([
 	ruby/demos/Makefile
 	src/Makefile
 	src/clients/Makefile
-	src/clients/appareo/Makefile
 	src/clients/cave/Makefile
 	src/output/Makefile
 	vim/Makefile

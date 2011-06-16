@@ -9,9 +9,3 @@
     client.</li>
 </ul>
 
-<p>For ebuild developers and distribution maintainers:</p>
-
-<ul>
-    <li><a href="appareo.html">appareo</a>, a Manifest generation tool.</li>
-</ul>
-

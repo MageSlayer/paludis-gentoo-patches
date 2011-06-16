@@ -104,7 +104,8 @@ namespace paludis
 
          /**
           * Ignore if a package is or isn't referenced in the Manifest.
-          * It's useful with appareo not to get errors before generating it.
+          * It's useful for generating manifests, to avoid getting errors
+          * before generating it.
           *
           * \since 0.46
           */
