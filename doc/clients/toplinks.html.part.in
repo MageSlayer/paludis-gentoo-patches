@@ -18,7 +18,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###clients/accerso.html">accerso</a>
+                <a href="###TOPURI###clients/appareo.html">appareo</a>
             </td>
         </tr>
 
@@ -32,7 +32,7 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###clients/appareo.html">appareo</a>
+                &nbsp;
             </td>
         </tr>
 

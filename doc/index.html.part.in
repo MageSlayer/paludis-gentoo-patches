@@ -87,7 +87,6 @@ the exheres repository format.</p>
 <p>For ebuild developers and distribution maintainers:</p>
 
 <ul>
-    <li><a href="clients/accerso.html">accerso</a>, the mirror client.</li>
     <li><a href="clients/appareo.html">appareo</a>, a Manifest generation tool.</li>
 </ul>
 

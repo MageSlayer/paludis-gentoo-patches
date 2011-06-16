@@ -97,18 +97,6 @@ HTML_LOG_COMPILER = $(LOG_COMPILER)
 index.html : header.html.part $(srcdir)/index.html.part footer.html.part
 	cat header.html.part $(srcdir)/index.html.part footer.html.part > $@
 
-accerso.html : header.html.part footer.html.part
-	{ cat header.html.part && { \
-	    echo "<h1>accerso</h1>"; \
-	    if test -f $(top_builddir)/src/clients/accerso/accerso.html-man-fragment ; then \
-	        cat $(top_builddir)/src/clients/accerso/accerso.html-man-fragment ; \
-	    elif test -f $(top_srcdir)/src/clients/accerso/accerso.html-man-fragment ; then \
-	        cat $(top_srcdir)/src/clients/accerso/accerso.html-man-fragment ; \
-	    else \
-	        echo "<p>Sorry, documentation was generated without support for the accerso client.</p>" ; \
-	    fi ; } \
-	    && cat footer.html.part ; } > $@
-
 appareo.html : header.html.part footer.html.part
 	{ cat header.html.part && { \
 	    echo "<h1>appareo</h1>"; \

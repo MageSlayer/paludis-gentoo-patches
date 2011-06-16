@@ -12,7 +12,6 @@
 <p>For ebuild developers and distribution maintainers:</p>
 
 <ul>
-    <li><a href="accerso.html">accerso</a>, the mirror client.</li>
     <li><a href="appareo.html">appareo</a>, a Manifest generation tool.</li>
 </ul>
 
