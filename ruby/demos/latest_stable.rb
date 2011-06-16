@@ -73,7 +73,7 @@ if ARGV.empty?
 end
 keywords = ARGV;
 
-env = NoConfigEnvironment.new(repository_dir, write_cache_dir, master_repository_dir)
+env = EnvironmentFactory.instance.create("")
 
 def check_one_package(env, search_keywords, repo, pkg)
     results = {}

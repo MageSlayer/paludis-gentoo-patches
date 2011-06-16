@@ -35,44 +35,6 @@ module Paludis
         end
     end
 
-    class TestCase_NoConfigEnvironment < Test::Unit::TestCase
-        def test_create
-            assert_nothing_raised do
-                e = NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
-                assert_kind_of Environment, e
-                assert_kind_of NoConfigEnvironment, e
-            end
-
-            assert_nothing_raised do
-                e = NoConfigEnvironment.new(Dir.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo"))
-                assert_kind_of Environment, e
-                assert_kind_of NoConfigEnvironment, e
-            end
-
-            assert_nothing_raised do
-                e = NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo", '/var/empty')
-                assert_kind_of Environment, e
-                assert_kind_of NoConfigEnvironment, e
-            end
-
-            assert_raise TypeError do
-                e = NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo", 7)
-            end
-
-            assert_raise TypeError do
-                e = NoConfigEnvironment.new(7, '/var/empty')
-            end
-
-            assert_raise ArgumentError do
-                e = NoConfigEnvironment.new
-            end
-
-            assert_raise ArgumentError do
-                e = NoConfigEnvironment.new(1,2,3,4,5)
-            end
-        end
-    end
-
     class TestCase_EnvironmentAcceptLicense < Test::Unit::TestCase
         def env
             @env or @env = EnvironmentFactory.instance.create("")
@@ -145,53 +107,9 @@ module Paludis
         end
     end
 
-    class TestCase_NoConfigEnvironmentPackageSet < Test::Unit::TestCase
-        def env
-            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
-        end
-
-        def test_package_set
-            assert_kind_of DepSpec, env.set('everything')
-        end
-
-        def test_package_set_error
-            assert_raise SetNameError do
-                env.set('broken#')
-            end
-        end
-    end
-
-    class TestCase_NoConfigEnvirontmentPortageRepository < Test::Unit::TestCase
-        def env
-            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
-        end
-
-        def test_portage_repository
-            assert_kind_of Repository, env.main_repository
-        end
-    end
-
-    class TestCase_NoConfigEnvirontmentMasterRepository < Test::Unit::TestCase
-        def env
-            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
-        end
-
-        def env_master
-            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo",
-                                   "/var/empty",
-                                   "slaverepo",
-                                   [Dir.getwd().to_s + "/environment_TEST_dir/slaverepo"])
-        end
-
-        def test_master_repository
-            assert_nil env.master_repository
-            assert_kind_of Repository, env_master.master_repository
-        end
-    end
-
     class TestCase_EnvironmentDistribution < Test::Unit::TestCase
         def env
-            NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
+            @env or @env = EnvironmentFactory.instance.create("")
         end
 
         def test_distribution
@@ -317,20 +235,11 @@ module Paludis
             @env or @env = EnvironmentFactory.instance.create("")
         end
 
-        def ncenv
-            @ncenv or @ncenv = NoConfigEnvironment.new(Dir.getwd().to_s + "/environment_TEST_dir/testrepo")
-        end
-
         def test_format_key
             assert_respond_to env, :format_key
             assert_not_nil env.format_key
             assert_kind_of MetadataStringKey, env.format_key
             assert_equal 'paludis', env.format_key.parse_value
-
-            assert_respond_to ncenv, :format_key
-            assert_not_nil ncenv.format_key
-            assert_kind_of MetadataStringKey, ncenv.format_key
-            assert_equal 'no_config', ncenv.format_key.parse_value
         end
 
         def test_config_location_key
@@ -338,9 +247,6 @@ module Paludis
             assert_not_nil env.config_location_key
             assert_kind_of MetadataFSPathKey, env.config_location_key
             assert_equal Dir.getwd().to_s + "/environment_TEST_dir/home/.paludis", env.config_location_key.parse_value
-
-            assert_respond_to ncenv, :config_location_key
-            assert_nil ncenv.config_location_key
         end
     end
 

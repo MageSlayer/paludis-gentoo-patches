@@ -49,10 +49,6 @@ module Paludis
             @env or @env = EnvironmentFactory.instance.create("")
         end
 
-        def no_config_testrepo
-            NoConfigEnvironment.new Dir.getwd().to_s + "/repository_TEST_dir/testrepo"
-        end
-
         def p
             env[Selection::RequireExactlyOne.new(Generator::Matches.new(
                 Paludis::parse_user_package_dep_spec('=foo/bar-2.0::testrepo', env, []), nil, []))].first
@@ -164,13 +160,6 @@ module Paludis
 
     class TestCase_RepositoryInterfaces < Test::Unit::TestCase
         include RepositoryTestCase
-
-        def test_responds
-            repo = no_config_testrepo.main_repository
-            [ :environment_variable_interface ].each do |sym|
-                assert_respond_to repo, sym
-            end
-        end
 
         def test_interfaces
             assert_equal installed_repo.name, installed_repo.environment_variable_interface.name

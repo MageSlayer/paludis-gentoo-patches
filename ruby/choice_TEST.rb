@@ -18,6 +18,8 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+ENV["PALUDIS_HOME"] = Dir.getwd().to_s + "/choice_TEST_dir/home";
+
 require 'test/unit'
 require 'Paludis'
 
@@ -27,7 +29,7 @@ module Paludis
     module TestStuff
         def env
             unless @env
-                @env = NoConfigEnvironment.new("choice_TEST_dir/testrepo/", '/var/empty')
+                @env = EnvironmentFactory.instance.create("")
             end
             @env
         end

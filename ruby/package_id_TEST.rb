@@ -18,6 +18,8 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 #
 
+ENV["PALUDIS_HOME"] = Dir.getwd().to_s + "/package_id_TEST_dir/home";
+
 require 'test/unit'
 require 'Paludis'
 
@@ -27,16 +29,9 @@ module Paludis
     module TestStuff
         def env
             unless @env
-                @env = EnvironmentFactory.instance.create("no-config:repository-dir=package_id_TEST_dir/testrepo/:write-cache=/var/empty:accept-unstable=true")
+                @env = EnvironmentFactory.instance.create("")
             end
             @env
-        end
-
-        def env_vdb
-            unless @env_vdb
-                @env_vdb = NoConfigEnvironment.new("package_id_TEST_dir/installed/")
-            end
-            @env_vdb
         end
 
         def pid_testrepo
@@ -48,7 +43,7 @@ module Paludis
         end
 
         def pid_installed
-            env_vdb.fetch_repository("installed").package_ids("cat-one/pkg-one").first
+            env.fetch_repository("installed").package_ids("cat-one/pkg-one").first
         end
     end
 

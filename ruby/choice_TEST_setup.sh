@@ -4,6 +4,37 @@
 mkdir choice_TEST_dir || exit 1
 cd choice_TEST_dir || exit 1
 
+mkdir -p home/.paludis/repositories
+
+cat <<END > home/.paludis/repositories/testrepo.conf
+location = `pwd`/testrepo
+format = e
+names_cache = /var/empty
+cache = /var/empty
+profiles = \${location}/profiles/testprofile
+builddir = `pwd`
+END
+
+cat <<END > home/.paludis/repositories/installed.conf
+location = `pwd`/installed
+format = vdb
+names_cache = /var/empty
+cache = /var/empty
+builddir = `pwd`
+name = installed
+END
+
+cat <<END > home/.paludis/keywords.conf
+*/* test
+END
+cat <<END > home/.paludis/licenses.conf
+*/* *
+END
+
+cat <<END > home/.paludis/general.conf
+world = /dev/null
+END
+
 mkdir -p testrepo/{eclass,distfiles,profiles/testprofile,foo/bar/files} || exit 1
 cd testrepo || exit 1
 echo "testrepo" > profiles/repo_name || exit 1
