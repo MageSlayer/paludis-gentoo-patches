@@ -448,12 +448,6 @@ UnavailableRepository::perform_hook(const Hook &, const std::shared_ptr<OutputMa
     return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 }
 
-const std::shared_ptr<const MetadataValueKey<std::string> >
-UnavailableRepository::accept_keywords_key() const
-{
-    return make_null_shared_ptr();
-}
-
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 UnavailableRepository::sync_host_key() const
 {

@@ -91,7 +91,6 @@ namespace paludis
         typedef Name<struct name_eclass_must_not_set_variables> eclass_must_not_set_variables;
         typedef Name<struct name_env_a> env_a;
         typedef Name<struct name_env_aa> env_aa;
-        typedef Name<struct name_env_accept_keywords> env_accept_keywords;
         typedef Name<struct name_env_accept_license> env_accept_license;
         typedef Name<struct name_env_arch> env_arch;
         typedef Name<struct name_env_d> env_d;
@@ -324,7 +323,6 @@ namespace paludis
             NamedValue<n::description_use, std::string> description_use;
             NamedValue<n::env_a, std::string> env_a;
             NamedValue<n::env_aa, std::string> env_aa;
-            NamedValue<n::env_accept_keywords, std::string> env_accept_keywords;
             NamedValue<n::env_accept_license, std::string> env_accept_license;
             NamedValue<n::env_arch, std::string> env_arch;
             NamedValue<n::env_d, std::string> env_d;

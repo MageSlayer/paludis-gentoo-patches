@@ -148,12 +148,6 @@ FakeRepository::installed_root_key() const
     return std::shared_ptr<const MetadataValueKey<FSPath> >();
 }
 
-const std::shared_ptr<const MetadataValueKey<std::string> >
-FakeRepository::accept_keywords_key() const
-{
-    return make_null_shared_ptr();
-}
-
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 FakeRepository::sync_host_key() const
 {

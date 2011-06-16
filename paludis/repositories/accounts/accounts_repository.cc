@@ -441,11 +441,5 @@ AccountsRepository::sync(
     return false;
 }
 
-const std::shared_ptr<const MetadataValueKey<std::string> >
-AccountsRepository::accept_keywords_key() const
-{
-    return make_null_shared_ptr();
-}
-
 template class Pimp<AccountsRepository>;
 

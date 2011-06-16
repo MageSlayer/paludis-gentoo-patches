@@ -261,7 +261,6 @@ namespace paludis
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > binary_keywords_filter;
         std::shared_ptr<const MetadataValueKey<FSPath> > accounts_repository_data_location_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > e_updates_location_key;
-        mutable std::shared_ptr<const MetadataValueKey<std::string> > accept_keywords_key;
         std::shared_ptr<Map<std::string, std::string> > sync_hosts;
         std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key;
         std::list<std::shared_ptr<const MetadataKey> > about_keys;
@@ -570,8 +569,6 @@ ERepository::_add_metadata_keys() const
         add_metadata_key(_imp->accounts_repository_data_location_key);
     if (_imp->e_updates_location_key)
         add_metadata_key(_imp->e_updates_location_key);
-    if (_imp->accept_keywords_key)
-        add_metadata_key(_imp->accept_keywords_key);
     add_metadata_key(_imp->sync_host_key);
 
     std::for_each(_imp->about_keys.begin(), _imp->about_keys.end(), std::bind(
@@ -1084,33 +1081,6 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 void
 ERepository::need_keys_added() const
 {
-    Lock l(_imp->mutexes->profile_ptr_mutex);
-
-    if (! _imp->accept_keywords_key)
-    {
-        _imp->need_profiles();
-
-        std::string k, v;
-
-        v = EAPIData::get_instance()->eapi_from_string(eapi_for_file(*_imp->main_profile_path)
-                )->supported()->ebuild_environment_variables()->env_accept_keywords();
-        if (! v.empty())
-            k = _imp->profile_ptr->environment_variable(v);
-
-        if (k.empty())
-        {
-            v = EAPIData::get_instance()->eapi_from_string(eapi_for_file(*_imp->main_profile_path)
-                    )->supported()->ebuild_environment_variables()->env_arch();
-            if (! v.empty())
-                k = _imp->profile_ptr->environment_variable(v);
-        }
-
-        _imp->accept_keywords_key = std::make_shared<LiteralMetadataValueKey<std::string>>(v,
-                    "Default accepted keywords", mkt_internal, k);
-        add_metadata_key(_imp->accept_keywords_key);
-    }
-
-    return;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
@@ -1628,13 +1598,6 @@ ERepository::populate_sets() const
                         true);
         }
     }
-}
-
-const std::shared_ptr<const MetadataValueKey<std::string> >
-ERepository::accept_keywords_key() const
-{
-    need_keys_added();
-    return _imp->accept_keywords_key;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >

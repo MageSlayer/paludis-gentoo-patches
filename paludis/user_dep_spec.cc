@@ -918,8 +918,6 @@ UserKeyRequirement::requirement_met(
             key = repo->location_key().get();
         else if (_imp->key == "::$installed_root")
             key = repo->installed_root_key().get();
-        else if (_imp->key == "::$accept_keywords")
-            key = repo->accept_keywords_key().get();
         else if (_imp->key == "::$sync_host")
             key = repo->sync_host_key().get();
     }
