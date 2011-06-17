@@ -470,5 +470,13 @@ TEST(KeyValueConfigFile, AnnoyingLibtoolQuotes)
     ASSERT_EQ(2, std::distance(ff.begin(), ff.end()));
     EXPECT_EQ("foo 'bar' baz", ff.get("x"));
     EXPECT_EQ("z", ff.get("y"));
+
+    std::stringstream s3;
+    s3 << "x='foo 'bar' baz'" << std::endl;
+    KeyValueConfigFile f3(s3, { kvcfo_ignore_single_quotes_inside_strings },
+            &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
+
+    ASSERT_EQ(1, std::distance(f3.begin(), f3.end()));
+    EXPECT_EQ("foo 'bar' baz", ff.get("x"));
 }
 
