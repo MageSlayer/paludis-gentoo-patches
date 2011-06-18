@@ -1077,6 +1077,61 @@ WORK="${WORKBASE}"
 
 optionq spork
 END
+mkdir -p "packages/cat/expecting-tests-enabled"
+cat <<'END' > packages/cat/expecting-tests-enabled/expecting-tests-enabled-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+pkg_setup() {
+    expecting_tests || die "expecting_tests"
+    expecting_tests --any || die "expecting_tests --any"
+    expecting_tests --recommended || die "expecting_tests --recommended"
+}
+END
+mkdir -p "packages/cat/expecting-tests-disabled"
+cat <<'END' > packages/cat/expecting-tests-disabled/expecting-tests-disabled-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+pkg_setup() {
+    expecting_tests --expensive && die "expecting_tests --expensive"
+}
+
+src_test_expensive() {
+    echo monkeys
+}
+END
+mkdir -p "packages/cat/expecting-tests-none"
+cat <<'END' > packages/cat/expecting-tests-none/expecting-tests-none-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+pkg_setup() {
+    expecting_tests --expensive
+}
+END
+
 cd ..
 
 cd ..

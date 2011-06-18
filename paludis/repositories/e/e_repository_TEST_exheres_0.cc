@@ -564,5 +564,29 @@ TEST(ERepository, InstallExheres0)
         ASSERT_TRUE(bool(id));
         EXPECT_THROW(id->perform_action(action), ActionFailedError);
     }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/expecting-tests-enabled-1",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/expecting-tests-disabled-1",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/expecting-tests-none-1",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
 }
 

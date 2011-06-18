@@ -52,6 +52,7 @@
 #include <paludis/unformatted_pretty_printer.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/repository.hh>
+#include <paludis/elike_choices.hh>
 
 #include <vector>
 #include <limits>
@@ -450,6 +451,74 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     return "O0;";
                 else
                     return "O1;";
+            }
+        }
+        else if (tokens[0] == "EXPECTING_TESTS")
+        {
+            if (tokens.size() != 3)
+            {
+                Log::get_instance()->message("e.pipe_commands.expecting_tests.bad", ll_warning, lc_context) << "Got bad EXPECTING_TESTS pipe command";
+                return "Ebad EXPECTING_TESTS command";
+            }
+            else
+            {
+                std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string(tokens[1]));
+                if (! eapi->supported())
+                    return "EEXPECTING_TESTS EAPI " + tokens[1] + " unsupported";
+
+                if (in_metadata_generation)
+                    return "Ecannot query expecting tests during metadata generation";
+
+                if (! package_id->choices_key())
+                    return "EEXPECTING_TESTS ID " + stringify(*package_id) + " has no choices";
+
+                bool expensive(true), recommended(true), optional(true), any(true);
+                if (tokens[2].empty() || tokens[2] == "--any")
+                {
+                }
+                else if (tokens[2] == "--expensive")
+                    any = recommended = optional = false;
+                else if (tokens[2] == "--recommended")
+                    any = expensive = optional = false;
+                else if (tokens[2] == "--optional")
+                    any = recommended = expensive = false;
+
+                auto choices(package_id->choices_key()->parse_value());
+
+                if (optional)
+                {
+                    const auto name(ELikeOptionalTestsChoiceValue::canonical_name_with_prefix());
+                    const auto value(choices->find_by_name_with_prefix(name));
+                    if (value && value->enabled())
+                        return "O0;";
+
+                    if ((! value) && (! any) && (! choices->has_matching_contains_every_value_prefix(name)))
+                        return "EOPTIONQ ID " + stringify(*package_id) + " has no choice named '" + stringify(name) + "'";
+                }
+
+                if (recommended)
+                {
+                    const auto name(ELikeRecommendedTestsChoiceValue::canonical_name_with_prefix());
+                    const auto value(choices->find_by_name_with_prefix(name));
+                    if (value && value->enabled())
+                        return "O0;";
+
+                    if ((! value) && (! any) && (! choices->has_matching_contains_every_value_prefix(name)))
+                        return "EOPTIONQ ID " + stringify(*package_id) + " has no choice named '" + stringify(name) + "'";
+                }
+
+                if (expensive)
+                {
+                    const auto name(ELikeExpensiveTestsChoiceValue::canonical_name_with_prefix());
+                    const auto value(choices->find_by_name_with_prefix(name));
+                    if (value && value->enabled())
+                        return "O0;";
+
+                    if ((! value) && (! any) && (! choices->has_matching_contains_every_value_prefix(name)))
+                        return "EOPTIONQ ID " + stringify(*package_id) + " has no choice named '" + stringify(name) + "'";
+                }
+
+                return "O1;";
             }
         }
         else if (tokens[0] == "REWRITE_VAR")
