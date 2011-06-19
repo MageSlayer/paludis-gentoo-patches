@@ -4,6 +4,19 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.64.0:
+    * Support for Gentoo old-style virtuals has been removed.
+
+    * The 'accerso', 'instruo' and 'appareo' clients have been removed in favour
+      of 'cave'.
+
+    * 'cave resolve' now has 'if-same-metadata' options for '--keep' and
+      '--keep-targets', to take care of all those times when Gentoo developers
+      ignore policy and change dependencies without a revbump.
+
+    * Dependent IDs now have their dependency type (e.g. 'build', 'runtime')
+      shown in the reasons output for 'cave resolve' and 'cave uninstall'.
+
 0.62.2:
     * 'cave fix-linkage' no longer gets upset at .la files that are missing a
       final newline character.
