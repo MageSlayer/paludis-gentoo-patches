@@ -231,8 +231,7 @@ Decider::_resolve_dependents()
         if (! (*s)->supports_action(SupportsActionTest<UninstallAction>()))
             continue;
 
-        const std::shared_ptr<const ChangeByResolventSequence> dependent_upon_ids(dependent_upon(
-                    _imp->env, *s, changing.first, changing.second, staying));
+        auto dependent_upon_ids(dependent_upon(_imp->env, *s, changing.first, changing.second, staying));
         if (dependent_upon_ids->empty())
             continue;
 
@@ -245,9 +244,8 @@ Decider::_resolve_dependents()
         if (remove && _imp->resolutions_by_resolvent->end() == _imp->resolutions_by_resolvent->find(resolvent))
             changed = true;
 
-        const std::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
-        const std::shared_ptr<const ConstraintSequence> constraints(_imp->fns.get_constraints_for_dependent_fn()(
-                    resolution, *s, dependent_upon_ids));
+        auto resolution(_resolution_for_resolvent(resolvent, true));
+        auto constraints(_imp->fns.get_constraints_for_dependent_fn()(resolution, *s, dependent_upon_ids));
         for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
                 c != c_end ; ++c)
             _apply_resolution_constraint(resolution, *c);

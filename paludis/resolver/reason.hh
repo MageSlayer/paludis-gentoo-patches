@@ -24,14 +24,18 @@
 #include <paludis/resolver/resolvent-fwd.hh>
 #include <paludis/resolver/sanitised_dependencies-fwd.hh>
 #include <paludis/resolver/change_by_resolvent-fwd.hh>
+#include <paludis/resolver/collect_depped_upon-fwd.hh>
+
 #include <paludis/util/pimp.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/type_list.hh>
 #include <paludis/util/tribool.hh>
+
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/serialise-fwd.hh>
 #include <paludis/changed_choices-fwd.hh>
+
 #include <memory>
 
 namespace paludis
@@ -102,10 +106,10 @@ namespace paludis
                 Pimp<DependentReason> _imp;
 
             public:
-                DependentReason(const ChangeByResolvent &);
+                DependentReason(const DependentPackageID &);
                 ~DependentReason();
 
-                const ChangeByResolvent id_and_resolvent_being_removed() const;
+                const DependentPackageID dependent_upon() const;
 
                 virtual void serialise(Serialiser &) const;
         };

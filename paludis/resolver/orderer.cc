@@ -35,6 +35,8 @@
 #include <paludis/resolver/orderer_notes.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/resolver/labels_classifier.hh>
+#include <paludis/resolver/collect_depped_upon.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
@@ -45,10 +47,12 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/enum_iterator.hh>
+
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/package_id.hh>
+
 #include <unordered_set>
 #include <unordered_map>
 #include <algorithm>
@@ -363,11 +367,11 @@ namespace
             /* we may be constrained by a dep from a package that was changed
              * from a non error decision to an unable to make decision */
             if (ignore_dependencies_from_resolvents.end() != ignore_dependencies_from_resolvents.find(
-                        r.id_and_resolvent_being_removed().resolvent()))
+                        r.dependent_upon().resolvent()))
                 return;
 
             NAGIndex from(make_named_values<NAGIndex>(
-                        n::resolvent() = r.id_and_resolvent_being_removed().resolvent(),
+                        n::resolvent() = r.dependent_upon().resolvent(),
                         n::role() = nir_done
                         ));
 

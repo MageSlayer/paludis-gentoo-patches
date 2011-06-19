@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,5 +21,37 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_COLLECT_DEPPED_UPON_HH 1
 
 #include <paludis/resolver/collect_depped_upon-fwd.hh>
+#include <paludis/resolver/resolvent.hh>
+
+#include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/named_value.hh>
+
+#include <paludis/package_id-fwd.hh>
+#include <paludis/serialise-fwd.hh>
+
+namespace paludis
+{
+    namespace n
+    {
+        typedef Name<struct name_package_id> package_id;
+        typedef Name<struct name_resolvent> resolvent;
+    }
+
+    namespace resolver
+    {
+        struct DependentPackageID
+        {
+            NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
+            NamedValue<n::resolvent, Resolvent> resolvent;
+
+            void serialise(Serialiser &) const;
+            static const DependentPackageID deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
+        };
+    }
+
+    extern template class Sequence<resolver::DependentPackageID>;
+    extern template class WrappedForwardIterator<Sequence<resolver::DependentPackageID>::ConstIteratorTag, const resolver::DependentPackageID>;
+}
 
 #endif

@@ -19,11 +19,17 @@
 
 #include <paludis/resolver/collect_depped_upon.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
+
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/make_named_values.hh>
+#include <paludis/util/sequence-impl.hh>
+#include <paludis/util/set-impl.hh>
+#include <paludis/util/wrapped_output_iterator-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
+
 #include <paludis/spec_tree.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
@@ -33,6 +39,8 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/match_package.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/serialise-impl.hh>
+
 #include <algorithm>
 
 using namespace paludis;
@@ -49,6 +57,30 @@ namespace
     {
         return i.package_id();
     }
+
+    template <typename R_>
+    struct ResultValueMaker;
+
+    template <>
+    struct ResultValueMaker<std::shared_ptr<const PackageID> >
+    {
+        static const std::shared_ptr<const PackageID> create(const std::shared_ptr<const PackageID> & i)
+        {
+            return i;
+        }
+    };
+
+    template <>
+    struct ResultValueMaker<DependentPackageID>
+    {
+        static DependentPackageID create(const ChangeByResolvent & r)
+        {
+            return make_named_values<DependentPackageID>(
+                    n::package_id() = r.package_id(),
+                    n::resolvent() = r.resolvent()
+                    );
+        }
+    };
 
     template <typename S_>
     const std::shared_ptr<const PackageID> best_eventual(
@@ -70,7 +102,7 @@ namespace
         return result;
     }
 
-    template <typename C_>
+    template <typename C_, typename R_>
     struct DependentChecker
     {
         const Environment * const env;
@@ -78,7 +110,7 @@ namespace
         const std::shared_ptr<const C_> going_away;
         const std::shared_ptr<const C_> newly_available;
         const std::shared_ptr<const PackageIDSequence> not_changing_slots;
-        const std::shared_ptr<C_> result;
+        const std::shared_ptr<R_> result;
 
         DependentChecker(
                 const Environment * const e,
@@ -91,7 +123,7 @@ namespace
             going_away(g),
             newly_available(n),
             not_changing_slots(s),
-            result(std::make_shared<C_>())
+            result(std::make_shared<R_>())
         {
         }
 
@@ -137,7 +169,7 @@ namespace
                 }
 
                 if (! any)
-                    result->push_back(*g);
+                    result->push_back(ResultValueMaker<typename R_::value_type>::create(*g));
             }
         }
 
@@ -170,7 +202,7 @@ namespace
     };
 }
 
-const std::shared_ptr<const ChangeByResolventSequence>
+const std::shared_ptr<const DependentPackageIDSequence>
 paludis::resolver::dependent_upon(
         const Environment * const env,
         const std::shared_ptr<const PackageID> & id,
@@ -178,7 +210,7 @@ paludis::resolver::dependent_upon(
         const std::shared_ptr<const ChangeByResolventSequence> & staying,
         const std::shared_ptr<const PackageIDSequence> & not_changing_slots)
 {
-    DependentChecker<ChangeByResolventSequence> c(env, id, going_away, staying, not_changing_slots);
+    DependentChecker<ChangeByResolventSequence, DependentPackageIDSequence> c(env, id, going_away, staying, not_changing_slots);
     if (id->dependencies_key())
         id->dependencies_key()->parse_value()->top()->accept(c);
     else
@@ -201,7 +233,7 @@ paludis::resolver::collect_depped_upon(
         const std::shared_ptr<const PackageIDSequence> & candidates,
         const std::shared_ptr<const PackageIDSequence> & not_changing_slots)
 {
-    DependentChecker<PackageIDSequence> c(env, id, candidates, std::make_shared<PackageIDSequence>(), not_changing_slots);
+    DependentChecker<PackageIDSequence, PackageIDSequence> c(env, id, candidates, std::make_shared<PackageIDSequence>(), not_changing_slots);
     if (id->dependencies_key())
         id->dependencies_key()->parse_value()->top()->accept(c);
     else
@@ -233,7 +265,7 @@ paludis::resolver::collect_dependents(
     for (auto i(installed_ids->begin()), i_end(installed_ids->end()) ;
             i != i_end ; ++i)
     {
-        DependentChecker<PackageIDSequence> c(env, *i, going_away_as_ids,
+        DependentChecker<PackageIDSequence, PackageIDSequence> c(env, *i, going_away_as_ids,
                 std::make_shared<PackageIDSequence>(), std::make_shared<PackageIDSequence>());
 
         if ((*i)->dependencies_key())
@@ -254,4 +286,26 @@ paludis::resolver::collect_dependents(
 
     return result;
 }
+
+void
+DependentPackageID::serialise(Serialiser & s) const
+{
+    s.object("DependentPackageID")
+        .member(SerialiserFlags<serialise::might_be_null>(), "package_id", package_id())
+        .member(SerialiserFlags<>(), "resolvent", resolvent())
+        ;
+}
+
+const DependentPackageID
+DependentPackageID::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "DependentPackageID");
+    return make_named_values<DependentPackageID>(
+            n::package_id() = v.member<std::shared_ptr<const PackageID> >("package_id"),
+            n::resolvent() = v.member<Resolvent>("resolvent")
+            );
+}
+
+template class Sequence<DependentPackageID>;
+template class WrappedForwardIterator<Sequence<DependentPackageID>::ConstIteratorTag, const DependentPackageID>;
 

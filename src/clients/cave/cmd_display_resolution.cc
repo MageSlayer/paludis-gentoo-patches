@@ -25,7 +25,9 @@
 #include "colour_pretty_printer.hh"
 #include "format_user_config.hh"
 #include "parse_spec_with_nice_error.hh"
+
 #include <paludis/args/do_help.hh>
+
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/destringify.hh>
@@ -42,6 +44,7 @@
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/enum_iterator.hh>
+
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
@@ -58,6 +61,8 @@
 #include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/resolver/match_qpns.hh>
 #include <paludis/resolver/why_changed_choices.hh>
+#include <paludis/resolver/collect_depped_upon.hh>
+
 #include <paludis/package_id.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -236,7 +241,7 @@ namespace
 
         std::pair<std::string, Tribool> visit(const DependentReason & r) const
         {
-            return std::make_pair("dependent upon " + stringify(*r.id_and_resolvent_being_removed().package_id()), true);
+            return std::make_pair("dependent upon " + stringify(*r.dependent_upon().package_id()), true);
         }
 
         std::pair<std::string, Tribool> visit(const WasUsedByReason & r) const

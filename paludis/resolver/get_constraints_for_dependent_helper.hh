@@ -24,11 +24,15 @@
 #include <paludis/resolver/resolution-fwd.hh>
 #include <paludis/resolver/change_by_resolvent-fwd.hh>
 #include <paludis/resolver/constraint-fwd.hh>
+#include <paludis/resolver/collect_depped_upon-fwd.hh>
+
 #include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
+
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+
 #include <memory>
 
 namespace paludis
@@ -49,7 +53,7 @@ namespace paludis
                 const std::shared_ptr<ConstraintSequence> operator() (
                         const std::shared_ptr<const Resolution> &,
                         const std::shared_ptr<const PackageID> &,
-                        const std::shared_ptr<const ChangeByResolventSequence> &) const;
+                        const std::shared_ptr<const DependentPackageIDSequence> &) const;
         };
     }
 

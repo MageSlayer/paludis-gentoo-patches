@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,6 +18,7 @@
  */
 
 #include "cmd_resolve_dump.hh"
+
 #include <paludis/resolver/resolver.hh>
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
@@ -28,11 +29,14 @@
 #include <paludis/resolver/destination.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
+#include <paludis/resolver/collect_depped_upon.hh>
+
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+
 #include <iostream>
 #include <sstream>
 
@@ -179,7 +183,7 @@ namespace
 
         void visit(const DependentReason & r)
         {
-            str = "Dependent(" + stringify(*r.id_and_resolvent_being_removed().package_id()) + ")";
+            str = "Dependent(" + stringify(*r.dependent_upon().package_id()) + ")";
         }
 
         void visit(const WasUsedByReason & r)

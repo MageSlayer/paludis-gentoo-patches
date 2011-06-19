@@ -31,8 +31,11 @@
 #include <paludis/resolver/constraint-fwd.hh>
 #include <paludis/resolver/required_confirmations-fwd.hh>
 #include <paludis/resolver/change_by_resolvent-fwd.hh>
+#include <paludis/resolver/collect_depped_upon-fwd.hh>
+
 #include <paludis/util/named_value.hh>
 #include <paludis/util/tribool-fwd.hh>
+
 #include <paludis/filter-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -40,6 +43,7 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/generator-fwd.hh>
 #include <paludis/filtered_generator-fwd.hh>
+
 #include <functional>
 
 namespace paludis
@@ -113,7 +117,7 @@ namespace paludis
         typedef std::function<std::shared_ptr<ConstraintSequence> (
                 const std::shared_ptr<const Resolution> &,
                 const std::shared_ptr<const PackageID> &,
-                const std::shared_ptr<const ChangeByResolventSequence> &
+                const std::shared_ptr<const DependentPackageIDSequence> &
                 )> GetConstraintsForDependentFunction;
 
         typedef std::function<std::shared_ptr<ConstraintSequence> (

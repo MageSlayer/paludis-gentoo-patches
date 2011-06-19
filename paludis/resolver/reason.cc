@@ -21,10 +21,13 @@
 #include <paludis/resolver/resolvent.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/resolver/change_by_resolvent.hh>
+#include <paludis/resolver/collect_depped_upon.hh>
+
 #include <paludis/util/stringify.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+
 #include <paludis/serialise-impl.hh>
 #include <paludis/changed_choices.hh>
 
@@ -156,16 +159,16 @@ namespace paludis
     template <>
     struct Imp<DependentReason>
     {
-        const ChangeByResolvent id_being_removed;
+        const DependentPackageID dependent_upon;
 
-        Imp(const ChangeByResolvent & i) :
-            id_being_removed(i)
+        Imp(const DependentPackageID & i) :
+            dependent_upon(i)
         {
         }
     };
 }
 
-DependentReason::DependentReason(const ChangeByResolvent & i) :
+DependentReason::DependentReason(const DependentPackageID & i) :
     _imp(i)
 {
 }
@@ -174,17 +177,17 @@ DependentReason::~DependentReason()
 {
 }
 
-const ChangeByResolvent
-DependentReason::id_and_resolvent_being_removed() const
+const DependentPackageID
+DependentReason::dependent_upon() const
 {
-    return _imp->id_being_removed;
+    return _imp->dependent_upon;
 }
 
 void
 DependentReason::serialise(Serialiser & s) const
 {
     s.object("DependentReason")
-        .member(SerialiserFlags<>(), "id_and_resolvent_being_removed", id_and_resolvent_being_removed())
+        .member(SerialiserFlags<>(), "dependent_upon", dependent_upon())
         ;
 }
 
@@ -454,7 +457,7 @@ Reason::deserialise(Deserialisation & d)
     {
         Deserialisator v(d, "DependentReason");
         return std::make_shared<DependentReason>(
-                    v.member<ChangeByResolvent>("id_and_resolvent_being_removed")
+                    v.member<DependentPackageID>("dependent_upon")
                 );
     }
     else if (d.class_name() == "WasUsedByReason")

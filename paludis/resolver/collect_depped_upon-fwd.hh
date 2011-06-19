@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_COLLECT_DEPPED_UPON_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/sequence-fwd.hh>
 #include <paludis/resolver/change_by_resolvent-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
@@ -30,7 +31,11 @@ namespace paludis
 {
     namespace resolver
     {
-        const std::shared_ptr<const ChangeByResolventSequence> dependent_upon(
+        struct DependentPackageID;
+
+        typedef Sequence<DependentPackageID> DependentPackageIDSequence;
+
+        const std::shared_ptr<const DependentPackageIDSequence> dependent_upon(
                 const Environment * const,
                 const std::shared_ptr<const PackageID> &,
                 const std::shared_ptr<const ChangeByResolventSequence> &,

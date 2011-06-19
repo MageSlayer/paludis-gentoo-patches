@@ -73,7 +73,7 @@ const std::shared_ptr<ConstraintSequence>
 GetConstraintsForDependentHelper::operator() (
         const std::shared_ptr<const Resolution> &,
         const std::shared_ptr<const PackageID> & id,
-        const std::shared_ptr<const ChangeByResolventSequence> & dependent_upon_ids) const
+        const std::shared_ptr<const DependentPackageIDSequence> & dependent_upon_ids) const
 {
     auto result(std::make_shared<ConstraintSequence>());
 

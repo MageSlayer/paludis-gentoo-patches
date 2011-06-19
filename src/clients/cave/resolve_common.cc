@@ -539,7 +539,7 @@ namespace
 
         const std::string visit(const DependentReason & r) const
         {
-            return "from dependent " + stringify(*r.id_and_resolvent_being_removed().package_id());
+            return "from dependent " + stringify(*r.dependent_upon().package_id());
         }
 
         const std::string visit(const TargetReason & r) const
