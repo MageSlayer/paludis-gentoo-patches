@@ -42,6 +42,7 @@
 #include <paludis/serialise-impl.hh>
 
 #include <algorithm>
+#include <sstream>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -64,7 +65,9 @@ namespace
     template <>
     struct ResultValueMaker<std::shared_ptr<const PackageID> >
     {
-        static const std::shared_ptr<const PackageID> create(const std::shared_ptr<const PackageID> & i)
+        static const std::shared_ptr<const PackageID> create(
+                const std::shared_ptr<const PackageID> & i,
+                const std::shared_ptr<const DependenciesLabelSequence> &)
         {
             return i;
         }
@@ -73,9 +76,16 @@ namespace
     template <>
     struct ResultValueMaker<DependentPackageID>
     {
-        static DependentPackageID create(const ChangeByResolvent & r)
+        static DependentPackageID create(
+                const ChangeByResolvent & r,
+                const std::shared_ptr<const DependenciesLabelSequence> & s)
         {
+            std::stringstream adl;
+            for (auto l(s->begin()), l_end(s->end()) ; l != l_end ; ++l)
+                adl << (adl.str().empty() ? "" : ", ") << stringify(**l);
+
             return make_named_values<DependentPackageID>(
+                    n::active_dependency_labels_as_string() = adl.str(),
                     n::package_id() = r.package_id(),
                     n::resolvent() = r.resolvent()
                     );
@@ -112,6 +122,8 @@ namespace
         const std::shared_ptr<const PackageIDSequence> not_changing_slots;
         const std::shared_ptr<R_> result;
 
+        std::list<std::shared_ptr<const DependenciesLabelSequence> > labels_stack;
+
         DependentChecker(
                 const Environment * const e,
                 const std::shared_ptr<const PackageID> & i,
@@ -125,6 +137,7 @@ namespace
             not_changing_slots(s),
             result(std::make_shared<R_>())
         {
+            labels_stack.push_front(std::make_shared<DependenciesLabelSequence>());
         }
 
         void visit(const DependencySpecTree::NodeType<NamedSetDepSpec>::Type & s)
@@ -169,7 +182,7 @@ namespace
                 }
 
                 if (! any)
-                    result->push_back(ResultValueMaker<typename R_::value_type>::create(*g));
+                    result->push_back(ResultValueMaker<typename R_::value_type>::create(*g, *labels_stack.begin()));
             }
         }
 
@@ -180,24 +193,32 @@ namespace
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & s)
         {
             if (s.spec()->condition_met(env, id_for_specs))
-                std::for_each(indirect_iterator(s.begin()), indirect_iterator(s.end()),
-                        accept_visitor(*this));
+            {
+                labels_stack.push_front(*labels_stack.begin());
+                std::for_each(indirect_iterator(s.begin()), indirect_iterator(s.end()), accept_visitor(*this));
+                labels_stack.pop_front();
+            }
         }
 
         void visit(const DependencySpecTree::NodeType<AnyDepSpec>::Type & s)
         {
-            std::for_each(indirect_iterator(s.begin()), indirect_iterator(s.end()),
-                    accept_visitor(*this));
+            labels_stack.push_front(*labels_stack.begin());
+            std::for_each(indirect_iterator(s.begin()), indirect_iterator(s.end()), accept_visitor(*this));
+            labels_stack.pop_front();
         }
 
         void visit(const DependencySpecTree::NodeType<AllDepSpec>::Type & s)
         {
-            std::for_each(indirect_iterator(s.begin()), indirect_iterator(s.end()),
-                    accept_visitor(*this));
+            labels_stack.push_front(*labels_stack.begin());
+            std::for_each(indirect_iterator(s.begin()), indirect_iterator(s.end()), accept_visitor(*this));
+            labels_stack.pop_front();
         }
 
-        void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type &)
+        void visit(const DependencySpecTree::NodeType<DependenciesLabelsDepSpec>::Type & node)
         {
+            std::shared_ptr<DependenciesLabelSequence> labels(std::make_shared<DependenciesLabelSequence>());
+            std::copy(node.spec()->begin(), node.spec()->end(), labels->back_inserter());
+            *labels_stack.begin() = labels;
         }
     };
 }
@@ -212,15 +233,24 @@ paludis::resolver::dependent_upon(
 {
     DependentChecker<ChangeByResolventSequence, DependentPackageIDSequence> c(env, id, going_away, staying, not_changing_slots);
     if (id->dependencies_key())
+    {
+        c.labels_stack.push_front(id->dependencies_key()->initial_labels());
         id->dependencies_key()->parse_value()->top()->accept(c);
+        c.labels_stack.pop_front();
+    }
     else
     {
-        if (id->build_dependencies_key())
-            id->build_dependencies_key()->parse_value()->top()->accept(c);
-        if (id->run_dependencies_key())
-            id->run_dependencies_key()->parse_value()->top()->accept(c);
-        if (id->post_dependencies_key())
-            id->post_dependencies_key()->parse_value()->top()->accept(c);
+        auto k({ &PackageID::build_dependencies_key, &PackageID::run_dependencies_key, &PackageID::post_dependencies_key });
+        for (auto i(k.begin()), i_end(k.end()) ; i != i_end ; ++i)
+        {
+            auto key(((*id).*(*i))());
+            if (key)
+            {
+                c.labels_stack.push_front(key->initial_labels());
+                key->parse_value()->top()->accept(c);
+                c.labels_stack.pop_front();
+            }
+        }
     }
 
     return c.result;
@@ -291,6 +321,7 @@ void
 DependentPackageID::serialise(Serialiser & s) const
 {
     s.object("DependentPackageID")
+        .member(SerialiserFlags<>(), "active_dependency_labels_as_string", active_dependency_labels_as_string())
         .member(SerialiserFlags<serialise::might_be_null>(), "package_id", package_id())
         .member(SerialiserFlags<>(), "resolvent", resolvent())
         ;
@@ -301,6 +332,7 @@ DependentPackageID::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "DependentPackageID");
     return make_named_values<DependentPackageID>(
+            n::active_dependency_labels_as_string() = v.member<std::string>("active_dependency_labels_as_string"),
             n::package_id() = v.member<std::shared_ptr<const PackageID> >("package_id"),
             n::resolvent() = v.member<Resolvent>("resolvent")
             );

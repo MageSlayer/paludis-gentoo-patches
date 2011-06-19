@@ -34,6 +34,7 @@ namespace paludis
 {
     namespace n
     {
+        typedef Name<struct name_active_dependency_labels_as_string> active_dependency_labels_as_string;
         typedef Name<struct name_package_id> package_id;
         typedef Name<struct name_resolvent> resolvent;
     }
@@ -42,6 +43,7 @@ namespace paludis
     {
         struct DependentPackageID
         {
+            NamedValue<n::active_dependency_labels_as_string, std::string> active_dependency_labels_as_string;
             NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
             NamedValue<n::resolvent, Resolvent> resolvent;
 
