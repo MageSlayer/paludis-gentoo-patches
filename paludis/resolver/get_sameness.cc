@@ -79,7 +79,7 @@ namespace
     }
 }
 
-std::tuple<bool, bool, bool>
+ExistingPackageIDAttributes
 paludis::resolver::get_sameness(
         const std::shared_ptr<const PackageID> & existing_id,
         const std::shared_ptr<const PackageID> & installable_id)
@@ -152,6 +152,11 @@ paludis::resolver::get_sameness(
         is_same_metadata = is_same_metadata && is_same_dependencies(existing_id->dependencies_key(), installable_id->dependencies_key());
     }
 
-    return std::make_tuple(is_same_version, is_same, is_same_metadata);
+    ExistingPackageIDAttributes attrs;
+    if (is_same_version) attrs += epia_is_same_version;
+    if (is_same) attrs += epia_is_same;
+    if (is_same_metadata) attrs += epia_is_same_metadata;
+
+    return attrs;
 }
 

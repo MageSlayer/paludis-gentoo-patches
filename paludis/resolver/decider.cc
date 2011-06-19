@@ -718,29 +718,14 @@ namespace
                 case ue_if_possible:
                     break;
 
-                case ue_only_if_transient:
-                    if (! decision.is_transient())
-                        return false;
-                    break;
-
-                case ue_if_same:
-                    if (! decision.is_same())
-                        return false;
-                    break;
-
-                case ue_if_same_metadata:
-                    if (! decision.is_same_metadata())
-                        return false;
-                    break;
-
-                case ue_if_same_version:
-                    if (! decision.is_same_version())
-                        return false;
-                    break;
-
                 case ue_never:
                 case last_ue:
                     return false;
+
+                case ue_only_if_transient: if (! decision.attributes()[epia_is_transient])     return false; break;
+                case ue_if_same:           if (! decision.attributes()[epia_is_same])          return false; break;
+                case ue_if_same_metadata:  if (! decision.attributes()[epia_is_same_metadata]) return false; break;
+                case ue_if_same_version:   if (! decision.attributes()[epia_is_same_version])  return false; break;
             }
 
             return true;
@@ -1454,6 +1439,15 @@ Decider::_get_error_resolvents_for(
     return result;
 }
 
+namespace
+{
+    ExistingPackageIDAttributes existing_package_id_attributes_for_no_installable_id(bool is_transient)
+    {
+        return ExistingPackageIDAttributes({ epia_is_same, epia_is_same_metadata, epia_is_same_version }) |
+            (is_transient ? ExistingPackageIDAttributes({ epia_is_transient }) : ExistingPackageIDAttributes({ }));
+    }
+}
+
 const std::shared_ptr<Decision>
 Decider::_try_to_find_decision_for(
         const std::shared_ptr<const Resolution> & resolution,
@@ -1528,10 +1522,7 @@ Decider::_try_to_find_decision_for(
         return std::make_shared<ExistingNoChangeDecision>(
                     resolution->resolvent(),
                     existing_id,
-                    true,
-                    true,
-                    true,
-                    is_transient,
+                    existing_package_id_attributes_for_no_installable_id(is_transient),
                     ! resolution->constraints()->all_untaken()
                     );
     }
@@ -1555,19 +1546,15 @@ Decider::_try_to_find_decision_for(
     }
     else if (existing_id && installable_id)
     {
-        bool is_same_version, is_same, is_same_metadata;
-        std::tie(is_same_version, is_same, is_same_metadata) = get_sameness(existing_id, installable_id);
-
-        bool is_transient(has_behaviour(existing_id, "transient"));
+        ExistingPackageIDAttributes existing_package_id_attributes(get_sameness(existing_id, installable_id));
+        if (has_behaviour(existing_id, "transient"))
+            existing_package_id_attributes += epia_is_transient;
 
         /* we've got existing and installable. do we have any reason not to pick the existing id? */
         const std::shared_ptr<Decision> existing(std::make_shared<ExistingNoChangeDecision>(
                     resolution->resolvent(),
                     existing_id,
-                    is_same_metadata,
-                    is_same,
-                    is_same_version,
-                    is_transient,
+                    existing_package_id_attributes,
                     ! resolution->constraints()->all_untaken()
                     ));
         const std::shared_ptr<Decision> changes_to_make(std::make_shared<ChangesToMakeDecision>(
@@ -1583,30 +1570,12 @@ Decider::_try_to_find_decision_for(
 
         switch (resolution->constraints()->strictest_use_existing())
         {
-            case ue_only_if_transient:
-            case ue_never:
-                return changes_to_make;
-
-            case ue_if_same_metadata:
-                if (is_same_metadata)
-                    return existing;
-                else
-                    return changes_to_make;
-
-            case ue_if_same:
-                if (is_same)
-                    return existing;
-                else
-                    return changes_to_make;
-
-            case ue_if_same_version:
-                if (is_same_version)
-                    return existing;
-                else
-                    return changes_to_make;
-
-            case ue_if_possible:
-                return existing;
+            case ue_only_if_transient: return changes_to_make;
+            case ue_never:             return changes_to_make;
+            case ue_if_same_metadata:  return existing_package_id_attributes[epia_is_same_metadata] ? existing : changes_to_make;
+            case ue_if_same:           return existing_package_id_attributes[epia_is_same]          ? existing : changes_to_make;
+            case ue_if_same_version:   return existing_package_id_attributes[epia_is_same_version]  ? existing : changes_to_make;
+            case ue_if_possible:       return existing;
 
             case last_ue:
                 break;
@@ -1849,10 +1818,7 @@ Decider::_get_unmatching_constraints(
             decision = std::make_shared<ExistingNoChangeDecision>(
                         resolution->resolvent(),
                         id,
-                        true,
-                        true,
-                        true,
-                        is_transient,
+                        existing_package_id_attributes_for_no_installable_id(is_transient),
                         ! (*c)->untaken()
                         );
         }

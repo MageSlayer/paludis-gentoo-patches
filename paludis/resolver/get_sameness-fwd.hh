@@ -21,15 +21,15 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_GET_SAMENESS_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <paludis/resolver/decision-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-#include <tuple>
 #include <memory>
 
 namespace paludis
 {
     namespace resolver
     {
-        std::tuple<bool, bool, bool>
+        ExistingPackageIDAttributes
         get_sameness(
                 const std::shared_ptr<const PackageID> & existing_id,
                 const std::shared_ptr<const PackageID> & installable_id) PALUDIS_ATTRIBUTE((warn_unused_result));

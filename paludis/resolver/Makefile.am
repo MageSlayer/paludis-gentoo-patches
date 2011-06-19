@@ -3,6 +3,7 @@ include $(top_srcdir)/misc/common-makefile.am
 DISTCLEANFILES = \
 	any_child_score-se.hh any_child_score-se.cc \
 	change_type-se.hh change_type-se.cc \
+	decision-se.hh decision-se.cc \
 	destination_types-se.hh destination_types-se.cc \
 	job_requirements-se.hh job_requirements-se.cc \
 	nag-se.hh nag-se.cc \
@@ -12,6 +13,7 @@ AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
 EXTRA_DIST = \
 	any_child_score-se.hh any_child_score-se.cc any_child_score.se \
 	change_type-se.hh change_type-se.cc change_type.se \
+	decision-se.hh decision-se.cc decision.se \
 	destination_types-se.hh destination_types-se.cc destination_types.se \
 	job_requirements-se.hh job_requirements-se.cc job_requirements.se \
 	nag-se.hh nag-se.cc nag.se \
@@ -21,6 +23,7 @@ EXTRA_DIST = \
 BUILT_SOURCES = \
 	any_child_score-se.hh any_child_score-se.cc \
 	change_type-se.hh change_type-se.cc \
+	decision-se.hh decision-se.cc \
 	destination_types-se.hh destination_types-se.cc \
 	nag-se.hh nag-se.cc \
 	job_requirements-se.hh job_requirements-se.cc \
@@ -44,7 +47,7 @@ noinst_HEADERS = \
 	confirm_helper.hh confirm_helper-fwd.hh \
 	constraint.hh constraint-fwd.hh \
 	decider.hh decider-fwd.hh \
-	decision.hh decision-fwd.hh \
+	decision.hh decision-fwd.hh decision-se.hh \
 	decision_utils.hh decision_utils-fwd.hh \
 	decisions.hh decisions-fwd.hh \
 	destination.hh destination-fwd.hh \
@@ -404,4 +407,10 @@ nag-se.hh : nag.se $(top_srcdir)/misc/make_se.bash
 
 nag-se.cc : nag.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/nag.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+decision-se.hh : decision.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/decision.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+decision-se.cc : decision.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/decision.se > $@ ; then rm -f $@ ; exit 1 ; fi
 

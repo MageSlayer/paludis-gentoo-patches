@@ -97,9 +97,17 @@ namespace
 
         const std::string visit(const ExistingNoChangeDecision & d) const
         {
-            return "ExistingNoChangeDecision(" + stringify(*d.existing_id()) + " is_same: "
-                + stringify(d.is_same()) + " is_same_version: " + stringify(d.is_same_version())
-                + " is_transient: " + stringify(d.is_transient()) + " taken: " + stringify(d.taken()) + ")";
+            std::string attrs;
+            for (EnumIterator<ExistingPackageIDAttribute> t, t_end(last_epia) ; t != t_end ; ++t)
+                if (d.attributes()[*t])
+                {
+                    if (! attrs.empty())
+                        attrs += ", ";
+                    attrs += stringify(*t);
+                }
+
+            return "ExistingNoChangeDecision(" + stringify(*d.existing_id()) + " " +
+                attrs + " taken: " + stringify(d.taken()) + ")";
         }
 
         const std::string visit(const ChangesToMakeDecision & d) const

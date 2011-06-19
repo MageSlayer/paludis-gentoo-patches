@@ -37,6 +37,8 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
+#include <paludis/resolver/decision-se.cc>
+
 Decision::~Decision() = default;
 
 const std::shared_ptr<Decision>
@@ -56,10 +58,7 @@ Decision::deserialise(Deserialisation & d)
         return std::make_shared<ExistingNoChangeDecision>(
                     v.member<Resolvent>("resolvent"),
                     v.member<std::shared_ptr<const PackageID> >("existing_id"),
-                    v.member<bool>("is_same_metadata"),
-                    v.member<bool>("is_same"),
-                    v.member<bool>("is_same_version"),
-                    v.member<bool>("is_transient"),
+                    v.member<ExistingPackageIDAttributes>("attributes"),
                     v.member<bool>("taken")
                     );
     }
@@ -250,21 +249,15 @@ namespace paludis
     {
         const Resolvent resolvent;
         const std::shared_ptr<const PackageID> existing_id;
-        const bool is_same_metadata;
-        const bool is_same;
-        const bool is_same_version;
-        const bool is_transient;
+        const ExistingPackageIDAttributes attributes;
         const bool taken;
 
         Imp(const Resolvent & l,
                 const std::shared_ptr<const PackageID> & e,
-                const bool m, const bool s, const bool v, const bool r, const bool t) :
+                const ExistingPackageIDAttributes & a, const bool t) :
             resolvent(l),
             existing_id(e),
-            is_same_metadata(m),
-            is_same(s),
-            is_same_version(v),
-            is_transient(r),
+            attributes(a),
             taken(t)
         {
         }
@@ -272,8 +265,8 @@ namespace paludis
 }
 
 ExistingNoChangeDecision::ExistingNoChangeDecision(const Resolvent & l, const std::shared_ptr<const PackageID> & e,
-        const bool m, const bool s, const bool v, const bool r, const bool t) :
-    _imp(l, e, m, s, v, r, t)
+        const ExistingPackageIDAttributes & a, const bool t) :
+    _imp(l, e, a, t)
 {
 }
 
@@ -285,28 +278,10 @@ ExistingNoChangeDecision::existing_id() const
     return _imp->existing_id;
 }
 
-bool
-ExistingNoChangeDecision::is_same_metadata() const
+const ExistingPackageIDAttributes
+ExistingNoChangeDecision::attributes() const
 {
-    return _imp->is_same_metadata;
-}
-
-bool
-ExistingNoChangeDecision::is_same() const
-{
-    return _imp->is_same;
-}
-
-bool
-ExistingNoChangeDecision::is_same_version() const
-{
-    return _imp->is_same_version;
-}
-
-bool
-ExistingNoChangeDecision::is_transient() const
-{
-    return _imp->is_transient;
+    return _imp->attributes;
 }
 
 const Resolvent
@@ -327,10 +302,7 @@ ExistingNoChangeDecision::serialise(Serialiser & s) const
     s.object("ExistingNoChangeDecision")
         .member(SerialiserFlags<>(), "resolvent", resolvent())
         .member(SerialiserFlags<serialise::might_be_null>(), "existing_id", existing_id())
-        .member(SerialiserFlags<>(), "is_same_metadata", is_same_metadata())
-        .member(SerialiserFlags<>(), "is_same", is_same())
-        .member(SerialiserFlags<>(), "is_same_version", is_same_version())
-        .member(SerialiserFlags<>(), "is_transient", is_transient())
+        .member(SerialiserFlags<>(), "attributes", attributes())
         .member(SerialiserFlags<>(), "taken", taken())
         ;
 }

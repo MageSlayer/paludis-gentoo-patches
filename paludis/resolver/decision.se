@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_ExistingPackageIDAttribute()
+{
+    prefix epia
+    namespace paludis::resolver
+
+    key epia_is_same_metadata        "Same, including metadata"
+    key epia_is_same                 "Same, including choices"
+    key epia_is_same_version         "Same version"
+    key epia_is_transient            "Is transient"
+
+    want_destringify
+}
+

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_RESOLVER_DECISION_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/options-fwd.hh>
+
 #include <iosfwd>
 
 namespace paludis
@@ -37,6 +39,10 @@ namespace paludis
         class ChangesToMakeDecision;
         class RemoveDecision;
         class BreakDecision;
+
+#include <paludis/resolver/decision-se.hh>
+
+        typedef Options<ExistingPackageIDAttribute> ExistingPackageIDAttributes;
     }
 }
 
