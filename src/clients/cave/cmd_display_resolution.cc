@@ -241,7 +241,8 @@ namespace
 
         std::pair<std::string, Tribool> visit(const DependentReason & r) const
         {
-            return std::make_pair("dependent upon " + stringify(*r.dependent_upon().package_id()), true);
+            return std::make_pair("dependent upon " + stringify(*r.dependent_upon().package_id())
+                    + " (" + r.dependent_upon().active_dependency_labels_as_string() + ")", true);
         }
 
         std::pair<std::string, Tribool> visit(const WasUsedByReason & r) const

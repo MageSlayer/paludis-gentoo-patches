@@ -183,7 +183,8 @@ namespace
 
         void visit(const DependentReason & r)
         {
-            str = "Dependent(" + stringify(*r.dependent_upon().package_id()) + ")";
+            str = "Dependent(" + stringify(*r.dependent_upon().package_id()) + ", " +
+                r.dependent_upon().active_dependency_labels_as_string() + ")";
         }
 
         void visit(const WasUsedByReason & r)
