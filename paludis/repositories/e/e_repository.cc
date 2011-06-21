@@ -1140,7 +1140,11 @@ ERepository::repository_factory_create(
             : 0);
 
     std::shared_ptr<ERepositorySequence> master_repositories;
-    if (! f("master_repository").empty())
+    std::string master_repository_str(f("master_repository"));
+    if (master_repository_str.empty() && ! layout_conf)
+        master_repository_str = f("master_repository_if_unknown");
+
+    if (! master_repository_str.empty())
     {
         if (layout_conf)
         {
@@ -1149,10 +1153,9 @@ ERepository::repository_factory_create(
                 << "'. You should probably remove the 'master_repository' setting from your repository config file.";
         }
 
-        Context context_local("When finding configuration information for master_repository '"
-                + stringify(f("master_repository")) + "':");
+        Context context_local("When finding configuration information for master_repository '" + stringify(master_repository_str) + "':");
 
-        RepositoryName master_repository_name(f("master_repository"));
+        RepositoryName master_repository_name(master_repository_str);
         std::shared_ptr<Repository> master_repository_uncasted(
                 env->fetch_repository(master_repository_name));
 

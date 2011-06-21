@@ -482,7 +482,7 @@ PortageEnvironment::_add_ebuild_repository(const FSPath & portdir, const std::st
              stringify(_imp->conf_dir / "portage" / "profile") : ""));
     keys->insert("format", "e");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("master_repository", master);
+    keys->insert("master_repository_if_unknown", master);
     keys->insert("sync", sync);
     keys->insert("distdir", stringify(_imp->vars->get("DISTDIR")));
     std::string builddir(_imp->vars->get("PORTAGE_TMPDIR"));
