@@ -93,6 +93,7 @@ FSMerger::FSMerger(const FSMergerParams & p) :
                 n::merged_entries() = p.merged_entries(),
                 n::no_chown() = p.no_chown(),
                 n::options() = p.options(),
+                n::permit_destination() = p.permit_destination(),
                 n::root() = p.root()
                 )),
     _imp(p)

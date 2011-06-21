@@ -34,7 +34,9 @@
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/fs_error.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/return_literal_function.hh>
 
+#include <functional>
 #include <iterator>
 #include <list>
 
@@ -172,6 +174,7 @@ namespace
                         n::merged_entries() = std::make_shared<FSPathSet>(),
                         n::no_chown() = true,
                         n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
+                        n::permit_destination() = std::bind(return_literal_function(true)),
                         n::root() = root_dir
                         ))
         {
@@ -193,6 +196,7 @@ namespace
                     n::merged_entries() = std::make_shared<FSPathSet>(),
                     n::no_chown() = true,
                     n::options() = o,
+                    n::permit_destination() = std::bind(return_literal_function(true)),
                     n::root() = root_dir
                     ))
         {

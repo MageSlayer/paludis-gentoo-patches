@@ -20,8 +20,7 @@
 #include <paludis/repositories/unpackaged/installed_repository.hh>
 #include <paludis/repositories/unpackaged/installed_id.hh>
 #include <paludis/repositories/unpackaged/exceptions.hh>
-#include <paludis/ndbam.hh>
-#include <paludis/ndbam_merger.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/stringify.hh>
@@ -36,6 +35,10 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/return_literal_function.hh>
+
+#include <paludis/ndbam.hh>
+#include <paludis/ndbam_merger.hh>
 #include <paludis/action.hh>
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
@@ -48,6 +51,7 @@
 #include <paludis/hook.hh>
 #include <paludis/common_sets.hh>
 #include <paludis/unformatted_pretty_printer.hh>
+
 #include <sstream>
 #include <sys/time.h>
 
@@ -374,6 +378,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
                 n::options() = m.options(),
                 n::output_manager() = m.output_manager(),
                 n::package_id() = m.package_id(),
+                n::permit_destination() = std::bind(return_literal_function(true)),
                 n::root() = installed_root_key()->parse_value()
             ));
 

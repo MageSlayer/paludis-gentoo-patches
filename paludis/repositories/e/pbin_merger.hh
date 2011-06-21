@@ -39,6 +39,7 @@ namespace paludis
         typedef Name<struct name_options> options;
         typedef Name<struct name_output_manager> output_manager;
         typedef Name<struct name_package_id> package_id;
+        typedef Name<struct name_permit_destination> permit_destination;
         typedef Name<struct name_root> root;
         typedef Name<struct name_tar_file> tar_file;
     }
@@ -56,6 +57,7 @@ namespace paludis
             NamedValue<n::options, MergerOptions> options;
             NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
             NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
+            NamedValue<n::permit_destination, PermitDestinationFn> permit_destination;
             NamedValue<n::root, FSPath> root;
             NamedValue<n::tar_file, FSPath> tar_file;
         };

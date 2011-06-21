@@ -39,6 +39,7 @@
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/return_literal_function.hh>
 
 #include <paludis/output_manager.hh>
 #include <paludis/distribution.hh>
@@ -430,6 +431,7 @@ ExndbamRepository::merge(const MergeParams & m)
                 n::options() = m.options(),
                 n::output_manager() = m.output_manager(),
                 n::package_id() = m.package_id(),
+                n::permit_destination() = std::bind(return_literal_function(true)),
                 n::root() = installed_root_key()->parse_value()
             ));
 

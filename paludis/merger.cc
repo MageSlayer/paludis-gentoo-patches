@@ -151,13 +151,19 @@ Merger::do_dir_recursive(bool is_check, const FSPath & src, const FSPath & dst)
 
     FSIterator d(src, { fsio_include_dotfiles, fsio_inode_sort }), d_end;
 
-    if (is_check && d == d_end && dst != _imp->params.root().realpath())
+    if (is_check)
     {
-        if (_imp->params.options()[mo_allow_empty_dirs])
-            Log::get_instance()->message("merger.empty_directory", ll_warning, lc_context) << "Installing empty directory '"
-                << stringify(dst) << "'";
-        else
-            on_error(is_check, "Attempted to install empty directory '" + stringify(dst) + "'");
+        if (d == d_end && dst != _imp->params.root().realpath())
+        {
+            if (_imp->params.options()[mo_allow_empty_dirs])
+                Log::get_instance()->message("merger.empty_directory", ll_warning, lc_context) << "Installing empty directory '"
+                    << stringify(dst) << "'";
+            else
+                on_error(is_check, "Attempted to install empty directory '" + stringify(dst) + "'");
+        }
+
+        if (! _imp->params.permit_destination()(dst))
+            on_error(is_check, "Not allowed to merge '" + stringify(src) + "' to '" + stringify(dst) + "'");
     }
 
     for ( ; d != d_end ; ++d)

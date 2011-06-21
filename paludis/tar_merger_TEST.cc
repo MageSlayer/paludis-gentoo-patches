@@ -31,6 +31,9 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/return_literal_function.hh>
+
+#include <functional>
 
 #include <gtest/gtest.h>
 
@@ -98,6 +101,7 @@ TEST(TarMerger, Works)
                 n::merged_entries() = std::make_shared<FSPathSet>(),
                 n::no_chown() = true,
                 n::options() = MergerOptions() + mo_rewrite_symlinks,
+                n::permit_destination() = std::bind(return_literal_function(true)),
                 n::root() = FSPath("/"),
                 n::tar_file() = output
                 ));

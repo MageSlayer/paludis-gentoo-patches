@@ -82,6 +82,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/process.hh>
+#include <paludis/util/return_literal_function.hh>
 #include <paludis/util/rmd160.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
@@ -1727,6 +1728,7 @@ ERepository::merge(const MergeParams & m)
                 n::options() = m.options(),
                 n::output_manager() = m.output_manager(),
                 n::package_id() = m.package_id(),
+                n::permit_destination() = std::bind(return_literal_function(true)),
                 n::root() = FSPath("/"),
                 n::tar_file() = _imp->params.binary_distdir() / (bin_dist_base + pbin_tar_extension)
             ));

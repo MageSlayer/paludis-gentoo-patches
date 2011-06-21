@@ -38,6 +38,7 @@ namespace paludis
         typedef Name<struct name_merged_entries> merged_entries;
         typedef Name<struct name_no_chown> no_chown;
         typedef Name<struct name_options> options;
+        typedef Name<struct name_permit_destination> permit_destination;
         typedef Name<struct name_root> root;
         typedef Name<struct name_tar_file> tar_file;
     }
@@ -62,6 +63,7 @@ namespace paludis
         NamedValue<n::merged_entries, std::shared_ptr<FSPathSet> > merged_entries;
         NamedValue<n::no_chown, bool> no_chown;
         NamedValue<n::options, MergerOptions> options;
+        NamedValue<n::permit_destination, PermitDestinationFn> permit_destination;
         NamedValue<n::root, FSPath> root;
         NamedValue<n::tar_file, FSPath> tar_file;
     };

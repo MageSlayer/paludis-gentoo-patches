@@ -43,8 +43,18 @@ namespace paludis
         typedef Name<struct name_merged_entries> merged_entries;
         typedef Name<struct name_no_chown> no_chown;
         typedef Name<struct name_options> options;
+        typedef Name<struct name_permit_destination> permit_destination;
         typedef Name<struct name_root> root;
     }
+
+    /**
+     * Whether to allow merging to a particular destination.
+     *
+     * \ingroup g_repository
+     * \see MergerParams
+     * \since 0.66
+     */
+    typedef std::function<bool (const FSPath &)> PermitDestinationFn;
 
     /**
      * Parameters for a basic Merger.
@@ -65,6 +75,10 @@ namespace paludis
         NamedValue<n::merged_entries, std::shared_ptr<FSPathSet> > merged_entries;
         NamedValue<n::no_chown, bool> no_chown;
         NamedValue<n::options, MergerOptions> options;
+
+        ///\since 0.66
+        NamedValue<n::permit_destination, PermitDestinationFn> permit_destination;
+
         NamedValue<n::root, FSPath> root;
     };
 

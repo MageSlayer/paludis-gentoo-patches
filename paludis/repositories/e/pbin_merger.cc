@@ -76,6 +76,7 @@ PbinMerger::PbinMerger(const PbinMergerParams & p) :
                 n::merged_entries() = p.merged_entries(),
                 n::no_chown() = ! getenv_with_default(env_vars::no_chown, "").empty(),
                 n::options() = p.options(),
+                n::permit_destination() = p.permit_destination(),
                 n::root() = p.root(),
                 n::tar_file() = p.tar_file()
             )),

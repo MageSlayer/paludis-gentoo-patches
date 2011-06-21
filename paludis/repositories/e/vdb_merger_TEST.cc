@@ -29,8 +29,11 @@
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/return_literal_function.hh>
 
 #include <paludis/standard_output_manager.hh>
+
+#include <functional>
 
 #include <gtest/gtest.h>
 
@@ -109,6 +112,7 @@ namespace
                         n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                         n::output_manager() = std::make_shared<StandardOutputManager>(),
                         n::package_id() = std::shared_ptr<PackageID>(),
+                        n::permit_destination() = std::bind(return_literal_function(true)),
                         n::root() = root_dir
                         ));
         }

@@ -57,6 +57,7 @@ namespace paludis
         typedef Name<struct name_merged_entries> merged_entries;
         typedef Name<struct name_no_chown> no_chown;
         typedef Name<struct name_options> options;
+        typedef Name<struct name_permit_destination> permit_destination;
         typedef Name<struct name_root> root;
     }
 
@@ -96,6 +97,10 @@ namespace paludis
 
         NamedValue<n::no_chown, bool> no_chown;
         NamedValue<n::options, MergerOptions> options;
+
+        ///\since 0.66
+        NamedValue<n::permit_destination, PermitDestinationFn> permit_destination;
+
         NamedValue<n::root, FSPath> root;
     };
 
