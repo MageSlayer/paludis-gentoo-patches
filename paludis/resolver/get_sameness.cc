@@ -21,6 +21,7 @@
 
 #include <paludis/util/log.hh>
 #include <paludis/util/visitor_cast.hh>
+#include <paludis/util/join.hh>
 
 #include <paludis/package_id.hh>
 #include <paludis/choice.hh>
@@ -32,6 +33,7 @@
 #include <paludis/slot_requirement.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/elike_slot_requirement.hh>
+#include <paludis/version_requirements.hh>
 
 #include <set>
 #include <algorithm>
@@ -48,14 +50,61 @@ namespace
 
         const std::string prettify(const PackageDepSpec & s) const
         {
+            /* cat/pkg[foo][bar] and cat/pkg[bar][foo] are the same, and := deps
+             * are weird */
+            std::set<std::string> tokens;
+
+            if (s.package_ptr())
+                tokens.insert("package:" + stringify(*s.package_ptr()));
+
+            if (s.package_name_part_ptr())
+                tokens.insert("package_name_part:" + stringify(*s.package_name_part_ptr()));
+
+            if (s.category_name_part_ptr())
+                tokens.insert("category_name_part:" + stringify(*s.category_name_part_ptr()));
+
+            if (s.version_requirements_ptr())
+            {
+                for (VersionRequirements::ConstIterator r(s.version_requirements_ptr()->begin()),
+                        r_end(s.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+                    tokens.insert("version_requirement:" + stringify(s.version_requirements_mode()) +
+                            stringify(r->version_operator()) + stringify(r->version_spec()));
+            }
+
             if (s.slot_requirement_ptr())
             {
                 auto r(visitor_cast<const SlotExactRequirement>(*s.slot_requirement_ptr()));
                 if (r && r->from_any_locked())
-                    return prettify(PartiallyMadePackageDepSpec(s).slot_requirement(std::make_shared<ELikeSlotAnyLockedRequirement>()));
+                    tokens.insert("slot_requirement:" + stringify(*std::make_shared<ELikeSlotAnyLockedRequirement>()));
+                else
+                    tokens.insert("slot_requirement:" + stringify(*s.slot_requirement_ptr()));
             }
 
-            return UnformattedPrettyPrinter::prettify(s);
+            if (s.in_repository_ptr())
+                tokens.insert("in_repository:" + stringify(*s.in_repository_ptr()));
+
+            if (s.installable_to_repository_ptr())
+                tokens.insert("installable_to_repository:" + stringify(s.installable_to_repository_ptr()->repository())
+                        + "/" + stringify(s.installable_to_repository_ptr()->include_masked()));
+
+            if (s.from_repository_ptr())
+                tokens.insert("from_repository:" + stringify(*s.from_repository_ptr()));
+
+            if (s.installed_at_path_ptr())
+                tokens.insert("installed_at_path:" + stringify(*s.installed_at_path_ptr()));
+
+            if (s.installable_to_path_ptr())
+                tokens.insert("installable_to_path:" + stringify(s.installable_to_path_ptr()->path())
+                        + "/" + stringify(s.installable_to_path_ptr()->include_masked()));
+
+            if (s.additional_requirements_ptr())
+            {
+                for (AdditionalPackageDepSpecRequirements::ConstIterator u(s.additional_requirements_ptr()->begin()),
+                        u_end(s.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
+                    tokens.insert("additional_requirement:" + stringify(**u));
+            }
+
+            return "PackageDepSpec(" + join(tokens.begin(), tokens.end(), ";") + ")";
         }
     };
 
