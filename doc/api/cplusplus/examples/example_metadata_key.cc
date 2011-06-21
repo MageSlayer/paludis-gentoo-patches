@@ -19,6 +19,7 @@
 #include <iostream>
 #include <iomanip>
 #include <set>
+#include <cstdlib>
 
 using namespace paludis;
 using namespace examples;

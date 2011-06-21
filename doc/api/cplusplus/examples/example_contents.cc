@@ -18,6 +18,7 @@
 #include <iostream>
 #include <iomanip>
 #include <algorithm>
+#include <cstdlib>
 
 using namespace paludis;
 using namespace examples;

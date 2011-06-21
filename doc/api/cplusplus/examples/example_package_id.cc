@@ -20,6 +20,7 @@
 #include "example_command_line.hh"
 #include <iostream>
 #include <iomanip>
+#include <cstdlib>
 #include <set>
 
 using namespace paludis;

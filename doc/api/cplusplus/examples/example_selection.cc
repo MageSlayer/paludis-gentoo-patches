@@ -18,6 +18,7 @@
 #include <iostream>
 #include <algorithm>
 #include <iterator>
+#include <cstdlib>
 
 using namespace paludis;
 using namespace examples;

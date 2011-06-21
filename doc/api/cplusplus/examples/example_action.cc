@@ -16,6 +16,7 @@
 #include <paludis/paludis.hh>
 #include "example_command_line.hh"
 #include <iostream>
+#include <cstdlib>
 
 using namespace paludis;
 using namespace examples;
