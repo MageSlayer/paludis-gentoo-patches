@@ -252,6 +252,11 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
                     kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
                     std::bind(&predefined, _imp->vars, std::placeholders::_1, std::placeholders::_2),
                     &do_incremental);
+    if ((_imp->conf_dir / "portage" / "make.conf").stat().exists())
+        _imp->vars = std::make_shared<KeyValueConfigFile>(_imp->conf_dir / "portage" / "make.conf", KeyValueConfigFileOptions() +
+                    kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
+                    std::bind(&predefined, _imp->vars, std::placeholders::_1, std::placeholders::_2),
+                    &do_incremental);
 
     {
         std::string fixed_root_var(_imp->vars->get("ROOT"));
@@ -705,6 +710,7 @@ PortageEnvironment::bashrc_files() const
         result->push_back(FSPath(LIBEXECDIR) / "paludis" / "environments" / "portage" / "bashrc");
     result->push_back(_imp->conf_dir / "make.globals");
     result->push_back(_imp->conf_dir / "make.conf");
+    result->push_back(_imp->conf_dir / "portage" / "make.conf");
     return result;
 }
 
