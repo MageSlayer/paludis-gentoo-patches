@@ -24,6 +24,7 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/iterator_funcs.hh>
 
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -37,6 +38,7 @@
 #include <sstream>
 #include <list>
 #include <map>
+#include <set>
 
 using namespace paludis;
 using namespace paludis::args;
@@ -197,6 +199,9 @@ ArgsHandler::run(
             args.push_back(option);
     }
 
+    ArgsIterator last_weak_arg(args.empty() ? args.end() : prev(args.end()));
+    ArgsOptionSpecifiedness specifiedness(args.empty() ? aos_specified : aos_weak);
+
     args.insert(args.end(), argseq->begin(), argseq->end());
 
     ArgsIterator argit(args.begin()), arge(args.end());
@@ -229,13 +234,13 @@ ArgsHandler::run(
                     throw BadArgument("--no-" + arg);
 
                 std::string remaining_chars;
-                ArgsVisitor visitor(&argit, arge, env_prefix, remaining_chars, true);
+                ArgsVisitor visitor(&argit, arge, env_prefix, remaining_chars, true, specifiedness);
                 it->second->accept(visitor);
             }
             else
             {
                 std::string remaining_chars;
-                ArgsVisitor visitor(&argit, arge, env_prefix, remaining_chars, false);
+                ArgsVisitor visitor(&argit, arge, env_prefix, remaining_chars, false, specifiedness);
                 it->second->accept(visitor);
             }
         }
@@ -258,7 +263,7 @@ ArgsHandler::run(
                     throw BadArgument(std::string("-") + *c);
                 }
 
-                ArgsVisitor visitor(&argit, arge, env_prefix, remaining_chars, false);
+                ArgsVisitor visitor(&argit, arge, env_prefix, remaining_chars, false, specifiedness);
                 it->second->accept(visitor);
 
                 if (maybe_second_char_used && remaining_chars.empty())
@@ -272,6 +277,9 @@ ArgsHandler::run(
             else
                 _imp->parameters.push_back(arg);
         }
+
+        if (aos_weak == specifiedness && last_weak_arg == argit)
+            specifiedness = aos_specified;
     }
 
     _imp->parameters.insert(_imp->parameters.end(), argit, ArgsIterator(args.end()));

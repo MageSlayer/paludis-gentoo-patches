@@ -300,7 +300,7 @@ ImportCommand::run(
     resolve_cmdline.resolution_options.verify(env);
 
     if (cmdline.a_execute.specified())
-        resolve_cmdline.resolution_options.a_execute.set_specified(true);
+        resolve_cmdline.resolution_options.a_execute.set_specified(args::aos_specified);
 
     std::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(std::make_shared<Sequence<std::pair<std::string, std::string> >>());
     targets->push_back(std::make_pair(stringify((*ids->begin())->name()), ""));

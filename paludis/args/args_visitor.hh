@@ -76,7 +76,8 @@ namespace paludis
                         ArgsHandler::ArgsIterator,
                         const std::string &,
                         std::string & remaining_chars,
-                        bool no);
+                        bool no,
+                        ArgsOptionSpecifiedness specifiedness);
 
                 ~ArgsVisitor();
 

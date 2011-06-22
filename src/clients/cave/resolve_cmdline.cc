@@ -471,7 +471,7 @@ ResolveCommandLineResolutionOptions::apply_shortcuts()
         if (! a_slots.specified())
             a_slots.set_argument("best");
         if (! a_no_follow_installed_dependencies.specified())
-            a_no_follow_installed_dependencies.set_specified(true);
+            a_no_follow_installed_dependencies.set_specified(args::aos_weak);
     }
 
     if (a_complete.specified())
@@ -483,7 +483,7 @@ ResolveCommandLineResolutionOptions::apply_shortcuts()
         if (! a_slots.specified())
             a_slots.set_argument("all");
         if (! a_follow_installed_build_dependencies.specified())
-            a_follow_installed_build_dependencies.set_specified(true);
+            a_follow_installed_build_dependencies.set_specified(args::aos_weak);
         if (! a_reinstall_scm.specified())
             a_reinstall_scm.set_argument("weekly");
     }
@@ -499,7 +499,7 @@ ResolveCommandLineResolutionOptions::apply_shortcuts()
         if (! a_slots.specified())
             a_slots.set_argument("all");
         if (! a_follow_installed_build_dependencies.specified())
-            a_follow_installed_build_dependencies.set_specified(true);
+            a_follow_installed_build_dependencies.set_specified(args::aos_weak);
     }
 }
 

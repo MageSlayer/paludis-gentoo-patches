@@ -64,7 +64,7 @@ ArgsOption::ArgsOption(ArgsGroup * const g, const std::string & our_long_name,
     _long_name(our_long_name),
     _short_name(our_short_name),
     _description(our_description),
-    _specified(false)
+    _specified(aos_not)
 {
     g->add(this);
     g->section()->handler()->add_option(this, our_long_name, our_short_name);

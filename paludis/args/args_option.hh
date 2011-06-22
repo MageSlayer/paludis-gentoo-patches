@@ -59,6 +59,13 @@ namespace paludis
         class StringSetArg;
         class StringSequenceArg;
 
+        enum ArgsOptionSpecifiedness
+        {
+            aos_not,
+            aos_weak,
+            aos_specified
+        };
+
         /**
          * Base class for a command line option.
          *
@@ -77,7 +84,7 @@ namespace paludis
                 const char _short_name;
                 const std::string _description;
 
-                bool _specified;
+                ArgsOptionSpecifiedness _specified;
 
                 ArgsOption(const ArgsOption &);
                 void operator= (const ArgsOption &);
@@ -127,17 +134,27 @@ namespace paludis
 
                 /**
                  * Fetch whether or not we were specified on the
-                 * command line.
+                 * command line (or as an env var).
                  */
                 virtual bool specified() const
                 {
-                    return _specified;
+                    return _specified != aos_not;
+                }
+
+                /**
+                 * Fetch whether or not we were explicitly (not
+                 * an env var) specified. Used to catch -x y -x z
+                 * where -x takes a single value.
+                 */
+                virtual bool explicitly_specified() const
+                {
+                    return _specified == aos_specified;
                 }
 
                 /**
                  * Set the value returned by specified().
                  */
-                virtual void set_specified(const bool value)
+                virtual void set_specified(const ArgsOptionSpecifiedness value)
                 {
                     _specified = value;
                 }
@@ -435,7 +452,12 @@ namespace paludis
                     return _other->specified();
                 }
 
-                virtual void set_specified(const bool value)
+                virtual bool explicitly_specified() const
+                {
+                    return _other->explicitly_specified();
+                }
+
+                virtual void set_specified(const ArgsOptionSpecifiedness value)
                 {
                     _other->set_specified(value);
                 }

@@ -144,8 +144,8 @@ FixLinkageCommand::run(
     cmdline.run(args, "CAVE", "CAVE_FIX_LINKAGE_OPTIONS", "CAVE_FIX_LINKAGE_CMDLINE",
             args::ArgsHandlerOptions() + args::aho_separate_after_dashes);
 
-    resolve_cmdline.resolution_options.a_lazy.set_specified(true);
-    resolve_cmdline.execution_options.a_preserve_world.set_specified(true);
+    resolve_cmdline.resolution_options.a_lazy.set_specified(args::aos_weak);
+    resolve_cmdline.execution_options.a_preserve_world.set_specified(args::aos_weak);
     resolve_cmdline.run(cmdline.separate_after_dashes_args(),
             "CAVE", "CAVE_RESOLVE_OPTIONS", "CAVE_RESOLVE_CMDLINE");
 
@@ -162,7 +162,7 @@ FixLinkageCommand::run(
     resolve_cmdline.resolution_options.verify(env);
 
     if (cmdline.a_execute.specified())
-        resolve_cmdline.resolution_options.a_execute.set_specified(true);
+        resolve_cmdline.resolution_options.a_execute.set_specified(args::aos_specified);
 
     auto libraries(std::make_shared<Sequence<std::string>>());
     for (auto l(cmdline.a_libraries.begin_args()), l_end(cmdline.a_libraries.end_args()) ;

@@ -104,7 +104,7 @@ PurgeCommand::run(
     cmdline.resolution_options->apply_shortcuts();
     cmdline.resolution_options->verify(env);
 
-    cmdline.resolution_options->a_purge.set_specified(true);
+    cmdline.resolution_options->a_purge.set_specified(args::aos_weak);
     cmdline.resolution_options->a_purge.add_argument("*/*");
 
     return resolve_common(env, *cmdline.resolution_options, *cmdline.execution_options, *cmdline.display_options,

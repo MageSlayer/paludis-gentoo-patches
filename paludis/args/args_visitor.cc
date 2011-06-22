@@ -27,6 +27,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/pimp-impl.hh>
+#include <paludis/util/log.hh>
 
 #include <algorithm>
 #include <sstream>
@@ -45,26 +46,29 @@ namespace paludis
         std::string env_prefix;
         std::string & remaining_chars;
         bool no;
+        ArgsOptionSpecifiedness specifiedness;
 
         Imp(
                 ArgsHandler::ArgsIterator * i,
                 ArgsHandler::ArgsIterator e,
                 std::string p,
                 std::string & s,
-                bool n) :
+                bool n,
+                ArgsOptionSpecifiedness sp) :
             args_index(i),
             args_end(e),
             env_prefix(p),
             remaining_chars(s),
-            no(n)
+            no(n),
+            specifiedness(sp)
         {
         }
     };
 }
 
 ArgsVisitor::ArgsVisitor(ArgsHandler::ArgsIterator * ai, ArgsHandler::ArgsIterator ae,
-        const std::string & env_prefix, std::string & s, bool n) :
-    _imp(ai, ae, env_prefix, s, n)
+        const std::string & env_prefix, std::string & s, bool n, ArgsOptionSpecifiedness p) :
+    _imp(ai, ae, env_prefix, s, n, p)
 {
 }
 
@@ -85,8 +89,12 @@ void ArgsVisitor::visit(StringArg & arg)
 {
     if (! _imp->no)
     {
+        if (arg.explicitly_specified())
+            Log::get_instance()->message("args.specified_twice", ll_warning, lc_context)
+                <<  "Option '--" << arg.long_name() << "' was specified more than once, but it does not take multiple values";
+
         std::string p(get_param(arg));
-        arg.set_specified(true);
+        arg.set_specified(_imp->specifiedness);
         arg.set_argument(p);
         if (! _imp->env_prefix.empty())
             setenv(env_name(arg.long_name()).c_str(), p.c_str(), 1);
@@ -95,7 +103,7 @@ void ArgsVisitor::visit(StringArg & arg)
         throw BadArgument("--no-" + arg.long_name());
     else
     {
-        arg.set_specified(false);
+        arg.set_specified(aos_not);
         if (! _imp->env_prefix.empty())
             unsetenv(env_name(arg.long_name()).c_str());
     }
@@ -110,7 +118,7 @@ void ArgsVisitor::visit(SwitchArg & arg)
 {
     if (! _imp->no)
     {
-        arg.set_specified(true);
+        arg.set_specified(_imp->specifiedness);
         if (! _imp->env_prefix.empty())
             setenv(env_name(arg.long_name()).c_str(), "1", 1);
     }
@@ -118,7 +126,7 @@ void ArgsVisitor::visit(SwitchArg & arg)
         throw BadArgument("--no-" + arg.long_name());
     else
     {
-        arg.set_specified(false);
+        arg.set_specified(aos_not);
         if (! _imp->env_prefix.empty())
             unsetenv(env_name(arg.long_name()).c_str());
     }
@@ -128,7 +136,11 @@ void ArgsVisitor::visit(IntegerArg & arg)
 {
     if (! _imp->no)
     {
-        arg.set_specified(true);
+        if (arg.explicitly_specified())
+            Log::get_instance()->message("args.specified_twice", ll_warning, lc_context)
+                <<  "Option '--" << arg.long_name() << "' was specified more than once, but it does not take multiple values";
+
+        arg.set_specified(_imp->specifiedness);
         std::string param;
 
         if ((! _imp->remaining_chars.empty()) && (std::string::npos == _imp->remaining_chars.find_first_not_of("0123456789")))
@@ -160,7 +172,11 @@ void ArgsVisitor::visit(EnumArg & arg)
 {
     if (! _imp->no)
     {
-        arg.set_specified(true);
+        if (arg.explicitly_specified())
+            Log::get_instance()->message("args.specified_twice", ll_warning, lc_context)
+                <<  "Option '--" << arg.long_name() << "' was specified more than once, but it does not take multiple values";
+
+        arg.set_specified(_imp->specifiedness);
 
         std::string p;
         if (_imp->remaining_chars.length() == 1)
@@ -183,7 +199,7 @@ void ArgsVisitor::visit(StringSetArg & arg)
 {
     if (! _imp->no)
     {
-        arg.set_specified(true);
+        arg.set_specified(_imp->specifiedness);
 
         std::string param = get_param(arg);
         arg.add_argument(param);
@@ -200,7 +216,7 @@ void ArgsVisitor::visit(StringSequenceArg & arg)
 {
     if (! _imp->no)
     {
-        arg.set_specified(true);
+        arg.set_specified(_imp->specifiedness);
 
         std::string param = get_param(arg);
         arg.add_argument(param);

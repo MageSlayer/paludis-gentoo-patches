@@ -390,7 +390,7 @@ SyncCommand::run(
             repos.insert((*p)->name());
 
     if (1 == repos.size())
-        cmdline.a_sequential.set_specified(true);
+        cmdline.a_sequential.set_specified(args::aos_weak);
 
     cout << fuc(fs_heading(), fv<'s'>("Starting sync"));
 
