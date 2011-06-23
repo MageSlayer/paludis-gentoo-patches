@@ -156,6 +156,7 @@ TEST(TarMerger, NotAvailable)
                 n::merged_entries() = std::make_shared<FSPathSet>(),
                 n::no_chown() = true,
                 n::options() = MergerOptions(),
+                n::permit_destination() = std::bind(return_literal_function(true)),
                 n::root() = FSPath("/"),
                 n::tar_file() = output
                 ));
