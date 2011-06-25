@@ -64,7 +64,7 @@ namespace paludis
         const Environment * const env;
         const std::shared_ptr<const ERepositoryID> id;
         const std::shared_ptr<const ERepository> maybe_e_repository;
-        const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > maybe_descriptions;
+        const std::function<std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > ()> descriptions_function;
 
         const std::string raw_name;
         const std::string human_name;
@@ -72,12 +72,12 @@ namespace paludis
 
         Imp(const Environment * const e, const std::shared_ptr<const ERepositoryID> & i,
                 const std::shared_ptr<const ERepository> & p,
-                const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d,
+                const std::function<std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > ()> & d,
                 const std::string & r, const std::string & h, const MetadataKeyType t) :
             env(e),
             id(i),
             maybe_e_repository(p),
-            maybe_descriptions(d),
+            descriptions_function(d),
             raw_name(r),
             human_name(h),
             type(t)
@@ -91,7 +91,7 @@ EChoicesKey::EChoicesKey(
         const std::shared_ptr<const ERepositoryID> & i,
         const std::string & r, const std::string & h, const MetadataKeyType t,
         const std::shared_ptr<const ERepository> & p,
-        const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d) :
+                const std::function<std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > ()> & d) :
     _imp(e, i, p, d, r, h, t)
 {
 }
@@ -261,6 +261,8 @@ EChoicesKey::parse_value() const
     if (_imp->value)
         return _imp->value;
 
+    auto descriptions(_imp->descriptions_function());
+
     Context context("When making Choices key for '" + stringify(*_imp->id) + "':");
 
     _imp->value = std::make_shared<Choices>();
@@ -268,15 +270,15 @@ EChoicesKey::parse_value() const
         return _imp->value;
 
     if (_imp->id->raw_myoptions_key())
-        populate_myoptions();
+        populate_myoptions(descriptions);
     else
-        populate_iuse();
+        populate_iuse(descriptions);
 
     return _imp->value;
 }
 
 void
-EChoicesKey::populate_myoptions() const
+EChoicesKey::populate_myoptions(const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d) const
 {
     Context local_context("When using raw_myoptions_key to populate choices:");
 
@@ -352,7 +354,7 @@ EChoicesKey::populate_myoptions() const
 }
 
 void
-EChoicesKey::populate_iuse() const
+EChoicesKey::populate_iuse(const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d) const
 {
     Context local_context("When using raw_iuse_key and raw_use_key to populate choices:");
 
@@ -436,7 +438,7 @@ EChoicesKey::populate_iuse() const
         {
             std::shared_ptr<const ChoiceValue> choice(_imp->id->make_choice_value(
                         use, UnprefixedChoiceName(stringify(it->first)), it->second.default_value(), false,
-                        ! it->second.implicit(), get_maybe_description(_imp->maybe_descriptions, it->first), false));
+                        ! it->second.implicit(), get_maybe_description(d, it->first), false));
             use->add(choice);
         }
 
@@ -471,7 +473,7 @@ EChoicesKey::populate_iuse() const
                 }
                 else
                     use->add(_imp->id->make_choice_value(use, UnprefixedChoiceName(stringify(flag.first)), flag.second, false, false,
-                                get_maybe_description(_imp->maybe_descriptions, flag.first), false));
+                                get_maybe_description(d, flag.first), false));
             }
         }
     }
@@ -551,7 +553,7 @@ EChoicesKey::populate_iuse() const
                 std::map<ChoiceNameWithPrefix, ChoiceOptions>::const_iterator i(i_values.find(ChoiceNameWithPrefix(lower_u + delim + stringify(*v))));
                 if (i_values.end() != i)
                     exp->add(_imp->id->make_choice_value(exp, *v, i->second.default_value(), false, ! i->second.implicit(),
-                                get_maybe_description(_imp->maybe_descriptions, i->first), false));
+                                get_maybe_description(d, i->first), false));
                 else
                     exp->add(_imp->id->make_choice_value(exp, *v, indeterminate, false, false, "", false));
             }
@@ -575,7 +577,7 @@ EChoicesKey::populate_iuse() const
             std::string name(_imp->id->eapi()->supported()->choices_options()->fancy_test_flag());
             choice = _imp->id->make_choice_value(
                         use, UnprefixedChoiceName(name), indeterminate, true, true,
-                        get_maybe_description(_imp->maybe_descriptions, ChoiceNameWithPrefix(name)), false);
+                        get_maybe_description(d, ChoiceNameWithPrefix(name)), false);
             use->add(choice);
         }
     }

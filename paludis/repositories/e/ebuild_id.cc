@@ -431,7 +431,7 @@ EbuildID::need_keys_added() const
         _imp->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
                     _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
                     mkt_normal, e_repo,
-                    maybe_use_descriptions);
+                    std::bind(return_literal_function(maybe_use_descriptions)));
 
         if (_imp->eapi->supported()->is_pbin())
         {
@@ -441,7 +441,7 @@ EbuildID::need_keys_added() const
     }
     else
         _imp->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
-                    e_repo, maybe_use_descriptions);
+                    e_repo, std::bind(return_literal_function(maybe_use_descriptions)));
     add_metadata_key(_imp->choices);
 }
 

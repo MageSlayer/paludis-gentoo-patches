@@ -518,10 +518,10 @@ EInstalledRepositoryID::need_keys_added() const
     if (_imp->eapi->supported())
         _imp->keys->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
                     _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
-                    mkt_normal, make_null_shared_ptr(), make_null_shared_ptr());
+                    mkt_normal, make_null_shared_ptr(), std::bind(return_literal_function(make_null_shared_ptr())));
     else
         _imp->keys->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
-                    make_null_shared_ptr(), make_null_shared_ptr());
+                    make_null_shared_ptr(), std::bind(return_literal_function(make_null_shared_ptr())));
 
     add_metadata_key(_imp->keys->choices);
 

@@ -24,6 +24,7 @@
 #include <paludis/choice-fwd.hh>
 #include <paludis/repositories/e/e_choice_value.hh>
 #include <paludis/util/map-fwd.hh>
+#include <functional>
 
 namespace paludis
 {
@@ -39,8 +40,8 @@ namespace paludis
             private:
                 Pimp<EChoicesKey> _imp;
 
-                void populate_iuse() const;
-                void populate_myoptions() const;
+                void populate_iuse(const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > &) const;
+                void populate_myoptions(const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > &) const;
 
             public:
                 EChoicesKey(
@@ -50,7 +51,7 @@ namespace paludis
                         const std::string &,
                         const MetadataKeyType,
                         const std::shared_ptr<const ERepository> & maybe_profile,
-                        const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & maybe_descriptions);
+                        const std::function<std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > ()> & maybe_descriptions_fn);
 
                 ~EChoicesKey();
 
