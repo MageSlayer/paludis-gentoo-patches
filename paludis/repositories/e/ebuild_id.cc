@@ -141,7 +141,8 @@ namespace paludis
         const std::string guessed_eapi;
         const time_t master_mtime;
         const std::shared_ptr<const EclassMtimes> eclass_mtimes;
-        mutable bool has_keys;
+        mutable bool has_non_xml_keys;
+        mutable bool has_xml_keys;
         mutable bool has_masks;
 
         const std::shared_ptr<const LiteralMetadataValueKey<FSPath> > fs_location;
@@ -193,7 +194,8 @@ namespace paludis
             guessed_eapi(g),
             master_mtime(t),
             eclass_mtimes(m),
-            has_keys(false),
+            has_non_xml_keys(false),
+            has_xml_keys(false),
             has_masks(false),
             fs_location(make_fs_location(guessed_eapi, f))
         {
@@ -229,14 +231,14 @@ EbuildID::~EbuildID()
 }
 
 void
-EbuildID::need_keys_added() const
+EbuildID::need_non_xml_keys_added() const
 {
     Lock l(_imp->mutex);
 
-    if (_imp->has_keys)
+    if (_imp->has_non_xml_keys)
         return;
 
-    _imp->has_keys = true;
+    _imp->has_non_xml_keys = true;
 
     Context context("When generating metadata for ID '" + canonical_form(idcf_full) + "':");
 
@@ -352,7 +354,6 @@ EbuildID::need_keys_added() const
 
     add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("EAPI", "EAPI", mkt_internal, _imp->eapi->name()));
 
-    std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > maybe_use_descriptions;
     if (_imp->eapi->supported())
     {
         _imp->raw_use_expand = std::make_shared<LiteralMetadataStringSetKey>(
@@ -365,20 +366,6 @@ EbuildID::need_keys_added() const
                     _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden()->description(),
                     mkt_internal,
                     e_repo->profile()->use_expand_hidden());
-
-        std::shared_ptr<const MetadataXML> m(MetadataXMLPool::get_instance()->metadata_if_exists(
-                    _imp->fs_location->parse_value().dirname() / "metadata.xml"));
-        if (m)
-        {
-            if (! m->long_description().empty())
-                add_metadata_key(_imp->long_description = std::make_shared<LiteralMetadataValueKey<std::string>>("long_description",
-                                "Long Description", mkt_normal, m->long_description()));
-            if (! m->herds()->empty())
-                add_metadata_key(std::make_shared<LiteralMetadataStringSequenceKey>("herds", "Herds", mkt_normal, m->herds()));
-            if (! m->maintainers()->empty())
-                add_metadata_key(std::make_shared<LiteralMetadataStringSequenceKey>("maintainers", "Maintainers", mkt_normal, m->maintainers()));
-            maybe_use_descriptions = m->uses();
-        }
 
         if (_imp->eapi->supported()->choices_options()->profile_iuse_injection())
         {
@@ -431,7 +418,7 @@ EbuildID::need_keys_added() const
         _imp->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
                     _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
                     mkt_normal, e_repo,
-                    std::bind(return_literal_function(maybe_use_descriptions)));
+                    std::bind(&EbuildID::choice_descriptions, this));
 
         if (_imp->eapi->supported()->is_pbin())
         {
@@ -441,8 +428,59 @@ EbuildID::need_keys_added() const
     }
     else
         _imp->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
-                    e_repo, std::bind(return_literal_function(maybe_use_descriptions)));
+                    e_repo, std::bind(return_literal_function(make_null_shared_ptr())));
     add_metadata_key(_imp->choices);
+}
+
+void
+EbuildID::need_xml_keys_added() const
+{
+    Lock l(_imp->mutex);
+
+    if (_imp->has_xml_keys)
+        return;
+
+    _imp->has_xml_keys = true;
+
+    Context context("When generating XML-related metadata for ID '" + canonical_form(idcf_full) + "':");
+
+    need_non_xml_keys_added();
+
+    if (_imp->eapi->supported())
+    {
+        std::shared_ptr<const MetadataXML> m(MetadataXMLPool::get_instance()->metadata_if_exists(
+                    _imp->fs_location->parse_value().dirname() / "metadata.xml"));
+        if (m)
+        {
+            if (! m->long_description().empty())
+                add_metadata_key(_imp->long_description = std::make_shared<LiteralMetadataValueKey<std::string>>("long_description",
+                                "Long Description", mkt_normal, m->long_description()));
+            if (! m->herds()->empty())
+                add_metadata_key(std::make_shared<LiteralMetadataStringSequenceKey>("herds", "Herds", mkt_normal, m->herds()));
+            if (! m->maintainers()->empty())
+                add_metadata_key(std::make_shared<LiteralMetadataStringSequenceKey>("maintainers", "Maintainers", mkt_normal, m->maintainers()));
+        }
+    }
+}
+
+void
+EbuildID::need_keys_added() const
+{
+    Lock l(_imp->mutex);
+
+    need_non_xml_keys_added();
+    need_xml_keys_added();
+}
+
+const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> >
+EbuildID::choice_descriptions() const
+{
+    std::shared_ptr<const MetadataXML> m(MetadataXMLPool::get_instance()->metadata_if_exists(
+                _imp->fs_location->parse_value().dirname() / "metadata.xml"));
+    if (m)
+        return m->uses();
+    else
+        return make_null_shared_ptr();
 }
 
 namespace
@@ -682,7 +720,7 @@ EbuildID::eapi() const
     if (_imp->eapi)
         return _imp->eapi;
 
-    need_keys_added();
+    need_non_xml_keys_added();
 
     if (! _imp->eapi)
         throw InternalError(PALUDIS_HERE, "_imp->eapi still not set");
@@ -693,140 +731,140 @@ EbuildID::eapi() const
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 EbuildID::keywords_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->keywords;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::raw_iuse_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->raw_iuse;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::raw_iuse_effective_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->raw_iuse_effective;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EbuildID::raw_myoptions_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->raw_myoptions;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<RequiredUseSpecTree> >
 EbuildID::required_use_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->required_use;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::raw_use_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->raw_use;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::raw_use_expand_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->raw_use_expand;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::raw_use_expand_hidden_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->raw_use_expand_hidden;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::behaviours_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->behaviours;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> >
 EbuildID::license_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->license;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EbuildID::dependencies_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->dependencies;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EbuildID::build_dependencies_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->build_dependencies;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EbuildID::run_dependencies_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->run_dependencies;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 EbuildID::post_dependencies_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->post_dependencies;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EbuildID::restrict_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->restrictions;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EbuildID::properties_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->properties;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 EbuildID::fetches_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->src_uri;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 EbuildID::homepage_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->homepage;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
 EbuildID::short_description_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->short_description;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
 EbuildID::long_description_key() const
 {
-    need_keys_added();
+    need_xml_keys_added();
     return _imp->long_description;
 }
 
@@ -847,7 +885,7 @@ EbuildID::from_repositories_key() const
 {
     if (might_be_binary())
     {
-        need_keys_added();
+        need_non_xml_keys_added();
         return _imp->generated_from;
     }
     else
@@ -1307,77 +1345,77 @@ EbuildID::perform_action(Action & a) const
 const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EbuildID::remote_ids_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->remote_ids;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> >
 EbuildID::bugs_to_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->bugs_to;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 EbuildID::upstream_changelog_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->upstream_changelog;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 EbuildID::upstream_documentation_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->upstream_documentation;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 EbuildID::upstream_release_notes_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->upstream_release_notes;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EbuildID::generated_from_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->generated_from;
 }
 
 const std::shared_ptr<const MetadataTimeKey>
 EbuildID::generated_time_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->generated_time;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
 EbuildID::generated_using_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->generated_using;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >
 EbuildID::choices_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->choices;
 }
 
 const std::shared_ptr<const MetadataValueKey<SlotName> >
 EbuildID::slot_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->slot;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
 EbuildID::scm_revision_key() const
 {
-    need_keys_added();
+    need_non_xml_keys_added();
     return _imp->scm_revision;
 }
 

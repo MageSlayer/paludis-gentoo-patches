@@ -41,9 +41,14 @@ namespace paludis
 
             protected:
                 virtual void need_keys_added() const;
+                void need_non_xml_keys_added() const;
+                void need_xml_keys_added() const;
+
                 virtual void need_masks_added() const;
 
                 void need_behaviours() const;
+
+                const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > choice_descriptions() const;
 
             public:
                 EbuildID(const QualifiedPackageName &, const VersionSpec &,

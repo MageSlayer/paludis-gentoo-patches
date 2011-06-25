@@ -41,7 +41,7 @@ namespace paludis
                 Pimp<EChoicesKey> _imp;
 
                 void populate_iuse(const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > &) const;
-                void populate_myoptions(const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > &) const;
+                void populate_myoptions() const;
 
             public:
                 EChoicesKey(

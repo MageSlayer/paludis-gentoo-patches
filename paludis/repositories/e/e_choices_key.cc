@@ -261,8 +261,6 @@ EChoicesKey::parse_value() const
     if (_imp->value)
         return _imp->value;
 
-    auto descriptions(_imp->descriptions_function());
-
     Context context("When making Choices key for '" + stringify(*_imp->id) + "':");
 
     _imp->value = std::make_shared<Choices>();
@@ -270,15 +268,18 @@ EChoicesKey::parse_value() const
         return _imp->value;
 
     if (_imp->id->raw_myoptions_key())
-        populate_myoptions(descriptions);
+        populate_myoptions();
     else
+    {
+        auto descriptions(_imp->descriptions_function());
         populate_iuse(descriptions);
+    }
 
     return _imp->value;
 }
 
 void
-EChoicesKey::populate_myoptions(const std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > & d) const
+EChoicesKey::populate_myoptions() const
 {
     Context local_context("When using raw_myoptions_key to populate choices:");
 
