@@ -41,12 +41,6 @@ namespace paludis
         typedef Name<struct name_default_profile_layout> default_profile_layout;
         typedef Name<struct name_default_write_cache> default_write_cache;
         typedef Name<struct name_news_directory> news_directory;
-        typedef Name<struct name_qa_category_dir_checks> qa_category_dir_checks;
-        typedef Name<struct name_qa_eclass_file_contents_checks> qa_eclass_file_contents_checks;
-        typedef Name<struct name_qa_package_dir_checks> qa_package_dir_checks;
-        typedef Name<struct name_qa_package_id_checks> qa_package_id_checks;
-        typedef Name<struct name_qa_package_id_file_contents_checks> qa_package_id_file_contents_checks;
-        typedef Name<struct name_qa_tree_checks> qa_tree_checks;
     }
 
     namespace erepository
@@ -63,12 +57,6 @@ namespace paludis
             NamedValue<n::default_profile_layout, std::string> default_profile_layout;
             NamedValue<n::default_write_cache, std::string> default_write_cache;
             NamedValue<n::news_directory, FSPath> news_directory;
-            NamedValue<n::qa_category_dir_checks, std::shared_ptr<const Set<std::string> > > qa_category_dir_checks;
-            NamedValue<n::qa_eclass_file_contents_checks, std::shared_ptr<const Set<std::string> > > qa_eclass_file_contents_checks;
-            NamedValue<n::qa_package_dir_checks, std::shared_ptr<const Set<std::string> > > qa_package_dir_checks;
-            NamedValue<n::qa_package_id_checks, std::shared_ptr<const Set<std::string> > > qa_package_id_checks;
-            NamedValue<n::qa_package_id_file_contents_checks, std::shared_ptr<const Set<std::string> > > qa_package_id_file_contents_checks;
-            NamedValue<n::qa_tree_checks, std::shared_ptr<const Set<std::string> > > qa_tree_checks;
         };
 
         typedef ExtraDistributionData<EDistribution> EExtraDistributionData;
