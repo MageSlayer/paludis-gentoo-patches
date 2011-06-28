@@ -63,12 +63,12 @@ namespace
         }
 
         args::ArgsGroup g_owner_options;
-        args::EnumArg a_match;
+        args::EnumArg a_type;
         args::SwitchArg a_dereference;
 
         OwnerCommandLine() :
             g_owner_options(main_options_section(), "Owner options", "Alter how the search is performed."),
-            a_match(&g_owner_options, "match", 'm', "Which match algorithm to use",
+            a_type(&g_owner_options, "type", 't', "Which type of match algorithm to use",
                     args::EnumArg::EnumArgOptions
                     ("auto",          'a', "If pattern starts with a /, full; if it contains a /, partial; otherwise, basename")
                     ("basename",      'b', "Basename match")
@@ -78,7 +78,7 @@ namespace
             a_dereference(&g_owner_options, "dereference", 'd', "If the pattern is a path that exists and is a symbolic link, "
                     "dereference it recursively, and then search for the real path.", true)
         {
-            add_usage_line("[ --match algorithm ] pattern");
+            add_usage_line("[ --type algorithm ] pattern");
         }
     };
 
@@ -106,7 +106,7 @@ OwnerCommand::run(
     if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) != 1)
         throw args::DoHelp("owner takes exactly one parameter");
 
-    return owner_common(env, cmdline.a_match.argument(), *cmdline.begin_parameters(),
+    return owner_common(env, cmdline.a_type.argument(), *cmdline.begin_parameters(),
             cmdline.a_dereference.specified(), &format_id);
 }
 

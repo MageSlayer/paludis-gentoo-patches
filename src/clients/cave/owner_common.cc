@@ -60,7 +60,7 @@ namespace
 int
 paludis::cave::owner_common(
         const std::shared_ptr<Environment> & env,
-        const std::string & match,
+        const std::string & type,
         const std::string & q,
         const bool dereference,
         const std::function<void (const std::shared_ptr<const PackageID> &)> & callback)
@@ -83,11 +83,11 @@ paludis::cave::owner_common(
     if (query.length() >= 2 && '/' == query.at(query.length() - 1))
         query.erase(query.length() - 1);
 
-    if ("full" == match)
+    if ("full" == type)
         handler = handle_full;
-    else if ("basename" == match)
+    else if ("basename" == type)
         handler = handle_basename;
-    else if ("partial" == match)
+    else if ("partial" == type)
         handler = handle_partial;
     else
     {

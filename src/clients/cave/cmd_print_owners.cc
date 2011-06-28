@@ -52,11 +52,11 @@ namespace
         }
 
         args::ArgsGroup g_owner_options;
-        args::EnumArg a_match;
+        args::EnumArg a_type;
 
         PrintOwnersCommandLine() :
             g_owner_options(main_options_section(), "Owner options", "Alter how the search is performed."),
-            a_match(&g_owner_options, "match", 'm', "Which match algorithm to use",
+            a_type(&g_owner_options, "type", 't', "Which type of match algorithm to use",
                     args::EnumArg::EnumArgOptions
                     ("auto",          "If pattern starts with a /, full; if it contains a /, partial; otherwise, basename")
                     ("basename",      "Basename match")
@@ -64,7 +64,7 @@ namespace
                     ("partial",       "Partial match"),
                     "auto")
         {
-            add_usage_line("[ --match algorithm ] pattern");
+            add_usage_line("[ --type algorithm ] pattern");
         }
     };
 
@@ -92,7 +92,7 @@ PrintOwnersCommand::run(
     if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) != 1)
         throw args::DoHelp("print-owners takes exactly one parameter");
 
-    return owner_common(env, cmdline.a_match.argument(), *cmdline.begin_parameters(), false, &print_package_id);
+    return owner_common(env, cmdline.a_type.argument(), *cmdline.begin_parameters(), false, &print_package_id);
 }
 
 std::shared_ptr<args::ArgsHandler>
