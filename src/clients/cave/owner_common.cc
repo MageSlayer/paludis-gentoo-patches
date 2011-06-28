@@ -61,6 +61,7 @@ int
 paludis::cave::owner_common(
         const std::shared_ptr<Environment> & env,
         const std::string & type,
+        const Filter & matching,
         const std::string & q,
         const bool dereference,
         const std::function<void (const std::shared_ptr<const PackageID> &)> & callback)
@@ -100,7 +101,7 @@ paludis::cave::owner_common(
     }
 
     std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(generator::All() |
-                filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
+                filter::InstalledAtRoot(env->preferred_root_key()->parse_value()) | matching )]);
 
     for (PackageIDSequence::ConstIterator p(ids->begin()), p_end(ids->end()); p != p_end; ++p)
     {

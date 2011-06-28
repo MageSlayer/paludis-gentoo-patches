@@ -27,7 +27,11 @@
 #include <paludis/action.hh>
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/filter.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/stringify.hh>
 
@@ -65,6 +69,7 @@ namespace
         args::ArgsGroup g_owner_options;
         args::EnumArg a_type;
         args::SwitchArg a_dereference;
+        args::StringSetArg a_matching;
 
         OwnerCommandLine() :
             g_owner_options(main_options_section(), "Owner options", "Alter how the search is performed."),
@@ -76,9 +81,12 @@ namespace
                     ("partial",       'p', "Partial match"),
                     "auto"),
             a_dereference(&g_owner_options, "dereference", 'd', "If the pattern is a path that exists and is a symbolic link, "
-                    "dereference it recursively, and then search for the real path.", true)
+                    "dereference it recursively, and then search for the real path.", true),
+            a_matching(&g_owner_options, "matching", 'm', "Show only IDs matching this spec. If specified multiple "
+                    "times, only IDs matching every spec are selected.",
+                    args::StringSetArg::StringSetArgOptions())
         {
-            add_usage_line("[ --type algorithm ] pattern");
+            add_usage_line("[ --type algorithm ] [ --matching spec ] pattern");
         }
     };
 
@@ -106,8 +114,20 @@ OwnerCommand::run(
     if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) != 1)
         throw args::DoHelp("owner takes exactly one parameter");
 
-    return owner_common(env, cmdline.a_type.argument(), *cmdline.begin_parameters(),
-            cmdline.a_dereference.specified(), &format_id);
+    Filter matches((filter::All()));
+    if (cmdline.a_matching.specified())
+    {
+        for (args::StringSetArg::ConstIterator m(cmdline.a_matching.begin_args()),
+                m_end(cmdline.a_matching.end_args()) ;
+                m != m_end ; ++m)
+        {
+            PackageDepSpec s(parse_user_package_dep_spec(*m, env.get(), { updso_allow_wildcards }));
+            matches = filter::And(matches, filter::Matches(s, make_null_shared_ptr(), { }));
+        }
+    }
+
+    return owner_common(env, cmdline.a_type.argument(), matches,
+            *cmdline.begin_parameters(), cmdline.a_dereference.specified(), &format_id);
 }
 
 std::shared_ptr<args::ArgsHandler>

@@ -23,6 +23,10 @@
 #include "owner_common.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/filter.hh>
+#include <paludis/user_dep_spec.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <iostream>
 #include <cstdlib>
 
@@ -53,6 +57,7 @@ namespace
 
         args::ArgsGroup g_owner_options;
         args::EnumArg a_type;
+        args::StringSetArg a_matching;
 
         PrintOwnersCommandLine() :
             g_owner_options(main_options_section(), "Owner options", "Alter how the search is performed."),
@@ -62,9 +67,12 @@ namespace
                     ("basename",      "Basename match")
                     ("full",          "Full match")
                     ("partial",       "Partial match"),
-                    "auto")
+                    "auto"),
+            a_matching(&g_owner_options, "matching", 'm', "Show only IDs matching this spec. If specified multiple "
+                    "times, only IDs matching every spec are selected.",
+                    args::StringSetArg::StringSetArgOptions())
         {
-            add_usage_line("[ --type algorithm ] pattern");
+            add_usage_line("[ --type algorithm ] [ --matching spec ] pattern");
         }
     };
 
@@ -92,7 +100,20 @@ PrintOwnersCommand::run(
     if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) != 1)
         throw args::DoHelp("print-owners takes exactly one parameter");
 
-    return owner_common(env, cmdline.a_type.argument(), *cmdline.begin_parameters(), false, &print_package_id);
+    Filter matches((filter::All()));
+    if (cmdline.a_matching.specified())
+    {
+        for (args::StringSetArg::ConstIterator m(cmdline.a_matching.begin_args()),
+                m_end(cmdline.a_matching.end_args()) ;
+                m != m_end ; ++m)
+        {
+            PackageDepSpec s(parse_user_package_dep_spec(*m, env.get(), { updso_allow_wildcards }));
+            matches = filter::And(matches, filter::Matches(s, make_null_shared_ptr(), { }));
+        }
+    }
+
+    return owner_common(env, cmdline.a_type.argument(), matches,
+            *cmdline.begin_parameters(), false, &print_package_id);
 }
 
 std::shared_ptr<args::ArgsHandler>

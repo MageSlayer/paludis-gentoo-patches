@@ -24,6 +24,7 @@
 
 #include <paludis/package_id-fwd.hh>
 #include <paludis/environment-fwd.hh>
+#include <paludis/filter.hh>
 #include <string>
 #include <memory>
 #include <functional>
@@ -34,7 +35,8 @@ namespace paludis
     {
         int owner_common(
                 const std::shared_ptr<Environment> & env,
-                const std::string & match,
+                const std::string & type,
+                const Filter & matching,
                 const std::string & query,
                 const bool dereference,
                 const std::function<void (const std::shared_ptr<const PackageID> &)> &);
