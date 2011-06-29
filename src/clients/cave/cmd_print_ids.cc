@@ -18,7 +18,7 @@
  */
 
 #include "cmd_print_ids.hh"
-#include "format_string.hh"
+#include "format_package_id.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/name.hh>
@@ -238,24 +238,6 @@ namespace
         {
         }
     };
-
-    std::string format_id(
-            const PrintIDsCommandLine & c,
-            const std::shared_ptr<const PackageID> & i)
-    {
-        std::shared_ptr<Map<char, std::string> > m(std::make_shared<Map<char, std::string>>());
-        m->insert('c', stringify(i->name().category()));
-        m->insert('p', stringify(i->name().package()));
-        m->insert('v', stringify(i->version()));
-        m->insert('s', i->slot_key() ? stringify(i->slot_key()->parse_value()) : "");
-        m->insert(':', i->slot_key() ? ":" : "");
-        m->insert('r', stringify(i->repository_name()));
-        m->insert('F', i->canonical_form(idcf_full));
-        m->insert('V', i->canonical_form(idcf_version));
-        m->insert('W', i->canonical_form(idcf_no_version));
-        m->insert('N', i->canonical_form(idcf_no_name));
-        return format_string(c.a_format.argument(), m);
-    }
 }
 
 int
@@ -328,7 +310,7 @@ PrintIDsCommand::run(
     const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(fg)]);
     for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
             i != i_end ; ++i)
-        cout << format_id(cmdline, *i);
+        cout << format_package_id(*i, cmdline.a_format.argument());
 
     return EXIT_SUCCESS;
 }

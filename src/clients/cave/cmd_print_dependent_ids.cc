@@ -18,7 +18,7 @@
  */
 
 #include "cmd_print_dependent_ids.hh"
-#include "format_string.hh"
+#include "format_package_id.hh"
 #include "parse_spec_with_nice_error.hh"
 #include "exceptions.hh"
 #include <paludis/args/args.hh>
@@ -90,24 +90,6 @@ namespace
             a_format.set_argument("%F\\n");
         }
     };
-
-    std::string format_id(
-            const PrintDependentIDsCommandLine & c,
-            const std::shared_ptr<const PackageID> & i)
-    {
-        std::shared_ptr<Map<char, std::string> > m(std::make_shared<Map<char, std::string>>());
-        m->insert('c', stringify(i->name().category()));
-        m->insert('p', stringify(i->name().package()));
-        m->insert('v', stringify(i->version()));
-        m->insert('s', i->slot_key() ? stringify(i->slot_key()->parse_value()) : "");
-        m->insert(':', i->slot_key() ? ":" : "");
-        m->insert('r', stringify(i->repository_name()));
-        m->insert('F', i->canonical_form(idcf_full));
-        m->insert('V', i->canonical_form(idcf_version));
-        m->insert('W', i->canonical_form(idcf_no_version));
-        m->insert('N', i->canonical_form(idcf_no_name));
-        return format_string(c.a_format.argument(), m);
-    }
 }
 
 int
@@ -146,7 +128,7 @@ PrintDependentIDsCommand::run(
     auto dependents(resolver::collect_dependents(env.get(), *ids->begin(), installed_ids));
     for (auto i(dependents->begin()), i_end(dependents->end()) ;
             i != i_end ; ++i)
-        cout << format_id(cmdline, *i);
+        cout << format_package_id(*i, cmdline.a_format.argument());
 
     return dependents->empty() ? EXIT_FAILURE : EXIT_SUCCESS;
 }

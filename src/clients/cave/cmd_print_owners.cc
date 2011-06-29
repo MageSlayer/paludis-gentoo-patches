@@ -20,7 +20,7 @@
 
 #include "cmd_print_owners.hh"
 #include "command_command_line.hh"
-#include "format_string.hh"
+#include "format_package_id.hh"
 #include "owner_common.hh"
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
@@ -92,29 +92,11 @@ namespace
         }
     };
 
-    std::string format_id(
-            const std::string & format,
-            const std::shared_ptr<const PackageID> & i)
-    {
-        std::shared_ptr<Map<char, std::string> > m(std::make_shared<Map<char, std::string>>());
-        m->insert('c', stringify(i->name().category()));
-        m->insert('p', stringify(i->name().package()));
-        m->insert('v', stringify(i->version()));
-        m->insert('s', i->slot_key() ? stringify(i->slot_key()->parse_value()) : "");
-        m->insert(':', i->slot_key() ? ":" : "");
-        m->insert('r', stringify(i->repository_name()));
-        m->insert('F', i->canonical_form(idcf_full));
-        m->insert('V', i->canonical_form(idcf_version));
-        m->insert('W', i->canonical_form(idcf_no_version));
-        m->insert('N', i->canonical_form(idcf_no_name));
-        return format_string(format, m);
-    }
-
     void print_package_id(
             const std::string & format,
             const std::shared_ptr<const PackageID> & id)
     {
-        cout << format_id(format, id);
+        cout << format_package_id(id, format);
     }
 }
 
