@@ -292,5 +292,5 @@ const auto fs_display_errors = make_format_string_fetcher("display-resolution/di
     << "I encountered the following errors:\\n\\n";
 
 const auto fs_display_errors_untaken = make_format_string_fetcher("display-resolution/display_errors_untaken", 1)
-    << "I encountered the following errors for untaken packages:\\n\\n";
+    << "I encountered the following ignorable errors for untaken packages:\\n\\n";
 
