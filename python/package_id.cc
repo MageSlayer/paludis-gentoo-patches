@@ -26,6 +26,7 @@
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/action.hh>
+#include <paludis/dep_spec.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 
 using namespace paludis;
@@ -179,6 +180,12 @@ void expose_package_id()
         .def("choices_key", &PackageID::choices_key,
                 "The choices_key, if not None, indicates the package's choices."
             )
+
+        .def("uniquely_identifying_spec", &PackageID::uniquely_identifying_spec,
+                "A PackageDepSpec that uniquely identifies us.\n\n"
+                "When stringified, can be turned back into an equivalent unique "
+                "PackageDepSpec by using parse_user_package_dep_spec."
+                )
 
         .def("__eq__", &py_eq<PackageID>)
 

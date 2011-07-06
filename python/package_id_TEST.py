@@ -152,6 +152,9 @@ class TestCase_01_PackageID(unittest.TestCase):
     def test_31_choices_key(self):
         self.assert_(isinstance(self.pid.choices_key().parse_value(), Choices))
 
+    def test_32_uniquely_identifying_spec(self):
+        self.assert_(isinstance(self.pid.uniquely_identifying_spec(), PackageDepSpec))
+
 
 if __name__ == "__main__":
     unittest.main()
