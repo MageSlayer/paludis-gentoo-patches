@@ -198,6 +198,10 @@ module Paludis
             b = pid_testrepo
             assert a.eql?(b)
         end
+
+        def test_uniquely_identifying_spec
+            assert_kind_of PackageDepSpec, pid_testrepo.uniquely_identifying_spec
+        end
     end
 
     class TestCase_ERepo < Test::Unit::TestCase

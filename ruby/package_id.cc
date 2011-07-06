@@ -80,6 +80,28 @@ namespace
         return Qnil;
     }
 
+    /*
+     * call-seq:
+     *     uniquely_identifying_spec -> PackageDepSpec
+     *
+     * Our name.
+     */
+    VALUE
+    package_id_uniquely_identifying_spec(VALUE self)
+    {
+        std::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageID>, self_ptr);
+        try
+        {
+            return package_dep_spec_to_value((*self_ptr)->uniquely_identifying_spec());
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
+        return Qnil;
+    }
 
     /*
      * call-seq:
@@ -535,6 +557,7 @@ namespace
                         &KeyValue<MetadataValueKey<SlotName>, &PackageID::slot_key>::fetch)), 0);
         rb_define_method(c_package_id, "behaviours_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataCollectionKey<Set<std::string> >, &PackageID::behaviours_key>::fetch)), 0);
+        rb_define_method(c_package_id, "uniquely_identifying_spec", RUBY_FUNC_CAST(&package_id_uniquely_identifying_spec), 0);
 
         /*
          * Document-module: Paludis::PackageIDCanonicalForm
