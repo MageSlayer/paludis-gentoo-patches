@@ -57,6 +57,10 @@ class TestCase_01_Environments(unittest.TestCase):
         self.assertRaises(NoSuchPackageError, self.e.fetch_unique_qualified_package_name, "bar",
                 Filter.SupportsUninstallAction())
 
+    def test_25_reduced(self):
+        self.assert_(self.e.reduced_uid() >= 0)
+        self.assert_(self.e.reduced_gid() >= 0)
+
 class TestCase_03_TestEnvironment(unittest.TestCase):
     def test_01_create(self):
         e = TestEnvironment()

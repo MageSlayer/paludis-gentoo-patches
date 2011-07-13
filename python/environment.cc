@@ -514,6 +514,16 @@ void expose_environment()
                 "Return true if the first repository is more important than the second."
             )
 
+        .def("reduced_uid", &Environment::reduced_uid,
+                "reduced_uid() -> int\n"
+                "User id to use when reduced privs are permissible."
+            )
+
+        .def("reduced_gid", &Environment::reduced_gid,
+                "reduced_gid() -> int\n"
+                "Group id to use when reduced privs are permissible."
+            )
+
         .add_property("repositories",
                 bp::range(&Environment::begin_repositories, &Environment::end_repositories),
                 "[ro] Iterable of Repository\n"
