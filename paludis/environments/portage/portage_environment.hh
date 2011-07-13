@@ -76,6 +76,9 @@ namespace paludis
             bool _add_string_to_world(const std::string &) const;
             bool _remove_string_from_world(const std::string &) const;
 
+            std::string reduced_username() const;
+            std::string reduced_groupname() const;
+
         protected:
             virtual void need_keys_added() const;
             virtual void populate_sets() const;

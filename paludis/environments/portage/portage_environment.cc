@@ -65,6 +65,11 @@
 #include <vector>
 #include <list>
 
+#include <ctype.h>
+#include <sys/types.h>
+#include <grp.h>
+#include <pwd.h>
+
 #include "config.h"
 
 using namespace paludis;
@@ -101,6 +106,11 @@ namespace paludis
 
         std::set<std::string> ignore_breaks_portage;
         bool ignore_all_breaks_portage;
+
+        mutable Mutex reduced_mutex;
+        bool userpriv_enabled;
+        mutable std::shared_ptr<uid_t> reduced_uid;
+        mutable std::shared_ptr<gid_t> reduced_gid;
 
         mutable Mutex hook_mutex;
         mutable bool done_hooks;
@@ -306,6 +316,12 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     /* accept keywords */
     tokenise_whitespace(_imp->vars->get("ACCEPT_KEYWORDS"),
             std::inserter(_imp->accept_keywords, _imp->accept_keywords.begin()));
+
+    /* FEATURES */
+    std::set<std::string> features;
+    tokenise_whitespace(_imp->vars->get("FEATURES"),
+            std::inserter(features, features.begin()));
+    _imp->userpriv_enabled = (features.find("userpriv") != features.end());
 
     /* files */
 
@@ -818,16 +834,75 @@ PortageEnvironment::mask_for_user(const std::shared_ptr<const PackageID> & d, co
     return std::shared_ptr<const Mask>();
 }
 
+std::string
+PortageEnvironment::reduced_username() const
+{
+    return getenv_with_default("PORTAGE_USERNAME", "portage");
+}
+
+std::string
+PortageEnvironment::reduced_groupname() const
+{
+    return getenv_with_default("PORTAGE_GRPNAME", "portage");
+}
+
 gid_t
 PortageEnvironment::reduced_gid() const
 {
-    return getgid();
+    gid_t g(getgid());
+    if (0 == g && _imp->userpriv_enabled)
+    {
+        Lock lock(_imp->reduced_mutex);
+
+        if (! _imp->reduced_gid)
+        {
+            struct group * p(getgrnam(reduced_groupname().c_str()));
+            if (! p)
+            {
+                Log::get_instance()->message("portage_environment.reduced_gid.unknown", ll_warning, lc_no_context)
+                    << "Couldn't determine gid for group '" << reduced_groupname() << "'";
+                _imp->reduced_gid = std::make_shared<gid_t>(getgid());
+            }
+            else
+                _imp->reduced_gid = std::make_shared<gid_t>(p->gr_gid);
+        }
+
+        return *_imp->reduced_gid;
+    }
+    else
+        return g;
 }
 
 uid_t
 PortageEnvironment::reduced_uid() const
 {
-    return getuid();
+    uid_t u(getuid());
+    if (0 == u && _imp->userpriv_enabled)
+    {
+        Lock lock(_imp->reduced_mutex);
+
+        if (! _imp->reduced_uid)
+        {
+            Context context("When determining reduced UID:");
+
+            struct passwd * p(getpwnam(reduced_username().c_str()));
+            if (! p)
+            {
+                Log::get_instance()->message("paludis_environment.reduced_uid.unknown", ll_warning, lc_no_context)
+                    << "Couldn't determine uid for user '" << reduced_username() << "'";
+                _imp->reduced_uid = std::make_shared<uid_t>(getuid());
+            }
+            else
+                _imp->reduced_uid = std::make_shared<uid_t>(p->pw_uid);
+
+            Log::get_instance()->message("portage_environment.reduced_uid.value", ll_debug, lc_context)
+                << "Reduced uid is '" << *_imp->reduced_uid << "'";
+        }
+
+        return *_imp->reduced_uid;
+    }
+    else
+        return u;
 }
 
 bool
