@@ -312,6 +312,8 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     _load_atom_file(_imp->conf_dir / "portage" / "package.use", std::back_inserter(_imp->package_use), "", true);
     _load_atom_file(_imp->conf_dir / "portage" / "package.keywords", std::back_inserter(_imp->package_keywords),
             "~" + _imp->vars->get("ARCH"), false);
+    _load_atom_file(_imp->conf_dir / "portage" / "package.accept_keywords", std::back_inserter(_imp->package_keywords),
+            "~" + _imp->vars->get("ARCH"), false);
 
     _load_lined_file(_imp->conf_dir / "portage" / "package.mask", std::back_inserter(_imp->package_mask));
     _load_lined_file(_imp->conf_dir / "portage" / "package.unmask", std::back_inserter(_imp->package_unmask));
