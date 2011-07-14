@@ -53,6 +53,11 @@ namespace paludis
                 EInstalledRepository(const EInstalledRepositoryParams &, const RepositoryName &, const RepositoryCapabilities &);
                 ~EInstalledRepository();
 
+                std::string snoop_variable_from_environment_file(
+                        const FSPath &,
+                        const std::string & var) const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
             public:
                 /* RepositoryEnvironmentVariableInterface */
 

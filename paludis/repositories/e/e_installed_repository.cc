@@ -41,6 +41,7 @@
 #include <paludis/util/process.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/is_file_with_extension.hh>
 
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
@@ -200,20 +201,32 @@ EInstalledRepository::get_environment_variable(
     }
     else if ((ver_dir / "environment.bz2").stat().is_regular_file_or_symlink_to_regular_file())
     {
-        std::stringstream p;
-        Process env_process(ProcessCommand({"bash", "-c", "( bunzip2 < " + stringify(ver_dir / "environment.bz2" ) +
-                    " ; echo echo \\$" + var + " ) | bash -O extglob 2>/dev/null"}));
-        env_process.capture_stdout(p);
-        int exit_status(env_process.run().wait());
-        std::string result(strip_trailing_string(std::string(
-                        (std::istreambuf_iterator<char>(p)),
-                        std::istreambuf_iterator<char>()), "\n"));
-        if (0 != exit_status)
-            throw ActionFailedError("Could not load environment.bz2");
-        return result;
+        return snoop_variable_from_environment_file(ver_dir / "environment.bz2", var);
     }
     else
         throw ActionFailedError("Could not get variable '" + var + "' for '" + stringify(*id) + "'");
+}
+
+std::string
+EInstalledRepository::snoop_variable_from_environment_file(
+        const FSPath & f,
+        const std::string & var) const
+{
+    std::string x("cat");
+    if (is_file_with_extension(f, ".bz2", { }))
+        x = "bunzip2";
+
+    std::stringstream p;
+    Process env_process(ProcessCommand({"bash", "-c", "( " + x + " < " + stringify(f) +
+                " ; echo echo \\$" + var + " ) | bash -O extglob 2>/dev/null"}));
+    env_process.capture_stdout(p);
+    int exit_status(env_process.run().wait());
+    std::string result(strip_trailing_string(std::string(
+                    (std::istreambuf_iterator<char>(p)),
+                    std::istreambuf_iterator<char>()), "\n"));
+    if (0 != exit_status)
+        throw ActionFailedError("Could not load environment.bz2");
+    return result;
 }
 
 void
