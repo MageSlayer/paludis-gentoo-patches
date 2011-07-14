@@ -638,6 +638,20 @@ VDBRepository::merge(const MergeParams & m)
         {
         }
     }
+    else
+    {
+        /* nasty: make CONFIG_PROTECT etc available for hooks */
+        try
+        {
+            config_protect = snoop_variable_from_environment_file(m.environment_file(), "CONFIG_PROTECT");
+            config_protect_mask = snoop_variable_from_environment_file(m.environment_file(), "CONFIG_PROTECT_MASK");
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message("e.exndbam_repository.config_protect_unfetchable", ll_warning, lc_context)
+                << "Could not load CONFIG_PROTECT for merge checks due to exception '" + e.message() + "' (" + e.what() + ")";
+        }
+    }
 
     FSPath vdb_dir(_imp->params.location());
     vdb_dir /= stringify(m.package_id()->name().category());

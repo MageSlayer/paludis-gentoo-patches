@@ -413,6 +413,20 @@ ExndbamRepository::merge(const MergeParams & m)
         {
         }
     }
+    else
+    {
+        /* nasty: make CONFIG_PROTECT etc available for hooks */
+        try
+        {
+            config_protect = snoop_variable_from_environment_file(m.environment_file(), "CONFIG_PROTECT");
+            config_protect_mask = snoop_variable_from_environment_file(m.environment_file(), "CONFIG_PROTECT_MASK");
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message("e.exndbam_repository.config_protect_unfetchable", ll_warning, lc_context)
+                << "Could not load CONFIG_PROTECT for merge checks due to exception '" + e.message() + "' (" + e.what() + ")";
+        }
+    }
 
     bool fix_mtimes(std::static_pointer_cast<const ERepositoryID>(
                 m.package_id())->eapi()->supported()->ebuild_options()->fix_mtimes());
