@@ -27,29 +27,65 @@
 
 namespace paludis
 {
+    /**
+     * A SlotRequirement represents a PackageDepSpec's slot
+     * requirement, such as <code>:3</code>, <code>:*</code>,
+     * <code>:=</code> or <code>:=3</code>.
+     *
+     * \ingroup g_dep_spec
+     */
     class PALUDIS_VISIBLE SlotRequirement :
         public virtual DeclareAbstractAcceptMethods<SlotRequirement, MakeTypeList<
             SlotExactRequirement, SlotAnyLockedRequirement, SlotAnyUnlockedRequirement>::Type>
     {
         public:
+            /**
+             * String representation, including the leading colon. Not suitable
+             * for parsing.
+             */
             virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
+    /**
+     * A SlotExactRequirement is a SlotRequirement for exact
+     * slot requirements, such as <code>:3</code> or <code>:=3</code>.
+     *
+     * \ingroup g_dep_spec
+     */
     class PALUDIS_VISIBLE SlotExactRequirement :
         public SlotRequirement,
         public ImplementAcceptMethods<SlotRequirement, SlotExactRequirement>
     {
         public:
+            /**
+             * The slot in question.
+             */
             virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * If true, indicates we are a <code>:=3</code> style dependency.
+             */
             virtual bool from_any_locked() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
+    /**
+     * A SlotAnyLockedRequirement is a SlotRequirement for
+     * <code>:=</code> slot requirements.
+     *
+     * \ingroup g_dep_spec
+     */
     class PALUDIS_VISIBLE SlotAnyLockedRequirement :
         public SlotRequirement,
         public ImplementAcceptMethods<SlotRequirement, SlotAnyLockedRequirement>
     {
     };
 
+    /**
+     * A SlotAnyLockedRequirement is a SlotRequirement for
+     * <code>:*</code> slot requirements.
+     *
+     * \ingroup g_dep_spec
+     */
     class PALUDIS_VISIBLE SlotAnyUnlockedRequirement :
         public SlotRequirement,
         public ImplementAcceptMethods<SlotRequirement, SlotAnyUnlockedRequirement>
