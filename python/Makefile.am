@@ -72,6 +72,7 @@ IF_PYTHON_SOURCES = \
 	package_id.cc \
 	repository.cc \
 	selection.cc \
+	slot_requirement.cc \
 	version_operator.cc \
 	version_requirements.cc \
 	version_spec.cc

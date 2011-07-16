@@ -1215,12 +1215,10 @@ void expose_dep_spec()
                 "Version requirements mode."
                 )
 
-#if 0
-        .add_property("slot", &PythonPackageDepSpec::slot_ptr,
-                "[ro] SlotName\n"
+        .add_property("slot_requirement", &PythonPackageDepSpec::slot_requirement_ptr,
+                "[ro] SlotRequirement\n"
                 "Slot name (may be None)."
                 )
-#endif
 
         .add_property("in_repository", &PythonPackageDepSpec::in_repository_ptr,
                 "[ro] RepositoryName\n"
