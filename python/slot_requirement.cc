@@ -72,6 +72,9 @@ namespace
         static PyObject *
         convert(const std::shared_ptr<const SlotRequirement> & m)
         {
+            if (! m)
+                return Py_None;
+
             SlotRequirementSptrToPythonVisitor v(m);
             m->accept(v);
             return bp::incref(v.obj.ptr());

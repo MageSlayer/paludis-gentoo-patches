@@ -63,6 +63,8 @@ class TestCase_1_DepSpecs(unittest.TestCase):
         self.assert_(isinstance(self.pds.slot_requirement, SlotExactRequirement))
         self.assertEqual(str(self.pds.slot_requirement.slot), "100")
 
+        self.assertEqual(self.pds2.slot_requirement, None)
+
     def test_05_package(self):
         self.get_depspecs()
         self.assertEqual(str(self.pds.package), "foo/bar")
