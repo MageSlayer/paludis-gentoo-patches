@@ -338,7 +338,7 @@ _cave_cmd_owner()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '(--match -m)'{--match,-m}'[Which match algorithm to use]:match algorithm:((auto\:"If pattern starts with a \/, full; if it contains a \/, partial; otherwise, basename"
+    '(--type -t)'{--type,-t}'[Which type of match algorithm to use]:match algorithm:((auto\:"If pattern starts with a \/, full; if it contains a \/, partial; otherwise, basename"
                                                                                    a\:"If pattern starts with a \/, full; if it contains a \/, partial; otherwise, basename"
                                                                             basename\:"Basename match"
                                                                                    b\:"Basename match"
@@ -347,6 +347,7 @@ _cave_cmd_owner()
                                                                              partial\:"Partial match"
                                                                                    p\:"Partial match"))' \
     '(--dereference -d)'{--dereference,-d}'[If the pattern is a path that exists and is a symbolic link, dereference it recursively, and then search for the real path]' \
+    '*'{--matching,-m}'[Show only IDs matching this spec]:package spec: ' \
     '*:file:_files'
 }
 
@@ -564,10 +565,12 @@ _cave_cmd_print-owners()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '(--match -m)'{--match,-m}'[Which match algorithm to use]:match algorithm:((auto\:"If pattern starts with a \/, full; if it contains a \/, partial; otherwise, basename"
+    '(--type -t)'{--type,-t}'[Which type of match algorithm to use]:match algorithm:((auto\:"If pattern starts with a \/, full; if it contains a \/, partial; otherwise, basename"
                                                                                 basename\:"Basename match"
                                                                                 full\:"Full match"
                                                                                 partial\:"Partial match"))' \
+    '*'{--matching,-m}'[Show only IDs matching this spec]:package spec: ' \
+    '(--format -f)'{--format,-f}'[Select the output format]:output format: ' \
     '*:file:_files'
 }
 
@@ -679,9 +682,9 @@ _cave_resolve_arguments=(
     '*'{--uninstalls-may-break,-u}'[Permit uninstalls that might break packages matching the specified specification]:Spec: ' \
     '*'{--remove-if-dependent,-r}'[Remove dependent packages that might be broken by other changes if those packages match the specified specification]:Spec: ' \
     '*'{--less-restrictive-remove-blockers,-l}'[Use less restrictive blockers for packages matching the supplied specification if that package is to be removed by --remove-if-dependent]:Spec: ' \
-    '*--reinstall-dependents-of[Force any installed package that is dependent upon any installed package matching the supplied spec to be reinstalled]:Spec: ' \
-    '(--keep-targets -K)'{--keep-targets,-K}'[Select whether to keep target packages]:When:((auto a never n if-transient t if-same s if-same-version v if-possible p))' \
-    '(--keep -k)'{--keep,-k}'[Select whether to keep installed packages that are not targets]:When:((never n if-transient t if-same s if-same-version v if-possible p))' \
+    '*'{--reinstall-dependents-of,-D}'[Force any installed package that is dependent upon any installed package matching the supplied spec to be reinstalled]:Spec: ' \
+    '(--keep-targets -K)'{--keep-targets,-K}'[Select whether to keep target packages]:When:((auto a never n if-transient t if-same-metadata m if-same s if-same-version v if-possible p))' \
+    '(--keep -k)'{--keep,-k}'[Select whether to keep installed packages that are not targets]:When:((never n if-transient t if-same-metadata m if-same s if-same-version v if-possible p))' \
     '(--reinstall-scm -R)'{--reinstall-scm,-R}'[Select whether to reinstall SCM packages that would otherwise be kept]:When:((always a daily d weekly w never n))' \
     '*'{--with,-w}'[Never keep installed packages with the supplied package name]:Spec: ' \
     '*'{--without,-W}'[Keep installed packages with the supplied package name if possible]:Spec: ' \
@@ -699,10 +702,11 @@ _cave_resolve_arguments=(
     '*'{--ignore-from,-I}'[Discard all suggestions made by any package matching the supplied package specification]:Spec: ' \
     '*'{--favour,-F}'[If there is a choice, favour the specified package names]:Spec: ' \
     '*'{--avoid,-A}'[If there is a choice, avoid the specified package names]:Spec: ' \
+    '*'{--preset,-p}'[Preset a given constraint]:Spec: ' \
+    '*'{--hide,-H}'[When selecting origin ID candidates, pretend that any ID matching the specified spec does not exist]:Spec: ' \
     '*'{--not-usable,-N}'[Consider installed packages matching the supplied specification as being unusable when breaking dependency cycles]' \
     '*'{--early,-E}'[When given a collection of otherwise equally desirable packages to order, order packages matching the supplied spec first]' \
     '*'{--late,-L}'[When given a collection of otherwise equally desirable packages to order, order packages matching the supplied spec last]' \
-    '*'{--preset,-p}'[Preset a given constraint]:Spec: ' \
     '(--make -m)'{--make,-m}'[Specify what to do with targets]:Make:((auto a install i binaries b chroot c))' \
     '(--make-dependencies -M)'{--make-dependencies,-M}'[Specify what to do with dependencies of targets]:When:((auto runtime r all a none n))' \
     '*'{--via-binary,-b}'[When building a package matching the supplied spec, create a binary package and use that for the install]' \
