@@ -21,6 +21,8 @@
 #include <paludis/resolver/job.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/serialise-impl.hh>
 #include <vector>
 
@@ -86,6 +88,8 @@ template <typename Job_>
 typename JobList<Job_>::ConstIterator
 JobList<Job_>::fetch(const JobNumber n) const
 {
+    if (n < 0 || n >= JobNumber(_imp->list.size()))
+        throw InternalError(PALUDIS_HERE, "n is " + stringify(n) + " but size is " + stringify(_imp->list.size()));
     return ConstIterator(_imp->list.begin() + n);
 }
 
