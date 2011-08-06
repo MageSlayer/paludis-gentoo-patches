@@ -93,7 +93,7 @@ RequiredUseVerifier::matches(const std::string & s)
     }
 
     auto c(_imp->id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix(s)));
-    if (! c)
+    if ((! c) || (co_special == c->origin()))
     {
         Log::get_instance()->message("e.required_use.no_choice", ll_warning, lc_context)
             << "ID '" << *_imp->id << "' has no choice named '" << s << "'', so cannot check that required use constraint '" << s << "' matches";

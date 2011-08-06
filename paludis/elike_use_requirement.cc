@@ -65,7 +65,12 @@ namespace
         auto choices(id->choices_key()->parse_value());
         auto v(choices->find_by_name_with_prefix(f));
         if (v)
+        {
+            if (co_special == v->origin())
+                Log::get_instance()->message("elike_use_requirement.query", ll_warning, lc_context) <<
+                    "ID '" << *id << "' flag '" << f << "' should not be used as a conditional";
             return v->enabled();
+        }
 
         if (default_value.is_indeterminate() && ! choices->has_matching_contains_every_value_prefix(f) && options[euro_missing_is_qa])
             Log::get_instance()->message("elike_use_requirement.query", ll_qa, lc_context) <<
