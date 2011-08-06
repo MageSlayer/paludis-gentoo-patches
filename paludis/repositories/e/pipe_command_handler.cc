@@ -447,7 +447,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     return "EOPTIONQ ID " + stringify(*package_id) + " has no choice named '" + stringify(name) + "'";
                 }
 
-                if (is_special_elike_choice_value(value))
+                if (co_explicit != value->origin())
                     return "Ecannot query option '" + stringify(name) + "' for ID " + stringify(*package_id);
 
                 if (value->enabled())

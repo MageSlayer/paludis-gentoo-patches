@@ -41,8 +41,6 @@ namespace paludis
     const std::string canonical_build_options_human_name() PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 
 #include <paludis/elike_choices-se.hh>
-
-    bool is_special_elike_choice_value(const std::shared_ptr<const ChoiceValue> &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 }
 
 #endif
