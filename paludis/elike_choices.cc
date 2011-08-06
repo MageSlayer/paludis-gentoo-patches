@@ -28,6 +28,7 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/util/map.hh>
+#include <set>
 #include <limits>
 #include <istream>
 #include <ostream>
@@ -716,3 +717,21 @@ ELikeSymbolsChoiceValue::should_compress(const std::string & v)
 
     throw InternalError(PALUDIS_HERE, "Unhandled ELikeSymbolsChoiceValueParameter");
 }
+
+bool
+paludis::is_special_elike_choice_value(
+        const std::shared_ptr<const ChoiceValue> & v)
+{
+    static const std::set<std::string> specials({
+            stringify(ELikeOptionalTestsChoiceValue::canonical_name_with_prefix()),
+            stringify(ELikeRecommendedTestsChoiceValue::canonical_name_with_prefix()),
+            stringify(ELikeExpensiveTestsChoiceValue::canonical_name_with_prefix()),
+            stringify(ELikeJobsChoiceValue::canonical_name_with_prefix()),
+            stringify(ELikeTraceChoiceValue::canonical_name_with_prefix()),
+            stringify(ELikePreserveWorkChoiceValue::canonical_name_with_prefix()),
+            stringify(ELikeSymbolsChoiceValue::canonical_name_with_prefix())
+            });
+
+    return specials.end() != specials.find(stringify(v->name_with_prefix()));
+}
+

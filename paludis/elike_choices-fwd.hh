@@ -22,6 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/choice-fwd.hh>
+#include <memory>
 #include <string>
 #include <iosfwd>
 
@@ -31,6 +32,7 @@ namespace paludis
     struct ELikeRecommendedTestsChoiceValue;
     struct ELikeExpensiveTestsChoiceValue;
     struct ELikeJobsChoiceValue;
+    struct ELikeTraceChoiceValue;
     struct ELikePreserveWorkChoiceValue;
     struct ELikeSymbolsChoiceValue;
 
@@ -40,6 +42,7 @@ namespace paludis
 
 #include <paludis/elike_choices-se.hh>
 
+    bool is_special_elike_choice_value(const std::shared_ptr<const ChoiceValue> &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 }
 
 #endif
