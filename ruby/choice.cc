@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,6 +30,7 @@ namespace
     static VALUE c_choice;
     static VALUE c_choices;
     static VALUE c_choice_value;
+    static VALUE c_choice_origin;
 
     /*
      * call-seq:
@@ -296,17 +297,6 @@ namespace
      */
     FAKE_RDOC_METHOD(choice_value_locked)
 
-    /*
-     * call-seq:
-     *     explicitly_listed? -> true or false
-     *
-     * Is this flag explicitly listed?
-     *
-     * Use this to avoid showing things like LINGUAS values that aren't listed
-     * in IUSE but that end up as a ChoiceValue anyway.
-     */
-    FAKE_RDOC_METHOD(choice_value_explicitly_listed)
-
     template <typename R_, R_ (ChoiceValue::* r_) () const>
     struct ChoiceValueBoolishMembers
     {
@@ -323,6 +313,22 @@ namespace
             }
         }
     };
+
+    /*
+     * call-seq:
+     *     origin? -> ChoiceOrigin
+     *
+     * Is this flag explicitly listed?
+     *
+     * Use this to avoid showing things like LINGUAS values that aren't listed
+     * in IUSE but that end up as a ChoiceValue anyway.
+     */
+    VALUE
+    choice_value_origin(VALUE self_v)
+    {
+        std::shared_ptr<const ChoiceValue> self(value_to_choice_value(self_v));
+        return INT2FIX(self->origin());
+    }
 
     void do_register_choice()
     {
@@ -363,6 +369,18 @@ namespace
         rb_include_module(c_choice, rb_mEnumerable);
 
         /*
+         * Document-module: Paludis::ChoiceOrigin
+         *
+         * The origin of a Choice
+         */
+        c_choice_origin = rb_define_module_under(paludis_module(), "ChoiceOrigin");
+        for (ChoiceOrigin l(static_cast<ChoiceOrigin>(0)), l_end(last_co) ; l != l_end ;
+                l = static_cast<ChoiceOrigin>(static_cast<int>(l) + 1))
+            rb_define_const(c_choice_origin, value_case_to_RubyCase(stringify(l)).c_str(), INT2FIX(l));
+
+        // cc_enum_special<paludis/choice.hh, ChoiceOrigin, c_choice_origin>
+
+        /*
          * Document-class: Paludis::ChoiceValue
          *
          * A single ChoiceValue object for a Choice.
@@ -381,8 +399,7 @@ namespace
                     (&ChoiceValueBoolishMembers<bool, &ChoiceValue::locked>::fetch)), 0);
         rb_define_method(c_choice_value, "description", RDOC_IS_STUPID(choice_value_description,
                     (&ChoiceValueStringishMembers<std::string, &ChoiceValue::description>::fetch)), 0);
-        rb_define_method(c_choice_value, "explicitly_listed?", RDOC_IS_STUPID(choice_value_explicitly_listed,
-                    (&ChoiceValueBoolishMembers<bool, &ChoiceValue::explicitly_listed>::fetch)), 0);
+        rb_define_method(c_choice_value, "origin", RUBY_FUNC_CAST(&choice_value_origin), 0);
     }
 }
 

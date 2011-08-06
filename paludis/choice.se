@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_ChoiceOrigin()
+{
+    prefix co
+
+    key co_explicit            "An explicitly listed (e.g. IUSE) choice"
+    key co_implicit            "An implicit (e.g. unlisted LINGUAS) choice"
+    key co_special             "A special (e.g. build_options) choice"
+
+    doxygen_comment << "END"
+        /**
+         * Whether a choice is implicit, explicit or special.
+         *
+         * \see Choice
+         * \ingroup g_choices
+         */
+END
+}
+

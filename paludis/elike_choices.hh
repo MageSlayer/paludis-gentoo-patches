@@ -47,7 +47,7 @@ namespace paludis
             virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual ChoiceOrigin origin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -74,7 +74,7 @@ namespace paludis
             virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual ChoiceOrigin origin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -101,7 +101,7 @@ namespace paludis
             virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual ChoiceOrigin origin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -127,7 +127,7 @@ namespace paludis
             virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual ChoiceOrigin origin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -152,7 +152,7 @@ namespace paludis
             virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual ChoiceOrigin origin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -184,7 +184,7 @@ namespace paludis
             virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual ChoiceOrigin origin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -211,7 +211,7 @@ namespace paludis
             virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual ChoiceOrigin origin() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));

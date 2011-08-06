@@ -457,9 +457,9 @@ namespace
             return "monkey";
         }
 
-        virtual bool explicitly_listed() const
+        virtual ChoiceOrigin origin() const
         {
-            return true;
+            return co_explicit;
         }
 
         virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result))

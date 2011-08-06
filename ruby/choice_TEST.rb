@@ -194,10 +194,10 @@ module Paludis
             assert_equal "", linguas_en.description
         end
 
-        def test_explicitly_listed
-            assert use_flag1.explicitly_listed?
-            assert use_flag2.explicitly_listed?
-            assert linguas_en.explicitly_listed?
+        def test_choice_origin
+            assert_equal ChoiceOrigin::Explicit, use_flag1.origin
+            assert_equal ChoiceOrigin::Explicit, use_flag2.origin
+            assert_equal ChoiceOrigin::Explicit, linguas_en.origin
         end
     end
 end

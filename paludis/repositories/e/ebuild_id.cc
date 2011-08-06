@@ -1441,7 +1441,7 @@ EbuildID::make_choice_value(
         const UnprefixedChoiceName & value_name,
         const Tribool iuse_default,
         const bool iuse_default_wins,
-        const bool explicitly_listed,
+        const ChoiceOrigin origin,
         const std::string & override_description,
         const bool force_locked
         ) const
@@ -1521,8 +1521,8 @@ EbuildID::make_choice_value(
                 n::description() = get_description(e_repo->use_desc(), override_description, name(), choice->prefix(), value_name),
                 n::enabled() = enabled,
                 n::enabled_by_default() = enabled_by_default,
-                n::explicitly_listed() = explicitly_listed,
                 n::locked() = force_locked || locked,
+                n::origin() = origin,
                 n::unprefixed_choice_name() = value_name
                 ));
 }

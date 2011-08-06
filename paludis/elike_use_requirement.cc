@@ -269,7 +269,7 @@ namespace
                     return false;
                 }
 
-                if (v->locked() || ! v->explicitly_listed())
+                if (v->locked() || co_explicit != v->origin())
                     return false;
 
                 return changed_choices.add_override_if_possible(flag, ! v->enabled());;

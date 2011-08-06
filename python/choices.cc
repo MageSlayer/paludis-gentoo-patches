@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -121,8 +121,8 @@ void expose_choices()
                 "[ro] String\n"
                 )
 
-        .add_property("explicitly_listed", &ChoiceValue::explicitly_listed,
-                "[ro] bool\n"
+        .add_property("origin", &ChoiceValue::origin,
+                "[ro] ChoiceOrigin\n"
                 )
 
         ;
@@ -159,5 +159,8 @@ void expose_choices()
          "UnprefixedChoiceName",
          "A choice name, without prefix."
         );
+
+    enum_auto("ChoiceOrigin", last_co,
+            "The origin of a ChoiceValue");
 }
 

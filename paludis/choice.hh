@@ -358,12 +358,14 @@ namespace paludis
             virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
-             * Is this flag explicitly listed?
+             * The origin of this choice.
+             *
+             * \since 0.66
              *
              * Use this to avoid showing things like LINGUAS values that aren't listed
              * in IUSE but that end up as a ChoiceValue anyway.
              */
-            virtual bool explicitly_listed() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+            virtual ChoiceOrigin origin() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
              * This flag's parameter, or an empty string if it doesn't have one.

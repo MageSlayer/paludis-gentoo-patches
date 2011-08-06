@@ -350,7 +350,7 @@ namespace
             if (maybe_old_value->enabled() != value->enabled())
                 return "*";
         }
-        else if (maybe_old_id && value->explicitly_listed() && choice->consider_added_or_changed())
+        else if (maybe_old_id && co_explicit == value->origin() && choice->consider_added_or_changed())
         {
             if (old_id_is_installed)
                 return "+";
@@ -797,16 +797,16 @@ namespace
                         if ((*c)->begin() == (*c)->end())
                             continue;
 
-                        bool any_explicit(false);
+                        bool any_explicitish(false);
                         for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
                                 v != v_end ; ++v)
-                            if ((*v)->explicitly_listed())
+                            if (co_implicit != (*v)->origin())
                             {
-                                any_explicit = true;
+                                any_explicitish = true;
                                 break;
                             }
 
-                        if (! any_explicit)
+                        if (! any_explicitish)
                             continue;
                     }
 
@@ -820,7 +820,7 @@ namespace
                             v != v_end ; ++v)
                     {
                         if (! cmdline.a_internal_keys.specified())
-                            if (! (*v)->explicitly_listed())
+                            if (co_implicit == (*v)->origin())
                                 continue;
 
                         if ((*v)->enabled())
@@ -878,16 +878,16 @@ namespace
                         if ((*c)->begin() == (*c)->end())
                             continue;
 
-                        bool any_explicit(false);
+                        bool any_explicitish(false);
                         for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
                                 v != v_end ; ++v)
-                            if ((*v)->explicitly_listed())
+                            if (co_implicit != (*v)->origin())
                             {
-                                any_explicit = true;
+                                any_explicitish = true;
                                 break;
                             }
 
-                        if (! any_explicit)
+                        if (! any_explicitish)
                             continue;
                     }
 
@@ -904,7 +904,7 @@ namespace
                             v != v_end ; ++v)
                     {
                         if (! cmdline.a_internal_keys.specified())
-                            if (! (*v)->explicitly_listed())
+                            if (co_implicit == (*v)->origin())
                                 continue;
 
                         if ((*v)->enabled())

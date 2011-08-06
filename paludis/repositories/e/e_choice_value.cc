@@ -44,7 +44,7 @@ namespace
             bool enabled_by_default() const;
             bool locked() const;
             const std::string description() const;
-            bool explicitly_listed() const;
+            ChoiceOrigin origin() const;
             const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
             const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
@@ -91,10 +91,10 @@ EChoiceValue::locked() const
     return _params.locked();
 }
 
-bool
-EChoiceValue::explicitly_listed() const
+ChoiceOrigin
+EChoiceValue::origin() const
 {
-    return _params.explicitly_listed();
+    return _params.origin();
 }
 
 const std::string
@@ -119,7 +119,7 @@ namespace paludis
         Hash<std::string> description_hash;
         Hash<bool> enabled_hash;
         Hash<bool> enabled_by_default_hash;
-        Hash<bool> explicitly_listed_hash;
+        Hash<bool> origin_hash;
         Hash<bool> locked_hash;
         Hash<UnprefixedChoiceName> unprefixed_choice_name_hash;
 
@@ -131,7 +131,7 @@ namespace paludis
                 ^ description_hash(p.description())
                 ^ enabled_hash(p.enabled())
                 ^ enabled_by_default_hash(p.enabled_by_default())
-                ^ explicitly_listed_hash(p.explicitly_listed())
+                ^ origin_hash(p.origin())
                 ^ locked_hash(p.locked())
                 ^ unprefixed_choice_name_hash(p.unprefixed_choice_name())
                 ;
@@ -146,7 +146,7 @@ namespace paludis
             && (a.description() == b.description())
             && (a.enabled() == b.enabled())
             && (a.enabled_by_default() == b.enabled_by_default())
-            && (a.explicitly_listed() == b.explicitly_listed())
+            && (a.origin() == b.origin())
             && (a.locked() == b.locked())
             && (a.unprefixed_choice_name() == b.unprefixed_choice_name())
             ;

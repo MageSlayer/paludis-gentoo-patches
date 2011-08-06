@@ -160,7 +160,7 @@ paludis::resolver::get_sameness(
 
                 for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
                         i != i_end ; ++i)
-                    if ((*i)->explicitly_listed())
+                    if (co_explicit == (*i)->origin())
                         i_common.insert((*i)->name_with_prefix());
             }
 
@@ -172,7 +172,7 @@ paludis::resolver::get_sameness(
 
                 for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
                         i != i_end ; ++i)
-                    if ((*i)->explicitly_listed())
+                    if (co_explicit == (*i)->origin())
                         u_common.insert((*i)->name_with_prefix());
             }
 

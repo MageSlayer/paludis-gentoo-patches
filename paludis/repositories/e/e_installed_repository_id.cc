@@ -1032,7 +1032,7 @@ EInstalledRepositoryID::slot_key() const
 
 const std::shared_ptr<const ChoiceValue>
 EInstalledRepositoryID::make_choice_value(const std::shared_ptr<const Choice> & c, const UnprefixedChoiceName & v,
-        const Tribool, const bool, const bool explicitly_listed, const std::string & override_description, const bool) const
+        const Tribool, const bool, const ChoiceOrigin origin, const std::string & override_description, const bool) const
 {
     if (! eapi()->supported())
         throw InternalError(PALUDIS_HERE, "Unsupported EAPI");
@@ -1061,8 +1061,8 @@ EInstalledRepositoryID::make_choice_value(const std::shared_ptr<const Choice> & 
                 n::description() = override_description,
                 n::enabled() = enabled,
                 n::enabled_by_default() = enabled,
-                n::explicitly_listed() = explicitly_listed,
                 n::locked() = true,
+                n::origin() = origin,
                 n::unprefixed_choice_name() = v
                 ));
 }

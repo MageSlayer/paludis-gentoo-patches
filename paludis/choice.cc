@@ -29,6 +29,8 @@
 
 using namespace paludis;
 
+#include <paludis/choice-se.cc>
+
 typedef std::list<std::shared_ptr<const Choice> > ChoicesList;
 typedef std::list<std::shared_ptr<const ChoiceValue> > ChoiceList;
 

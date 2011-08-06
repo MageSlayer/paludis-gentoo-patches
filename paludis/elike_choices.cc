@@ -135,10 +135,10 @@ ELikeOptionalTestsChoiceValue::description() const
     return "Run tests considered by the package to be optional";
 }
 
-bool
-ELikeOptionalTestsChoiceValue::explicitly_listed() const
+ChoiceOrigin
+ELikeOptionalTestsChoiceValue::origin() const
 {
-    return true;
+    return co_special;
 }
 
 const std::string
@@ -209,10 +209,10 @@ ELikeRecommendedTestsChoiceValue::description() const
     return "Run tests considered by the package to be recommended";
 }
 
-bool
-ELikeRecommendedTestsChoiceValue::explicitly_listed() const
+ChoiceOrigin
+ELikeRecommendedTestsChoiceValue::origin() const
 {
-    return true;
+    return co_special;
 }
 
 const std::string
@@ -301,10 +301,10 @@ ELikeExpensiveTestsChoiceValue::description() const
     return "Run tests considered by the package to be useful, but expensive";
 }
 
-bool
-ELikeExpensiveTestsChoiceValue::explicitly_listed() const
+ChoiceOrigin
+ELikeExpensiveTestsChoiceValue::origin() const
 {
-    return true;
+    return co_special;
 }
 
 const std::string
@@ -396,10 +396,10 @@ ELikeJobsChoiceValue::description() const
     return "How many jobs the package's build system should use, where supported";
 }
 
-bool
-ELikeJobsChoiceValue::explicitly_listed() const
+ChoiceOrigin
+ELikeJobsChoiceValue::origin() const
 {
-    return true;
+    return co_special;
 }
 
 const std::string
@@ -469,10 +469,10 @@ ELikeTraceChoiceValue::description() const
     return "Trace actions executed by the package (very noisy, for debugging broken builds only)";
 }
 
-bool
-ELikeTraceChoiceValue::explicitly_listed() const
+ChoiceOrigin
+ELikeTraceChoiceValue::origin() const
 {
-    return true;
+    return co_special;
 }
 
 const std::string
@@ -545,10 +545,10 @@ ELikePreserveWorkChoiceValue::description() const
     return "Do not remove build directories, and do not modify the image when merging";
 }
 
-bool
-ELikePreserveWorkChoiceValue::explicitly_listed() const
+ChoiceOrigin
+ELikePreserveWorkChoiceValue::origin() const
 {
-    return true;
+    return co_special;
 }
 
 const std::string
@@ -628,10 +628,10 @@ ELikeSymbolsChoiceValue::description() const
     return "How to handle debug symbols in installed files";
 }
 
-bool
-ELikeSymbolsChoiceValue::explicitly_listed() const
+ChoiceOrigin
+ELikeSymbolsChoiceValue::origin() const
 {
-    return true;
+    return co_special;
 }
 
 const std::string

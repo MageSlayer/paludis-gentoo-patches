@@ -36,8 +36,8 @@ namespace paludis
         typedef Name<struct name_description> description;
         typedef Name<struct name_enabled> enabled;
         typedef Name<struct name_enabled_by_default> enabled_by_default;
-        typedef Name<struct name_explicitly_listed> explicitly_listed;
         typedef Name<struct name_locked> locked;
+        typedef Name<struct name_origin> origin;
         typedef Name<struct name_unprefixed_choice_name> unprefixed_choice_name;
     }
 
@@ -50,8 +50,8 @@ namespace paludis
             NamedValue<n::description, std::string> description;
             NamedValue<n::enabled, bool> enabled;
             NamedValue<n::enabled_by_default, bool> enabled_by_default;
-            NamedValue<n::explicitly_listed, bool> explicitly_listed;
             NamedValue<n::locked, bool> locked;
+            NamedValue<n::origin, ChoiceOrigin> origin;
             NamedValue<n::unprefixed_choice_name, UnprefixedChoiceName> unprefixed_choice_name;
         };
 

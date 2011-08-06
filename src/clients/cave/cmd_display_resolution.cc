@@ -574,7 +574,7 @@ namespace
             for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
                     i != i_end ; ++i)
             {
-                if (! (*i)->explicitly_listed())
+                if (co_implicit == (*i)->origin())
                     continue;
 
                 Tribool changed_state(indeterminate);

@@ -122,7 +122,7 @@ class TestCase_03_ChoiceValue(unittest.TestCase):
         self.assertEquals(self.use_testflag.enabled_by_default, False)
         self.assertEquals(self.use_testflag.locked, False)
         self.assertEquals(self.use_testflag.description, "the test flag")
-        self.assertEquals(self.use_testflag.explicitly_listed, True)
+        self.assertEquals(self.use_testflag.origin, ChoiceOrigin.EXPLICIT)
 
     def test_02_linguas_en(self):
         self.assert_(self.linguas_en)
@@ -132,7 +132,7 @@ class TestCase_03_ChoiceValue(unittest.TestCase):
         self.assertEquals(self.linguas_en.enabled_by_default, False)
         self.assertEquals(self.linguas_en.locked, False)
         self.assertEquals(self.linguas_en.description, "English")
-        self.assertEquals(self.linguas_en.explicitly_listed, True)
+        self.assertEquals(self.linguas_en.origin, ChoiceOrigin.EXPLICIT)
 
 if __name__ == "__main__":
     unittest.main()
