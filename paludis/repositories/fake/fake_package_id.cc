@@ -1198,7 +1198,6 @@ namespace paludis
 #ifndef PALUDIS_NO_EXPLICIT_FULLY_SPECIALISED
     template class FakeMetadataSpecTreeKey<FetchableURISpecTree>;
     template class FakeMetadataSpecTreeKey<DependencySpecTree>;
-    template class FakeMetadataSpecTreeKey<DependencySpecTree>;
 #endif
     template class FakeMetadataSpecTreeKey<SimpleURISpecTree>;
 
