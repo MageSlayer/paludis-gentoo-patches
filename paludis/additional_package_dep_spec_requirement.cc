@@ -33,6 +33,8 @@ paludis::operator<< (std::ostream & s, const AdditionalPackageDepSpecRequirement
     return s;
 }
 
-template class Sequence<std::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
-template class WrappedForwardIterator<AdditionalPackageDepSpecRequirements::ConstIteratorTag, const std::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
-
+namespace paludis
+{
+    template class Sequence<std::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
+    template class WrappedForwardIterator<AdditionalPackageDepSpecRequirements::ConstIteratorTag, const std::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
+}

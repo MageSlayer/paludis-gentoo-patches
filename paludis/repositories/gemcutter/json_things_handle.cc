@@ -59,5 +59,7 @@ JSONThingsHandle::parse_all_gems(const FSPath & p, const ParsedOneGemCallback & 
     parse_all_gems_function(p, c);
 }
 
-template class Singleton<JSONThingsHandle>;
-
+namespace paludis
+{
+    template class Singleton<JSONThingsHandle>;
+}

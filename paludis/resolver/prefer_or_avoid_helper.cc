@@ -74,5 +74,7 @@ PreferOrAvoidHelper::operator() (const QualifiedPackageName & n) const
     return indeterminate;
 }
 
-template class Pimp<PreferOrAvoidHelper>;
-
+namespace paludis
+{
+    template class Pimp<PreferOrAvoidHelper>;
+}

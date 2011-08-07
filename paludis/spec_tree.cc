@@ -176,110 +176,118 @@ namespace paludis
     };
 }
 
-template class SpecTree<MakeTypeList<
-    SpecTreeLeafNodeType<PlainTextDepSpec>,
-        SpecTreeLeafNodeType<PlainTextLabelDepSpec>,
-        SpecTreeLeafNodeType<SimpleURIDepSpec>,
-        SpecTreeLeafNodeType<FetchableURIDepSpec>,
-        SpecTreeLeafNodeType<LicenseDepSpec>,
-        SpecTreeLeafNodeType<PackageDepSpec>,
-        SpecTreeLeafNodeType<BlockDepSpec>,
-        SpecTreeLeafNodeType<URILabelsDepSpec>,
-        SpecTreeLeafNodeType<DependenciesLabelsDepSpec>,
-        SpecTreeLeafNodeType<NamedSetDepSpec>,
-        SpecTreeInnerNodeType<AllDepSpec>,
-        SpecTreeInnerNodeType<AnyDepSpec>,
-        SpecTreeInnerNodeType<ExactlyOneDepSpec>,
-        SpecTreeInnerNodeType<ConditionalDepSpec>
-    >::Type, AllDepSpec>;
-
-template class SpecTree<MakeTypeList<
-        SpecTreeLeafNodeType<LicenseDepSpec>,
-        SpecTreeInnerNodeType<AllDepSpec>,
-        SpecTreeInnerNodeType<AnyDepSpec>,
-        SpecTreeInnerNodeType<ConditionalDepSpec>
-    >::Type, AllDepSpec>;
-
-template class SpecTree<MakeTypeList<
-        SpecTreeLeafNodeType<FetchableURIDepSpec>,
-        SpecTreeLeafNodeType<URILabelsDepSpec>,
-        SpecTreeInnerNodeType<AllDepSpec>,
-        SpecTreeInnerNodeType<ConditionalDepSpec>
-    >::Type, AllDepSpec>;
-
-template class SpecTree<MakeTypeList<
-        SpecTreeLeafNodeType<SimpleURIDepSpec>,
-        SpecTreeInnerNodeType<AllDepSpec>,
-        SpecTreeInnerNodeType<ConditionalDepSpec>
-    >::Type, AllDepSpec>;
-
-template class SpecTree<MakeTypeList<
-        SpecTreeLeafNodeType<PackageDepSpec>,
-        SpecTreeInnerNodeType<AllDepSpec>,
-        SpecTreeInnerNodeType<ConditionalDepSpec>
-    >::Type, AllDepSpec>;
-
-template class SpecTree<MakeTypeList<
+namespace paludis
+{
+    template class SpecTree<MakeTypeList<
         SpecTreeLeafNodeType<PlainTextDepSpec>,
-        SpecTreeLeafNodeType<PlainTextLabelDepSpec>,
-        SpecTreeInnerNodeType<AllDepSpec>,
-        SpecTreeInnerNodeType<ConditionalDepSpec>
-    >::Type, AllDepSpec>;
+            SpecTreeLeafNodeType<PlainTextLabelDepSpec>,
+            SpecTreeLeafNodeType<SimpleURIDepSpec>,
+            SpecTreeLeafNodeType<FetchableURIDepSpec>,
+            SpecTreeLeafNodeType<LicenseDepSpec>,
+            SpecTreeLeafNodeType<PackageDepSpec>,
+            SpecTreeLeafNodeType<BlockDepSpec>,
+            SpecTreeLeafNodeType<URILabelsDepSpec>,
+            SpecTreeLeafNodeType<DependenciesLabelsDepSpec>,
+            SpecTreeLeafNodeType<NamedSetDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<AnyDepSpec>,
+            SpecTreeInnerNodeType<ExactlyOneDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
 
-template class SpecTree<MakeTypeList<
-        SpecTreeLeafNodeType<PlainTextDepSpec>,
-        SpecTreeInnerNodeType<AllDepSpec>,
-        SpecTreeInnerNodeType<AnyDepSpec>,
-        SpecTreeInnerNodeType<ExactlyOneDepSpec>,
-        SpecTreeInnerNodeType<ConditionalDepSpec>
-    >::Type, AllDepSpec>;
+    template class SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<LicenseDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<AnyDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
 
-template class SpecTree<MakeTypeList<
-        SpecTreeLeafNodeType<PackageDepSpec>,
-        SpecTreeLeafNodeType<BlockDepSpec>,
-        SpecTreeLeafNodeType<DependenciesLabelsDepSpec>,
-        SpecTreeLeafNodeType<NamedSetDepSpec>,
-        SpecTreeInnerNodeType<AllDepSpec>,
-        SpecTreeInnerNodeType<AnyDepSpec>,
-        SpecTreeInnerNodeType<ConditionalDepSpec>
-    >::Type, AllDepSpec>;
+    template class SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<FetchableURIDepSpec>,
+            SpecTreeLeafNodeType<URILabelsDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
 
-template class SpecTree<MakeTypeList<
-        SpecTreeLeafNodeType<PackageDepSpec>,
-        SpecTreeLeafNodeType<NamedSetDepSpec>,
-        SpecTreeInnerNodeType<AllDepSpec>
-    >::Type, AllDepSpec>;
+    template class SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<SimpleURIDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
 
-/* GenericSpecTree */
+    template class SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<PackageDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
 
-template const std::shared_ptr<GenericSpecTree::NodeType<PackageDepSpec>::Type>
-    BasicInnerNode<GenericSpecTree>::append<PackageDepSpec>(const std::shared_ptr<const PackageDepSpec> &);
-template const std::shared_ptr<GenericSpecTree::NodeType<PackageDepSpec>::Type>
-    BasicInnerNode<GenericSpecTree>::append<PackageDepSpec>(const std::shared_ptr<PackageDepSpec> &);
+    template class SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<PlainTextDepSpec>,
+            SpecTreeLeafNodeType<PlainTextLabelDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
 
-template const std::shared_ptr<GenericSpecTree::NodeType<NamedSetDepSpec>::Type>
-    BasicInnerNode<GenericSpecTree>::append<NamedSetDepSpec>(const std::shared_ptr<const NamedSetDepSpec> &);
-template const std::shared_ptr<GenericSpecTree::NodeType<NamedSetDepSpec>::Type>
-    BasicInnerNode<GenericSpecTree>::append<NamedSetDepSpec>(const std::shared_ptr<NamedSetDepSpec> &);
+    template class SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<PlainTextDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<AnyDepSpec>,
+            SpecTreeInnerNodeType<ExactlyOneDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
 
-template class BasicInnerNode<GenericSpecTree>;
-template class WrappedForwardIterator<BasicInnerNode<GenericSpecTree>::ConstIteratorTag,
-         const std::shared_ptr<const BasicNode<GenericSpecTree> > >;
+    template class SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<PackageDepSpec>,
+            SpecTreeLeafNodeType<BlockDepSpec>,
+            SpecTreeLeafNodeType<DependenciesLabelsDepSpec>,
+            SpecTreeLeafNodeType<NamedSetDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<AnyDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
 
-template class LeafNode<GenericSpecTree, PackageDepSpec>;
-template class LeafNode<GenericSpecTree, BlockDepSpec>;
-template class LeafNode<GenericSpecTree, DependenciesLabelsDepSpec>;
-template class LeafNode<GenericSpecTree, NamedSetDepSpec>;
-template class LeafNode<GenericSpecTree, PlainTextDepSpec>;
-template class LeafNode<GenericSpecTree, PlainTextLabelDepSpec>;
-template class LeafNode<GenericSpecTree, SimpleURIDepSpec>;
-template class LeafNode<GenericSpecTree, FetchableURIDepSpec>;
-template class LeafNode<GenericSpecTree, LicenseDepSpec>;
-template class LeafNode<GenericSpecTree, URILabelsDepSpec>;
-template class InnerNode<GenericSpecTree, AllDepSpec>;
-template class InnerNode<GenericSpecTree, AnyDepSpec>;
-template class InnerNode<GenericSpecTree, ExactlyOneDepSpec>;
-template class InnerNode<GenericSpecTree, ConditionalDepSpec>;
+    template class SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<PackageDepSpec>,
+            SpecTreeLeafNodeType<NamedSetDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>
+        >::Type, AllDepSpec>;
+
+    /* GenericSpecTree */
+
+    template const std::shared_ptr<GenericSpecTree::NodeType<PackageDepSpec>::Type>
+        BasicInnerNode<GenericSpecTree>::append<PackageDepSpec>(const std::shared_ptr<const PackageDepSpec> &);
+    template const std::shared_ptr<GenericSpecTree::NodeType<PackageDepSpec>::Type>
+        BasicInnerNode<GenericSpecTree>::append<PackageDepSpec>(const std::shared_ptr<PackageDepSpec> &);
+
+    template const std::shared_ptr<GenericSpecTree::NodeType<NamedSetDepSpec>::Type>
+        BasicInnerNode<GenericSpecTree>::append<NamedSetDepSpec>(const std::shared_ptr<const NamedSetDepSpec> &);
+    template const std::shared_ptr<GenericSpecTree::NodeType<NamedSetDepSpec>::Type>
+        BasicInnerNode<GenericSpecTree>::append<NamedSetDepSpec>(const std::shared_ptr<NamedSetDepSpec> &);
+
+    namespace spec_tree_internals {
+        template class BasicInnerNode<GenericSpecTree>;
+    }
+
+    template class WrappedForwardIterator<BasicInnerNode<GenericSpecTree>::ConstIteratorTag,
+             const std::shared_ptr<const BasicNode<GenericSpecTree> > >;
+
+    namespace spec_tree_internals {
+        template class LeafNode<GenericSpecTree, PackageDepSpec>;
+        template class LeafNode<GenericSpecTree, BlockDepSpec>;
+        template class LeafNode<GenericSpecTree, DependenciesLabelsDepSpec>;
+        template class LeafNode<GenericSpecTree, NamedSetDepSpec>;
+        template class LeafNode<GenericSpecTree, PlainTextDepSpec>;
+        template class LeafNode<GenericSpecTree, PlainTextLabelDepSpec>;
+        template class LeafNode<GenericSpecTree, SimpleURIDepSpec>;
+        template class LeafNode<GenericSpecTree, FetchableURIDepSpec>;
+        template class LeafNode<GenericSpecTree, LicenseDepSpec>;
+        template class LeafNode<GenericSpecTree, URILabelsDepSpec>;
+        template class InnerNode<GenericSpecTree, AllDepSpec>;
+        template class InnerNode<GenericSpecTree, AnyDepSpec>;
+        template class InnerNode<GenericSpecTree, ExactlyOneDepSpec>;
+        template class InnerNode<GenericSpecTree, ConditionalDepSpec>;
+    }
+}
 
 /* DependencySpecTree */
 
@@ -318,19 +326,22 @@ template const std::shared_ptr<DependencySpecTree::NodeType<ConditionalDepSpec>:
 template const std::shared_ptr<DependencySpecTree::NodeType<ConditionalDepSpec>::Type>
     BasicInnerNode<DependencySpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<ConditionalDepSpec> &);
 
+namespace paludis
+{
+    template class WrappedForwardIterator<BasicInnerNode<DependencySpecTree>::ConstIteratorTag,
+             const std::shared_ptr<const BasicNode<DependencySpecTree> > >;
+    namespace spec_tree_internals {
+        template class BasicInnerNode<DependencySpecTree>;
 
-template class BasicInnerNode<DependencySpecTree>;
-template class WrappedForwardIterator<BasicInnerNode<DependencySpecTree>::ConstIteratorTag,
-         const std::shared_ptr<const BasicNode<DependencySpecTree> > >;
-
-template class LeafNode<DependencySpecTree, PackageDepSpec>;
-template class LeafNode<DependencySpecTree, BlockDepSpec>;
-template class LeafNode<DependencySpecTree, DependenciesLabelsDepSpec>;
-template class LeafNode<DependencySpecTree, NamedSetDepSpec>;
-template class InnerNode<DependencySpecTree, AllDepSpec>;
-template class InnerNode<DependencySpecTree, AnyDepSpec>;
-template class InnerNode<DependencySpecTree, ConditionalDepSpec>;
-
+        template class LeafNode<DependencySpecTree, PackageDepSpec>;
+        template class LeafNode<DependencySpecTree, BlockDepSpec>;
+        template class LeafNode<DependencySpecTree, DependenciesLabelsDepSpec>;
+        template class LeafNode<DependencySpecTree, NamedSetDepSpec>;
+        template class InnerNode<DependencySpecTree, AllDepSpec>;
+        template class InnerNode<DependencySpecTree, AnyDepSpec>;
+        template class InnerNode<DependencySpecTree, ConditionalDepSpec>;
+    }
+}
 /* SetSpecTree */
 
 template const std::shared_ptr<SetSpecTree::NodeType<PackageDepSpec>::Type>
@@ -348,12 +359,18 @@ template const std::shared_ptr<SetSpecTree::NodeType<AllDepSpec>::Type>
 template const std::shared_ptr<SetSpecTree::NodeType<AllDepSpec>::Type>
     BasicInnerNode<SetSpecTree>::append<AllDepSpec>(const std::shared_ptr<AllDepSpec> &);
 
-template class BasicInnerNode<SetSpecTree>;
-template class WrappedForwardIterator<BasicInnerNode<SetSpecTree>::ConstIteratorTag,
-         const std::shared_ptr<const BasicNode<SetSpecTree> > >;
-template class LeafNode<SetSpecTree, PackageDepSpec>;
-template class LeafNode<SetSpecTree, NamedSetDepSpec>;
-template class InnerNode<SetSpecTree, AllDepSpec>;
+namespace paludis
+{
+    template class WrappedForwardIterator<BasicInnerNode<SetSpecTree>::ConstIteratorTag,
+             const std::shared_ptr<const BasicNode<SetSpecTree> > >;
+
+    namespace spec_tree_internals {
+        template class BasicInnerNode<SetSpecTree>;
+        template class LeafNode<SetSpecTree, PackageDepSpec>;
+        template class LeafNode<SetSpecTree, NamedSetDepSpec>;
+        template class InnerNode<SetSpecTree, AllDepSpec>;
+    }
+}
 
 /* PlainTextSpecTree */
 
@@ -377,14 +394,19 @@ template const std::shared_ptr<PlainTextSpecTree::NodeType<ConditionalDepSpec>::
 template const std::shared_ptr<PlainTextSpecTree::NodeType<ConditionalDepSpec>::Type>
     BasicInnerNode<PlainTextSpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<ConditionalDepSpec> &);
 
-template class BasicInnerNode<PlainTextSpecTree>;
-template class WrappedForwardIterator<BasicInnerNode<PlainTextSpecTree>::ConstIteratorTag,
-         const std::shared_ptr<const BasicNode<PlainTextSpecTree> > >;
-template class LeafNode<PlainTextSpecTree, PlainTextDepSpec>;
-template class LeafNode<PlainTextSpecTree, PlainTextLabelDepSpec>;
-template class InnerNode<PlainTextSpecTree, AllDepSpec>;
-template class InnerNode<PlainTextSpecTree, ConditionalDepSpec>;
+namespace paludis
+{
+    template class WrappedForwardIterator<BasicInnerNode<PlainTextSpecTree>::ConstIteratorTag,
+             const std::shared_ptr<const BasicNode<PlainTextSpecTree> > >;
 
+    namespace spec_tree_internals {
+        template class BasicInnerNode<PlainTextSpecTree>;
+        template class LeafNode<PlainTextSpecTree, PlainTextDepSpec>;
+        template class LeafNode<PlainTextSpecTree, PlainTextLabelDepSpec>;
+        template class InnerNode<PlainTextSpecTree, AllDepSpec>;
+        template class InnerNode<PlainTextSpecTree, ConditionalDepSpec>;
+    }
+}
 /* RequiredUseSpecTree */
 
 template const std::shared_ptr<RequiredUseSpecTree::NodeType<PlainTextDepSpec>::Type>
@@ -412,15 +434,20 @@ template const std::shared_ptr<RequiredUseSpecTree::NodeType<ConditionalDepSpec>
 template const std::shared_ptr<RequiredUseSpecTree::NodeType<ConditionalDepSpec>::Type>
     BasicInnerNode<RequiredUseSpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<ConditionalDepSpec> &);
 
-template class BasicInnerNode<RequiredUseSpecTree>;
-template class WrappedForwardIterator<BasicInnerNode<RequiredUseSpecTree>::ConstIteratorTag,
-         const std::shared_ptr<const BasicNode<RequiredUseSpecTree> > >;
-template class LeafNode<RequiredUseSpecTree, PlainTextDepSpec>;
-template class InnerNode<RequiredUseSpecTree, AllDepSpec>;
-template class InnerNode<RequiredUseSpecTree, AnyDepSpec>;
-template class InnerNode<RequiredUseSpecTree, ExactlyOneDepSpec>;
-template class InnerNode<RequiredUseSpecTree, ConditionalDepSpec>;
+namespace paludis
+{
+    template class WrappedForwardIterator<BasicInnerNode<RequiredUseSpecTree>::ConstIteratorTag,
+             const std::shared_ptr<const BasicNode<RequiredUseSpecTree> > >;
 
+    namespace spec_tree_internals {
+        template class BasicInnerNode<RequiredUseSpecTree>;
+        template class LeafNode<RequiredUseSpecTree, PlainTextDepSpec>;
+        template class InnerNode<RequiredUseSpecTree, AllDepSpec>;
+        template class InnerNode<RequiredUseSpecTree, AnyDepSpec>;
+        template class InnerNode<RequiredUseSpecTree, ExactlyOneDepSpec>;
+        template class InnerNode<RequiredUseSpecTree, ConditionalDepSpec>;
+    }
+}
 /* SimpleURISpecTree */
 
 template const std::shared_ptr<SimpleURISpecTree::NodeType<SimpleURIDepSpec>::Type>
@@ -438,13 +465,18 @@ template const std::shared_ptr<SimpleURISpecTree::NodeType<AllDepSpec>::Type>
 template const std::shared_ptr<SimpleURISpecTree::NodeType<AllDepSpec>::Type>
     BasicInnerNode<SimpleURISpecTree>::append<AllDepSpec>(const std::shared_ptr<AllDepSpec> &);
 
-template class BasicInnerNode<SimpleURISpecTree>;
-template class WrappedForwardIterator<BasicInnerNode<SimpleURISpecTree>::ConstIteratorTag,
-         const std::shared_ptr<const BasicNode<SimpleURISpecTree> > >;
-template class LeafNode<SimpleURISpecTree, SimpleURIDepSpec>;
-template class InnerNode<SimpleURISpecTree, AllDepSpec>;
-template class InnerNode<SimpleURISpecTree, ConditionalDepSpec>;
+namespace paludis
+{
+    template class WrappedForwardIterator<BasicInnerNode<SimpleURISpecTree>::ConstIteratorTag,
+             const std::shared_ptr<const BasicNode<SimpleURISpecTree> > >;
 
+    namespace spec_tree_internals {
+        template class BasicInnerNode<SimpleURISpecTree>;
+        template class LeafNode<SimpleURISpecTree, SimpleURIDepSpec>;
+        template class InnerNode<SimpleURISpecTree, AllDepSpec>;
+        template class InnerNode<SimpleURISpecTree, ConditionalDepSpec>;
+    }
+}
 /* FetchableURISpecTree */
 
 template const std::shared_ptr<FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type>
@@ -467,14 +499,20 @@ template const std::shared_ptr<FetchableURISpecTree::NodeType<AllDepSpec>::Type>
 template const std::shared_ptr<FetchableURISpecTree::NodeType<AllDepSpec>::Type>
     BasicInnerNode<FetchableURISpecTree>::append<AllDepSpec>(const std::shared_ptr<AllDepSpec> &);
 
-template class BasicInnerNode<FetchableURISpecTree>;
-template class WrappedForwardIterator<BasicInnerNode<FetchableURISpecTree>::ConstIteratorTag,
-         const std::shared_ptr<const BasicNode<FetchableURISpecTree> > >;
+namespace paludis
+{
+    template class WrappedForwardIterator<BasicInnerNode<FetchableURISpecTree>::ConstIteratorTag,
+             const std::shared_ptr<const BasicNode<FetchableURISpecTree> > >;
 
-template class LeafNode<FetchableURISpecTree, FetchableURIDepSpec>;
-template class LeafNode<FetchableURISpecTree, URILabelsDepSpec>;
-template class InnerNode<FetchableURISpecTree, AllDepSpec>;
-template class InnerNode<FetchableURISpecTree, ConditionalDepSpec>;
+    namespace spec_tree_internals {
+        template class BasicInnerNode<FetchableURISpecTree>;
+
+    template class LeafNode<FetchableURISpecTree, FetchableURIDepSpec>;
+    template class LeafNode<FetchableURISpecTree, URILabelsDepSpec>;
+    template class InnerNode<FetchableURISpecTree, AllDepSpec>;
+    template class InnerNode<FetchableURISpecTree, ConditionalDepSpec>;
+    }
+}
 
 /* LicenseSpecTree */
 
@@ -498,14 +536,20 @@ template const std::shared_ptr<LicenseSpecTree::NodeType<ConditionalDepSpec>::Ty
 template const std::shared_ptr<LicenseSpecTree::NodeType<ConditionalDepSpec>::Type>
     BasicInnerNode<LicenseSpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<ConditionalDepSpec> &);
 
-template class BasicInnerNode<LicenseSpecTree>;
-template class WrappedForwardIterator<BasicInnerNode<LicenseSpecTree>::ConstIteratorTag,
-         const std::shared_ptr<const BasicNode<LicenseSpecTree> > >;
+namespace paludis
+{
+    template class WrappedForwardIterator<BasicInnerNode<LicenseSpecTree>::ConstIteratorTag,
+             const std::shared_ptr<const BasicNode<LicenseSpecTree> > >;
 
-template class LeafNode<LicenseSpecTree, LicenseDepSpec>;
-template class InnerNode<LicenseSpecTree, AllDepSpec>;
-template class InnerNode<LicenseSpecTree, AnyDepSpec>;
-template class InnerNode<LicenseSpecTree, ConditionalDepSpec>;
+    namespace spec_tree_internals {
+        template class BasicInnerNode<LicenseSpecTree>;
+
+        template class LeafNode<LicenseSpecTree, LicenseDepSpec>;
+        template class InnerNode<LicenseSpecTree, AllDepSpec>;
+        template class InnerNode<LicenseSpecTree, AnyDepSpec>;
+        template class InnerNode<LicenseSpecTree, ConditionalDepSpec>;
+    }
+}
 
 /* SetSpecTree -> DependencySpecTree */
 

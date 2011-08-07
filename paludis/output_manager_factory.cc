@@ -145,7 +145,9 @@ OutputManagerFactory::add_manager(
     }
 }
 
-template class Pimp<OutputManagerFactory>;
-template class Singleton<OutputManagerFactory>;
-template class WrappedForwardIterator<OutputManagerFactory::ConstIteratorTag, const std::string>;
-
+namespace paludis
+{
+    template class Pimp<OutputManagerFactory>;
+    template class Singleton<OutputManagerFactory>;
+    template class WrappedForwardIterator<OutputManagerFactory::ConstIteratorTag, const std::string>;
+}

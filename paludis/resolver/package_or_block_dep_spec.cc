@@ -146,6 +146,8 @@ PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::shared_ptr<co
     }
 }
 
-template class Sequence<PackageOrBlockDepSpec>;
-template class WrappedForwardIterator<Sequence<PackageOrBlockDepSpec>::ConstIteratorTag, const PackageOrBlockDepSpec>;
-
+namespace paludis
+{
+    template class Sequence<PackageOrBlockDepSpec>;
+    template class WrappedForwardIterator<Sequence<PackageOrBlockDepSpec>::ConstIteratorTag, const PackageOrBlockDepSpec>;
+}

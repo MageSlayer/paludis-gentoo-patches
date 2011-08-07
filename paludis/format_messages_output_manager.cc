@@ -217,5 +217,7 @@ FormatMessagesOutputManager::factory_create(
             child, format_debug_s, format_info_s, format_warn_s, format_error_s, format_log_s, format_status_s, FormatMessage{replace_vars_func});
 }
 
-template class Pimp<FormatMessagesOutputManager>;
-
+namespace paludis
+{
+    template class Pimp<FormatMessagesOutputManager>;
+}

@@ -52,8 +52,6 @@
 
 using namespace paludis;
 
-template class Sequence<std::shared_ptr<HookFile> >;
-
 HookFile::~HookFile()
 {
 }
@@ -844,3 +842,7 @@ Hooker::perform_hook(
     return result;
 }
 
+namespace paludis
+{
+    template class Sequence<std::shared_ptr<HookFile> >;
+}

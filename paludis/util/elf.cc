@@ -398,9 +398,11 @@ ElfObject<ElfType_>::get_section_by_index(unsigned int index) const
     return SectionIterator(indirect_iterator(_imp->sections.begin() + index));
 }
 
-template class ElfObject<Elf32Type>;
-template class ElfObject<Elf64Type>;
+namespace paludis
+{
+    template class ElfObject<Elf32Type>;
+    template class ElfObject<Elf64Type>;
 
-template class WrappedForwardIterator<ElfObject<Elf32Type>::SectionIteratorTag, Section<Elf32Type> >;
-template class WrappedForwardIterator<ElfObject<Elf64Type>::SectionIteratorTag, Section<Elf64Type> >;
-
+    template class WrappedForwardIterator<ElfObject<Elf32Type>::SectionIteratorTag, Section<Elf32Type> >;
+    template class WrappedForwardIterator<ElfObject<Elf64Type>::SectionIteratorTag, Section<Elf64Type> >;
+}

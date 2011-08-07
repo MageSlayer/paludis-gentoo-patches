@@ -31,5 +31,8 @@ using namespace paludis::erepository;
 
 #include <paludis/repositories/e/e_repository_params-se.cc>
 
-template class Sequence<std::shared_ptr<const ERepository> >;
-template class WrappedForwardIterator<Sequence<std::shared_ptr<const ERepository> >::ConstIteratorTag, const std::shared_ptr<const ERepository> >;
+namespace paludis
+{
+    template class Sequence<std::shared_ptr<const ERepository> >;
+    template class WrappedForwardIterator<Sequence<std::shared_ptr<const ERepository> >::ConstIteratorTag, const std::shared_ptr<const ERepository> >;
+}

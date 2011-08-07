@@ -563,5 +563,7 @@ PartiallyMadePackageDepSpec::to_package_dep_spec() const
     return operator const PackageDepSpec();
 }
 
-template class Pimp<PartiallyMadePackageDepSpec>;
-
+namespace paludis
+{
+    template class Pimp<PartiallyMadePackageDepSpec>;
+}

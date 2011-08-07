@@ -58,5 +58,7 @@ ProfileFactory::create(
     throw ConfigurationError("Unrecognised profile '" + format + "'");
 }
 
-template class Singleton<ProfileFactory>;
-
+namespace paludis
+{
+    template class Singleton<ProfileFactory>;
+}

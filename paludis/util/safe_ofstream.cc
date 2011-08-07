@@ -154,5 +154,7 @@ SafeOFStreamError::SafeOFStreamError(const std::string & s) throw () :
 {
 }
 
-template class Pimp<SafeOFStreamBuf>;
-
+namespace paludis
+{
+    template class Pimp<SafeOFStreamBuf>;
+}

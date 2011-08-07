@@ -83,5 +83,7 @@ GetConstraintsForViaBinaryHelper::operator() (
     return result;
 }
 
-template class Pimp<GetConstraintsForViaBinaryHelper>;
-
+namespace paludis
+{
+    template class Pimp<GetConstraintsForViaBinaryHelper>;
+}

@@ -407,5 +407,7 @@ UnavailableRepositoryID::slot_key() const
     return make_null_shared_ptr();
 }
 
-template class Pimp<UnavailableRepositoryID>;
-
+namespace paludis
+{
+    template class Pimp<UnavailableRepositoryID>;
+}

@@ -624,5 +624,7 @@ PaludisLikeOptionsConf::known_choice_value_names(
     return result;
 }
 
-template class Pimp<PaludisLikeOptionsConf>;
-
+namespace paludis
+{
+    template class Pimp<PaludisLikeOptionsConf>;
+}

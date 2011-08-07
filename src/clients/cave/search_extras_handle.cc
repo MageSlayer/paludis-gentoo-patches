@@ -90,5 +90,7 @@ SearchExtrasHandle::~SearchExtrasHandle()
         ::dlclose(handle);
 }
 
-template class Singleton<SearchExtrasHandle>;
-
+namespace paludis
+{
+    template class Singleton<SearchExtrasHandle>;
+}

@@ -80,5 +80,7 @@ DamerauLevenshtein::distance_with(const std::string & candidate) const
     return prev[_imp->n - 1];
 }
 
-template class Pimp<DamerauLevenshtein>;
-
+namespace paludis
+{
+    template class Pimp<DamerauLevenshtein>;
+}

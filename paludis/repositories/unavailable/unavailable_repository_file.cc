@@ -269,7 +269,9 @@ UnavailableRepositoryFile::autoconfigurable() const
     return _imp->autoconfigurable;
 }
 
-template class Pimp<UnavailableRepositoryFile>;
-template class WrappedForwardIterator<UnavailableRepositoryFile::ConstIteratorTag,
-         const UnavailableRepositoryFileEntry>;
-
+namespace paludis
+{
+    template class Pimp<UnavailableRepositoryFile>;
+    template class WrappedForwardIterator<UnavailableRepositoryFile::ConstIteratorTag,
+             const UnavailableRepositoryFileEntry>;
+}

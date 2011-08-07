@@ -327,22 +327,23 @@ ChoiceValue::~ChoiceValue()
 {
 }
 
-template class Pimp<Choices>;
-template class Pimp<Choice>;
+namespace paludis
+{
+    template class Pimp<Choices>;
+    template class Pimp<Choice>;
 
-template class WrappedForwardIterator<Choices::ConstIteratorTag, const std::shared_ptr<const Choice> >;
-template class WrappedForwardIterator<Choice::ConstIteratorTag, const std::shared_ptr<const ChoiceValue> >;
+    template class WrappedForwardIterator<Choices::ConstIteratorTag, const std::shared_ptr<const Choice> >;
+    template class WrappedForwardIterator<Choice::ConstIteratorTag, const std::shared_ptr<const ChoiceValue> >;
 
-template class WrappedValue<UnprefixedChoiceNameTag>;
+    template class WrappedValue<UnprefixedChoiceNameTag>;
+    template class WrappedValue<ChoicePrefixNameTag>;
+    template class WrappedValue<ChoiceNameWithPrefixTag>;
+
+    template class Set<UnprefixedChoiceName>;
+    template class WrappedForwardIterator<Set<UnprefixedChoiceName>::ConstIteratorTag, const UnprefixedChoiceName>;
+    template class WrappedOutputIterator<Set<UnprefixedChoiceName>::InserterTag, UnprefixedChoiceName>;
+}
+
 template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<UnprefixedChoiceNameTag> &);
-
-template class WrappedValue<ChoicePrefixNameTag>;
 template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<ChoicePrefixNameTag> &);
-
-template class WrappedValue<ChoiceNameWithPrefixTag>;
 template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<ChoiceNameWithPrefixTag> &);
-
-template class Set<UnprefixedChoiceName>;
-template class WrappedForwardIterator<Set<UnprefixedChoiceName>::ConstIteratorTag, const UnprefixedChoiceName>;
-template class WrappedOutputIterator<Set<UnprefixedChoiceName>::InserterTag, UnprefixedChoiceName>;
-

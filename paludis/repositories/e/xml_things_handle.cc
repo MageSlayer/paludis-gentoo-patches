@@ -154,6 +154,8 @@ XMLThingsHandle::create_metadata_xml_from_xml_file() const
     return _imp->create_metadata_xml_from_xml_file;
 }
 
-template class Pimp<XMLThingsHandle>;
-template class Singleton<XMLThingsHandle>;
-
+namespace paludis
+{
+    template class Pimp<XMLThingsHandle>;
+    template class Singleton<XMLThingsHandle>;
+}

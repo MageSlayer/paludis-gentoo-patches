@@ -45,10 +45,6 @@ using namespace paludis;
 
 #include <paludis/repository-se.cc>
 
-template class Set<std::shared_ptr<Repository> >;
-template class WrappedForwardIterator<Set<std::shared_ptr<Repository> >::ConstIteratorTag, const std::shared_ptr<Repository> >;
-template class WrappedOutputIterator<Set<std::shared_ptr<Repository> >::InserterTag, std::shared_ptr<Repository> >;
-
 NoSuchSetError::NoSuchSetError(const std::string & our_name) throw () :
     Exception("Could not find '" + our_name + "'"),
     _name(our_name)
@@ -196,3 +192,9 @@ Repository::can_drop_in_memory_cache() const
 {
 }
 
+namespace paludis
+{
+    template class Set<std::shared_ptr<Repository> >;
+    template class WrappedForwardIterator<Set<std::shared_ptr<Repository> >::ConstIteratorTag, const std::shared_ptr<Repository> >;
+    template class WrappedOutputIterator<Set<std::shared_ptr<Repository> >::InserterTag, std::shared_ptr<Repository> >;
+}

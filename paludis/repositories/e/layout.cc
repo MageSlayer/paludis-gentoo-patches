@@ -29,8 +29,6 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-template class Singleton<LayoutFactory>;
-
 Layout::Layout(const std::shared_ptr<const FSPathSequence> & l) :
     _master_repositories_locations(l)
 {
@@ -82,6 +80,10 @@ LayoutFactory::create(
     throw ConfigurationError("Unrecognised layout '" + s + "'");
 }
 
-template class Map<FSPath, std::string, FSPathComparator>;
-template class WrappedForwardIterator<Map<FSPath, std::string, FSPathComparator>::ConstIteratorTag, const std::pair<const FSPath, std::string> >;
+namespace paludis
+{
+    template class Singleton<LayoutFactory>;
 
+    template class Map<FSPath, std::string, FSPathComparator>;
+    template class WrappedForwardIterator<Map<FSPath, std::string, FSPathComparator>::ConstIteratorTag, const std::pair<const FSPath, std::string> >;
+}

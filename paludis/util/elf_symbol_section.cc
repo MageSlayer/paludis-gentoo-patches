@@ -216,9 +216,11 @@ SymbolSection<ElfType_>::symbol_end() const
     return SymbolIterator(_imp->symbols.end());
 }
 
-template class SymbolSection<Elf32Type>;
-template class SymbolSection<Elf64Type>;
+namespace paludis
+{
+    template class SymbolSection<Elf32Type>;
+    template class SymbolSection<Elf64Type>;
 
-template class WrappedForwardIterator<SymbolSection<Elf32Type>::SymbolIteratorTag, const Symbol<Elf32Type> >;
-template class WrappedForwardIterator<SymbolSection<Elf64Type>::SymbolIteratorTag, const Symbol<Elf64Type> >;
-
+    template class WrappedForwardIterator<SymbolSection<Elf32Type>::SymbolIteratorTag, const Symbol<Elf32Type> >;
+    template class WrappedForwardIterator<SymbolSection<Elf64Type>::SymbolIteratorTag, const Symbol<Elf64Type> >;
+}

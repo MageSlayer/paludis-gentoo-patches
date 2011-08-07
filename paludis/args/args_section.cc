@@ -96,6 +96,8 @@ ArgsSection::name() const
     return _imp->name;
 }
 
-template class Pimp<ArgsSection>;
-template class WrappedForwardIterator<args::ArgsSection::GroupsConstIteratorTag, const args::ArgsGroup>;
-
+namespace paludis
+{
+    template class Pimp<ArgsSection>;
+    template class WrappedForwardIterator<args::ArgsSection::GroupsConstIteratorTag, const args::ArgsGroup>;
+}

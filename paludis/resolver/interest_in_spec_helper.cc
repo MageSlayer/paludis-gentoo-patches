@@ -354,5 +354,7 @@ InterestInSpecHelper::operator() (
         return si_ignore;
 }
 
-template class Pimp<InterestInSpecHelper>;
-
+namespace paludis
+{
+    template class Pimp<InterestInSpecHelper>;
+}

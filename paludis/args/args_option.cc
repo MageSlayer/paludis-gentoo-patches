@@ -603,11 +603,12 @@ SwitchArg::can_be_negated() const
     return _can_be_negated;
 }
 
-template class WrappedForwardIterator<StringSetArg::ConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<StringSetArg::AllowedArgConstIteratorTag,
-         const std::pair<std::string, std::string> >;
-template class WrappedForwardIterator<EnumArg::AllowedArgConstIteratorTag,
-         const AllowedEnumArg>;
-template class WrappedForwardIterator<StringSequenceArg::ConstIteratorTag, const std::string>;
-
-
+namespace paludis
+{
+    template class WrappedForwardIterator<StringSetArg::ConstIteratorTag, const std::string>;
+    template class WrappedForwardIterator<StringSetArg::AllowedArgConstIteratorTag,
+             const std::pair<std::string, std::string> >;
+    template class WrappedForwardIterator<EnumArg::AllowedArgConstIteratorTag,
+             const AllowedEnumArg>;
+    template class WrappedForwardIterator<StringSequenceArg::ConstIteratorTag, const std::string>;
+}

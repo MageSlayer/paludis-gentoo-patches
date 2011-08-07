@@ -27,9 +27,6 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-template class Sequence<UnsuitableCandidate>;
-template class WrappedForwardIterator<UnsuitableCandidates::ConstIteratorTag, const UnsuitableCandidate>;
-
 UnsuitableCandidate
 UnsuitableCandidate::deserialise(Deserialisation & d)
 {
@@ -49,3 +46,8 @@ UnsuitableCandidate::serialise(Serialiser & s) const
         ;
 }
 
+namespace paludis
+{
+    template class Sequence<UnsuitableCandidate>;
+    template class WrappedForwardIterator<UnsuitableCandidates::ConstIteratorTag, const UnsuitableCandidate>;
+}

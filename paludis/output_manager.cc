@@ -32,7 +32,9 @@ OutputManager::~OutputManager()
 {
 }
 
-template class Sequence<std::shared_ptr<OutputManager> >;
-template class WrappedForwardIterator<Sequence<std::shared_ptr<OutputManager> >::ConstIteratorTag,
-         const std::shared_ptr<OutputManager> >;
-
+namespace paludis
+{
+    template class Sequence<std::shared_ptr<OutputManager> >;
+    template class WrappedForwardIterator<Sequence<std::shared_ptr<OutputManager> >::ConstIteratorTag,
+             const std::shared_ptr<OutputManager> >;
+}

@@ -109,5 +109,7 @@ GetConstraintsForDependentHelper::operator() (
     return result;
 }
 
-template class Pimp<GetConstraintsForDependentHelper>;
-
+namespace paludis
+{
+    template class Pimp<GetConstraintsForDependentHelper>;
+}

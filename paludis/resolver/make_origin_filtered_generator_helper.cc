@@ -104,5 +104,7 @@ MakeOriginFilteredGeneratorHelper::operator() (const Generator & g) const
         return g;
 }
 
-template class Pimp<MakeOriginFilteredGeneratorHelper>;
-
+namespace paludis
+{
+    template class Pimp<MakeOriginFilteredGeneratorHelper>;
+}

@@ -65,5 +65,7 @@ MakeDestinationFilteredGeneratorHelper::operator() (
     return destination_filtered_generator(_imp->env, r->resolvent().destination_type(), g);
 }
 
-template class Pimp<MakeDestinationFilteredGeneratorHelper>;
-
+namespace paludis
+{
+    template class Pimp<MakeDestinationFilteredGeneratorHelper>;
+}

@@ -181,5 +181,7 @@ WildcardExpander::operator== (const WildcardExpander & other) const
     return _imp->files == other._imp->files && _imp->it == other._imp->it;
 }
 
-template class Pimp<WildcardExpander>;
-
+namespace paludis
+{
+    template class Pimp<WildcardExpander>;
+}

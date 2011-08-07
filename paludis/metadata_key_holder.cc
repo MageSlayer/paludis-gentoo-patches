@@ -104,5 +104,7 @@ MetadataKeyHolder::clear_metadata_keys() const
     _imp->keys.clear();
 }
 
-template class WrappedForwardIterator<MetadataKeyHolder::MetadataConstIteratorTag, const std::shared_ptr<const MetadataKey> >;
-
+namespace paludis
+{
+    template class WrappedForwardIterator<MetadataKeyHolder::MetadataConstIteratorTag, const std::shared_ptr<const MetadataKey> >;
+}

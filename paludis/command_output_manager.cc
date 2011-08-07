@@ -264,5 +264,7 @@ CommandOutputManager::factory_create(
             succeeded_command_s, nothing_more_to_come_command_s);
 }
 
-template class Pimp<CommandOutputManager>;
-
+namespace paludis
+{
+    template class Pimp<CommandOutputManager>;
+}

@@ -96,5 +96,7 @@ paludis::operator<< (std::ostream & s, const FilteredGenerator & fg)
     return s;
 }
 
-template class Pimp<FilteredGenerator>;
-
+namespace paludis
+{
+    template class Pimp<FilteredGenerator>;
+}

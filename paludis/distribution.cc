@@ -36,8 +36,6 @@
 
 using namespace paludis;
 
-template class Singleton<DistributionData>;
-
 DistributionConfigurationError::DistributionConfigurationError(const std::string & s) throw () :
     ConfigurationError("Distribution configuration error: " + s)
 {
@@ -101,3 +99,7 @@ DistributionData::distribution_from_string(const std::string & s) const
         return i->second;
 }
 
+namespace paludis
+{
+    template class Singleton<DistributionData>;
+}

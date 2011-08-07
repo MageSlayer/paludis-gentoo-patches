@@ -115,5 +115,7 @@ ChangedChoices::deserialise(Deserialisation & d)
     return result;
 }
 
-template class Pimp<ChangedChoices>;
-
+namespace paludis
+{
+    template class Pimp<ChangedChoices>;
+}

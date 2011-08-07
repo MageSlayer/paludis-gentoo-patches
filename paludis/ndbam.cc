@@ -666,7 +666,8 @@ NDBAM::index(const QualifiedPackageName & q, const std::string & d) const
         pc_index_sym.symlink("../../../data/" + d);
 }
 
-template class Sequence<std::shared_ptr<NDBAMEntry> >;
-template class WrappedForwardIterator<Sequence<std::shared_ptr<NDBAMEntry> >::ConstIteratorTag, const std::shared_ptr<NDBAMEntry> >;
-
-
+namespace paludis
+{
+    template class Sequence<std::shared_ptr<NDBAMEntry> >;
+    template class WrappedForwardIterator<Sequence<std::shared_ptr<NDBAMEntry> >::ConstIteratorTag, const std::shared_ptr<NDBAMEntry> >;
+}

@@ -626,19 +626,21 @@ PackageDepSpec::data() const
     return _imp->data;
 }
 
-template class LabelsDepSpec<URILabel>;
-template class LabelsDepSpec<DependenciesLabel>;
+namespace paludis
+{
+    template class LabelsDepSpec<URILabel>;
+    template class LabelsDepSpec<DependenciesLabel>;
 
-template class Cloneable<DepSpec>;
-template class Pimp<ConditionalDepSpec>;
-template class CloneUsingThis<DepSpec, ConditionalDepSpec>;
-template class Pimp<PackageDepSpec>;
-template class CloneUsingThis<DepSpec, PackageDepSpec>;
-template class Pimp<URILabelsDepSpec>;
-template class Pimp<DependenciesLabelsDepSpec>;
+    template class Cloneable<DepSpec>;
+    template class Pimp<ConditionalDepSpec>;
+    template class CloneUsingThis<DepSpec, ConditionalDepSpec>;
+    template class Pimp<PackageDepSpec>;
+    template class CloneUsingThis<DepSpec, PackageDepSpec>;
+    template class Pimp<URILabelsDepSpec>;
+    template class Pimp<DependenciesLabelsDepSpec>;
 
-template class WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag,
-         const std::shared_ptr<const DependenciesLabel> >;
-template class WrappedForwardIterator<URILabelsDepSpec::ConstIteratorTag,
-         const std::shared_ptr<const URILabel> >;
-
+    template class WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag,
+             const std::shared_ptr<const DependenciesLabel> >;
+    template class WrappedForwardIterator<URILabelsDepSpec::ConstIteratorTag,
+             const std::shared_ptr<const URILabel> >;
+}

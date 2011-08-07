@@ -126,5 +126,7 @@ FindRepositoryForHelper::operator() (
     return result;
 }
 
-template class Pimp<FindRepositoryForHelper>;
-
+namespace paludis
+{
+    template class Pimp<FindRepositoryForHelper>;
+}

@@ -99,5 +99,7 @@ GetConstraintsForPurgeHelper::operator() (
     return result;
 }
 
-template class Pimp<GetConstraintsForPurgeHelper>;
-
+namespace paludis
+{
+    template class Pimp<GetConstraintsForPurgeHelper>;
+}

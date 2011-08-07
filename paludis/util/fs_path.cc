@@ -429,13 +429,15 @@ FSPathComparator::operator() (const FSPath & a, const FSPath & b) const
     return stringify(a) < stringify(b);
 }
 
-template class Sequence<FSPath>;
-template class WrappedForwardIterator<Sequence<FSPath>::ConstIteratorTag, const FSPath>;
-template class WrappedForwardIterator<Sequence<FSPath>::ReverseConstIteratorTag, const FSPath>;
-template class WrappedOutputIterator<Sequence<FSPath>::InserterTag, FSPath>;
+namespace paludis
+{
+    template class Sequence<FSPath>;
+    template class WrappedForwardIterator<Sequence<FSPath>::ConstIteratorTag, const FSPath>;
+    template class WrappedForwardIterator<Sequence<FSPath>::ReverseConstIteratorTag, const FSPath>;
+    template class WrappedOutputIterator<Sequence<FSPath>::InserterTag, FSPath>;
 
-template class Set<FSPath, FSPathComparator>;
-template class WrappedForwardIterator<Set<FSPath, FSPathComparator>::ConstIteratorTag, const FSPath>;
+    template class Set<FSPath, FSPathComparator>;
+    template class WrappedForwardIterator<Set<FSPath, FSPathComparator>::ConstIteratorTag, const FSPath>;
 
-template class Pimp<FSPath>;
-
+    template class Pimp<FSPath>;
+}

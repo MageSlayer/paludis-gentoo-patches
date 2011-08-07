@@ -238,6 +238,8 @@ InfoPkgsMetadataKey::type() const
 }
 
 
-template class Pimp<InfoPkgsMetadataKey>;
-template class Pimp<InfoVarsMetadataKey>;
-
+namespace paludis
+{
+    template class Pimp<InfoPkgsMetadataKey>;
+    template class Pimp<InfoVarsMetadataKey>;
+}

@@ -96,5 +96,7 @@ ScopedNotifierCallback::remove_now()
     _imp->removed = true;
 }
 
-template class Pimp<ScopedNotifierCallback>;
-
+namespace paludis
+{
+    template class Pimp<ScopedNotifierCallback>;
+}

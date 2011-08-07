@@ -106,5 +106,7 @@ FindReplacingHelper::operator() (
     return result;
 }
 
-template class Pimp<FindReplacingHelper>;
-
+namespace paludis
+{
+    template class Pimp<FindReplacingHelper>;
+}

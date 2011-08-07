@@ -472,5 +472,7 @@ RepositoryRepository::merge(const MergeParams & m)
     }
 }
 
-template class Pimp<repository_repository::RepositoryRepository>;
-
+namespace paludis
+{
+    template class Pimp<repository_repository::RepositoryRepository>;
+}

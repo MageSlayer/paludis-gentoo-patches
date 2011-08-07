@@ -155,5 +155,7 @@ Hook::name() const
     return _imp->name;
 }
 
-template class WrappedForwardIterator<Hook::ConstIteratorTag, const std::pair<const std::string, std::string> >;
-
+namespace paludis
+{
+    template class WrappedForwardIterator<Hook::ConstIteratorTag, const std::pair<const std::string, std::string> >;
+}

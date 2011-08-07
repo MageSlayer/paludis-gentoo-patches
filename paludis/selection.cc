@@ -502,5 +502,7 @@ paludis::operator<< (std::ostream & s, const Selection & g)
     return s;
 }
 
-template class Pimp<Selection>;
-
+namespace paludis
+{
+    template class Pimp<Selection>;
+}

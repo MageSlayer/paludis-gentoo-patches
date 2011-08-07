@@ -1047,5 +1047,7 @@ paludis::user_version_spec_options()
         vso_ignore_case, vso_letters_anywhere, vso_dotted_suffixes };
 }
 
-template class Pimp<UserKeyRequirement>;
-
+namespace paludis
+{
+    template class Pimp<UserKeyRequirement>;
+}

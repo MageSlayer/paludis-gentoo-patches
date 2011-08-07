@@ -1191,14 +1191,16 @@ FakePackageID::behaviours_set()
     return _imp->behaviours_set;
 }
 
-template class FakeMetadataSpecTreeKey<LicenseSpecTree>;
-template class FakeMetadataSpecTreeKey<PlainTextSpecTree>;
+namespace paludis
+{
+    template class FakeMetadataSpecTreeKey<LicenseSpecTree>;
+    template class FakeMetadataSpecTreeKey<PlainTextSpecTree>;
 #ifndef PALUDIS_NO_EXPLICIT_FULLY_SPECIALISED
-template class FakeMetadataSpecTreeKey<FetchableURISpecTree>;
-template class FakeMetadataSpecTreeKey<DependencySpecTree>;
-template class FakeMetadataSpecTreeKey<DependencySpecTree>;
+    template class FakeMetadataSpecTreeKey<FetchableURISpecTree>;
+    template class FakeMetadataSpecTreeKey<DependencySpecTree>;
+    template class FakeMetadataSpecTreeKey<DependencySpecTree>;
 #endif
-template class FakeMetadataSpecTreeKey<SimpleURISpecTree>;
+    template class FakeMetadataSpecTreeKey<SimpleURISpecTree>;
 
-template class FakeMetadataCollectionKey<KeywordNameSet>;
-
+    template class FakeMetadataCollectionKey<KeywordNameSet>;
+}

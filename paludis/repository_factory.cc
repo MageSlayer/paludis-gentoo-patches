@@ -209,7 +209,9 @@ RepositoryFactory::add_repository_format(
     }
 }
 
-template class Pimp<RepositoryFactory>;
-template class Singleton<RepositoryFactory>;
-template class WrappedForwardIterator<RepositoryFactory::ConstIteratorTag, const std::string>;
-
+namespace paludis
+{
+    template class Pimp<RepositoryFactory>;
+    template class Singleton<RepositoryFactory>;
+    template class WrappedForwardIterator<RepositoryFactory::ConstIteratorTag, const std::string>;
+}

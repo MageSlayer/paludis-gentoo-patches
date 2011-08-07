@@ -160,5 +160,7 @@ ForwardAtFinishOutputManager::factory_create(
                 child);
 }
 
-template class Pimp<ForwardAtFinishOutputManager>;
-
+namespace paludis
+{
+    template class Pimp<ForwardAtFinishOutputManager>;
+}

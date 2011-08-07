@@ -247,5 +247,7 @@ paludis::operator!= (const FSIterator & me, const FSIterator & other)
     return ! operator== (me, other);
 }
 
-template class Pimp<FSIterator>;
-
+namespace paludis
+{
+    template class Pimp<FSIterator>;
+}

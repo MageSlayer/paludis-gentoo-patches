@@ -249,5 +249,7 @@ GetInitialConstraintsForHelper::_make_initial_constraints_for(
     return result;
 }
 
-template class Pimp<GetInitialConstraintsForHelper>;
-
+namespace paludis
+{
+    template class Pimp<GetInitialConstraintsForHelper>;
+}

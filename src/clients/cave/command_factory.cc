@@ -244,7 +244,9 @@ UnknownCommand::UnknownCommand(const std::string & s) throw () :
 {
 }
 
-template class Singleton<CommandFactory>;
-template class Pimp<CommandFactory>;
-template class WrappedForwardIterator<CommandFactory::ConstIteratorTag, const std::string>;
-
+namespace paludis
+{
+    template class Singleton<CommandFactory>;
+    template class Pimp<CommandFactory>;
+    template class WrappedForwardIterator<CommandFactory::ConstIteratorTag, const std::string>;
+}

@@ -146,6 +146,8 @@ EnvironmentFactory::add_environment_format(
     }
 }
 
-template class Singleton<EnvironmentFactory>;
-template class Pimp<EnvironmentFactory>;
-
+namespace paludis
+{
+    template class Singleton<EnvironmentFactory>;
+    template class Pimp<EnvironmentFactory>;
+}

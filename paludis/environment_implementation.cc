@@ -623,5 +623,7 @@ DuplicateSetError::DuplicateSetError(const SetName & s) throw () :
 {
 }
 
-template class WrappedForwardIterator<Environment::RepositoryConstIteratorTag, const std::shared_ptr<Repository> >;
-
+namespace paludis
+{
+    template class WrappedForwardIterator<Environment::RepositoryConstIteratorTag, const std::shared_ptr<Repository> >;
+}

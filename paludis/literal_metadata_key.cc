@@ -399,10 +399,12 @@ LiteralMetadataTimeKey::parse_value() const
     return _imp->value;
 }
 
-template class LiteralMetadataValueKey<FSPath>;
-template class LiteralMetadataValueKey<std::string>;
-template class LiteralMetadataValueKey<SlotName>;
-template class LiteralMetadataValueKey<bool>;
-template class LiteralMetadataValueKey<long>;
-template class LiteralMetadataValueKey<std::shared_ptr<const PackageID> >;
-
+namespace paludis
+{
+    template class LiteralMetadataValueKey<FSPath>;
+    template class LiteralMetadataValueKey<std::string>;
+    template class LiteralMetadataValueKey<SlotName>;
+    template class LiteralMetadataValueKey<bool>;
+    template class LiteralMetadataValueKey<long>;
+    template class LiteralMetadataValueKey<std::shared_ptr<const PackageID> >;
+}

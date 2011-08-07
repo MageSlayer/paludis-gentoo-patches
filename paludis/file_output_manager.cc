@@ -198,5 +198,7 @@ FileOutputManager::factory_create(
                 summary_output_manager, summary_output_message_s);
 }
 
-template class Pimp<FileOutputManager>;
-
+namespace paludis
+{
+    template class Pimp<FileOutputManager>;
+}

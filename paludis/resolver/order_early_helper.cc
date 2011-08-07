@@ -84,5 +84,7 @@ OrderEarlyHelper::operator() (const std::shared_ptr<const Resolution> & resoluti
     return indeterminate;
 }
 
-template class Pimp<OrderEarlyHelper>;
-
+namespace paludis
+{
+    template class Pimp<OrderEarlyHelper>;
+}

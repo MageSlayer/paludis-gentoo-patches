@@ -912,5 +912,7 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
     }
 }
 
-template class Pimp<EbuildFlatMetadataCache>;
-
+namespace paludis
+{
+    template class Pimp<EbuildFlatMetadataCache>;
+}

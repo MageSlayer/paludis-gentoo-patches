@@ -36,7 +36,6 @@
 
 using namespace paludis;
 
-template class Sequence<UseDescFileInfo>;
 typedef std::unordered_map<std::pair<ChoicePrefixName, UnprefixedChoiceName>, std::string,
         Hash<std::pair<ChoicePrefixName, UnprefixedChoiceName> > > UseDescs;
 
@@ -110,3 +109,7 @@ UseDesc::describe(
     return "";
 }
 
+namespace paludis
+{
+    template class Sequence<UseDescFileInfo>;
+}

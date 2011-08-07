@@ -37,8 +37,6 @@ using namespace paludis;
 
 #include <paludis/util/log-se.cc>
 
-template class Singleton<Log>;
-
 namespace paludis
 {
     template<>
@@ -211,5 +209,9 @@ LogMessageHandler::~LogMessageHandler()
         _log->_message(_id, _log_level, _log_context, _message);
 }
 
-template class Pimp<Log>;
+namespace paludis
+{
+    template class Singleton<Log>;
 
+    template class Pimp<Log>;
+}

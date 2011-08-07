@@ -92,5 +92,7 @@ OutputManagerFromEnvironment::construct_standard_if_unconstructed()
     }
 }
 
-template class Pimp<OutputManagerFromEnvironment>;
-
+namespace paludis
+{
+    template class Pimp<OutputManagerFromEnvironment>;
+}

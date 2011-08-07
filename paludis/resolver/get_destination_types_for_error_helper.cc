@@ -123,5 +123,7 @@ GetDestinationTypesForErrorHelper::operator() (
     return reason->accept_returning<DestinationTypes>(DestinationTypesFinder{_imp->target_destination_type});
 }
 
-template class Pimp<GetDestinationTypesForErrorHelper>;
-
+namespace paludis
+{
+    template class Pimp<GetDestinationTypesForErrorHelper>;
+}

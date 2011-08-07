@@ -93,5 +93,7 @@ ArgsGroup::end() const
     return ConstIterator(_imp->args_options.end());
 }
 
-template class WrappedForwardIterator<ArgsGroup::ConstIteratorTag, ArgsOption * const>;
-
+namespace paludis
+{
+    template class WrappedForwardIterator<ArgsGroup::ConstIteratorTag, ArgsOption * const>;
+}

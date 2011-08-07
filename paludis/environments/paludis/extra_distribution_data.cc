@@ -58,6 +58,8 @@ namespace paludis
     };
 }
 
-template class ExtraDistributionData<PaludisDistribution>;
-template class Singleton<ExtraDistributionData<PaludisDistribution>>;
-
+namespace paludis
+{
+    template class ExtraDistributionData<PaludisDistribution>;
+    template class Singleton<ExtraDistributionData<PaludisDistribution>>;
+}

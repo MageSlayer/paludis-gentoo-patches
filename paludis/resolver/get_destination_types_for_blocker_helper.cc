@@ -123,5 +123,7 @@ GetDestinationTypesForBlockerHelper::operator() (
     return reason->accept_returning<DestinationTypes>(DestinationTypesFinder{_imp->target_destination_type});
 }
 
-template class Pimp<GetDestinationTypesForBlockerHelper>;
-
+namespace paludis
+{
+    template class Pimp<GetDestinationTypesForBlockerHelper>;
+}

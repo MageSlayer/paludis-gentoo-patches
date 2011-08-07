@@ -188,6 +188,8 @@ paludis::resolver::operator<< (std::ostream & s, const Resolvent & r)
     return s;
 }
 
-template class Sequence<Resolvent>;
-template class WrappedForwardIterator<Resolvents::ConstIteratorTag, const Resolvent>;
-
+namespace paludis
+{
+    template class Sequence<Resolvent>;
+    template class WrappedForwardIterator<Resolvents::ConstIteratorTag, const Resolvent>;
+}

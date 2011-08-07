@@ -137,6 +137,8 @@ TraditionalMaskFile::~TraditionalMaskFile()
 {
 }
 
-template class WrappedForwardIterator<TraditionalMaskFile::ConstIteratorTag,
-         const std::pair<const std::string, std::shared_ptr<const MaskInfo> > >;
-
+namespace paludis
+{
+    template class WrappedForwardIterator<TraditionalMaskFile::ConstIteratorTag,
+             const std::pair<const std::string, std::shared_ptr<const MaskInfo> > >;
+}

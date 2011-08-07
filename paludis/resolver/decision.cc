@@ -675,10 +675,12 @@ BreakDecision::deserialise(Deserialisation & d)
     return result;
 }
 
-template class Pimp<NothingNoChangeDecision>;
-template class Pimp<ExistingNoChangeDecision>;
-template class Pimp<ChangesToMakeDecision>;
-template class Pimp<UnableToMakeDecision>;
-template class Pimp<RemoveDecision>;
-template class Pimp<BreakDecision>;
-
+namespace paludis
+{
+    template class Pimp<NothingNoChangeDecision>;
+    template class Pimp<ExistingNoChangeDecision>;
+    template class Pimp<ChangesToMakeDecision>;
+    template class Pimp<UnableToMakeDecision>;
+    template class Pimp<RemoveDecision>;
+    template class Pimp<BreakDecision>;
+}

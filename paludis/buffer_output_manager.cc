@@ -125,5 +125,7 @@ BufferOutputManager::factory_create(
     return std::make_shared<BufferOutputManager>(child);
 }
 
-template class Pimp<BufferOutputManager>;
-
+namespace paludis
+{
+    template class Pimp<BufferOutputManager>;
+}

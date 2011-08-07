@@ -122,5 +122,7 @@ FileSuffixes::get_package_file_manifest_key(const FSPath & e, const QualifiedPac
     return manifest_key(suffix);
 }
 
-template class Singleton<FileSuffixes>;
-
+namespace paludis
+{
+    template class Singleton<FileSuffixes>;
+}

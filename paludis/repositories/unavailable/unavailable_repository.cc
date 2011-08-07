@@ -454,5 +454,7 @@ UnavailableRepository::sync_host_key() const
     return _imp->sync_host_key;
 }
 
-template class Pimp<unavailable_repository::UnavailableRepository>;
-
+namespace paludis
+{
+    template class Pimp<unavailable_repository::UnavailableRepository>;
+}

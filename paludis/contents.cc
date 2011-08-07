@@ -150,9 +150,11 @@ Contents::end() const
     return ConstIterator(_imp->c.end());
 }
 
-template class Pimp<Contents>;
-template class Pimp<ContentsEntry>;
-template class Pimp<ContentsSymEntry>;
+namespace paludis
+{
+    template class Pimp<Contents>;
+    template class Pimp<ContentsEntry>;
+    template class Pimp<ContentsSymEntry>;
 
-template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::shared_ptr<const ContentsEntry> >;
-
+    template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::shared_ptr<const ContentsEntry> >;
+}

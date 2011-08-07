@@ -276,5 +276,7 @@ RepositoryID::slot_key() const
     return make_null_shared_ptr();
 }
 
-template class Pimp<RepositoryID>;
-
+namespace paludis
+{
+    template class Pimp<RepositoryID>;
+}

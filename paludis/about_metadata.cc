@@ -81,6 +81,8 @@ AboutMetadata::need_keys_added() const
 {
 }
 
-template class Pimp<AboutMetadata>;
-template class Singleton<AboutMetadata>;
-
+namespace paludis
+{
+    template class Pimp<AboutMetadata>;
+    template class Singleton<AboutMetadata>;
+}

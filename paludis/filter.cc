@@ -542,12 +542,14 @@ paludis::operator<< (std::ostream & s, const Filter & f)
     return s;
 }
 
-template class Pimp<Filter>;
-template class filter::SupportsAction<InstallAction>;
-template class filter::SupportsAction<UninstallAction>;
-template class filter::SupportsAction<PretendAction>;
-template class filter::SupportsAction<ConfigAction>;
-template class filter::SupportsAction<FetchAction>;
-template class filter::SupportsAction<InfoAction>;
-template class filter::SupportsAction<PretendFetchAction>;
-
+namespace paludis
+{
+    template class Pimp<Filter>;
+    template class filter::SupportsAction<InstallAction>;
+    template class filter::SupportsAction<UninstallAction>;
+    template class filter::SupportsAction<PretendAction>;
+    template class filter::SupportsAction<ConfigAction>;
+    template class filter::SupportsAction<FetchAction>;
+    template class filter::SupportsAction<InfoAction>;
+    template class filter::SupportsAction<PretendFetchAction>;
+}

@@ -322,15 +322,17 @@ ConfigAction::class_simple_name()
     return "config";
 }
 
-template class Pimp<FetchAction>;
-template class Pimp<InstallAction>;
-template class Pimp<PretendAction>;
-template class Pimp<PretendFetchAction>;
-template class Pimp<UninstallAction>;
-template class Pimp<InfoAction>;
-template class Pimp<ConfigAction>;
+namespace paludis
+{
+    template class Pimp<FetchAction>;
+    template class Pimp<InstallAction>;
+    template class Pimp<PretendAction>;
+    template class Pimp<PretendFetchAction>;
+    template class Pimp<UninstallAction>;
+    template class Pimp<InfoAction>;
+    template class Pimp<ConfigAction>;
 
-template class Sequence<FetchActionFailure>;
-template class WrappedForwardIterator<Sequence<FetchActionFailure>::ConstIteratorTag, const FetchActionFailure>;
-template class WrappedOutputIterator<Sequence<FetchActionFailure>::InserterTag, FetchActionFailure>;
-
+    template class Sequence<FetchActionFailure>;
+    template class WrappedForwardIterator<Sequence<FetchActionFailure>::ConstIteratorTag, const FetchActionFailure>;
+    template class WrappedOutputIterator<Sequence<FetchActionFailure>::InserterTag, FetchActionFailure>;
+}

@@ -115,5 +115,7 @@ ResolutionsByResolvent::deserialise(Deserialisation & d)
     return result;
 }
 
-template class WrappedForwardIterator<ResolutionsByResolvent::ConstIteratorTag, const std::shared_ptr<Resolution> >;
-
+namespace paludis
+{
+    template class WrappedForwardIterator<ResolutionsByResolvent::ConstIteratorTag, const std::shared_ptr<Resolution> >;
+}

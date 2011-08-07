@@ -21,5 +21,7 @@
 
 using namespace paludis;
 
-template class Set<std::string>;
-
+namespace paludis
+{
+    template class Set<std::string>;
+}

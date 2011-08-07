@@ -219,7 +219,9 @@ GLSAError::GLSAError(const std::string & msg, const std::string & filename) thro
 {
 }
 
-template class WrappedForwardIterator<GLSAPackage::ArchsConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<GLSAPackage::RangesConstIteratorTag, const erepository::GLSARange>;
-template class WrappedForwardIterator<GLSA::PackagesConstIteratorTag, const GLSAPackage>;
-
+namespace paludis
+{
+    template class WrappedForwardIterator<GLSAPackage::ArchsConstIteratorTag, const std::string>;
+    template class WrappedForwardIterator<GLSAPackage::RangesConstIteratorTag, const erepository::GLSARange>;
+    template class WrappedForwardIterator<GLSA::PackagesConstIteratorTag, const GLSAPackage>;
+}

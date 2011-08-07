@@ -413,5 +413,7 @@ UnwrittenRepository::sync_host_key() const
     return _imp->sync_host_key;
 }
 
-template class Pimp<unwritten_repository::UnwrittenRepository>;
-
+namespace paludis
+{
+    template class Pimp<unwritten_repository::UnwrittenRepository>;
+}

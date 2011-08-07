@@ -441,5 +441,7 @@ AccountsRepository::sync(
     return false;
 }
 
-template class Pimp<AccountsRepository>;
-
+namespace paludis
+{
+    template class Pimp<AccountsRepository>;
+}

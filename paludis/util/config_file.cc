@@ -875,10 +875,12 @@ KeyValueConfigFile::transformation_function() const
     return _imp->transformation_function;
 }
 
-template class Pimp<ConfigFile::Source>;
-template class Pimp<LineConfigFile>;
-template class Pimp<KeyValueConfigFile>;
+namespace paludis
+{
+    template class Pimp<ConfigFile::Source>;
+    template class Pimp<LineConfigFile>;
+    template class Pimp<KeyValueConfigFile>;
 
-template class WrappedForwardIterator<LineConfigFile::ConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<KeyValueConfigFile::ConstIteratorTag, const std::pair<const std::string, std::string> >;
-
+    template class WrappedForwardIterator<LineConfigFile::ConstIteratorTag, const std::string>;
+    template class WrappedForwardIterator<KeyValueConfigFile::ConstIteratorTag, const std::pair<const std::string, std::string> >;
+}

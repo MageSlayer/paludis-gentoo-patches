@@ -67,28 +67,30 @@ MetadataSpecTreeKey<DependencySpecTree>::~MetadataSpecTreeKey()
 {
 }
 
-template class MetadataCollectionKey<KeywordNameSet>;
-template class MetadataCollectionKey<Set<std::string> >;
-template class MetadataCollectionKey<Sequence<std::string> >;
-template class MetadataCollectionKey<Map<std::string, std::string> >;
-template class MetadataCollectionKey<PackageIDSequence>;
-template class MetadataCollectionKey<FSPathSequence>;
+namespace paludis
+{
+    template class MetadataCollectionKey<KeywordNameSet>;
+    template class MetadataCollectionKey<Set<std::string> >;
+    template class MetadataCollectionKey<Sequence<std::string> >;
+    template class MetadataCollectionKey<Map<std::string, std::string> >;
+    template class MetadataCollectionKey<PackageIDSequence>;
+    template class MetadataCollectionKey<FSPathSequence>;
 
-template class MetadataSpecTreeKey<LicenseSpecTree>;
-template class MetadataSpecTreeKey<PlainTextSpecTree>;
-template class MetadataSpecTreeKey<RequiredUseSpecTree>;
+    template class MetadataSpecTreeKey<LicenseSpecTree>;
+    template class MetadataSpecTreeKey<PlainTextSpecTree>;
+    template class MetadataSpecTreeKey<RequiredUseSpecTree>;
 #ifndef PALUDIS_NO_EXPLICIT_FULLY_SPECIALISED
-template class MetadataSpecTreeKey<FetchableURISpecTree>;
-template class MetadataSpecTreeKey<DependencySpecTree>;
+    template class MetadataSpecTreeKey<FetchableURISpecTree>;
+    template class MetadataSpecTreeKey<DependencySpecTree>;
 #endif
-template class MetadataSpecTreeKey<SimpleURISpecTree>;
+    template class MetadataSpecTreeKey<SimpleURISpecTree>;
 
-template class MetadataValueKey<std::string>;
-template class MetadataValueKey<long>;
-template class MetadataValueKey<bool>;
-template class MetadataValueKey<FSPath>;
-template class MetadataValueKey<SlotName>;
-template class MetadataValueKey<std::shared_ptr<const PackageID> >;
-template class MetadataValueKey<std::shared_ptr<const Contents> >;
-template class MetadataValueKey<std::shared_ptr<const Choices> >;
-
+    template class MetadataValueKey<std::string>;
+    template class MetadataValueKey<long>;
+    template class MetadataValueKey<bool>;
+    template class MetadataValueKey<FSPath>;
+    template class MetadataValueKey<SlotName>;
+    template class MetadataValueKey<std::shared_ptr<const PackageID> >;
+    template class MetadataValueKey<std::shared_ptr<const Contents> >;
+    template class MetadataValueKey<std::shared_ptr<const Choices> >;
+}

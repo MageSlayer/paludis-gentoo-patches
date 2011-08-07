@@ -270,5 +270,7 @@ UnavailableRepositoryStore::package_ids(const QualifiedPackageName & p) const
         return i->second;
 }
 
-template class Pimp<unavailable_repository::UnavailableRepositoryStore>;
-
+namespace paludis
+{
+    template class Pimp<unavailable_repository::UnavailableRepositoryStore>;
+}

@@ -23,7 +23,9 @@
 
 using namespace paludis;
 
-template class Sequence<std::string>;
-template class WrappedForwardIterator<Sequence<std::string>::ConstIteratorTag, const std::string>;
-template class WrappedOutputIterator<Sequence<std::string>::InserterTag, std::string>;
-
+namespace paludis
+{
+    template class Sequence<std::string>;
+    template class WrappedForwardIterator<Sequence<std::string>::ConstIteratorTag, const std::string>;
+    template class WrappedOutputIterator<Sequence<std::string>::InserterTag, std::string>;
+}

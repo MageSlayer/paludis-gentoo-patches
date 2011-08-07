@@ -74,5 +74,7 @@ AllowedToRestartHelper::operator() (
     return ! _imp->no_restarts_for_specs.match_any(_imp->env, id, { });
 }
 
-template class Pimp<AllowedToRestartHelper>;
-
+namespace paludis
+{
+    template class Pimp<AllowedToRestartHelper>;
+}

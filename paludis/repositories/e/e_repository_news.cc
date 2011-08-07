@@ -396,7 +396,9 @@ NewsError::NewsError(const FSPath & f, const std::string & m) throw () :
 {
 }
 
-template class WrappedForwardIterator<NewsFile::DisplayIfInstalledConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<NewsFile::DisplayIfKeywordConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<NewsFile::DisplayIfProfileConstIteratorTag, const std::string>;
-
+namespace paludis
+{
+    template class WrappedForwardIterator<NewsFile::DisplayIfInstalledConstIteratorTag, const std::string>;
+    template class WrappedForwardIterator<NewsFile::DisplayIfKeywordConstIteratorTag, const std::string>;
+    template class WrappedForwardIterator<NewsFile::DisplayIfProfileConstIteratorTag, const std::string>;
+}

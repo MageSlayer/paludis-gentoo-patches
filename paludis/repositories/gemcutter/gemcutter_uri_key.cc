@@ -154,5 +154,7 @@ GemcutterURIKey::pretty_print_value(
     return p.s.str();
 }
 
-template class Pimp<GemcutterURIKey>;
-
+namespace paludis
+{
+    template class Pimp<GemcutterURIKey>;
+}

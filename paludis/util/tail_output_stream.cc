@@ -114,5 +114,7 @@ TailOutputStreamBuf::tail(const bool clear)
     return result;
 }
 
-template class Pimp<TailOutputStreamBuf>;
-
+namespace paludis
+{
+    template class Pimp<TailOutputStreamBuf>;
+}

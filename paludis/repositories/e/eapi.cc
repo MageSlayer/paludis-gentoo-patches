@@ -47,8 +47,6 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-template class Singleton<EAPIData>;
-
 namespace
 {
     std::string predefined(const std::string & d, const KeyValueConfigFile &, const std::string & v)
@@ -489,3 +487,7 @@ EAPILabels::class_for_label(const std::string & l) const
     return i->second;
 }
 
+namespace paludis
+{
+    template class Singleton<EAPIData>;
+}

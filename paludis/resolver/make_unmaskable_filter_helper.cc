@@ -106,5 +106,7 @@ MakeUnmaskableFilterHelper::operator() (
         return filter::NotMasked();
 }
 
-template class Pimp<MakeUnmaskableFilterHelper>;
-
+namespace paludis
+{
+    template class Pimp<MakeUnmaskableFilterHelper>;
+}

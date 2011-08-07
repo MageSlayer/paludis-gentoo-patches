@@ -171,5 +171,7 @@ Executor::exclusivity_mutex()
     return _imp->mutex;
 }
 
-template class Pimp<Executor>;
-
+namespace paludis
+{
+    template class Pimp<Executor>;
+}

@@ -132,6 +132,8 @@ ChangedChoicesConfirmation::serialise(Serialiser & s) const
         ;
 }
 
-template class Sequence<std::shared_ptr<const RequiredConfirmation> >;
-template class WrappedForwardIterator<RequiredConfirmations::ConstIteratorTag, const std::shared_ptr<const RequiredConfirmation> >;
-
+namespace paludis
+{
+    template class Sequence<std::shared_ptr<const RequiredConfirmation> >;
+    template class WrappedForwardIterator<RequiredConfirmations::ConstIteratorTag, const std::shared_ptr<const RequiredConfirmation> >;
+}

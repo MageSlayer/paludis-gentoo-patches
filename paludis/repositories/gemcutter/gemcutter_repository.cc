@@ -302,5 +302,7 @@ GemcutterRepository::sync_host_key() const
     return make_null_shared_ptr();
 }
 
-template class Pimp<gemcutter_repository::GemcutterRepository>;
-
+namespace paludis
+{
+    template class Pimp<gemcutter_repository::GemcutterRepository>;
+}

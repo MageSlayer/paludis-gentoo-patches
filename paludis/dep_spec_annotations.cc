@@ -145,6 +145,8 @@ paludis::find_blocker_role_in_annotations(
     return dsar_none;
 }
 
-template class Pimp<DepSpecAnnotations>;
-template class WrappedForwardIterator<DepSpecAnnotations::ConstIteratorTag, const DepSpecAnnotation>;
-
+namespace paludis
+{
+    template class Pimp<DepSpecAnnotations>;
+    template class WrappedForwardIterator<DepSpecAnnotations::ConstIteratorTag, const DepSpecAnnotation>;
+}

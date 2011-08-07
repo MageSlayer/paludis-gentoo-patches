@@ -75,5 +75,7 @@ AlwaysViaBinaryHelper::operator() (const std::shared_ptr<const Resolution> & res
         _imp->always_via_binary_specs.match_any(_imp->env, changes_decision->origin_id(), { });
 }
 
-template class Pimp<AlwaysViaBinaryHelper>;
-
+namespace paludis
+{
+    template class Pimp<AlwaysViaBinaryHelper>;
+}

@@ -118,5 +118,7 @@ AllowedToRemoveHelper::operator() (
     return _imp->allowed_to_remove_specs.match_any(_imp->env, id, { });
 }
 
-template class Pimp<AllowedToRemoveHelper>;
-
+namespace paludis
+{
+    template class Pimp<AllowedToRemoveHelper>;
+}

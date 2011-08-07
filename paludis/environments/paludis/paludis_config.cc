@@ -1155,5 +1155,7 @@ PaludisConfig::distribution() const
     return _imp->distribution;
 }
 
-template class WrappedForwardIterator<PaludisConfig::RepositoryConstIteratorTag, const std::function<std::string (const std::string &)> >;
-
+namespace paludis
+{
+    template class WrappedForwardIterator<PaludisConfig::RepositoryConstIteratorTag, const std::function<std::string (const std::string &)> >;
+}

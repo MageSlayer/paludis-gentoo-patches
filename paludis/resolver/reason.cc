@@ -488,15 +488,17 @@ Reason::deserialise(Deserialisation & d)
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
 
-template class Pimp<TargetReason>;
-template class Pimp<DependencyReason>;
-template class Pimp<DependentReason>;
-template class Pimp<SetReason>;
-template class Pimp<PresetReason>;
-template class Pimp<WasUsedByReason>;
-template class Pimp<LikeOtherDestinationTypeReason>;
-template class Pimp<ViaBinaryReason>;
+namespace paludis
+{
+    template class Pimp<TargetReason>;
+    template class Pimp<DependencyReason>;
+    template class Pimp<DependentReason>;
+    template class Pimp<SetReason>;
+    template class Pimp<PresetReason>;
+    template class Pimp<WasUsedByReason>;
+    template class Pimp<LikeOtherDestinationTypeReason>;
+    template class Pimp<ViaBinaryReason>;
 
-template class Sequence<std::shared_ptr<const Reason> >;
-template class WrappedForwardIterator<Reasons::ConstIteratorTag, const std::shared_ptr<const Reason> >;
-
+    template class Sequence<std::shared_ptr<const Reason> >;
+    template class WrappedForwardIterator<Reasons::ConstIteratorTag, const std::shared_ptr<const Reason> >;
+}

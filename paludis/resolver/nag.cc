@@ -509,10 +509,12 @@ NAGEdgeProperties::deserialise(Deserialisation & d)
             );
 }
 
-template class WrappedForwardIterator<NAG::EdgesFromConstIteratorTag, const std::pair<const NAGIndex, NAGEdgeProperties> >;
-template class WrappedForwardIterator<NAG::NodesConstIteratorTag, const NAGIndex>;
+namespace paludis
+{
+    template class WrappedForwardIterator<NAG::EdgesFromConstIteratorTag, const std::pair<const NAGIndex, NAGEdgeProperties> >;
+    template class WrappedForwardIterator<NAG::NodesConstIteratorTag, const NAGIndex>;
 
-template class Set<NAGIndex>;
-template class WrappedForwardIterator<Set<NAGIndex>::ConstIteratorTag, const NAGIndex>;
-template class WrappedOutputIterator<Set<NAGIndex>::InserterTag, NAGIndex>;
-
+    template class Set<NAGIndex>;
+    template class WrappedForwardIterator<Set<NAGIndex>::ConstIteratorTag, const NAGIndex>;
+    template class WrappedOutputIterator<Set<NAGIndex>::InserterTag, NAGIndex>;
+}

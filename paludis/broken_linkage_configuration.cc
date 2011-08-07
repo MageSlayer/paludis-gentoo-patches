@@ -406,5 +406,7 @@ BrokenLinkageConfiguration::lib_is_masked(const std::string & lib) const
     return std::binary_search(_imp->ld_library_mask.begin(), _imp->ld_library_mask.end(), lib);
 }
 
-template class WrappedForwardIterator<BrokenLinkageConfiguration::DirsIteratorTag, const FSPath>;
-
+namespace paludis
+{
+    template class WrappedForwardIterator<BrokenLinkageConfiguration::DirsIteratorTag, const FSPath>;
+}

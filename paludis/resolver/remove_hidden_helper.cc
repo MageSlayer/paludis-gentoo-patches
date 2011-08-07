@@ -75,5 +75,7 @@ RemoveHiddenHelper::operator() (
     return result;
 }
 
-template class Pimp<RemoveHiddenHelper>;
-
+namespace paludis
+{
+    template class Pimp<RemoveHiddenHelper>;
+}

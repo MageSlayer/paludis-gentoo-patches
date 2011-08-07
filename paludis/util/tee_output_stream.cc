@@ -85,5 +85,7 @@ TeeOutputStream::add_stream(std::ostream * const s)
     buf.add_stream(s);
 }
 
-template class Pimp<TeeOutputStreamBuf>;
-
+namespace paludis
+{
+    template class Pimp<TeeOutputStreamBuf>;
+}

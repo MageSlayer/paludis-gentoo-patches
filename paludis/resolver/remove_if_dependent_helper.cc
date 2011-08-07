@@ -66,5 +66,7 @@ RemoveIfDependentHelper::operator() (
     return _imp->remove_if_dependent_specs.match_any(_imp->env, id, { });
 }
 
-template class Pimp<RemoveIfDependentHelper>;
-
+namespace paludis
+{
+    template class Pimp<RemoveIfDependentHelper>;
+}

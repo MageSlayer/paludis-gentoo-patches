@@ -300,5 +300,7 @@ UnavailablePackageID::slot_key() const
     return _imp->slot_key;
 }
 
-template class Pimp<UnavailablePackageID>;
-
+namespace paludis
+{
+    template class Pimp<UnavailablePackageID>;
+}

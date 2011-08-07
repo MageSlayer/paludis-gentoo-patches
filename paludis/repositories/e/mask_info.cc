@@ -24,6 +24,8 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-template class Sequence<MaskInfo>;
-template class WrappedForwardIterator<Sequence<MaskInfo>::ConstIteratorTag, const MaskInfo>;
-
+namespace paludis
+{
+    template class Sequence<MaskInfo>;
+    template class WrappedForwardIterator<Sequence<MaskInfo>::ConstIteratorTag, const MaskInfo>;
+}

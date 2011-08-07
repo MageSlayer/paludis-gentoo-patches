@@ -229,5 +229,7 @@ GetUseExistingNothingHelper::operator() (
     return reason->accept_returning<std::pair<UseExisting, bool> >(v);
 }
 
-template class Pimp<GetUseExistingNothingHelper>;
-
+namespace paludis
+{
+    template class Pimp<GetUseExistingNothingHelper>;
+}

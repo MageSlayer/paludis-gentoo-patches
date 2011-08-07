@@ -249,5 +249,7 @@ UnwrittenRepositoryStore::repository_information(const FSPath & p)
     return result;
 }
 
-template class Pimp<unwritten_repository::UnwrittenRepositoryStore>;
-
+namespace paludis
+{
+    template class Pimp<unwritten_repository::UnwrittenRepositoryStore>;
+}

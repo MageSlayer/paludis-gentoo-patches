@@ -520,7 +520,9 @@ OutputManagerFromIPC::construct_standard_if_unconstructed()
     }
 }
 
-template class Pimp<IPCOutputManager>;
-template class Pimp<IPCInputManager>;
-template class Pimp<OutputManagerFromIPC>;
-
+namespace paludis
+{
+    template class Pimp<IPCOutputManager>;
+    template class Pimp<IPCInputManager>;
+    template class Pimp<OutputManagerFromIPC>;
+}

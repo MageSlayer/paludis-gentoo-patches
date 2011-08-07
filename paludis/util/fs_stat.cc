@@ -193,5 +193,7 @@ FSStat::lowlevel_id() const
     return std::make_pair(_imp->st.st_dev, _imp->st.st_ino);
 }
 
-template class Pimp<FSStat>;
-
+namespace paludis
+{
+    template class Pimp<FSStat>;
+}

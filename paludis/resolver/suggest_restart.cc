@@ -104,5 +104,7 @@ SuggestRestart::suggested_preset() const
     return _imp->suggested_preset;
 }
 
-template class Pimp<SuggestRestart>;
-
+namespace paludis
+{
+    template class Pimp<SuggestRestart>;
+}

@@ -284,5 +284,7 @@ GemcutterDependenciesKey::pretty_print_value(
     return p.s.str();
 }
 
-template class Pimp<GemcutterDependenciesKey>;
-
+namespace paludis
+{
+    template class Pimp<GemcutterDependenciesKey>;
+}

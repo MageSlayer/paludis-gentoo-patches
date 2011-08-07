@@ -56,5 +56,7 @@ AllowChoiceChangesHelper::operator() (const std::shared_ptr<const Resolution> &)
     return _imp->allow_choice_changes;
 }
 
-template class Pimp<AllowChoiceChangesHelper>;
-
+namespace paludis
+{
+    template class Pimp<AllowChoiceChangesHelper>;
+}

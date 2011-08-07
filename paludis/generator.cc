@@ -812,12 +812,14 @@ paludis::operator<< (std::ostream & s, const Generator & g)
     return s;
 }
 
-template class Pimp<Generator>;
-template class generator::SomeIDsMightSupportAction<InstallAction>;
-template class generator::SomeIDsMightSupportAction<UninstallAction>;
-template class generator::SomeIDsMightSupportAction<PretendAction>;
-template class generator::SomeIDsMightSupportAction<ConfigAction>;
-template class generator::SomeIDsMightSupportAction<FetchAction>;
-template class generator::SomeIDsMightSupportAction<InfoAction>;
-template class generator::SomeIDsMightSupportAction<PretendFetchAction>;
-
+namespace paludis
+{
+    template class Pimp<Generator>;
+    template class generator::SomeIDsMightSupportAction<InstallAction>;
+    template class generator::SomeIDsMightSupportAction<UninstallAction>;
+    template class generator::SomeIDsMightSupportAction<PretendAction>;
+    template class generator::SomeIDsMightSupportAction<ConfigAction>;
+    template class generator::SomeIDsMightSupportAction<FetchAction>;
+    template class generator::SomeIDsMightSupportAction<InfoAction>;
+    template class generator::SomeIDsMightSupportAction<PretendFetchAction>;
+}

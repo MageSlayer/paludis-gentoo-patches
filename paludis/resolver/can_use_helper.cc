@@ -63,5 +63,7 @@ CanUseHelper::operator() (const std::shared_ptr<const PackageID> & id) const
     return ! _imp->cannot_use_specs.match_any(_imp->env, id, { });
 }
 
-template class Pimp<CanUseHelper>;
-
+namespace paludis
+{
+    template class Pimp<CanUseHelper>;
+}

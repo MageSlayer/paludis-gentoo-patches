@@ -46,13 +46,15 @@ AlwaysEnabledDependencyLabel<Label_>::enabled(const Environment * const, const s
     return true;
 }
 
-template class AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag>;
-template class AlwaysEnabledDependencyLabel<DependenciesRunLabelTag>;
-template class AlwaysEnabledDependencyLabel<DependenciesPostLabelTag>;
-template class AlwaysEnabledDependencyLabel<DependenciesCompileAgainstLabelTag>;
-template class AlwaysEnabledDependencyLabel<DependenciesFetchLabelTag>;
-template class AlwaysEnabledDependencyLabel<DependenciesInstallLabelTag>;
-template class AlwaysEnabledDependencyLabel<DependenciesSuggestionLabelTag>;
-template class AlwaysEnabledDependencyLabel<DependenciesRecommendationLabelTag>;
-template class AlwaysEnabledDependencyLabel<DependenciesTestLabelTag>;
-
+namespace paludis
+{
+    template class AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag>;
+    template class AlwaysEnabledDependencyLabel<DependenciesRunLabelTag>;
+    template class AlwaysEnabledDependencyLabel<DependenciesPostLabelTag>;
+    template class AlwaysEnabledDependencyLabel<DependenciesCompileAgainstLabelTag>;
+    template class AlwaysEnabledDependencyLabel<DependenciesFetchLabelTag>;
+    template class AlwaysEnabledDependencyLabel<DependenciesInstallLabelTag>;
+    template class AlwaysEnabledDependencyLabel<DependenciesSuggestionLabelTag>;
+    template class AlwaysEnabledDependencyLabel<DependenciesRecommendationLabelTag>;
+    template class AlwaysEnabledDependencyLabel<DependenciesTestLabelTag>;
+}

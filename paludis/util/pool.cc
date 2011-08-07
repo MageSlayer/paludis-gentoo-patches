@@ -120,5 +120,7 @@ PoolKeyTypeCodes::next()
     return ++result;
 }
 
-template class Pimp<PoolKeys>;
-
+namespace paludis
+{
+    template class Pimp<PoolKeys>;
+}

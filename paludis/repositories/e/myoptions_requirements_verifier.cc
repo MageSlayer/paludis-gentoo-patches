@@ -359,5 +359,7 @@ MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<AllDepSpe
     _imp->current_prefix_stack.pop_front();
 }
 
-template class Pimp<MyOptionsRequirementsVerifier>;
-
+namespace paludis
+{
+    template class Pimp<MyOptionsRequirementsVerifier>;
+}

@@ -487,5 +487,7 @@ OutputConf::create_named_output_manager(const std::string & s, const CreateOutpu
                 );
 }
 
-template class Pimp<paludis_environment::OutputConf>;
-
+namespace paludis
+{
+    template class Pimp<paludis_environment::OutputConf>;
+}

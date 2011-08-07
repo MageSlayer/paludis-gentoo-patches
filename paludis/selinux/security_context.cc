@@ -32,8 +32,6 @@
 
 using namespace paludis;
 
-template class Singleton<MatchPathCon>;
-
 namespace
 {
     // Declared here to remove dep on <selinux/selinux.h>
@@ -264,4 +262,9 @@ int paludis::setfilecon(const FSPath & path, const std::shared_ptr<const Securit
 bool paludis::is_selinux_enabled()
 {
     return libselinux.is_selinux_enabled() == 1;
+}
+
+namespace paludis
+{
+    template class Singleton<MatchPathCon>;
 }

@@ -89,5 +89,7 @@ AAVisitor::end() const
     return ConstIterator(_imp->aa.end());
 }
 
-template class WrappedForwardIterator<AAVisitor::ConstIteratorTag, const std::string>;
-
+namespace paludis
+{
+    template class WrappedForwardIterator<AAVisitor::ConstIteratorTag, const std::string>;
+}

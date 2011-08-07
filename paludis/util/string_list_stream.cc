@@ -143,4 +143,7 @@ StringListStream::nothing_more_to_write()
     buf.nothing_more_to_write();
 }
 
-template class Pimp<StringListStreamBuf>;
+namespace paludis
+{
+    template class Pimp<StringListStreamBuf>;
+}

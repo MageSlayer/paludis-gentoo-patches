@@ -297,5 +297,7 @@ SuggestionsConf::interest_in_suggestion(
     return indeterminate;
 }
 
-template class Pimp<SuggestionsConf>;
-
+namespace paludis
+{
+    template class Pimp<SuggestionsConf>;
+}

@@ -316,5 +316,7 @@ AccountsRepositoryStore::package_ids(const QualifiedPackageName & p) const
         return i->second;
 }
 
-template class Pimp<accounts_repository::AccountsRepositoryStore>;
-
+namespace paludis
+{
+    template class Pimp<accounts_repository::AccountsRepositoryStore>;
+}

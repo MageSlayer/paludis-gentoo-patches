@@ -167,5 +167,7 @@ Manifest2Reader::find(const std::pair<const std::string, const std::string> & p)
     return ConstIterator(second_iterator(_imp->entries.find(p)));
 }
 
-template class WrappedForwardIterator<Manifest2Reader::ConstIteratorTag, const Manifest2Entry>;
-
+namespace paludis
+{
+    template class WrappedForwardIterator<Manifest2Reader::ConstIteratorTag, const Manifest2Entry>;
+}

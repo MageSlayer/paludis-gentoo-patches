@@ -138,7 +138,8 @@ EAPIPhases::end_phases() const
     return ConstIterator(indirect_iterator(_imp->phases.end()));
 }
 
-template class WrappedForwardIterator<EAPIPhase::ConstIteratorTag, const std::string>;
-template class WrappedForwardIterator<EAPIPhases::ConstIteratorTag, const EAPIPhase>;
-
-
+namespace paludis
+{
+    template class WrappedForwardIterator<EAPIPhase::ConstIteratorTag, const std::string>;
+    template class WrappedForwardIterator<EAPIPhases::ConstIteratorTag, const EAPIPhase>;
+}

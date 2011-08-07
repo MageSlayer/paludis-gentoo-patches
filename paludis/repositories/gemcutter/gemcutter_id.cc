@@ -413,5 +413,7 @@ GemcutterID::slot_key() const
     return _imp->slot_key;
 }
 
-template class Pimp<GemcutterID>;
-
+namespace paludis
+{
+    template class Pimp<GemcutterID>;
+}

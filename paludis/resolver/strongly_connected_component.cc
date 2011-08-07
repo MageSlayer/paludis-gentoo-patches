@@ -27,10 +27,12 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-template class Set<Resolvent>;
-template class WrappedForwardIterator<Set<Resolvent>::ConstIteratorTag, const Resolvent>;
-template class WrappedOutputIterator<Set<Resolvent>::InserterTag, Resolvent>;
+namespace paludis
+{
+    template class Set<Resolvent>;
+    template class WrappedForwardIterator<Set<Resolvent>::ConstIteratorTag, const Resolvent>;
+    template class WrappedOutputIterator<Set<Resolvent>::InserterTag, Resolvent>;
 
-template class Sequence<StronglyConnectedComponent>;
-template class WrappedForwardIterator<Sequence<StronglyConnectedComponent>::ConstIteratorTag, const StronglyConnectedComponent>;
-
+    template class Sequence<StronglyConnectedComponent>;
+    template class WrappedForwardIterator<Sequence<StronglyConnectedComponent>::ConstIteratorTag, const StronglyConnectedComponent>;
+}

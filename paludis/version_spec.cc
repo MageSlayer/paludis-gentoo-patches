@@ -773,5 +773,7 @@ VersionSpec::end() const
     return ConstIterator(_imp->parts.end());
 }
 
-template class WrappedForwardIterator<VersionSpec::ConstIteratorTag, const VersionSpecComponent>;
-
+namespace paludis
+{
+    template class WrappedForwardIterator<VersionSpec::ConstIteratorTag, const VersionSpecComponent>;
+}

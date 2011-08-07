@@ -55,5 +55,7 @@ ThreadPool::number_of_threads() const
     return _imp->threads.size();
 }
 
-template class Pimp<ThreadPool>;
-
+namespace paludis
+{
+    template class Pimp<ThreadPool>;
+}

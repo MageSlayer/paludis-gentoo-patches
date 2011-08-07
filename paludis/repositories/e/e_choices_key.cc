@@ -602,5 +602,7 @@ EChoicesKey::type() const
     return _imp->type;
 }
 
-template class Map<ChoiceNameWithPrefix, std::string>;
-
+namespace paludis
+{
+    template class Map<ChoiceNameWithPrefix, std::string>;
+}

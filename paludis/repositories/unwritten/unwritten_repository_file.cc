@@ -376,7 +376,9 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
     }
 }
 
-template class Pimp<UnwrittenRepositoryFile>;
-template class WrappedForwardIterator<UnwrittenRepositoryFile::ConstIteratorTag,
-         const UnwrittenRepositoryFileEntry>;
-
+namespace paludis
+{
+    template class Pimp<UnwrittenRepositoryFile>;
+    template class WrappedForwardIterator<UnwrittenRepositoryFile::ConstIteratorTag,
+             const UnwrittenRepositoryFileEntry>;
+}

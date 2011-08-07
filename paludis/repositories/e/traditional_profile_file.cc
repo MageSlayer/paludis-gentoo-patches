@@ -205,13 +205,18 @@ TraditionalProfileFile<F_>::end() const
     return ConstIterator(this->_imp->lines.end());
 }
 
-template class TraditionalProfileFile<LineConfigFile>;
-template class WrappedForwardIterator<TraditionalProfileFile<LineConfigFile>::ConstIteratorTag, const std::pair<
-    std::shared_ptr<const EAPI>,
-    const std::remove_reference<LineConfigFile::ConstIterator::value_type>::type> >;
+namespace paludis
+{
+    namespace erepository {
+        template class TraditionalProfileFile<LineConfigFile>;
+        template class TraditionalProfileFile<TraditionalMaskFile>;
+    }
 
-template class TraditionalProfileFile<TraditionalMaskFile>;
-template class WrappedForwardIterator<TraditionalProfileFile<TraditionalMaskFile>::ConstIteratorTag, const std::pair<
-    std::shared_ptr<const EAPI>,
-    const std::remove_reference<TraditionalMaskFile::ConstIterator::value_type>::type> >;
+    template class WrappedForwardIterator<TraditionalProfileFile<LineConfigFile>::ConstIteratorTag, const std::pair<
+        std::shared_ptr<const EAPI>,
+        const std::remove_reference<LineConfigFile::ConstIterator::value_type>::type> >;
 
+    template class WrappedForwardIterator<TraditionalProfileFile<TraditionalMaskFile>::ConstIteratorTag, const std::pair<
+        std::shared_ptr<const EAPI>,
+        const std::remove_reference<TraditionalMaskFile::ConstIterator::value_type>::type> >;
+}

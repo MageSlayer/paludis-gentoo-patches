@@ -152,5 +152,7 @@ ConfirmHelper::operator() (
             _imp->permit_old_version_specs, _imp->allowed_to_break_specs, _imp->allowed_to_break_system, id});
 }
 
-template class Pimp<ConfirmHelper>;
-
+namespace paludis
+{
+    template class Pimp<ConfirmHelper>;
+}

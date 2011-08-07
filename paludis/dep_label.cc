@@ -71,27 +71,28 @@ DependenciesLabel::~DependenciesLabel()
 {
 }
 
-template class SpecificURILabel<URIMirrorsThenListedLabelTag>;
-template class SpecificURILabel<URIMirrorsOnlyLabelTag>;
-template class SpecificURILabel<URIListedOnlyLabelTag>;
-template class SpecificURILabel<URIListedThenMirrorsLabelTag>;
-template class SpecificURILabel<URILocalMirrorsOnlyLabelTag>;
-template class SpecificURILabel<URIManualOnlyLabelTag>;
+namespace paludis
+{
+    template class SpecificURILabel<URIMirrorsThenListedLabelTag>;
+    template class SpecificURILabel<URIMirrorsOnlyLabelTag>;
+    template class SpecificURILabel<URIListedOnlyLabelTag>;
+    template class SpecificURILabel<URIListedThenMirrorsLabelTag>;
+    template class SpecificURILabel<URILocalMirrorsOnlyLabelTag>;
+    template class SpecificURILabel<URIManualOnlyLabelTag>;
 
-template class SpecificDependenciesLabel<DependenciesBuildLabelTag>;
-template class SpecificDependenciesLabel<DependenciesRunLabelTag>;
-template class SpecificDependenciesLabel<DependenciesPostLabelTag>;
-template class SpecificDependenciesLabel<DependenciesCompileAgainstLabelTag>;
-template class SpecificDependenciesLabel<DependenciesFetchLabelTag>;
-template class SpecificDependenciesLabel<DependenciesInstallLabelTag>;
-template class SpecificDependenciesLabel<DependenciesSuggestionLabelTag>;
-template class SpecificDependenciesLabel<DependenciesRecommendationLabelTag>;
-template class SpecificDependenciesLabel<DependenciesTestLabelTag>;
+    template class SpecificDependenciesLabel<DependenciesBuildLabelTag>;
+    template class SpecificDependenciesLabel<DependenciesRunLabelTag>;
+    template class SpecificDependenciesLabel<DependenciesPostLabelTag>;
+    template class SpecificDependenciesLabel<DependenciesCompileAgainstLabelTag>;
+    template class SpecificDependenciesLabel<DependenciesFetchLabelTag>;
+    template class SpecificDependenciesLabel<DependenciesInstallLabelTag>;
+    template class SpecificDependenciesLabel<DependenciesSuggestionLabelTag>;
+    template class SpecificDependenciesLabel<DependenciesRecommendationLabelTag>;
+    template class SpecificDependenciesLabel<DependenciesTestLabelTag>;
 
-template class Sequence<std::shared_ptr<const DependenciesLabel> >;
-template class WrappedForwardIterator<Sequence<std::shared_ptr<const DependenciesLabel> >::ConstIteratorTag,
-         const std::shared_ptr<const DependenciesLabel> >;
-template class WrappedOutputIterator<Sequence<std::shared_ptr<const DependenciesLabel> >::InserterTag,
-         std::shared_ptr<const DependenciesLabel> >;
-
-
+    template class Sequence<std::shared_ptr<const DependenciesLabel> >;
+    template class WrappedForwardIterator<Sequence<std::shared_ptr<const DependenciesLabel> >::ConstIteratorTag,
+             const std::shared_ptr<const DependenciesLabel> >;
+    template class WrappedOutputIterator<Sequence<std::shared_ptr<const DependenciesLabel> >::InserterTag,
+             std::shared_ptr<const DependenciesLabel> >;
+}

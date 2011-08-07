@@ -127,6 +127,8 @@ template const std::string MemoisedHashes::get<SHA1>(const FSPath &, SafeIFStrea
 template const std::string MemoisedHashes::get<SHA256>(const FSPath &, SafeIFStream &) const;
 template const std::string MemoisedHashes::get<MD5>(const FSPath &, SafeIFStream &) const;
 
-template class Pimp<MemoisedHashes>;
-template class Singleton<MemoisedHashes>;
-
+namespace paludis
+{
+    template class Pimp<MemoisedHashes>;
+    template class Singleton<MemoisedHashes>;
+}

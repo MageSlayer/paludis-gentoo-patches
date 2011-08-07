@@ -230,5 +230,7 @@ SourceURIFinder::add_listed()
     }
 }
 
-template class WrappedForwardIterator<SourceURIFinder::ConstIteratorTag, const std::pair<std::string, std::string> >;
-
+namespace paludis
+{
+    template class WrappedForwardIterator<SourceURIFinder::ConstIteratorTag, const std::pair<std::string, std::string> >;
+}

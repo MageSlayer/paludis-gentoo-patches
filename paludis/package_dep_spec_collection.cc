@@ -78,5 +78,7 @@ PackageDepSpecCollection::match_any(
     return false;
 }
 
-template class Pimp<PackageDepSpecCollection>;
-
+namespace paludis
+{
+    template class Pimp<PackageDepSpecCollection>;
+}

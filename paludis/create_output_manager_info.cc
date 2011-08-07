@@ -266,6 +266,8 @@ CreateOutputManagerForRepositorySyncInfo::deserialise(Deserialisation & d)
                 );
 }
 
-template class Pimp<CreateOutputManagerForRepositorySyncInfo>;
-template class Pimp<CreateOutputManagerForPackageIDActionInfo>;
-
+namespace paludis
+{
+    template class Pimp<CreateOutputManagerForRepositorySyncInfo>;
+    template class Pimp<CreateOutputManagerForPackageIDActionInfo>;
+}

@@ -199,5 +199,7 @@ RequiredUseVerifier::unmet_requirements() const
     return _imp->unmet_requirements;
 }
 
-template class Pimp<RequiredUseVerifier>;
-
+namespace paludis
+{
+    template class Pimp<RequiredUseVerifier>;
+}

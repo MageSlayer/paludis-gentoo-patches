@@ -380,8 +380,10 @@ DeserialisatorHandler<std::shared_ptr<const PackageID> >::handle(Deserialisation
                         vso_letters_anywhere, vso_dotted_suffixes }), make_null_shared_ptr(), { }))]->begin();
 }
 
-template class Pimp<Deserialiser>;
-template class Pimp<Deserialisation>;
-template class Pimp<Deserialisator>;
-template class WrappedForwardIterator<Deserialisation::ConstIteratorTag, const std::shared_ptr<Deserialisation> >;
-
+namespace paludis
+{
+    template class Pimp<Deserialiser>;
+    template class Pimp<Deserialisation>;
+    template class Pimp<Deserialisator>;
+    template class WrappedForwardIterator<Deserialisation::ConstIteratorTag, const std::shared_ptr<Deserialisation> >;
+}

@@ -65,6 +65,8 @@ namespace paludis
     };
 }
 
-template class ExtraDistributionData<EDistribution>;
-template class Singleton<ExtraDistributionData<EDistribution>>;
-
+namespace paludis
+{
+    template class ExtraDistributionData<EDistribution>;
+    template class Singleton<ExtraDistributionData<EDistribution>>;
+}

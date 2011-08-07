@@ -123,5 +123,7 @@ AmbiguousPackageNameError::name() const
     return _name_data->name;
 }
 
-template class WrappedForwardIterator<AmbiguousPackageNameError::OptionsConstIteratorTag, const std::string>;
-
+namespace paludis
+{
+    template class WrappedForwardIterator<AmbiguousPackageNameError::OptionsConstIteratorTag, const std::string>;
+}

@@ -266,5 +266,7 @@ TeeOutputManager::factory_create(
     return std::make_shared<TeeOutputManager>(children, messages_children, stdout_children, stderr_children);
 }
 
-template class Pimp<TeeOutputManager>;
-
+namespace paludis
+{
+    template class Pimp<TeeOutputManager>;
+}

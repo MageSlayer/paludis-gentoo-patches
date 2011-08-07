@@ -16,8 +16,6 @@ using namespace examples;
 using std::cout;
 using std::endl;
 
-template class Singleton<CommandLine>;
-
 CommandLine::CommandLine() :
     ArgsHandler(),
 
@@ -94,3 +92,7 @@ CommandLine::run(const int argc, const char * const * const argv, const std::str
         show_version_and_exit();
 }
 
+namespace paludis
+{
+    template class Singleton<CommandLine>;
+}

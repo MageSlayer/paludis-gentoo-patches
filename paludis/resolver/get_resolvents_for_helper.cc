@@ -405,5 +405,7 @@ GetResolventsForHelper::operator() (
     return result;
 }
 
-template class Pimp<GetResolventsForHelper>;
-
+namespace paludis
+{
+    template class Pimp<GetResolventsForHelper>;
+}

@@ -190,5 +190,7 @@ GemcutterRepositoryStore::package_ids(const QualifiedPackageName & p) const
         return i->second;
 }
 
-template class Pimp<gemcutter_repository::GemcutterRepositoryStore>;
-
+namespace paludis
+{
+    template class Pimp<gemcutter_repository::GemcutterRepositoryStore>;
+}

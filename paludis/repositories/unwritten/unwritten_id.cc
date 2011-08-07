@@ -300,5 +300,7 @@ UnwrittenID::choices_key() const
     return _imp->choices_key;
 }
 
-template class Pimp<UnwrittenID>;
-
+namespace paludis
+{
+    template class Pimp<UnwrittenID>;
+}

@@ -178,9 +178,11 @@ Constraint::deserialise(Deserialisation & d)
             ));
 }
 
-template class Pimp<Constraints>;
-template class WrappedForwardIterator<Constraints::ConstIteratorTag, const std::shared_ptr<const Constraint> >;
+namespace paludis
+{
+    template class Pimp<Constraints>;
+    template class WrappedForwardIterator<Constraints::ConstIteratorTag, const std::shared_ptr<const Constraint> >;
 
-template class Sequence<std::shared_ptr<const Constraint> >;
-template class WrappedForwardIterator<ConstraintSequence::ConstIteratorTag, const std::shared_ptr<const Constraint> >;
-
+    template class Sequence<std::shared_ptr<const Constraint> >;
+    template class WrappedForwardIterator<ConstraintSequence::ConstIteratorTag, const std::shared_ptr<const Constraint> >;
+}

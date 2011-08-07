@@ -139,5 +139,7 @@ BufferOutputStream::anything_to_unbuffer() const
     return buf.anything_to_unbuffer();
 }
 
-template class Pimp<BufferOutputStreamBuf>;
-
+namespace paludis
+{
+    template class Pimp<BufferOutputStreamBuf>;
+}

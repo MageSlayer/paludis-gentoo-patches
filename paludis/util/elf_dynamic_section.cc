@@ -355,9 +355,11 @@ DynamicSection<ElfType_>::entry_end() const
     return EntryIterator(indirect_iterator(_imp->dynamic_entries.end()));
 }
 
-template class DynamicSection<Elf32Type>;
-template class DynamicSection<Elf64Type>;
+namespace paludis
+{
+    template class DynamicSection<Elf32Type>;
+    template class DynamicSection<Elf64Type>;
 
-template class WrappedForwardIterator<DynamicSection<Elf32Type>::EntryIteratorTag, DynamicEntry<Elf32Type> >;
-template class WrappedForwardIterator<DynamicSection<Elf64Type>::EntryIteratorTag, DynamicEntry<Elf64Type> >;
-
+    template class WrappedForwardIterator<DynamicSection<Elf32Type>::EntryIteratorTag, DynamicEntry<Elf32Type> >;
+    template class WrappedForwardIterator<DynamicSection<Elf64Type>::EntryIteratorTag, DynamicEntry<Elf64Type> >;
+}
