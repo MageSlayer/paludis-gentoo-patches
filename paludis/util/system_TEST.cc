@@ -49,7 +49,7 @@ TEST(GetenvError, Throws)
 TEST(KernelVersion, Works)
 {
     EXPECT_TRUE(! kernel_version().empty());
-#ifdef linux
+#ifdef __linux__
     EXPECT_TRUE('2' == kernel_version().at(0) || '3' == kernel_version().at(0));
     EXPECT_TRUE('.' == kernel_version().at(1));
 #elif defined(__FreeBSD__)
