@@ -395,6 +395,9 @@ namespace
         if (c.untaken())
             result << " (untaken)";
 
+        if (c.nothing_is_fine_too())
+            result << " (nothing is fine too)";
+
         return result.str();
     }
 
