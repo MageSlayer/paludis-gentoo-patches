@@ -104,7 +104,7 @@ namespace
             if (! output)
                 return;
 
-            std::string s(stage + ": ");
+            std::string s;
             s.append(stringify(steps));
             if (-1 != total)
                 s.append("/" + stringify(total));
@@ -142,6 +142,7 @@ namespace
                 s.append(stringify(t) + " metadata (" + ss + ") ");
             }
 
+            s = stage + ": " + s;
             std::cout << std::string(width, '\010') << s;
 
             if (width > s.length())
