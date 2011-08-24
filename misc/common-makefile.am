@@ -96,6 +96,7 @@ LOG_COMPILER = \
 		TEST_SCRIPT_DIR="$(srcdir)/" \
 		TOP_SRCDIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_srcdir)`" \
 		TOP_BUILDDIR="`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)`" \
+		TZ=UTC \
 		$(LOG_COMPILER_EXTRA) \
 		bash $(top_srcdir)/paludis/util/run_test.sh $(LOG_COMPILER_INTERP)
 
