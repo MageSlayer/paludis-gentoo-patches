@@ -1256,7 +1256,8 @@ Decider::find_any_score(
 
     const std::shared_ptr<DependencyReason> reason_unless_block(is_block ? make_null_shared_ptr() : std::make_shared<DependencyReason>(
                 our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _package_dep_spec_already_met(*dep.spec().if_package(), our_id)));
-    const std::shared_ptr<const Resolvents> resolvents_unless_block(_get_resolvents_for(spec, reason_unless_block).first);
+    const std::shared_ptr<const Resolvents> resolvents_unless_block(is_block ? make_null_shared_ptr() :
+            _get_resolvents_for(spec, reason_unless_block).first);
 
     /* next: will already be installing */
     static_assert(acs_will_be_installing < acs_vacuous_blocker, "acs order changed");
