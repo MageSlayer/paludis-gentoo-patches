@@ -1569,9 +1569,10 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
                         )));
         choices->add(build_options);
 
+        bool mask_tests(false);
         if (! eapi()->supported()->is_pbin())
         {
-            bool may_be_unrestricted_test(true), may_be_unrestricted_strip(true);
+            bool may_be_unrestricted_strip(true);
 
             /* if we unconditionally restrict an action, don't add / force mask
              * a build option for it. but if we conditionally restrict it, do,
@@ -1580,44 +1581,8 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
             {
                 UnconditionalRestrictFinder f;
                 restrict_key()->parse_value()->top()->accept(f);
-                may_be_unrestricted_test = f.s.end() == f.s.find("test");
+                mask_tests = f.s.end() == f.s.find("test");
                 may_be_unrestricted_strip = f.s.end() == f.s.find("strip");
-            }
-
-            /* optional_tests */
-            if (eapi()->supported()->choices_options()->has_optional_tests())
-                build_options->add(std::make_shared<ELikeOptionalTestsChoiceValue>(shared_from_this(), _imp->environment, build_options,
-                            ! may_be_unrestricted_test));
-
-            /* recommended_tests */
-            if (eapi()->supported()->choices_options()->has_recommended_tests())
-                build_options->add(std::make_shared<ELikeRecommendedTestsChoiceValue>(shared_from_this(), _imp->environment, build_options,
-                            ! may_be_unrestricted_test));
-
-            /* expensive_tests */
-            if (eapi()->supported()->choices_options()->has_expensive_tests())
-            {
-                if (! _imp->defined_phases)
-                    throw InternalError(PALUDIS_HERE, "bug! no defined_phases yet");
-
-                bool has_expensive_test_phase(false);
-                EAPIPhases phases(_imp->eapi->supported()->ebuild_phases()->ebuild_install());
-                for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
-                        phase != phase_end ; ++phase)
-                {
-                    if (phase->option("expensive_tests"))
-                    {
-                        auto defined_phases(_imp->defined_phases->parse_value());
-                        if (defined_phases->end() != defined_phases->find(phase->equal_option("skipname")))
-                        {
-                            has_expensive_test_phase = true;
-                            break;
-                        }
-                    }
-                }
-
-                if (has_expensive_test_phase)
-                    build_options->add(std::make_shared<ELikeExpensiveTestsChoiceValue>(shared_from_this(), _imp->environment, build_options, false));
             }
 
             /* symbols */
@@ -1633,6 +1598,44 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
                 build_options->add(std::make_shared<ELikeJobsChoiceValue>(
                             shared_from_this(), _imp->environment, build_options));
             }
+        }
+        else
+            mask_tests = true;
+
+        /* optional_tests */
+        if (eapi()->supported()->choices_options()->has_optional_tests())
+            build_options->add(std::make_shared<ELikeOptionalTestsChoiceValue>(shared_from_this(), _imp->environment, build_options,
+                        mask_tests));
+
+        /* recommended_tests */
+        if (eapi()->supported()->choices_options()->has_recommended_tests())
+            build_options->add(std::make_shared<ELikeRecommendedTestsChoiceValue>(shared_from_this(), _imp->environment, build_options,
+                        mask_tests));
+
+        /* expensive_tests */
+        if (eapi()->supported()->choices_options()->has_expensive_tests())
+        {
+            if (! _imp->defined_phases)
+                throw InternalError(PALUDIS_HERE, "bug! no defined_phases yet");
+
+            bool has_expensive_test_phase(false);
+            EAPIPhases phases(_imp->eapi->supported()->ebuild_phases()->ebuild_install());
+            for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+                    phase != phase_end ; ++phase)
+            {
+                if (phase->option("expensive_tests"))
+                {
+                    auto defined_phases(_imp->defined_phases->parse_value());
+                    if (defined_phases->end() != defined_phases->find(phase->equal_option("skipname")))
+                    {
+                        has_expensive_test_phase = true;
+                        break;
+                    }
+                }
+            }
+
+            if (has_expensive_test_phase)
+                build_options->add(std::make_shared<ELikeExpensiveTestsChoiceValue>(shared_from_this(), _imp->environment, build_options, mask_tests));
         }
 
         /* trace */
