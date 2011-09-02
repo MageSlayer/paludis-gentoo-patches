@@ -175,7 +175,7 @@ namespace
                         n::no_chown() = true,
                         n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                         n::permit_destination() = std::bind(return_literal_function(true)),
-                        n::root() = root_dir
+                        n::root() = root_dir.realpath()
                         ))
         {
         }
@@ -197,7 +197,7 @@ namespace
                     n::no_chown() = true,
                     n::options() = o,
                     n::permit_destination() = std::bind(return_literal_function(true)),
-                    n::root() = root_dir
+                    n::root() = root_dir.realpath()
                     ))
         {
         }
@@ -470,7 +470,7 @@ TEST(Merger, EmptyRootDisallowed)
 {
     auto data(make_merger("empty_root_disallowed", { }));
     ASSERT_TRUE(FSIterator(data->image_dir, { fsio_include_dotfiles, fsio_first_only }) == FSIterator());
-    ASSERT_TRUE(! data->merger.check());
+    ASSERT_TRUE(data->merger.check());
 }
 
 TEST(Merger, Mtimes)
