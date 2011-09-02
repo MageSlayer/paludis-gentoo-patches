@@ -169,6 +169,7 @@ namespace paludis
         typedef Name<struct name_non_empty_variables> non_empty_variables;
         typedef Name<struct name_package_dep_spec_parse_options> package_dep_spec_parse_options;
         typedef Name<struct name_pdepend> pdepend;
+        typedef Name<struct name_permitted_directories> permitted_directories;
         typedef Name<struct name_pipe_commands> pipe_commands;
         typedef Name<struct name_profile_iuse_injection> profile_iuse_injection;
         typedef Name<struct name_properties> properties;
@@ -300,6 +301,7 @@ namespace paludis
             NamedValue<n::iuse_flag_parse_options, IUseFlagParseOptions> iuse_flag_parse_options;
             NamedValue<n::merger_options, MergerOptions> merger_options;
             NamedValue<n::package_dep_spec_parse_options, ELikePackageDepSpecOptions> package_dep_spec_parse_options;
+            NamedValue<n::permitted_directories, std::string> permitted_directories;
             NamedValue<n::pipe_commands, std::shared_ptr<const EAPIPipeCommands> > pipe_commands;
             NamedValue<n::tools_options, std::shared_ptr<const EAPIToolsOptions> > tools_options;
             NamedValue<n::uri_labels, std::shared_ptr<const EAPILabels> > uri_labels;

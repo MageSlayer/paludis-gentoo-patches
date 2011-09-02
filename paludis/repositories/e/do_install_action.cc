@@ -40,6 +40,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/return_literal_function.hh>
+#include <paludis/util/tokeniser.hh>
 
 #include <paludis/action.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -48,6 +49,7 @@
 #include <paludis/elike_choices.hh>
 #include <paludis/output_manager.hh>
 
+#include <vector>
 #include <algorithm>
 #include <set>
 
@@ -197,6 +199,20 @@ paludis::erepository::do_install_action(
     auto merged_entries(std::make_shared<FSPathSet>());
 
     auto permitted_directories(std::make_shared<PermittedDirectories>());
+    {
+        std::vector<std::string> tokens;
+        tokenise_whitespace(id->eapi()->supported()->permitted_directories(), std::back_inserter(tokens));
+        for (auto t(tokens.begin()), t_end(tokens.end()) ;
+                t != t_end ; ++t)
+        {
+            if (t->at(0) == '-')
+                permitted_directories->add(FSPath(t->substr(1)), false);
+            else if (t->at(0) == '+')
+                permitted_directories->add(FSPath(t->substr(1)), true);
+            else
+                throw InternalError(PALUDIS_HERE, "bad permitted_directories");
+        }
+    }
 
     auto choices(id->choices_key()->parse_value());
     std::shared_ptr<const ChoiceValue> preserve_work_choice(choices->find_by_name_with_prefix(ELikePreserveWorkChoiceValue::canonical_name_with_prefix()));

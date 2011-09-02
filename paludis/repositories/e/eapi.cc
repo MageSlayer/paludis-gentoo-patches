@@ -352,6 +352,7 @@ namespace
                         n::iuse_flag_parse_options() = iuse_flag_parse_options,
                         n::merger_options() = merger_options,
                         n::package_dep_spec_parse_options() = package_dep_spec_parse_options,
+                        n::permitted_directories() = check_get(k, "permitted_directories"),
                         n::pipe_commands() = make_pipe_commands(k),
                         n::tools_options() = make_tool_options(k),
                         n::uri_labels() = std::make_shared<const EAPILabels>(check_get(k, "uri_labels")),
