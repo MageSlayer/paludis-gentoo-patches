@@ -1669,6 +1669,7 @@ ERepository::get_environment_variable(
             n::maybe_output_manager() = make_null_shared_ptr(),
             n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-variable"),
             n::package_id() = id,
+            n::permitted_directories() = make_null_shared_ptr(),
             n::portdir() =
                 (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                 (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),

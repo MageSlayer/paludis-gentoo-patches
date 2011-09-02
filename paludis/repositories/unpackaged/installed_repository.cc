@@ -379,7 +379,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
                 n::output_manager() = m.output_manager(),
                 n::package_id() = m.package_id(),
                 n::permit_destination() = m.permit_destination(),
-                n::root() = installed_root_key()->parse_value()
+                n::root() = installed_root_key()->parse_value().realpath()
             ));
 
     if (m.check())

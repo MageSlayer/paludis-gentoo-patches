@@ -85,6 +85,7 @@ noinst_HEADERS = \
 	parse_plain_text_label.hh \
 	parse_uri_label.hh \
 	pbin_merger.hh \
+	permitted_directories.hh permitted_directories-fwd.hh \
 	pipe_command_handler.hh \
 	profile.hh \
 	required_use_verifier.hh \
@@ -164,6 +165,7 @@ libpaludiserepository_la_SOURCES = \
 	parse_plain_text_label.cc \
 	parse_uri_label.cc \
 	pbin_merger.cc \
+	permitted_directories.cc \
 	pipe_command_handler.cc \
 	profile.cc \
 	registration.cc \

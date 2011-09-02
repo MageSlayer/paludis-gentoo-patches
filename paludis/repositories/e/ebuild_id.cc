@@ -320,6 +320,7 @@ EbuildID::need_non_xml_keys_added() const
                     n::maybe_output_manager() = make_null_shared_ptr(),
                     n::package_builddir() = e_repo->params().builddir() / (stringify(name().category()) + "-" + stringify(name().package()) + "-" + stringify(version()) + "-metadata"),
                     n::package_id() = shared_from_this(),
+                    n::permitted_directories() = make_null_shared_ptr(),
                     n::portdir() =
                         (e_repo->params().master_repositories() && ! e_repo->params().master_repositories()->empty()) ?
                         (*e_repo->params().master_repositories()->begin())->params().location() : e_repo->params().location(),

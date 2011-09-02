@@ -40,3 +40,12 @@ exsetscmrevision()
     paludis_pipe_command SET_SCM_REVISION "$EAPI" "$@" >/dev/null
 }
 
+exdirectory()
+{
+    [[ "${!PALUDIS_EBUILD_PHASE_VAR}" == "setup" ]] || \
+        die "exdirectory must be called in pkg_setup"
+
+    paludis_pipe_command PERMIT_DIRECTORY "$EAPI" "$@" >/dev/null
+}
+
+

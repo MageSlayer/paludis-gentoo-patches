@@ -24,6 +24,7 @@
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
+#include <paludis/repositories/e/permitted_directories.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
@@ -177,7 +178,9 @@ namespace
 
 std::string
 paludis::erepository::pipe_command_handler(const Environment * const environment,
-        const std::shared_ptr<const ERepositoryID> & package_id, bool in_metadata_generation,
+        const std::shared_ptr<const ERepositoryID> & package_id,
+        const std::shared_ptr<PermittedDirectories> & maybe_permitted_directories,
+        bool in_metadata_generation,
         const std::string & s, const std::shared_ptr<OutputManager> & maybe_output_manager)
 {
     Context context("In ebuild pipe command handler:");
@@ -523,6 +526,43 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 return "O1;";
             }
+        }
+        else if (tokens[0] == "PERMIT_DIRECTORY")
+        {
+            if (tokens.size() != 4)
+            {
+                Log::get_instance()->message("e.pipe_commands.permit_directory.bad", ll_warning, lc_context) << "Got bad PERMIT_DIRECTORY pipe command";
+                return "Ebad PERMIT_DIRECTORY command";
+            }
+
+            bool permit(true);
+            if (tokens[2] == "--allow")
+                permit = true;
+            else if (tokens[2] == "--forbid")
+                permit = false;
+            else
+            {
+                Log::get_instance()->message("e.pipe_commands.permit_directory.bad_argument", ll_warning, lc_context)
+                    << "Got bad PERMIT_DIRECTORY pipe command argument";
+                return "Ebad PERMIT_DIRECTORY command argument";
+            }
+
+            if (! maybe_permitted_directories)
+            {
+                Log::get_instance()->message("e.pipe_commands.permit_directory.not_allowed", ll_warning, lc_context)
+                    << "Got bad PERMIT_DIRECTORY pipe command: not allowed here";
+                return "Ebad PERMIT_DIRECTORY command: not allowed here";
+            }
+
+            if (0 != tokens[3].compare(0, 1, "/", 0, 1))
+            {
+                Log::get_instance()->message("e.pipe_commands.permit_directory.bad_argument", ll_warning, lc_context)
+                    << "Got bad PERMIT_DIRECTORY pipe command argument";
+                return "Ebad PERMIT_DIRECTORY command argument";
+            }
+
+            maybe_permitted_directories->add(FSPath(tokens[3]), permit);
+            return "O0;";
         }
         else if (tokens[0] == "REWRITE_VAR")
         {

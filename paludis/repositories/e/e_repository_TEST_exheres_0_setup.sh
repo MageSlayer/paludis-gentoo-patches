@@ -6,8 +6,7 @@ cd e_repository_TEST_exheres_0_dir || exit 1
 
 mkdir -p root/etc
 
-mkdir -p vdb
-touch vdb/THISISTHEVDB
+mkdir -p instrepo
 
 mkdir -p build
 ln -s build symlinked_build
@@ -1129,6 +1128,65 @@ WORK="${WORKBASE}"
 
 pkg_setup() {
     expecting_tests --expensive
+}
+END
+mkdir -p "packages/cat/exdirectory-phase"
+cat <<'END' > packages/cat/exdirectory-phase/exdirectory-phase-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+src_install() {
+    exdirectory --allow /stuff
+}
+END
+mkdir -p "packages/cat/exdirectory-forbid"
+cat <<'END' > packages/cat/exdirectory-forbid/exdirectory-forbid-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+pkg_setup() {
+    exdirectory --forbid /usr
+}
+
+src_install() {
+    herebin stuff <<EOT
+EOT
+}
+END
+mkdir -p "packages/cat/exdirectory-allow"
+cat <<'END' > packages/cat/exdirectory-allow/exdirectory-allow-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+pkg_setup() {
+    exdirectory --allow /stuff
+}
+
+src_install() {
+    insinto /stuff
+    hereins it <<EOT
+EOT
 }
 END
 

@@ -20,8 +20,8 @@
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/e_repository_exceptions.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
-#include <paludis/repositories/e/vdb_repository.hh>
 #include <paludis/repositories/e/eapi.hh>
+#include <paludis/repositories/e/exndbam_repository.hh>
 
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
@@ -587,6 +587,67 @@ TEST(ERepository, InstallExheres0)
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
+}
+
+TEST(ERepository, ReallyInstallExheres0)
+{
+    TestEnvironment env;
+    auto keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_exheres_0_dir" / "repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_exheres_0_dir" / "repo/profiles/profile"));
+    keys->insert("layout", "exheres");
+    keys->insert("eapi_when_unknown", "exheres-0");
+    keys->insert("eapi_when_unspecified", "exheres-0");
+    keys->insert("profile_eapi_when_unspecified", "exheres-0");
+    keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_exheres_0_dir" / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_exheres_0_dir" / "build"));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
+
+    auto i_keys(std::make_shared<Map<std::string, std::string>>());
+    i_keys->insert("format", "exndbam");
+    i_keys->insert("names_cache", "/var/empty");
+    i_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_exheres_0_dir" / "instrepo"));
+    i_keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_exheres_0_dir" / "build"));
+    i_keys->insert("root", stringify(FSPath::cwd() / "e_repository_TEST_exheres_0_dir" / "root"));
+    std::shared_ptr<Repository> i_repo(ExndbamRepository::repository_factory_create(&env,
+                std::bind(from_keys, i_keys, std::placeholders::_1)));
+    env.add_repository(1, i_repo);
+
+    InstallAction action(make_named_values<InstallActionOptions>(
+                n::destination() = i_repo,
+                n::make_output_manager() = &make_standard_output_manager,
+                n::perform_uninstall() = &cannot_uninstall,
+                n::replacing() = std::make_shared<PackageIDSequence>(),
+                n::want_phase() = &want_all_phases
+            ));
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/exdirectory-phase-1",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/exdirectory-forbid-1",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/exdirectory-allow-1",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
     }
 }
 

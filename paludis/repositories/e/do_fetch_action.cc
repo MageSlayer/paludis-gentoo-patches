@@ -36,6 +36,7 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/metadata_key.hh>
@@ -189,6 +190,7 @@ paludis::erepository::do_fetch_action(
                         n::maybe_output_manager() = output_manager,
                         n::package_builddir() = package_builddir,
                         n::package_id() = id,
+                        n::permitted_directories() = make_null_shared_ptr(),
                         n::portdir() =
                             (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
                             (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
@@ -236,6 +238,7 @@ paludis::erepository::do_fetch_action(
                         n::maybe_output_manager() = output_manager,
                         n::package_builddir() = repo->params().builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-nofetch"),
                         n::package_id() = id,
+                        n::permitted_directories() = make_null_shared_ptr(),
                         n::portdir() = (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
                             (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
                         n::root() = "/",

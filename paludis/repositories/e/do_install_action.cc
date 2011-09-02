@@ -29,6 +29,7 @@
 #include <paludis/repositories/e/e_stripper.hh>
 #include <paludis/repositories/e/ebuild.hh>
 #include <paludis/repositories/e/make_archive_strings.hh>
+#include <paludis/repositories/e/permitted_directories.hh>
 
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
@@ -195,6 +196,8 @@ paludis::erepository::do_install_action(
     std::string used_config_protect;
     auto merged_entries(std::make_shared<FSPathSet>());
 
+    auto permitted_directories(std::make_shared<PermittedDirectories>());
+
     auto choices(id->choices_key()->parse_value());
     std::shared_ptr<const ChoiceValue> preserve_work_choice(choices->find_by_name_with_prefix(ELikePreserveWorkChoiceValue::canonical_name_with_prefix()));
 
@@ -263,7 +266,7 @@ paludis::erepository::do_install_action(
                         n::output_manager() = output_manager,
                         n::package_id() = id,
                         n::perform_uninstall() = install_action.options.perform_uninstall(),
-                        n::permit_destination() = std::bind(return_literal_function(true)),
+                        n::permit_destination() = std::bind(&PermittedDirectories::permit, permitted_directories, std::placeholders::_1),
                         n::replacing() = install_action.options.replacing(),
                         n::used_this_for_config_protect() = std::bind(
                                 &used_this_for_config_protect, std::ref(used_config_protect), std::placeholders::_1)
@@ -347,6 +350,7 @@ paludis::erepository::do_install_action(
                     n::maybe_output_manager() = output_manager,
                     n::package_builddir() = package_builddir,
                     n::package_id() = id,
+                    n::permitted_directories() = permitted_directories,
                     n::portdir() =
                         (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
                         (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
