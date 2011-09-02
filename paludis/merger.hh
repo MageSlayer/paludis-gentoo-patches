@@ -48,15 +48,6 @@ namespace paludis
     }
 
     /**
-     * Whether to allow merging to a particular destination.
-     *
-     * \ingroup g_repository
-     * \see MergerParams
-     * \since 0.66
-     */
-    typedef std::function<bool (const FSPath &)> PermitDestinationFn;
-
-    /**
      * Parameters for a basic Merger.
      *
      * \see Merger

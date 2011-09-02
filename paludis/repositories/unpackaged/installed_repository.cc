@@ -378,7 +378,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
                 n::options() = m.options(),
                 n::output_manager() = m.output_manager(),
                 n::package_id() = m.package_id(),
-                n::permit_destination() = std::bind(return_literal_function(true)),
+                n::permit_destination() = m.permit_destination(),
                 n::root() = installed_root_key()->parse_value()
             ));
 

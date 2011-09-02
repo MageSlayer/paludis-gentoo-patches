@@ -72,6 +72,7 @@ namespace paludis
         typedef Name<struct name_package_id> package_id;
         typedef Name<struct name_path> path;
         typedef Name<struct name_perform_uninstall> perform_uninstall;
+        typedef Name<struct name_permit_destination> permit_destination;
         typedef Name<struct name_profile> profile;
         typedef Name<struct name_replacing> replacing;
         typedef Name<struct name_status> status;
@@ -140,6 +141,9 @@ namespace paludis
         NamedValue<n::perform_uninstall, std::function<void (
                 const std::shared_ptr<const PackageID> &,
                 const UninstallActionOptions &)> > perform_uninstall;
+
+        ///\since 0.66
+        NamedValue<n::permit_destination, PermitDestinationFn> permit_destination;
 
         /**
          * Someone needs to replace these (either the merge or the install).

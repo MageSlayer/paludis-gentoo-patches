@@ -1728,7 +1728,7 @@ ERepository::merge(const MergeParams & m)
                 n::options() = m.options(),
                 n::output_manager() = m.output_manager(),
                 n::package_id() = m.package_id(),
-                n::permit_destination() = std::bind(return_literal_function(true)),
+                n::permit_destination() = m.permit_destination(),
                 n::root() = FSPath("/"),
                 n::tar_file() = _imp->params.binary_distdir() / (bin_dist_base + pbin_tar_extension)
             ));

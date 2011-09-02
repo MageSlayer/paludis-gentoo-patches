@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,9 +20,11 @@
 #ifndef PALUDIS_GUARD_PALUDIS_MERGER_FWD_HH
 #define PALUDIS_GUARD_PALUDIS_MERGER_FWD_HH 1
 
-#include <iosfwd>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/options-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
+#include <iosfwd>
+#include <functional>
 
 namespace paludis
 {
@@ -38,6 +40,15 @@ namespace paludis
     typedef Options<MergerOption> MergerOptions;
 
     class Merger;
+
+    /**
+     * Whether to allow merging to a particular destination.
+     *
+     * \ingroup g_repository
+     * \see MergerParams
+     * \since 0.66
+     */
+    typedef std::function<bool (const FSPath &)> PermitDestinationFn;
 }
 
 #endif

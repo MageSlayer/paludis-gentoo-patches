@@ -38,6 +38,7 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/return_literal_function.hh>
 
 #include <paludis/action.hh>
 #include <paludis/dep_spec_flattener.hh>
@@ -262,6 +263,7 @@ paludis::erepository::do_install_action(
                         n::output_manager() = output_manager,
                         n::package_id() = id,
                         n::perform_uninstall() = install_action.options.perform_uninstall(),
+                        n::permit_destination() = std::bind(return_literal_function(true)),
                         n::replacing() = install_action.options.replacing(),
                         n::used_this_for_config_protect() = std::bind(
                                 &used_this_for_config_protect, std::ref(used_config_protect), std::placeholders::_1)
