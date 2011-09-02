@@ -196,6 +196,17 @@ FSPath::strip_leading(const FSPath & f) const
     return FSPath(_imp->path.substr(root.length()));
 }
 
+bool
+FSPath::starts_with(const FSPath & f) const
+{
+    std::string root(stringify(f));
+
+    if (root == "/")
+        root.clear();
+    root.append("/");
+    return 0 == (_imp->path + "/").compare(0, root.length(), root);
+}
+
 FSPath
 FSPath::dirname() const
 {

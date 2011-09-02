@@ -85,6 +85,12 @@ namespace paludis
             FSPath strip_leading(const FSPath & prefix) const;
 
             /**
+             * Do we start with a given path (eg '/foo/bar' starts with '/foo'
+             * but not '/fo')?
+             */
+            bool starts_with(const FSPath &) const;
+
+            /**
              * Try to make a directory.
              *
              * \return True, if we succeeded, and false if the directory

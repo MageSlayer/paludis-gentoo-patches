@@ -107,6 +107,31 @@ TEST(FSPath, StripLeading)
     EXPECT_TRUE(stringify(d.strip_leading(root3)) == "/my/directory");
 }
 
+TEST(FSPath, StartsWith)
+{
+    FSPath slash("/");
+    FSPath usr("/usr");
+    FSPath lib("/lib");
+
+    EXPECT_TRUE(FSPath("/").starts_with(slash));
+    EXPECT_TRUE(FSPath("/usr").starts_with(slash));
+    EXPECT_TRUE(FSPath("/usr/bin/foo").starts_with(slash));
+    EXPECT_TRUE(FSPath("/lib/foo").starts_with(slash));
+    EXPECT_TRUE(FSPath("/lib64/foo").starts_with(slash));
+
+    EXPECT_FALSE(FSPath("/").starts_with(usr));
+    EXPECT_TRUE(FSPath("/usr").starts_with(usr));
+    EXPECT_TRUE(FSPath("/usr/bin/foo").starts_with(usr));
+    EXPECT_FALSE(FSPath("/lib/foo").starts_with(usr));
+    EXPECT_FALSE(FSPath("/lib64/foo").starts_with(usr));
+
+    EXPECT_FALSE(FSPath("/").starts_with(lib));
+    EXPECT_FALSE(FSPath("/usr").starts_with(lib));
+    EXPECT_FALSE(FSPath("/usr/bin/foo").starts_with(lib));
+    EXPECT_TRUE(FSPath("/lib/foo").starts_with(lib));
+    EXPECT_FALSE(FSPath("/lib64/foo").starts_with(lib));
+}
+
 TEST(FSPath, OStream)
 {
     std::string n("fs_path_TEST_dir/no_perms");
