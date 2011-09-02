@@ -162,7 +162,7 @@ Merger::do_dir_recursive(bool is_check, const FSPath & src, const FSPath & dst)
                 on_error(is_check, "Attempted to install empty directory '" + stringify(dst) + "'");
         }
 
-        if (! _imp->params.permit_destination()(dst))
+        if (! _imp->params.permit_destination()(dst.strip_leading(_imp->params.root().realpath())))
             on_error(is_check, "Not allowed to merge '" + stringify(src) + "' to '" + stringify(dst) + "'");
     }
 
