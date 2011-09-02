@@ -100,14 +100,14 @@ namespace
         void SetUp()
         {
             target = GetParam();
-            root_dir = FSPath::cwd() / "vdb_merger_TEST_dir" / target / "root";
+            root_dir = FSPath::cwd() / "vdb_merger_TEST_dir" / (target + "_dir") / "root";
             merger = std::make_shared<VDBMergerNoDisplay>(make_named_values<VDBMergerParams>(
                         n::config_protect() = "/protected_file /protected_dir",
                         n::config_protect_mask() = "/protected_dir/unprotected_file /protected_dir/unprotected_dir",
-                        n::contents_file() = FSPath::cwd() / "vdb_merger_TEST_dir/CONTENTS" / target,
+                        n::contents_file() = FSPath::cwd() / "vdb_merger_TEST_dir/CONTENTS" / (target + "_dir"),
                         n::environment() = &env,
                         n::fix_mtimes_before() = Timestamp(0, 0),
-                        n::image() = FSPath::cwd() / "vdb_merger_TEST_dir" / target / "image",
+                        n::image() = FSPath::cwd() / "vdb_merger_TEST_dir" / (target + "_dir") / "image",
                         n::merged_entries() = std::make_shared<FSPathSet>(),
                         n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                         n::output_manager() = std::make_shared<StandardOutputManager>(),
