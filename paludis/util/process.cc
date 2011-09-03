@@ -178,6 +178,8 @@ namespace paludis
         std::unique_ptr<Channel> capture_stderr_pipe;
         std::string prefix_stderr_buffer;
 
+        bool extra_newlines_if_any_output_exists;
+
         std::ostream * capture_output_to_fd;
         std::unique_ptr<Pipe> capture_output_to_fd_pipe;
 
@@ -214,6 +216,7 @@ void
 RunningProcessThread::thread_func()
 {
     bool prefix_stdout_buffer_has_newline(false), prefix_stderr_buffer_has_newline(false), want_to_finish(true);
+    bool done_extra_newlines_stdout(false), done_extra_newlines_stderr(false);
     std::string input_stream_pending;
 
     if (as_main_process && send_input_to_fd)
@@ -398,6 +401,13 @@ RunningProcessThread::thread_func()
                 if (std::string::npos == p)
                     break;
 
+                if (extra_newlines_if_any_output_exists)
+                {
+                    if (! done_extra_newlines_stdout)
+                        capture_stdout->write("\n", 1);
+                    done_extra_newlines_stdout = true;
+                }
+
                 capture_stdout->write(prefix_stdout.data(), prefix_stdout.length());
                 capture_stdout->write(prefix_stdout_buffer.data(), p + 1);
                 prefix_stdout_buffer.erase(0, p + 1);
@@ -413,6 +423,13 @@ RunningProcessThread::thread_func()
                 std::string::size_type p(prefix_stderr_buffer.find('\n'));
                 if (std::string::npos == p)
                     break;
+
+                if (extra_newlines_if_any_output_exists)
+                {
+                    if (! done_extra_newlines_stderr)
+                        capture_stderr->write("\n", 1);
+                    done_extra_newlines_stderr = true;
+                }
 
                 capture_stderr->write(prefix_stderr.data(), prefix_stderr.length());
                 capture_stderr->write(prefix_stderr_buffer.data(), p + 1);
@@ -450,6 +467,14 @@ RunningProcessThread::thread_func()
                 throw ProcessError("read() on our ctl pipe gave '" + std::string(1, c) + "' not 'x'");
             done = true;
         }
+    }
+
+    if (extra_newlines_if_any_output_exists)
+    {
+        if (done_extra_newlines_stdout)
+            capture_stdout->write("\n", 1);
+        if (done_extra_newlines_stderr)
+            capture_stderr->write("\n", 1);
     }
 }
 
@@ -489,6 +514,7 @@ namespace paludis
 
         std::string prefix_stdout;
         std::string prefix_stderr;
+        bool extra_newlines_if_any_output_exists;
 
         bool as_main_process;
 
@@ -507,6 +533,7 @@ namespace paludis
             setuid(getuid()),
             setgid(getgid()),
             echo_command_to(0),
+            extra_newlines_if_any_output_exists(false),
             as_main_process(false)
         {
         }
@@ -553,6 +580,8 @@ Process::run()
                 _imp->capture_stderr = thread->own_capture_stderr.get();
             }
         }
+
+        thread->extra_newlines_if_any_output_exists = _imp->extra_newlines_if_any_output_exists;
 
         if (_imp->capture_stdout)
         {
@@ -889,6 +918,13 @@ Process::prefix_stderr(const std::string & s)
 {
     _imp->need_thread = true;
     _imp->prefix_stderr = s;
+    return *this;
+}
+
+Process &
+Process::extra_newlines_if_any_output_exists()
+{
+    _imp->extra_newlines_if_any_output_exists = true;
     return *this;
 }
 

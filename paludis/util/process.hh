@@ -107,6 +107,7 @@ namespace paludis
 
             Process & prefix_stdout(const std::string &);
             Process & prefix_stderr(const std::string &);
+            Process & extra_newlines_if_any_output_exists();
 
             Process & sandbox();
             Process & sydbox();
