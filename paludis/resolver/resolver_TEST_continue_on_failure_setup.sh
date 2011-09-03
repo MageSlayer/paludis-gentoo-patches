@@ -52,5 +52,15 @@ PLATFORMS="test"
 SLOT="0"
 END
 
+# continue-on-failure-purge
+echo 'continue-on-failure-purge' >> metadata/categories.conf
+
+mkdir -p 'packages/continue-on-failure-purge/target'
+cat <<END > packages/continue-on-failure-purge/target/target-1.exheres-0
+SUMMARY="dep"
+PLATFORMS="test"
+SLOT="0"
+END
+
 cd ..
 

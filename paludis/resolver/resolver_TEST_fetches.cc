@@ -123,7 +123,7 @@ TEST_F(ResolverFetchTestCase, Fetch)
 
     const FetchJob * const fetch_target_job(visitor_cast<const FetchJob>(**resolved->job_lists()->execute_job_list()->fetch(2)));
     ASSERT_TRUE(fetch_target_job);
-    EXPECT_EQ("1 satisfied, 1 independent",
+    EXPECT_EQ("1 satisfied independent, 1 independent",
             join(fetch_target_job->requirements()->begin(), fetch_target_job->requirements()->end(), ", ", stringify_req));
 
     const InstallJob * const target_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));

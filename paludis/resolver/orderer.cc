@@ -741,7 +741,7 @@ namespace
                     if (n != change_or_remove_job_numbers.end())
                         requirements->push_back(make_named_values<JobRequirement>(
                                     n::job_number() = n->second,
-                                    n::required_if() = basic_required_ifs + jri_require_for_satisfied
+                                    n::required_if() = basic_required_ifs + jri_require_for_satisfied + jri_require_for_independent
                                     ));
                 }
 

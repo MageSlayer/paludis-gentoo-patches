@@ -144,7 +144,7 @@ namespace
                 EXPECT_EQ("4 satisfied independent always, 3 independent, 1 independent",
                         join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req));
             else
-                EXPECT_EQ("4 satisfied independent always, 1 satisfied, 3 independent, 1 independent",
+                EXPECT_EQ("4 satisfied independent always, 1 satisfied independent, 3 independent, 1 independent",
                         join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req));
         }
     };
@@ -201,14 +201,56 @@ TEST_F(ResolverContinueOnFailureTestCase, Uninstall)
 
     const UninstallJob * const target_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
     ASSERT_TRUE(target_job);
-    EXPECT_EQ("0 satisfied", join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req));
+    EXPECT_EQ("0 satisfied independent", join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req));
 
     const UninstallJob * const dep_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(2)));
     ASSERT_TRUE(dep_job);
-    EXPECT_EQ("1 satisfied", join(dep_job->requirements()->begin(), dep_job->requirements()->end(), ", ", stringify_req));
+    EXPECT_EQ("1 satisfied independent", join(dep_job->requirements()->begin(), dep_job->requirements()->end(), ", ", stringify_req));
 
     const UninstallJob * const dep_of_dep_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
     ASSERT_TRUE(dep_of_dep_job);
-    EXPECT_EQ("2 satisfied", join(dep_of_dep_job->requirements()->begin(), dep_of_dep_job->requirements()->end(), ", ", stringify_req));
+    EXPECT_EQ("2 satisfied independent", join(dep_of_dep_job->requirements()->begin(), dep_of_dep_job->requirements()->end(), ", ", stringify_req));
+}
+
+TEST_F(ResolverContinueOnFailureTestCase, Purge)
+{
+    data->install("continue-on-failure-purge", "target", "0")->build_dependencies_key()->set_from_string("continue-on-failure-purge/going");
+    data->install("continue-on-failure-purge", "going", "1");
+
+    data->get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("continue-on-failure-purge/going", &data->env, { }));
+    data->allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("continue-on-failure-purge/going", &data->env, { }));
+
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("continue-on-failure-purge/target"));
+
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("continue-on-failure-purge/target"))
+                .remove(QualifiedPackageName("continue-on-failure-purge/going"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
+
+    ASSERT_EQ(3, resolved->job_lists()->execute_job_list()->length());
+
+    const FetchJob * const fetch_target_job(visitor_cast<const FetchJob>(**resolved->job_lists()->execute_job_list()->fetch(0)));
+    ASSERT_TRUE(fetch_target_job);
+    EXPECT_EQ("", join(fetch_target_job->requirements()->begin(), fetch_target_job->requirements()->end(), ", ", stringify_req));
+
+    const InstallJob * const target_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
+    ASSERT_TRUE(target_job);
+    EXPECT_EQ("0 satisfied independent always", join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req));
+
+    const UninstallJob * const going_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(2)));
+    ASSERT_TRUE(going_job);
+    EXPECT_EQ("1 satisfied independent", join(going_job->requirements()->begin(), going_job->requirements()->end(), ", ", stringify_req));
 }
 
