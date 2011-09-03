@@ -35,9 +35,7 @@ ebuild_f_pretend()
     if hasq "pretend" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping pkg_pretend (SKIP_FUNCTIONS)"
     else
-        echo
         pkg_pretend
-        echo
     fi
     true
 }

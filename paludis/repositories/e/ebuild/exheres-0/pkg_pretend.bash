@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2007, 2008, 2011 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,9 +32,7 @@ exheres_internal_pretend()
     if hasq "pretend" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping pkg_pretend (SKIP_FUNCTIONS)"
     else
-        echo
         pkg_pretend
-        echo
     fi
 
     true

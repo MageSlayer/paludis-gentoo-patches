@@ -1119,6 +1119,7 @@ void
 EbuildPretendCommand::extend_command(Process & process)
 {
     process
+        .extra_newlines_if_any_output_exists()
         .prefix_stdout(stringify(params.package_id()->name().package()) + "-" +
                 stringify(params.package_id()->version()) + "> ")
         .prefix_stderr(stringify(params.package_id()->name().package()) + "-" +
