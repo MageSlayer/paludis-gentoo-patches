@@ -130,6 +130,14 @@ namespace paludis
                         const std::string & c, const std::string & p, const std::string & v);
             };
 
+            struct ResolverWithBinaryTestData :
+                ResolverTestData
+            {
+                std::shared_ptr<Repository> bin_repo;
+
+                ResolverWithBinaryTestData(const std::string & group, const std::string & eapi, const std::string & layout);
+            };
+
             struct ResolverTestCase :
                 testing::Test
             {

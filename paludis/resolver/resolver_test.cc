@@ -140,6 +140,27 @@ ResolverTestData::ResolverTestData(const std::string & t, const std::string & e,
     make_unmaskable_filter_helper.set_override_masks(false);
 }
 
+ResolverWithBinaryTestData::ResolverWithBinaryTestData(const std::string & t, const std::string & e, const std::string & l) :
+    ResolverTestData(t, e, l)
+{
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / ("resolver_TEST_" + t + "_dir") / "binrepo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / ("resolver_TEST_" + t + "_dir") / "repo/profiles/profile"));
+    keys->insert("layout", l);
+    keys->insert("eapi_when_unknown", e);
+    keys->insert("eapi_when_unspecified", e);
+    keys->insert("profile_eapi", e);
+    keys->insert("binary_destination", "true");
+    keys->insert("binary_keywords_filter", "test ~test");
+    keys->insert("distdir", stringify(FSPath::cwd() / ("resolver_TEST_" + t + "_dir") / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / ("resolver_TEST_" + t + "_dir") / "build"));
+    bin_repo = RepositoryFactory::get_instance()->create(&env,
+            std::bind(from_keys, keys, std::placeholders::_1));
+    env.add_repository(2, bin_repo);
+}
+
 ResolverFunctions
 ResolverTestData::get_resolver_functions()
 {
