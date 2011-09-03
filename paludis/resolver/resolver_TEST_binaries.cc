@@ -71,12 +71,37 @@ namespace
     };
 }
 
+TEST_F(ResolverBinariesTestCase, SelfBuildBinary)
+{
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("self-build-binary/target"));
+
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("self-build-binary/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("self-build-binary/dep"))
+                .change(QualifiedPackageName("self-build-binary/dep"))
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
+}
+
 TEST_F(ResolverBinariesTestCase, SelfRunBinary)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("self-run-binary/target"));
 
     check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("self-run-binary/dep"))
+                .change(QualifiedPackageName("self-run-binary/dep"))
                 .change(QualifiedPackageName("self-run-binary/target"))
                 .finished()),
             n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -84,8 +109,6 @@ TEST_F(ResolverBinariesTestCase, SelfRunBinary)
             n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
                 .finished()),
             n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
-                .change(QualifiedPackageName("self-run-binary/dep"))
-                .change(QualifiedPackageName("self-run-binary/dep"))
                 .finished()),
             n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .finished()),

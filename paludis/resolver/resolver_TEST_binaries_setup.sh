@@ -22,6 +22,25 @@ cd repo
 echo "repo" > profiles/repo_name
 : > metadata/categories.conf
 
+# self-build-binary
+echo 'self-build-binary' >> metadata/categories.conf
+
+mkdir -p 'packages/self-build-binary/target'
+cat <<END > packages/self-build-binary/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build+run: self-build-binary/dep"
+END
+
+mkdir -p 'packages/self-build-binary/dep'
+cat <<END > packages/self-build-binary/dep/dep-1.exheres-0
+SUMMARY="dep"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build: self-build-binary/dep"
+END
+
 # self-run-binary
 echo 'self-run-binary' >> metadata/categories.conf
 

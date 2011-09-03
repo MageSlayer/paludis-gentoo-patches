@@ -309,13 +309,23 @@ namespace
                             from = from_bin;
                     }
 
+                    /* ticket:1174: making binaries with self run dependencies */
+                    bool override_run_all_met(false);
+                    if (to.resolvent().destination_type() != dt_create_binary &&
+                            from.resolvent().destination_type() == dt_create_binary &&
+                            from.resolvent().package() == to.resolvent().package() &&
+                            from.resolvent().slot() == to.resolvent().slot())
+                    {
+                        override_run_all_met = true;
+                    }
+
                     nag->add_edge(from, to,
                             make_named_values<NAGEdgeProperties>(
                                 n::always() = false,
                                 n::build() = classifier->includes_buildish,
                                 n::build_all_met() = r.already_met().is_true() || ! classifier->includes_buildish,
                                 n::run() = classifier->includes_non_post_runish,
-                                n::run_all_met() = r.already_met().is_true() || ! classifier->includes_non_post_runish
+                                n::run_all_met() = override_run_all_met || r.already_met().is_true() || ! classifier->includes_non_post_runish
                                 ));
                 }
                 else
