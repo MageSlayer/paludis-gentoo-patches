@@ -10,6 +10,7 @@ libexecprog_SCRIPTS = \
 	dolib \
 	dosed \
 	donewins \
+	emake \
 	fperms \
 	fowners \
 	herebin \

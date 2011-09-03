@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007, 2008, 2009 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2009, 2011 Ciaran McCreesh
 # Copyright (c) 2008 Bo Ørsted Andresen
 # Copyright (c) 2009 David Leverton
 # Copyright (c) 2009 Mike Kelly
@@ -148,10 +148,10 @@ econf()
         done
 
         echo ${ECONF_WRAPPER} "${ECONF_SOURCE}"/configure \
-            "${default_args[@]}" "${econf_args[@]}" ${EXTRA_ECONF} 1>&2
+            "${default_args[@]}" "${econf_args[@]}" 1>&2
 
         ${ECONF_WRAPPER} "${ECONF_SOURCE}"/configure \
-            "${default_args[@]}" "${econf_args[@]}" ${EXTRA_ECONF} || paludis_die_unless_nonfatal "econf failed" || return 247
+            "${default_args[@]}" "${econf_args[@]}" || paludis_die_unless_nonfatal "econf failed" || return 247
     else
         paludis_die_unless_nonfatal "No configure script for econf" || return 247
     fi
@@ -173,7 +173,7 @@ einstall()
         cmd="${cmd} sysconfdir=${IMAGE}/etc"
         cmd="${cmd} localstatedir=${IMAGE}/var/lib"
         cmd="${cmd} libdir=${IMAGE}/usr/${LIBDIR:-lib}"
-        cmd="${cmd} ${EXTRA_EINSTALL} ${@} install"
+        cmd="${cmd} ${@} install"
         echo "${cmd}" 1>&2
         ${cmd} || paludis_die_unless_nonfatal "einstall failed" || return 247
     else
