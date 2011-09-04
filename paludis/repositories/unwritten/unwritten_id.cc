@@ -276,12 +276,6 @@ UnwrittenID::homepage_key() const
     return _imp->homepage_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
-UnwrittenID::contents_key() const
-{
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >();
-}
-
 const std::shared_ptr<const MetadataTimeKey>
 UnwrittenID::installed_time_key() const
 {

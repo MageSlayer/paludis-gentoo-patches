@@ -119,4 +119,3 @@ ExndbamID::make_contents_key() const
     return std::make_shared<ExndbamContentsKey>(this, _ndbam);
 }
 
-

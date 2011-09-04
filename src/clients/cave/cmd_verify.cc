@@ -226,11 +226,11 @@ VerifyCommand::run(
     for (PackageIDSequence::ConstIterator i(entries->begin()), i_end(entries->end()) ;
             i != i_end ; ++i)
     {
-        if (! (*i)->contents_key())
+        auto contents((*i)->contents());
+        if (! contents)
             continue;
 
         Verifier v(*i);
-        auto contents((*i)->contents_key()->parse_value());
         std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(v));
         exit_status |= v.exit_status;
     }

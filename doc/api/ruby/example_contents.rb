@@ -23,14 +23,15 @@ ids = env[Selection::AllVersionsSorted.new(
 
 # For each ID:
 ids.each do | id |
-    # Do we have a contents key? PackageID _key methods can return Nil.
-    if not id.contents_key
+    # Do we have contents? This can return nil
+    contents = id.contents
+    if contents
         puts "ID '#{id}' does not provide a contents key."
     else
         puts "ID '#{id}' provides contents key:"
 
         # Contents is made up of a collection of ContentsEntry instances.
-        id.contents_key.parse_value.each do | c |
+        contents.each do | c |
 
             # Some ContentsEntry subclasses contain more information than others
             if c.kind_of? ContentsOtherEntry

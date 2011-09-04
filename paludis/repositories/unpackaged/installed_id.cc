@@ -598,16 +598,10 @@ InstalledUnpackagedID::long_description_key() const
     return std::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
-InstalledUnpackagedID::contents_key() const
-{
-    return _imp->contents_key;
-}
-
 const std::shared_ptr<const Contents>
 InstalledUnpackagedID::contents() const
 {
-    return contents_key()->parse_value();
+    return _imp->contents_key->parse_value();
 }
 
 const std::shared_ptr<const MetadataTimeKey>

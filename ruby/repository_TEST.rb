@@ -181,7 +181,7 @@ module Paludis
         include RepositoryTestCase
 
         def contents
-            contents = installed_pid.contents_key.parse_value
+            contents = installed_pid.contents
         end
 
         def entries

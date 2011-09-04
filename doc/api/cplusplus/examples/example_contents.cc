@@ -80,9 +80,9 @@ int main(int argc, char * argv[])
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {
-            /* Do we have a contents key? PackageID _key() methods can return
-             * a zero pointer. */
-            if (! (*i)->contents_key())
+            /* Do we have contents key?*/
+            auto contents((*i)->contents());
+            if (! contents)
             {
                 cout << "ID '" << **i << "' does not provide a contents key." << endl;
             }
@@ -94,7 +94,6 @@ int main(int argc, char * argv[])
                  * indirect_iterator because choices->begin() and ->end() return
                  * iterators to std::shared_ptr<>s rather than raw objects. */
                 ContentsPrinter p;
-                auto contents((*i)->contents_key()->parse_value());
                 std::for_each(
                         indirect_iterator(contents->begin()),
                         indirect_iterator(contents->end()),

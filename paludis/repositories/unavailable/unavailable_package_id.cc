@@ -270,12 +270,6 @@ UnavailablePackageID::homepage_key() const
     return std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
-UnavailablePackageID::contents_key() const
-{
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >();
-}
-
 const std::shared_ptr<const MetadataTimeKey>
 UnavailablePackageID::installed_time_key() const
 {

@@ -139,9 +139,9 @@ TEST(InstalledRepository, Metadata)
     EXPECT_TRUE(bool(id1->fs_location_key()));
     EXPECT_EQ(id1->fs_location_key()->parse_value(), FSPath::cwd() / "installed_repository_TEST_dir/repo1/data/giant-space-weasel/1:0:foo/");
 
-    EXPECT_TRUE(bool(id1->contents_key()));
+    EXPECT_TRUE(bool(id1->contents()));
     ContentsDumper d1;
-    auto contents1(id1->contents_key()->parse_value());
+    auto contents1(id1->contents());
     std::for_each(indirect_iterator(contents1->begin()), indirect_iterator(contents1->end()), accept_visitor(d1));
     EXPECT_EQ("dir</fnord>", d1.s.str());
 
@@ -156,9 +156,9 @@ TEST(InstalledRepository, Metadata)
     EXPECT_TRUE(bool(id2->fs_location_key()));
     EXPECT_EQ(id2->fs_location_key()->parse_value(), FSPath::cwd() / "installed_repository_TEST_dir/repo1/data/giant-space-weasel/2:1:bar/");
 
-    EXPECT_TRUE(bool(id2->contents_key()));
+    EXPECT_TRUE(bool(id2->contents()));
     ContentsDumper d2;
-    auto contents2(id2->contents_key()->parse_value());
+    auto contents2(id2->contents());
     std::for_each(indirect_iterator(contents2->begin()), indirect_iterator(contents2->end()), accept_visitor(d2));
     EXPECT_EQ("dir</stilton>file</stilton/cheese>file</stilton/is delicious>", d2.s.str());
 }

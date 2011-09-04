@@ -869,12 +869,6 @@ EbuildID::long_description_key() const
     return _imp->long_description;
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
-EbuildID::contents_key() const
-{
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >();
-}
-
 const std::shared_ptr<const MetadataTimeKey>
 EbuildID::installed_time_key() const
 {

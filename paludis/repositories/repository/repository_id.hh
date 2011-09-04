@@ -77,8 +77,6 @@ namespace paludis
                  const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const;
                  const std::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const;
                  const std::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const;
-                 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
-                     contents_key() const;
                  const std::shared_ptr<const MetadataTimeKey> installed_time_key() const;
                  const std::shared_ptr<const MetadataValueKey<FSPath> > fs_location_key() const;
                  const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;

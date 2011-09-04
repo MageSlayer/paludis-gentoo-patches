@@ -133,11 +133,9 @@ paludis::cave::executables_common(
     for (auto i(best ? entries->last() : entries->begin()), i_end(entries->end()) ;
             i != i_end ; ++i)
     {
-        if ((*i)->contents_key())
-        {
-            std::shared_ptr<const Contents> contents((*i)->contents_key()->parse_value());
+        auto contents((*i)->contents());
+        if (contents)
             std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(ed));
-        }
     }
 
     return EXIT_SUCCESS;

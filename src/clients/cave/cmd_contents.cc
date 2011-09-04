@@ -138,10 +138,10 @@ ContentsCommand::run(
         nothing_matching_error(env.get(), *cmdline.begin_parameters(), filter::InstalledAtRoot(env->preferred_root_key()->parse_value()));
 
     const std::shared_ptr<const PackageID> id(*entries->last());
-    if (! id->contents_key())
+    auto contents(id->contents());
+    if (! contents)
         throw BadIDForCommand(spec, id, "does not support listing contents");
 
-    auto contents(id->contents_key()->parse_value());
     std::transform(
             contents->begin(),
             contents->end(),

@@ -174,10 +174,10 @@ PrintIDContentsCommand::run(
     for (auto i(cmdline.a_best.specified() ? entries->last() : entries->begin()), i_end(entries->end()) ;
             i != i_end ; ++i)
     {
-        if (! (*i)->contents_key())
+        auto contents((*i)->contents());
+        if (! contents)
             throw BadIDForCommand(spec, (*i), "does not support listing contents");
 
-        auto contents((*i)->contents_key()->parse_value());
         for (auto c(contents->begin()), c_end(contents->end()) ;
                 c != c_end ; ++c)
             if (match_type(cmdline.a_type, *c))

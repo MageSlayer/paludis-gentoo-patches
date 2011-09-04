@@ -107,7 +107,7 @@ module Paludis
             { :name => QualifiedPackageName, :version => VersionSpec, :repository_name => String,
                 :keywords_key => MetadataKeywordNameSetKey, :choices_key => MetadataChoicesKey,
                 :short_description_key => MetadataStringKey, :long_description_key => MetadataStringKey,
-                :contents_key => MetadataContentsKey, :installed_time_key => MetadataTimeKey,
+                :installed_time_key => MetadataTimeKey,
                 :from_repositories_key => Array, :masks => Array, :overridden_masks => Array
             }.each_pair do | method, type |
 
@@ -234,10 +234,6 @@ module Paludis
         def test_long_description
             #only gems has this atm
             assert_nil pid_testrepo.long_description_key
-        end
-
-        def test_contents_key
-            assert_nil pid_testrepo.contents_key
         end
 
         def test_installed_time_key

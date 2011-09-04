@@ -443,7 +443,7 @@ VDBRepository::perform_uninstall(
 
             std::shared_ptr<const Contents> contents(a.options.override_contents());
             if (! contents)
-                contents = id->contents_key()->parse_value();
+                contents = id->contents();
 
             /* unmerge */
             VDBUnmerger unmerger(
@@ -689,7 +689,7 @@ VDBRepository::merge(const MergeParams & m)
     std::shared_ptr<const Contents> is_replace_contents;
     if (is_replace)
     {
-        is_replace_contents = is_replace->contents_key()->parse_value();
+        is_replace_contents = is_replace->contents();
 
         FSPath old_vdb_dir(_imp->params.location());
         old_vdb_dir /= stringify(is_replace->name().category());

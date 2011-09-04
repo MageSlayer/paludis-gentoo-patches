@@ -11,8 +11,8 @@ Log.instance.program_name = $0
 def get_contents(pids, directories, root)
     in_contents= []
     pids.each do |pid|
-        next if pid.contents_key.nil?
-        contents = pid.contents_key.parse_value
+        contents = pid.contents
+        next if contents.nil?
         contents.each do |entry|
             next if entry.kind_of? ContentsOtherEntry
             directories.each do |directory|

@@ -841,13 +841,6 @@ FakePackageID::long_description_key() const
     return std::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
-FakePackageID::contents_key() const
-{
-    need_keys_added();
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >();
-}
-
 const std::shared_ptr<const MetadataTimeKey>
 FakePackageID::installed_time_key() const
 {

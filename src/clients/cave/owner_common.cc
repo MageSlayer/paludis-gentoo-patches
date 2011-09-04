@@ -105,10 +105,10 @@ paludis::cave::owner_common(
 
     for (PackageIDSequence::ConstIterator p(ids->begin()), p_end(ids->end()); p != p_end; ++p)
     {
-        if (! (*p)->contents_key())
+        std::shared_ptr<const Contents> contents((*p)->contents());
+        if (! contents)
             continue;
 
-        std::shared_ptr<const Contents> contents((*p)->contents_key()->parse_value());
         if (contents->end() != std::find_if(contents->begin(), contents->end(), std::bind(handler, query,
                         std::placeholders::_1)))
         {

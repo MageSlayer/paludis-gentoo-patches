@@ -860,17 +860,11 @@ EInstalledRepositoryID::long_description_key() const
     return _imp->keys->long_description;
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
-EInstalledRepositoryID::contents_key() const
-{
-    need_keys_added();
-    return _imp->keys->contents;
-}
-
 const std::shared_ptr<const Contents>
 EInstalledRepositoryID::contents() const
 {
-    return contents_key()->parse_value();
+    need_keys_added();
+    return _imp->keys->contents->parse_value();
 }
 
 const std::shared_ptr<const MetadataTimeKey>

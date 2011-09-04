@@ -246,12 +246,6 @@ RepositoryID::homepage_key() const
     return std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
-RepositoryID::contents_key() const
-{
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >();
-}
-
 const std::shared_ptr<const MetadataTimeKey>
 RepositoryID::installed_time_key() const
 {

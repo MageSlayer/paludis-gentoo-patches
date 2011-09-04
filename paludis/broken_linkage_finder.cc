@@ -331,10 +331,7 @@ Imp<BrokenLinkageFinder>::gather_package(const std::shared_ptr<const PackageID> 
 
     Context ctx("When gathering the contents of " + stringify(*pkg) + ":");
 
-    std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > > key(pkg->contents_key());
-    if (! key)
-        return;
-    std::shared_ptr<const Contents> contents(key->parse_value());
+    auto contents(pkg->contents());
     if (! contents)
         return;
 

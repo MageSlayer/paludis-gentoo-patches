@@ -246,14 +246,6 @@ namespace paludis
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const = 0;
 
             /**
-             * The contents_key, if non-zero, contains the contents of a
-             * package. For installed packages, this means the files installed;
-             * for installable packages, this means the files that will be
-             * installed (if known, which it may be for some binary packages).
-             */
-            virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > > contents_key() const = 0;
-
-            /**
              * The installed_time_key, if non-zero, contains the time a package
              * was installed. It affects dependency resolution if DepList is
              * using dl_reinstall_scm_daily or dl_reinstall_scm_weekly.

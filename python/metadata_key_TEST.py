@@ -126,26 +126,6 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
 
         test_metadata_time_key(TestKey())
 
-
-    def test_04_contents(self):
-        class TestKey(MetadataContentsKey):
-            def __init__(self):
-                MetadataContentsKey.__init__(self)
-
-            def parse_value(self):
-                return Contents()
-
-            def raw_name(self):
-                return "raw"
-
-            def human_name(self):
-                return "human"
-
-            def type(self):
-                return MetadataKeyType.NORMAL
-
-        test_metadata_contents_key(TestKey())
-
     def test_06_keyword_name_iterable(self):
         class TestKey(MetadataKeywordNameIterableKey):
             def __init__(self):

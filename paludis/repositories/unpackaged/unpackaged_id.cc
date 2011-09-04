@@ -257,12 +257,6 @@ UnpackagedID::long_description_key() const
     return std::shared_ptr<const MetadataValueKey<std::string> >();
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
-UnpackagedID::contents_key() const
-{
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >();
-}
-
 const std::shared_ptr<const MetadataTimeKey>
 UnpackagedID::installed_time_key() const
 {

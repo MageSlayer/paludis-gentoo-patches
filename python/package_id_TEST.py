@@ -133,10 +133,6 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(self.pid.long_description_key(), None)
         self.assertEquals(self.ipid.long_description_key(), None)
 
-    def test_26_contents_key(self):
-        self.assertEquals(self.pid.contents_key(), None)
-        self.assert_(isinstance(self.ipid.contents_key(), MetadataContentsKey))
-
     def test_27_installed_time_key(self):
         self.assertEquals(self.pid.installed_time_key(), None)
         self.assert_(isinstance(self.ipid.installed_time_key(), MetadataTimeKey))

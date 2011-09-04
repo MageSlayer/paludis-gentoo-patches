@@ -371,12 +371,6 @@ AccountsID::long_description_key() const
     return make_null_shared_ptr();
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
-AccountsID::contents_key() const
-{
-    return make_null_shared_ptr();
-}
-
 const std::shared_ptr<const MetadataTimeKey>
 AccountsID::installed_time_key() const
 {

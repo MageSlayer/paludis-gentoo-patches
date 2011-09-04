@@ -105,11 +105,11 @@ paludis::cave::size_common(
     for (auto i(best ? entries->last() : entries->begin()), i_end(entries->end()) ;
             i != i_end ; ++i)
     {
-        if (! (*i)->contents_key())
+        auto contents((*i)->contents());
+        if (! contents)
             throw BadIDForCommand(spec, (*i), "does not support listing contents");
 
         unsigned long size(0);
-        auto contents((*i)->contents_key()->parse_value());
         for (auto c(contents->begin()), c_end(contents->end()) ;
                 c != c_end ; ++c)
             size += (*c)->accept_returning<unsigned long>(GetSize());

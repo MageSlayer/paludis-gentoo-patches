@@ -424,14 +424,6 @@ namespace
      * Our long description
      */
     /*
-     * Document-method: contents_key
-     *
-     * call-seq:
-     *     contents_key -> MetadataContentsKey
-     *
-     * Our Contents
-     */
-    /*
      * Document-method: installed_time_key
      *
      * call-seq:
@@ -571,8 +563,6 @@ namespace
                         &PackageID::short_description_key>::fetch)), 0);
         rb_define_method(c_package_id, "long_description_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::string>,
                         &PackageID::long_description_key>::fetch)), 0);
-        rb_define_method(c_package_id, "contents_key", RUBY_FUNC_CAST((&KeyValue<MetadataValueKey<std::shared_ptr<const Contents> >,
-                        &PackageID::contents_key>::fetch)), 0);
         rb_define_method(c_package_id, "installed_time_key", RUBY_FUNC_CAST((&KeyValue<MetadataTimeKey,&PackageID::installed_time_key>::fetch)), 0);
         rb_define_method(c_package_id, "from_repositories_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<Set<std::string> >,
                         &PackageID::from_repositories_key>::fetch)), 0);

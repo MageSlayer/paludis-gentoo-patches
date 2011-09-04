@@ -383,12 +383,6 @@ GemcutterID::homepage_key() const
     return _imp->homepage_uri_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >
-GemcutterID::contents_key() const
-{
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > >();
-}
-
 const std::shared_ptr<const MetadataTimeKey>
 GemcutterID::installed_time_key() const
 {

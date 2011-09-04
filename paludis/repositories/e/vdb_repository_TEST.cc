@@ -222,7 +222,7 @@ TEST(VDBRepository, Contents)
                     PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
     ContentsGatherer gatherer;
-    auto contents(e1->contents_key()->parse_value());
+    auto contents(e1->contents());
     std::for_each(indirect_iterator(contents->begin()),
                   indirect_iterator(contents->end()),
                   accept_visitor(gatherer));

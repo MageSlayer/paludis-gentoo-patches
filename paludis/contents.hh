@@ -191,7 +191,7 @@ namespace paludis
     };
 
     /**
-     * A package's contents, obtainable by PackageID::contents_key.
+     * A package's contents, obtainable by PackageID::contents.
      *
      * \ingroup g_contents
      * \nosubgrouping
