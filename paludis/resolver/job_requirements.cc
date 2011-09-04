@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -53,28 +53,23 @@ JobRequirement::serialise(Serialiser & s) const
         ;
 }
 
-namespace
+bool
+JobRequirementComparator::operator() (const JobRequirement & a, const JobRequirement & b)
 {
-    struct JobRequirementComparator
+    if (a.job_number() < b.job_number())
+        return true;
+    if (a.job_number() > b.job_number())
+        return false;
+
+    for (EnumIterator<JobRequirementIf> t, t_end(last_jri) ; t != t_end ; ++t)
     {
-        bool operator() (const JobRequirement & a, const JobRequirement & b)
-        {
-            if (a.job_number() < b.job_number())
-                return true;
-            if (a.job_number() > b.job_number())
-                return false;
-
-            for (EnumIterator<JobRequirementIf> t, t_end(last_jri) ; t != t_end ; ++t)
-            {
-                if (a.required_if()[*t] < b.required_if()[*t])
-                    return true;
-                if (a.required_if()[*t] > b.required_if()[*t])
-                    return false;
-            }
-
+        if (a.required_if()[*t] < b.required_if()[*t])
+            return true;
+        if (a.required_if()[*t] > b.required_if()[*t])
             return false;
-        }
-    };
+    }
+
+    return false;
 }
 
 const std::shared_ptr<JobRequirements>

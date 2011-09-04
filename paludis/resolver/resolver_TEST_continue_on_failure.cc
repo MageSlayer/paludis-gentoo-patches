@@ -89,6 +89,14 @@ namespace
             result << " always";
         return result.str();
     }
+
+    std::string
+    sort_stringify_job_requirements(const ExecuteJob * const j)
+    {
+        std::set<JobRequirement, JobRequirementComparator> r;
+        std::copy(j->requirements()->begin(), j->requirements()->end(), std::inserter(r, r.begin()));
+        return join(r.begin(), r.end(), ", ", stringify_req);
+    }
 }
 
 namespace
@@ -130,22 +138,18 @@ namespace
 
             const InstallJob * const direct_dep_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
             ASSERT_TRUE(direct_dep_job);
-            EXPECT_EQ("0 satisfied independent always",
-                    join(direct_dep_job->requirements()->begin(), direct_dep_job->requirements()->end(), ", ", stringify_req));
+            EXPECT_EQ("0 satisfied independent always", sort_stringify_job_requirements(direct_dep_job));
 
             const InstallJob * const indirect_dep_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
             ASSERT_TRUE(indirect_dep_job);
-            EXPECT_EQ("2 satisfied independent always",
-                    join(indirect_dep_job->requirements()->begin(), indirect_dep_job->requirements()->end(), ", ", stringify_req));
+            EXPECT_EQ("2 satisfied independent always", sort_stringify_job_requirements(indirect_dep_job));
 
             const InstallJob * const target_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(5)));
             ASSERT_TRUE(target_job);
             if (direct_dep_installed_)
-                EXPECT_EQ("4 satisfied independent always, 3 independent, 1 independent",
-                        join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req));
+                EXPECT_EQ("1 independent, 3 independent, 4 satisfied independent always", sort_stringify_job_requirements(target_job));
             else
-                EXPECT_EQ("4 satisfied independent always, 1 satisfied independent, 3 independent, 1 independent",
-                        join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req));
+                EXPECT_EQ("1 independent, 1 satisfied independent, 3 independent, 4 satisfied independent always", sort_stringify_job_requirements(target_job));
         }
     };
 }
@@ -197,19 +201,19 @@ TEST_F(ResolverContinueOnFailureTestCase, Uninstall)
 
     const UninstallJob * const needs_target_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(0)));
     ASSERT_TRUE(needs_target_job);
-    EXPECT_EQ("", join(needs_target_job->requirements()->begin(), needs_target_job->requirements()->end(), ", ", stringify_req));
+    EXPECT_EQ("", sort_stringify_job_requirements(needs_target_job));
 
     const UninstallJob * const target_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
     ASSERT_TRUE(target_job);
-    EXPECT_EQ("0 satisfied independent", join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req));
+    EXPECT_EQ("0 satisfied independent", sort_stringify_job_requirements(target_job));
 
     const UninstallJob * const dep_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(2)));
     ASSERT_TRUE(dep_job);
-    EXPECT_EQ("1 satisfied independent", join(dep_job->requirements()->begin(), dep_job->requirements()->end(), ", ", stringify_req));
+    EXPECT_EQ("1 satisfied independent", sort_stringify_job_requirements(dep_job));
 
     const UninstallJob * const dep_of_dep_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
     ASSERT_TRUE(dep_of_dep_job);
-    EXPECT_EQ("2 satisfied independent", join(dep_of_dep_job->requirements()->begin(), dep_of_dep_job->requirements()->end(), ", ", stringify_req));
+    EXPECT_EQ("2 satisfied independent", sort_stringify_job_requirements(dep_of_dep_job));
 }
 
 TEST_F(ResolverContinueOnFailureTestCase, Purge)
@@ -243,14 +247,14 @@ TEST_F(ResolverContinueOnFailureTestCase, Purge)
 
     const FetchJob * const fetch_target_job(visitor_cast<const FetchJob>(**resolved->job_lists()->execute_job_list()->fetch(0)));
     ASSERT_TRUE(fetch_target_job);
-    EXPECT_EQ("", join(fetch_target_job->requirements()->begin(), fetch_target_job->requirements()->end(), ", ", stringify_req));
+    EXPECT_EQ("", sort_stringify_job_requirements(fetch_target_job));
 
     const InstallJob * const target_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
     ASSERT_TRUE(target_job);
-    EXPECT_EQ("0 satisfied independent always", join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req));
+    EXPECT_EQ("0 satisfied independent always", sort_stringify_job_requirements(target_job));
 
     const UninstallJob * const going_job(visitor_cast<const UninstallJob>(**resolved->job_lists()->execute_job_list()->fetch(2)));
     ASSERT_TRUE(going_job);
-    EXPECT_EQ("1 satisfied independent", join(going_job->requirements()->begin(), going_job->requirements()->end(), ", ", stringify_req));
+    EXPECT_EQ("1 satisfied independent", sort_stringify_job_requirements(going_job));
 }
 

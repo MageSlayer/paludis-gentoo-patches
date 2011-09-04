@@ -87,6 +87,14 @@ namespace
             result << " always";
         return result.str();
     }
+
+    std::string
+    sort_stringify_job_requirements(const ExecuteJob * const j)
+    {
+        std::set<JobRequirement, JobRequirementComparator> r;
+        std::copy(j->requirements()->begin(), j->requirements()->end(), std::inserter(r, r.begin()));
+        return join(r.begin(), r.end(), ", ", stringify_req);
+    }
 }
 
 TEST_F(ResolverFetchTestCase, Fetch)
@@ -114,21 +122,18 @@ TEST_F(ResolverFetchTestCase, Fetch)
 
     const FetchJob * const fetch_fetch_dep_job(visitor_cast<const FetchJob>(**resolved->job_lists()->execute_job_list()->fetch(0)));
     ASSERT_TRUE(fetch_fetch_dep_job);
-    EXPECT_EQ("", join(fetch_fetch_dep_job->requirements()->begin(), fetch_fetch_dep_job->requirements()->end(), ", ", stringify_req));
+    EXPECT_EQ("", sort_stringify_job_requirements(fetch_fetch_dep_job));
 
     const InstallJob * const fetch_dep_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(1)));
     ASSERT_TRUE(fetch_dep_job);
-    EXPECT_EQ("0 satisfied independent always",
-            join(fetch_dep_job->requirements()->begin(), fetch_dep_job->requirements()->end(), ", ", stringify_req));
+    EXPECT_EQ("0 satisfied independent always", sort_stringify_job_requirements(fetch_dep_job));
 
     const FetchJob * const fetch_target_job(visitor_cast<const FetchJob>(**resolved->job_lists()->execute_job_list()->fetch(2)));
     ASSERT_TRUE(fetch_target_job);
-    EXPECT_EQ("1 satisfied independent, 1 independent",
-            join(fetch_target_job->requirements()->begin(), fetch_target_job->requirements()->end(), ", ", stringify_req));
+    EXPECT_EQ("1 independent, 1 satisfied independent", sort_stringify_job_requirements(fetch_target_job));
 
     const InstallJob * const target_job(visitor_cast<const InstallJob>(**resolved->job_lists()->execute_job_list()->fetch(3)));
     ASSERT_TRUE(target_job);
-    EXPECT_EQ("2 satisfied independent always, 1 independent",
-            join(target_job->requirements()->begin(), target_job->requirements()->end(), ", ", stringify_req));
+    EXPECT_EQ("1 independent, 2 satisfied independent always", sort_stringify_job_requirements(target_job));
 }
 
