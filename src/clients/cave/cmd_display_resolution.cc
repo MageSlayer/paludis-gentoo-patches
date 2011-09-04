@@ -928,11 +928,6 @@ namespace
             cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(pretty_print_time(k.parse_value().seconds())));
         }
 
-        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > & k)
-        {
-            cout << fuc(fs_mask_by_valueless(), fv<'i'>(indent), fv<'k'>(k.human_name()));
-        }
-
         void visit(const MetadataValueKey<FSPath> & k)
         {
             cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.parse_value())));

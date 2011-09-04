@@ -75,11 +75,6 @@ class MetadataKeySptrToPythonVisitor
             obj = bp::object(std::static_pointer_cast<const MetadataTimeKey>(_m_ptr));
         }
 
-        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > & k)
-        {
-            obj = bp::object(std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const Contents> > >(_m_ptr));
-        }
-
         void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const Choices> > >(_m_ptr));
@@ -425,52 +420,6 @@ struct MetadataTimeKeyWrapper :
             return f();
         else
             throw PythonMethodNotImplemented("MetadataTimeKey", "type");
-    }
-};
-
-struct MetadataContentsKeyWrapper :
-    MetadataValueKey<std::shared_ptr<const Contents> > ,
-    bp::wrapper<MetadataValueKey<std::shared_ptr<const Contents> > >
-{
-    virtual const std::shared_ptr<const Contents> parse_value() const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = get_override("parse_value"))
-            return f();
-        else
-            throw PythonMethodNotImplemented("MetadataContentsKey", "parse_value");
-    }
-
-    virtual const std::string raw_name() const
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = get_override("raw_name"))
-            return f();
-        else
-            throw PythonMethodNotImplemented("MetadataContentsKey", "raw_name");
-    }
-
-    virtual const std::string human_name() const
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = get_override("human_name"))
-            return f();
-        else
-            throw PythonMethodNotImplemented("MetadataContentsKey", "human_name");
-    }
-
-    virtual MetadataKeyType type() const
-    {
-        Lock l(get_mutex());
-
-        if (bp::override f = get_override("type"))
-            return f();
-        else
-            throw PythonMethodNotImplemented("MetadataContentsKey", "type");
     }
 };
 
@@ -1133,47 +1082,6 @@ void expose_metadata_key()
         .def("parse_value", bp::pure_virtual(&MetadataValueKey<FSPath> ::parse_value),
                 "parse_value() -> FSPath\n"
                 "Fetch our value."
-                )
-        ;
-
-    /**
-     * MetadataContentsKey
-     */
-    bp::register_ptr_to_python<std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > > >();
-    bp::implicitly_convertible<std::shared_ptr<MetadataContentsKeyWrapper>,
-            std::shared_ptr<MetadataKey> >();
-    bp::class_<MetadataContentsKeyWrapper, std::shared_ptr<MetadataContentsKeyWrapper>,
-            bp::bases<MetadataKey>, boost::noncopyable>
-        (
-         "MetadataContentsKey",
-         "A MetadataContentsKey is a MetadataKey that holds a Contents heirarchy.\n\n"
-
-         "This class can be subclassed in Python.",
-         bp::init<>(
-             "__init__()"
-             )
-        )
-        .def("parse_value", bp::pure_virtual(&MetadataValueKey<std::shared_ptr<const Contents> > ::parse_value),
-                "parse_value() -> Contents\n"
-                "Fetch our value."
-                )
-
-        //Work around epydoc bug
-        .def("raw_name", bp::pure_virtual(&MetadataKey::raw_name),
-                "raw_name() -> string\n"
-                "Fetch our raw name."
-                )
-
-        //Work around epydoc bug
-        .def("human_name", bp::pure_virtual(&MetadataKey::human_name),
-                "human_name() -> string\n"
-                "Fetch our human name."
-                )
-
-        //Work around epydoc bug
-        .def("type", bp::pure_virtual(&MetadataKey::type),
-                "type() -> MetadataKeyType\n"
-                "Fetch our key type."
                 )
         ;
 

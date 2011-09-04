@@ -282,10 +282,6 @@ namespace
                     texts.push_back(stringify((*i)->name_with_prefix()));
         }
 
-        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)
-        {
-        }
-
         void visit(const MetadataTimeKey & k)
         {
             texts.push_back(stringify(k.parse_value().seconds()));

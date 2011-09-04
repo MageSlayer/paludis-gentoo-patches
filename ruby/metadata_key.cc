@@ -40,7 +40,6 @@ namespace
     static VALUE c_metadata_slot_key;
     static VALUE c_metadata_size_key;
     static VALUE c_metadata_time_key;
-    static VALUE c_metadata_contents_key;
     static VALUE c_metadata_choices_key;
     static VALUE c_metadata_keyword_name_set_key;
     static VALUE c_metadata_string_set_key;
@@ -136,12 +135,6 @@ namespace
         void visit(const MetadataTimeKey &)
         {
             value = Data_Wrap_Struct(c_metadata_time_key, 0, &Common<std::shared_ptr<const MetadataKey> >::free,
-                    new std::shared_ptr<const MetadataKey>(mm));
-        }
-
-        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)
-        {
-            value = Data_Wrap_Struct(c_metadata_contents_key, 0, &Common<std::shared_ptr<const MetadataKey> >::free,
                     new std::shared_ptr<const MetadataKey>(mm));
         }
 
@@ -369,29 +362,6 @@ namespace
             std::shared_ptr<const MetadataKey> * self_ptr;
             Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
             return rb_time_new((std::static_pointer_cast<const MetadataTimeKey>(*self_ptr))->parse_value().seconds(), 0);
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    /*
-     * call-seq:
-     *     parse_value -> Contents
-     *
-     * Our Value.
-     * */
-    VALUE
-    metadata_contents_key_value(VALUE self)
-    {
-        try
-        {
-            std::shared_ptr<const MetadataKey> * self_ptr;
-            Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-            if (std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const Contents> > >(*self_ptr)->parse_value())
-                return contents_to_value(std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const Contents> > >(*self_ptr)->parse_value());
-            return Qnil;
         }
         catch (const std::exception & e)
         {
@@ -689,17 +659,9 @@ namespace
         rb_define_method(c_metadata_time_key, "parse_value", RUBY_FUNC_CAST(&metadata_time_key_value), 0);
 
         /*
-         * Document-class: Paludis::MetadataContentsKey
-         *
-         * Metadata class for Contents.
-         */
-        c_metadata_contents_key = rb_define_class_under(paludis_module(), "MetadataContentsKey", c_metadata_key);
-        rb_define_method(c_metadata_contents_key, "parse_value", RUBY_FUNC_CAST(&metadata_contents_key_value), 0);
-
-        /*
          * Document-class: Paludis::MetadataChoicesKey
          *
-         * Metadata class for Contents.
+         * Metadata class for Choices.
          */
         c_metadata_choices_key = rb_define_class_under(paludis_module(), "MetadataChoicesKey", c_metadata_key);
         rb_define_method(c_metadata_choices_key, "parse_value", RUBY_FUNC_CAST(&metadata_choices_key_value), 0);

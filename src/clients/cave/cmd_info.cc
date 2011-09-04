@@ -270,10 +270,6 @@ namespace
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(*k.parse_value())));
         }
 
-        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)
-        {
-        }
-
         void visit(const MetadataValueKey<std::shared_ptr<const Choices> > &)
         {
         }

@@ -51,8 +51,7 @@ module Paludis
         include TestStuff
 
         def classes
-            [MetadataStringKey, MetadataContentsKey, MetadataTimeKey, MetadataKeywordNameSetKey,
-                MetadataStringSetKey]
+            [MetadataStringKey, MetadataTimeKey, MetadataKeywordNameSetKey, MetadataStringSetKey]
         end
 
         def all_classes

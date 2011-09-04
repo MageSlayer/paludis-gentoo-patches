@@ -45,11 +45,6 @@ namespace
             s << k.parse_value().seconds();
         }
 
-        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)
-        {
-            s << "<unprintable>";
-        }
-
         void visit(const MetadataValueKey<std::shared_ptr<const Choices> > &)
         {
             s << "<unprintable>";

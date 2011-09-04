@@ -100,15 +100,6 @@ namespace
                 cout << indent << left << setw(30) << "    Value:" << " " << pretty_print_time(key.parse_value().seconds()) << endl;
             }
 
-            void visit(const MetadataValueKey<std::shared_ptr<const Contents> > &)
-            {
-                cout << indent << left << setw(30) << "    Class:" << " " <<
-                    "MetadataValueKey<std::shared_ptr<const Contents> > " << endl;
-                /* We won't display the contents of the contents key here, since
-                 * it involves creating another visitor. See \ref
-                 * example_contents.cc "example_contents.cc" for that. */
-            }
-
             void visit(const MetadataValueKey<std::shared_ptr<const Choices> > &)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " <<

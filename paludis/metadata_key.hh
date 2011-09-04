@@ -26,7 +26,6 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/spec_tree.hh>
-#include <paludis/contents-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
 #include <paludis/choice-fwd.hh>
@@ -104,7 +103,6 @@ namespace paludis
                 MetadataValueKey<FSPath>,
                 MetadataValueKey<SlotName>,
                 MetadataValueKey<std::shared_ptr<const PackageID> >,
-                MetadataValueKey<std::shared_ptr<const Contents> >,
                 MetadataValueKey<std::shared_ptr<const Choices> >,
                 MetadataTimeKey,
                 MetadataSectionKey

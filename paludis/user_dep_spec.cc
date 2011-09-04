@@ -643,24 +643,6 @@ namespace
             return false;
         }
 
-        bool visit(const MetadataValueKey<std::shared_ptr<const Contents> > & s) const
-        {
-            auto v(s.parse_value());
-            switch (op)
-            {
-                case '=':
-                    return pattern == join(indirect_iterator(v->begin()), indirect_iterator(v->end()), " ",
-                            stringify_contents_entry);
-                case '<':
-                    return indirect_iterator(v->end()) != std::find_if(
-                            indirect_iterator(v->begin()),
-                            indirect_iterator(v->end()),
-                            StringifyEqual(pattern));
-            }
-
-            return false;
-        }
-
         bool visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k) const
         {
             return pattern == stringify(*k.parse_value());

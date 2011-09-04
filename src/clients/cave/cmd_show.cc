@@ -745,41 +745,6 @@ namespace
                     );
         }
 
-        void visit(const MetadataValueKey<std::shared_ptr<const Contents> > & k)
-        {
-            auto v(k.parse_value());
-            if (cmdline.a_complex_keys.specified() || important)
-            {
-                if (cmdline.a_flat.specified())
-                {
-                    ContentsDisplayer d(0);
-                    std::for_each(indirect_iterator(v->begin()), indirect_iterator(v->end()), accept_visitor(d));
-                    out << fuc(
-                            (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
-                            fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                            fv<'v'>(d.s.str()),
-                            fv<'i'>(std::string(indent, ' ')),
-                            fv<'b'>(important ? "true" : ""),
-                            fv<'p'>("")
-                            );
-                }
-                else
-                {
-                    ContentsDisplayer d(indent);
-                    std::for_each(indirect_iterator(v->begin()), indirect_iterator(v->end()), accept_visitor(d));
-                    out << fuc(
-                            (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
-                            fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                            fv<'v'>(""),
-                            fv<'i'>(std::string(indent, ' ')),
-                            fv<'b'>(important ? "true" : ""),
-                            fv<'p'>("")
-                            );
-                    out << d.s.str();
-                }
-            }
-        }
-
         void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
             auto choices(k.parse_value());
