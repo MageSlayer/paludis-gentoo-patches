@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -38,7 +38,7 @@ namespace paludis
                 virtual std::string fs_location_raw_name() const;
                 virtual std::string fs_location_human_name() const;
                 virtual std::string contents_filename() const;
-                virtual std::shared_ptr<MetadataValueKey<std::shared_ptr<const Contents> > > make_contents_key() const;
+                virtual const std::shared_ptr<const Contents> contents() const;
         };
     }
 }

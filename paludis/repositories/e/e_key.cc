@@ -22,7 +22,6 @@
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/parse_uri_label.hh>
 #include <paludis/repositories/e/eapi.hh>
-#include <paludis/repositories/e/vdb_contents_tokeniser.hh>
 #include <paludis/repositories/e/e_repository.hh>
 #include <paludis/repositories/e/myoption.hh>
 #include <paludis/repositories/e/spec_tree_pretty_printer.hh>
@@ -30,7 +29,6 @@
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/tokeniser.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/create_iterator-impl.hh>
@@ -54,8 +52,6 @@
 
 #include <algorithm>
 #include <functional>
-#include <list>
-#include <vector>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -631,115 +627,6 @@ ERequiredUseKey::human_name() const
 
 MetadataKeyType
 ERequiredUseKey::type() const
-{
-    return _imp->type;
-}
-
-namespace paludis
-{
-    template <>
-    struct Imp<EContentsKey>
-    {
-        const FSPath filename;
-
-        const std::string raw_name;
-        const std::string human_name;
-        const MetadataKeyType type;
-
-        Imp(const FSPath & v, const std::string & r, const std::string & h, const MetadataKeyType & t) :
-            filename(v),
-            raw_name(r),
-            human_name(h),
-            type(t)
-        {
-        }
-    };
-}
-
-EContentsKey::EContentsKey(const std::string & r, const std::string & h, const FSPath & v, const MetadataKeyType t) :
-    _imp(v, r, h, t)
-{
-}
-
-EContentsKey::~EContentsKey()
-{
-}
-
-const std::shared_ptr<const Contents>
-EContentsKey::parse_value() const
-{
-    Context context("When creating contents from '" + stringify(_imp->filename) + "':");
-
-    auto value(std::make_shared<Contents>());
-
-    FSPath f(_imp->filename);
-    if (! f.stat().is_regular_file_or_symlink_to_regular_file())
-    {
-        Log::get_instance()->message("e.contents.not_a_file", ll_warning, lc_context) << "Could not read CONTENTS file '" <<
-            _imp->filename << "'";
-        return value;
-    }
-
-    SafeIFStream ff(f);
-
-    std::string line;
-    unsigned line_number(0);
-    while (std::getline(ff, line))
-    {
-        ++line_number;
-
-        std::vector<std::string> tokens;
-        if (! VDBContentsTokeniser::tokenise(line, std::back_inserter(tokens)))
-        {
-            Log::get_instance()->message("e.contents.broken", ll_warning, lc_context) << "CONTENTS has broken line '" <<
-                line_number << "', skipping";
-            continue;
-        }
-
-        if ("obj" == tokens.at(0))
-        {
-            std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsFileEntry>(FSPath(tokens.at(1))));
-            e->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal,
-                            Timestamp(destringify<time_t>(tokens.at(3)), 0)));
-            e->add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("md5", "md5", mkt_normal, tokens.at(2)));
-            value->add(e);
-        }
-        else if ("dir" == tokens.at(0))
-        {
-            std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsDirEntry>(FSPath(tokens.at(1))));
-            value->add(e);
-        }
-        else if ("sym" == tokens.at(0))
-        {
-            std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsSymEntry>(FSPath(tokens.at(1)), tokens.at(2)));
-            e->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal,
-                            Timestamp(destringify<time_t>(tokens.at(3)), 0)));
-            value->add(e);
-        }
-        else if ("misc" == tokens.at(0) || "fif" == tokens.at(0) || "dev" == tokens.at(0))
-            value->add(std::shared_ptr<ContentsEntry>(std::make_shared<ContentsOtherEntry>(FSPath(tokens.at(1)))));
-        else
-            Log::get_instance()->message("e.contents.unknown", ll_warning, lc_context) << "CONTENTS has unsupported entry type '" <<
-                tokens.at(0) << "', skipping";
-    }
-
-    return value;
-}
-
-const std::string
-EContentsKey::raw_name() const
-{
-    return _imp->raw_name;
-}
-
-const std::string
-EContentsKey::human_name() const
-{
-    return _imp->human_name;
-}
-
-MetadataKeyType
-EContentsKey::type() const
 {
     return _imp->type;
 }

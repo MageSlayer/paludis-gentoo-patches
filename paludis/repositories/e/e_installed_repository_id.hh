@@ -99,7 +99,6 @@ namespace paludis
                 virtual std::string fs_location_raw_name() const = 0;
                 virtual std::string fs_location_human_name() const = 0;
                 virtual std::string contents_filename() const = 0;
-                virtual std::shared_ptr<MetadataValueKey<std::shared_ptr<const Contents> > > make_contents_key() const = 0;
 
                 virtual const std::shared_ptr<const ChoiceValue> make_choice_value(
                         const std::shared_ptr<const Choice> &, const UnprefixedChoiceName &, const Tribool,
@@ -111,8 +110,6 @@ namespace paludis
                 virtual void can_drop_in_memory_cache() const;
 
                 virtual void set_scm_revision(const std::string &) const PALUDIS_ATTRIBUTE((noreturn));
-
-                virtual const std::shared_ptr<const Contents> contents() const;
         };
     }
 }

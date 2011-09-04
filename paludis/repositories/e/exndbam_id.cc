@@ -29,63 +29,6 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-namespace
-{
-    class ExndbamContentsKey :
-        public MetadataValueKey<std::shared_ptr<const Contents> >
-    {
-        private:
-            const PackageID * const _id;
-            const NDBAM * const _db;
-            mutable Mutex _mutex;
-            mutable std::shared_ptr<Contents> _v;
-
-        public:
-            ExndbamContentsKey(const PackageID * const i, const NDBAM * const d) :
-                _id(i),
-                _db(d)
-            {
-            }
-
-            const std::shared_ptr<const Contents> parse_value() const
-            {
-                Lock l(_mutex);
-                if (_v)
-                    return _v;
-
-                using namespace std::placeholders;
-                _v = std::make_shared<Contents>();
-                _db->parse_contents(*_id,
-                        std::bind(&Contents::add, _v.get(), std::placeholders::_1),
-                        std::bind(&Contents::add, _v.get(), std::placeholders::_1),
-                        std::bind(&Contents::add, _v.get(), std::placeholders::_1)
-                        );
-                return _v;
-            }
-
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
-            {
-                return "contents";
-            }
-
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
-            {
-                return "Contents";
-            }
-
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
-            {
-                return mkt_internal;
-            }
-
-            virtual void invalidate() const
-            {
-                Lock l(_mutex);
-                _v.reset();
-            }
-    };
-}
-
 ExndbamID::ExndbamID(const QualifiedPackageName & q, const VersionSpec & v,
         const Environment * const e,
         const RepositoryName & r,
@@ -113,9 +56,15 @@ ExndbamID::contents_filename() const
     return "contents";
 }
 
-std::shared_ptr<MetadataValueKey<std::shared_ptr<const Contents> > >
-ExndbamID::make_contents_key() const
+const std::shared_ptr<const Contents>
+ExndbamID::contents() const
 {
-    return std::make_shared<ExndbamContentsKey>(this, _ndbam);
+    auto v(std::make_shared<Contents>());
+    _ndbam->parse_contents(*this,
+            std::bind(&Contents::add, v.get(), std::placeholders::_1),
+            std::bind(&Contents::add, v.get(), std::placeholders::_1),
+            std::bind(&Contents::add, v.get(), std::placeholders::_1)
+            );
+    return v;
 }
 

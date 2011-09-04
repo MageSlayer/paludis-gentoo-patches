@@ -223,24 +223,6 @@ namespace paludis
                         const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
-        class EContentsKey :
-            public MetadataValueKey<std::shared_ptr<const Contents> >
-        {
-            private:
-                Pimp<EContentsKey> _imp;
-
-            public:
-                EContentsKey(const std::string &, const std::string &, const FSPath &, const MetadataKeyType);
-                ~EContentsKey();
-
-                const std::shared_ptr<const Contents> parse_value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
-
-                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
-        };
-
         class EMTimeKey :
             public MetadataTimeKey
         {

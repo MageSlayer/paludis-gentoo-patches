@@ -89,7 +89,6 @@ namespace
         std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage;
         std::shared_ptr<const MetadataValueKey<std::string> > short_description;
         std::shared_ptr<const MetadataValueKey<std::string> > long_description;
-        std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Contents> > > contents;
         std::shared_ptr<const MetadataTimeKey> installed_time;
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories;
         std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > upstream_changelog;
@@ -508,9 +507,6 @@ EInstalledRepositoryID::need_keys_added() const
             add_metadata_key(_imp->keys->homepage);
         }
 
-    _imp->keys->contents = make_contents_key();
-    add_metadata_key(_imp->keys->contents);
-
     _imp->keys->installed_time = std::make_shared<EMTimeKey>("INSTALLED_TIME", "Installed time",
                 _imp->dir / contents_filename(), mkt_normal);
     add_metadata_key(_imp->keys->installed_time);
@@ -858,13 +854,6 @@ EInstalledRepositoryID::long_description_key() const
 {
     need_keys_added();
     return _imp->keys->long_description;
-}
-
-const std::shared_ptr<const Contents>
-EInstalledRepositoryID::contents() const
-{
-    need_keys_added();
-    return _imp->keys->contents->parse_value();
 }
 
 const std::shared_ptr<const MetadataTimeKey>
