@@ -115,54 +115,6 @@ namespace
             }
     };
 
-    class InstalledUnpackagedContentsKey :
-        public MetadataValueKey<std::shared_ptr<const Contents> >
-    {
-        private:
-            const PackageID * const _id;
-            const NDBAM * const _db;
-            mutable Mutex _mutex;
-            mutable std::shared_ptr<Contents> _v;
-
-        public:
-            InstalledUnpackagedContentsKey(const PackageID * const i, const NDBAM * const d) :
-                _id(i),
-                _db(d)
-            {
-            }
-
-            const std::shared_ptr<const Contents> parse_value() const
-            {
-                Lock l(_mutex);
-                if (_v)
-                    return _v;
-
-                using namespace std::placeholders;
-                _v = std::make_shared<Contents>();
-                _db->parse_contents(*_id,
-                        std::bind(&Contents::add, _v.get(), std::placeholders::_1),
-                        std::bind(&Contents::add, _v.get(), std::placeholders::_1),
-                        std::bind(&Contents::add, _v.get(), std::placeholders::_1)
-                        );
-                return _v;
-            }
-
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
-            {
-                return "contents";
-            }
-
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
-            {
-                return "Contents";
-            }
-
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
-            {
-                return mkt_internal;
-            }
-    };
-
     class InstalledUnpackagedTimeKey :
         public MetadataTimeKey
     {
@@ -398,7 +350,6 @@ namespace paludis
 
         std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot_key;
         std::shared_ptr<InstalledUnpackagedFSPathKey> fs_location_key;
-        std::shared_ptr<InstalledUnpackagedContentsKey> contents_key;
         std::shared_ptr<InstalledUnpackagedTimeKey> installed_time_key;
         std::shared_ptr<InstalledUnpackagedStringSetKey> from_repositories_key;
         std::shared_ptr<InstalledUnpackagedStringKey> description_key;
@@ -408,7 +359,7 @@ namespace paludis
 
         Imp(
                 const Environment * const e,
-                const PackageID * const id,
+                const PackageID * const,
                 const QualifiedPackageName & q,
                 const VersionSpec & v,
                 const SlotName & s,
@@ -427,10 +378,7 @@ namespace paludis
             behaviours_key(InstalledUnpackagedIDData::get_instance()->behaviours_key)
         {
             if ((l / "contents").stat().exists())
-            {
-                contents_key = std::make_shared<InstalledUnpackagedContentsKey>(id, d);
                 installed_time_key = std::make_shared<InstalledUnpackagedTimeKey>(l / "contents");
-            }
 
             from_repositories_key = std::make_shared<InstalledUnpackagedStringSetKey>("source_repository",
                         "Source repository", mkt_normal);
@@ -462,8 +410,6 @@ InstalledUnpackagedID::InstalledUnpackagedID(const Environment * const e, const 
 {
     add_metadata_key(_imp->fs_location_key);
     add_metadata_key(_imp->slot_key);
-    if (_imp->contents_key)
-        add_metadata_key(_imp->contents_key);
     if (_imp->installed_time_key)
         add_metadata_key(_imp->installed_time_key);
     if (_imp->from_repositories_key)
@@ -601,7 +547,14 @@ InstalledUnpackagedID::long_description_key() const
 const std::shared_ptr<const Contents>
 InstalledUnpackagedID::contents() const
 {
-    return _imp->contents_key->parse_value();
+    using namespace std::placeholders;
+    auto v(std::make_shared<Contents>());
+    _imp->ndbam->parse_contents(*this,
+            std::bind(&Contents::add, v.get(), std::placeholders::_1),
+            std::bind(&Contents::add, v.get(), std::placeholders::_1),
+            std::bind(&Contents::add, v.get(), std::placeholders::_1)
+            );
+    return v;
 }
 
 const std::shared_ptr<const MetadataTimeKey>
