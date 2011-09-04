@@ -38,10 +38,6 @@ class TestCase_01_MetadataKeys(unittest.TestCase):
         self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
         self.ipid = iter(self.e.fetch_repository("installed").package_ids("cat-one/pkg-one", [])).next()
 
-    def test_01_contents(self):
-        self.assertEquals(self.pid.find_metadata("CONTENTS"), None)
-        self.assert_(isinstance(self.ipid.find_metadata("CONTENTS"), MetadataContentsKey))
-
     def test_02_installed_time(self):
         self.assertEquals(self.pid.find_metadata("INSTALLED_TIME"), None)
         self.assert_(isinstance(self.ipid.find_metadata("INSTALLED_TIME"), MetadataTimeKey))
