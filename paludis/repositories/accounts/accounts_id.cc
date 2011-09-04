@@ -553,3 +553,9 @@ AccountsID::perform_action(Action & action) const
     output_manager->succeeded();
 }
 
+const std::shared_ptr<const Contents>
+AccountsID::contents() const
+{
+    return make_null_shared_ptr();
+}
+

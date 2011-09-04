@@ -98,6 +98,8 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
                  std::size_t extra_hash_value() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                 virtual const std::shared_ptr<const Contents> contents() const;
         };
 
     }

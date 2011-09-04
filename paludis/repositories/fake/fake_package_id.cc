@@ -1191,6 +1191,12 @@ FakePackageID::behaviours_set()
     return _imp->behaviours_set;
 }
 
+const std::shared_ptr<const Contents>
+FakePackageID::contents() const
+{
+    return make_null_shared_ptr();
+}
+
 namespace paludis
 {
     template class FakeMetadataSpecTreeKey<LicenseSpecTree>;
@@ -1203,3 +1209,4 @@ namespace paludis
 
     template class FakeMetadataCollectionKey<KeywordNameSet>;
 }
+

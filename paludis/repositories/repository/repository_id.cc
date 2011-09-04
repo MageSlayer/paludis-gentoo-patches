@@ -276,7 +276,14 @@ RepositoryID::slot_key() const
     return make_null_shared_ptr();
 }
 
+const std::shared_ptr<const Contents>
+RepositoryID::contents() const
+{
+    return make_null_shared_ptr();
+}
+
 namespace paludis
 {
     template class Pimp<RepositoryID>;
 }
+

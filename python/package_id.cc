@@ -155,7 +155,6 @@ void expose_package_id()
                 "installed (if known, which it may be for some binary packages)."
             )
 
-
         .def("installed_time_key", &PackageID::installed_time_key,
                 "The installed_time_key, if not None, contains the time a package\n"
                 "was installed. It affects dependency resolution if DepList is\n"
@@ -186,6 +185,13 @@ void expose_package_id()
                 "When stringified, can be turned back into an equivalent unique "
                 "PackageDepSpec by using parse_user_package_dep_spec."
                 )
+
+        .def("contents", &PackageID::contents,
+                "The contents, if not None, contains the contents of a\n"
+                "package. For installed packages, this means the files installed;\n"
+                "for installable packages, this means the files that will be\n"
+                "installed (if known, which it may be for some binary packages)."
+            )
 
         .def("__eq__", &py_eq<PackageID>)
 

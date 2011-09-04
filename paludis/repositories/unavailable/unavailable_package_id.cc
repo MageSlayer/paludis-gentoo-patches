@@ -300,7 +300,14 @@ UnavailablePackageID::slot_key() const
     return _imp->slot_key;
 }
 
+const std::shared_ptr<const Contents>
+UnavailablePackageID::contents() const
+{
+    return make_null_shared_ptr();
+}
+
 namespace paludis
 {
     template class Pimp<UnavailablePackageID>;
 }
+

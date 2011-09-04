@@ -86,6 +86,8 @@ namespace paludis
                         const bool replace,
                         const std::shared_ptr<const PackageID> & if_for_install_id,
                         const std::shared_ptr<OutputManager> & output_manager) const;
+
+                virtual const std::shared_ptr<const Contents> contents() const;
         };
     }
 }

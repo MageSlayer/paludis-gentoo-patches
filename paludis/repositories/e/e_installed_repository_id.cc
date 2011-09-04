@@ -867,6 +867,12 @@ EInstalledRepositoryID::contents_key() const
     return _imp->keys->contents;
 }
 
+const std::shared_ptr<const Contents>
+EInstalledRepositoryID::contents() const
+{
+    return contents_key()->parse_value();
+}
+
 const std::shared_ptr<const MetadataTimeKey>
 EInstalledRepositoryID::installed_time_key() const
 {

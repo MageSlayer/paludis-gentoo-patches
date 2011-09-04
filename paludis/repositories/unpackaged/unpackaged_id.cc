@@ -511,3 +511,9 @@ UnpackagedID::choices_key() const
     return _imp->choices_key;
 }
 
+const std::shared_ptr<const Contents>
+UnpackagedID::contents() const
+{
+    return make_null_shared_ptr();
+}
+

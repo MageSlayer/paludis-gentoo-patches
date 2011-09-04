@@ -1715,3 +1715,9 @@ EbuildID::set_scm_revision(const std::string & s) const
     }
 }
 
+const std::shared_ptr<const Contents>
+EbuildID::contents() const
+{
+    return make_null_shared_ptr();
+}
+

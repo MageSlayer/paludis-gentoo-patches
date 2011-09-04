@@ -318,6 +318,16 @@ namespace paludis
              */
             virtual void perform_action(Action &) const = 0;
 
+            /**
+             * The contents, if non-zero, contains the contents of a
+             * package. For installed packages, this means the files installed;
+             * for installable packages, this means the files that will be
+             * installed (if known, which it may be for some binary packages).
+             *
+             * \since 0.66
+             */
+            virtual const std::shared_ptr<const Contents> contents() const = 0;
+
             ///\}
 
             ///\name Masks

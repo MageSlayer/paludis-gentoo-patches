@@ -342,6 +342,35 @@ namespace
     }
 
     /*
+     * Document-method: contents
+     *
+     * call-seq:
+     *     contents -> Contents
+     *
+     * Our Contents
+     */
+    VALUE
+    package_id_contents(VALUE self)
+    {
+        std::shared_ptr<const PackageID> * self_ptr;
+        Data_Get_Struct(self, std::shared_ptr<const PackageID>, self_ptr);
+        try
+        {
+            auto contents((*self_ptr)->contents());
+            if (! contents)
+                return Qnil;
+            else
+                return contents_to_value(contents);
+        }
+        catch (const std::exception & e)
+        {
+            exception_to_ruby_exception(e);
+        }
+
+        return Qnil;
+    }
+
+    /*
      * Document-method: masked?
      *
      * call-seq:
@@ -558,6 +587,7 @@ namespace
         rb_define_method(c_package_id, "behaviours_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataCollectionKey<Set<std::string> >, &PackageID::behaviours_key>::fetch)), 0);
         rb_define_method(c_package_id, "uniquely_identifying_spec", RUBY_FUNC_CAST(&package_id_uniquely_identifying_spec), 0);
+        rb_define_method(c_package_id, "contents", RUBY_FUNC_CAST(&package_id_contents), 0);
 
         /*
          * Document-module: Paludis::PackageIDCanonicalForm

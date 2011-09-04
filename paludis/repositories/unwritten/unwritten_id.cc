@@ -300,7 +300,14 @@ UnwrittenID::choices_key() const
     return _imp->choices_key;
 }
 
+const std::shared_ptr<const Contents>
+UnwrittenID::contents() const
+{
+    return make_null_shared_ptr();
+}
+
 namespace paludis
 {
     template class Pimp<UnwrittenID>;
 }
+

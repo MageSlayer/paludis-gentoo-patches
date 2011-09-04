@@ -170,6 +170,8 @@ namespace paludis
                 bool might_be_binary() const;
 
                 virtual void set_scm_revision(const std::string &) const;
+
+                virtual const std::shared_ptr<const Contents> contents() const;
         };
     }
 }

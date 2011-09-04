@@ -354,3 +354,9 @@ InstalledAccountsID::perform_action(Action & action) const
     throw ActionFailedError("Unsupported action: " + action.simple_name());
 }
 
+const std::shared_ptr<const Contents>
+InstalledAccountsID::contents() const
+{
+    return make_null_shared_ptr();
+}
+

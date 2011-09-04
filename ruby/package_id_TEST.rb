@@ -302,9 +302,8 @@ module Paludis
             assert_nil pid_installed.long_description_key
         end
 
-        def test_contents_key
-            assert_kind_of MetadataContentsKey, pid_installed.contents_key
-            assert_kind_of Contents, pid_installed.contents_key.parse_value
+        def test_contents
+            assert_kind_of Contents, pid_installed.contents
         end
 
         def test_installed_time_key
