@@ -4,6 +4,13 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.66.0:
+    * The short options for 'cave owner' and 'cave print-owner' have changed.
+
+    * Support for directory whitelisting for exheres-0.
+
+    * Various bug fixes.
+
 0.64.3:
     * Fixed a bug where a ! inside a || ( ) could cause a segfault.
 
