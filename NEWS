@@ -4,6 +4,24 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.64.3:
+    * Fixed a bug where a ! inside a || ( ) could cause a segfault.
+
+    * Assorted minor bug fixes and compiler compatibility changes.
+
+0.64.2:
+    * The Python bindings now cover various additional things.
+
+    * CONFIG_PROTECT is now available for merge-check hooks.
+
+    * When using Portage format configurations, userpriv is now available.
+
+0.64.1:
+    * 'cave resolve --keep if-same-metadata' now thinks "cat/pkg[a][b]" and
+      "cat/pkg[b][a]" are "the same".
+
+    * Support for Portage-format configurations has been improved slightly.
+
 0.64.0:
     * Support for Gentoo old-style virtuals has been removed.
 
