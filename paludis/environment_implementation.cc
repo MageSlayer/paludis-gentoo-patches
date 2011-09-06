@@ -618,6 +618,37 @@ EnvironmentImplementation::end_repositories() const
     return RepositoryConstIterator(_imp->repositories.end());
 }
 
+const std::shared_ptr<const Set<std::string> >
+EnvironmentImplementation::expand_licence(
+        const std::string & s) const
+{
+    auto result(std::make_shared<Set<std::string> >());
+
+    std::set<std::string> todo;
+    todo.insert(s);
+
+    while (! todo.empty())
+    {
+        std::string t(*todo.begin());
+        todo.erase(todo.begin());
+
+        result->insert(t);
+
+        for (auto r(begin_repositories()), r_end(end_repositories()) ;
+                r != r_end ; ++r)
+        {
+            auto l((*r)->maybe_expand_licence_nonrecursively(t));
+            if (l)
+                for (auto i(l->begin()), i_end(l->end()) ;
+                        i != i_end ; ++i)
+                    if (result->end() == result->find(*i))
+                        todo.insert(*i);
+        }
+    }
+
+    return result;
+}
+
 DuplicateSetError::DuplicateSetError(const SetName & s) throw () :
     Exception("A set named '" + stringify(s) + "' already exists")
 {

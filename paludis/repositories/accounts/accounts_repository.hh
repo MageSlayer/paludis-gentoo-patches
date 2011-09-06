@@ -130,6 +130,8 @@ namespace paludis
                 virtual std::shared_ptr<const PackageIDSequence> package_ids(const QualifiedPackageName & p, const RepositoryContentMayExcludes &) const;
                 virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
                 virtual bool some_ids_might_not_be_masked() const;
+                virtual const std::shared_ptr<const Set<std::string> > maybe_expand_licence_nonrecursively(
+                        const std::string &) const;
 
                 ///\}
 

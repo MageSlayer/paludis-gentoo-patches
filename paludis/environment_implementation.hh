@@ -128,6 +128,9 @@ namespace paludis
 
             virtual RepositoryConstIterator end_repositories() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::shared_ptr<const Set<std::string> > expand_licence(
+                    const std::string &) const;
     };
 
     class PALUDIS_VISIBLE DuplicateSetError :

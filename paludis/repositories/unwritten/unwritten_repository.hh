@@ -92,6 +92,9 @@ namespace paludis
 
                 virtual bool sync(const std::string &, const std::string &, const std::shared_ptr<OutputManager> & output_manager) const;
 
+                virtual const std::shared_ptr<const Set<std::string> > maybe_expand_licence_nonrecursively(
+                        const std::string &) const;
+
                 ///\name RepositoryFactory functions
                 ///\{
 

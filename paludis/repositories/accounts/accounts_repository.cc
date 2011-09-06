@@ -441,6 +441,12 @@ AccountsRepository::sync(
     return false;
 }
 
+const std::shared_ptr<const Set<std::string> >
+AccountsRepository::maybe_expand_licence_nonrecursively(const std::string &) const
+{
+    return make_null_shared_ptr();
+}
+
 namespace paludis
 {
     template class Pimp<AccountsRepository>;

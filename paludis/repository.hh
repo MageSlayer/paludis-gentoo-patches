@@ -373,6 +373,22 @@ namespace paludis
              */
             virtual bool some_ids_might_not_be_masked() const = 0;
 
+            /**
+             * Possibly expand a licence.
+             *
+             * May return a null pointer, if we don't define any licence
+             * groups, or if the thing being passed in doesn't look like a
+             * licence group.
+             *
+             * This should not be recursive.
+             *
+             * Callers should Environment::expand_licence, not this method.
+             *
+             * \since 0.66
+             */
+            virtual const std::shared_ptr<const Set<std::string> > maybe_expand_licence_nonrecursively(
+                    const std::string &) const = 0;
+
             ///\}
 
             ///\name Repository behaviour methods

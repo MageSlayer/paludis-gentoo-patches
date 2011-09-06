@@ -414,3 +414,9 @@ EInstalledRepository::sync(const std::string &, const std::string &, const std::
     return false;
 }
 
+const std::shared_ptr<const Set<std::string> >
+EInstalledRepository::maybe_expand_licence_nonrecursively(const std::string &) const
+{
+    return make_null_shared_ptr();
+}
+

@@ -309,6 +309,18 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
+             * Expand a licence group into its constituent licences, recursively (if any
+             * of our repositories thinks it is a group).
+             *
+             * The original group is included in the result.
+             *
+             * \since 0.68
+             */
+            virtual const std::shared_ptr<const Set<std::string> > expand_licence(
+                    const std::string &) const
+                PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
              * Do we accept any of the specified keywords for a particular package?
              *
              * If the collection includes "*", should return true.

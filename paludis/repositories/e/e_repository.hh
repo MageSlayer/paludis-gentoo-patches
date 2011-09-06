@@ -144,6 +144,9 @@ namespace paludis
             virtual std::shared_ptr<const CategoryNamePartSet> unimportant_category_names(const RepositoryContentMayExcludes &) const;
             virtual const bool is_unimportant() const;
 
+            virtual const std::shared_ptr<const Set<std::string> > maybe_expand_licence_nonrecursively(
+                    const std::string &) const;
+
             /**
              * Update GLEP 42 news files.
              */

@@ -102,6 +102,9 @@ namespace paludis
 
             virtual const bool is_unimportant() const;
 
+            virtual const std::shared_ptr<const Set<std::string> > maybe_expand_licence_nonrecursively(
+                    const std::string &) const;
+
             /* Keys */
 
             virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
