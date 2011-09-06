@@ -143,8 +143,21 @@ namespace
         for (auto i(list.begin()), i_end(list.end()) ;
                 i != i_end ; ++i)
         {
-            auto l(env->expand_licence(*i));
-            std::copy(l->begin(), l->end(), std::back_inserter(extras));
+            std::string s(*i);
+            if (0 == s.compare(0, 1, "-", 0, 1))
+            {
+                auto l(env->expand_licence(i->substr(1)));
+                for (auto v(l->begin()), v_end(l->end()) ;
+                        v != v_end ; ++v)
+                    extras.push_back("-" + *v);
+            }
+            else
+            {
+                auto l(env->expand_licence(*i));
+                for (auto v(l->begin()), v_end(l->end()) ;
+                        v != v_end ; ++v)
+                    extras.push_back(*v);
+            }
         }
 
         list.splice(list.end(), extras, extras.begin(), extras.end());

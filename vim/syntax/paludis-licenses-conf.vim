@@ -25,7 +25,7 @@ syn match  PaludisLicensesConfSet /^[^ \t#\/]\+\S\@!/
             \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfLicenseGroup,PaludisLicensesConfContinuation skipwhite
 syn match  PaludisLicensesConfLicense contained /-\?[a-zA-Z0-9\-_*]\+/
             \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfLicenseGroup,PaludisLicensesConfContinuation skipwhite
-syn match  PaludisLicensesConfLicenseGroup contained /@[a-zA-Z0-9\-_*]\+/
+syn match  PaludisLicensesConfLicenseGroup contained /-\?@[a-zA-Z0-9\-_*]\+/
             \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfLicenseGroup,PaludisLicensesConfContinuation skipwhite
 syn match  PaludisLicensesConfContinuation contained /\\$/
             \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfLicenseGroup,PaludisLicensesConfContinuation skipwhite skipnl
@@ -35,7 +35,7 @@ hi def link PaludisLicensesConfPDS              Identifier
 hi def link PaludisLicensesConfWildcard         Special
 hi def link PaludisLicensesConfSet              Special
 hi def link PaludisLicensesConfLicense          Keyword
-hi def link PaludisLicensesConfLicense          Macro
+hi def link PaludisLicensesConfLicenseGroup     Macro
 hi def link PaludisLicensesConfContinuation     Preproc
 
 let b:current_syntax = "paludis-licenses-conf"
