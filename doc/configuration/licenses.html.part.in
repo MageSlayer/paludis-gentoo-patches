@@ -33,6 +33,8 @@ any of:</p>
 <ul>
     <li><code>license</code>, which accepts that license.</li>
     <li><code>-license</code>, which unaccepts that license.</li>
+    <li><code>@GROUP</code>, which accepts all licenses in a particular group.</li>
+    <li><code>-@GROUP</code>, which unaccepts all licenses in a particular group.</li>
     <li><code>-*</code>, which unaccepts all licenses.</li>
     <li><code>*</code>, which accepts all licenses.</li>
 </ul>
