@@ -42,6 +42,7 @@
 #include <paludis/repositories/e/make_use.hh>
 #include <paludis/repositories/e/a_finder.hh>
 #include <paludis/repositories/e/file_suffixes.hh>
+#include <paludis/repositories/e/licence_groups.hh>
 
 #include <paludis/about.hh>
 #include <paludis/action.hh>
@@ -61,9 +62,11 @@
 #include <paludis/syncer.hh>
 
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/active_object_ptr.hh>
 #include <paludis/util/cookie.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/create_iterator-impl.hh>
+#include <paludis/util/deferred_construction_ptr.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/extract_host_from_url.hh>
 #include <paludis/util/fs_stat.hh>
@@ -184,6 +187,15 @@ namespace
     {
         return r->arch_flags()->end() != r->arch_flags()->find(p);
     }
+
+    std::shared_ptr<LicenceGroups>
+    make_licence_groups(const std::shared_ptr<const MetadataValueKey<FSPath> > & p)
+    {
+        auto result(std::make_shared<LicenceGroups>());
+        if (p)
+            result->add(p->parse_value());
+        return result;
+    }
 }
 
 namespace paludis
@@ -262,12 +274,15 @@ namespace paludis
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > binary_keywords_filter;
         std::shared_ptr<const MetadataValueKey<FSPath> > accounts_repository_data_location_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > e_updates_location_key;
+        std::shared_ptr<const MetadataValueKey<FSPath> > licence_groups_location_key;
         std::shared_ptr<Map<std::string, std::string> > sync_hosts;
         std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key;
         std::list<std::shared_ptr<const MetadataKey> > about_keys;
 
         std::shared_ptr<EclassMtimes> eclass_mtimes;
         time_t master_mtime;
+
+        const ActiveObjectPtr<DeferredConstructionPtr<std::shared_ptr<LicenceGroups> > > licence_groups;
     };
 
     Imp<ERepository>::Imp(ERepository * const r,
@@ -358,10 +373,13 @@ namespace paludis
                     make_binary_keywords_filter(params.binary_keywords_filter()))),
         accounts_repository_data_location_key(layout->accounts_repository_data_location_key()),
         e_updates_location_key(layout->e_updates_location_key()),
+        licence_groups_location_key(layout->licence_groups_location_key()),
         sync_hosts(std::make_shared<Map<std::string, std::string> >()),
         sync_host_key(std::make_shared<LiteralMetadataStringStringMapKey>("sync_host", "sync_host", mkt_internal, sync_hosts)),
         eclass_mtimes(std::make_shared<EclassMtimes>(r, params.eclassdirs())),
-        master_mtime(0)
+        master_mtime(0),
+        licence_groups(DeferredConstructionPtr<std::shared_ptr<LicenceGroups> > (
+                    std::bind(&make_licence_groups, std::cref(licence_groups_location_key))))
     {
         if ((params.location() / "metadata" / "about.conf").stat().is_regular_file_or_symlink_to_regular_file())
         {
@@ -570,6 +588,8 @@ ERepository::_add_metadata_keys() const
         add_metadata_key(_imp->accounts_repository_data_location_key);
     if (_imp->e_updates_location_key)
         add_metadata_key(_imp->e_updates_location_key);
+    if (_imp->licence_groups_location_key)
+        add_metadata_key(_imp->licence_groups_location_key);
     add_metadata_key(_imp->sync_host_key);
 
     std::for_each(_imp->about_keys.begin(), _imp->about_keys.end(), std::bind(
@@ -1879,8 +1899,8 @@ ERepository::get_mirrors(const std::string & m) const
 }
 
 const std::shared_ptr<const Set<std::string> >
-ERepository::maybe_expand_licence_nonrecursively(const std::string &) const
+ERepository::maybe_expand_licence_nonrecursively(const std::string & s) const
 {
-    return make_null_shared_ptr();
+    return _imp->licence_groups->maybe_expand_licence_nonrecursively(s);
 }
 

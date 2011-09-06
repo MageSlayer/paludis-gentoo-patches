@@ -132,6 +132,9 @@ namespace paludis
                 virtual std::shared_ptr<MetadataValueKey<FSPath> > e_updates_location_key() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
+                virtual std::shared_ptr<MetadataValueKey<FSPath> > licence_groups_location_key() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
+
                 virtual std::shared_ptr<const MasksInfo> repository_masks(const std::shared_ptr<const PackageID> &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
         };

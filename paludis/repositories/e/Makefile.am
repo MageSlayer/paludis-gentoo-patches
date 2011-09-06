@@ -72,6 +72,7 @@ noinst_HEADERS = \
 	fix_locked_dependencies.hh \
 	glsa.hh \
 	layout.hh \
+	licence_groups.hh \
 	make_archive_strings.hh \
 	make_use.hh \
 	manifest2_reader.hh \
@@ -152,6 +153,7 @@ libpaludiserepository_la_SOURCES = \
 	fix_locked_dependencies.cc \
 	glsa.cc \
 	layout.cc \
+	licence_groups.cc \
 	make_archive_strings.cc \
 	make_use.cc \
 	manifest2_reader.cc \

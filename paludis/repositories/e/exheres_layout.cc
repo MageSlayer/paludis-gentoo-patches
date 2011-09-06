@@ -663,6 +663,16 @@ ExheresLayout::e_updates_location_key() const
     return make_null_shared_ptr();
 }
 
+std::shared_ptr<MetadataValueKey<FSPath> >
+ExheresLayout::licence_groups_location_key() const
+{
+    if ((_imp->tree_root / "metadata" / "licence_groups.conf").stat().exists())
+        return std::make_shared<LiteralMetadataValueKey<FSPath>>("licence_groups_location",
+                    "License groups data location", mkt_internal, _imp->tree_root / "metadata" / "licence_groups.conf");
+    else
+        return make_null_shared_ptr();
+}
+
 std::shared_ptr<const MasksInfo>
 ExheresLayout::repository_masks(const std::shared_ptr<const PackageID> & id) const
 {
