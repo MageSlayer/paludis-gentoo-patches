@@ -37,6 +37,7 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/set.hh>
 #include <unordered_map>
 #include <list>
 #include <vector>
@@ -60,13 +61,16 @@ namespace paludis
     {
         const PaludisEnvironment * const env;
 
-        SpecificMap qualified;
-        UnspecificMap unqualified;
+        mutable SpecificMap qualified;
+        mutable UnspecificMap unqualified;
         mutable NamedSetMap set;
         mutable Mutex set_mutex;
+        mutable Mutex expanded_mutex;
+        mutable bool expanded;
 
         Imp(const PaludisEnvironment * const e) :
-            env(e)
+            env(e),
+            expanded(false)
         {
         }
     };
@@ -131,9 +135,49 @@ LicensesConf::add(const FSPath & filename)
     }
 }
 
+namespace
+{
+    void expand(const Environment * const env, LicensesList & list)
+    {
+        LicensesList extras;
+        for (auto i(list.begin()), i_end(list.end()) ;
+                i != i_end ; ++i)
+        {
+            auto l(env->expand_licence(*i));
+            std::copy(l->begin(), l->end(), std::back_inserter(extras));
+        }
+
+        list.splice(list.end(), extras, extras.begin(), extras.end());
+    }
+}
+
 bool
 LicensesConf::query(const std::string & t, const std::shared_ptr<const PackageID> & e) const
 {
+    {
+        Lock lock(_imp->expanded_mutex);
+        if (! _imp->expanded)
+        {
+            _imp->expanded = true;
+
+            for (auto q(_imp->qualified.begin()), q_end(_imp->qualified.end()) ;
+                    q != q_end ; ++q)
+            {
+                for (auto p(q->second.begin()), p_end(q->second.end()) ;
+                        p != p_end ; ++p)
+                    expand(_imp->env, p->second);
+            }
+
+            for (auto p(_imp->unqualified.begin()), p_end(_imp->unqualified.end()) ;
+                    p != p_end ; ++p)
+                expand(_imp->env, p->second);
+
+            for (auto p(_imp->set.begin()), p_end(_imp->set.end()) ;
+                    p != p_end ; ++p)
+                expand(_imp->env, p->second.second);
+        }
+    }
+
     /* highest priority: specific */
     bool break_when_done(false);
     {
