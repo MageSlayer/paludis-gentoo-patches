@@ -23,7 +23,7 @@ syn match  PaludisLicensesConfPDS /^[^ \t#\/]\+\/[^ \t#\/]\+\s*/
 syn match  PaludisLicensesConfWildcard contained /\(\*\/\@=\|\/\@<=\*\)/
 syn match  PaludisLicensesConfSet /^[^ \t#\/]\+\S\@!/
             \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfLicenseGroup,PaludisLicensesConfContinuation skipwhite
-syn match  PaludisLicensesConfLicense contained /-\?[a-zA-Z0-9\-_*]\+/
+syn match  PaludisLicensesConfLicense contained /-\?[a-zA-Z0-9\-_*.]\+/
             \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfLicenseGroup,PaludisLicensesConfContinuation skipwhite
 syn match  PaludisLicensesConfLicenseGroup contained /-\?@[a-zA-Z0-9\-_*]\+/
             \ nextgroup=PaludisLicensesConfLicense,PaludisLicensesConfLicenseGroup,PaludisLicensesConfContinuation skipwhite
