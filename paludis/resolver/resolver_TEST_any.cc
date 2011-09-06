@@ -296,3 +296,27 @@ TEST_F(ResolverAnyTestCase, SelfUseNeither)
             );
 }
 
+TEST_F(ResolverAnyTestCase, SelfOrOther)
+{
+    data->install("self-or-other", "other", "1");
+    data->get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_same_version);
+
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("self-or-other/target"));
+
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("self-or-other/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
+}
+

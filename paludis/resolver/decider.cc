@@ -1259,34 +1259,8 @@ Decider::find_any_score(
     const std::shared_ptr<const Resolvents> resolvents_unless_block(is_block ? make_null_shared_ptr() :
             _get_resolvents_for(spec, reason_unless_block).first);
 
-    /* next: will already be installing */
-    static_assert(acs_will_be_installing < acs_vacuous_blocker, "acs order changed");
-    if (! is_block)
-    {
-        for (Resolvents::ConstIterator r(resolvents_unless_block->begin()), r_end(resolvents_unless_block->end()) ;
-                r != r_end ; ++r)
-        {
-            bool any(false), any_bad(false);
-            ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->find(*r));
-            if (i != _imp->resolutions_by_resolvent->end() && (*i)->decision())
-            {
-                auto constraint(_make_constraint_from_package_dependency(our_resolution, dep, reason_unless_block, si_take));
-                if (_check_constraint(constraint, (*i)->decision()))
-                    any = true;
-                else
-                {
-                    any_bad = false;
-                    break;
-                }
-            }
-
-            if (any && ! any_bad)
-                return std::make_pair(acs_will_be_installing, operator_bias);
-        }
-    }
-
     /* next: already installed */
-    static_assert(acs_already_installed < acs_will_be_installing, "acs order changed");
+    static_assert(acs_already_installed < acs_vacuous_blocker, "acs order changed");
     {
         Context sub_context("When working out whether it's acs_already_installed:");
 

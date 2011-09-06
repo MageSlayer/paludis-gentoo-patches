@@ -134,5 +134,26 @@ MYOPTIONS="disabled disabled2"
 DEPENDENCIES="run: || ( self-use-neither/dep[disabled] self-use-neither/dep[disabled2] )"
 END
 
+# self-or-other
+echo 'self-or-other' >> metadata/categories.conf
+
+mkdir -p 'packages/self-or-other/target'
+cat <<END > packages/self-or-other/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="
+    || ( self-or-other/target self-or-other/other )
+    "
+END
+
+mkdir -p 'packages/self-or-other/other'
+cat <<END > packages/self-or-other/other/other-1.exheres-0
+SUMMARY="other"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES=""
+END
+
 cd ..
 
