@@ -758,10 +758,10 @@ struct class_set_key :
     bp::class_<MetadataCollectionKeyWrapper<C_>, std::shared_ptr<MetadataCollectionKeyWrapper<C_> >,
         bp::bases<MetadataKey>, boost::noncopyable>
 {
-    class_set_key(const std::string & set) :
+    class_set_key(const std::string & set, const std::string & cn) :
         bp::class_<MetadataCollectionKeyWrapper<C_>, std::shared_ptr<MetadataCollectionKeyWrapper<C_> >,
             bp::bases<MetadataKey>, boost::noncopyable>(
-                    ("Metadata" + set + "Key").c_str(),
+                    ("Metadata" + cn + "Key").c_str(),
                     "A MetadataCollectionKey is a MetadataKey that holds a Set or Sequence of some kind of item\n"
                     "as its value.\n\n"
 
@@ -1130,10 +1130,11 @@ void expose_metadata_key()
     /**
      * MetadataCollectionKeys
      */
-    class_set_key<KeywordNameSet>("KeywordNameIterable");
-    class_set_key<Set<std::string> >("StringIterable");
-    class_set_key<FSPathSequence>("FSPathIterable");
-    class_set_key<PackageIDSequence>("PackageIDIterable");
+    class_set_key<KeywordNameSet>("KeywordNameIterable", "KeywordNameIterable");
+    class_set_key<Set<std::string> >("StringIterable", "StringIterable");
+    class_set_key<Sequence<std::string> >("StringIterable", "StringSequence");
+    class_set_key<FSPathSequence>("FSPathIterable", "FSPathIterable");
+    class_set_key<PackageIDSequence>("PackageIDIterable", "PackageIDIterable");
 
     /**
      * MetadataSpecTreeKeys
