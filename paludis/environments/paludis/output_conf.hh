@@ -52,7 +52,7 @@ namespace paludis
                 /**
                  * Add another file.
                  */
-                void add(const FSPath &);
+                void add(const FSPath &, const FSPath & root);
 
                 const std::shared_ptr<OutputManager> create_output_manager(
                         const CreateOutputManagerInfo &) const;

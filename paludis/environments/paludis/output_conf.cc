@@ -332,9 +332,14 @@ namespace
 }
 
 void
-OutputConf::add(const FSPath & filename)
+OutputConf::add(const FSPath & filename, const FSPath & root)
 {
     Context context("When adding source '" + stringify(filename) + "' as an output file:");
+
+    _imp->predefined_variables->erase(std::string("root"));
+    _imp->predefined_variables->insert("root", stringify(root));
+    _imp->predefined_variables->erase(std::string("ROOT"));
+    _imp->predefined_variables->insert("ROOT", stringify(root));
 
     std::shared_ptr<KeyValueConfigFile> f(make_bashable_kv_conf(filename,
                 _imp->predefined_variables, { kvcfo_allow_sections, kvcfo_allow_fancy_assigns, kvcfo_allow_env }));
@@ -491,3 +496,4 @@ namespace paludis
 {
     template class Pimp<paludis_environment::OutputConf>;
 }
+

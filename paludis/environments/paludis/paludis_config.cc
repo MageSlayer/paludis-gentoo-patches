@@ -705,7 +705,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! file->stat().exists())
                 continue;
 
-            _imp->output_conf->add(*file);
+            _imp->output_conf->add(*file, FSPath(_imp->root));
             any = true;
         }
 
