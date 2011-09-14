@@ -28,6 +28,7 @@
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/fs_path-fwd.hh>
 #include <paludis/choice-fwd.hh>
+#include <paludis/maintainer-fwd.hh>
 #include <memory>
 
 namespace paludis
@@ -46,7 +47,7 @@ namespace paludis
         {
             NamedValue<n::herds, std::shared_ptr<Sequence<std::string> > > herds;
             NamedValue<n::long_description, std::string> long_description;
-            NamedValue<n::maintainers, std::shared_ptr<Sequence<std::string> > > maintainers;
+            NamedValue<n::maintainers, std::shared_ptr<Maintainers> > maintainers;
             NamedValue<n::uses, std::shared_ptr<Map<ChoiceNameWithPrefix, std::string> > > uses;
         };
 

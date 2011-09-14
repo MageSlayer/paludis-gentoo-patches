@@ -24,6 +24,7 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/choice.hh>
+#include <paludis/maintainer.hh>
 #include <set>
 
 #include <libxml/tree.h>
@@ -287,7 +288,7 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSPath & filename)
                 make_named_values<erepository::MetadataXML>(
                     n::herds() = std::make_shared<Sequence<std::string>>(),
                     n::long_description() = "",
-                    n::maintainers() = std::make_shared<Sequence<std::string>>(),
+                    n::maintainers() = std::make_shared<Maintainers>(),
                     n::uses() = std::make_shared<Map<ChoiceNameWithPrefix, std::string>>()
                     )));
 
@@ -318,13 +319,19 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSPath & filename)
 
     for (int i = 0 ; i != maintainer_object->nodesetval->nodeNr ; ++i)
     {
-        std::string name, email;
+        Maintainer maintainer(make_named_values<Maintainer>(
+                    n::author() = "",
+                    n::description() = "",
+                    n::email() = ""
+                    ));
 
         sub_context->node = maintainer_object->nodesetval->nodeTab[i];
         std::shared_ptr<xmlXPathObject>
             name_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("./name[position()=1]"),
                         sub_context.get()), xmlXPathFreeObject)),
             email_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("./email[position()=1]"),
+                        sub_context.get()), xmlXPathFreeObject)),
+            description_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("./description[position()=1]"),
                         sub_context.get()), xmlXPathFreeObject));
 
         if (name_object->nodesetval->nodeNr)
@@ -333,7 +340,7 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSPath & filename)
             std::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
                         xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
                             text_context.get()), xmlXPathFreeObject));
-            name = extract_children_text(text_object);
+            maintainer.author() = extract_children_text(text_object);
         }
 
         if (email_object->nodesetval->nodeNr)
@@ -342,23 +349,20 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSPath & filename)
             std::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
                         xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
                             text_context.get()), xmlXPathFreeObject));
-            email = extract_children_text(text_object);
+            maintainer.email() = extract_children_text(text_object);
         }
 
-        if ((! name.empty()) || (! email.empty()))
+        if (description_object->nodesetval->nodeNr)
         {
-            std::string p;
-            if (! name.empty())
-            {
-                p = name;
-                if (! email.empty())
-                    p = p + " <" + email + ">";
-            }
-            else
-                p = email;
-
-            result->maintainers()->push_back(p);
+            text_context->node = description_object->nodesetval->nodeTab[0];
+            std::shared_ptr<xmlXPathObject> text_object(manage_libxml_ptr(
+                        xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
+                            text_context.get()), xmlXPathFreeObject));
+            maintainer.description() = extract_children_text(text_object);
         }
+
+        if ((! maintainer.email().empty()) || (! maintainer.author().empty()))
+            result->maintainers()->push_back(maintainer);
     }
 
     for (int i = 0 ; i != use_object->nodesetval->nodeNr ; ++i)

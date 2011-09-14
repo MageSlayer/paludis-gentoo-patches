@@ -459,7 +459,7 @@ EbuildID::need_xml_keys_added() const
             if (! m->herds()->empty())
                 add_metadata_key(std::make_shared<LiteralMetadataStringSequenceKey>("herds", "Herds", mkt_normal, m->herds()));
             if (! m->maintainers()->empty())
-                add_metadata_key(std::make_shared<LiteralMetadataStringSequenceKey>("maintainers", "Maintainers", mkt_normal, m->maintainers()));
+                add_metadata_key(std::make_shared<LiteralMetadataMaintainersKey>("maintainers", "Maintainers", mkt_normal, m->maintainers()));
         }
     }
 }
