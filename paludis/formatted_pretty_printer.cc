@@ -205,6 +205,12 @@ FormattedPrettyPrinter::prettify(const std::string & v) const
 }
 
 const std::string
+FormattedPrettyPrinter::prettify(const Maintainer & v) const
+{
+    return format_plain(stringify(v));
+}
+
+const std::string
 FormattedPrettyPrinter::prettify(const std::pair<const std::string, std::string> & v) const
 {
     if (v.first.empty())

@@ -48,6 +48,7 @@ namespace
     static VALUE c_metadata_package_id_sequence_key;
     static VALUE c_metadata_fsentry_key;
     static VALUE c_metadata_fsentry_sequence_key;
+    static VALUE c_metadata_maintainers_key;
     static VALUE c_metadata_key_type;
     static VALUE c_metadata_license_spec_tree_key;
     static VALUE c_metadata_fetchable_uri_spec_tree_key;
@@ -183,6 +184,12 @@ namespace
         void visit(const MetadataCollectionKey<FSPathSequence> &)
         {
             value = Data_Wrap_Struct(c_metadata_fsentry_sequence_key, 0, &Common<std::shared_ptr<const MetadataKey> >::free,
+                    new std::shared_ptr<const MetadataKey>(mm));
+        }
+
+        void visit(const MetadataCollectionKey<Maintainers> &)
+        {
+            value = Data_Wrap_Struct(c_metadata_maintainers_key, 0, &Common<std::shared_ptr<const MetadataKey> >::free,
                     new std::shared_ptr<const MetadataKey>(mm));
         }
 
@@ -688,7 +695,15 @@ namespace
          * Metadata class for filesystem sequences.
          */
         c_metadata_fsentry_sequence_key = rb_define_class_under(paludis_module(), "MetadataFSPathSequenceKey", c_metadata_key);
-        rb_define_method(c_metadata_fsentry_sequence_key, "parse_value", RUBY_FUNC_CAST((&SetValue<FSPathSequence>::fetch)), 0);
+        rb_define_method(c_metadata_fsentry_sequence_key, "parse_value", RUBY_FUNC_CAST((&SetValue<Maintainers>::fetch)), 0);
+
+        /*
+         * Document-class: Paludis::MetadataMaintainersKey
+         *
+         * Metadata class for maintainers.
+         */
+        c_metadata_maintainers_key = rb_define_class_under(paludis_module(), "MetadataMaintainersKey", c_metadata_key);
+        rb_define_method(c_metadata_maintainers_key, "parse_value", RUBY_FUNC_CAST((&SetValue<FSPathSequence>::fetch)), 0);
 
         /*
          * Document-class: Paludis::MetadataStringSetKey

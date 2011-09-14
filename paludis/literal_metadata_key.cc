@@ -123,6 +123,24 @@ namespace paludis
         {
         }
     };
+
+    template <>
+    struct Imp<LiteralMetadataMaintainersKey>
+    {
+        const std::string raw_name;
+        const std::string human_name;
+        const MetadataKeyType type;
+        const std::shared_ptr<const Maintainers> value;
+
+        Imp(const std::string & r, const std::string & h, const MetadataKeyType t,
+                const std::shared_ptr<const Maintainers> & v) :
+            raw_name(r),
+            human_name(h),
+            type(t),
+            value(v)
+        {
+        }
+    };
 }
 
 LiteralMetadataFSPathSequenceKey::LiteralMetadataFSPathSequenceKey(const std::string & r, const std::string & h,
@@ -399,6 +417,47 @@ LiteralMetadataTimeKey::parse_value() const
     return _imp->value;
 }
 
+LiteralMetadataMaintainersKey::LiteralMetadataMaintainersKey(const std::string & r, const std::string & h,
+        const MetadataKeyType t, const std::shared_ptr<const Maintainers> & v) :
+    _imp(r, h, t, v)
+{
+}
+
+LiteralMetadataMaintainersKey::~LiteralMetadataMaintainersKey()
+{
+}
+
+const std::shared_ptr<const Maintainers>
+LiteralMetadataMaintainersKey::parse_value() const
+{
+    return _imp->value;
+}
+
+const std::string
+LiteralMetadataMaintainersKey::pretty_print_value(
+        const PrettyPrinter & p, const PrettyPrintOptions &) const
+{
+    return join(_imp->value->begin(), _imp->value->end(), " ", CallPrettyPrinter(p));
+}
+
+const std::string
+LiteralMetadataMaintainersKey::human_name() const
+{
+    return _imp->human_name;
+}
+
+const std::string
+LiteralMetadataMaintainersKey::raw_name() const
+{
+    return _imp->raw_name;
+}
+
+MetadataKeyType
+LiteralMetadataMaintainersKey::type() const
+{
+    return _imp->type;
+}
+
 namespace paludis
 {
     template class LiteralMetadataValueKey<FSPath>;
@@ -408,3 +467,4 @@ namespace paludis
     template class LiteralMetadataValueKey<long>;
     template class LiteralMetadataValueKey<std::shared_ptr<const PackageID> >;
 }
+

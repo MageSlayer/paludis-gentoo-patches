@@ -75,6 +75,7 @@ namespace paludis
     template class MetadataCollectionKey<Map<std::string, std::string> >;
     template class MetadataCollectionKey<PackageIDSequence>;
     template class MetadataCollectionKey<FSPathSequence>;
+    template class MetadataCollectionKey<Maintainers>;
 
     template class MetadataSpecTreeKey<LicenseSpecTree>;
     template class MetadataSpecTreeKey<PlainTextSpecTree>;
@@ -93,3 +94,4 @@ namespace paludis
     template class MetadataValueKey<std::shared_ptr<const PackageID> >;
     template class MetadataValueKey<std::shared_ptr<const Choices> >;
 }
+

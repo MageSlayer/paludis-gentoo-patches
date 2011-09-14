@@ -120,6 +120,11 @@ namespace
             s << k.pretty_print_value(UnformattedPrettyPrinter(), { });
         }
 
+        void visit(const MetadataCollectionKey<Maintainers> & k)
+        {
+            s << k.pretty_print_value(UnformattedPrettyPrinter(), { });
+        }
+
         void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
         {
             s << k.pretty_print_value(UnformattedPrettyPrinter(), { });

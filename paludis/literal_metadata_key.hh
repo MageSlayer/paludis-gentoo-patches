@@ -249,6 +249,40 @@ namespace paludis
                     const PrettyPrinter &,
                     const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+    /**
+     * A LiteralMetadataMaintainersKey is a MetadataCollectionKey<Maintainers>
+     * whose value is known at construction time.
+     *
+     * \ingroup g_literal_metadata_key
+     * \since 0.68
+     */
+    class PALUDIS_VISIBLE LiteralMetadataMaintainersKey :
+        public MetadataCollectionKey<Maintainers>
+    {
+        private:
+            Pimp<LiteralMetadataMaintainersKey> _imp;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            LiteralMetadataMaintainersKey(const std::string &, const std::string &, const MetadataKeyType,
+                    const std::shared_ptr<const Maintainers> &);
+            ~LiteralMetadataMaintainersKey();
+
+            ///\}
+
+            virtual const std::shared_ptr<const Maintainers> parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string pretty_print_value(
+                    const PrettyPrinter &,
+                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
 }
 
 #endif

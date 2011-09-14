@@ -820,6 +820,20 @@ namespace
 
             return false;
         }
+
+        bool visit(const MetadataCollectionKey<Maintainers> & s) const
+        {
+            auto v(s.parse_value());
+            switch (op)
+            {
+                case '=':
+                    return pattern == join(v->begin(), v->end(), " ");
+                case '<':
+                    return v->end() != std::find_if(v->begin(), v->end(), StringifyEqual(pattern));
+            }
+
+            return false;
+        }
     };
 
     struct AssociatedKeyFinder

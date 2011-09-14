@@ -31,6 +31,7 @@
 #include <paludis/choice-fwd.hh>
 #include <paludis/pretty_printer-fwd.hh>
 #include <paludis/pretty_print_options-fwd.hh>
+#include <paludis/maintainer-fwd.hh>
 #include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/remove_shared_ptr.hh>
@@ -91,6 +92,7 @@ namespace paludis
                 MetadataCollectionKey<PackageIDSequence>,
                 MetadataCollectionKey<FSPathSequence>,
                 MetadataCollectionKey<Map<std::string, std::string> >,
+                MetadataCollectionKey<Maintainers>,
                 MetadataSpecTreeKey<DependencySpecTree>,
                 MetadataSpecTreeKey<LicenseSpecTree>,
                 MetadataSpecTreeKey<FetchableURISpecTree>,

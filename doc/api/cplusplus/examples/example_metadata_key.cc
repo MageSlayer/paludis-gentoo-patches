@@ -172,6 +172,13 @@ namespace
                 cout << indent << left << setw(30) << "    Value:" << " " << join(value->begin(), value->end(), " ") << endl;
             }
 
+            void visit(const MetadataCollectionKey<Maintainers> & key)
+            {
+                auto value(key.parse_value());
+                cout << indent << left << setw(30) << "    Class:" << " " << "MetadataCollectionKey<Maintainers>" << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << join(value->begin(), value->end(), " ") << endl;
+            }
+
             void visit(const MetadataCollectionKey<FSPathSequence> & key)
             {
                 auto value(key.parse_value());

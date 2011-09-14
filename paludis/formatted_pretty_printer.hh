@@ -74,6 +74,8 @@ namespace paludis
             virtual const std::string prettify(const FSPath &) const;
 
             virtual const std::string prettify(const KeywordName &) const;
+
+            virtual const std::string prettify(const Maintainer &) const;
     };
 }
 

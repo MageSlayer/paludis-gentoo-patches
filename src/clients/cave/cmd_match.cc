@@ -366,6 +366,11 @@ namespace
                     std::back_inserter(texts), &stringify<PackageID>);
         }
 
+        void visit(const MetadataCollectionKey<Maintainers> & k)
+        {
+            auto v(k.parse_value());
+            std::transform(v->begin(), v->end(), std::back_inserter(texts), &stringify<Maintainer>);
+        }
     };
 }
 

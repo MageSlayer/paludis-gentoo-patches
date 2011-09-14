@@ -951,6 +951,12 @@ namespace
             cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_value(printer, { }))));
         }
 
+        void visit(const MetadataCollectionKey<Maintainers> & k)
+        {
+            ColourPrettyPrinter printer(env, id, 0);
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.pretty_print_value(printer, { }))));
+        }
+
         void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
             ColourPrettyPrinter printer(env, id, 0);

@@ -198,6 +198,12 @@ namespace
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(join(v->begin(), v->end(), "  ")));
         }
 
+        void visit(const MetadataCollectionKey<Maintainers> & k)
+        {
+            auto v(k.parse_value());
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(join(v->begin(), v->end(), "  ")));
+        }
+
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
         {
             ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);

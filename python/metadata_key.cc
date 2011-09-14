@@ -19,11 +19,13 @@
 
 #include <python/paludis_python.hh>
 #include <python/exception.hh>
+#include <python/iterable.hh>
 
 #include <paludis/metadata_key.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_label.hh>
 #include <paludis/environment.hh>
+#include <paludis/maintainer.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/timestamp.hh>
@@ -108,6 +110,11 @@ class MetadataKeySptrToPythonVisitor
         void visit(const MetadataCollectionKey<FSPathSequence> & k)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataCollectionKey<FSPathSequence> >(_m_ptr));
+        }
+
+        void visit(const MetadataCollectionKey<Maintainers> & k)
+        {
+            obj = bp::object(std::static_pointer_cast<const MetadataCollectionKey<Maintainers> >(_m_ptr));
         }
 
         void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
@@ -1135,6 +1142,7 @@ void expose_metadata_key()
     class_set_key<Sequence<std::string> >("StringIterable", "StringSequence");
     class_set_key<FSPathSequence>("FSPathIterable", "FSPathIterable");
     class_set_key<PackageIDSequence>("PackageIDIterable", "PackageIDIterable");
+    class_set_key<Maintainers>("MaintainerIterable", "MaintainerIterable");
 
     /**
      * MetadataSpecTreeKeys
@@ -1145,5 +1153,41 @@ void expose_metadata_key()
     class_spec_tree_key<RequiredUseSpecTree>("RequiredUseSpecTree");
     class_spec_tree_key<SimpleURISpecTree>("SimpleURISpecTree");
     class_spec_tree_key<FetchableURISpecTree>("FetchableURISpecTree");
+
+    /**
+     * Maintainers
+     */
+    class_iterable<Maintainers>
+        (
+         "MaintainerIterable",
+         "Iterable of Maintainer",
+         true
+        );
+
+    /**
+     * Maintainer
+     */
+    bp::class_<Maintainer> maintainer(
+            "Maintainer",
+            "Represents a package maintainer",
+            bp::no_init
+            );
+
+    maintainer
+        .add_property("author",
+                &named_values_getter<Maintainer, n::author, std::string, &Maintainer::author>,
+                "[ro] String\n"
+                )
+
+        .add_property("description",
+                &named_values_getter<Maintainer, n::description, std::string, &Maintainer::description>,
+                "[ro] String\n"
+                )
+
+        .add_property("email",
+                &named_values_getter<Maintainer, n::email, std::string, &Maintainer::email>,
+                "[ro] String\n"
+                )
+        ;
 }
 
