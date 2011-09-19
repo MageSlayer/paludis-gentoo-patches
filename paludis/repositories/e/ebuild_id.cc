@@ -1576,7 +1576,7 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
             {
                 UnconditionalRestrictFinder f;
                 restrict_key()->parse_value()->top()->accept(f);
-                mask_tests = f.s.end() == f.s.find("test");
+                mask_tests = f.s.end() != f.s.find("test");
                 may_be_unrestricted_strip = f.s.end() == f.s.find("strip");
             }
 
