@@ -4,6 +4,11 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.68.0:
+    * Licence groups are now supported.
+
+    * Various bug fixes.
+
 0.66.0:
     * The short options for 'cave owner' and 'cave print-owner' have changed.
 
