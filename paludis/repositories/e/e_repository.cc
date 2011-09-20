@@ -1162,7 +1162,7 @@ ERepository::repository_factory_create(
 
     std::shared_ptr<ERepositorySequence> master_repositories;
     std::string master_repository_str(f("master_repository"));
-    if (master_repository_str.empty() && ! layout_conf)
+    if (master_repository_str.empty() && ((! layout_conf) || (layout_conf->get("masters").empty())))
         master_repository_str = f("master_repository_if_unknown");
 
     if (! master_repository_str.empty())
