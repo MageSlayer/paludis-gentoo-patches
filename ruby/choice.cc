@@ -316,7 +316,7 @@ namespace
 
     /*
      * call-seq:
-     *     origin? -> ChoiceOrigin
+     *     origin -> ChoiceOrigin
      *
      * Is this flag explicitly listed?
      *
