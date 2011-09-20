@@ -1529,6 +1529,10 @@ ERepository::repository_factory_dependencies(
                     t != t_end ; ++t)
                 result->insert(RepositoryName(*t));
         }
+
+        if ((! layout_conf) || (layout_conf->get("masters").empty()))
+            if (! f("master_repository_if_unknown").empty())
+                result->insert(RepositoryName(f("master_repository_if_unknown")));
     }
 
     return result;
