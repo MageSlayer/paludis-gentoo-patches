@@ -1167,7 +1167,7 @@ ERepository::repository_factory_create(
 
     if (! master_repository_str.empty())
     {
-        if (layout_conf)
+        if (layout_conf && ! layout_conf->get("masters").empty())
         {
             Log::get_instance()->message("e.ebuild.configuration.master_repository", ll_warning, lc_context) << "Key 'master_repository' in '"
                 << f("repo_file") << "' will override '" << (FSPath(location) / "metadata/layout.conf")
