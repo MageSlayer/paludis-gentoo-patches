@@ -42,6 +42,10 @@ module Paludis
             env.fetch_repository("testrepo").package_ids("bad/pkg").first
         end
 
+        def pid_scm
+            env.fetch_repository("exheresrepo").package_ids("scm/scm").first
+        end
+
         def pid_installed
             env.fetch_repository("installed").package_ids("cat-one/pkg-one").first
         end
@@ -184,6 +188,14 @@ module Paludis
             assert_kind_of OverriddenMask, mask
             assert_kind_of UnacceptedMask, mask.mask
             assert_equal MaskOverrideReason::AcceptedUnstable, mask.override_reason
+        end
+
+        def test_mask_tokens
+            masks = pid_scm.masks
+            assert_equal 1, masks.length
+            mask = masks.first
+            assert_kind_of RepositoryMask, mask
+            assert_equal "scm", mask.token
         end
 
         def test_hash

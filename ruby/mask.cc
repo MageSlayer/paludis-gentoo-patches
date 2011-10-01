@@ -130,6 +130,13 @@ namespace
      * Fetch the name of the metadata key that is not accepted.
      */
     /*
+     * Document-method: token
+     * call-seq:
+     *     token -> String
+     *
+     * An associated token. Might be empty.
+     */
+    /*
      * Document-method: mask_key
      *
      * call-seq:
@@ -202,6 +209,8 @@ namespace
          * A UserMask is a Mask due to user configuration.
          */
         c_user_mask = rb_define_class_under(paludis_module(), "UserMask", c_mask);
+        rb_define_method(c_user_mask, "token",
+                RUBY_FUNC_CAST((&MaskMetadataKey<UserMask,&UserMask::token>::fetch)), 0);
 
         /*
          * Document-class: Paludis::UnacceptedMask
@@ -219,6 +228,8 @@ namespace
          * A RepositoryMask is a Mask that signifies that a PackageID has been marked as masked by a Repository.
          */
         c_repository_mask = rb_define_class_under(paludis_module(), "RepositoryMask", c_mask);
+        rb_define_method(c_repository_mask, "token",
+                RUBY_FUNC_CAST((&MaskMetadataKey<RepositoryMask,&RepositoryMask::token>::fetch)), 0);
 
         /*
          * Document-class: Paludis::UnsupportedMask

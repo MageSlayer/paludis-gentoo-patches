@@ -15,6 +15,15 @@ profiles = \${location}/profiles/testprofile
 builddir = `pwd`
 END
 
+cat <<END > home/.paludis/repositories/exheresrepo.conf
+location = `pwd`/exheresrepo
+format = e
+names_cache = /var/empty
+cache = /var/empty
+profiles = \${location}/profiles/testprofile
+builddir = `pwd`
+END
+
 cat <<END > home/.paludis/repositories/installed.conf
 location = `pwd`/installed
 format = vdb
@@ -81,6 +90,38 @@ KEYWORDS="test!!!"
 RESTRICT="monkey"
 DEPEND="||(foo/bar bar/foo)"
 RDEPEND=""
+END
+
+cd ..
+
+mkdir -p exheresrepo/{exlibs,metadata,profiles/testprofile,packages/scm/scm/files} || exit 1
+cd exheresrepo || exit 1
+echo "exheresrepo" > profiles/repo_name || exit 1
+cat <<END > metadata/categories.conf || exit 1
+scm
+END
+cat <<END > metadata/layout.conf
+layout = exheres
+eapi_when_unknown = exheres-0
+eapi_when_unspecified = exheres-0
+profile_eapi_when_unspecified = exheres-0
+END
+cat <<END > metadata/profiles_desc.conf
+test testprofile stable
+END
+cat <<END > metadata/repository_mask.conf
+scm/scm[=scm] [[ token = scm ]]
+END
+
+cat <<"END" > packages/scm/scm/scm-scm.exheres-0 || exit 1
+SUMMARY="Test package"
+HOMEPAGE="http://paludis.pioto.org/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="testflag"
+LICENCES="GPL-2"
+PLATFORMS="test"
+DEPENDENCIES="build: foo/bar"
 END
 
 cd ..
