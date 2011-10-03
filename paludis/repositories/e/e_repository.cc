@@ -725,20 +725,20 @@ ERepository::need_mirrors() const
 
 bool
 ERepository::sync(
-        const std::string & suffix,
+        const std::string & source,
         const std::string & revision,
         const std::shared_ptr<OutputManager> & output_manager) const
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
     std::string sync_uri, sync_options;
-    if (_imp->params.sync()->end() != _imp->params.sync()->find(suffix))
-        sync_uri = _imp->params.sync()->find(suffix)->second;
+    if (_imp->params.sync()->end() != _imp->params.sync()->find(source))
+        sync_uri = _imp->params.sync()->find(source)->second;
     if (sync_uri.empty())
         return false;
 
-    if (_imp->params.sync_options()->end() != _imp->params.sync_options()->find(suffix))
-        sync_options = _imp->params.sync_options()->find(suffix)->second;
+    if (_imp->params.sync_options()->end() != _imp->params.sync_options()->find(source))
+        sync_options = _imp->params.sync_options()->find(source)->second;
 
     std::list<std::string> sync_list;
     tokenise_whitespace(sync_uri, std::back_inserter(sync_list));
@@ -1373,35 +1373,35 @@ ERepository::repository_factory_create(
     auto sync(std::make_shared<Map<std::string, std::string> >());
     std::vector<std::string> sync_tokens;
     tokenise_whitespace(f("sync"), std::back_inserter(sync_tokens));
-    std::string suffix;
+    std::string source;
     for (auto t(sync_tokens.begin()), t_end(sync_tokens.end()) ;
             t != t_end ; ++t)
         if ((! t->empty()) && (':' == t->at(t->length() - 1)))
-            suffix = t->substr(0, t->length() - 1);
+            source = t->substr(0, t->length() - 1);
         else
         {
             std::string v;
-            if (sync->end() != sync->find(suffix))
-                v = sync->find(suffix)->second + " ";
-            sync->erase(suffix);
-            sync->insert(suffix, v + *t);
+            if (sync->end() != sync->find(source))
+                v = sync->find(source)->second + " ";
+            sync->erase(source);
+            sync->insert(source, v + *t);
         }
 
     auto sync_options(std::make_shared<Map<std::string, std::string> >());
     std::vector<std::string> sync_options_tokens;
     tokenise_whitespace(f("sync_options"), std::back_inserter(sync_options_tokens));
-    suffix = "";
+    source = "";
     for (auto t(sync_options_tokens.begin()), t_end(sync_options_tokens.end()) ;
             t != t_end ; ++t)
         if ((! t->empty()) && (':' == t->at(t->length() - 1)))
-            suffix = t->substr(0, t->length() - 1);
+            source = t->substr(0, t->length() - 1);
         else
         {
             std::string v;
-            if (sync_options->end() != sync_options->find(suffix))
-                v = sync_options->find(suffix)->second + " ";
-            sync_options->erase(suffix);
-            sync_options->insert(suffix, v + *t);
+            if (sync_options->end() != sync_options->find(source))
+                v = sync_options->find(source)->second + " ";
+            sync_options->erase(source);
+            sync_options->insert(source, v + *t);
         }
 
     std::string builddir(f("builddir"));

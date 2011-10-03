@@ -76,11 +76,11 @@ for <code>e</code> format repositories:</p>
 
     <dt><code>sync</code></dt>
     <dd>How to sync the repository. See <a href="../syncers.html">Syncers</a> for supported formats. Optional if the
-    repository does not need to be synced. Different sync URIs to use when a different suffix is requested may be
+    repository does not need to be synced. Different sync URIs to use when a different source is requested may be
     specified, e.g. <code>sync = git+http://host/path local: git+file:///path</code>.</dd>
 
     <dt><code>sync_options</code></dt>
-    <dd>Any options to be passed to the syncer. Optional. Options for suffixes are specified using the same format as
+    <dd>Any options to be passed to the syncer. Optional. Options for alternative sources are specified using the same format as
     for <code>sync</code>.</dd>
 
     <dt><code>builddir</code></dt>

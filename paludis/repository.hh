@@ -425,11 +425,11 @@ namespace paludis
              *
              * \return True if we synced successfully, false if we skipped sync.
              * \since 0.42 (previously in an interface)
-             * \since 0.55 takes a suffix (may be empty)
+             * \since 0.55 takes a source (may be empty)
              * \since 0.61 takes a revision (may be empty)
              */
             virtual bool sync(
-                    const std::string & suffix,
+                    const std::string & source,
                     const std::string & revision,
                     const std::shared_ptr<OutputManager> &) const = 0;
 

@@ -4,6 +4,11 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+master:
+    * 'cave sync --suffix' is now known as '--source' (although the old
+      version is still supported for compatibility).  The short version is
+      still '-s'.
+
 0.68.0:
     * Licence groups are now supported.
 

@@ -833,7 +833,7 @@ _cave_cmd_sync()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '--sequential[Only perform one sync at a time]' \
-    '(--suffix -s)'{--suffix,-s}'[Use the specified suffix for syncing]:Suffix: ' \
+    '(--source -s)'{--source,-s}'[Use the specified source for syncing]:Source: ' \
     '(--revision -r)'{--revision,-r}'[Sync to the specified revision]:Revision: ' \
     '*:repository:_cave_repositories' && return 0
 }

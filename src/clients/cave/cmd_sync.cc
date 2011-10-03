@@ -67,7 +67,8 @@ namespace
         args::SwitchArg a_sequential;
 
         args::ArgsGroup g_sync_options;
-        args::StringArg a_suffix;
+        args::StringArg a_source;
+        args::AliasArg a_suffix;
         args::StringArg a_revision;
 
         virtual std::string app_name() const
@@ -91,7 +92,8 @@ namespace
             a_sequential(&g_job_options, "sequential", '\0', "Only perform one sync at a time.", false),
 
             g_sync_options(main_options_section(), "Sync Options", "Sync options."),
-            a_suffix(&g_sync_options, "suffix", 's', "Use the specified suffix for syncing."),
+            a_source(&g_sync_options, "source", 's', "Use the specified source for syncing."),
+            a_suffix(&a_source, "suffix", true),
             a_revision(&g_sync_options, "revision", 'r', "Sync to the specified revision. Not supported by all "
                     "syncers. Probably doesn't make sense when not specified with a repository parameter.")
         {
@@ -144,8 +146,8 @@ namespace
             if (r->sync_host_key())
             {
                 auto sync_host(r->sync_host_key()->parse_value());
-                if (sync_host->end() != sync_host->find(cmdline.a_suffix.argument()))
-                    return sync_host->find(cmdline.a_suffix.argument())->second;
+                if (sync_host->end() != sync_host->find(cmdline.a_source.argument()))
+                    return sync_host->find(cmdline.a_source.argument())->second;
             }
 
             return "";
@@ -207,7 +209,7 @@ namespace
             {
                 const std::shared_ptr<Repository> repo(env->fetch_repository(name));
 
-                if (! repo->sync(cmdline.a_suffix.argument(), cmdline.a_revision.argument(), output_manager))
+                if (! repo->sync(cmdline.a_source.argument(), cmdline.a_revision.argument(), output_manager))
                     skipped = true;
                 success = true;
             }
