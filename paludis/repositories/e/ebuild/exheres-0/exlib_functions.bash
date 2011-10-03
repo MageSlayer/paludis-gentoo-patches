@@ -28,6 +28,7 @@ export_exlib_phases()
         fi
         eval "${e}() { type -t ${CURRENT_EXLIB}_${e} >/dev/null || \
             die \"exported phase function ${CURRENT_EXLIB}_${e} does not exist\" ; ${CURRENT_EXLIB}_${e} \"\$@\" ; }"
+        PALUDIS_CHECK_EXPORTED_PHASES+=" ${CURRENT_EXLIB}_${e}"
     done
 }
 
@@ -262,6 +263,12 @@ require()
         for v in ${!v}; do
             has ${v} ${!a_v} || die "${CURRENT_EXLIB}.exlib takes no ${v} parameter"
         done
+
+        # die on exported exlib phases which don't get defined
+        for v in ${PALUDIS_CHECK_EXPORTED_PHASES} ; do
+            type -t ${v} >/dev/null || die "exported phase function ${v} does not exist"
+        done
+        unset PALUDIS_CHECK_EXPORTED_PHASES
 
         export CURRENT_EXLIB="${old_CURRENT_EXLIB}"
         if [[ -n ${CURRENT_EXLIB} ]]; then
