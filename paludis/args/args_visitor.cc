@@ -99,8 +99,6 @@ void ArgsVisitor::visit(StringArg & arg)
         if (! _imp->env_prefix.empty())
             setenv(env_name(arg.long_name()).c_str(), p.c_str(), 1);
     }
-    else if (! arg.can_be_negated())
-        throw BadArgument("--no-" + arg.long_name());
     else
     {
         arg.set_specified(aos_not);
@@ -122,8 +120,6 @@ void ArgsVisitor::visit(SwitchArg & arg)
         if (! _imp->env_prefix.empty())
             setenv(env_name(arg.long_name()).c_str(), "1", 1);
     }
-    else if (! arg.can_be_negated())
-        throw BadArgument("--no-" + arg.long_name());
     else
     {
         arg.set_specified(aos_not);
@@ -134,99 +130,79 @@ void ArgsVisitor::visit(SwitchArg & arg)
 
 void ArgsVisitor::visit(IntegerArg & arg)
 {
-    if (! _imp->no)
+    if (arg.explicitly_specified())
+        Log::get_instance()->message("args.specified_twice", ll_warning, lc_context)
+            <<  "Option '--" << arg.long_name() << "' was specified more than once, but it does not take multiple values";
+
+    arg.set_specified(_imp->specifiedness);
+    std::string param;
+
+    if ((! _imp->remaining_chars.empty()) && (std::string::npos == _imp->remaining_chars.find_first_not_of("0123456789")))
     {
-        if (arg.explicitly_specified())
-            Log::get_instance()->message("args.specified_twice", ll_warning, lc_context)
-                <<  "Option '--" << arg.long_name() << "' was specified more than once, but it does not take multiple values";
-
-        arg.set_specified(_imp->specifiedness);
-        std::string param;
-
-        if ((! _imp->remaining_chars.empty()) && (std::string::npos == _imp->remaining_chars.find_first_not_of("0123456789")))
-        {
-            param = _imp->remaining_chars;
-            _imp->remaining_chars.clear();
-        }
-        else
-            param = get_param(arg);
-
-        try
-        {
-            int a(destringify<int>(param));
-            arg.set_argument(a);
-
-            if (! _imp->env_prefix.empty())
-                setenv(env_name(arg.long_name()).c_str(), stringify(a).c_str(), 1);
-        }
-        catch (const DestringifyError &)
-        {
-            throw BadValue("--" + arg.long_name(), param);
-        }
+        param = _imp->remaining_chars;
+        _imp->remaining_chars.clear();
     }
     else
-        throw BadArgument("--no-" + arg.long_name());
+        param = get_param(arg);
+
+    try
+    {
+        int a(destringify<int>(param));
+        arg.set_argument(a);
+
+        if (! _imp->env_prefix.empty())
+            setenv(env_name(arg.long_name()).c_str(), stringify(a).c_str(), 1);
+    }
+    catch (const DestringifyError &)
+    {
+        throw BadValue("--" + arg.long_name(), param);
+    }
 }
 
 void ArgsVisitor::visit(EnumArg & arg)
 {
-    if (! _imp->no)
+    if (arg.explicitly_specified())
+        Log::get_instance()->message("args.specified_twice", ll_warning, lc_context)
+            <<  "Option '--" << arg.long_name() << "' was specified more than once, but it does not take multiple values";
+
+    arg.set_specified(_imp->specifiedness);
+
+    std::string p;
+    if (_imp->remaining_chars.length() == 1)
     {
-        if (arg.explicitly_specified())
-            Log::get_instance()->message("args.specified_twice", ll_warning, lc_context)
-                <<  "Option '--" << arg.long_name() << "' was specified more than once, but it does not take multiple values";
-
-        arg.set_specified(_imp->specifiedness);
-
-        std::string p;
-        if (_imp->remaining_chars.length() == 1)
-        {
-            p = _imp->remaining_chars;
-            _imp->remaining_chars.clear();
-        }
-        else
-            p = get_param(arg);
-
-        arg.set_argument(p);
-        if (! _imp->env_prefix.empty())
-            setenv(env_name(arg.long_name()).c_str(), p.c_str(), 1);
+        p = _imp->remaining_chars;
+        _imp->remaining_chars.clear();
     }
     else
-        throw BadArgument("--no-" + arg.long_name());
+        p = get_param(arg);
+
+    arg.set_argument(p);
+    if (! _imp->env_prefix.empty())
+        setenv(env_name(arg.long_name()).c_str(), p.c_str(), 1);
 }
 
 void ArgsVisitor::visit(StringSetArg & arg)
 {
-    if (! _imp->no)
-    {
-        arg.set_specified(_imp->specifiedness);
+    arg.set_specified(_imp->specifiedness);
 
-        std::string param = get_param(arg);
-        arg.add_argument(param);
+    std::string param = get_param(arg);
+    arg.add_argument(param);
 
-        if (! _imp->env_prefix.empty())
-            setenv(env_name(arg.long_name()).c_str(), join(arg.begin_args(),
-                        arg.end_args(), " ").c_str(), 1);
-    }
-    else
-        throw BadArgument("--no-" + arg.long_name());
+    if (! _imp->env_prefix.empty())
+        setenv(env_name(arg.long_name()).c_str(), join(arg.begin_args(),
+                    arg.end_args(), " ").c_str(), 1);
 }
 
 void ArgsVisitor::visit(StringSequenceArg & arg)
 {
-    if (! _imp->no)
-    {
-        arg.set_specified(_imp->specifiedness);
+    arg.set_specified(_imp->specifiedness);
 
-        std::string param = get_param(arg);
-        arg.add_argument(param);
+    std::string param = get_param(arg);
+    arg.add_argument(param);
 
-        if (! _imp->env_prefix.empty())
-            setenv(env_name(arg.long_name()).c_str(), join(arg.begin_args(),
-                        arg.end_args(), " ").c_str(), 1);
-    }
-    else
-        throw BadArgument("--no-" + arg.long_name());
+    if (! _imp->env_prefix.empty())
+        setenv(env_name(arg.long_name()).c_str(), join(arg.begin_args(),
+                    arg.end_args(), " ").c_str(), 1);
 }
 
 std::string

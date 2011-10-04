@@ -232,6 +232,8 @@ ArgsHandler::run(
                 it = _imp->longopts.find(arg);
                 if (it == _imp->longopts.end())
                     throw BadArgument("--no-" + arg);
+                if (! it->second->can_be_negated())
+                    throw BadArgument("--no-" + arg);
 
                 std::string remaining_chars;
                 ArgsVisitor visitor(&argit, arge, env_prefix, remaining_chars, true, specifiedness);
