@@ -315,7 +315,12 @@ AsciidocWriter::arg_group_item(const char & short_name, const std::string & long
         _os << "-" << short_name << " , ";
     _os << "--" << long_name;
     if (! negated_long_name.empty())
-        _os << " (" << "--" << negated_long_name << ")";
+    {
+        _os << " (";
+        if (short_name)
+            _os << "+" << short_name << " , ";
+        _os << "--" << negated_long_name << ")";
+    }
     _os << "*::" << endl;
     _os << "        ";
     escape_asciidoc(_os, description);

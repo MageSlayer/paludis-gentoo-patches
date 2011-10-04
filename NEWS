@@ -9,6 +9,10 @@ master:
       version is still supported for compatibility).  The short version is
       still '-s'.
 
+    * Command-line arguments that have a short version and can be negated
+      with '--no-*' can now be negated in short form by using '+' instead
+      of '-', for example '+x' for '--no-execute'.
+
 0.68.0:
     * Licence groups are now supported.
 

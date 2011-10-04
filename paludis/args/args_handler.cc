@@ -246,8 +246,9 @@ ArgsHandler::run(
                 it->second->accept(visitor);
             }
         }
-        else if (arg[0] == '-')
+        else if (arg[0] == '-' || arg[0] == '+')
         {
+            bool negate(arg[0] == '+');
             arg.erase(0, 1);
             for (std::string::iterator c = arg.begin(); c != arg.end(); ++c)
             {
@@ -261,11 +262,11 @@ ArgsHandler::run(
 
                 std::map<char, ArgsOption *>::iterator it = _imp->shortopts.find(*c);
                 if (it == _imp->shortopts.end())
-                {
-                    throw BadArgument(std::string("-") + *c);
-                }
+                    throw BadArgument(std::string(negate ? "+" : "-") + *c);
+                if (negate && ! it->second->can_be_negated())
+                    throw BadArgument(std::string("+") + *c);
 
-                ArgsVisitor visitor(&argit, arge, env_prefix, remaining_chars, false, specifiedness);
+                ArgsVisitor visitor(&argit, arge, env_prefix, remaining_chars, negate, specifiedness);
                 it->second->accept(visitor);
 
                 if (maybe_second_char_used && remaining_chars.empty())

@@ -46,6 +46,7 @@ namespace
         IntegerArg arg_somenum;
         EnumArg arg_enum;
         SwitchArg arg_spider;
+        SwitchArg arg_spy;
 
         ArgsGroup group_three;
         EnumArg arg_other_enum;
@@ -88,6 +89,7 @@ CommandLine::CommandLine() :
     arg_enum(&group_two, "enum", 'e', "One of three",
             EnumArg::EnumArgOptions("one", "Option one")("two", "option two")("three", "option three"), "two"),
     arg_spider(&group_two, "spider", '\0', "A spider?", true),
+    arg_spy(&group_two, "spy", 'y', "A spy?", true),
 
     group_three(main_options_section(), "Group three", "Description of group three"),
     arg_other_enum(&group_three, "something-else", '\0', "Blah.", EnumArg::EnumArgOptions("a", "A")("b", "B")("c", "C"), "b"),
@@ -101,10 +103,10 @@ CommandLine::~CommandLine()
 
 TEST(Args, Simple)
 {
-    const char * args[] = { "program-name", "--other-monkey", "chimp", "--other-baz", "--spider", "--no-spider",
+    const char * args[] = { "program-name", "--other-monkey", "chimp", "--other-baz", "--spider", "--no-spider", "--spy", "+y",
         "-fsne", "blah", "7", "three", "--", "--dummy", "one", "two" };
     CommandLine c1;
-    c1.run(14, args, "", "", "");
+    c1.run(16, args, "", "", "");
     EXPECT_TRUE(c1.arg_foo.specified());
     EXPECT_TRUE(! c1.arg_bar.specified());
     EXPECT_TRUE(c1.arg_baz.specified());
@@ -121,6 +123,7 @@ TEST(Args, Simple)
     EXPECT_TRUE(c1.arg_monkey.specified());
     EXPECT_TRUE(c1.arg_monkey.argument() == "chimp");
     EXPECT_TRUE(! c1.arg_spider.specified());
+    EXPECT_TRUE(! c1.arg_spy.specified());
 
     ASSERT_EQ(3, std::distance(c1.begin_parameters(), c1.end_parameters()));
     EXPECT_EQ("--dummy", *c1.begin_parameters());
@@ -138,8 +141,10 @@ TEST(Args, MissingParameters)
 TEST(Args, NoNo)
 {
     const char *args[] = { "program-name", "--no-num" };
+    const char *args2[] = { "program-name", "+f" };
     CommandLine c1;
     EXPECT_THROW(c1.run(2, args, "", "", ""), BadArgument);
+    EXPECT_THROW(c1.run(2, args2, "", "", ""), BadArgument);
 }
 
 TEST(Args, Removed)
