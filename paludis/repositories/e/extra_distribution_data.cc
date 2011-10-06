@@ -21,6 +21,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/upper_lower.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/distribution-impl.hh>
 
@@ -55,6 +56,7 @@ namespace paludis
                             n::default_eapi_when_unknown() = k->get("default_eapi_when_unknown"),
                             n::default_eapi_when_unspecified() = k->get("default_eapi_when_unspecified"),
                             n::default_layout() = k->get("default_layout"),
+                            n::default_manifest_hashes() = make_set(toupper(k->get("default_manifest_hashes"))),
                             n::default_names_cache() = k->get("default_names_cache"),
                             n::default_profile_eapi() = k->get("default_profile_eapi"),
                             n::default_profile_layout() = k->get("default_profile_layout"),

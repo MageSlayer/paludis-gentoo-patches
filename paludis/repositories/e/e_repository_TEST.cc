@@ -663,6 +663,19 @@ TEST(ERepository, Manifest)
     EXPECT_EQ(contents("e_repository_TEST_dir/repo11/Manifest_correct"), contents("e_repository_TEST_dir/repo11/category/package/Manifest"));
 
     EXPECT_THROW(repo->make_manifest(QualifiedPackageName("category/package-b")), MissingDistfileError);
+
+    std::shared_ptr<Map<std::string, std::string> > keys2(std::make_shared<Map<std::string, std::string>>());
+    keys2->insert("format", "e");
+    keys2->insert("names_cache", "/var/empty");
+    keys2->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo11a"));
+    keys2->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo11a/profiles/profile"));
+    keys2->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
+    std::shared_ptr<ERepository> repo2(std::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
+                    std::bind(from_keys, keys2, std::placeholders::_1))));
+    env.add_repository(1, repo2);
+    repo2->make_manifest(QualifiedPackageName("category/package"));
+
+    EXPECT_EQ(contents("e_repository_TEST_dir/repo11a/Manifest_correct"), contents("e_repository_TEST_dir/repo11a/category/package/Manifest"));
 }
 
 TEST(ERepository, Fetch)

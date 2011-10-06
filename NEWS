@@ -18,6 +18,9 @@ master:
 
     * The SHA-512 and Whirlpool functions are now supported in Manifest files.
 
+    * The hash functions used to generate Manifest files can now be controlled
+      by either the repository itself or user configuration.
+
 0.68.0:
     * Licence groups are now supported.
 

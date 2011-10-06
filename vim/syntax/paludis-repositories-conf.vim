@@ -46,7 +46,7 @@ syn keyword PaludisRepositoriesConfKnownKey contained
             \ location distdir format builddir library sync root yaml_uri
             \ master_repository profiles pkgdir setsdir securitydir newsdir
             \ names_cache sync sync_options eclassdirs cache write_cache
-            \ importance layout use_manifest
+            \ importance layout use_manifest manifest_hashes
             \ binary_uri_prefix binary_keywords_filter binary_destination binary_distdir
             \ eapi_when_unspecified eapi_when_unknown profile_eapi_when_unspecified
             \ name handler config_template config_filename

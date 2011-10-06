@@ -36,6 +36,7 @@ namespace paludis
         typedef Name<struct name_default_eapi_when_unknown> default_eapi_when_unknown;
         typedef Name<struct name_default_eapi_when_unspecified> default_eapi_when_unspecified;
         typedef Name<struct name_default_layout> default_layout;
+        typedef Name<struct name_default_manifest_hashes> default_manifest_hashes;
         typedef Name<struct name_default_names_cache> default_names_cache;
         typedef Name<struct name_default_profile_eapi> default_profile_eapi;
         typedef Name<struct name_default_profile_layout> default_profile_layout;
@@ -52,6 +53,7 @@ namespace paludis
             NamedValue<n::default_eapi_when_unknown, std::string> default_eapi_when_unknown;
             NamedValue<n::default_eapi_when_unspecified, std::string> default_eapi_when_unspecified;
             NamedValue<n::default_layout, std::string> default_layout;
+            NamedValue<n::default_manifest_hashes, std::shared_ptr<const Set<std::string> > > default_manifest_hashes;
             NamedValue<n::default_names_cache, std::string> default_names_cache;
             NamedValue<n::default_profile_eapi, std::string> default_profile_eapi;
             NamedValue<n::default_profile_layout, std::string> default_profile_layout;

@@ -68,6 +68,7 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/deferred_construction_ptr.hh>
 #include <paludis/util/destringify.hh>
+#include <paludis/util/digest_registry.hh>
 #include <paludis/util/extract_host_from_url.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
@@ -86,18 +87,16 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/process.hh>
 #include <paludis/util/return_literal_function.hh>
-#include <paludis/util/rmd160.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/sha1.hh>
-#include <paludis/util/sha256.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/tokeniser.hh>
+#include <paludis/util/upper_lower.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 
@@ -266,6 +265,7 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<std::string> > eapi_when_unspecified_key;
         std::shared_ptr<const MetadataValueKey<std::string> > profile_eapi_when_unspecified_key;
         std::shared_ptr<const MetadataValueKey<std::string> > use_manifest_key;
+        std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > manifest_hashes_key;
         std::shared_ptr<const MetadataSectionKey> info_pkgs_key;
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > info_vars_key;
         std::shared_ptr<const MetadataValueKey<std::string> > binary_destination_key;
@@ -345,6 +345,8 @@ namespace paludis
                     "profile_eapi_when_unspecified", "profile_eapi_when_unspecified", mkt_normal, params.profile_eapi_when_unspecified())),
         use_manifest_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "use_manifest", "use_manifest", mkt_normal, stringify(params.use_manifest()))),
+        manifest_hashes_key(std::make_shared<LiteralMetadataStringSetKey>(
+                    "manifest_hashes", "manifest_hashes", mkt_normal, params.manifest_hashes())),
         info_pkgs_key(layout->info_packages_files()->end() != std::find_if(layout->info_packages_files()->begin(),
                     layout->info_packages_files()->end(),
                     std::bind(std::mem_fn(&FSStat::is_regular_file_or_symlink_to_regular_file),
@@ -576,6 +578,7 @@ ERepository::_add_metadata_keys() const
     if (_imp->master_repositories_key)
         add_metadata_key(_imp->master_repositories_key);
     add_metadata_key(_imp->use_manifest_key);
+    add_metadata_key(_imp->manifest_hashes_key);
     if (_imp->info_pkgs_key)
         add_metadata_key(_imp->info_pkgs_key);
     if (_imp->info_vars_key)
@@ -1019,6 +1022,11 @@ ERepository::some_ids_might_not_be_masked() const
 void
 ERepository::make_manifest(const QualifiedPackageName & qpn)
 {
+    for (Set<std::string>::ConstIterator it(_imp->params.manifest_hashes()->begin()),
+             it_end(_imp->params.manifest_hashes()->end()); it_end != it; ++it)
+        if (! DigestRegistry::get_instance()->get(*it))
+            throw ERepositoryConfigurationError("Manifest hash function '" + *it + "' is not supported");
+
     FSPath package_dir = _imp->layout->package_directory(qpn);
 
     std::vector<std::pair<std::pair<std::string, std::string>, std::string> > lines;
@@ -1038,19 +1046,15 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
         SafeIFStream file_stream(file);
 
-        RMD160 rmd160sum(file_stream);
-        std::string line(file_type + " " + filename + " "
-            + stringify(file.stat().file_size()) + " RMD160 " + rmd160sum.hexsum());
+        std::string line(file_type + " " + filename + " " + stringify(file.stat().file_size()));
 
-        file_stream.clear();
-        file_stream.seekg(0, std::ios::beg);
-        SHA1 sha1sum(file_stream);
-        line += " SHA1 " + sha1sum.hexsum();
-
-        file_stream.clear();
-        file_stream.seekg(0, std::ios::beg);
-        SHA256 sha256sum(file_stream);
-        line += " SHA256 " + sha256sum.hexsum();
+        for (Set<std::string>::ConstIterator it(_imp->params.manifest_hashes()->begin()),
+                 it_end(_imp->params.manifest_hashes()->end()); it_end != it; ++it)
+        {
+            file_stream.clear();
+            file_stream.seekg(0, std::ios::beg);
+            line += " " + *it + " " + DigestRegistry::get_instance()->get(*it)(file_stream);
+        }
 
         lines.push_back(std::make_pair(std::make_pair(file_type, filename), line));
     }
@@ -1087,10 +1091,11 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
             MemoisedHashes * hashes = MemoisedHashes::get_instance();
 
-            std::string line("DIST " + f.basename() + " " + stringify(f_stat.file_size())
-                + " RMD160 " + hashes->get("RMD160", f, file_stream)
-                + " SHA1 " + hashes->get("SHA1", f, file_stream)
-                + " SHA256 " + hashes->get("SHA256", f, file_stream));
+            std::string line("DIST " + f.basename() + " " + stringify(f_stat.file_size()));
+
+            for (Set<std::string>::ConstIterator it(_imp->params.manifest_hashes()->begin()),
+                     it_end(_imp->params.manifest_hashes()->end()); it_end != it; ++it)
+                line += " " + *it + " " + hashes->get(*it, f, file_stream);
 
             lines.push_back(std::make_pair(std::make_pair("DIST", f.basename()), line));
         }
@@ -1455,6 +1460,19 @@ ERepository::repository_factory_create(
         use_manifest = destringify<UseManifest>(f("use_manifest"));
     }
 
+    std::shared_ptr<Set<std::string> > manifest_hashes_writable(std::make_shared<Set<std::string> >());
+    tokenise_whitespace(toupper(f("manifest_hashes")), manifest_hashes_writable->inserter());
+    if (manifest_hashes_writable->empty() && layout_conf)
+        // manifest-hashes with a hyphen, not an underscore (grrr)
+        tokenise_whitespace(toupper(layout_conf->get("manifest-hashes")), manifest_hashes_writable->inserter());
+    std::shared_ptr<const Set<std::string> > manifest_hashes;
+    if (! manifest_hashes_writable->empty())
+        manifest_hashes = manifest_hashes_writable;
+    else
+        manifest_hashes = EExtraDistributionData::get_instance()->data_from_distribution(
+                    *DistributionData::get_instance()->distribution_from_string(
+                        env->distribution()))->default_manifest_hashes();
+
     bool binary_destination(false);
 
     if (! f("binary_destination").empty())
@@ -1493,6 +1511,7 @@ ERepository::repository_factory_create(
                 n::ignore_deprecated_profiles() = ignore_deprecated_profiles,
                 n::layout() = layout,
                 n::location() = FSPath(location).realpath_if_exists(),
+                n::manifest_hashes() = manifest_hashes,
                 n::master_repositories() = master_repositories,
                 n::names_cache() = FSPath(names_cache).realpath_if_exists(),
                 n::newsdir() = FSPath(newsdir).realpath_if_exists(),

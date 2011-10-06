@@ -23,6 +23,7 @@
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/map-fwd.hh>
+#include <paludis/util/set-fwd.hh>
 #include <memory>
 
 /** \file
@@ -57,6 +58,7 @@ namespace paludis
         typedef Name<struct name_ignore_deprecated_profiles> ignore_deprecated_profiles;
         typedef Name<struct name_layout> layout;
         typedef Name<struct name_location> location;
+        typedef Name<struct name_manifest_hashes> manifest_hashes;
         typedef Name<struct name_master_repositories> master_repositories;
         typedef Name<struct name_names_cache> names_cache;
         typedef Name<struct name_newsdir> newsdir;
@@ -96,6 +98,7 @@ namespace paludis
             NamedValue<n::ignore_deprecated_profiles, bool> ignore_deprecated_profiles;
             NamedValue<n::layout, std::string> layout;
             NamedValue<n::location, FSPath> location;
+            NamedValue<n::manifest_hashes, std::shared_ptr<const Set<std::string> > > manifest_hashes;
             NamedValue<n::master_repositories, std::shared_ptr<const ERepositorySequence> > master_repositories;
             NamedValue<n::names_cache, FSPath> names_cache;
             NamedValue<n::newsdir, FSPath> newsdir;
