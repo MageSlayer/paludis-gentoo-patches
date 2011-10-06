@@ -19,6 +19,7 @@
 
 #include "sha256.hh"
 #include <paludis/util/attributes.hh>
+#include <paludis/util/digest_registry.hh>
 #include <istream>
 #include <iomanip>
 #include <sstream>
@@ -225,4 +226,9 @@ paludis::SHA256::_k[64] = {
     0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
     0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
 };
+
+namespace
+{
+    DigestRegistry::Registration<SHA256> registration("SHA256");
+}
 

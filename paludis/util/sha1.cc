@@ -21,6 +21,7 @@
 
 #include <paludis/util/sha1.hh>
 #include <paludis/util/byte_swap.hh>
+#include <paludis/util/digest_registry.hh>
 #include <sstream>
 #include <istream>
 #include <iomanip>
@@ -207,5 +208,10 @@ SHA1::hexsum() const
     result << std::setw(8) << h3;
     result << std::setw(8) << h4;
     return result.str();
+}
+
+namespace
+{
+    DigestRegistry::Registration<SHA1> registration("SHA1");
 }
 

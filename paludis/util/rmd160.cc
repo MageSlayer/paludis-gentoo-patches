@@ -19,6 +19,7 @@
 
 #include "rmd160.hh"
 #include <paludis/util/attributes.hh>
+#include <paludis/util/digest_registry.hh>
 #include <sstream>
 #include <istream>
 #include <iomanip>
@@ -228,4 +229,9 @@ const uint32_t RMD160::_k[5] = {
 const uint32_t RMD160::_kp[5] = {
     0x50a28be6, 0x5c4dd124, 0x6d703ef3, 0x7a6d76e9, 0x00000000
 };
+
+namespace
+{
+    DigestRegistry::Registration<RMD160> registration("RMD160");
+}
 

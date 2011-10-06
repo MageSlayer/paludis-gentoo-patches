@@ -18,6 +18,7 @@
  */
 
 #include <paludis/util/md5.hh>
+#include <paludis/util/digest_registry.hh>
 #include <sstream>
 #include <istream>
 #include <iomanip>
@@ -236,4 +237,9 @@ const uint32_t MD5::_t[64] = {
     0x6fa87e4f, 0xfe2ce6e0, 0xa3014314, 0x4e0811a1,
     0xf7537e82, 0xbd3af235, 0x2ad7d2bb, 0xeb86d391
 };
+
+namespace
+{
+    DigestRegistry::Registration<MD5> registration("MD5");
+}
 
