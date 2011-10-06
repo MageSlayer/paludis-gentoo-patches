@@ -24,6 +24,7 @@
 #include <paludis/util/singleton.hh>
 #include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/safe_ifstream-fwd.hh>
+#include <string>
 
 namespace paludis
 {
@@ -37,8 +38,7 @@ namespace paludis
             public:
                 Pimp<MemoisedHashes> _imp;
 
-                template <typename H_>
-                const std::string get(const FSPath & file, SafeIFStream & stream) const;
+                const std::string get(const std::string & algo, const FSPath & file, SafeIFStream & stream) const;
 
             private:
                 MemoisedHashes();

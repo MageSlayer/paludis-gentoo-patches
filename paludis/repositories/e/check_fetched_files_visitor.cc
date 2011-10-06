@@ -252,7 +252,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSPath & distfile)
 
             if (! m->rmd160().empty())
             {
-                std::string rmd160hexsum(hashes->get<RMD160>(distfile, file_stream));
+                std::string rmd160hexsum(hashes->get("RMD160", distfile, file_stream));
 
                 if (rmd160hexsum != m->rmd160())
                 {
@@ -273,7 +273,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSPath & distfile)
 
             if (! m->sha1().empty())
             {
-                std::string sha1hexsum(hashes->get<SHA1>(distfile, file_stream));
+                std::string sha1hexsum(hashes->get("SHA1", distfile, file_stream));
 
                 if (sha1hexsum != m->sha1())
                 {
@@ -294,7 +294,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSPath & distfile)
 
             if (! m->sha256().empty())
             {
-                std::string sha256hexsum(hashes->get<SHA256>(distfile, file_stream));
+                std::string sha256hexsum(hashes->get("SHA256", distfile, file_stream));
 
                 if (sha256hexsum != m->sha256())
                 {
@@ -315,7 +315,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSPath & distfile)
 
             if (! m->md5().empty())
             {
-                std::string md5hexsum(hashes->get<MD5>(distfile, file_stream));
+                std::string md5hexsum(hashes->get("MD5", distfile, file_stream));
 
                 if (md5hexsum != m->md5())
                 {

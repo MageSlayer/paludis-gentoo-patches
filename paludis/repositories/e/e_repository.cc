@@ -1091,9 +1091,9 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
             manifest << "DIST " << f.basename() << " "
                 << f_stat.file_size()
-                << " RMD160 " << hashes->get<RMD160>(f, file_stream)
-                << " SHA1 " << hashes->get<SHA1>(f, file_stream)
-                << " SHA256 " << hashes->get<SHA256>(f, file_stream)
+                << " RMD160 " << hashes->get("RMD160", f, file_stream)
+                << " SHA1 " << hashes->get("SHA1", f, file_stream)
+                << " SHA256 " << hashes->get("SHA256", f, file_stream)
                 << std::endl;
         }
     }

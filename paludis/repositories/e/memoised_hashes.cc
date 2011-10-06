@@ -23,10 +23,7 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/safe_ifstream.hh>
-#include <paludis/util/rmd160.hh>
-#include <paludis/util/sha1.hh>
-#include <paludis/util/sha256.hh>
-#include <paludis/util/md5.hh>
+#include <paludis/util/digest_registry.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/fs_stat.hh>
@@ -38,7 +35,7 @@ using namespace paludis::erepository;
 
 namespace paludis
 {
-    typedef std::map<std::pair<std::string, int>, std::pair<Timestamp, std::string> > HashesMap;
+    typedef std::map<std::pair<std::string, std::string>, std::pair<Timestamp, std::string> > HashesMap;
 
     template <>
     struct Imp<MemoisedHashes>
@@ -61,45 +58,10 @@ MemoisedHashes::~MemoisedHashes()
 {
 }
 
-namespace
-{
-    template <typename>
-    struct HashIDs;
-
-    template <>
-    struct HashIDs<RMD160>
-    {
-        static const int id;
-    };
-    const int HashIDs<RMD160>::id = 0;
-
-    template <>
-    struct HashIDs<SHA1>
-    {
-        static const int id;
-    };
-    const int HashIDs<SHA1>::id = 1;
-
-    template <>
-    struct HashIDs<SHA256>
-    {
-        static const int id;
-    };
-    const int HashIDs<SHA256>::id = 2;
-
-    template <>
-    struct HashIDs<MD5>
-    {
-        static const int id;
-    };
-    const int HashIDs<MD5>::id = 3;
-}
-
-template <typename H_>
 const std::string
-MemoisedHashes::get(const FSPath & file, SafeIFStream & stream) const
+MemoisedHashes::get(const std::string & algo, const FSPath & file, SafeIFStream & stream) const
 {
-    std::pair<std::string, int> key(stringify(file), HashIDs<H_>::id);
+    std::pair<std::string, std::string> key(stringify(file), algo);
     Timestamp mtime(file.stat().mtim());
 
     Lock l(_imp->mutex);
@@ -108,8 +70,7 @@ MemoisedHashes::get(const FSPath & file, SafeIFStream & stream) const
 
     if (i == _imp->hashes.end() || i->second.first != mtime)
     {
-        H_ hash(stream);
-        std::pair<Timestamp, std::string> value(std::make_pair(mtime, hash.hexsum()));
+        std::pair<Timestamp, std::string> value(std::make_pair(mtime, DigestRegistry::get_instance()->get(algo)(stream)));
         stream.clear();
         stream.seekg(0, std::ios::beg);
 
@@ -121,11 +82,6 @@ MemoisedHashes::get(const FSPath & file, SafeIFStream & stream) const
 
     return i->second.second;
 }
-
-template const std::string MemoisedHashes::get<RMD160>(const FSPath &, SafeIFStream &) const;
-template const std::string MemoisedHashes::get<SHA1>(const FSPath &, SafeIFStream &) const;
-template const std::string MemoisedHashes::get<SHA256>(const FSPath &, SafeIFStream &) const;
-template const std::string MemoisedHashes::get<MD5>(const FSPath &, SafeIFStream &) const;
 
 namespace paludis
 {
