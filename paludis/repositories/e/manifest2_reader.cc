@@ -30,6 +30,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/map.hh>
 
 #include <list>
 #include <map>
@@ -80,8 +81,9 @@ Manifest2Reader::Manifest2Reader(const FSPath & f) :
         tokenise_whitespace((*l), create_inserter<std::string>(std::back_inserter(tokens)));
         std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end());
 
-        std::string type, name, sha1, sha256, rmd160, md5;
+        std::string type, name;
         off_t size;
+        std::shared_ptr<Map<std::string, std::string> > hashes(std::make_shared<Map<std::string, std::string> >());
 
         if (t_end == t)
             continue;
@@ -114,25 +116,12 @@ Manifest2Reader::Manifest2Reader(const FSPath & f) :
             if (t_end == t)
                 throw Manifest2Error("no checksum for: " + checksum_type);
 
-            if ("SHA1" == checksum_type)
-                sha1 = (*t);
-            else if ("SHA256" == checksum_type)
-                sha256 = (*t);
-            else if ("RMD160" == checksum_type)
-                rmd160 = (*t);
-            else if ("MD5" == checksum_type)
-                md5 = (*t);
-            else
-                Log::get_instance()->message("e.manifest.unknown_checksum", ll_debug, lc_no_context)
-                    << "Skipping unknown checksum type " << checksum_type;
+            hashes->insert(checksum_type, *t);
         }
 
         _imp->entries.insert(std::make_pair(std::make_pair(type,name), make_named_values<Manifest2Entry>(
-                        n::md5() = md5,
+                        n::hashes() = hashes,
                         n::name() = name,
-                        n::rmd160() = rmd160,
-                        n::sha1() = sha1,
-                        n::sha256() = sha256,
                         n::size() = size,
                         n::type() = type
                         )));

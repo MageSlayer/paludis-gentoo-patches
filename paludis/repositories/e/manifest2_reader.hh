@@ -23,6 +23,7 @@
 #include <paludis/action.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/map-fwd.hh>
 #include <string>
 
 /** \file
@@ -35,11 +36,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct name_md5> md5;
+        typedef Name<struct name_hashes> hashes;
         typedef Name<struct name_name> name;
-        typedef Name<struct name_rmd160> rmd160;
-        typedef Name<struct name_sha1> sha1;
-        typedef Name<struct name_sha256> sha256;
         typedef Name<struct name_size> size;
         typedef Name<struct name_type> type;
     }
@@ -48,11 +46,8 @@ namespace paludis
     {
         struct Manifest2Entry
         {
-            NamedValue<n::md5, std::string> md5;
+            NamedValue<n::hashes, std::shared_ptr<const Map<std::string, std::string> > > hashes;
             NamedValue<n::name, std::string> name;
-            NamedValue<n::rmd160, std::string> rmd160;
-            NamedValue<n::sha1, std::string> sha1;
-            NamedValue<n::sha256, std::string> sha256;
             NamedValue<n::size, off_t> size;
             NamedValue<n::type, std::string> type;
         };

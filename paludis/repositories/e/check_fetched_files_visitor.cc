@@ -36,12 +36,10 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/rmd160.hh>
-#include <paludis/util/sha1.hh>
-#include <paludis/util/sha256.hh>
-#include <paludis/util/md5.hh>
+#include <paludis/util/digest_registry.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
@@ -216,7 +214,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSPath & distfile)
     if (manifest_ignore == _imp->use_manifest)
         return true;
 
-    bool found(false);
+    bool found(false), hashed(false);
 
     for (Manifest2Reader::ConstIterator m(_imp->m2r->begin()), m_end(_imp->m2r->end()) ;
         m != m_end ; ++m)
@@ -250,88 +248,35 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSPath & distfile)
 
             MemoisedHashes * hashes = MemoisedHashes::get_instance();
 
-            if (! m->rmd160().empty())
+            for (Map<std::string, std::string>::ConstIterator it(m->hashes()->begin()),
+                     it_end(m->hashes()->end()); it_end != it; ++it)
             {
-                std::string rmd160hexsum(hashes->get("RMD160", distfile, file_stream));
-
-                if (rmd160hexsum != m->rmd160())
+                if (! DigestRegistry::get_instance()->get(it->first))
                 {
-                    Log::get_instance()->message("e.manifest.rmd160.failure", ll_debug, lc_context)
-                        << "Malformed Manifest: failed RMD160 checksum";
-                    _imp->output_manager->stdout_stream() << "failed RMD160";
+                    Log::get_instance()->message("e.manifest.checksum.unsupported", ll_warning, lc_context)
+                        << "Manifest hash function '" + it->first + "' is not supported";
+                    continue;
+                }
+
+                std::string hexsum(hashes->get(it->first, distfile, file_stream));
+
+                if (hexsum != it->second)
+                {
+                    Log::get_instance()->message("e.manifest.checksum.failure", ll_debug, lc_context)
+                        << "Malformed Manifest: failed " << it->first << " checksum";
+                    _imp->output_manager->stdout_stream() << "failed " << it->first;
                     _imp->failures->push_back(make_named_values<FetchActionFailure>(
                             n::failed_automatic_fetching() = false,
-                            n::failed_integrity_checks() = "Failed RMD160 checksum",
+                            n::failed_integrity_checks() = "Failed " + it->first + " checksum",
                             n::requires_manual_fetching() = false,
                             n::target_file() = stringify(distfile.basename())
                             ));
                     return false;
                 }
-                Log::get_instance()->message("e.manifest.rmd160.result", ll_debug, lc_context)
-                    << "Actual RMD160 = " << rmd160hexsum;
-            }
 
-            if (! m->sha1().empty())
-            {
-                std::string sha1hexsum(hashes->get("SHA1", distfile, file_stream));
-
-                if (sha1hexsum != m->sha1())
-                {
-                    Log::get_instance()->message("e.manifest.sha1.failure", ll_debug, lc_context)
-                        << "Malformed Manifest: failed SHA1 checksum";
-                    _imp->output_manager->stdout_stream() << "failed SHA1";
-                    _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                            n::failed_automatic_fetching() = false,
-                            n::failed_integrity_checks() = "Failed SHA1 checksum",
-                            n::requires_manual_fetching() = false,
-                            n::target_file() = stringify(distfile.basename())
-                            ));
-                    return false;
-                }
-                Log::get_instance()->message("e.manifest.sha1.result", ll_debug, lc_context)
-                    << "Actual SHA1 = " << sha1hexsum;
-            }
-
-            if (! m->sha256().empty())
-            {
-                std::string sha256hexsum(hashes->get("SHA256", distfile, file_stream));
-
-                if (sha256hexsum != m->sha256())
-                {
-                    Log::get_instance()->message("e.manifest.sha256.failure", ll_debug, lc_context)
-                        << "Malformed Manifest: failed SHA256 checksum";
-                    _imp->output_manager->stdout_stream() << "failed SHA256";
-                    _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                                n::failed_automatic_fetching() = false,
-                                n::failed_integrity_checks() = "Failed SHA256 checksum",
-                                n::requires_manual_fetching() = false,
-                                n::target_file() = stringify(distfile.basename())
-                            ));
-                    return false;
-                }
-                Log::get_instance()->message("e.manifest.sha256.result", ll_debug, lc_context)
-                    << "Actual SHA256 = " << sha256hexsum;
-            }
-
-            if (! m->md5().empty())
-            {
-                std::string md5hexsum(hashes->get("MD5", distfile, file_stream));
-
-                if (md5hexsum != m->md5())
-                {
-                    Log::get_instance()->message("e.manifest.md5.failure", ll_debug, lc_context)
-                        << "Malformed Manifest: failed MD5 checksum";
-                    _imp->output_manager->stdout_stream() << "failed MD5";
-                    _imp->failures->push_back(make_named_values<FetchActionFailure>(
-                            n::failed_automatic_fetching() = false,
-                            n::failed_integrity_checks() = "Failed MD5 checksum",
-                            n::requires_manual_fetching() = false,
-                            n::target_file() = stringify(distfile.basename())
-                            ));
-                    return false;
-                }
-                Log::get_instance()->message("e.manifest.md5.result", ll_debug, lc_context)
-                    << "Actual MD5 = " << md5hexsum;
+                Log::get_instance()->message("e.manifest.checksum.result", ll_debug, lc_context)
+                    << "Actual " << it->first << " = " << hexsum;
+                hashed = true;
             }
         }
         catch (const SafeIFStreamError &)
@@ -353,6 +298,18 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSPath & distfile)
         _imp->failures->push_back(make_named_values<FetchActionFailure>(
                     n::failed_automatic_fetching() = false,
                     n::failed_integrity_checks() = "Not in Manifest",
+                    n::requires_manual_fetching() = false,
+                    n::target_file() = stringify(distfile.basename())
+                ));
+        return false;
+    }
+
+    if (found && ! hashed)
+    {
+        _imp->output_manager->stdout_stream() << "no supported hashes in Manifest";
+        _imp->failures->push_back(make_named_values<FetchActionFailure>(
+                    n::failed_automatic_fetching() = false,
+                    n::failed_integrity_checks() = "No supported hashes in Manifest",
                     n::requires_manual_fetching() = false,
                     n::target_file() = stringify(distfile.basename())
                 ));
