@@ -17,8 +17,6 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include "config.h"
-
 #include <paludis/util/sha1.hh>
 #include <paludis/util/byte_swap.hh>
 #include <paludis/util/digest_registry.hh>
@@ -35,28 +33,6 @@ using namespace paludis;
 
 namespace
 {
-#ifdef PALUDIS_BIG_ENDIAN
-    inline uint32_t from_bigendian(uint32_t x)
-    {
-        return x;
-    }
-
-    inline uint32_t to_bigendian(uint32_t x)
-    {
-        return x;
-    }
-#else
-    inline uint32_t from_bigendian(uint32_t x)
-    {
-        return byte_swap(x);
-    }
-
-    inline uint32_t to_bigendian(uint32_t x)
-    {
-        return byte_swap(x);
-    }
-#endif
-
     template <int n_>
     inline uint32_t s(uint32_t x)
     {
@@ -137,7 +113,7 @@ SHA1::process_block(uint32_t * w)
 {
     uint32_t a(h0), b(h1), c(h2), d(h3), e(h4);
 
-    std::transform(&w[0], &w[16], &w[0], from_bigendian);
+    std::transform(&w[0], &w[16], &w[0], from_bigendian<uint32_t>);
 
     for (int t = 16; t < 80; ++t)
         w[t] = s<1>(w[t - 3] ^ w[t - 8] ^ w[t - 14] ^ w[t - 16]);
@@ -189,8 +165,8 @@ SHA1::SHA1(std::istream & s) :
             }
 
             std::fill(&block.m[block_size], &block.m[56], 0);
-            block.w[14] = to_bigendian((size >> 32) & 0xFFFFFFFFU);
-            block.w[15] = to_bigendian(size & 0xFFFFFFFFU);
+            block.w[14] = to_bigendian<uint32_t>((size >> 32) & 0xFFFFFFFFU);
+            block.w[15] = to_bigendian<uint32_t>(size & 0xFFFFFFFFU);
         }
 
         process_block(block.w);

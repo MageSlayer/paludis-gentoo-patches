@@ -75,6 +75,36 @@ namespace paludis
     {
         return byte_swap_internals::ByteSwap<sizeof(T_), T_>::swap(x);
     }
+
+#ifdef PALUDIS_BIG_ENDIAN
+    template <typename T_>
+    inline T_
+    from_bigendian(T_ x)
+    {
+        return x;
+    }
+
+    template <typename T_>
+    inline T_
+    to_bigendian(T_ x)
+    {
+        return x;
+    }
+#else
+    template <typename T_>
+    inline T_
+    from_bigendian(T_ x)
+    {
+        return byte_swap(x);
+    }
+
+    template <typename T_>
+    inline T_
+    to_bigendian(T_ x)
+    {
+        return byte_swap(x);
+    }
+#endif
 }
 
 #endif
