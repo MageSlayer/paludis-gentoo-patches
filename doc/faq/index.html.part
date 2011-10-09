@@ -71,7 +71,7 @@ functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
     <li><a href="different.html#features">No <code>FEATURES</code> Equivalent</a></li>
     <li><a href="different.html#mkdir">No Automatic Directory Creation</a></li>
     <li><a href="different.html#revdep_rebuild">Revdep-rebuild Equivalent</a></li>
-    <li><a href="different.html#playman">No Layman (and how Playman is different)</a></li>
+    <li><a href="different.html#layman">Alternatives to Layman</a></li>
     <li><a href="different.html#package_provided">No <code>package.provided</code> file</a></li>
 </ul>
 
