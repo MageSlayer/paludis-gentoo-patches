@@ -135,6 +135,13 @@ paludis::erepository::parse_annotations(
                 role = dsar_general_defined_in;
         }
 
+        /* licences */
+        if (dsar_none == role)
+        {
+            if (key == eapi.supported()->annotations()->licence_last_checked())
+                role = dsar_licence_last_checked;
+        }
+
         if (dsar_none == role)
             Log::get_instance()->message("e.dep_parser.unknown_annotation", ll_qa, lc_context)
                 << "Unknown annotation '" << key << "' = '" << k->second << "'";

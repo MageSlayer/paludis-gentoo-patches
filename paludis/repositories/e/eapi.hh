@@ -148,6 +148,7 @@ namespace paludis
         typedef Name<struct name_iuse_effective> iuse_effective;
         typedef Name<struct name_iuse_flag_parse_options> iuse_flag_parse_options;
         typedef Name<struct name_keywords> keywords;
+        typedef Name<struct name_licence_last_checked> licence_last_checked;
         typedef Name<struct name_license> license;
         typedef Name<struct name_load_modules> load_modules;
         typedef Name<struct name_long_description> long_description;
@@ -490,6 +491,7 @@ namespace paludis
             NamedValue<n::general_note, std::string> general_note;
             NamedValue<n::general_token, std::string> general_token;
             NamedValue<n::general_url, std::string> general_url;
+            NamedValue<n::licence_last_checked, std::string> licence_last_checked;
             NamedValue<n::myoptions_number_selected, std::string> myoptions_number_selected;
             NamedValue<n::myoptions_number_selected_at_least_one, std::string> myoptions_number_selected_at_least_one;
             NamedValue<n::myoptions_number_selected_at_most_one, std::string> myoptions_number_selected_at_most_one;

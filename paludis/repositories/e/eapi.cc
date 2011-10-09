@@ -262,6 +262,7 @@ namespace
                     n::general_note() = k.get("annotations_general_note"),
                     n::general_token() = k.get("annotations_general_token"),
                     n::general_url() = k.get("annotations_general_url"),
+                    n::licence_last_checked() = k.get("annotations_licence_last_checked"),
                     n::myoptions_number_selected() = k.get("annotations_myoptions_number_selected"),
                     n::myoptions_number_selected_at_least_one() = k.get("annotations_myoptions_number_selected_at_least_one"),
                     n::myoptions_number_selected_at_most_one() = k.get("annotations_myoptions_number_selected_at_most_one"),
