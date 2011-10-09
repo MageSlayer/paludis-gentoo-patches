@@ -68,6 +68,7 @@
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/upper_lower.hh>
 
 #include <set>
 #include <iterator>
@@ -387,9 +388,7 @@ EbuildID::need_non_xml_keys_added() const
                     x_end(e_repo->profile()->use_expand_implicit()->end()) ;
                     x != x_end ; ++x)
             {
-                std::string lower_x;
-                std::transform(x->begin(), x->end(), std::back_inserter(lower_x), &::tolower);
-
+                std::string lower_x(tolower(*x));
                 bool prefixed(use_expand->end() != use_expand->find(*x));
                 bool unprefixed(use_expand_unprefixed->end() != use_expand_unprefixed->find(*x));
 

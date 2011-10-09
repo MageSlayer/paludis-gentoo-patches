@@ -43,6 +43,7 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/env_var_names.hh>
 #include <paludis/util/join.hh>
+#include <paludis/util/upper_lower.hh>
 
 #include <paludis/standard_output_manager.hh>
 #include <paludis/hooker.hh>
@@ -65,7 +66,6 @@
 #include <vector>
 #include <list>
 
-#include <ctype.h>
 #include <sys/types.h>
 #include <grp.h>
 #include <pwd.h>
@@ -303,9 +303,7 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     for (std::set<std::string>::const_iterator i(_imp->use_expand.begin()), i_end(_imp->use_expand.end()) ;
             i != i_end ; ++i)
     {
-        std::string lower_i;
-        std::transform(i->begin(), i->end(), std::back_inserter(lower_i), ::tolower);
-
+        std::string lower_i(tolower(*i));
         std::set<std::string> values;
         tokenise_whitespace(_imp->vars->get(*i), std::inserter(values, values.begin()));
         for (std::set<std::string>::const_iterator v(values.begin()), v_end(values.end()) ;

@@ -39,6 +39,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/upper_lower.hh>
 
 #include <paludis/environment.hh>
 #include <paludis/choice.hh>
@@ -115,8 +116,7 @@ namespace
 
         bool operator() (const std::string & s) const
         {
-            std::string lower_s;
-            std::transform(s.begin(), s.end(), std::back_inserter(lower_s), &::tolower);
+            std::string lower_s(tolower(s));
             lower_s.append(delim);
             return (0 == flag.value().compare(0, lower_s.length(), lower_s, 0, lower_s.length()));
         }
@@ -310,8 +310,7 @@ EChoicesKey::populate_myoptions() const
         {
             Context local_local_context("When using raw_use_expand_key value '" + *u + "' to populate choices:");
 
-            std::string lower_u;
-            std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
+            std::string lower_u(tolower(*u));
             std::shared_ptr<Choice> exp(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                             n::consider_added_or_changed() = true,
                             n::contains_every_value() = false,
@@ -504,8 +503,7 @@ EChoicesKey::populate_iuse(const std::shared_ptr<const Map<ChoiceNameWithPrefix,
         for (Set<std::string>::ConstIterator u(raw_use_expand->begin()), u_end(raw_use_expand->end()) ;
                 u != u_end ; ++u)
         {
-            std::string lower_u;
-            std::transform(u->begin(), u->end(), std::back_inserter(lower_u), &::tolower);
+            std::string lower_u(tolower(*u));
             std::shared_ptr<Choice> exp(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                             n::consider_added_or_changed() = true,
                             n::contains_every_value() = ! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse(),

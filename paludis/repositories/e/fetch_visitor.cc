@@ -42,6 +42,7 @@
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/env_var_names.hh>
+#include <paludis/util/upper_lower.hh>
 
 #include <algorithm>
 #include <list>
@@ -148,9 +149,7 @@ namespace
 {
     FSPath make_fetcher(const FSPath & d, const std::string & x)
     {
-        std::string lower_x;
-        std::transform(x.begin(), x.end(), std::back_inserter(lower_x), &::tolower);
-        return d / ("do" + lower_x);
+        return d / ("do" + tolower(x));
     }
 }
 

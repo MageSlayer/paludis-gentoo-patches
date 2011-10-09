@@ -22,6 +22,7 @@
 
 #include <python/mutex.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/upper_lower.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/named_value-fwd.hh>
 #include <boost/python.hpp>
@@ -97,9 +98,7 @@ namespace paludis
             boost::python::enum_<E_> enum_(name.c_str());
             for (E_ e(static_cast<E_>(0)); e != e_last ; e = static_cast<E_>(static_cast<int>(e) + 1))
             {
-                const std::string e_name_low = stringify(e);
-                std::string e_name_up;
-                std::transform(e_name_low.begin(), e_name_low.end(), std::back_inserter(e_name_up), &::toupper);
+                std::string e_name_up(toupper(stringify(e)));
                 enum_.value(e_name_up.c_str(), e);
                 doc += "\n\t" + e_name_up;
             }

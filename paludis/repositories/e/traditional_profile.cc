@@ -44,6 +44,7 @@
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_error.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/upper_lower.hh>
 
 #include <paludis/choice.hh>
 #include <paludis/environment.hh>
@@ -60,7 +61,6 @@
 #include <vector>
 
 #include <strings.h>
-#include <ctype.h>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -422,9 +422,7 @@ namespace
         for (Set<std::string>::ConstIterator x(_imp->use_expand->begin()), x_end(_imp->use_expand->end()) ;
                 x != x_end ; ++x)
         {
-            std::string lower_x;
-            std::transform(x->begin(), x->end(), std::back_inserter(lower_x), &::tolower);
-
+            std::string lower_x(tolower(*x));
             std::list<std::string> uses;
             tokenise_whitespace(_imp->environment_variables[stringify(*x)], std::back_inserter(uses));
             for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
@@ -440,11 +438,7 @@ namespace
 
         for (Set<std::string>::ConstIterator x(_imp->use_expand->begin()), x_end(_imp->use_expand->end()) ;
                 x != x_end ; ++x)
-        {
-            std::string lower_x;
-            std::transform(x->begin(), x->end(), std::back_inserter(lower_x), &::tolower);
-            _imp->known_choice_value_names.insert(std::make_pair(lower_x, std::make_shared<Set<UnprefixedChoiceName>>()));
-        }
+            _imp->known_choice_value_names.insert(std::make_pair(tolower(*x), std::make_shared<Set<UnprefixedChoiceName>>()));
 
         for (std::set<std::pair<ChoicePrefixName, UnprefixedChoiceName> >::const_iterator u(_imp->use.begin()), u_end(_imp->use.end()) ;
                 u != u_end ; ++u)
@@ -932,8 +926,7 @@ TraditionalProfile::known_choice_value_names(
     if (_imp->known_choice_value_names_for_separator.end() == it)
         it = _imp->known_choice_value_names_for_separator.insert(std::make_pair(separator, KnownMap())).first;
 
-    std::string lower_x;
-    std::transform(choice->raw_name().begin(), choice->raw_name().end(), std::back_inserter(lower_x), &::tolower);
+    std::string lower_x(tolower(choice->raw_name()));
     KnownMap::const_iterator it2(it->second.find(lower_x));
     if (it->second.end() == it2)
     {

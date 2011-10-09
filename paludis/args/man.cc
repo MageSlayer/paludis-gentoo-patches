@@ -19,13 +19,13 @@
  */
 
 #include "man.hh"
+#include <paludis/util/upper_lower.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <functional>
 #include <ostream>
 #include <sstream>
 #include <algorithm>
-#include <ctype.h>
 
 using namespace paludis;
 using namespace paludis::args;
@@ -291,9 +291,7 @@ AsciidocWriter::end_description()
 void
 AsciidocWriter::start_options(const std::string & s)
 {
-    std::string upper_s;
-    std::transform(s.begin(), s.end(), std::back_inserter(upper_s), &::toupper);
-    _os << upper_s << endl;
+    _os << toupper(s) << endl;
     _os << std::string(s.size(), char('-')) << endl;
 }
 
