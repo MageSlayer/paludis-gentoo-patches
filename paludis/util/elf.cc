@@ -59,7 +59,7 @@ namespace paludis
 
 enum {
     native_byte_order =
-#if WORDS_BIGENDIAN
+#ifdef PALUDIS_BIG_ENDIAN
     ELFDATA2MSB
 #else
     ELFDATA2LSB

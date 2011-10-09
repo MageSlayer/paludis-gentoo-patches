@@ -35,7 +35,7 @@ using namespace paludis;
 
 namespace
 {
-#if WORDS_BIGENDIAN
+#ifdef PALUDIS_BIG_ENDIAN
     inline uint32_t from_bigendian(uint32_t x)
     {
         return x;
