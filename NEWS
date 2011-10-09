@@ -16,6 +16,8 @@ master:
     * Manifest files for E repositories are now generated with the lines in the
       same order as Portage.
 
+    * The SHA-512 algorithm is now supported for Manifest files.
+
 0.68.0:
     * Licence groups are now supported.
 
