@@ -33,6 +33,8 @@ make_enum_DepSpecAnnotationRole()
 
     key dsar_system_implicit                  "For system, whether a spec is an implicit dependency"
 
+    key dsar_licence_last_checked             "Last checked, for licences"
+
     want_destringify
 
     doxygen_comment << "END"
