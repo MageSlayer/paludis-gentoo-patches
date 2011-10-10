@@ -592,7 +592,7 @@ Decider::_make_constraints_from_blocker(
             break;
 
         case dsar_blocker_upgrade_blocked_before:
-            nothing_is_fine_too = ! _block_dep_spec_has_nothing_installed(spec, maybe_from_package_id_from_reason(reason), resolution->resolvent());
+            nothing_is_fine_too = _block_dep_spec_has_nothing_installed(spec, maybe_from_package_id_from_reason(reason), resolution->resolvent());
             break;
 
         default:
