@@ -204,7 +204,7 @@ namespace paludis
                         const PackageDepSpec &,
                         const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                bool _block_dep_spec_already_met(
+                bool _block_dep_spec_has_nothing_installed(
                         const BlockDepSpec &,
                         const std::shared_ptr<const PackageID> &,
                         const Resolvent &) const PALUDIS_ATTRIBUTE((warn_unused_result));

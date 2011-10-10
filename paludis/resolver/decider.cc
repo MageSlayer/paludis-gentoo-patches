@@ -588,11 +588,11 @@ Decider::_make_constraints_from_blocker(
             break;
 
         case dsar_blocker_manual:
-            force_unable = ! _block_dep_spec_already_met(spec, maybe_from_package_id_from_reason(reason), resolution->resolvent());
+            force_unable = ! _block_dep_spec_has_nothing_installed(spec, maybe_from_package_id_from_reason(reason), resolution->resolvent());
             break;
 
         case dsar_blocker_upgrade_blocked_before:
-            nothing_is_fine_too = ! _block_dep_spec_already_met(spec, maybe_from_package_id_from_reason(reason), resolution->resolvent());
+            nothing_is_fine_too = ! _block_dep_spec_has_nothing_installed(spec, maybe_from_package_id_from_reason(reason), resolution->resolvent());
             break;
 
         default:
@@ -1142,7 +1142,7 @@ Decider::_add_dependencies_if_necessary(
             /* now we can find out per-resolvent whether we're really already met */
             const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
                         package_id, changed_choices, our_resolution->resolvent(), *s,
-                        s->spec().if_block() ? _block_dep_spec_already_met(*s->spec().if_block(), package_id, *r) :
+                        s->spec().if_block() ? _block_dep_spec_has_nothing_installed(*s->spec().if_block(), package_id, *r) :
                         _package_dep_spec_already_met(*s->spec().if_package(), package_id)));
 
             const std::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(*r, true));
@@ -1949,7 +1949,7 @@ Decider::_package_dep_spec_already_met(const PackageDepSpec & spec, const std::s
 }
 
 bool
-Decider::_block_dep_spec_already_met(const BlockDepSpec & spec, const std::shared_ptr<const PackageID> & from_id,
+Decider::_block_dep_spec_has_nothing_installed(const BlockDepSpec & spec, const std::shared_ptr<const PackageID> & from_id,
         const Resolvent & resolvent) const
 {
     Context context("When determining already met for '" + stringify(spec) + "':");
