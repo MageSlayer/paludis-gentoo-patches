@@ -180,6 +180,8 @@ require()
         done
         local old_CURRENT_EXLIB="${CURRENT_EXLIB}"
         export CURRENT_EXLIB="${e}"
+        local old_PALUDIS_CHECK_EXPORTED_PHASES="${PALUDIS_CHECK_EXPORTED_PHASES}"
+        export PALUDIS_CHECK_EXPORTED_PHASES=
         alias exparam="exparam_internal ${CURRENT_EXLIB}"
 
         for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
@@ -268,7 +270,7 @@ require()
         for v in ${PALUDIS_CHECK_EXPORTED_PHASES} ; do
             type -t ${v} >/dev/null || die "exported phase function ${v} does not exist"
         done
-        unset PALUDIS_CHECK_EXPORTED_PHASES
+        export PALUDIS_CHECK_EXPORTED_PHASES="${old_PALUDIS_CHECK_EXPORTED_PHASES}"
 
         export CURRENT_EXLIB="${old_CURRENT_EXLIB}"
         if [[ -n ${CURRENT_EXLIB} ]]; then
