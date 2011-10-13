@@ -52,7 +52,7 @@ dnl }}}
 PALUDIS_PC_VERSION="${VERSION_FULL}"
 PALUDIS_PC_SLOT="${VERSION_MAJOR}.${VERSION_MINOR}${VERSION_SUFFIX}"
 
-if test x"$((VERSION_MINOR % 2))" = x"1" ; then
+if test x"$((VERSION_MINOR % 2))" = x"1" || test -n "${GITHEAD}" ; then
 	PALUDIS_PC_SLOT="${PALUDIS_PC_SLOT}_"`echo ${GITHEAD} | sed -e 's,\(........\(-dirty\)\?\)$,#\1,' -e 's,.*#,,'`
 fi
 
