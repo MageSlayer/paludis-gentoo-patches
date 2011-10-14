@@ -91,6 +91,12 @@ namespace
     {
         return wp_yes;
     }
+
+    std::string contents(const std::string & filename)
+    {
+        SafeIFStream s(FSPath(filename).realpath());
+        return std::string((std::istreambuf_iterator<char>(s)), std::istreambuf_iterator<char>());
+    }
 }
 
 TEST(ERepository, RepoName)
@@ -654,18 +660,7 @@ TEST(ERepository, Manifest)
     env.add_repository(1, repo);
     repo->make_manifest(QualifiedPackageName("category/package"));
 
-    std::multiset<std::string> made_manifest, reference_manifest;
-    SafeIFStream made_manifest_stream(FSPath("e_repository_TEST_dir/repo11/category/package/Manifest")),
-        reference_manifest_stream(FSPath("e_repository_TEST_dir/repo11/Manifest_correct"));
-
-    std::string line;
-
-    while ( getline(made_manifest_stream, line) )
-        made_manifest.insert(line);
-    while ( getline(reference_manifest_stream, line) )
-        reference_manifest.insert(line);
-
-    EXPECT_TRUE(made_manifest == reference_manifest);
+    EXPECT_EQ(contents("e_repository_TEST_dir/repo11/Manifest_correct"), contents("e_repository_TEST_dir/repo11/category/package/Manifest"));
 
     EXPECT_THROW(repo->make_manifest(QualifiedPackageName("category/package-b")), MissingDistfileError);
 }

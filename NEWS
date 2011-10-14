@@ -13,6 +13,9 @@ master:
       with '--no-*' can now be negated in short form by using '+' instead
       of '-', for example '+x' for '--no-execute'.
 
+    * Manifest files for E repositories are now generated with the lines in the
+      same order as Portage.
+
 0.68.0:
     * Licence groups are now supported.
 

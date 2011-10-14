@@ -1021,11 +1021,7 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 {
     FSPath package_dir = _imp->layout->package_directory(qpn);
 
-    FSPath(package_dir / "Manifest").unlink();
-    SafeOFStream manifest(FSPath(package_dir / "Manifest"), -1, true);
-    if (! manifest)
-        throw ERepositoryConfigurationError("Couldn't open Manifest for writing.");
-
+    std::vector<std::pair<std::pair<std::string, std::string>, std::string> > lines;
     auto files(_imp->layout->manifest_files(qpn, package_dir));
 
     for (auto f(files->begin()) ; f != files->end() ; ++f)
@@ -1043,18 +1039,20 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
         SafeIFStream file_stream(file);
 
         RMD160 rmd160sum(file_stream);
-        manifest << file_type << " " << filename << " "
-            << file.stat().file_size() << " RMD160 " << rmd160sum.hexsum();
+        std::string line(file_type + " " + filename + " "
+            + stringify(file.stat().file_size()) + " RMD160 " + rmd160sum.hexsum());
 
         file_stream.clear();
         file_stream.seekg(0, std::ios::beg);
         SHA1 sha1sum(file_stream);
-        manifest << " SHA1 " << sha1sum.hexsum();
+        line += " SHA1 " + sha1sum.hexsum();
 
         file_stream.clear();
         file_stream.seekg(0, std::ios::beg);
         SHA256 sha256sum(file_stream);
-        manifest << " SHA256 " << sha256sum.hexsum() << std::endl;
+        line += " SHA256 " + sha256sum.hexsum();
+
+        lines.push_back(std::make_pair(std::make_pair(file_type, filename), line));
     }
 
     std::shared_ptr<const PackageIDSequence> versions;
@@ -1089,14 +1087,24 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
             MemoisedHashes * hashes = MemoisedHashes::get_instance();
 
-            manifest << "DIST " << f.basename() << " "
-                << f_stat.file_size()
-                << " RMD160 " << hashes->get("RMD160", f, file_stream)
-                << " SHA1 " << hashes->get("SHA1", f, file_stream)
-                << " SHA256 " << hashes->get("SHA256", f, file_stream)
-                << std::endl;
+            std::string line("DIST " + f.basename() + " " + stringify(f_stat.file_size())
+                + " RMD160 " + hashes->get("RMD160", f, file_stream)
+                + " SHA1 " + hashes->get("SHA1", f, file_stream)
+                + " SHA256 " + hashes->get("SHA256", f, file_stream));
+
+            lines.push_back(std::make_pair(std::make_pair("DIST", f.basename()), line));
         }
     }
+
+    std::sort(lines.begin(), lines.end());
+
+    FSPath(package_dir / "Manifest").unlink();
+    SafeOFStream manifest(FSPath(package_dir / "Manifest"), -1, true);
+    if (! manifest)
+        throw ERepositoryConfigurationError("Couldn't open Manifest for writing.");
+
+    for (auto it(lines.begin()), it_end(lines.end()); it_end != it; ++it)
+        manifest << it->second << std::endl;
 }
 
 void
