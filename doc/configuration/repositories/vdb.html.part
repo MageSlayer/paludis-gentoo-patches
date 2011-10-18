@@ -22,6 +22,13 @@ for <code>vdb</code> format repositories:</p>
     <dt><code>builddir</code></dt>
     <dd>The directory to use when 'building' a package for an uninstall (a temporary directory is needed for various
     operations). Optional.</dd>
+
+    <dt><code>root</code></dt>
+    <dd>The root to which this VDB repository corresponds. Optional.</dd>
+
+    <dt><code>name</code></dt>
+    <dd>The repository's name. Defaults to "installed". Usually only changed if multiple VDB repositories are
+    required.</dd>
 </dl>
 
 
