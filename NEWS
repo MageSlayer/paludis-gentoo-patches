@@ -4,7 +4,7 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
-master:
+0.70.0:
     * 'cave sync --suffix' is now known as '--source' (although the old
       version is still supported for compatibility).  The short version is
       still '-s'.
