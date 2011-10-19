@@ -1563,7 +1563,7 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
                         )));
         choices->add(build_options);
 
-        bool mask_tests(false);
+        bool mask_tests(false), mask_expensive_tests(false);
         if (! eapi()->supported()->is_pbin())
         {
             bool may_be_unrestricted_strip(true);
@@ -1594,7 +1594,10 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
             }
         }
         else
+        {
             mask_tests = true;
+            mask_expensive_tests = true;
+        }
 
         /* optional_tests */
         if (eapi()->supported()->choices_options()->has_optional_tests())
@@ -1629,7 +1632,8 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
             }
 
             if (has_expensive_test_phase)
-                build_options->add(std::make_shared<ELikeExpensiveTestsChoiceValue>(shared_from_this(), _imp->environment, build_options, mask_tests));
+                build_options->add(std::make_shared<ELikeExpensiveTestsChoiceValue>(shared_from_this(), _imp->environment, build_options,
+                            mask_expensive_tests));
         }
 
         /* trace */
