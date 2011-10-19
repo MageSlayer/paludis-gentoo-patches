@@ -303,7 +303,7 @@ ImportCommand::run(
         resolve_cmdline.resolution_options.a_execute.set_specified(args::aos_specified);
 
     std::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(std::make_shared<Sequence<std::pair<std::string, std::string> >>());
-    targets->push_back(std::make_pair(stringify((*ids->begin())->name()), ""));
+    targets->push_back(std::make_pair(stringify((*ids->begin())->uniquely_identifying_spec()), ""));
 
     std::shared_ptr<Sequence<std::string> > world_specs(std::make_shared<Sequence<std::string>>());
     world_specs->push_back(stringify((*ids->begin())->name()));
