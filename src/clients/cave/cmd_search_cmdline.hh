@@ -46,6 +46,7 @@ namespace paludis
 
             args::ArgsGroup g_pattern_options;
             args::EnumArg a_type;
+            args::SwitchArg a_case_sensitive;
             args::SwitchArg a_and;
             args::SwitchArg a_not;
 

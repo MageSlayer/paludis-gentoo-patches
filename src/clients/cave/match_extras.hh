@@ -23,6 +23,6 @@
 #include <paludis/util/attributes.hh>
 #include <string>
 
-extern "C" bool cave_match_extras_match_regex(const std::string &, const std::string &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
+extern "C" bool cave_match_extras_match_regex(const std::string &, const std::string &, bool) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
 
 #endif

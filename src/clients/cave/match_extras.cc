@@ -24,9 +24,9 @@
 using namespace paludis;
 
 extern "C" bool
-cave_match_extras_match_regex(const std::string & text, const std::string & pattern_str)
+cave_match_extras_match_regex(const std::string & text, const std::string & pattern_str, bool case_sensitive)
 {
-    const pcrecpp::RE pattern(pattern_str, pcrecpp::RE_Options().set_caseless(true));
+    const pcrecpp::RE pattern(pattern_str, pcrecpp::RE_Options().set_caseless(!case_sensitive));
     if (! pattern.error().empty())
         throw args::DoHelp("Pattern '" + pattern_str + "' error: " + pattern.error());
 

@@ -42,6 +42,7 @@ SearchCommandLineMatchOptions::SearchCommandLineMatchOptions(args::ArgsHandler *
             ("regex", 'r', "Match using pcre regular expressions, ignoring case"),
             "text"
           ),
+    a_case_sensitive(&g_pattern_options, "case-sensitive", 'C', "Make matching case sensitive.", true),
     a_and(&g_pattern_options, "and", '&', "If multiple patterns are specified, require that "
             "all patterns match. Default is to succeed if any pattern matches.", true),
     a_not(&g_pattern_options, "not", '!', "Invert the results of pattern matches.", true),

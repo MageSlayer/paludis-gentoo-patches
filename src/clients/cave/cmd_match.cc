@@ -67,7 +67,7 @@ namespace
     struct ExtrasHandle :
         Singleton<ExtrasHandle>
     {
-        typedef bool (* MatchFunction)(const std::string &, const std::string &);
+        typedef bool (* MatchFunction)(const std::string &, const std::string &, bool);
 
         void * handle;
         MatchFunction match_function;
@@ -120,29 +120,35 @@ namespace
         }
     };
 
-    bool match_text(const std::string & text, const std::string & pattern)
+    bool match_text(const std::string & text, const std::string & pattern, bool case_sensitive)
     {
-        return 0 != strcasestr(text.c_str(), pattern.c_str());
+        if (case_sensitive)
+            return 0 != strstr(text.c_str(), pattern.c_str());
+        else
+            return 0 != strcasestr(text.c_str(), pattern.c_str());
     }
 
-    bool match_exact(const std::string & text, const std::string & pattern)
+    bool match_exact(const std::string & text, const std::string & pattern, bool case_sensitive)
     {
-        return 0 == strcasecmp(text.c_str(), pattern.c_str());
+        if (case_sensitive)
+            return 0 == strcmp(text.c_str(), pattern.c_str());
+        else
+            return 0 == strcasecmp(text.c_str(), pattern.c_str());
     }
 
-    bool match_regex(const std::string & text, const std::string & pattern)
+    bool match_regex(const std::string & text, const std::string & pattern, bool case_sensitive)
     {
-        return ExtrasHandle::get_instance()->match_function(text, pattern);
+        return ExtrasHandle::get_instance()->match_function(text, pattern, case_sensitive);
     }
 
-    bool match(const std::string & text, const std::string & pattern, const std::string & algorithm)
+    bool match(const std::string & text, const std::string & pattern, bool case_sensitive, const std::string & algorithm)
     {
         if (algorithm == "text")
-            return match_text(text, pattern);
+            return match_text(text, pattern, case_sensitive);
         else if (algorithm == "exact")
-            return match_exact(text, pattern);
+            return match_exact(text, pattern, case_sensitive);
         else if (algorithm == "regex")
-            return match_regex(text, pattern);
+            return match_regex(text, pattern, case_sensitive);
         else
             throw args::DoHelp("Unknown algoritm '" + algorithm + "'");
     }
@@ -444,7 +450,7 @@ MatchCommand::run_hosted(
             p != p_end ; ++p)
     {
         bool current(texts.end() != std::find_if(texts.begin(), texts.end(),
-                    std::bind(&match, std::placeholders::_1, *p, match_options.a_type.argument())));
+                    std::bind(&match, std::placeholders::_1, *p, match_options.a_case_sensitive.specified(), match_options.a_type.argument())));
 
         if (match_options.a_not.specified())
             current = ! current;
