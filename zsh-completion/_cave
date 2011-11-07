@@ -202,6 +202,7 @@ _cave_cmd_generate-metadata()
 _cave_match_arguments=(
     '(--help -h)'{--help,-h}'[Display help messsage]'
     '(--type -t)'{--type,-t}'[Specify which matching algorithm to use]:Matching:((text t exact x regex r))'
+    '(--case-sensitive -C --no-case-sensitive +C)'{--case-sensitive,-C,--no-case-sensitive,+C}'[Make matching case sensitive]'
     '(--and -& --no-and +&)'{--and,-\&,--no-and,+\&}'[If multiple patterns are specified, require that all patterns match]'
     '(--not -! --no-not +!)'{--not,-\!,--no-not,+\!}'[Invert the results of pattern matches]'
     '*'{--key,-k}'[Search the named metadata key]'
