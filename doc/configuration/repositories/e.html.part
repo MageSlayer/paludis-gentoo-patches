@@ -97,7 +97,7 @@ for <code>e</code> format repositories:</p>
     <dt><code>manifest_hashes</code></dt>
     <dd>Space-separated list of hash functions to use when generating <code>Manifest</code> files. Supported values are
     <code>MD5</code>, <code>RMD160</code>, <code>SHA1</code>, <code>SHA256</code>, <code>SHA512</code> and
-    <code>WHIRLPOOL</code>. Optional, usually set by the distribution or the repository's <code>metadata/layout.conf</code>.
+    <code>WHIRLPOOL</code>. Optional, usually set by the distribution or the repository's <code>metadata/layout.conf</code>.</dd>
 
     <dt><code>binary_destination</code></dt>
     <dd>If set to <code>true</code>, this repository is treated as a destination when creating binary packages.</dd>
