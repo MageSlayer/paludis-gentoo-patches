@@ -249,8 +249,8 @@ namespace paludis
         std::shared_ptr<const MetadataCollectionKey<FSPathSequence> > profiles_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > cache_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > write_cache_key;
-        std::shared_ptr<const MetadataValueKey<std::string> > append_repository_name_to_write_cache_key;
-        std::shared_ptr<const MetadataValueKey<std::string> > ignore_deprecated_profiles;
+        std::shared_ptr<const MetadataValueKey<bool> > append_repository_name_to_write_cache_key;
+        std::shared_ptr<const MetadataValueKey<bool> > ignore_deprecated_profiles;
         std::shared_ptr<const MetadataValueKey<FSPath> > names_cache_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > distdir_key;
         std::shared_ptr<const MetadataCollectionKey<FSPathSequence> > eclassdirs_key;
@@ -268,7 +268,7 @@ namespace paludis
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > manifest_hashes_key;
         std::shared_ptr<const MetadataSectionKey> info_pkgs_key;
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > info_vars_key;
-        std::shared_ptr<const MetadataValueKey<std::string> > binary_destination_key;
+        std::shared_ptr<const MetadataValueKey<bool> > binary_destination_key;
         std::shared_ptr<const MetadataValueKey<std::string> > binary_src_uri_prefix_key;
         std::shared_ptr<const MetadataValueKey<std::string> > binary_distdir_key;
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > binary_keywords_filter;
@@ -309,12 +309,12 @@ namespace paludis
                     mkt_normal, params.cache())),
         write_cache_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("write_cache", "write_cache",
                     mkt_normal, params.write_cache())),
-        append_repository_name_to_write_cache_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
+        append_repository_name_to_write_cache_key(std::make_shared<LiteralMetadataValueKey<bool> >(
                     "append_repository_name_to_write_cache", "append_repository_name_to_write_cache",
-                    mkt_internal, stringify(params.append_repository_name_to_write_cache()))),
-        ignore_deprecated_profiles(std::make_shared<LiteralMetadataValueKey<std::string> >(
+                    mkt_internal, params.append_repository_name_to_write_cache())),
+        ignore_deprecated_profiles(std::make_shared<LiteralMetadataValueKey<bool> >(
                     "ignore_deprecated_profiles", "ignore_deprecated_profiles",
-                    mkt_internal, stringify(params.ignore_deprecated_profiles()))),
+                    mkt_internal, params.ignore_deprecated_profiles())),
         names_cache_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
                     "names_cache", "names_cache", mkt_normal, params.names_cache())),
         distdir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
@@ -361,9 +361,9 @@ namespace paludis
                 std::make_shared<InfoVarsMetadataKey>(layout->info_variables_files()) :
                 std::shared_ptr<InfoVarsMetadataKey>()
                 ),
-        binary_destination_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
+        binary_destination_key(std::make_shared<LiteralMetadataValueKey<bool> >(
                     "binary_destination", "binary_destination", params.binary_destination() ? mkt_normal : mkt_internal,
-                    stringify(params.binary_destination()))),
+                    params.binary_destination())),
         binary_src_uri_prefix_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "binary_uri_prefix", "binary_uri_prefix", params.binary_destination() ? mkt_normal : mkt_internal,
                     params.binary_uri_prefix())),
