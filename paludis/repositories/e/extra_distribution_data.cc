@@ -22,6 +22,7 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/upper_lower.hh>
+#include <paludis/util/destringify.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/distribution-impl.hh>
 
@@ -60,6 +61,7 @@ namespace paludis
                             n::default_names_cache() = k->get("default_names_cache"),
                             n::default_profile_eapi() = k->get("default_profile_eapi"),
                             n::default_profile_layout() = k->get("default_profile_layout"),
+                            n::default_thin_manifests() = destringify<bool>(k->get("default_thin_manifests")),
                             n::default_write_cache() = k->get("default_write_cache"),
                             n::news_directory() = FSPath(k->get("news_directory"))
                             ));

@@ -676,6 +676,23 @@ TEST(ERepository, Manifest)
     repo2->make_manifest(QualifiedPackageName("category/package"));
 
     EXPECT_EQ(contents("e_repository_TEST_dir/repo11a/Manifest_correct"), contents("e_repository_TEST_dir/repo11a/category/package/Manifest"));
+
+    std::shared_ptr<Map<std::string, std::string> > keys3(std::make_shared<Map<std::string, std::string>>());
+    keys3->insert("format", "e");
+    keys3->insert("names_cache", "/var/empty");
+    keys3->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo11b"));
+    keys3->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo11b/profiles/profile"));
+    keys3->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
+    std::shared_ptr<ERepository> repo3(std::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
+                    std::bind(from_keys, keys3, std::placeholders::_1))));
+    env.add_repository(1, repo3);
+    repo3->make_manifest(QualifiedPackageName("category/package"));
+
+    EXPECT_EQ(contents("e_repository_TEST_dir/repo11b/Manifest_correct"), contents("e_repository_TEST_dir/repo11b/category/package/Manifest"));
+
+    EXPECT_TRUE(FSStat(FSPath("e_repository_TEST_dir/repo11b/category/package2/Manifest")).exists());
+    repo3->make_manifest(QualifiedPackageName("category/package2"));
+    EXPECT_TRUE(! FSStat(FSPath("e_repository_TEST_dir/repo11b/category/package2/Manifest")).exists());
 }
 
 TEST(ERepository, Fetch)

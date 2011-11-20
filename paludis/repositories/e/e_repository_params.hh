@@ -70,6 +70,7 @@ namespace paludis
         typedef Name<struct name_setsdir> setsdir;
         typedef Name<struct name_sync> sync;
         typedef Name<struct name_sync_options> sync_options;
+        typedef Name<struct name_thin_manifests> thin_manifests;
         typedef Name<struct name_use_manifest> use_manifest;
         typedef Name<struct name_write_bin_uri_prefix> write_bin_uri_prefix;
         typedef Name<struct name_write_cache> write_cache;
@@ -110,6 +111,7 @@ namespace paludis
             NamedValue<n::setsdir, FSPath> setsdir;
             NamedValue<n::sync, std::shared_ptr<Map<std::string, std::string> > > sync;
             NamedValue<n::sync_options, std::shared_ptr<Map<std::string, std::string> > > sync_options;
+            NamedValue<n::thin_manifests, bool> thin_manifests;
             NamedValue<n::use_manifest, erepository::UseManifest> use_manifest;
             NamedValue<n::write_bin_uri_prefix, std::string> write_bin_uri_prefix;
             NamedValue<n::write_cache, FSPath> write_cache;

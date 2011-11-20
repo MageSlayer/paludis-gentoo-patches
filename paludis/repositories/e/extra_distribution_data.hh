@@ -40,6 +40,7 @@ namespace paludis
         typedef Name<struct name_default_names_cache> default_names_cache;
         typedef Name<struct name_default_profile_eapi> default_profile_eapi;
         typedef Name<struct name_default_profile_layout> default_profile_layout;
+        typedef Name<struct name_default_thin_manifests> default_thin_manifests;
         typedef Name<struct name_default_write_cache> default_write_cache;
         typedef Name<struct name_news_directory> news_directory;
     }
@@ -57,6 +58,7 @@ namespace paludis
             NamedValue<n::default_names_cache, std::string> default_names_cache;
             NamedValue<n::default_profile_eapi, std::string> default_profile_eapi;
             NamedValue<n::default_profile_layout, std::string> default_profile_layout;
+            NamedValue<n::default_thin_manifests, bool> default_thin_manifests;
             NamedValue<n::default_write_cache, std::string> default_write_cache;
             NamedValue<n::news_directory, FSPath> news_directory;
         };

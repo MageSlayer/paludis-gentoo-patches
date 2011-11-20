@@ -291,6 +291,7 @@ mkdir -p repo11/{eclass,distfiles,metadata,profiles/profile} || exit 1
 mkdir -p repo11/category/package{,-b}/files || exit 1
 cd repo11 || exit 1
 echo "manifest-hashes = RMD160 SHA1 SHA256" >> metadata/layout.conf || exit 1
+echo "thin-manifests = false" >> metadata/layout.conf || exit 1
 echo "test-repo-11" >> profiles/repo_name || exit 1
 echo "category" >> profiles/categories || exit 1
 cat <<END > profiles/profile/make.defaults
@@ -352,6 +353,7 @@ mkdir -p repo11a/{eclass,distfiles,metadata,profiles/profile} || exit 1
 mkdir -p repo11a/category/package/files || exit 1
 cd repo11a || exit 1
 echo "manifest-hashes = SHA256 SHA512 WHIRLPOOL" > metadata/layout.conf || exit 1
+echo "thin-manifests = false" >> metadata/layout.conf || exit 1
 echo "test-repo-11a" >> profiles/repo_name || exit 1
 echo "category" >> profiles/categories || exit 1
 cat <<END > profiles/profile/make.defaults
@@ -396,6 +398,64 @@ EBUILD package-1.ebuild 134 SHA256 4d58e5622889397ff6a257d87652a8220585c4d97efbf
 EBUILD package-2.ebuild 134 SHA256 3fb00f77d96c3e6576c2d424d31023958b507bdf20eb6555e89a135b37a54c07 SHA512 79b54d6aaa773540c77d943891957dbc060bfc714cc210343a7969eae96d64d43896f5221907a9dca5fe4de74e58dd6a36a943448e64c4ccd709c7391b3a7538 WHIRLPOOL 9212c730e541042be975e49f4ccd09816b9d02126c2cac3908296450d067bd0d2e39ec7120f1fbf75a9a32fb65ce8a2e860225da438f6cda89a7921ae56b8972
 MISC ChangeLog 34 SHA256 a8dfbbc187c93c0731fa9722aff87c437a4b9f59b1786d62651fb104b0c3ed97 SHA512 03d8f86f43de02a64a64f515a5a7ae97b544202ed60544b33814569d4b1502d1c9ce5f2e8e50a107aa2b08a0b127a815f90f11830197a0ecf34b67c019c0625f WHIRLPOOL 411b585cca9c3dcdf609967efc86f1996c2f1fd8a9d6b62549b9099611e312760c572ccbc6384bb0beab4a78b4b354dcf90284f4dab6640972fb38f8d944fcb5
 MISC metadata.xml 37 SHA256 ba3b181b832c002612fba7768c95e526e188658d8fc85b92c153940ad43169de SHA512 5120780bfcd7d0999bf108adfd02ddc1fa3d75666649fb64cf521fd1a94bb9653882a2a8f77d2825fe099e0a56b2858bd01a6439069585f2cc7d87f8ac5227d4 WHIRLPOOL 93bfb6ca3acc70b15dbd96bec3aa903219698bdc4aa141a2acca48d63c2928e237f4d6db524ff2ac98f4f10803726dc84975ad5ba8e41c32f6cbea901bb242aa
+END
+cd ..
+
+mkdir -p repo11b/{eclass,distfiles,metadata,profiles/profile} || exit 1
+mkdir -p repo11b/category/{package,package2}/files || exit 1
+cd repo11b || exit 1
+echo "manifest-hashes = SHA256 SHA512 WHIRLPOOL" > metadata/layout.conf || exit 1
+echo "thin-manifests = true" >> metadata/layout.conf || exit 1
+echo "test-repo-11b" >> profiles/repo_name || exit 1
+echo "category" >> profiles/categories || exit 1
+cat <<END > profiles/profile/make.defaults
+ARCH=test
+END
+cat <<END > category/package/package-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="foo"
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND=""
+END
+cat <<END > category/package/package-2.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="bar"
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND=""
+END
+cat <<END > category/package/ChangeLog || exit 1
+The times, they are-a changin'...
+END
+cat <<END > category/package/metadata.xml || exit
+This isn't valid xml & I don't care!
+END
+cat <<END > category/package/files/some.patch || exit 1
++ Manifest2
+END
+cat <<END > category/package2/package2-2.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND=""
+END
+echo lalala > category/package2/Manifest || exit 1
+echo "something" > distfiles/foo || exit 1
+echo "for nothing" > distfiles/bar || exit 1
+cat <<END > Manifest_correct || exit 1
+DIST bar 12 SHA256 27cd06afc317a809116e7730736663b9f09dd863fcc37b69d32d4f5eb58708b2 SHA512 eb482b4b17a46dbf7023c5caf76aed468ee32559b715df5a1539089c522913f612d7e780edca54546e8300813b41687550176be60899474ee8373183a19e98b0 WHIRLPOOL cbdc7a79ed68423b7d9fd25fc9f1c1cd01dfad53eca3d586083861918357d2081166b7939702eddf88a72ea8494694348b94a4df07775c2a7b1d1830470810ea
+DIST foo 10 SHA256 4bc453b53cb3d914b45f4b250294236adba2c0e09ff6f03793949e7e39fd4cc1 SHA512 4de57cffd81ee9dbf85831aff72914dc7ca7a7bef0466bfcda81ff3ef75d8a86d2f1c2f1bcb3afc130910384c700dd81d6a8eebdf81abfb5e61a1abcf70743fe WHIRLPOOL 02f9452201dba1f200fce2953487999b45eb85fbe1c4a518399b4640630b53b750d9bc171f37021be8e52ebc5a117394ec0435df2c2b85a1dc2e7a1e8cf75c7c
 END
 cd ..
 

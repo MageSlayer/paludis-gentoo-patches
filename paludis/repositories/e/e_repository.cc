@@ -266,6 +266,7 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<std::string> > profile_eapi_when_unspecified_key;
         std::shared_ptr<const MetadataValueKey<std::string> > use_manifest_key;
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > manifest_hashes_key;
+        std::shared_ptr<const MetadataValueKey<bool> > thin_manifests_key;
         std::shared_ptr<const MetadataSectionKey> info_pkgs_key;
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > info_vars_key;
         std::shared_ptr<const MetadataValueKey<bool> > binary_destination_key;
@@ -347,6 +348,8 @@ namespace paludis
                     "use_manifest", "use_manifest", mkt_normal, stringify(params.use_manifest()))),
         manifest_hashes_key(std::make_shared<LiteralMetadataStringSetKey>(
                     "manifest_hashes", "manifest_hashes", mkt_normal, params.manifest_hashes())),
+        thin_manifests_key(std::make_shared<LiteralMetadataValueKey<bool> >(
+                    "thin_manifests", "thin_manifests", mkt_normal, params.thin_manifests())),
         info_pkgs_key(layout->info_packages_files()->end() != std::find_if(layout->info_packages_files()->begin(),
                     layout->info_packages_files()->end(),
                     std::bind(std::mem_fn(&FSStat::is_regular_file_or_symlink_to_regular_file),
@@ -579,6 +582,7 @@ ERepository::_add_metadata_keys() const
         add_metadata_key(_imp->master_repositories_key);
     add_metadata_key(_imp->use_manifest_key);
     add_metadata_key(_imp->manifest_hashes_key);
+    add_metadata_key(_imp->thin_manifests_key);
     if (_imp->info_pkgs_key)
         add_metadata_key(_imp->info_pkgs_key);
     if (_imp->info_vars_key)
@@ -1032,31 +1036,34 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
     std::vector<std::pair<std::pair<std::string, std::string>, std::string> > lines;
     auto files(_imp->layout->manifest_files(qpn, package_dir));
 
-    for (auto f(files->begin()) ; f != files->end() ; ++f)
+    if (! _imp->params.thin_manifests())
     {
-        FSPath file(f->first);
-        FSStat file_stat(file);
-        std::string filename = file.basename();
-        std::string file_type(f->second);
-
-        if ("AUX" == file_type)
+        for (auto f(files->begin()) ; f != files->end() ; ++f)
         {
-            filename = stringify(file).substr(stringify(package_dir / "files").length()+1);
+            FSPath file(f->first);
+            FSStat file_stat(file);
+            std::string filename = file.basename();
+            std::string file_type(f->second);
+
+            if ("AUX" == file_type)
+            {
+                filename = stringify(file).substr(stringify(package_dir / "files").length()+1);
+            }
+
+            SafeIFStream file_stream(file);
+
+            std::string line(file_type + " " + filename + " " + stringify(file.stat().file_size()));
+
+            for (Set<std::string>::ConstIterator it(_imp->params.manifest_hashes()->begin()),
+                     it_end(_imp->params.manifest_hashes()->end()); it_end != it; ++it)
+            {
+                file_stream.clear();
+                file_stream.seekg(0, std::ios::beg);
+                line += " " + *it + " " + DigestRegistry::get_instance()->get(*it)(file_stream);
+            }
+
+            lines.push_back(std::make_pair(std::make_pair(file_type, filename), line));
         }
-
-        SafeIFStream file_stream(file);
-
-        std::string line(file_type + " " + filename + " " + stringify(file.stat().file_size()));
-
-        for (Set<std::string>::ConstIterator it(_imp->params.manifest_hashes()->begin()),
-                 it_end(_imp->params.manifest_hashes()->end()); it_end != it; ++it)
-        {
-            file_stream.clear();
-            file_stream.seekg(0, std::ios::beg);
-            line += " " + *it + " " + DigestRegistry::get_instance()->get(*it)(file_stream);
-        }
-
-        lines.push_back(std::make_pair(std::make_pair(file_type, filename), line));
     }
 
     std::shared_ptr<const PackageIDSequence> versions;
@@ -1104,12 +1111,16 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
     std::sort(lines.begin(), lines.end());
 
     FSPath(package_dir / "Manifest").unlink();
-    SafeOFStream manifest(FSPath(package_dir / "Manifest"), -1, true);
-    if (! manifest)
-        throw ERepositoryConfigurationError("Couldn't open Manifest for writing.");
 
-    for (auto it(lines.begin()), it_end(lines.end()); it_end != it; ++it)
-        manifest << it->second << std::endl;
+    if (! lines.empty())
+    {
+        SafeOFStream manifest(FSPath(package_dir / "Manifest"), -1, true);
+        if (! manifest)
+            throw ERepositoryConfigurationError("Couldn't open Manifest for writing.");
+
+        for (auto it(lines.begin()), it_end(lines.end()); it_end != it; ++it)
+            manifest << it->second << std::endl;
+    }
 }
 
 void
@@ -1473,8 +1484,21 @@ ERepository::repository_factory_create(
                     *DistributionData::get_instance()->distribution_from_string(
                         env->distribution()))->default_manifest_hashes();
 
-    bool binary_destination(false);
+    bool thin_manifests(false);
+    if (! f("thin_manifests").empty())
+    {
+        Context item_context("When handling thin_manifests key:");
+        thin_manifests = destringify<bool>(f("thin_manifests"));
+    }
+    else if (layout_conf && ! layout_conf->get("thin-manifests").empty())
+        // match Portage parsing
+        thin_manifests = tolower(layout_conf->get("thin-manifests")) == "true";
+    else
+        thin_manifests = EExtraDistributionData::get_instance()->data_from_distribution(
+                    *DistributionData::get_instance()->distribution_from_string(
+                        env->distribution()))->default_thin_manifests();
 
+    bool binary_destination(false);
     if (! f("binary_destination").empty())
     {
         Context item_context("When handling binary_destination key:");
@@ -1523,6 +1547,7 @@ ERepository::repository_factory_create(
                 n::setsdir() = FSPath(setsdir).realpath_if_exists(),
                 n::sync() = sync,
                 n::sync_options() = sync_options,
+                n::thin_manifests() = thin_manifests,
                 n::use_manifest() = use_manifest,
                 n::write_bin_uri_prefix() = "",
                 n::write_cache() = FSPath(write_cache).realpath_if_exists()

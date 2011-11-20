@@ -4,6 +4,9 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+master:
+    * Generation of thin Manifests is now supported.
+
 0.70.1:
     * 'cave search' now has a '--case-sensitive' option.
 

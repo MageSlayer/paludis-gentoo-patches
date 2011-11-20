@@ -99,6 +99,10 @@ for <code>e</code> format repositories:</p>
     <code>MD5</code>, <code>RMD160</code>, <code>SHA1</code>, <code>SHA256</code>, <code>SHA512</code> and
     <code>WHIRLPOOL</code>. Optional, usually set by the distribution or the repository's <code>metadata/layout.conf</code>.</dd>
 
+    <dt><code>thin_manifests</code></dt>
+    <dd>If set to <code>true</code>, generated <code>Manifest</code> files will only contain <code>DIST</code> entries.
+    Optional, usually set by the distribution or the repository's <code>metadata/layout.conf</code>.</dd>
+
     <dt><code>binary_destination</code></dt>
     <dd>If set to <code>true</code>, this repository is treated as a destination when creating binary packages.</dd>
 
