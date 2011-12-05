@@ -220,6 +220,7 @@ Imp<ElfLinkageChecker>::handle_library(const FSPath & file, const ElfArchitectur
     seen.insert(std::make_pair(file, arch));
     std::pair<Symlinks::const_iterator, Symlinks::const_iterator> range(symlinks.equal_range(file));
     libraries[arch].push_back(file.basename());
+    libraries[arch].push_back(stringify(file.strip_leading(root)));
 
     if (range.first != range.second)
     {
@@ -244,6 +245,7 @@ ElfLinkageChecker::note_symlink(const FSPath & link, const FSPath & target)
             Log::get_instance()->message("broken_linkage_finder.note_symlink", ll_debug, lc_context)
                 << "'" << link << "' is a symlink to known library '" << target << "'";
             _imp->libraries[it->second].push_back(link.basename());
+            _imp->libraries[it->second].push_back(stringify(link.strip_leading(_imp->root)));
         }
         else
             _imp->symlinks.insert(std::make_pair(target, link));
