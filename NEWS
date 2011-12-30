@@ -4,7 +4,9 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
-master:
+0.70.2:
+    * Assorted bug fixes.
+
     * Generation of thin Manifests is now supported.
 
 0.70.1:
