@@ -5,7 +5,8 @@ This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
 master:
-    * Changed documentation URLs.
+    * Changed documentation and Git URLs from paludis.pioto.org to
+      paludis.exherbo.org.
 
 0.70.2:
     * Assorted bug fixes.
