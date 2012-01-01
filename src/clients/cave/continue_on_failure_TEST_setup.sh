@@ -69,7 +69,7 @@ END
 
 cat <<"END" > cat/a/a-1.ebuild || exit 1
 DESCRIPTION="Test a"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI=""
 SLOT="0"
 IUSE=""
@@ -85,7 +85,7 @@ END
 
 cat <<"END" > cat/b/b-1.ebuild || exit 1
 DESCRIPTION="Test b"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI=""
 SLOT="0"
 IUSE=""
@@ -101,7 +101,7 @@ END
 
 cat <<"END" > cat/c/c-1.ebuild || exit 1
 DESCRIPTION="Test c"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI=""
 SLOT="0"
 IUSE=""
@@ -117,7 +117,7 @@ END
 
 cat <<"END" > cat/d/d-1.ebuild || exit 1
 DESCRIPTION="Test d"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI=""
 SLOT="0"
 IUSE=""
@@ -132,7 +132,7 @@ END
 
 cat <<"END" > cat/e/e-1.ebuild || exit 1
 DESCRIPTION="Test e"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI=""
 SLOT="0"
 IUSE=""
@@ -148,7 +148,7 @@ END
 
 cat <<"END" > cat/z/z-1.ebuild || exit 1
 DESCRIPTION="Test z"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI=""
 SLOT="0"
 IUSE=""
@@ -164,7 +164,7 @@ END
 
 cat <<"END" > cat/y/y-1.ebuild || exit 1
 DESCRIPTION="Test y"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI=""
 SLOT="0"
 IUSE=""
@@ -180,7 +180,7 @@ END
 
 cat <<"END" > cat/x/x-1.ebuild || exit 1
 DESCRIPTION="Test x"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI=""
 SLOT="0"
 IUSE=""
@@ -196,7 +196,7 @@ END
 
 cat <<"END" > cat/w/w-1.ebuild || exit 1
 DESCRIPTION="Test w"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI=""
 SLOT="0"
 IUSE=""
@@ -207,7 +207,7 @@ END
 
 cat <<"END" > cat/w/w-2.ebuild || exit 1
 DESCRIPTION="Test w"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI=""
 SLOT="0"
 IUSE=""
@@ -222,7 +222,7 @@ END
 
 cat <<"END" > cat/v/v-1.ebuild || exit 1
 DESCRIPTION="Test v"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI=""
 SLOT="0"
 IUSE=""
@@ -238,7 +238,7 @@ END
 
 cat <<"END" > cat/u/u-1.ebuild || exit 1
 DESCRIPTION="Test u"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI=""
 SLOT="0"
 IUSE=""

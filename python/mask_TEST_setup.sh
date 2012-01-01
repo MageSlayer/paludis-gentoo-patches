@@ -25,7 +25,7 @@ END
 
 cat <<"END" > masked/repo/repo-1.0.ebuild || exit 1
 DESCRIPTION="RepositoryMask"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI="http://example.com/${P}.tar.bz2"
 SLOT="0"
 IUSE=""
@@ -35,7 +35,7 @@ END
 
 cat <<"END" > masked/user/user-1.0.ebuild || exit 1
 DESCRIPTION="UserMask"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI="http://example.com/${P}.tar.bz2"
 SLOT="0"
 IUSE=""
@@ -46,7 +46,7 @@ END
 
 cat <<"END" > masked/unaccepted/unaccepted-1.0.ebuild || exit 1
 DESCRIPTION="UnacceptedMask"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI="http://example.com/${P}.tar.bz2"
 SLOT="0"
 IUSE=""

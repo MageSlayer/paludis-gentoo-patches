@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2011 Ciaran McCreesh
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -46,7 +46,7 @@ ebuild_f_test()
     local save_PALUDIS_EXTRA_DIE_MESSAGE="${PALUDIS_EXTRA_DIE_MESSAGE}"
     export PALUDIS_EXTRA_DIE_MESSAGE="
 !!! This package failed inside the test phase. You should read
-!!!    http://paludis.pioto.org/faq/stricter.html#testfailures
+!!!    http://paludis.exherbo.org/faq/stricter.html#testfailures
 !!! for more information on packages with test phase failures.
 "
 

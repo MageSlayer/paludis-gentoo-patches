@@ -96,7 +96,7 @@ changelog.subst :
 	    -e 's,&,\&amp;,g' \
 	    -e 's,<,\&lt;,g' \
 	    -e 's,>,\&gt;,g' \
-	    -e 's,\([[:blank:][:punct:]]\)\?\([0-9a-f]\{40\}\)\([[:blank:][:punct:]]\)\?,\1<a href="http://git.pioto.org/?p=paludis.git;a=commit;h=\2">\2</a>,g' \
+	    -e 's,\([[:blank:][:punct:]]\)\?\([0-9a-f]\{40\}\)\([[:blank:][:punct:]]\)\?,\1<a href="http://git.exherbo.org/?p=paludis/paludis.git;a=commit;h=\2">\2</a>,g' \
 	    -e 's,ticket:\([0-9]\+\),<a href="http://trac.pioto.org/paludis/ticket/\1">ticket:\1</a>,g' \
 	    > changelog.subst
 

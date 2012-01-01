@@ -67,7 +67,7 @@ END
 
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1
 DESCRIPTION="Test package"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI="http://example.com/${P}.tar.bz2"
 SLOT="0"
 IUSE="testflag"
@@ -81,7 +81,7 @@ END
 
 cat <<"END" > bad/pkg/pkg-1.0.ebuild || exit 1
 DESCRIPTION="Test package"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI="http://example.com/${P}.tar.bz2"
 SLOT="0"
 IUSE="testflag!!!"
@@ -115,7 +115,7 @@ END
 
 cat <<"END" > packages/scm/scm/scm-scm.exheres-0 || exit 1
 SUMMARY="Test package"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 DOWNLOADS=""
 SLOT="0"
 MYOPTIONS="testflag"

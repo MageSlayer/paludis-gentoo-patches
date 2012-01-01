@@ -56,7 +56,7 @@ END
 
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1
 DESCRIPTION="Test package"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI="http://example.com/${P}.tar.bz2"
 SLOT="0"
 IUSE="testflag"
@@ -71,7 +71,7 @@ END
 
 cat <<"END" > cat/masked/masked-1.0.ebuild || exit 1
 DESCRIPTION="Masked package"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI="http://example.com/${P}.tar.bz2"
 SLOT="0"
 IUSE=""

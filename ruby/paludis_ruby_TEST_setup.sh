@@ -57,7 +57,7 @@ END
 
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1
 DESCRIPTION="Test package"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI=""
 SLOT="0"
 IUSE=""
@@ -67,7 +67,7 @@ END
 
 cat <<"END" > foo/bar/bar-2.0.ebuild || exit 1
 DESCRIPTION="Test package"
-HOMEPAGE="http://paludis.pioto.org/"
+HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI=""
 SLOT="0"
 IUSE=""
