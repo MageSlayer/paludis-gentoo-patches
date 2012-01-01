@@ -249,7 +249,7 @@ typical way to set up what Portage calls an 'overlay':</p>
 <pre>
 master_repository = gentoo
 location = /var/paludis/repositories/paludis-overlay/
-sync = git://git.pioto.org/paludis-overlay.git
+sync = git://github.com/ciaranm/paludis-overlay.git
 names_cache = (as above)
 write_cache = (see below)
 format = e
