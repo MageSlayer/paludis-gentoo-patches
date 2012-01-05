@@ -55,14 +55,14 @@ for x in "$@"; do
             cd "${x}"
             ls * >/dev/null 2>&1 && dodoc -r *
         )
+    elif [[ -d "${x}" ]] ; then
+        echo "${0}: ${x} is a directory but we are not recursing" >&2
+        ret=1
     elif [[ -s "${x}" ]]; then
         install -m0644 "${x}" "${dir}"
     elif [[ ! -e "${x}" ]]; then
         echo "${0}: ${x} does not exist" >&2
         ret=2
-    elif [[ -d "${x}" ]] ; then
-        echo "${0}: ${x} is a directory but we are not recursing" >&2
-        ret=1
     fi
 done
 
