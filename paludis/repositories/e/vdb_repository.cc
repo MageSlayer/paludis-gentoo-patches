@@ -658,8 +658,8 @@ VDBRepository::merge(const MergeParams & m)
     vdb_dir /= stringify(m.package_id()->name().category());
     vdb_dir /= (stringify(m.package_id()->name().package()) + "-" + stringify(m.package_id()->version()));
 
-    bool fix_mtimes(std::static_pointer_cast<const ERepositoryID>(
-                m.package_id())->eapi()->supported()->ebuild_options()->fix_mtimes());
+    auto eapi(std::static_pointer_cast<const ERepositoryID>(m.package_id())->eapi()->supported());
+    auto fix_mtimes(eapi->ebuild_options()->fix_mtimes());
 
     VDBMerger merger(
             make_named_values<VDBMergerParams>(
@@ -668,7 +668,7 @@ VDBRepository::merge(const MergeParams & m)
                 n::contents_file() = vdb_dir / "CONTENTS",
                 n::environment() = _imp->params.environment(),
                 n::fix_mtimes_before() = fix_mtimes ?  m.build_start_time() : Timestamp(0, 0),
-                n::fs_merger_options() = FSMergerOptions(),
+                n::fs_merger_options() = eapi->fs_merger_options(),
                 n::image() = m.image_dir(),
                 n::merged_entries() = m.merged_entries(),
                 n::options() = m.options(),

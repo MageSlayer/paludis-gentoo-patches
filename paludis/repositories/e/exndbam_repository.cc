@@ -428,8 +428,8 @@ ExndbamRepository::merge(const MergeParams & m)
         }
     }
 
-    bool fix_mtimes(std::static_pointer_cast<const ERepositoryID>(
-                m.package_id())->eapi()->supported()->ebuild_options()->fix_mtimes());
+    auto eapi(std::static_pointer_cast<const ERepositoryID>(m.package_id())->eapi()->supported());
+    auto fix_mtimes(eapi->ebuild_options()->fix_mtimes());
 
     NDBAMMerger merger(
             make_named_values<NDBAMMergerParams>(
@@ -438,7 +438,7 @@ ExndbamRepository::merge(const MergeParams & m)
                 n::contents_file() = target_ver_dir / "contents",
                 n::environment() = _imp->params.environment(),
                 n::fix_mtimes_before() = fix_mtimes ?  m.build_start_time() : Timestamp(0, 0),
-                n::fs_merger_options() = FSMergerOptions(),
+                n::fs_merger_options() = eapi->fs_merger_options(),
                 n::get_new_ids_or_minus_one() = std::bind(&get_new_ids_or_minus_one, _imp->params.environment(), std::placeholders::_1),
                 n::image() = m.image_dir(),
                 n::install_under() = FSPath("/"),

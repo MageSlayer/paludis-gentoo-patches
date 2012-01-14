@@ -337,6 +337,16 @@ namespace
                 merger_options += destringify<MergerOption>(*t);
         }
 
+        FSMergerOptions fs_merger_options;
+        {
+            std::list<std::string> fs_merger_options_tokens;
+            tokenise_whitespace(check_get(k, "fs_merger_options"), std::back_inserter(fs_merger_options_tokens));
+            for (std::list<std::string>::const_iterator t(fs_merger_options_tokens.begin()),
+                    t_end(fs_merger_options_tokens.end()) ;
+                    t != t_end ; ++t)
+                fs_merger_options += destringify<FSMergerOption>(*t);
+        }
+
         return std::make_shared<SupportedEAPI>(make_named_values<SupportedEAPI>(
                         n::allow_tokens_in_mask_files() = destringify_key<bool>(k, "allow_tokens_in_mask_files"),
                         n::annotations() = make_annotations(k),
@@ -349,6 +359,7 @@ namespace
                         n::ebuild_metadata_variables() = make_ebuild_metadata_variables(k),
                         n::ebuild_options() = make_ebuild_options(k),
                         n::ebuild_phases() = make_ebuild_phases(k),
+                        n::fs_merger_options() = fs_merger_options,
                         n::is_pbin() = destringify_key<bool>(k, "is_pbin"),
                         n::iuse_flag_parse_options() = iuse_flag_parse_options,
                         n::merger_options() = merger_options,

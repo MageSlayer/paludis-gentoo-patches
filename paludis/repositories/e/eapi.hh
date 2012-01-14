@@ -31,6 +31,7 @@
 #include <paludis/name.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/merger-fwd.hh>
+#include <paludis/fs_merger-fwd.hh>
 #include <memory>
 
 namespace paludis
@@ -126,6 +127,7 @@ namespace paludis
         typedef Name<struct name_flat_list_index> flat_list_index;
         typedef Name<struct name_fs_location_description> fs_location_description;
         typedef Name<struct name_fs_location_name> fs_location_name;
+        typedef Name<struct name_fs_merger_options> fs_merger_options;
         typedef Name<struct name_general_author> general_author;
         typedef Name<struct name_general_date> general_date;
         typedef Name<struct name_general_description> general_description;
@@ -298,6 +300,7 @@ namespace paludis
             NamedValue<n::ebuild_metadata_variables, std::shared_ptr<const EAPIEbuildMetadataVariables> > ebuild_metadata_variables;
             NamedValue<n::ebuild_options, std::shared_ptr<const EAPIEbuildOptions> > ebuild_options;
             NamedValue<n::ebuild_phases, std::shared_ptr<const EAPIEbuildPhases> > ebuild_phases;
+            NamedValue<n::fs_merger_options, FSMergerOptions> fs_merger_options;
             NamedValue<n::is_pbin, bool> is_pbin;
             NamedValue<n::iuse_flag_parse_options, IUseFlagParseOptions> iuse_flag_parse_options;
             NamedValue<n::merger_options, MergerOptions> merger_options;
