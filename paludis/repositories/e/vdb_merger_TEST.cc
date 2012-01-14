@@ -107,6 +107,7 @@ namespace
                         n::contents_file() = FSPath::cwd() / "vdb_merger_TEST_dir/CONTENTS" / (target + "_dir"),
                         n::environment() = &env,
                         n::fix_mtimes_before() = Timestamp(0, 0),
+                        n::fs_merger_options() = FSMergerOptions(),
                         n::image() = FSPath::cwd() / "vdb_merger_TEST_dir" / (target + "_dir") / "image",
                         n::merged_entries() = std::make_shared<FSPathSet>(),
                         n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,

@@ -75,6 +75,7 @@ NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
     FSMerger(make_named_values<FSMergerParams>(
                 n::environment() = p.environment(),
                 n::fix_mtimes_before() = p.fix_mtimes_before(),
+                n::fs_merger_options() = p.fs_merger_options(),
                 n::get_new_ids_or_minus_one() = p.get_new_ids_or_minus_one(),
                 n::image() = p.image(),
                 n::install_under() = p.install_under(),

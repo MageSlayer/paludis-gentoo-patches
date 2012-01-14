@@ -370,6 +370,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
                 n::contents_file() = target_ver_dir / "contents",
                 n::environment() = _imp->params.environment(),
                 n::fix_mtimes_before() = m.build_start_time(),
+                n::fs_merger_options() = FSMergerOptions(),
                 n::get_new_ids_or_minus_one() = std::bind(&get_new_ids_or_minus_one,
                         _imp->params.environment(), rewrite_ids_over_to_root, _1),
                 n::image() = m.image_dir(),

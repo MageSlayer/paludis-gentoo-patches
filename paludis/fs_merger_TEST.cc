@@ -167,6 +167,7 @@ namespace
             merger(make_named_values<FSMergerParams>(
                         n::environment() = &env,
                         n::fix_mtimes_before() = Timestamp(0, 0),
+                        n::fs_merger_options() = FSMergerOptions(),
                         n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
                         n::image() = image_dir,
                         n::install_under() = FSPath("/"),
@@ -189,6 +190,7 @@ namespace
             merger(make_named_values<FSMergerParams>(
                     n::environment() = &env,
                     n::fix_mtimes_before() = fix ? FSPath("fs_merger_TEST_dir/reference").stat().mtim() : Timestamp(0, 0),
+                    n::fs_merger_options() = FSMergerOptions(),
                     n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
                     n::image() = image_dir,
                     n::install_under() = FSPath("/"),

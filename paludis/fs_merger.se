@@ -25,3 +25,12 @@ make_enum_FSMergerStatusFlag()
 END
 }
 
+make_enum_FSMergerOption()
+{
+    prefix fsmo
+
+    key fsmo_dir_over_sym_dir_is_error   "Merging a directory over a symlink is an error"
+
+    want_destringify
+}
+

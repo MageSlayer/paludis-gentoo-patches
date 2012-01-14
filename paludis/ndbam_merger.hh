@@ -35,6 +35,7 @@ namespace paludis
         typedef Name<struct name_contents_file> contents_file;
         typedef Name<struct name_environment> environment;
         typedef Name<struct name_fix_mtimes_before> fix_mtimes_before;
+        typedef Name<struct name_fs_merger_options> fs_merger_options;
         typedef Name<struct name_get_new_ids_or_minus_one> get_new_ids_or_minus_one;
         typedef Name<struct name_image> image;
         typedef Name<struct name_install_under> install_under;
@@ -53,6 +54,7 @@ namespace paludis
         NamedValue<n::contents_file, FSPath> contents_file;
         NamedValue<n::environment, Environment *> environment;
         NamedValue<n::fix_mtimes_before, Timestamp> fix_mtimes_before;
+        NamedValue<n::fs_merger_options, FSMergerOptions> fs_merger_options;
         NamedValue<n::get_new_ids_or_minus_one, std::function<std::pair<uid_t, gid_t> (const FSPath &)> > get_new_ids_or_minus_one;
         NamedValue<n::image, FSPath> image;
         NamedValue<n::install_under, FSPath> install_under;

@@ -89,6 +89,7 @@ VDBMerger::VDBMerger(const VDBMergerParams & p) :
     FSMerger(make_named_values<FSMergerParams>(
                 n::environment() = p.environment(),
                 n::fix_mtimes_before() = p.fix_mtimes_before(),
+                n::fs_merger_options() = p.fs_merger_options(),
                 n::get_new_ids_or_minus_one() = std::bind(&get_new_ids_or_minus_one, p.environment(), std::placeholders::_1),
                 n::image() = p.image(),
                 n::install_under() = FSPath("/"),

@@ -234,8 +234,13 @@ FSMerger::on_dir_over_sym(bool is_check, const FSPath & src, const FSPath & dst)
 
     if (m == et_dir)
     {
-        on_warn(is_check, "Expected '" + stringify(dst / src.basename()) +
-                "' to be a directory but found a symlink to a directory");
+        if (_imp->params.fs_merger_options()[fsmo_dir_over_sym_dir_is_error])
+            on_error(is_check, "Expected '" + stringify(dst / src.basename()) +
+                    "' to be a directory but found a symlink to a directory");
+        else
+            on_warn(is_check, "Expected '" + stringify(dst / src.basename()) +
+                    "' to be a directory but found a symlink to a directory");
+
         if (! is_check)
             track_install_dir(src, dst, FSMergerStatusFlags() + msi_used_existing);
     }

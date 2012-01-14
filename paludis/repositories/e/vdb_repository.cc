@@ -668,6 +668,7 @@ VDBRepository::merge(const MergeParams & m)
                 n::contents_file() = vdb_dir / "CONTENTS",
                 n::environment() = _imp->params.environment(),
                 n::fix_mtimes_before() = fix_mtimes ?  m.build_start_time() : Timestamp(0, 0),
+                n::fs_merger_options() = FSMergerOptions(),
                 n::image() = m.image_dir(),
                 n::merged_entries() = m.merged_entries(),
                 n::options() = m.options(),

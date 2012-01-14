@@ -44,6 +44,14 @@ namespace paludis
      */
     typedef Options<FSMergerStatusFlag> FSMergerStatusFlags;
 
+    /**
+     * Options for FSMerger.
+     *
+     * \ingroup g_repository
+     * \since 0.71
+     */
+    typedef Options<FSMergerOption> FSMergerOptions;
+
     class FSMergerParams;
     class FSMergerError;
     class FSMerger;

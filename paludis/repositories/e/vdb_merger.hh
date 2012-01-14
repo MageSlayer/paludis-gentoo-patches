@@ -60,6 +60,7 @@ namespace paludis
         NamedValue<n::contents_file, FSPath> contents_file;
         NamedValue<n::environment, Environment *> environment;
         NamedValue<n::fix_mtimes_before, Timestamp> fix_mtimes_before;
+        NamedValue<n::fs_merger_options, FSMergerOptions> fs_merger_options;
         NamedValue<n::image, FSPath> image;
         NamedValue<n::merged_entries, std::shared_ptr<FSPathSet> > merged_entries;
         NamedValue<n::options, MergerOptions> options;
