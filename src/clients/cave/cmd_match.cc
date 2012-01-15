@@ -33,6 +33,7 @@
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/log.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
@@ -413,8 +414,18 @@ MatchCommand::run_hosted(
         const std::shared_ptr<const Set<std::string> > & patterns,
         const PackageDepSpec & spec)
 {
-    const std::shared_ptr<const PackageID> id(*((*env)[selection::RequireExactlyOne(
-                    generator::Matches(spec, make_null_shared_ptr(), { }))])->begin());
+    std::shared_ptr<const PackageID> id;
+    try
+    {
+        id = (*((*env)[selection::RequireExactlyOne(generator::Matches(spec, make_null_shared_ptr(), { }))])->begin());
+    }
+    catch (const DidNotGetExactlyOneError & e)
+    {
+        Log::get_instance()->message("cave.match.not_one_id", ll_warning, lc_context)
+            << "Got exception '" << e.message() << "' (" << e.what() << ") when looking for '"
+            << spec << "'. This might be caused by a stale search index.";
+        return false;
+    }
 
     std::list<std::string> texts;
 
