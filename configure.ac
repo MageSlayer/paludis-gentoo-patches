@@ -1169,18 +1169,51 @@ AC_ARG_ENABLE([ruby],
 AC_MSG_RESULT($enable_ruby)
 
 if test "x$enable_ruby" = "xyes" ; then
-	AC_CHECK_PROGS(RUBY, ruby, )
-	if test "x$RUBY" = "x" ; then
-		AC_MSG_ERROR([Ruby is required for --enable-ruby])
-	fi
+	PKG_CHECK_MODULES(RUBY, [ruby-1.9], [
+		RUBY=`pkg-config --variable=ruby ruby-1.9`
+	], [
+		AC_CHECK_PROGS(RUBY, ruby, )
+		if test "x$RUBY" = "x" ; then
+			AC_MSG_ERROR([Ruby is required for --enable-ruby])
+		fi
 
-	AC_MSG_CHECKING([for Ruby archdir])
-	RUBY_ARCHDIR=`$RUBY -r rbconfig -e 'puts Config::CONFIG@<:@"archdir"@:>@'`
-	if test "x$RUBY_ARCHDIR" = "x" ; then
-		AC_MSG_ERROR([Could not find Ruby archdir])
-	fi
-	AC_MSG_RESULT([$RUBY_ARCHDIR])
-	AC_SUBST([RUBY_ARCHDIR])
+		AC_MSG_CHECKING([for Ruby archdir])
+		RUBY_ARCHDIR=`$RUBY -r rbconfig -e 'puts Config::CONFIG@<:@"archdir"@:>@'`
+		if test "x$RUBY_ARCHDIR" = "x" ; then
+			AC_MSG_ERROR([Could not find Ruby archdir])
+		fi
+		AC_MSG_RESULT([$RUBY_ARCHDIR])
+
+		AC_MSG_CHECKING([for Ruby soname])
+		RUBY_SONAME=`$RUBY -r rbconfig -e 'puts Config::CONFIG@<:@"RUBY_SO_NAME"@:>@'`
+		if test "x$RUBY_SONAME" = "x" ; then
+			AC_MSG_ERROR([Could not find Ruby soname])
+		fi
+		AC_MSG_RESULT([$RUBY_SONAME])
+
+		AC_MSG_CHECKING([for Ruby hdrdir])
+		RUBY_HDRDIR=`$RUBY -r rbconfig -e 'puts Config::CONFIG@<:@"rubyhdrdir"@:>@'`
+		if test "x$RUBY_HDRDIR" = "x" ; then
+			AC_MSG_ERROR([Could not find Ruby hdrdir])
+		elif test "x$RUBY_HDRDIR" = "xnil" ; then
+			RUBY_HDRDIR=$RUBY_ARCHDIR
+		fi
+		AC_MSG_RESULT([$RUBY_HDRDIR])
+
+		AC_MSG_CHECKING([for Ruby hdrarchdir])
+		if test "x$RUBY_ARCHDIR" = "x$RUBY_HDRDIR"; then
+			RUBY_HDRARCHDIR=$RUBY_ARCHDIR
+		else
+			RUBY_HDRARCHDIR=`$RUBY -r rbconfig -e 'puts File.join(Config::CONFIG@<:@"rubyhdrdir"@:>@, Config::CONFIG@<:@"arch"@:>@'\)`
+			if test "x$RUBY_HDRARCHDIR" = "x" ; then
+				AC_MSG_ERROR([Could not find Ruby hdrarchdir])
+			fi
+		fi
+		AC_MSG_RESULT([$RUBY_HDRARCHDIR])
+
+		RUBY_CFLAGS="-I${RUBY_HDRDIR} -I${RUBY_HDRARCHDIR}"
+		RUBY_LIBS="-l${RUBY_SONAME}"
+	])
 
 	AC_MSG_CHECKING([for Ruby sitearchdir])
 	RUBY_SITEARCHDIR=`$RUBY -r rbconfig -e 'puts Config::CONFIG@<:@"sitearchdir"@:>@'`
@@ -1188,15 +1221,6 @@ if test "x$enable_ruby" = "xyes" ; then
 		AC_MSG_ERROR([Could not find Ruby sitearchdir])
 	fi
 	AC_MSG_RESULT([$RUBY_SITEARCHDIR])
-	AC_SUBST([RUBY_SITEARCHDIR])
-
-	AC_MSG_CHECKING([for Ruby soname])
-	RUBY_SONAME=`$RUBY -r rbconfig -e 'puts Config::CONFIG@<:@"RUBY_SO_NAME"@:>@'`
-	if test "x$RUBY_SONAME" = "x" ; then
-		AC_MSG_ERROR([Could not find Ruby soname])
-	fi
-	AC_MSG_RESULT([$RUBY_SONAME])
-	AC_SUBST([RUBY_SONAME])
 
 	AC_ARG_WITH([ruby-install-dir],
 		AS_HELP_STRING([--with-ruby-install-dir=dir], [Specify Ruby installation dir]),
@@ -1207,30 +1231,11 @@ if test "x$enable_ruby" = "xyes" ; then
 		RUBY_INSTALL_DIR=$RUBY_SITEARCHDIR
 	fi
 	AC_MSG_RESULT([$RUBY_INSTALL_DIR])
+
+	AC_SUBST([RUBY])
+	AC_SUBST([RUBY_CFLAGS])
+	AC_SUBST([RUBY_LIBS])
 	AC_SUBST([RUBY_INSTALL_DIR])
-
-	AC_MSG_CHECKING([for Ruby hdrdir])
-	RUBY_HDRDIR=`$RUBY -r rbconfig -e 'puts Config::CONFIG@<:@"rubyhdrdir"@:>@'`
-	if test "x$RUBY_HDRDIR" = "x" ; then
-		AC_MSG_ERROR([Could not find Ruby hdrdir])
-	elif test "x$RUBY_HDRDIR" = "xnil" ; then
-		RUBY_HDRDIR=$RUBY_ARCHDIR
-	fi
-	AC_MSG_RESULT([$RUBY_HDRDIR])
-	AC_SUBST([RUBY_HDRDIR])
-
-	AC_MSG_CHECKING([for Ruby hdrarchdir])
-	if test "x$RUBY_ARCHDIR" = "x$RUBY_HDRDIR"; then
-		RUBY_HDRARCHDIR=$RUBY_ARCHDIR
-	else
-		RUBY_HDRARCHDIR=`$RUBY -r rbconfig -e 'puts File.join(Config::CONFIG@<:@"rubyhdrdir"@:>@, Config::CONFIG@<:@"arch"@:>@'\)`
-		if test "x$RUBY_HDRARCHDIR" = "x" ; then
-			AC_MSG_ERROR([Could not find Ruby hdrarchdir])
-		fi
-	fi
-	AC_MSG_RESULT([$RUBY_HDRARCHDIR])
-	AC_SUBST([RUBY_HDRARCHDIR])
-
 fi
 AM_CONDITIONAL([ENABLE_RUBY], test "x$enable_ruby" = "xyes")
 dnl }}}
