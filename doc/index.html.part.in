@@ -4,7 +4,7 @@
 
 <ul>
     <li>We use <a href="http://trac.pioto.org/paludis/">Trac</a> for bug reports, feature requests etc.</li>
-    <li>You are encouraged to use the <a href="http://lists.pioto.org/mailman/listinfo/paludis-user">paludis-user</a>
+    <li>You are encouraged to use the <a href="http://lists.exherbo.org/mailman/listinfo/paludis-user">paludis-user</a>
         mailing list, or the <code>#paludis</code> IRC channel on <code>irc.freenode.net</code>.</li>
     <li>The current version is ###PALUDIS_VERSION###. See <a href="news.html">the release notes</a> and <a
         href="changelog.html">changelog</a>.</li>

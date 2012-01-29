@@ -11,9 +11,9 @@
 <p>We have two mailing lists:</p>
 
 <ul>
-    <li><a href="http://lists.pioto.org/mailman/listinfo/paludis-user">paludis-user</a>, for general
+    <li><a href="http://lists.exherbo.org/mailman/listinfo/paludis-user">paludis-user</a>, for general
     user questions.</li>
-    <li><a href="http://lists.pioto.org/mailman/listinfo/paludis-dev">paludis-dev</a>, for
+    <li><a href="http://lists.exherbo.org/mailman/listinfo/paludis-dev">paludis-dev</a>, for
     development. Rather high noise, since it gets an auto-CC: on trac tickets and nightly build reports.</li>
 </ul>
 
