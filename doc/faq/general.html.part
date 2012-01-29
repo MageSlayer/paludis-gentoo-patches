@@ -20,7 +20,7 @@ you should ask it in one of these places:</p>
 <ul>
     <li>The <code>#paludis</code> channel on <code>irc.freenode.net</code></li>
     <li>The <a href="../overview/contact.html">paludis-user mailing list</a></li>
-    <li>The <a href="http://trac.pioto.org/paludis/">bug tracker</a> will probably
+    <li>The <a href="http://paludis.exherbo.org/trac/">bug tracker</a> will probably
     also be useful</li>
 </ul>
 
@@ -50,7 +50,7 @@ the code now does.</p>
 
 <ul>
     <li>Patches can be submitted via <a
-        href="http://trac.pioto.org/paludis/">trac</a>. It's best to
+        href="http://paludis.exherbo.org/trac/">trac</a>. It's best to
     discuss ideas before spending too much time on the code, because we don't
     have any qualms about rejecting things we think are a bad idea.</li>
 

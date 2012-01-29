@@ -97,7 +97,7 @@ changelog.subst :
 	    -e 's,<,\&lt;,g' \
 	    -e 's,>,\&gt;,g' \
 	    -e 's,\([[:blank:][:punct:]]\)\?\([0-9a-f]\{40\}\)\([[:blank:][:punct:]]\)\?,\1<a href="http://git.exherbo.org/paludis/paludis.git/commit/?id=\2">\2</a>,g' \
-	    -e 's,ticket:\([0-9]\+\),<a href="http://trac.pioto.org/paludis/ticket/\1">ticket:\1</a>,g' \
+	    -e 's,ticket:\([0-9]\+\),<a href="http://paludis.exherbo.org/trac/ticket/\1">ticket:\1</a>,g' \
 	    > changelog.subst
 
 documentation : doxygen epydoc htmldocs
