@@ -1355,23 +1355,23 @@ if test "x$enable_python" = "xyes" ; then
 	save_CXXFLAGS="$CXXFLAGS"
 	save_LIBS="$LIBS"
 	CXXFLAGS="$CXXFLAGS -I$PYTHON_INCLUDE_DIR"
-	LIBS="$LIBS -lboost_python -lpython$PYTHON_VERSION"
-	AC_LINK_IFELSE([AC_LANG_SOURCE([
-#include <boost/python.hpp>
-int main() { boost::python::throw_error_already_set(); return 0; }
-	])],
-		[BOOST_PYTHON_LIB="-lboost_python"
-		AC_MSG_RESULT([$BOOST_PYTHON_LIB])],
-		[LIBS="$save_LIBS -lboost_python-mt -lpython$PYTHON_VERSION"
+	BOOST_PYTHON_LIB=
+	for lib in boost_python-$PYTHON_VERSION boost_python-$PYTHON_VERSION-mt boost_python boost_python-mt; do
+		LIBS="$LIBS -l$lib -lpython$PYTHON_VERSION"
 		AC_LINK_IFELSE([AC_LANG_SOURCE([
 #include <boost/python.hpp>
 int main() { boost::python::throw_error_already_set(); return 0; }
 		])],
-			[BOOST_PYTHON_LIB="-lboost_python-mt"
-			AC_MSG_RESULT([$BOOST_PYTHON_LIB])],
-			[AC_MSG_RESULT([not found])
-			AC_MSG_ERROR([Cannot work out how to link to boost.python. You may need to reinstall boost.python, especially \
-						  if you have upgraded Python since installing Boost.])])])
+			[BOOST_PYTHON_LIB="-l$lib"
+			AC_MSG_RESULT([$BOOST_PYTHON_LIB])
+			break],
+			[LIBS="$save_LIBS"])
+	done
+	if test "x$BOOST_PYTHON_LIB" = x; then
+		AC_MSG_RESULT([not found])
+		AC_MSG_ERROR([Cannot work out how to link to boost.python. You may need to reinstall boost.python, especially \
+					  if you have upgraded Python since installing Boost.])
+	fi
 	AC_SUBST(BOOST_PYTHON_LIB)
 	dnl Restore the C++ flags
 	LIBS="$save_LIBS"
