@@ -349,7 +349,8 @@ AsciidocWriter::extra_arg_enum(const AllowedEnumArg & e, const std::string & def
 void
 AsciidocWriter::extra_arg_string_set(const std::string & first, const std::string & second)
 {
-    _os << first << endl;
+    _os << "*" << first << "*:::" << endl;
+    _os << "        ";
     escape_asciidoc(_os, second);
     _os << endl;
 }
