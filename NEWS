@@ -4,9 +4,11 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
-master:
+0.72.0:
     * Changed documentation and Git URLs from paludis.pioto.org to
       paludis.exherbo.org.
+
+    * Gentoo's new boost.python library names are now recognised.
 
 0.70.2:
     * Assorted bug fixes.
