@@ -115,6 +115,7 @@ namespace
                 {
                     PackageDepSpec new_s(PartiallyMadePackageDepSpec(*node.spec()).slot_requirement(
                                 std::make_shared<ELikeSlotExactRequirement>((*matches->last())->slot_key()->parse_value(), true)));
+                    new_s.set_annotations(node.spec()->maybe_annotations());
                     c = std::make_shared<PackageDepSpec>(new_s);
                 }
             } while (false);
