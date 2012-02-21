@@ -199,7 +199,7 @@ emagicdocs()
             ANNOUNCE PORTING NOTES PROBLEMS NOTICE "${DEFAULT_SRC_INSTALL_EXTRA_DOCS[@]}"; do
             for p in "${DEFAULT_SRC_INSTALL_EXTRA_PREFIXES[@]}" '' ; do
                 for doc in "${p}"*([[:digit:]])"${f}"{,+([._-])*} ; do
-                    if [[ -s "${doc}" ]] ; then
+                    if [[ -s "${doc}" && ! -d "${doc}" ]] ; then
                         for e in "${DEFAULT_SRC_INSTALL_EXCLUDE[@]}" ; do
                             [[ ${doc} == ${e} ]] && continue 2
                         done
