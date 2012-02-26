@@ -32,6 +32,7 @@ using namespace paludis;
 struct PaludisTarExtras
 {
     struct archive * archive;
+    struct archive_entry_linkresolver * linkresolver;
 };
 
 extern "C"
@@ -57,6 +58,14 @@ paludis_tar_extras_init(const std::string & f, const std::string & compress)
 
     if (ARCHIVE_OK != archive_write_open_filename(extras->archive, f.c_str()))
         throw MergerError("archive_write_open_filename failed");
+
+    extras->linkresolver = archive_entry_linkresolver_new();
+
+    if (extras->linkresolver == NULL)
+        throw MergerError("archive_entry_linkresolver_new failed");
+
+    archive_entry_linkresolver_set_strategy(extras->linkresolver, archive_format(extras->archive));
+
     return extras;
 }
 
@@ -71,28 +80,35 @@ paludis_tar_extras_add_file(PaludisTarExtras * const extras, const std::string &
     archive_read_disk_set_standard_lookup(disk_archive);
 
     struct archive_entry * entry(archive_entry_new());
+    struct archive_entry * sparse(archive_entry_new());
 
     int fd(open(from.c_str(), O_RDONLY));
 
     archive_entry_copy_pathname(entry, path.c_str());
     if (ARCHIVE_OK != archive_read_disk_entry_from_file(disk_archive, entry, fd, 0))
         throw MergerError("archive_read_disk_entry_from_file failed");
+
+    archive_entry_linkify(extras->linkresolver, &entry, &sparse);
+
     if (ARCHIVE_OK != archive_write_header(extras->archive, entry))
         throw MergerError("archive_write_header failed");
 
-    int bytes_read;
-    char buf[4096];
-    while ((bytes_read = read(fd, buf, sizeof(buf))) > 0)
-        if (bytes_read != archive_write_data(extras->archive, buf, bytes_read))
-            throw MergerError("archive_write_data failed");
+    if (archive_entry_size(entry) > 0)
+    {
+        int bytes_read;
+        char buf[4096];
+        while ((bytes_read = read(fd, buf, sizeof(buf))) > 0)
+            if (bytes_read != archive_write_data(extras->archive, buf, bytes_read))
+                throw MergerError("archive_write_data failed");
 
-    close(fd);
+        close(fd);
 
-    if (ARCHIVE_OK != archive_write_finish_entry(extras->archive))
-        throw MergerError("archive_write_finish_entry failed");
+        if (ARCHIVE_OK != archive_write_finish_entry(extras->archive))
+            throw MergerError("archive_write_finish_entry failed");
 
-    if (ARCHIVE_OK != archive_read_finish(disk_archive))
-        throw MergerError("archive_read_finish failed");
+        if (ARCHIVE_OK != archive_read_finish(disk_archive))
+            throw MergerError("archive_read_finish failed");
+    }
 
     archive_entry_free(entry);
 }
@@ -130,6 +146,7 @@ paludis_tar_extras_cleanup(PaludisTarExtras * const extras)
         throw MergerError("archive_write_close failed");
     if (ARCHIVE_OK != archive_write_finish(extras->archive))
         throw MergerError("archive_write_finish failed");
+    archive_entry_linkresolver_free(extras->linkresolver);
     delete extras;
 }
 
