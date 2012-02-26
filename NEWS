@@ -4,6 +4,13 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.72.1:
+    * Hardlinks are now handled cleanly by pbins.
+
+    * Ruby 1.9 is now supported.
+
+    * Minor bug fixes.
+
 0.72.0:
     * Changed documentation and Git URLs from paludis.pioto.org to
       paludis.exherbo.org.
