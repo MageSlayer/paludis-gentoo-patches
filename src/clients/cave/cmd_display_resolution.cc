@@ -570,15 +570,52 @@ namespace
         for (Choices::ConstIterator k(choices->begin()), k_end(choices->end()) ;
                 k != k_end ; ++k)
         {
-            if ((*k)->hidden())
-                continue;
+            if ((*k)->hidden() && (*k)->consider_added_or_changed() && old_choices)
+            {
+                /* ignore the hide if anything has changed */
+                bool show_anyway(false);
+                for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
+                        i != i_end && ! show_anyway ; ++i)
+                {
+                    std::shared_ptr<const ChoiceValue> old_choice(
+                            old_choices->find_by_name_with_prefix((*i)->name_with_prefix()));
+                    if (! old_choice)
+                        show_anyway = true;
+                    else if (old_choice->enabled() != (*i)->enabled())
+                        show_anyway = true;
+                }
+
+                if (! show_anyway)
+                    continue;
+            }
 
             bool shown_prefix_changed(false), shown_prefix_unchanged(false);
             for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
                     i != i_end ; ++i)
             {
-                if (co_implicit == (*i)->origin())
-                    continue;
+                bool changed(false), added(false);
+                if ((*k)->consider_added_or_changed())
+                {
+                    if (old_choices)
+                    {
+                        std::shared_ptr<const ChoiceValue> old_choice(
+                                old_choices->find_by_name_with_prefix((*i)->name_with_prefix()));
+                        if (! old_choice)
+                            added = true;
+                        else if (old_choice->enabled() != (*i)->enabled())
+                            changed = true;
+                    }
+                    else
+                        added = true;
+                }
+
+                if ((! added) && (! changed))
+                {
+                    if (co_implicit == (*i)->origin())
+                        continue;
+                    if ((*k)->hidden())
+                        continue;
+                }
 
                 Tribool changed_state(indeterminate);
                 if (changed_choices)
@@ -616,22 +653,6 @@ namespace
                         t = printer.prettify_choice_value_masked(*i);
                     else
                         t = printer.prettify_choice_value_disabled(*i);
-                }
-
-                bool changed(false), added(false);
-                if ((*k)->consider_added_or_changed())
-                {
-                    if (old_choices)
-                    {
-                        std::shared_ptr<const ChoiceValue> old_choice(
-                                old_choices->find_by_name_with_prefix((*i)->name_with_prefix()));
-                        if (! old_choice)
-                            added = true;
-                        else if (old_choice->enabled() != (*i)->enabled())
-                            changed = true;
-                    }
-                    else
-                        added = true;
                 }
 
                 if (changed)
