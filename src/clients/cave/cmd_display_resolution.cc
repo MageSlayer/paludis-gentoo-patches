@@ -547,6 +547,30 @@ namespace
         }
     }
 
+    bool show_choice_value_even_if_hidden(
+            const std::shared_ptr<const ChoiceValue> & v,
+            const std::shared_ptr<const Choices> & old_choices)
+    {
+        if (! old_choices)
+            return false;
+
+        switch (v->origin())
+        {
+            case co_implicit: return false;
+            case co_special:  return false;
+            case co_explicit: break;
+            case last_co:     break;
+        }
+
+        std::shared_ptr<const ChoiceValue> old_choice(old_choices->find_by_name_with_prefix(v->name_with_prefix()));
+        if (! old_choice)
+            return true;
+        else if (old_choice->enabled() != v->enabled())
+            return true;
+
+        return false;
+    }
+
     void display_choices(
             const std::shared_ptr<Environment> & env,
             const DisplayResolutionCommandLine & cmdline,
@@ -576,14 +600,8 @@ namespace
                 bool show_anyway(false);
                 for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
                         i != i_end && ! show_anyway ; ++i)
-                {
-                    std::shared_ptr<const ChoiceValue> old_choice(
-                            old_choices->find_by_name_with_prefix((*i)->name_with_prefix()));
-                    if (! old_choice)
+                    if (show_choice_value_even_if_hidden(*i, old_choices))
                         show_anyway = true;
-                    else if (old_choice->enabled() != (*i)->enabled())
-                        show_anyway = true;
-                }
 
                 if (! show_anyway)
                     continue;
@@ -609,11 +627,14 @@ namespace
                         added = true;
                 }
 
-                if ((! added) && (! changed))
+                if (co_implicit == (*i)->origin() || (*k)->hidden())
                 {
-                    if (co_implicit == (*i)->origin())
-                        continue;
-                    if ((*k)->hidden())
+                    if (added || changed)
+                    {
+                        if (! show_choice_value_even_if_hidden(*i, old_choices))
+                            continue;
+                    }
+                    else
                         continue;
                 }
 
