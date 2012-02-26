@@ -4,6 +4,10 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.72.2:
+    * Added and changed options are now displayed in 'resolve' output, even if
+      they are hidden.
+
 0.72.1:
     * Hardlinks are now handled cleanly by pbins.
 
