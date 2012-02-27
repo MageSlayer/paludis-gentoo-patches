@@ -68,7 +68,7 @@ namespace paludis
         struct MinElement<c_, cs_...>
         {
             enum {
-                cs_value = MinElement<cs_...>::value,
+                cs_value = static_cast<char>(MinElement<cs_...>::value),
                 c_value = c_,
                 value = (cs_value < c_value ? cs_value : c_value)
             };
