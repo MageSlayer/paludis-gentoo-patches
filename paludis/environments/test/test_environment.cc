@@ -44,6 +44,7 @@
 #include <unordered_map>
 #include <string>
 #include <list>
+#include <unistd.h>
 
 using namespace paludis;
 

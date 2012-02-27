@@ -48,6 +48,7 @@
 #include <iostream>
 #include <algorithm>
 #include <map>
+#include <unistd.h>
 
 #include "command_command_line.hh"
 

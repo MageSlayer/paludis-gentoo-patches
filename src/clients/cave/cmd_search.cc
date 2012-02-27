@@ -55,6 +55,7 @@
 #include <algorithm>
 #include <set>
 #include <map>
+#include <unistd.h>
 
 #include "command_command_line.hh"
 

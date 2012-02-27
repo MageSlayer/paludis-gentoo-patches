@@ -52,6 +52,7 @@
 #include <vector>
 #include <algorithm>
 #include <set>
+#include <unistd.h>
 
 using namespace paludis;
 using namespace paludis::erepository;

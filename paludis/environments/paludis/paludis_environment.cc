@@ -65,6 +65,7 @@
 #include <algorithm>
 #include <list>
 #include <map>
+#include <unistd.h>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;

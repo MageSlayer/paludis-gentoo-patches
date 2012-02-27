@@ -37,6 +37,7 @@
 #include <paludis/output_manager.hh>
 
 #include <algorithm>
+#include <unistd.h>
 
 using namespace paludis;
 using namespace paludis::erepository;

@@ -25,6 +25,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <cstring>
+#include <unistd.h>
 #include "config.h"
 
 #ifdef HAVE_PTSNAME_R

@@ -39,6 +39,7 @@
 #include <paludis/action.hh>
 
 #include <algorithm>
+#include <unistd.h>
 
 using namespace paludis;
 using namespace paludis::erepository;

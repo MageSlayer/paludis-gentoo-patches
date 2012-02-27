@@ -21,6 +21,7 @@
 #include <paludis/util/stringify.hh>
 #include <sys/types.h>
 #include <sys/time.h>
+#include <unistd.h>
 
 using namespace paludis;
 

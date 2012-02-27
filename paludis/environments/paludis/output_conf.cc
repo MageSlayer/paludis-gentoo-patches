@@ -53,6 +53,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <unistd.h>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;

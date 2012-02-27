@@ -92,6 +92,7 @@
 #include <cstdlib>
 #include <map>
 #include <limits>
+#include <unistd.h>
 
 using namespace paludis;
 using namespace cave;
