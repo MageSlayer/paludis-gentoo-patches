@@ -23,6 +23,7 @@
 #include <paludis/util/graph-fwd.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/stringify.hh>
 #include <memory>
 
 /** \file
