@@ -90,6 +90,12 @@ namespace paludis
             {
             }
 
+            NamedValue & operator=(const NamedValue & v)
+            {
+                _value = v._value;
+                return *this;
+            }
+
             V_ & operator() ()
             {
                 return _value;
