@@ -261,7 +261,7 @@ NDBAM::has_package_named(const QualifiedPackageName & q)
         if (FSPath(_imp->location / "indices" / "categories" /
                     stringify(q.category()) / stringify(q.package())).stat().is_directory_or_symlink_to_directory())
         {
-            cc.package_contents_map.insert(std::make_pair(q, new PackageContents));
+            cc.package_contents_map.insert(std::make_pair(q, std::make_shared<PackageContents>()));
             return true;
         }
         cc.package_contents_map.insert(std::make_pair(q, std::shared_ptr<PackageContents>()));
@@ -596,7 +596,7 @@ NDBAM::category_names_containing_package(const PackageNamePart & p) const
     Lock l(_imp->category_names_containing_package_mutex);
     CategoryNamesContainingPackage::iterator cncp_i(_imp->category_names_containing_package.find(p));
     if (_imp->category_names_containing_package.end() == cncp_i)
-        cncp_i = _imp->category_names_containing_package.insert(std::make_pair(p, new CategoryNamesContainingPackageEntry)).first;
+        cncp_i = _imp->category_names_containing_package.insert(std::make_pair(p, std::make_shared<CategoryNamesContainingPackageEntry>())).first;
     CategoryNamesContainingPackageEntry & cncp(*cncp_i->second);
 
     l.acquire_then_release_old(cncp.mutex);
