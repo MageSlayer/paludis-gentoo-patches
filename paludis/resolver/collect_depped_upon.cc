@@ -240,7 +240,7 @@ paludis::resolver::dependent_upon(
     }
     else
     {
-        auto k({ &PackageID::build_dependencies_key, &PackageID::run_dependencies_key, &PackageID::post_dependencies_key });
+        auto k { &PackageID::build_dependencies_key, &PackageID::run_dependencies_key, &PackageID::post_dependencies_key };
         for (auto i(k.begin()), i_end(k.end()) ; i != i_end ; ++i)
         {
             auto key(((*id).*(*i))());
