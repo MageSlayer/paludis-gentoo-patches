@@ -19,6 +19,7 @@
 
 #include <paludis/match_package.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/dep_spec_annotations.hh>
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/environment.hh>
 #include <paludis/version_requirements.hh>
@@ -211,6 +212,9 @@ paludis::match_package_with_maybe_changes(
                     return false;
         }
     }
+
+    if (from_id && *id == *from_id && spec.maybe_annotations() && spec.maybe_annotations()->end() != spec.maybe_annotations()->find(dsar_no_self_match))
+        return false;
 
     return true;
 }

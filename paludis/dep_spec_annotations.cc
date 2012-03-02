@@ -129,6 +129,7 @@ paludis::find_blocker_role_in_annotations(
             case dsar_general_date:
             case dsar_general_author:
             case dsar_general_token:
+            case dsar_no_self_match:
             case dsar_myoptions_requires:
             case dsar_myoptions_n_at_least_one:
             case dsar_myoptions_n_at_most_one:

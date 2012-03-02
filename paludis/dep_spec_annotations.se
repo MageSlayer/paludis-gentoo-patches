@@ -16,6 +16,8 @@ make_enum_DepSpecAnnotationRole()
     key dsar_general_token                    "A token"
     key dsar_general_defined_in               "Defined in"
 
+    key dsar_no_self_match                    "Spec doesn't match the containing package (checked by match_package)"
+
     # update find_blocker_role_in_annotations when adding here
     key dsar_blocker_manual                   "Blocker, resolve manually"
     key dsar_blocker_uninstall_blocked_after  "Blocker, uninstall blocked after"
