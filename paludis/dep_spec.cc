@@ -224,6 +224,18 @@ BlockDepSpec::BlockDepSpec(const BlockDepSpec & other) :
     set_annotations(other.maybe_annotations());
 }
 
+const std::shared_ptr<const DepSpecAnnotations>
+BlockDepSpec::maybe_annotations() const
+{
+    return _spec.maybe_annotations();
+}
+
+void
+BlockDepSpec::set_annotations(const std::shared_ptr<const DepSpecAnnotations> & anno)
+{
+    _spec.set_annotations(anno);
+}
+
 std::ostream &
 paludis::operator<< (std::ostream & s, const PlainTextDepSpec & a)
 {

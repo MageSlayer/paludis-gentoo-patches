@@ -88,14 +88,14 @@ namespace paludis
              *
              * \since 0.58
              */
-            const std::shared_ptr<const DepSpecAnnotations> maybe_annotations() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const DepSpecAnnotations> maybe_annotations() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Change our annotations, may be null.
              *
              * \since 0.58
              */
-            void set_annotations(const std::shared_ptr<const DepSpecAnnotations> &);
+            virtual void set_annotations(const std::shared_ptr<const DepSpecAnnotations> &);
     };
 
     /**
@@ -600,6 +600,22 @@ namespace paludis
              * \since 0.41
              */
             const PackageDepSpec blocking() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Our annotations, may be null.  Forwards to the
+             * underlying PackageDepSpec.
+             *
+             * \since 0.73
+             */
+            virtual const std::shared_ptr<const DepSpecAnnotations> maybe_annotations() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * Change our annotations, may be null.  Forwards to the
+             * underlying PackageDepSpec.
+             *
+             * \since 0.73
+             */
+            virtual void set_annotations(const std::shared_ptr<const DepSpecAnnotations> &);
 
             virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
