@@ -41,22 +41,22 @@ class MaskSptrToPythonVisitor
         {
         }
 
-        void visit(const UserMask & m)
+        void visit(const UserMask &)
         {
             obj = bp::object(std::static_pointer_cast<const UserMask>(_m_ptr));
         }
 
-        void visit(const UnacceptedMask & m)
+        void visit(const UnacceptedMask &)
         {
             obj = bp::object(std::static_pointer_cast<const UnacceptedMask>(_m_ptr));
         }
 
-        void visit(const RepositoryMask & m)
+        void visit(const RepositoryMask &)
         {
             obj = bp::object(std::static_pointer_cast<const RepositoryMask>(_m_ptr));
         }
 
-        void visit(const UnsupportedMask & m)
+        void visit(const UnsupportedMask &)
         {
             obj = bp::object(std::static_pointer_cast<const UnsupportedMask>(_m_ptr));
         }
