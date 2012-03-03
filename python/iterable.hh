@@ -53,7 +53,7 @@ namespace paludis
         template <typename To_, typename From_, typename C_, bool>
         struct ConditionalAdd
         {
-            static void add(C_ &, PyObject * ptr)
+            static void add(C_ &, PyObject *)
             {
             }
         };
