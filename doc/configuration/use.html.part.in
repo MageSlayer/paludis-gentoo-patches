@@ -77,7 +77,7 @@ default <code>VIDEO_CARDS</code> from your profile, you will need to use <code>*
 
     <dt>symbols</dt>
     <dd>Controls how debug symbols in executables and libraries are handled. If unset or set to <code>preserve</code>,
-    no stripping is done. If set to <code>strip</code>, debug symbols are split. If set to <code>split</code>, debug
+    no stripping is done. If set to <code>strip</code>, debug symbols are stripped. If set to <code>split</code>, debug
     symbols are split out into files in <code>/usr/lib/debug/</code>. If set to <code>compress</code>, symbols are also
     split out, and debug sections are compressed. Note that <code>compress</code> will only work with <code>binutils
         &gt;=2.21.51.0.4</code>, and may cause problems with older versions of <code>gdb</code>.</dd>
