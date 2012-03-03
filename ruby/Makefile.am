@@ -76,12 +76,12 @@ if ENABLE_RUBY
 
 lib_LTLIBRARIES = libpaludisruby_@PALUDIS_PC_SLOT@.la
 
-libpaludisruby_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) -I. $(RUBY_CFLAGS)
+libpaludisruby_@PALUDIS_PC_SLOT@_la_CXXFLAGS =  $(RUBY_CFLAGS) $(AM_CXXFLAGS) -I.
 libpaludisruby_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0
 
 paludis_ruby_so.o : paludis_ruby_so.cc
 	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) \
-	    $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(AM_CXXFLAGS) $(RUBY_CFLAGS) -c \
+	    $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(CXXFLAGS) $(RUBY_CFLAGS) $(AM_CXXFLAGS) -c \
 	    -o $@ $(srcdir)/paludis_ruby_so.cc ; then ln -fs .libs/paludis_ruby_so.o $@ ; else rm -f $@ ; exit 1 ; fi
 
 libpaludisruby_@PALUDIS_PC_SLOT@_la_SOURCES = $(IF_RUBY_SOURCES)
