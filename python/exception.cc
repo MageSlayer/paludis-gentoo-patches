@@ -73,8 +73,8 @@ ExceptionRegister::get_py_exception(const std::string & name)
     }
 }
 
-PythonError::PythonError(const std::string & message) throw () :
-    Exception(message)
+PythonError::PythonError(const std::string & m) throw () :
+    Exception(m)
 {
 }
 
