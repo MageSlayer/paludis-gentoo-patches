@@ -47,112 +47,112 @@ class MetadataKeySptrToPythonVisitor
         {
         }
 
-        void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const PackageID> > &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const PackageID> > >(_m_ptr));
         }
 
-        void visit(const MetadataValueKey<std::string> & k)
+        void visit(const MetadataValueKey<std::string> &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataValueKey<std::string> >(_m_ptr));
         }
 
-        void visit(const MetadataValueKey<SlotName> & k)
+        void visit(const MetadataValueKey<SlotName> &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataValueKey<SlotName> >(_m_ptr));
         }
 
-        void visit(const MetadataValueKey<long> & k)
+        void visit(const MetadataValueKey<long> &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataValueKey<long> >(_m_ptr));
         }
 
-        void visit(const MetadataValueKey<bool> & k)
+        void visit(const MetadataValueKey<bool> &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataValueKey<bool> >(_m_ptr));
         }
 
-        void visit(const MetadataTimeKey & k)
+        void visit(const MetadataTimeKey &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataTimeKey>(_m_ptr));
         }
 
-        void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
+        void visit(const MetadataValueKey<std::shared_ptr<const Choices> > &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataValueKey<std::shared_ptr<const Choices> > >(_m_ptr));
         }
 
-        void visit(const MetadataValueKey<FSPath> & k)
+        void visit(const MetadataValueKey<FSPath> &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataValueKey<FSPath> >(_m_ptr));
         }
 
-        void visit(const MetadataCollectionKey<KeywordNameSet> & k)
+        void visit(const MetadataCollectionKey<KeywordNameSet> &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataCollectionKey<KeywordNameSet> >(_m_ptr));
         }
 
-        void visit(const MetadataCollectionKey<Set<std::string> > & k)
+        void visit(const MetadataCollectionKey<Set<std::string> > &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataCollectionKey<Set<std::string> > >(_m_ptr));
         }
 
-        void visit(const MetadataCollectionKey<Map<std::string, std::string> > & k)
+        void visit(const MetadataCollectionKey<Map<std::string, std::string> > &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataCollectionKey<Map<std::string, std::string> > >(_m_ptr));
         }
 
-        void visit(const MetadataCollectionKey<Sequence<std::string> > & k)
+        void visit(const MetadataCollectionKey<Sequence<std::string> > &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataCollectionKey<Sequence<std::string> > >(_m_ptr));
         }
 
-        void visit(const MetadataCollectionKey<FSPathSequence> & k)
+        void visit(const MetadataCollectionKey<FSPathSequence> &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataCollectionKey<FSPathSequence> >(_m_ptr));
         }
 
-        void visit(const MetadataCollectionKey<Maintainers> & k)
+        void visit(const MetadataCollectionKey<Maintainers> &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataCollectionKey<Maintainers> >(_m_ptr));
         }
 
-        void visit(const MetadataSpecTreeKey<LicenseSpecTree> & k)
+        void visit(const MetadataSpecTreeKey<LicenseSpecTree> &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataSpecTreeKey<LicenseSpecTree> >(_m_ptr));
         }
 
-        void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)
+        void visit(const MetadataSpecTreeKey<DependencySpecTree> &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataSpecTreeKey<DependencySpecTree> >(_m_ptr));
         }
 
-        void visit(const MetadataSpecTreeKey<PlainTextSpecTree> & k)
+        void visit(const MetadataSpecTreeKey<PlainTextSpecTree> &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(_m_ptr));
         }
 
-        void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> & k)
+        void visit(const MetadataSpecTreeKey<RequiredUseSpecTree> &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataSpecTreeKey<RequiredUseSpecTree> >(_m_ptr));
         }
 
-        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> & k)
+        void visit(const MetadataSpecTreeKey<FetchableURISpecTree> &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataSpecTreeKey<FetchableURISpecTree> >(_m_ptr));
         }
 
-        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> & k)
+        void visit(const MetadataSpecTreeKey<SimpleURISpecTree> &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataSpecTreeKey<SimpleURISpecTree> >(_m_ptr));
         }
 
-        void visit(const MetadataCollectionKey<PackageIDSequence> & k)
+        void visit(const MetadataCollectionKey<PackageIDSequence> &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataCollectionKey<PackageIDSequence> >(_m_ptr));
         }
 
-        void visit(const MetadataSectionKey & k)
+        void visit(const MetadataSectionKey &)
         {
             obj = bp::object(std::static_pointer_cast<const MetadataSectionKey>(_m_ptr));
         }
