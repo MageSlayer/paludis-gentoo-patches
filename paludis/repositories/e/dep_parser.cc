@@ -426,7 +426,7 @@ namespace
     }
 
     void add_synthetic_block_annotations(
-            const EAPI &,
+            const EAPI & eapi,
             const std::shared_ptr<BlockDepSpec> & block_spec,
             const BlockFixOp & block_fix_op)
     {
@@ -434,7 +434,16 @@ namespace
         if (block_spec->maybe_annotations())
             std::for_each(block_spec->maybe_annotations()->begin(), block_spec->maybe_annotations()->end(),
                     std::bind(&DepSpecAnnotations::add, annotations, std::placeholders::_1));
+
         add_block_annotations(annotations, block_fix_op);
+        if (eapi.supported()->dependency_spec_tree_parse_options()[dstpo_no_self_block])
+            annotations->add(make_named_values<DepSpecAnnotation>(
+                        n::key() = "<match_package>",
+                        n::kind() = dsak_synthetic,
+                        n::role() = dsar_no_self_match,
+                        n::value() = "<no_self_block>"
+                        ));
+
         block_spec->set_annotations(annotations);
     }
 

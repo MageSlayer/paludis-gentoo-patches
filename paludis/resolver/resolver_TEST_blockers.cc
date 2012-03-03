@@ -339,126 +339,165 @@ TEST_F(ResolverBlockers0TestCase, HardBlockAndDepCycle)
 
 namespace
 {
-    template <int installed_version_, int dep_version_, bool strong_>
+    template <bool exheres_, int installed_version_, int dep_version_, bool strong_>
     struct SelfBlockTestCase :
-        ResolverBlockers0TestCase
+        std::conditional<exheres_, ResolverBlockersTestCase, ResolverBlockers0TestCase>::type
     {
         void common_test_code()
         {
             std::string cat(std::string("self-block-") +
+                    (exheres_ ? "ex" : "eb") + "-" +
                     (-1 == installed_version_ ? "x" : stringify(installed_version_)) + "-" +
                     (-1 == dep_version_ ? "x" : stringify(dep_version_)) + "-" +
                     (strong_ ? "s" : "w"));
 
             if (installed_version_ != -1)
-                data->install(cat, "dep", stringify(installed_version_));
+                this->data->install(cat, "dep", stringify(installed_version_));
 
-            data->allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec(stringify(cat) + "/dep", &data->env, UserPackageDepSpecOptions()));
+            this->data->allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec(stringify(cat) + "/dep", &this->data->env, UserPackageDepSpecOptions()));
 
-            std::shared_ptr<const Resolved> resolved(data->get_resolved(cat + "/target"));
-            std::shared_ptr<DecisionChecks> checks, u_checks, o_checks;
+            std::shared_ptr<const Resolved> resolved(this->data->get_resolved(cat + "/target"));
+            std::shared_ptr<ResolverTestCase::DecisionChecks> checks, u_checks, o_checks;
 
-            if (dep_version_ != 0)
+            // dep_version_ != 0 means it blocks itself, but only in exheres
+            if (exheres_ && dep_version_ != 0)
             {
-                checks = make_shared_copy(DecisionChecks()
+                checks = make_shared_copy(ResolverTestCase::DecisionChecks()
                         .change(QualifiedPackageName(cat + "/target"))
                         .finished());
-                u_checks = make_shared_copy(DecisionChecks()
+                u_checks = make_shared_copy(ResolverTestCase::DecisionChecks()
                         .unable(QualifiedPackageName(cat + "/dep"))
                         .finished());
-                o_checks = make_shared_copy(DecisionChecks()
+                o_checks = make_shared_copy(ResolverTestCase::DecisionChecks()
                         .finished());
             }
+            // no self-blocker and no already-installed version means no problem
             else if (installed_version_ == -1)
             {
-                checks = make_shared_copy(DecisionChecks()
+                checks = make_shared_copy(ResolverTestCase::DecisionChecks()
                         .change(QualifiedPackageName(cat + "/dep"))
                         .change(QualifiedPackageName(cat + "/target"))
                         .finished());
-                u_checks = make_shared_copy(DecisionChecks()
+                u_checks = make_shared_copy(ResolverTestCase::DecisionChecks()
                         .finished());
-                o_checks = make_shared_copy(DecisionChecks()
+                o_checks = make_shared_copy(ResolverTestCase::DecisionChecks()
                         .finished());
             }
-            else if (installed_version_ == 1 || ((! strong_) && installed_version_ == 0))
+            // blocker doesn't match the installed version, or blocker is weak, therefore fine
+            else if ((dep_version_ != -1 && dep_version_ != installed_version_) || (! strong_))
             {
-                checks = make_shared_copy(DecisionChecks()
+                checks = make_shared_copy(ResolverTestCase::DecisionChecks()
                         .change(QualifiedPackageName(cat + "/dep"))
                         .change(QualifiedPackageName(cat + "/target"))
                         .finished());
-                u_checks = make_shared_copy(DecisionChecks()
+                u_checks = make_shared_copy(ResolverTestCase::DecisionChecks()
                         .finished());
-                o_checks = make_shared_copy(DecisionChecks()
+                o_checks = make_shared_copy(ResolverTestCase::DecisionChecks()
                         .finished());
             }
-            else if (strong_ && installed_version_ == 0 && dep_version_ == 0)
+            // remaining case: strong blocker matches installed version
+            else
             {
-                checks = make_shared_copy(DecisionChecks()
+                checks = make_shared_copy(ResolverTestCase::DecisionChecks()
                         .change(QualifiedPackageName(cat + "/target"))
                         .finished());
-                u_checks = make_shared_copy(DecisionChecks()
+                u_checks = make_shared_copy(ResolverTestCase::DecisionChecks()
                         .finished());
-                o_checks = make_shared_copy(DecisionChecks()
+                o_checks = make_shared_copy(ResolverTestCase::DecisionChecks()
                         .change(QualifiedPackageName(cat + "/dep"))
                         .finished());
             }
-
-            ASSERT_TRUE(bool(checks));
-            ASSERT_TRUE(bool(u_checks));
-            ASSERT_TRUE(bool(o_checks));
 
             check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = checks,
                     n::taken_unable_to_make_decisions() = u_checks,
-                    n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                    n::taken_unconfirmed_decisions() = make_shared_copy(ResolverTestCase::DecisionChecks()
                         .finished()),
                     n::taken_unorderable_decisions() = o_checks,
-                    n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                    n::untaken_change_or_remove_decisions() = make_shared_copy(ResolverTestCase::DecisionChecks()
                         .finished()),
-                    n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                    n::untaken_unable_to_make_decisions() = make_shared_copy(ResolverTestCase::DecisionChecks()
                         .finished())
                     );
         }
     };
 }
 
-typedef SelfBlockTestCase<-1, -1, false> TestSelfBlockXXW;
-typedef SelfBlockTestCase<-1, -1, true> TestSelfBlockXXS;
-typedef SelfBlockTestCase< 0, -1, false> TestSelfBlock0XW;
-typedef SelfBlockTestCase< 0, -1, true> TestSelfBlock0XS;
-typedef SelfBlockTestCase< 1, -1, false> TestSelfBlock1XW;
-typedef SelfBlockTestCase< 1, -1, true> TestSelfBlock1XS;
-typedef SelfBlockTestCase<-1,  0, false> TestSelfBlockX0W;
-typedef SelfBlockTestCase<-1,  0, true> TestSelfBlockX0S;
-typedef SelfBlockTestCase< 0,  0, false> TestSelfBlock00W;
-typedef SelfBlockTestCase< 0,  0, true> TestSelfBlock00S;
-typedef SelfBlockTestCase< 1,  0, false> TestSelfBlock10W;
-typedef SelfBlockTestCase< 1,  0, true> TestSelfBlock10S;
-typedef SelfBlockTestCase<-1,  1, false> TestSelfBlockX1W;
-typedef SelfBlockTestCase<-1,  1, true> TestSelfBlockX1S;
-typedef SelfBlockTestCase< 0,  1, false> TestSelfBlock01W;
-typedef SelfBlockTestCase< 0,  1, true> TestSelfBlock01S;
-typedef SelfBlockTestCase< 1,  1, false> TestSelfBlock11W;
-typedef SelfBlockTestCase< 1,  1, true> TestSelfBlock11S;
+typedef SelfBlockTestCase<false, -1, -1, false> TestSelfBlockEbXXW;
+typedef SelfBlockTestCase<false, -1, -1, true> TestSelfBlockEbXXS;
+typedef SelfBlockTestCase<false,  0, -1, false> TestSelfBlockEb0XW;
+typedef SelfBlockTestCase<false,  0, -1, true> TestSelfBlockEb0XS;
+typedef SelfBlockTestCase<false,  1, -1, false> TestSelfBlockEb1XW;
+typedef SelfBlockTestCase<false,  1, -1, true> TestSelfBlockEb1XS;
+typedef SelfBlockTestCase<false, -1,  0, false> TestSelfBlockEbX0W;
+typedef SelfBlockTestCase<false, -1,  0, true> TestSelfBlockEbX0S;
+typedef SelfBlockTestCase<false,  0,  0, false> TestSelfBlockEb00W;
+typedef SelfBlockTestCase<false,  0,  0, true> TestSelfBlockEb00S;
+typedef SelfBlockTestCase<false,  1,  0, false> TestSelfBlockEb10W;
+typedef SelfBlockTestCase<false,  1,  0, true> TestSelfBlockEb10S;
+typedef SelfBlockTestCase<false, -1,  1, false> TestSelfBlockEbX1W;
+typedef SelfBlockTestCase<false, -1,  1, true> TestSelfBlockEbX1S;
+typedef SelfBlockTestCase<false,  0,  1, false> TestSelfBlockEb01W;
+typedef SelfBlockTestCase<false,  0,  1, true> TestSelfBlockEb01S;
+typedef SelfBlockTestCase<false,  1,  1, false> TestSelfBlockEb11W;
+typedef SelfBlockTestCase<false,  1,  1, true> TestSelfBlockEb11S;
 
-TEST_F(TestSelfBlockXXW, Works) { common_test_code(); }
-TEST_F(TestSelfBlockXXS, Works) { common_test_code(); }
-TEST_F(TestSelfBlock0XW, Works) { common_test_code(); }
-TEST_F(TestSelfBlock0XS, Works) { common_test_code(); }
-TEST_F(TestSelfBlock1XW, Works) { common_test_code(); }
-TEST_F(TestSelfBlock1XS, Works) { common_test_code(); }
-TEST_F(TestSelfBlockX0W, Works) { common_test_code(); }
-TEST_F(TestSelfBlockX0S, Works) { common_test_code(); }
-TEST_F(TestSelfBlock00W, Works) { common_test_code(); }
-TEST_F(TestSelfBlock00S, Works) { common_test_code(); }
-TEST_F(TestSelfBlock10W, Works) { common_test_code(); }
-TEST_F(TestSelfBlock10S, Works) { common_test_code(); }
-TEST_F(TestSelfBlockX1W, Works) { common_test_code(); }
-TEST_F(TestSelfBlockX1S, Works) { common_test_code(); }
-TEST_F(TestSelfBlock01W, Works) { common_test_code(); }
-TEST_F(TestSelfBlock01S, Works) { common_test_code(); }
-TEST_F(TestSelfBlock11W, Works) { common_test_code(); }
-TEST_F(TestSelfBlock11S, Works) { common_test_code(); }
+typedef SelfBlockTestCase<true, -1, -1, false> TestSelfBlockExXXW;
+typedef SelfBlockTestCase<true, -1, -1, true> TestSelfBlockExXXS;
+typedef SelfBlockTestCase<true,  0, -1, false> TestSelfBlockEx0XW;
+typedef SelfBlockTestCase<true,  0, -1, true> TestSelfBlockEx0XS;
+typedef SelfBlockTestCase<true,  1, -1, false> TestSelfBlockEx1XW;
+typedef SelfBlockTestCase<true,  1, -1, true> TestSelfBlockEx1XS;
+typedef SelfBlockTestCase<true, -1,  0, false> TestSelfBlockExX0W;
+typedef SelfBlockTestCase<true, -1,  0, true> TestSelfBlockExX0S;
+typedef SelfBlockTestCase<true,  0,  0, false> TestSelfBlockEx00W;
+typedef SelfBlockTestCase<true,  0,  0, true> TestSelfBlockEx00S;
+typedef SelfBlockTestCase<true,  1,  0, false> TestSelfBlockEx10W;
+typedef SelfBlockTestCase<true,  1,  0, true> TestSelfBlockEx10S;
+typedef SelfBlockTestCase<true, -1,  1, false> TestSelfBlockExX1W;
+typedef SelfBlockTestCase<true, -1,  1, true> TestSelfBlockExX1S;
+typedef SelfBlockTestCase<true,  0,  1, false> TestSelfBlockEx01W;
+typedef SelfBlockTestCase<true,  0,  1, true> TestSelfBlockEx01S;
+typedef SelfBlockTestCase<true,  1,  1, false> TestSelfBlockEx11W;
+typedef SelfBlockTestCase<true,  1,  1, true> TestSelfBlockEx11S;
+
+TEST_F(TestSelfBlockEbXXW, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEbXXS, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEb0XW, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEb0XS, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEb1XW, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEb1XS, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEbX0W, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEbX0S, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEb00W, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEb00S, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEb10W, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEb10S, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEbX1W, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEbX1S, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEb01W, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEb01S, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEb11W, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEb11S, Works) { common_test_code(); }
+
+TEST_F(TestSelfBlockExXXW, Works) { common_test_code(); }
+TEST_F(TestSelfBlockExXXS, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEx0XW, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEx0XS, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEx1XW, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEx1XS, Works) { common_test_code(); }
+TEST_F(TestSelfBlockExX0W, Works) { common_test_code(); }
+TEST_F(TestSelfBlockExX0S, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEx00W, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEx00S, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEx10W, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEx10S, Works) { common_test_code(); }
+TEST_F(TestSelfBlockExX1W, Works) { common_test_code(); }
+TEST_F(TestSelfBlockExX1S, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEx01W, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEx01S, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEx11W, Works) { common_test_code(); }
+TEST_F(TestSelfBlockEx11S, Works) { common_test_code(); }
 
 TEST_F(ResolverBlockersTestCase, UninstallBlockedAfter)
 {

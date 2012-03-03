@@ -164,27 +164,41 @@ DEPEND="
 END
 
 # self-block
-for i in "x" "0" "1" ; do
-    for d in "x" "0" "1" ; do
-        for b in "w" "s" ; do
-            cat=self-block-${i}-${d}-${b}
+for e in "eb" "ex" ; do
+    for i in "x" "0" "1" ; do
+        for d in "x" "0" "1" ; do
+            for b in "w" "s" ; do
+                cat=self-block-${e}-${i}-${d}-${b}
 
-            dep=${cat}/dep
+                dep=${cat}/dep
 
-            if [[ "${d}" != "x" ]] ; then
-                dep="=${dep}-${d}"
-            fi
+                if [[ "${d}" != "x" ]] ; then
+                    if [[ "${e}" == "eb" ]] ; then
+                        dep="=${dep}-${d}"
+                    else
+                        dep="${dep}[=${d}]"
+                    fi
+                fi
 
-            if [[ "${b}" == "w" ]] ; then
-                dep="!${dep}"
-            else
-                dep="!!${dep}"
-            fi
+                if [[ "${b}" == "w" ]] ; then
+                    if [[ "${e}" == "eb" ]] ; then
+                        dep="!${dep}"
+                    else
+                        dep="!${dep} [[ resolution = uninstall-blocked-after ]]"
+                    fi
+                else
+                    if [[ "${e}" == "eb" ]] ; then
+                        dep="!!${dep}"
+                    else
+                        dep="!${dep}"
+                    fi
+                fi
 
-            echo $cat >> metadata/categories.conf
+                echo $cat >> metadata/categories.conf
 
-            mkdir -p 'packages/'$cat'/target'
-            cat <<END > packages/$cat/target/target-1.ebuild
+                mkdir -p 'packages/'$cat'/target'
+                if [[ "${e}" == "eb" ]] ; then
+                    cat <<END > packages/$cat/target/target-1.ebuild
 EAPI="2"
 DESCRIPTION="target"
 KEYWORDS="test"
@@ -193,9 +207,20 @@ DEPEND="
     ${cat}/dep
     "
 END
+                else
+                    cat <<END > packages/$cat/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build+run:
+    ${cat}/dep
+    "
+END
+                fi
 
-            mkdir -p 'packages/'$cat'/dep'
-            cat <<END > packages/$cat/dep/dep-1.ebuild
+                mkdir -p 'packages/'$cat'/dep'
+                if [[ "${e}" == "eb" ]] ; then
+                    cat <<END > packages/$cat/dep/dep-1.ebuild
 EAPI="2"
 DESCRIPTION="target"
 KEYWORDS="test"
@@ -204,7 +229,18 @@ DEPEND="
     ${dep}
     "
 END
+                else
+                    cat <<END > packages/$cat/dep/dep-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="build+run:
+    ${dep}
+    "
+END
+                fi
 
+            done
         done
     done
 done
