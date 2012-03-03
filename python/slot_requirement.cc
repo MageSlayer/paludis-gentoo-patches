@@ -46,17 +46,17 @@ namespace
             {
             }
 
-            void visit(const SlotExactRequirement & k)
+            void visit(const SlotExactRequirement &)
             {
                 obj = bp::object(std::static_pointer_cast<const SlotExactRequirement>(_m_ptr));
             }
 
-            void visit(const SlotAnyLockedRequirement & k)
+            void visit(const SlotAnyLockedRequirement &)
             {
                 obj = bp::object(std::static_pointer_cast<const SlotAnyLockedRequirement>(_m_ptr));
             }
 
-            void visit(const SlotAnyUnlockedRequirement & k)
+            void visit(const SlotAnyUnlockedRequirement &)
             {
                 obj = bp::object(std::static_pointer_cast<const SlotAnyUnlockedRequirement>(_m_ptr));
             }
