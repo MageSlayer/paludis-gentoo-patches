@@ -100,7 +100,7 @@ Gentoo-derived systems is:</p>
 
 <p>On Exherbo systems, we instead use:</p>
 
-<pre>world = /var/db/paludis/world</pre>
+<pre>world = ${root}/var/db/paludis/repositories/installed/world</pre>
 
 <h3>keywords.conf</h3>
 
