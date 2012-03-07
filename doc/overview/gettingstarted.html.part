@@ -102,9 +102,9 @@ Gentoo-derived systems is:</p>
 
 <pre>world = ${root}/var/db/paludis/repositories/installed/world</pre>
 
-<h3>keywords.conf</h3>
+<h3>keywords.conf / platforms.conf</h3>
 
-<p>You will need to make <code>/etc/paludis/keywords.conf</code>:</p>
+<p>You will need to make <code>/etc/paludis/keywords.conf</code> (Gentoo) or <code>/etc/paludis/platforms.conf</code> (Exherbo):</p>
 
 <pre>
 */*                      x86
@@ -126,9 +126,9 @@ app-misc/blah            -* x86
     <li>The magic keyword <code>*</code> can be used to accept anything, even empty keywords.</li>
 </ul>
 
-<h3>use.conf</h3>
+<h3>use.conf / options.conf</h3>
 
-<p>You will also need <code>/etc/paludis/use.conf</code>, which is also cumulative. Note the prefix syntax for things
+<p>You will also need <code>/etc/paludis/use.conf</code> (Gentoo) or <code>/etc/paludis/options.conf</code> (Exherbo), which is also cumulative. Note the prefix syntax for things
 that would be handled by <code>USE_EXPAND</code> by Portage, and the explicit <code>-*</code>.</p>
 
 <pre>
@@ -139,9 +139,9 @@ that would be handled by <code>USE_EXPAND</code> by Portage, and the explicit <c
 app-editors/vim -nls
 </pre>
 
-<h3>licenses.conf</h3>
+<h3>licenses.conf / licences.conf</h3>
 
-<p>And you will need <code>/etc/paludis/licenses.conf</code>, which for most people would look like:</p>
+<p>And you will need <code>/etc/paludis/licenses.conf</code> (Gentoo) or <code>/etc/paludis/licences.conf</code> (Exherbo), which for most people would look like:</p>
 
 <pre>
 */* *
