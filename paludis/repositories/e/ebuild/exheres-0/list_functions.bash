@@ -96,6 +96,13 @@ hasq()
 expecting_tests()
 {
     local r=$(paludis_pipe_command EXPECTING_TESTS "$EAPI" "${1:---any}" )
+    if [[ "${#@}" -gt 1 ]] ; then
+        if [[ ${r%%;*} -eq 0 ]] ; then
+            echo "${2}"
+        else
+            echo "${3}"
+        fi
+    fi
     return ${r%%;*}
 }
 

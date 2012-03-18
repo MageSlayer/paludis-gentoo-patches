@@ -26,7 +26,8 @@ default_src_configure()
     ebuild_verify_not_changed_from_global_scope \
         DEFAULT_SRC_CONFIGURE_PARAMS \
         DEFAULT_SRC_CONFIGURE_OPTION_ENABLES \
-        DEFAULT_SRC_CONFIGURE_OPTION_WITHS
+        DEFAULT_SRC_CONFIGURE_OPTION_WITHS \
+        DEFAULT_SRC_CONFIGURE_TESTS
 
     if [[ -x ${ECONF_SOURCE:-.}/configure ]] ; then
         econf \
@@ -36,6 +37,9 @@ default_src_configure()
             done ) \
             $(for s in "${DEFAULT_SRC_CONFIGURE_OPTION_WITHS[@]}" ; do \
                 option_with ${s} ; \
+            done ) \
+            $(for s in "${DEFAULT_SRC_CONFIGURE_TESTS[@]}" ; do \
+                expecting_tests ${s} ; \
             done )
     fi
 }
