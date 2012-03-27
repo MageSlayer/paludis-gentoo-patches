@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_MAKE_NULL_SHARED_PTR_HH 1
 
 #include <memory>
+#include <paludis/util/attributes.hh>
 
 /** \file
  * Declarations for the make_null_shared_ptr function.
