@@ -364,12 +364,9 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
 
         std::map<std::string, std::string>::const_iterator eapi(keys.find("EAPI"));
         if (keys.end() == eapi)
-        {
-            Log::get_instance()->message("e.cache.flat_hash.broken", ll_warning, lc_context)
-                << "cache file contains no 'EAPI' key";
-            return false;
-        }
-        id->set_eapi(eapi->second);
+            id->set_eapi("0");
+        else
+            id->set_eapi(eapi->second);
 
         if (id->eapi()->supported())
         {

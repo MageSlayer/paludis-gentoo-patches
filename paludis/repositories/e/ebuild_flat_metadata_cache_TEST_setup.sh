@@ -530,7 +530,7 @@ TZ=UTC touch -t 197001010001 metadata/cache/cat/flat_hash-bad-md5-1 || exit 2
 
 mkdir cat/flat_hash-no-eapi
 cat <<END > cat/flat_hash-no-eapi/flat_hash-no-eapi-1.ebuild || exit 1
-DESCRIPTION="The Generated Description flat_hash-no-eapi"
+DESCRIPTION="Monkey"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
@@ -549,7 +549,7 @@ SRC_URI=the-src-uri
 RESTRICT=the-restrict
 HOMEPAGE=the-homepage
 LICENSE=the-license
-DESCRIPTION=The Stale Description
+DESCRIPTION=The Description flat_hash-no-eapi
 KEYWORDS=the-keywords
 IUSE=the-iuse
 PDEPEND=the/pdepend

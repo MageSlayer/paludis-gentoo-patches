@@ -509,7 +509,7 @@ TEST(EbuildFlatMetadataCache, HashNoEAPI)
                             &env, { })), make_null_shared_ptr(), { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
-    EXPECT_EQ("The Generated Description flat_hash-no-eapi", id1->short_description_key()->parse_value());
+    EXPECT_EQ("The Description flat_hash-no-eapi", id1->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashDuplicateKey)
