@@ -1325,9 +1325,13 @@ ERepository::repository_factory_create(
     std::string cache(f("cache"));
     if (cache.empty())
     {
-        cache = location + "/metadata/cache";
+        cache = location + "/metadata/md5-cache";
         if (! FSPath(cache).stat().exists())
-            cache = "/var/empty";
+        {
+            cache = location + "/metadata/cache";
+            if (! FSPath(cache).stat().exists())
+                cache = "/var/empty";
+        }
     }
 
     std::string write_cache(f("write_cache"));
