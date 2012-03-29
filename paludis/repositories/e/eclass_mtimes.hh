@@ -61,6 +61,11 @@ namespace paludis
              * Fetch the full path of a given exlib, on the path of a given package.
              */
             const std::pair<FSPath, FSStat> * exlib(const std::string &, const QualifiedPackageName &) const;
+
+            /**
+             * Fetch the MD5 checksum of a given file.
+             */
+            std::string md5(const FSPath &) const;
     };
 }
 

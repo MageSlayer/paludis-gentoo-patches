@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
- * Copyright (c) 2008 David Leverton
+ * Copyright (c) 2008, 2012 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,9 +28,13 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/fs_stat.hh>
+#include <paludis/util/md5.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <unordered_map>
 
 using namespace paludis;
+
+typedef std::unordered_map<FSPath, std::string, Hash<FSPath> > MD5Map;
 
 namespace
 {
@@ -72,6 +76,7 @@ namespace paludis
         const ERepository * repo;
         mutable Cache eclasses;
         mutable std::unordered_map<QualifiedPackageName, Cache, Hash<QualifiedPackageName> > exlibs;
+        mutable MD5Map md5s;
         mutable Mutex mutex;
 
         Imp(const ERepository * r, const std::shared_ptr<const FSPathSequence> & d) :
@@ -106,5 +111,18 @@ EclassMtimes::exlib(const std::string & e, const QualifiedPackageName & qpn) con
     if (_imp->exlibs.end() == cache)
         cache = _imp->exlibs.insert(std::make_pair(qpn, Cache(_imp->repo->layout()->exlibsdirs(qpn)))).first;
     return lookup(e + ".exlib", cache->second);
+}
+
+std::string
+EclassMtimes::md5(const FSPath & p) const
+{
+    Lock l(_imp->mutex);
+    MD5Map::const_iterator it(_imp->md5s.find(p));
+    if (_imp->md5s.end() != it)
+        return it->second;
+
+    SafeIFStream s(p);
+    MD5 m(s);
+    return _imp->md5s.insert(std::make_pair(p, m.hexsum())).first->second;
 }
 
