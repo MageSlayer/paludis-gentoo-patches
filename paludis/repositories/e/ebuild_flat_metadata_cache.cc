@@ -35,6 +35,7 @@
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_error.hh>
 #include <paludis/util/pimp-impl.hh>
+#include <paludis/util/md5.hh>
 
 #include <paludis/environment.hh>
 #include <paludis/unformatted_pretty_printer.hh>
@@ -376,14 +377,36 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
             std::vector<std::string> inherited;
 
             {
-                std::map<std::string, std::string>::const_iterator mtime_it(keys.find("_mtime_"));
-                std::time_t cache_time(keys.end() == mtime_it ? _imp->filename_stat.mtim().seconds() : destringify<std::time_t>(mtime_it->second));
-                bool ok(_imp->ebuild_stat.mtim().seconds() == cache_time);
-                if (! ok)
-                    Log::get_instance()->message("e.cache.flat_hash.mtime", ll_debug, lc_context)
-                        << "ebuild has mtime " << _imp->ebuild_stat.mtim().seconds() << ", but expected " << cache_time;
+                bool ok(true), is_md5(false);
 
-                if (ok) {
+                std::map<std::string, std::string>::const_iterator md5_it(keys.find("_md5_"));
+                if (keys.end() != md5_it)
+                {
+                    is_md5 = true;
+                    SafeIFStream s(_imp->ebuild);
+                    MD5 md5(s);
+                    if (md5.hexsum() != md5_it->second)
+                    {
+                        Log::get_instance()->message("e.cache.flat_hash.md5", ll_debug, lc_context)
+                            << "ebuild has MD5 '" << md5.hexsum() << "', but expected '" << md5_it->second << "'";
+                        ok = false;
+                    }
+                }
+
+                else
+                {
+                    std::map<std::string, std::string>::const_iterator mtime_it(keys.find("_mtime_"));
+                    std::time_t cache_time(keys.end() == mtime_it ? _imp->filename_stat.mtim().seconds() : destringify<std::time_t>(mtime_it->second));
+                    if (_imp->ebuild_stat.mtim().seconds() != cache_time)
+                    {
+                        Log::get_instance()->message("e.cache.flat_hash.mtime", ll_debug, lc_context)
+                            << "ebuild has mtime " << _imp->ebuild_stat.mtim().seconds() << ", but expected " << cache_time;
+                        ok = false;
+                    }
+                }
+
+                if (ok)
+                {
                     std::string cache_guessed(keys["_guessed_eapi_"]);
                     if (cache_guessed.empty())
                         cache_guessed = "0";
@@ -412,14 +435,6 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                                 << "_eclasses_ entry is incomplete";
                             return false;
                         }
-                        FSPath eclass_dir(std::string::npos != it->find('/') ? FSPath(*it++) : eclassdir);
-                        if (eclasses.end() == it)
-                        {
-                            Log::get_instance()->message("e.cache.flat_hash.eclass.truncated", ll_warning, lc_context)
-                                << "_eclasses_ entry is incomplete";
-                            return false;
-                        }
-                        std::time_t eclass_mtime(destringify<std::time_t>(*it));
 
                         auto eclass(_imp->eclass_mtimes->eclass(eclass_name));
                         if (eclass)
@@ -433,21 +448,46 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                             ok = false;
                         }
 
-                        else if (eclass->first.dirname() != eclass_dir)
+                        else if (is_md5)
                         {
-                            Log::get_instance()->message("e.cache.flat_hash.eclass.wrong_location", ll_debug, lc_context)
-                                << "Cache-requested eclass '" << eclass_name << "' was found at '"
-                                << eclass->first.dirname() << "', but expected '" << eclass_dir << "'";
-                            ok = false;
+                            std::string cache_md5(*it), actual_md5(_imp->eclass_mtimes->md5(eclass->first));
+                            if (actual_md5 != cache_md5)
+                            {
+                                Log::get_instance()->message("e.cache.flat_hash.eclass.wrong_md5", ll_debug, lc_context)
+                                    << "Cache-requested eclass '" << eclass_name << "' has MD5 '"
+                                    << actual_md5 << "', but expected '" << cache_md5 << "'";
+                                ok = false;
+                            }
                         }
 
-                        else if (eclass->second.mtim().seconds() != eclass_mtime)
+                        else
                         {
-                            Log::get_instance()->message("e.cache.flat_hash.eclass.wrong_mtime", ll_debug, lc_context)
-                                << "Cache-requested eclass '" << eclass_name << "' has mtime "
-                                << eclass->second.mtim().seconds() << ", but expected " << eclass_mtime;
-                            ok = false;
+                            FSPath eclass_dir(std::string::npos != it->find('/') ? FSPath(*it++) : eclassdir);
+                            if (eclasses.end() == it)
+                            {
+                                Log::get_instance()->message("e.cache.flat_hash.eclass.truncated", ll_warning, lc_context)
+                                    << "_eclasses_ entry is incomplete";
+                                return false;
+                            }
+                            std::time_t eclass_mtime(destringify<std::time_t>(*it));
+
+                            if (eclass->first.dirname() != eclass_dir)
+                            {
+                                Log::get_instance()->message("e.cache.flat_hash.eclass.wrong_location", ll_debug, lc_context)
+                                    << "Cache-requested eclass '" << eclass_name << "' was found at '"
+                                    << eclass->first.dirname() << "', but expected '" << eclass_dir << "'";
+                                ok = false;
+                            }
+
+                            else if (eclass->second.mtim().seconds() != eclass_mtime)
+                            {
+                                Log::get_instance()->message("e.cache.flat_hash.eclass.wrong_mtime", ll_debug, lc_context)
+                                    << "Cache-requested eclass '" << eclass_name << "' has mtime "
+                                    << eclass->second.mtim().seconds() << ", but expected " << eclass_mtime;
+                                ok = false;
+                            }
                         }
+
 
                         if (! ok)
                             break;
@@ -461,6 +501,13 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                     for (std::vector<std::string>::const_iterator it(exlibs.begin()),
                              it_end(exlibs.end()); it_end != it; ++it)
                     {
+                        if (is_md5)
+                        {
+                            Log::get_instance()->message("e.cache.flat_hash.exlib.md5.unimplemented", ll_warning, lc_context)
+                                << "Verifying _exlibs_ using MD5 is not yet implemented";
+                            return false;
+                        }
+
                         std::string exlib_name(*it);
                         inherited.push_back(exlib_name);
                         if (exlibs.end() == ++it)

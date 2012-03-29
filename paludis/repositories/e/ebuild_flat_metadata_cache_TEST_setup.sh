@@ -477,6 +477,57 @@ END
 TZ=UTC touch -t 197001010001 cat/flat_hash-bad-mtime/flat_hash-bad-mtime-1 || exit 2
 TZ=UTC touch -t 197001010001 metadata/cache/cat/flat_hash-bad-mtime-1 || exit 2
 
+mkdir cat/flat_hash-md5
+cat <<END > cat/flat_hash-md5/flat_hash-md5-1.ebuild || exit 1
+END
+cat <<END > metadata/cache/cat/flat_hash-md5-1 || exit 1
+_md5_=d41d8cd98f00b204e9800998ecf8427e
+_guessed_eapi_=0
+DEPEND=the/depend
+RDEPEND=the/rdepend
+SLOT=the-slot
+SRC_URI=the-src-uri
+RESTRICT=the-restrict
+HOMEPAGE=the-homepage
+LICENSE=the-license
+DESCRIPTION=The Description flat_hash-md5
+KEYWORDS=the-keywords
+IUSE=the-iuse
+PDEPEND=the/pdepend
+EAPI=0
+END
+TZ=UTC touch -t 197001010001 metadata/cache/cat/flat_hash-md5-1 || exit 2
+
+mkdir cat/flat_hash-bad-md5
+cat <<END > cat/flat_hash-bad-md5/flat_hash-bad-md5-1.ebuild || exit 1
+DESCRIPTION="The Generated Description flat_hash-bad-md5"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND=""
+END
+cat <<END > metadata/cache/cat/flat_hash-bad-md5-1 || exit 1
+_md5_=d41d8cd98f00b204e9800998ecf8427e
+_guessed_eapi_=0
+DEPEND=the/depend
+RDEPEND=the/rdepend
+SLOT=the-slot
+SRC_URI=the-src-uri
+RESTRICT=the-restrict
+HOMEPAGE=the-homepage
+LICENSE=the-license
+DESCRIPTION=The Stale Description
+KEYWORDS=the-keywords
+IUSE=the-iuse
+PDEPEND=the/pdepend
+EAPI=0
+END
+TZ=UTC touch -t 197001010001 cat/flat_hash-bad-md5/flat_hash-bad-md5-1.ebuild || exit 2
+TZ=UTC touch -t 197001010001 metadata/cache/cat/flat_hash-bad-md5-1 || exit 2
+
 mkdir cat/flat_hash-no-eapi
 cat <<END > cat/flat_hash-no-eapi/flat_hash-no-eapi-1.ebuild || exit 1
 DESCRIPTION="The Generated Description flat_hash-no-eapi"
@@ -912,6 +963,121 @@ EAPI=0
 PROPERTIES=the-properties
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-eclasses-spaces/flat_hash-eclasses-spaces-1.ebuild || exit 2
+
+mkdir cat/flat_hash-eclass-md5
+cat <<END > cat/flat_hash-eclass-md5/flat_hash-eclass-md5-1.ebuild || exit 1
+END
+cat <<END > metadata/cache/cat/flat_hash-eclass-md5-1 || exit 1
+_md5_=d41d8cd98f00b204e9800998ecf8427e
+_guessed_eapi_=0
+_eclasses_=foo	0a4d9ad1a63a829bc31879a68024ef78	bar	d41d8cd98f00b204e9800998ecf8427e
+DEPEND=the/depend
+RDEPEND=the/rdepend
+SLOT=the-slot
+SRC_URI=the-src-uri
+RESTRICT=the-restrict
+HOMEPAGE=the-homepage
+LICENSE=the-license
+DESCRIPTION=The Description flat_hash-eclass-md5
+KEYWORDS=the-keywords
+IUSE=the-iuse
+PDEPEND=the/pdepend
+EAPI=0
+END
+TZ=UTC touch -t 197001010001 metadata/cache/cat/flat_hash-eclass-md5-1 || exit 2
+
+mkdir cat/flat_hash-eclass-bad-md5
+cat <<END > cat/flat_hash-eclass-bad-md5/flat_hash-eclass-bad-md5-1.ebuild || exit 1
+DESCRIPTION="The Generated Description flat_hash-eclass-bad-md5"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND=""
+END
+cat <<END > metadata/cache/cat/flat_hash-eclass-bad-md5-1 || exit 1
+_md5_=d3472291afcdc827fa4bff7215be1bfa
+_guessed_eapi_=0
+_eclasses_=foo	0a4d9ad1a63a829bc31879a68024ef79	bar	d41d8cd98f00b204e9800998ecf8427e
+DEPEND=the/depend
+RDEPEND=the/rdepend
+SLOT=the-slot
+SRC_URI=the-src-uri
+RESTRICT=the-restrict
+HOMEPAGE=the-homepage
+LICENSE=the-license
+DESCRIPTION=The Stale Description
+KEYWORDS=the-keywords
+IUSE=the-iuse
+PDEPEND=the/pdepend
+EAPI=0
+END
+TZ=UTC touch -t 197001010001 cat/flat_hash-eclass-bad-md5/flat_hash-eclass-bad-md5-1.ebuild || exit 2
+TZ=UTC touch -t 197001010001 metadata/cache/cat/flat_hash-eclass-bad-md5-1 || exit 2
+
+mkdir cat/flat_hash-eclass-truncated-md5
+cat <<END > cat/flat_hash-eclass-truncated-md5/flat_hash-eclass-truncated-md5-1.ebuild || exit 1
+DESCRIPTION="The Generated Description flat_hash-eclass-truncated-md5"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND=""
+END
+cat <<END > metadata/cache/cat/flat_hash-eclass-truncated-md5-1 || exit 1
+_md5_=088607e2812c483ecc9a16b69fd1b71f
+_guessed_eapi_=0
+_eclasses_=foo	0a4d9ad1a63a829bc31879a68024ef78	bar
+DEPEND=the/depend
+RDEPEND=the/rdepend
+SLOT=the-slot
+SRC_URI=the-src-uri
+RESTRICT=the-restrict
+HOMEPAGE=the-homepage
+LICENSE=the-license
+DESCRIPTION=The Stale Description
+KEYWORDS=the-keywords
+IUSE=the-iuse
+PDEPEND=the/pdepend
+EAPI=0
+END
+TZ=UTC touch -t 197001010001 cat/flat_hash-eclass-truncated-md5/flat_hash-eclass-truncated-md5-1.ebuild || exit 2
+TZ=UTC touch -t 197001010001 metadata/cache/cat/flat_hash-eclass-truncated-md5-1 || exit 2
+
+mkdir cat/flat_hash-eclass-gone-md5
+cat <<END > cat/flat_hash-eclass-gone-md5/flat_hash-eclass-gone-md5-1.ebuild || exit 1
+DESCRIPTION="The Generated Description flat_hash-eclass-gone-md5"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND=""
+END
+cat <<END > metadata/cache/cat/flat_hash-eclass-gone-md5-1 || exit 1
+_md5_=7a0546fdebe4320feb9008ea76ca3ace
+_guessed_eapi_=0
+_eclasses_=foo	0a4d9ad1a63a829bc31879a68024ef78	bat	d41d8cd98f00b204e9800998ecf8427e
+DEPEND=the/depend
+RDEPEND=the/rdepend
+SLOT=the-slot
+SRC_URI=the-src-uri
+RESTRICT=the-restrict
+HOMEPAGE=the-homepage
+LICENSE=the-license
+DESCRIPTION=The Stale Description
+KEYWORDS=the-keywords
+IUSE=the-iuse
+PDEPEND=the/pdepend
+EAPI=0
+END
+TZ=UTC touch -t 197001010001 cat/flat_hash-eclass-gone-md5/flat_hash-eclass-gone-md5-1.ebuild || exit 2
+TZ=UTC touch -t 197001010001 metadata/cache/cat/flat_hash-eclass-gone-md5-1 || exit 2
 
 mkdir cat/flat_hash-exlib
 cat <<END > cat/flat_hash-exlib/flat_hash-exlib-1.ebuild || exit 1

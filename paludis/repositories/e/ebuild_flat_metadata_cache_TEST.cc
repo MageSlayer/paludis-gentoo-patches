@@ -446,6 +446,50 @@ TEST(EbuildFlatMetadataCache, HashBadMtime)
     EXPECT_EQ("The Generated Description flat_hash-bad-mtime", id1->short_description_key()->parse_value());
 }
 
+TEST(EbuildFlatMetadataCache, HashMD5)
+{
+    TestEnvironment env;
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
+    keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+    keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
+
+    const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+                    PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-md5-1",
+                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+
+    ASSERT_TRUE(bool(id1->short_description_key()));
+    EXPECT_EQ("The Description flat_hash-md5", id1->short_description_key()->parse_value());
+}
+
+TEST(EbuildFlatMetadataCache, HashBadMD5)
+{
+    TestEnvironment env;
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
+    keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+    keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
+
+    const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
+                    PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-bad-md5-1",
+                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+
+    ASSERT_TRUE(bool(id1->short_description_key()));
+    EXPECT_EQ("The Generated Description flat_hash-bad-md5", id1->short_description_key()->parse_value());
+}
+
 TEST(EbuildFlatMetadataCache, HashNoEAPI)
 {
     TestEnvironment env;
@@ -764,6 +808,94 @@ TEST(EbuildFlatMetadataCache, HashEclassSpaces)
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-eclasses-spaces", id->short_description_key()->parse_value());
+}
+
+TEST(EbuildFlatMetadataCache, HashEclassMD5)
+{
+    TestEnvironment env;
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
+    keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+    keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
+
+    std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                    PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-md5-1",
+                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+
+    ASSERT_TRUE(bool(id->short_description_key()));
+    EXPECT_EQ("The Description flat_hash-eclass-md5", id->short_description_key()->parse_value());
+}
+
+TEST(EbuildFlatMetadataCache, HashEclassBadMD5)
+{
+    TestEnvironment env;
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
+    keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+    keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
+
+    std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                    PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-bad-md5-1",
+                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+
+    ASSERT_TRUE(bool(id->short_description_key()));
+    EXPECT_EQ("The Generated Description flat_hash-eclass-bad-md5", id->short_description_key()->parse_value());
+}
+
+TEST(EbuildFlatMetadataCache, HashEclassTruncatedMD5)
+{
+    TestEnvironment env;
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
+    keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+    keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
+
+    std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                    PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-truncated-md5-1",
+                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+
+    ASSERT_TRUE(bool(id->short_description_key()));
+    EXPECT_EQ("The Generated Description flat_hash-eclass-truncated-md5", id->short_description_key()->parse_value());
+}
+
+TEST(EbuildFlatMetadataCache, HashEclassGoneMD5)
+{
+    TestEnvironment env;
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir/repo/profiles/profile"));
+    keys->insert("eclassdirs", "ebuild_flat_metadata_cache_TEST_dir/repo/eclass ebuild_flat_metadata_cache_TEST_dir/extra_eclasses");
+    keys->insert("builddir", stringify(FSPath::cwd() / "ebuild_flat_metadata_cache_TEST_dir" / "build"));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
+
+    std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                    PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-gone-md5-1",
+                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+
+    ASSERT_TRUE(bool(id->short_description_key()));
+    EXPECT_EQ("The Generated Description flat_hash-eclass-gone-md5", id->short_description_key()->parse_value());
 }
 
 TEST(EbuildFlatMetadataCache, HashExlib)
