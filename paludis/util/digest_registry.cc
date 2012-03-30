@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2011 David Leverton
+ * Copyright (c) 2011, 2012 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,6 +20,7 @@
 #include <paludis/util/digest_registry.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
+#include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <map>
 
 using namespace paludis;
@@ -31,6 +32,12 @@ namespace
 
 namespace paludis
 {
+    template <>
+    struct WrappedForwardIteratorTraits<DigestRegistry::AlgorithmsConstIteratorTag>
+    {
+        typedef FunctionMap::const_iterator UnderlyingIterator;
+    };
+
     template <>
     struct Imp<DigestRegistry>
     {
@@ -55,6 +62,18 @@ DigestRegistry::get(const std::string & algo) const
     return it->second;
 }
 
+DigestRegistry::AlgorithmsConstIterator
+DigestRegistry::begin_algorithms() const
+{
+    return AlgorithmsConstIterator(_imp->functions.begin());
+}
+
+DigestRegistry::AlgorithmsConstIterator
+DigestRegistry::end_algorithms() const
+{
+    return AlgorithmsConstIterator(_imp->functions.end());
+}
+
 void
 DigestRegistry::register_function(const std::string & algo, const Function & func)
 {
@@ -65,6 +84,7 @@ namespace paludis
 {
     template class Pimp<DigestRegistry>;
     template class Singleton<DigestRegistry>;
+    template class WrappedForwardIterator<DigestRegistry::AlgorithmsConstIteratorTag, const std::pair<const std::string, DigestRegistry::Function> >;
 }
 
 

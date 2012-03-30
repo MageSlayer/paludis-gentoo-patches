@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2011 David Leverton
+ * Copyright (c) 2011, 2012 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,7 +25,9 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/singleton.hh>
+#include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <functional>
+#include <utility>
 
 namespace paludis
 {
@@ -38,6 +40,12 @@ namespace paludis
             typedef std::function<std::string (std::istream &)> Function;
 
             Function get(const std::string & algo) const;
+
+            struct AlgorithmsConstIteratorTag;
+            typedef WrappedForwardIterator<AlgorithmsConstIteratorTag, const std::pair<const std::string, Function> > AlgorithmsConstIterator;
+
+            AlgorithmsConstIterator begin_algorithms() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            AlgorithmsConstIterator end_algorithms() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             template <typename T_>
             class Registration
