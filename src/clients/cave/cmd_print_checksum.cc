@@ -53,6 +53,7 @@ namespace
             add_usage_line("ALGORITHM --stdin");
             add_usage_line("ALGORITHM --file FILENAME");
             add_usage_line("ALGORITHM --text TEXT");
+            add_see_also("cave-print-checksum-algorithms", 1);
         }
 
         virtual std::string app_name() const

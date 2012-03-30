@@ -44,6 +44,7 @@ command_MANS = \
 	cave-print-best-version.1 \
 	cave-print-categories.1 \
 	cave-print-checksum.1 \
+	cave-print-checksum-algorithms.1 \
 	cave-print-commands.1 \
 	cave-print-dependent-ids.1 \
 	cave-print-environment-metadata.1 \
@@ -175,6 +176,7 @@ libcave_a_SOURCES = \
 	cmd_print_best_version.cc cmd_print_best_version.hh \
 	cmd_print_categories.cc cmd_print_categories.hh \
 	cmd_print_checksum.cc cmd_print_checksum.hh \
+	cmd_print_checksum_algorithms.cc cmd_print_checksum_algorithms.hh \
 	cmd_print_commands.cc cmd_print_commands.hh \
 	cmd_print_dependent_ids.cc cmd_print_dependent_ids.hh \
 	cmd_print_environment_metadata.cc cmd_print_environment_metadata.hh \
