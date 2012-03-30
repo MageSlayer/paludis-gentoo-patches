@@ -260,8 +260,12 @@ AsciidocWriter::start_usage_lines()
 void
 AsciidocWriter::usage_line(const std::string & name, const std::string & line)
 {
-    _os << "*" << name << " ";
-    escape_asciidoc(_os, line);
+    _os << "*" << name;
+    if (! line.empty())
+    {
+        _os << " ";
+        escape_asciidoc(_os, line);
+    }
     _os << "*" << endl << endl;
 }
 
