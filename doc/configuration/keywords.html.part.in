@@ -22,7 +22,7 @@ specification may be any of:</p>
 
 <p>Any token may be quoted using either single or double quotes.</p>
 
-<p>Accepted keywords pr platforms are one of:</p>
+<p>Accepted keywords or platforms are one of:</p>
 
 <ul>
     <li><code>keyword</code>, which accepts any package containing that keyword.</li>
