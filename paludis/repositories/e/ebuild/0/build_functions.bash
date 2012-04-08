@@ -45,9 +45,10 @@ econf()
         [[ -z "${CBUILD}" ]] || LOCAL_EXTRA_ECONF="--build=${CBUILD} ${LOCAL_EXTRA_ECONF}"
         [[ -z "${CTARGET}" ]] || LOCAL_EXTRA_ECONF="--target=${CTARGET} ${LOCAL_EXTRA_ECONF}"
 
+        local extra_options_help=""
         for i in ${PALUDIS_ECONF_EXTRA_OPTIONS_HELP_DEPENDENT}; do
             "${ECONF_SOURCE}/configure" --help 2>/dev/null | grep -q "${i%%::*}" \
-                && LOCAL_EXTRA_ECONF+=" ${i#*::}"
+                && extra_options_help+=" ${i#*::}"
         done
 
         # If the ebuild passed in --prefix, use that to set --libdir. KDE at least needs this.
@@ -78,6 +79,7 @@ econf()
             --sysconfdir=/etc \
             --localstatedir=/var/lib \
             ${PALUDIS_ECONF_EXTRA_OPTIONS} \
+            ${extra_options_help} \
             ${libcmd} "$@" ${LOCAL_EXTRA_ECONF} 1>&2
 
         ${LOCAL_ECONF_WRAPPER} "${ECONF_SOURCE}"/configure \
@@ -89,6 +91,7 @@ econf()
             --sysconfdir=/etc \
             --localstatedir=/var/lib \
             ${PALUDIS_ECONF_EXTRA_OPTIONS} \
+            ${extra_options_help} \
             ${libcmd} "$@" ${LOCAL_EXTRA_ECONF} || die "econf failed"
 
     else
