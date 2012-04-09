@@ -31,7 +31,7 @@ builtin_tidyup()
             echo chflags -R 0 "${PALUDIS_PACKAGE_BUILDDIR}" 1>&2
             chflags -R 0 "${PALUDIS_PACKAGE_BUILDDIR}" || die "Couldn't remove flags from workdir"
         fi
-        echo rm -fr "${PALUDIS_PACKAGE_BUILDDIR}" 1>&2
+        [[ -z ${PALUDIS_EBUILD_QUIET} ]] && echo rm -fr "${PALUDIS_PACKAGE_BUILDDIR}" 1>&2
         rm -fr "${PALUDIS_PACKAGE_BUILDDIR}" || die "Couldn't remove work"
     fi
 }
