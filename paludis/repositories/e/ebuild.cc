@@ -177,6 +177,7 @@ EbuildCommand::operator() ()
         .setenv("PALUDIS_REDUCED_GID", stringify(params.environment()->reduced_gid()))
         .setenv("PALUDIS_REDUCED_UID", stringify(params.environment()->reduced_uid()))
         .setenv("PALUDIS_EBUILD_LOG_LEVEL", stringify(Log::get_instance()->log_level()))
+        .setenv("PALUDIS_EBUILD_QUIET", "")
         .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
         .setenv("PALUDIS_UTILITY_PATH_SUFFIXES",
                 params.package_id()->eapi()->supported()->ebuild_options()->utility_path_suffixes())
@@ -402,6 +403,7 @@ void
 EbuildMetadataCommand::extend_command(Process & process)
 {
     process
+        .setenv("PALUDIS_EBUILD_QUIET", "yes")
         .setuid_setgid(params.environment()->reduced_uid(), params.environment()->reduced_gid())
         ;
 }
@@ -748,6 +750,7 @@ EbuildVariableCommand::extend_command(Process & process)
 {
     process
         .setenv("PALUDIS_VARIABLE", _var)
+        .setenv("PALUDIS_EBUILD_QUIET", "yes")
         .setuid_setgid(params.environment()->reduced_uid(), params.environment()->reduced_gid());
 }
 
@@ -1124,6 +1127,7 @@ EbuildPretendCommand::extend_command(Process & process)
                 stringify(params.package_id()->version()) + "> ")
         .prefix_stderr(stringify(params.package_id()->name().package()) + "-" +
                 stringify(params.package_id()->version()) + "> ")
+        .setenv("PALUDIS_EBUILD_QUIET", "yes")
         .setenv("PALUDIS_PROFILE_DIR", stringify(*pretend_params.profiles()->begin()))
         .setenv("PALUDIS_PROFILE_DIRS", join(pretend_params.profiles()->begin(),
                     pretend_params.profiles()->end(), " "))
@@ -1335,6 +1339,7 @@ void
 EbuildBadOptionsCommand::extend_command(Process & process)
 {
     process
+        .setenv("PALUDIS_EBUILD_QUIET", "yes")
         .setenv("PALUDIS_PROFILE_DIR", stringify(*bad_options_params.profiles()->begin()))
         .setenv("PALUDIS_PROFILE_DIRS", join(bad_options_params.profiles()->begin(),
                     bad_options_params.profiles()->end(), " "))

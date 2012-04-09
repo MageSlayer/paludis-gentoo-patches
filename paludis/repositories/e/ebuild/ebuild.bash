@@ -592,8 +592,7 @@ ebuild_main()
 
     if [[ ${#@} -ge 2 ]] ; then
         ebuild_section "Running ebuild phases $@ as $(id -un ):$(id -gn )..."
-    elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] && \
-            [[ ${1} != pretend ]] && [[ ${1} != bad_options ]] ; then
+    else
         ebuild_section "Running ebuild phase $@ as $(id -un ):$(id -gn )..."
     fi
 
@@ -601,11 +600,11 @@ ebuild_main()
         ebuild_load_module $(paludis_phase_to_function_name "${action}")
     done
 
-    if [[ $1 == metadata ]] || [[ $1 == variable ]] || [[ $1 == pretend ]] || \
-            [[ $1 == bad_options ]] ; then
-        export ${PALUDIS_EBUILD_PHASE_VAR}="${1}"
+    for action in $@ ; do
+        export ${PALUDIS_EBUILD_PHASE_VAR}="${action}"
         perform_hook ebuild_${action}_pre
-        if [[ $1 == metadata ]]; then
+
+        if [[ ${action} == metadata ]]; then
             # Ban execve() calls if we're running under sandbox
             if esandbox check 2>/dev/null; then
                 esandbox enable_exec || ebuild_notice "warning" "esandbox enable_exec returned failure"
@@ -625,46 +624,38 @@ ebuild_main()
             if esandbox check 2>/dev/null; then
                 esandbox disable_exec || ebuild_notice "warning" "esandbox disable_exec returned failure"
             fi
-        else
+        fi
+
+        if [[ ${#@} -eq 1 ]] && [[ ${action} == variable || ${action} == pretend || ${action} == bad_options ]]; then
             ebuild_load_em_up_dan
         fi
-        if ! ${PALUDIS_F_FUNCTION_PREFIX:-ebuild_f}_${1} ; then
+
+        # Restrict network access if running under sandbox
+        if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
+            if esandbox check 2>/dev/null; then
+                esandbox enable_net || ebuild_notice "warning" "esandbox enable_net returned failure"
+            fi
+        fi
+
+        ${PALUDIS_F_FUNCTION_PREFIX:-ebuild_f}_${action}
+        local paludis_ebuild_phase_status="${?}"
+
+        if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
+            if esandbox check 2>/dev/null; then
+                esandbox disable_net || ebuild_notice "warning" "esandbox disable_net returned failure"
+            fi
+        fi
+
+        if [[ ${paludis_ebuild_phase_status} -ne 0 ]]; then
             perform_hook ebuild_${action}_fail
-            die "${1} failed"
+            die "${action} failed"
         fi
         perform_hook ebuild_${action}_post
-    else
-        for action in $@ ; do
-            export ${PALUDIS_EBUILD_PHASE_VAR}="${action}"
-            perform_hook ebuild_${action}_pre
-            # Restrict network access if running under sandbox
-            if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
-                if esandbox check 2>/dev/null; then
-                    esandbox enable_net || ebuild_notice "warning" "esandbox enable_net returned failure"
-                fi
-            fi
-            if ! ${PALUDIS_F_FUNCTION_PREFIX:-ebuild_f}_${action} ; then
-                if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
-                    if esandbox check 2>/dev/null; then
-                        esandbox disable_net || ebuild_notice "warning" "esandbox disable_net returned failure"
-                    fi
-                fi
-                perform_hook ebuild_${action}_fail
-                die "${action} failed"
-            fi
-            if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
-                if esandbox check 2>/dev/null; then
-                    esandbox disable_net || ebuild_notice "warning" "esandbox disable_net returned failure"
-                fi
-            fi
-            perform_hook ebuild_${action}_post
-        done
-    fi
+    done
 
     if [[ ${#@} -ge 2 ]] ; then
         ebuild_section "Completed ebuild phases $@"
-    elif [[ ${1} != variable ]] && [[ ${1} != metadata ]] && \
-            [[ ${1} != pretend ]] && [[ ${1} != bad_options ]] ; then
+    else
         ebuild_section "Completed ebuild phase $@"
     fi
 }
