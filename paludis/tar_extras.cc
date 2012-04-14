@@ -109,6 +109,8 @@ paludis_tar_extras_add_file(PaludisTarExtras * const extras, const std::string &
         if (ARCHIVE_OK != archive_read_finish(disk_archive))
             throw MergerError("archive_read_finish failed");
     }
+    else
+        close(fd);
 
     archive_entry_free(entry);
 }
