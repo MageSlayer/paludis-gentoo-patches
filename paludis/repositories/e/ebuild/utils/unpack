@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007, 2008 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2011 Ciaran McCreesh
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -30,6 +30,7 @@ die()
     fi
     exit 123
 }
+
 assert()
 {
     local _pipestatus="${PIPESTATUS[*]}"
@@ -82,8 +83,8 @@ unpack_a() {
 }
 
 unpack_tar.lzma() {
-    echo lzma -dc "${1}" \| tar xf - --no-same-owner "${TAR_OPTIONS[@]}"
-    lzma -dc "${1}" | tar xf - --no-same-owner "${TAR_OPTIONS[@]}"
+    echo lzma -dc "${1}" \| strip_tar_corruption \| tar xf - --no-same-owner "${TAR_OPTIONS[@]}"
+    lzma -dc "${1}" | strip_tar_corruption | tar xf - --no-same-owner "${TAR_OPTIONS[@]}"
     assert "Couldn't unpack ${1}"
 }
 
@@ -98,8 +99,8 @@ unpack_7z() {
 }
 
 unpack_tar.xz() {
-    echo xz -dc "${1}" \| tar xf - --no-same-owner "${TAR_OPTIONS[@]}"
-    xz -dc "${1}" | tar xf - --no-same-owner "${TAR_OPTIONS[@]}"
+    echo xz -dc "${1}" \| strip_tar_corruption \| tar xf - --no-same-owner "${TAR_OPTIONS[@]}"
+    xz -dc "${1}" | strip_tar_corruption | tar xf - --no-same-owner "${TAR_OPTIONS[@]}"
     assert "Couldn't unpack ${1}"
 }
 

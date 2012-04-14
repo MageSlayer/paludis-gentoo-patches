@@ -59,7 +59,8 @@ libexecprog_SCRIPTS = \
 libexecbindir = $(libexecdir)/paludis/utils
 libexecbin_PROGRAMS = \
 	print_exports \
-	locked_pipe_command
+	locked_pipe_command \
+	strip_tar_corruption
 
 if ENABLE_PBINS
 libexecbin_PROGRAMS += \
@@ -73,6 +74,7 @@ endif
 
 print_exports_SOURCES = print_exports.cc
 locked_pipe_command_SOURCES = locked_pipe_command.cc
+strip_tar_corruption_SOURCES = strip_tar_corruption.cc
 
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
