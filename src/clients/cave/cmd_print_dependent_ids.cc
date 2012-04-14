@@ -84,6 +84,7 @@ namespace
                     "%c for category, %p for package, %v for version, %s for slot, %: for ':' if we have a slot and "
                     "empty otherwise, %r for repository, %F for the canonical full form, %V for the canonical full "
                     "version, %W for the canonical full unversioned form, %N for the canonical full unnamed form, "
+                    "%u for a uniquely identifying dependency spec, "
                     "\\n for newline, \\t for tab. Default is '%F\\n'.")
         {
             add_usage_line("spec");
