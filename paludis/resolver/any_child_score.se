@@ -12,6 +12,7 @@ make_enum_AnyChildScore()
     key acs_blocks_installed         "Blocks a currently-installed package"
     key acs_could_install            "Could install"
     key acs_already_installed        "Already installed"
+    key acs_could_install_and_installedish "Could install, and already installedish"
     key acs_vacuous_blocker          "Blocker that doesn't match any installable packages"
     key acs_prefer                   "Explicitly preferred"
     key acs_better_than_best         "Better than the best option"

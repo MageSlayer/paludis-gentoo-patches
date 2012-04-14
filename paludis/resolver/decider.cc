@@ -76,6 +76,7 @@
 
 #include <paludis/util/pimp-impl.hh>
 
+#include <list>
 #include <algorithm>
 #include <map>
 #include <set>
@@ -1258,16 +1259,50 @@ Decider::find_any_score(
                 our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _package_dep_spec_already_met(*dep.spec().if_package(), our_id)));
     const std::shared_ptr<const Resolvents> resolvents_unless_block(is_block ? make_null_shared_ptr() :
             _get_resolvents_for(spec, reason_unless_block).first);
+    std::list<std::shared_ptr<Decision> > could_install_decisions;
+    for (Resolvents::ConstIterator r(resolvents_unless_block->begin()), r_end(resolvents_unless_block->end()) ;
+            r != r_end ; ++r)
+    {
+        const std::shared_ptr<Resolution> could_install_resolution(_create_resolution_for_resolvent(*r));
+        const std::shared_ptr<ConstraintSequence> could_install_constraints(_make_constraints_from_dependency(
+                    our_resolution, dep, reason_unless_block, si_take));
+        for (ConstraintSequence::ConstIterator c(could_install_constraints->begin()), c_end(could_install_constraints->end()) ;
+                c != c_end ; ++c)
+            could_install_resolution->constraints()->add(*c);
+        auto could_install_decision(_try_to_find_decision_for(could_install_resolution, false, false, false, false, false));
+        if (could_install_decision)
+            could_install_decisions.push_back(could_install_decision);
+    }
+
+    /* next: could install, and something similar is installed */
+    if (! is_block)
+    {
+        static_assert(acs_already_installed < acs_could_install_and_installedish, "acs order changed");
+
+        Context sub_context("When working out whether it's acs_could_install_and_installedish:");
+
+        for (auto c(could_install_decisions.begin()), c_end(could_install_decisions.end()) ;
+                c != c_end ; ++ c)
+        {
+            const auto installed_resolvent((*_imp->env)[selection::SomeArbitraryVersion(
+                        generator::Package((*c)->resolvent().package()) |
+                        make_slot_filter((*c)->resolvent()) |
+                        filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))]);
+            if (! installed_resolvent->empty())
+                return std::make_pair(acs_could_install_and_installedish, operator_bias);
+        }
+    }
 
     /* next: already installed */
     static_assert(acs_already_installed < acs_vacuous_blocker, "acs order changed");
     {
         Context sub_context("When working out whether it's acs_already_installed:");
 
-        const std::shared_ptr<const PackageIDSequence> installed_ids((*_imp->env)[selection::BestVersionOnly(
+        const std::shared_ptr<const PackageIDSequence> installed_id((*_imp->env)[selection::BestVersionOnly(
                     generator::Matches(spec, our_id, { }) |
                     filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))]);
-        if (! installed_ids->empty() ^ is_block)
+
+        if (! installed_id->empty() ^ is_block)
             return std::make_pair(acs_already_installed, operator_bias);
     }
 
@@ -1275,19 +1310,8 @@ Decider::find_any_score(
     if (! is_block)
     {
         static_assert(acs_could_install < acs_already_installed, "acs order changed");
-        for (Resolvents::ConstIterator r(resolvents_unless_block->begin()), r_end(resolvents_unless_block->end()) ;
-                r != r_end ; ++r)
-        {
-            const std::shared_ptr<Resolution> resolution(_create_resolution_for_resolvent(*r));
-            const std::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(
-                        our_resolution, dep, reason_unless_block, si_take));
-            for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
-                    c != c_end ; ++c)
-                resolution->constraints()->add(*c);
-            const std::shared_ptr<Decision> decision(_try_to_find_decision_for(resolution, false, false, false, false, false));
-            if (decision)
-                return std::make_pair(acs_could_install, operator_bias);
-        }
+        if (! could_install_decisions.empty())
+            return std::make_pair(acs_could_install, operator_bias);
     }
 
     /* next: blocks installed package */

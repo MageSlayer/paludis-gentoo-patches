@@ -320,3 +320,27 @@ TEST_F(ResolverAnyTestCase, SelfOrOther)
             );
 }
 
+TEST_F(ResolverAnyTestCase, UpgradeOverAny)
+{
+    data->install("upgrade-over-any", "dep", "1");
+
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("upgrade-over-any/target"));
+
+    check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("upgrade-over-any/dep"))
+                .change(QualifiedPackageName("upgrade-over-any/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
+}
+
