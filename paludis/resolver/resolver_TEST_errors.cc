@@ -73,7 +73,7 @@ TEST_F(ResolverErrorsTestCase, UnableToDecideThenMore)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("unable-to-decide-then-more/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("unable-to-decide-then-more/pkg-b"))
                 .change(QualifiedPackageName("unable-to-decide-then-more/target"))

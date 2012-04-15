@@ -98,7 +98,7 @@ namespace
             data->install("hard", "z-pkg", "1")->behaviours_set()->insert(transient_ ? "transient" : "");
 
             std::shared_ptr<const Resolved> resolved(data->get_resolved("hard/target"));
-            check_resolved(resolved,
+            this->check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("hard/a-pkg"))
                         .change(QualifiedPackageName("hard/z-pkg"))
@@ -136,7 +136,7 @@ namespace
             data->install("unfixable", "a-pkg", "1")->behaviours_set()->insert(transient_ ? "transient" : "");
 
             std::shared_ptr<const Resolved> resolved(data->get_resolved("unfixable/target"));
-            check_resolved(resolved,
+            this->check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("unfixable/target"))
                         .finished()),
@@ -176,7 +176,7 @@ namespace
             data->install("remove", "z-pkg", "1")->behaviours_set()->insert(transient_ ? "transient" : "");
 
             std::shared_ptr<const Resolved> resolved(data->get_resolved("remove/target"));
-            check_resolved(resolved,
+            this->check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .remove(QualifiedPackageName("remove/a-pkg"))
                         .remove(QualifiedPackageName("remove/z-pkg"))
@@ -219,7 +219,7 @@ namespace
             std::shared_ptr<const Resolved> resolved(data->get_resolved(make_uninstall_blocker(
                             parse_user_package_dep_spec("target/target", &data->env, UserPackageDepSpecOptions()))));
 
-            check_resolved(resolved,
+            this->check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = exists_ ? make_shared_copy(DecisionChecks()
                         .remove(QualifiedPackageName("target/target"))
                         .finished()) : make_shared_copy(DecisionChecks()
@@ -261,7 +261,7 @@ namespace
 
             std::shared_ptr<const Resolved> resolved(data->get_resolved("blocked-and-dep/target"));
 
-            check_resolved(resolved,
+            this->check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("blocked-and-dep/target"))
                         .finished()),
@@ -296,7 +296,7 @@ TEST_F(ResolverBlockers0TestCase, Cycle)
     data->install("block-and-dep-cycle", "target", "0");
     std::shared_ptr<const Resolved> resolved(data->get_resolved("block-and-dep-cycle/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("block-and-dep-cycle/dep"))
                 .change(QualifiedPackageName("block-and-dep-cycle/target"))
@@ -319,7 +319,7 @@ TEST_F(ResolverBlockers0TestCase, HardBlockAndDepCycle)
     data->install("hard-block-and-dep-cycle", "target", "0");
     std::shared_ptr<const Resolved> resolved(data->get_resolved("hard-block-and-dep-cycle/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .finished()),
             n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
@@ -408,7 +408,7 @@ namespace
                         .finished());
             }
 
-            check_resolved(resolved,
+            this->check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = checks,
                     n::taken_unable_to_make_decisions() = u_checks,
                     n::taken_unconfirmed_decisions() = make_shared_copy(ResolverTestCase::DecisionChecks()
@@ -506,7 +506,7 @@ TEST_F(ResolverBlockersTestCase, UninstallBlockedAfter)
 
     std::shared_ptr<const Resolved> resolved(data->get_resolved("uninstall-blocked-after/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("uninstall-blocked-after/target"))
                 .remove(QualifiedPackageName("uninstall-blocked-after/dep"))
@@ -530,7 +530,7 @@ TEST_F(ResolverBlockersTestCase, UninstallBlockedBefore)
     data->allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("uninstall-blocked-before/dep", &data->env, UserPackageDepSpecOptions()));
     std::shared_ptr<const Resolved> resolved(data->get_resolved("uninstall-blocked-before/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .remove(QualifiedPackageName("uninstall-blocked-before/dep"))
                 .change(QualifiedPackageName("uninstall-blocked-before/target"))
@@ -554,7 +554,7 @@ TEST_F(ResolverBlockersTestCase, UpgradeBlockedBefore)
     data->allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("upgrade-blocked-before/dep", &data->env, UserPackageDepSpecOptions()));
     std::shared_ptr<const Resolved> resolved(data->get_resolved("upgrade-blocked-before/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("upgrade-blocked-before/dep"))
                 .change(QualifiedPackageName("upgrade-blocked-before/target"))
@@ -577,7 +577,7 @@ TEST_F(ResolverBlockersTestCase, Manual)
     data->install("manual", "dep", "1");
     std::shared_ptr<const Resolved> resolved(data->get_resolved("manual/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("manual/target"))
                 .finished()),
@@ -600,7 +600,7 @@ TEST_F(ResolverBlockersTestCase, OtherSlotFirst)
     data->install("other-slot-first", "dep", "1")->set_slot(SlotName("1"));
     std::shared_ptr<const Resolved> resolved(data->get_resolved("other-slot-first/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change_slot(QualifiedPackageName("other-slot-first/dep"), SlotName("1"))
                 .change_slot(QualifiedPackageName("other-slot-first/dep"), SlotName("2"))

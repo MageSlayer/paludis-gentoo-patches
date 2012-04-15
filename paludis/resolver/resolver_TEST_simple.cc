@@ -71,7 +71,7 @@ namespace
 TEST_F(ResolverSimpleTestCase, NoDeps)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("no-deps/target"));
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("no-deps/target"))
                 .finished()),
@@ -92,7 +92,7 @@ TEST_F(ResolverSimpleTestCase, BuildDeps)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("build-deps/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("build-deps/a-dep"))
                 .change(QualifiedPackageName("build-deps/b-dep"))
@@ -116,7 +116,7 @@ TEST_F(ResolverSimpleTestCase, RunDeps)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("run-deps/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("run-deps/a-dep"))
                 .change(QualifiedPackageName("run-deps/b-dep"))
@@ -140,7 +140,7 @@ TEST_F(ResolverSimpleTestCase, PostDeps)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("post-deps/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("post-deps/a-dep"))
                 .change(QualifiedPackageName("post-deps/b-dep"))

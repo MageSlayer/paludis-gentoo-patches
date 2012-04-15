@@ -75,7 +75,7 @@ TEST_F(ResolverAnyTestCase, EmptyAlternative)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("test/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("test/target"))
                 .finished()),
@@ -97,7 +97,7 @@ TEST_F(ResolverAnyTestCase, EmptyAlternativeWithUpdate)
     data->install("test", "dep", "2");
     std::shared_ptr<const Resolved> resolved(data->get_resolved("test/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("test/target"))
                 .finished()),
@@ -119,7 +119,7 @@ TEST_F(ResolverAnyTestCase, EmptyAlternativeWithUntakenUpgrade)
     data->install("test", "dep", "1");
     std::shared_ptr<const Resolved> resolved(data->get_resolved("test/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("test/target"))
                 .finished()),
@@ -192,7 +192,7 @@ namespace
                         .finished());
             }
 
-            check_resolved(resolved,
+            this->check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = checks,
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
@@ -233,7 +233,7 @@ TEST_F(ResolverAnyTestCase, SelfUseFirst)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("self-use-first/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("self-use-first/dep"))
                 .change(QualifiedPackageName("self-use-first/target"))
@@ -255,7 +255,7 @@ TEST_F(ResolverAnyTestCase, SelfUseSecond)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("self-use-second/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("self-use-second/dep"))
                 .change(QualifiedPackageName("self-use-second/target"))
@@ -277,7 +277,7 @@ TEST_F(ResolverAnyTestCase, SelfUseNeither)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("self-use-neither/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("self-use-neither/dep"))
                 .change(QualifiedPackageName("self-use-neither/target"))
@@ -303,7 +303,7 @@ TEST_F(ResolverAnyTestCase, SelfOrOther)
 
     std::shared_ptr<const Resolved> resolved(data->get_resolved("self-or-other/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("self-or-other/target"))
                 .finished()),
@@ -326,7 +326,7 @@ TEST_F(ResolverAnyTestCase, UpgradeOverAny)
 
     std::shared_ptr<const Resolved> resolved(data->get_resolved("upgrade-over-any/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("upgrade-over-any/dep"))
                 .change(QualifiedPackageName("upgrade-over-any/target"))

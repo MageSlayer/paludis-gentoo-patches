@@ -116,7 +116,7 @@ namespace
 
             std::shared_ptr<const Resolved> resolved(data->get_resolved("continue-on-failure/target"));
 
-            check_resolved(resolved,
+            this->check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                         .change(QualifiedPackageName("continue-on-failure/direct-dep"))
                         .change(QualifiedPackageName("continue-on-failure/indirect-dep"))
@@ -178,7 +178,7 @@ TEST_F(ResolverContinueOnFailureTestCase, Uninstall)
     std::shared_ptr<const Resolved> resolved(data->get_resolved(make_uninstall_blocker(
                     parse_user_package_dep_spec("continue-on-failure-uninstall/target", &data->env, { }))));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .remove(QualifiedPackageName("continue-on-failure-uninstall/needs-target"))
                 .remove(QualifiedPackageName("continue-on-failure-uninstall/target"))
@@ -226,7 +226,7 @@ TEST_F(ResolverContinueOnFailureTestCase, Purge)
 
     std::shared_ptr<const Resolved> resolved(data->get_resolved("continue-on-failure-purge/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("continue-on-failure-purge/target"))
                 .remove(QualifiedPackageName("continue-on-failure-purge/going"))

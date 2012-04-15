@@ -83,7 +83,7 @@ TEST_F(ResolverPurgesTestCase, Purges)
     data->get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_possible);
 
     std::shared_ptr<const Resolved> resolved(data->get_resolved("purges/target"));
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("purges/new-dep"))
                 .change(QualifiedPackageName("purges/target"))
@@ -116,7 +116,7 @@ TEST_F(ResolverPurgesTestCase, StarSlotPurges)
     std::shared_ptr<const Resolved> resolved(data->get_resolved(make_uninstall_blocker(
                     parse_user_package_dep_spec("star-slot-purges/target:1", &data->env, { }))));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .remove(QualifiedPackageName("star-slot-purges/target"))
                 .finished()),

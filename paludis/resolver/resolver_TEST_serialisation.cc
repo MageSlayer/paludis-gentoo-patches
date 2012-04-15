@@ -85,7 +85,7 @@ TEST_F(ResolverSerialisationTestCase, Serialisation)
         resolved = std::make_shared<Resolved>(Resolved::deserialise(desern));
     }
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("serialisation/dep"))
                 .change(QualifiedPackageName("serialisation/target"))

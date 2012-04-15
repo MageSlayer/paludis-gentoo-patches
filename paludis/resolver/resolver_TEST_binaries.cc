@@ -75,7 +75,7 @@ TEST_F(ResolverBinariesTestCase, SelfBuildBinary)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("self-build-binary/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("self-build-binary/target"))
                 .finished()),
@@ -98,7 +98,7 @@ TEST_F(ResolverBinariesTestCase, SelfRunBinary)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("self-run-binary/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("self-run-binary/dep"))
                 .change(QualifiedPackageName("self-run-binary/dep"))

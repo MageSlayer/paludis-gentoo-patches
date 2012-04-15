@@ -101,7 +101,7 @@ TEST_F(ResolverFetchTestCase, Fetch)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("fetch/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("fetch/fetch-dep"))
                 .change(QualifiedPackageName("fetch/target"))

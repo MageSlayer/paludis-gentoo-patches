@@ -97,7 +97,7 @@ namespace
                             parse_user_package_dep_spec("breaking/target", &data->env, UserPackageDepSpecOptions()))));
 
             if (allowed_to_remove_)
-                check_resolved(resolved,
+                this->check_resolved(resolved,
                         n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                             .remove(QualifiedPackageName("breaking/dep"))
                             .remove(QualifiedPackageName("breaking/target"))
@@ -114,7 +114,7 @@ namespace
                             .finished())
                         );
             else if (confirm_)
-                check_resolved(resolved,
+                this->check_resolved(resolved,
                         n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                             .remove(QualifiedPackageName("breaking/target"))
                             .finished()),
@@ -130,7 +130,7 @@ namespace
                             .finished())
                         );
             else
-                check_resolved(resolved,
+                this->check_resolved(resolved,
                         n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                             .remove(QualifiedPackageName("breaking/target"))
                             .finished()),

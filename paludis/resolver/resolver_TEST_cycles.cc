@@ -79,7 +79,7 @@ TEST_F(ResolverCyclesTestCase, NoChanges)
 
     std::shared_ptr<const Resolved> resolved(data->get_resolved("no-changes/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("no-changes/target"))
                 .finished()),
@@ -101,7 +101,7 @@ TEST_F(ResolverCyclesTestCase, ExistingUsable)
     data->install("existing-usable", "dep", "1");
     std::shared_ptr<const Resolved> resolved(data->get_resolved("existing-usable/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("existing-usable/target"))
                 .change(QualifiedPackageName("existing-usable/dep"))
@@ -123,7 +123,7 @@ TEST_F(ResolverCyclesTestCase, MutualRunDeps)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("mutual-run-deps/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("mutual-run-deps/dep-a"))
                 .change(QualifiedPackageName("mutual-run-deps/dep-b"))
@@ -147,7 +147,7 @@ TEST_F(ResolverCyclesTestCase, MutualBuildDeps)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("mutual-build-deps/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("mutual-build-deps/target"))
                 .finished()),
@@ -217,7 +217,7 @@ namespace
                         .finished());
             }
 
-            check_resolved(resolved,
+            this->check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = checks,
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
@@ -289,7 +289,7 @@ namespace
                         .finished());
             }
 
-            check_resolved(resolved,
+            this->check_resolved(resolved,
                     n::taken_change_or_remove_decisions() = checks,
                     n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                         .finished()),
@@ -327,7 +327,7 @@ TEST_F(ResolverCyclesTestCase, CycleDeps)
 
     std::shared_ptr<const Resolved> resolved(data->get_resolved("cycle-deps/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("cycle-deps/target"))
                 .finished()),
@@ -354,7 +354,7 @@ TEST_F(ResolverCyclesTestCase, BuildAgainstBlock)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("build-against-block/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("build-against-block/dep-b"))
                 .change(QualifiedPackageName("build-against-block/dep-a"))

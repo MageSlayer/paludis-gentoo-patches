@@ -72,7 +72,7 @@ TEST_F(ResolverSuggestionsTestCase, Suggestion)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("suggestion/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("suggestion/target"))
                 .finished()),
@@ -94,7 +94,7 @@ TEST_F(ResolverSuggestionsTestCase, Unmeetable)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("unmeetable-suggestion/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("unmeetable-suggestion/target"))
                 .finished()),
@@ -116,7 +116,7 @@ TEST_F(ResolverSuggestionsTestCase, SuggestionThenDependency)
 {
     std::shared_ptr<const Resolved> resolved(data->get_resolved("suggestion-then-dependency/target"));
 
-    check_resolved(resolved,
+    this->check_resolved(resolved,
             n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
                 .change(QualifiedPackageName("suggestion-then-dependency/a-suggested-dep"))
                 .change(QualifiedPackageName("suggestion-then-dependency/hard-dep"))
