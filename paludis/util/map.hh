@@ -108,8 +108,8 @@ namespace paludis
             ///\}
     };
 
-    extern template class Map<std::string, std::string>;
-    extern template class WrappedForwardIterator<Map<std::string, std::string>::ConstIteratorTag, const std::pair<const std::string, std::string> >;
+    extern template class PALUDIS_VISIBLE Map<std::string, std::string>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Map<std::string, std::string>::ConstIteratorTag, const std::pair<const std::string, std::string> >;
 }
 
 #endif

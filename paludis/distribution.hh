@@ -42,6 +42,8 @@
 
 namespace paludis
 {
+    extern template class PALUDIS_VISIBLE Singleton<DistributionData>;
+
     namespace n
     {
         typedef Name<struct name_concept_keyword> concept_keyword;
@@ -157,8 +159,6 @@ namespace paludis
                     const Distribution &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
-
-    extern template class Singleton<DistributionData>;
 }
 
 #endif

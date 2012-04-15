@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -48,8 +48,8 @@ namespace paludis
         };
     }
 
-    extern template class Sequence<resolver::ChangeByResolvent>;
-    extern template class WrappedForwardIterator<Sequence<resolver::ChangeByResolvent>::ConstIteratorTag, const resolver::ChangeByResolvent>;
+    extern template class PALUDIS_VISIBLE Sequence<resolver::ChangeByResolvent>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Sequence<resolver::ChangeByResolvent>::ConstIteratorTag, const resolver::ChangeByResolvent>;
 }
 
 #endif

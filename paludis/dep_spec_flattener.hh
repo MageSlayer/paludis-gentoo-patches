@@ -118,15 +118,15 @@ namespace paludis
             ///\}
     };
 
-    extern template class DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>;
-    extern template class DepSpecFlattener<SetSpecTree, PackageDepSpec>;
-    extern template class DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>;
+    extern template class PALUDIS_VISIBLE DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>;
+    extern template class PALUDIS_VISIBLE DepSpecFlattener<SetSpecTree, PackageDepSpec>;
+    extern template class PALUDIS_VISIBLE DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>;
 
-    extern template class WrappedForwardIterator<DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIteratorTag,
            const std::shared_ptr<const PlainTextDepSpec> >;
-    extern template class WrappedForwardIterator<DepSpecFlattener<SetSpecTree, PackageDepSpec>::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<DepSpecFlattener<SetSpecTree, PackageDepSpec>::ConstIteratorTag,
            const std::shared_ptr<const PackageDepSpec> >;
-    extern template class WrappedForwardIterator<DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec>::ConstIteratorTag,
            const std::shared_ptr<const SimpleURIDepSpec> >;
 }
 

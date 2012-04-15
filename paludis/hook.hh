@@ -155,7 +155,7 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template class WrappedForwardIterator<Hook::ConstIteratorTag, const std::pair<const std::string, std::string> >;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Hook::ConstIteratorTag, const std::pair<const std::string, std::string> >;
 }
 
 extern "C" paludis::HookResult PALUDIS_VISIBLE paludis_hook_run_3(

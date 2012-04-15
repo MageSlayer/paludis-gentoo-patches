@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,7 +25,7 @@ using namespace paludis;
 
 namespace paludis
 {
-    template class Sequence<std::string>;
-    template class WrappedForwardIterator<Sequence<std::string>::ConstIteratorTag, const std::string>;
-    template class WrappedOutputIterator<Sequence<std::string>::InserterTag, std::string>;
+    template class PALUDIS_VISIBLE Sequence<std::string>;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<Sequence<std::string>::ConstIteratorTag, const std::string>;
+    template class PALUDIS_VISIBLE WrappedOutputIterator<Sequence<std::string>::InserterTag, std::string>;
 }

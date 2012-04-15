@@ -34,6 +34,8 @@
 
 namespace paludis
 {
+    extern template class PALUDIS_VISIBLE Singleton<RepositoryFactory>;
+
     class PALUDIS_VISIBLE RepositoryFactory :
         public Singleton<RepositoryFactory>
     {
@@ -157,8 +159,7 @@ namespace paludis
     void register_repositories(const RepositoryClass_ * const, RepositoryFactory * const);
 
     extern template class Pimp<RepositoryFactory>;
-    extern template class Singleton<RepositoryFactory>;
-    extern template class WrappedForwardIterator<RepositoryFactory::ConstIteratorTag, const std::string>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<RepositoryFactory::ConstIteratorTag, const std::string>;
 }
 
 #endif

@@ -61,7 +61,7 @@ namespace paludis
     }
 
     extern template class Pimp<args::ArgsSection>;
-    extern template class WrappedForwardIterator<args::ArgsSection::GroupsConstIteratorTag, const args::ArgsGroup>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsSection::GroupsConstIteratorTag, const args::ArgsGroup>;
 }
 
 #endif

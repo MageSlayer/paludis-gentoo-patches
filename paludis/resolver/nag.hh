@@ -104,9 +104,9 @@ namespace paludis
         };
     }
 
-    extern template class WrappedForwardIterator<resolver::NAG::EdgesFromConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<resolver::NAG::EdgesFromConstIteratorTag,
            const std::pair<const resolver::NAGIndex, resolver::NAGEdgeProperties> >;
-    extern template class WrappedForwardIterator<resolver::NAG::NodesConstIteratorTag, const resolver::NAGIndex>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<resolver::NAG::NodesConstIteratorTag, const resolver::NAGIndex>;
 }
 
 #endif

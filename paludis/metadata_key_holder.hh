@@ -76,7 +76,7 @@ namespace paludis
             ///\}
     };
 
-    extern template class WrappedForwardIterator<MetadataKeyHolder::MetadataConstIteratorTag, const std::shared_ptr<const MetadataKey> >;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<MetadataKeyHolder::MetadataConstIteratorTag, const std::shared_ptr<const MetadataKey> >;
 }
 
 #endif

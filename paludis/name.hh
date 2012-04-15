@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,9 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/wrapped_value.hh>
 #include <paludis/util/operators.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 
 #include <string>
 #include <iosfwd>
@@ -67,6 +70,8 @@ namespace paludis
         static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    extern template struct PALUDIS_VISIBLE WrappedValue<PackageNamePartTag>;
+
     /**
      * A CategoryNamePartError is thrown if an invalid value is assigned to
      * a CategoryNamePart.
@@ -93,6 +98,8 @@ namespace paludis
 
         static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+    extern template struct PALUDIS_VISIBLE WrappedValue<CategoryNamePartTag>;
 
     /**
      * Represents a category plus package name.
@@ -236,6 +243,15 @@ namespace paludis
 
         static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+    extern template struct PALUDIS_VISIBLE WrappedValue<RepositoryNameTag>;
+    extern template struct PALUDIS_VISIBLE WrappedValue<SlotNameTag>;
+    extern template struct PALUDIS_VISIBLE WrappedValue<KeywordNameTag>;
+    extern template struct PALUDIS_VISIBLE WrappedValue<SetNameTag>;
+
+    extern template struct PALUDIS_VISIBLE Set<QualifiedPackageName>;
+    extern template struct PALUDIS_VISIBLE WrappedForwardIterator<Set<QualifiedPackageName>::ConstIteratorTag, const QualifiedPackageName>;
+    extern template struct PALUDIS_VISIBLE WrappedOutputIterator<Set<QualifiedPackageName>::InserterTag, QualifiedPackageName>;
 }
 
 #endif

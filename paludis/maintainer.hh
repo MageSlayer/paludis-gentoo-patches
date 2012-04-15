@@ -47,8 +47,8 @@ namespace paludis
         NamedValue<n::email, std::string> email;
     };
 
-    extern template class Sequence<Maintainer>;
-    extern template class WrappedForwardIterator<Sequence<Maintainer>::ConstIteratorTag, const Maintainer>;
+    extern template class PALUDIS_VISIBLE Sequence<Maintainer>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Sequence<Maintainer>::ConstIteratorTag, const Maintainer>;
 }
 
 #endif

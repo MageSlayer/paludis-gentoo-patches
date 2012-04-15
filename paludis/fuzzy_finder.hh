@@ -99,8 +99,8 @@ namespace paludis
             ///\}
     };
 
-    extern template class WrappedForwardIterator<FuzzyCandidatesFinder::CandidatesConstIteratorTag, const QualifiedPackageName>;
-    extern template class WrappedForwardIterator<FuzzyRepositoriesFinder::RepositoriesConstIteratorTag, const RepositoryName>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<FuzzyCandidatesFinder::CandidatesConstIteratorTag, const QualifiedPackageName>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<FuzzyRepositoriesFinder::RepositoriesConstIteratorTag, const RepositoryName>;
 
 }
 

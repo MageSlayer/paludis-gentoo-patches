@@ -32,6 +32,8 @@
 
 namespace paludis
 {
+    extern template class PALUDIS_VISIBLE Singleton<EnvironmentFactory>;
+
     class PALUDIS_VISIBLE FallBackToAnotherFormatError
     {
     };
@@ -91,7 +93,6 @@ namespace paludis
     void register_environment(const EnvironmentClass_ * const, EnvironmentFactory * const);
 
     extern template class Pimp<EnvironmentFactory>;
-    extern template class Singleton<EnvironmentFactory>;
 }
 
 #endif

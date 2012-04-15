@@ -443,13 +443,14 @@ FSPathComparator::operator() (const FSPath & a, const FSPath & b) const
 
 namespace paludis
 {
-    template class Sequence<FSPath>;
-    template class WrappedForwardIterator<Sequence<FSPath>::ConstIteratorTag, const FSPath>;
-    template class WrappedForwardIterator<Sequence<FSPath>::ReverseConstIteratorTag, const FSPath>;
-    template class WrappedOutputIterator<Sequence<FSPath>::InserterTag, FSPath>;
+    template class PALUDIS_VISIBLE Sequence<FSPath>;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<Sequence<FSPath>::ConstIteratorTag, const FSPath>;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<Sequence<FSPath>::ReverseConstIteratorTag, const FSPath>;
+    template class PALUDIS_VISIBLE WrappedOutputIterator<Sequence<FSPath>::InserterTag, FSPath>;
 
-    template class Set<FSPath, FSPathComparator>;
-    template class WrappedForwardIterator<Set<FSPath, FSPathComparator>::ConstIteratorTag, const FSPath>;
+    template class PALUDIS_VISIBLE Set<FSPath, FSPathComparator>;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<Set<FSPath, FSPathComparator>::ConstIteratorTag, const FSPath>;
 
     template class Pimp<FSPath>;
 }
+

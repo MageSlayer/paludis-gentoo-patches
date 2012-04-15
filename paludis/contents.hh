@@ -235,7 +235,7 @@ namespace paludis
     extern template class Pimp<ContentsEntry>;
     extern template class Pimp<ContentsSymEntry>;
 
-    extern template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::shared_ptr<const ContentsEntry> >;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Contents::ConstIteratorTag, const std::shared_ptr<const ContentsEntry> >;
 }
 
 #endif

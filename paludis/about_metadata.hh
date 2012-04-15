@@ -35,6 +35,8 @@
 
 namespace paludis
 {
+    extern template class PALUDIS_VISIBLE Singleton<AboutMetadata>;
+
     /**
      * Information about Paludis, provided as MetadataKey instances.
      *
@@ -58,7 +60,6 @@ namespace paludis
     };
 
     extern template class Pimp<AboutMetadata>;
-    extern template class Singleton<AboutMetadata>;
 }
 
 #endif

@@ -31,6 +31,11 @@
 
 namespace paludis
 {
+    class DigestRegistry;
+
+    extern template class Pimp<DigestRegistry>;
+    extern template class PALUDIS_VISIBLE Singleton<DigestRegistry>;
+
     class PALUDIS_VISIBLE DigestRegistry :
         public Singleton<DigestRegistry>
     {
@@ -73,9 +78,6 @@ namespace paludis
                 return digest.hexsum();
             }
     };
-
-    extern template class Pimp<DigestRegistry>;
-    extern template class Singleton<DigestRegistry>;
 }
 
 #endif

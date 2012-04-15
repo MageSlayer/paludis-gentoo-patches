@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2009 Ciaran McCreesh
+ * Copyright (c) 2007, 2009, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,7 +28,7 @@ using namespace paludis;
 namespace paludis
 {
     template class Map<std::string, std::string>;
-    template class DefaultMapComparator<std::string>;
+    template class PALUDIS_VISIBLE DefaultMapComparator<std::string>;
     template class WrappedForwardIterator<Map<std::string, std::string>::ConstIteratorTag, const std::pair<const std::string, std::string> >;
-    template class WrappedOutputIterator<Map<std::string, std::string>::InserterTag, std::pair<const std::string, std::string> >;
+    template class PALUDIS_VISIBLE WrappedOutputIterator<Map<std::string, std::string>::InserterTag, std::pair<const std::string, std::string> >;
 }

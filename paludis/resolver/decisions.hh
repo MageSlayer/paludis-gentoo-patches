@@ -74,22 +74,22 @@ namespace paludis
                 static const std::shared_ptr<Decisions> deserialise(Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
-        extern template class Decisions<UnableToMakeDecision>;
-        extern template class Decisions<ChangesToMakeDecision>;
-        extern template class Decisions<ChangeOrRemoveDecision>;
-        extern template class Decisions<ConfirmableDecision>;
-        extern template class Decisions<ChangeOrRemoveDecision, std::shared_ptr<const OrdererNotes> >;
+        extern template class PALUDIS_VISIBLE Decisions<UnableToMakeDecision>;
+        extern template class PALUDIS_VISIBLE Decisions<ChangesToMakeDecision>;
+        extern template class PALUDIS_VISIBLE Decisions<ChangeOrRemoveDecision>;
+        extern template class PALUDIS_VISIBLE Decisions<ConfirmableDecision>;
+        extern template class PALUDIS_VISIBLE Decisions<ChangeOrRemoveDecision, std::shared_ptr<const OrdererNotes> >;
     }
 
-    extern template class WrappedForwardIterator<resolver::Decisions<resolver::UnableToMakeDecision>::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<resolver::Decisions<resolver::UnableToMakeDecision>::ConstIteratorTag,
            const std::shared_ptr<const resolver::UnableToMakeDecision> >;
-    extern template class WrappedForwardIterator<resolver::Decisions<resolver::ChangesToMakeDecision>::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<resolver::Decisions<resolver::ChangesToMakeDecision>::ConstIteratorTag,
            const std::shared_ptr<const resolver::ChangesToMakeDecision> >;
-    extern template class WrappedForwardIterator<resolver::Decisions<resolver::ChangeOrRemoveDecision>::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<resolver::Decisions<resolver::ChangeOrRemoveDecision>::ConstIteratorTag,
            const std::shared_ptr<const resolver::ChangeOrRemoveDecision> >;
-    extern template class WrappedForwardIterator<resolver::Decisions<resolver::ConfirmableDecision>::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<resolver::Decisions<resolver::ConfirmableDecision>::ConstIteratorTag,
            const std::shared_ptr<const resolver::ConfirmableDecision> >;
-    extern template class WrappedForwardIterator<resolver::Decisions<resolver::ChangeOrRemoveDecision,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<resolver::Decisions<resolver::ChangeOrRemoveDecision,
            std::shared_ptr<const resolver::OrdererNotes> >::ConstIteratorTag,
            const std::pair<
                std::shared_ptr<const resolver::ChangeOrRemoveDecision>,

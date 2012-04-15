@@ -53,8 +53,8 @@ namespace paludis
         };
     }
 
-    extern template class Sequence<resolver::JobRequirement>;
-    extern template class WrappedForwardIterator<Sequence<resolver::JobRequirement>::ConstIteratorTag, const resolver::JobRequirement>;
+    extern template class PALUDIS_VISIBLE Sequence<resolver::JobRequirement>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Sequence<resolver::JobRequirement>::ConstIteratorTag, const resolver::JobRequirement>;
 }
 
 #endif

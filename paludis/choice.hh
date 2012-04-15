@@ -28,6 +28,9 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/util/wrapped_value.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <memory>
 #include <string>
 
@@ -107,6 +110,8 @@ namespace paludis
         static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    extern template class PALUDIS_VISIBLE WrappedValue<ChoicePrefixNameTag>;
+
     template <>
     struct WrappedValueTraits<UnprefixedChoiceNameTag>
     {
@@ -117,6 +122,8 @@ namespace paludis
         static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    extern template class PALUDIS_VISIBLE WrappedValue<UnprefixedChoiceNameTag>;
+
     template <>
     struct WrappedValueTraits<ChoiceNameWithPrefixTag>
     {
@@ -126,6 +133,8 @@ namespace paludis
 
         static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+    extern template class PALUDIS_VISIBLE WrappedValue<ChoiceNameWithPrefixTag>;
 
     /**
      * Choices holds a collection of configurable values for a PackageID.
@@ -388,8 +397,12 @@ namespace paludis
     extern template class Pimp<Choices>;
     extern template class Pimp<Choice>;
 
-    extern template class WrappedForwardIterator<Choices::ConstIteratorTag, const std::shared_ptr<const Choice> >;
-    extern template class WrappedForwardIterator<Choice::ConstIteratorTag, const std::shared_ptr<const ChoiceValue> >;
+    extern template class PALUDIS_VISIBLE Set<UnprefixedChoiceName>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Set<UnprefixedChoiceName>::ConstIteratorTag, const UnprefixedChoiceName>;
+    extern template class PALUDIS_VISIBLE WrappedOutputIterator<Set<UnprefixedChoiceName>::InserterTag, UnprefixedChoiceName>;
+
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Choices::ConstIteratorTag, const std::shared_ptr<const Choice> >;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Choice::ConstIteratorTag, const std::shared_ptr<const ChoiceValue> >;
 }
 
 #endif

@@ -97,7 +97,6 @@ namespace paludis
     };
 
     extern template class Pimp<ScopedNotifierCallback>;
-
 }
 
 #endif

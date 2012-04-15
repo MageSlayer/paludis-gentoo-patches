@@ -777,3 +777,4 @@ namespace paludis
 {
     template class WrappedForwardIterator<VersionSpec::ConstIteratorTag, const VersionSpecComponent>;
 }
+

@@ -26,7 +26,10 @@
 #include <paludis/util/operators.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/fs_path-fwd.hh>
+#include <paludis/util/set.hh>
+#include <paludis/util/sequence.hh>
 
 #include <paludis/action-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
@@ -463,8 +466,22 @@ namespace paludis
                     const std::shared_ptr<const PackageID> &) const;
     };
 
-    extern template class WrappedForwardIterator<PackageID::MasksConstIteratorTag, const std::shared_ptr<const Mask> >;
-    extern template class WrappedForwardIterator<PackageID::OverriddenMasksConstIteratorTag, const std::shared_ptr<const OverriddenMask> >;
+    extern template class PALUDIS_VISIBLE Sequence<std::shared_ptr<const PackageID> >;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Sequence<std::shared_ptr<const PackageID> >::ConstIteratorTag,
+             const std::shared_ptr<const PackageID> >;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Sequence<std::shared_ptr<const PackageID> >::ReverseConstIteratorTag,
+             const std::shared_ptr<const PackageID> >;
+    extern template class PALUDIS_VISIBLE WrappedOutputIterator<Sequence<std::shared_ptr<const PackageID> >::InserterTag,
+             std::shared_ptr<const PackageID> >;
+
+    extern template class PALUDIS_VISIBLE Set<std::shared_ptr<const PackageID>, PackageIDSetComparator>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Set<std::shared_ptr<const PackageID>, PackageIDSetComparator>::ConstIteratorTag,
+             const std::shared_ptr<const PackageID> >;
+    extern template class PALUDIS_VISIBLE WrappedOutputIterator<Set<std::shared_ptr<const PackageID>, PackageIDSetComparator>::InserterTag,
+             std::shared_ptr<const PackageID> >;
+
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<PackageID::MasksConstIteratorTag, const std::shared_ptr<const Mask> >;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<PackageID::OverriddenMasksConstIteratorTag, const std::shared_ptr<const OverriddenMask> >;
 }
 
 #endif

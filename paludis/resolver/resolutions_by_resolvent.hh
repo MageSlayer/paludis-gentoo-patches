@@ -56,7 +56,7 @@ namespace paludis
         };
     }
 
-    extern template class WrappedForwardIterator<resolver::ResolutionsByResolvent::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<resolver::ResolutionsByResolvent::ConstIteratorTag,
            const std::shared_ptr<resolver::Resolution> >;
 }
 

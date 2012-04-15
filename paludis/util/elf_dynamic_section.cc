@@ -357,9 +357,10 @@ DynamicSection<ElfType_>::entry_end() const
 
 namespace paludis
 {
-    template class DynamicSection<Elf32Type>;
-    template class DynamicSection<Elf64Type>;
+    template class PALUDIS_VISIBLE DynamicSection<Elf32Type>;
+    template class PALUDIS_VISIBLE DynamicSection<Elf64Type>;
 
-    template class WrappedForwardIterator<DynamicSection<Elf32Type>::EntryIteratorTag, DynamicEntry<Elf32Type> >;
-    template class WrappedForwardIterator<DynamicSection<Elf64Type>::EntryIteratorTag, DynamicEntry<Elf64Type> >;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<DynamicSection<Elf32Type>::EntryIteratorTag, DynamicEntry<Elf32Type> >;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<DynamicSection<Elf64Type>::EntryIteratorTag, DynamicEntry<Elf64Type> >;
 }
+

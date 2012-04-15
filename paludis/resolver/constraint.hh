@@ -95,7 +95,7 @@ namespace paludis
     }
 
     extern template class Pimp<resolver::Constraints>;
-    extern template class WrappedForwardIterator<resolver::Constraints::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<resolver::Constraints::ConstIteratorTag,
            const std::shared_ptr<const resolver::Constraint> >;
 }
 

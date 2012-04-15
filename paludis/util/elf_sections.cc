@@ -101,10 +101,11 @@ StringSection<ElfType_>::get_type() const
 
 namespace paludis
 {
-    template class Section<Elf32Type>;
-    template class Section<Elf64Type>;
-    template class GenericSection<Elf32Type>;
-    template class GenericSection<Elf64Type>;
-    template class StringSection<Elf32Type>;
-    template class StringSection<Elf64Type>;
+    template class PALUDIS_VISIBLE Section<Elf32Type>;
+    template class PALUDIS_VISIBLE Section<Elf64Type>;
+    template class PALUDIS_VISIBLE GenericSection<Elf32Type>;
+    template class PALUDIS_VISIBLE GenericSection<Elf64Type>;
+    template class PALUDIS_VISIBLE StringSection<Elf32Type>;
+    template class PALUDIS_VISIBLE StringSection<Elf64Type>;
 }
+

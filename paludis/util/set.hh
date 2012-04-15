@@ -109,7 +109,7 @@ namespace paludis
             ///\}
     };
 
-    extern template class Set<std::string>;
+    extern template class PALUDIS_VISIBLE Set<std::string>;
 }
 
 #endif

@@ -57,6 +57,15 @@
 
 namespace paludis
 {
+    extern template class PALUDIS_VISIBLE Cloneable<DepSpec>;
+    extern template class Pimp<ConditionalDepSpec>;
+    extern template class PALUDIS_VISIBLE CloneUsingThis<DepSpec, ConditionalDepSpec>;
+    extern template class Pimp<PackageDepSpec>;
+    extern template class PALUDIS_VISIBLE CloneUsingThis<DepSpec, PackageDepSpec>;
+    extern template class Pimp<DependenciesLabelsDepSpec>;
+    extern template class Pimp<URILabelsDepSpec>;
+    extern template class Pimp<PlainTextLabelDepSpec>;
+
     /**
      * Base class for a dependency spec.
      *
@@ -680,18 +689,9 @@ namespace paludis
             const std::string label() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template class Cloneable<DepSpec>;
-    extern template class Pimp<ConditionalDepSpec>;
-    extern template class CloneUsingThis<DepSpec, ConditionalDepSpec>;
-    extern template class Pimp<PackageDepSpec>;
-    extern template class CloneUsingThis<DepSpec, PackageDepSpec>;
-    extern template class Pimp<DependenciesLabelsDepSpec>;
-    extern template class Pimp<URILabelsDepSpec>;
-    extern template class Pimp<PlainTextLabelDepSpec>;
-
-    extern template class WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag,
            const std::shared_ptr<const DependenciesLabel> >;
-    extern template class WrappedForwardIterator<URILabelsDepSpec::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<URILabelsDepSpec::ConstIteratorTag,
            const std::shared_ptr<const URILabel> >;
 
 }

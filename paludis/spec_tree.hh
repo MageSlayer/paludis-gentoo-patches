@@ -177,23 +177,96 @@ namespace paludis
             const std::shared_ptr<typename InnerNodeType<RootNode_>::Type> _top;
     };
 
-    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<GenericSpecTree>::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE SpecTree<MakeTypeList<
+        SpecTreeLeafNodeType<PlainTextDepSpec>,
+            SpecTreeLeafNodeType<PlainTextLabelDepSpec>,
+            SpecTreeLeafNodeType<SimpleURIDepSpec>,
+            SpecTreeLeafNodeType<FetchableURIDepSpec>,
+            SpecTreeLeafNodeType<LicenseDepSpec>,
+            SpecTreeLeafNodeType<PackageDepSpec>,
+            SpecTreeLeafNodeType<BlockDepSpec>,
+            SpecTreeLeafNodeType<URILabelsDepSpec>,
+            SpecTreeLeafNodeType<DependenciesLabelsDepSpec>,
+            SpecTreeLeafNodeType<NamedSetDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<AnyDepSpec>,
+            SpecTreeInnerNodeType<ExactlyOneDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
+
+    extern template class PALUDIS_VISIBLE SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<LicenseDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<AnyDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
+
+    extern template class PALUDIS_VISIBLE SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<FetchableURIDepSpec>,
+            SpecTreeLeafNodeType<URILabelsDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
+
+    extern template class PALUDIS_VISIBLE SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<SimpleURIDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
+
+    extern template class PALUDIS_VISIBLE SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<PackageDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
+
+    extern template class PALUDIS_VISIBLE SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<PlainTextDepSpec>,
+            SpecTreeLeafNodeType<PlainTextLabelDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
+
+    extern template class PALUDIS_VISIBLE SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<PlainTextDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<AnyDepSpec>,
+            SpecTreeInnerNodeType<ExactlyOneDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
+
+    extern template class PALUDIS_VISIBLE SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<PackageDepSpec>,
+            SpecTreeLeafNodeType<BlockDepSpec>,
+            SpecTreeLeafNodeType<DependenciesLabelsDepSpec>,
+            SpecTreeLeafNodeType<NamedSetDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>,
+            SpecTreeInnerNodeType<AnyDepSpec>,
+            SpecTreeInnerNodeType<ConditionalDepSpec>
+        >::Type, AllDepSpec>;
+
+    extern template class PALUDIS_VISIBLE SpecTree<MakeTypeList<
+            SpecTreeLeafNodeType<PackageDepSpec>,
+            SpecTreeLeafNodeType<NamedSetDepSpec>,
+            SpecTreeInnerNodeType<AllDepSpec>
+        >::Type, AllDepSpec>;
+
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<spec_tree_internals::BasicInnerNode<GenericSpecTree>::ConstIteratorTag,
            const std::shared_ptr<const spec_tree_internals::BasicNode<GenericSpecTree> > >;
-    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<DependencySpecTree>::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<spec_tree_internals::BasicInnerNode<DependencySpecTree>::ConstIteratorTag,
            const std::shared_ptr<const spec_tree_internals::BasicNode<DependencySpecTree> > >;
-    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<SetSpecTree>::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<spec_tree_internals::BasicInnerNode<SetSpecTree>::ConstIteratorTag,
              const std::shared_ptr<const spec_tree_internals::BasicNode<SetSpecTree> > >;
-    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<PlainTextSpecTree>::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<spec_tree_internals::BasicInnerNode<PlainTextSpecTree>::ConstIteratorTag,
              const std::shared_ptr<const spec_tree_internals::BasicNode<PlainTextSpecTree> > >;
-    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<RequiredUseSpecTree>::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<spec_tree_internals::BasicInnerNode<RequiredUseSpecTree>::ConstIteratorTag,
              const std::shared_ptr<const spec_tree_internals::BasicNode<RequiredUseSpecTree> > >;
-    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<SimpleURISpecTree>::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<spec_tree_internals::BasicInnerNode<SimpleURISpecTree>::ConstIteratorTag,
              const std::shared_ptr<const spec_tree_internals::BasicNode<SimpleURISpecTree> > >;
-    extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<FetchableURISpecTree>::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<spec_tree_internals::BasicInnerNode<FetchableURISpecTree>::ConstIteratorTag,
              const std::shared_ptr<const spec_tree_internals::BasicNode<FetchableURISpecTree> > >;
     extern template class WrappedForwardIterator<spec_tree_internals::BasicInnerNode<LicenseSpecTree>::ConstIteratorTag,
              const std::shared_ptr<const spec_tree_internals::BasicNode<LicenseSpecTree> > >;
-
 }
 
 #endif

@@ -33,6 +33,8 @@
 
 namespace paludis
 {
+    extern template class PALUDIS_VISIBLE Singleton<OutputManagerFactory>;
+
     class PALUDIS_VISIBLE OutputManagerFactory :
         public Singleton<OutputManagerFactory>
     {
@@ -103,8 +105,7 @@ namespace paludis
     };
 
     extern template class Pimp<OutputManagerFactory>;
-    extern template class Singleton<OutputManagerFactory>;
-    extern template class WrappedForwardIterator<OutputManagerFactory::ConstIteratorTag, const std::string>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<OutputManagerFactory::ConstIteratorTag, const std::string>;
 }
 
 #endif

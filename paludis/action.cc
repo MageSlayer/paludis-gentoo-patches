@@ -332,7 +332,8 @@ namespace paludis
     template class Pimp<InfoAction>;
     template class Pimp<ConfigAction>;
 
-    template class Sequence<FetchActionFailure>;
-    template class WrappedForwardIterator<Sequence<FetchActionFailure>::ConstIteratorTag, const FetchActionFailure>;
-    template class WrappedOutputIterator<Sequence<FetchActionFailure>::InserterTag, FetchActionFailure>;
+    template class PALUDIS_VISIBLE Sequence<FetchActionFailure>;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<Sequence<FetchActionFailure>::ConstIteratorTag, const FetchActionFailure>;
+    template class PALUDIS_VISIBLE WrappedOutputIterator<Sequence<FetchActionFailure>::InserterTag, FetchActionFailure>;
 }
+

@@ -344,6 +344,7 @@ namespace paludis
     template class WrappedOutputIterator<Set<UnprefixedChoiceName>::InserterTag, UnprefixedChoiceName>;
 }
 
-template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<UnprefixedChoiceNameTag> &);
-template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<ChoicePrefixNameTag> &);
-template std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<ChoiceNameWithPrefixTag> &);
+template PALUDIS_VISIBLE std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<UnprefixedChoiceNameTag> &);
+template PALUDIS_VISIBLE std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<ChoicePrefixNameTag> &);
+template PALUDIS_VISIBLE std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<ChoiceNameWithPrefixTag> &);
+

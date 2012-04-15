@@ -65,7 +65,7 @@ namespace paludis
     };
 
     extern template class Pimp<DepSpecAnnotations>;
-    extern template class WrappedForwardIterator<DepSpecAnnotations::ConstIteratorTag, const DepSpecAnnotation>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<DepSpecAnnotations::ConstIteratorTag, const DepSpecAnnotation>;
 }
 
 #endif

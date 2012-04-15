@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -43,15 +43,15 @@ namespace paludis
                     const std::shared_ptr<const PackageID> &) const;
     };
 
-    extern template class AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag>;
-    extern template class AlwaysEnabledDependencyLabel<DependenciesRunLabelTag>;
-    extern template class AlwaysEnabledDependencyLabel<DependenciesPostLabelTag>;
-    extern template class AlwaysEnabledDependencyLabel<DependenciesCompileAgainstLabelTag>;
-    extern template class AlwaysEnabledDependencyLabel<DependenciesFetchLabelTag>;
-    extern template class AlwaysEnabledDependencyLabel<DependenciesInstallLabelTag>;
-    extern template class AlwaysEnabledDependencyLabel<DependenciesSuggestionLabelTag>;
-    extern template class AlwaysEnabledDependencyLabel<DependenciesRecommendationLabelTag>;
-    extern template class AlwaysEnabledDependencyLabel<DependenciesTestLabelTag>;
+    extern template class PALUDIS_VISIBLE AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag>;
+    extern template class PALUDIS_VISIBLE AlwaysEnabledDependencyLabel<DependenciesRunLabelTag>;
+    extern template class PALUDIS_VISIBLE AlwaysEnabledDependencyLabel<DependenciesPostLabelTag>;
+    extern template class PALUDIS_VISIBLE AlwaysEnabledDependencyLabel<DependenciesCompileAgainstLabelTag>;
+    extern template class PALUDIS_VISIBLE AlwaysEnabledDependencyLabel<DependenciesFetchLabelTag>;
+    extern template class PALUDIS_VISIBLE AlwaysEnabledDependencyLabel<DependenciesInstallLabelTag>;
+    extern template class PALUDIS_VISIBLE AlwaysEnabledDependencyLabel<DependenciesSuggestionLabelTag>;
+    extern template class PALUDIS_VISIBLE AlwaysEnabledDependencyLabel<DependenciesRecommendationLabelTag>;
+    extern template class PALUDIS_VISIBLE AlwaysEnabledDependencyLabel<DependenciesTestLabelTag>;
 }
 
 #endif

@@ -301,13 +301,13 @@ namespace paludis
     }
 
     extern template class Pimp<Filter>;
-    extern template class filter::SupportsAction<InstallAction>;
-    extern template class filter::SupportsAction<UninstallAction>;
-    extern template class filter::SupportsAction<PretendAction>;
-    extern template class filter::SupportsAction<ConfigAction>;
-    extern template class filter::SupportsAction<FetchAction>;
-    extern template class filter::SupportsAction<InfoAction>;
-    extern template class filter::SupportsAction<PretendFetchAction>;
+    extern template class PALUDIS_VISIBLE filter::SupportsAction<InstallAction>;
+    extern template class PALUDIS_VISIBLE filter::SupportsAction<UninstallAction>;
+    extern template class PALUDIS_VISIBLE filter::SupportsAction<PretendAction>;
+    extern template class PALUDIS_VISIBLE filter::SupportsAction<ConfigAction>;
+    extern template class PALUDIS_VISIBLE filter::SupportsAction<FetchAction>;
+    extern template class PALUDIS_VISIBLE filter::SupportsAction<InfoAction>;
+    extern template class PALUDIS_VISIBLE filter::SupportsAction<PretendFetchAction>;
 }
 
 #endif

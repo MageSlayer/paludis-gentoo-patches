@@ -728,8 +728,8 @@ namespace paludis
 
     extern template class Pimp<CreateOutputManagerForRepositorySyncInfo>;
     extern template class Pimp<CreateOutputManagerForPackageIDActionInfo>;
-    extern template class WrappedForwardIterator<Environment::RepositoryConstIteratorTag, const std::shared_ptr<Repository> >;
-    extern template class WrappedForwardIterator<AmbiguousPackageNameError::OptionsConstIteratorTag, const std::string>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Environment::RepositoryConstIteratorTag, const std::shared_ptr<Repository> >;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<AmbiguousPackageNameError::OptionsConstIteratorTag, const std::string>;
 }
 
 #endif

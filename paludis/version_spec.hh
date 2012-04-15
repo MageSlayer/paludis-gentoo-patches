@@ -25,7 +25,7 @@
 #include <paludis/util/pimp.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 #include <iosfwd>
 #include <string>
@@ -222,6 +222,8 @@ namespace paludis
             ConstIterator begin() const;
             ConstIterator end() const;
     };
+
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<VersionSpec::ConstIteratorTag, const VersionSpecComponent>;
 }
 
 #endif

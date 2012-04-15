@@ -190,6 +190,10 @@ namespace paludis
              */
             std::string title() const;
     };
+
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<GLSAPackage::ArchsConstIteratorTag, const std::string>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<GLSAPackage::RangesConstIteratorTag, const erepository::GLSARange>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<GLSA::PackagesConstIteratorTag, const GLSAPackage>;
 }
 
 #endif

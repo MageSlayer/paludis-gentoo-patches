@@ -654,11 +654,11 @@ namespace paludis
         };
     }
 
-    extern template class WrappedForwardIterator<args::StringSetArg::ConstIteratorTag, const std::string>;
-    extern template class WrappedForwardIterator<args::StringSetArg::AllowedArgConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::StringSetArg::ConstIteratorTag, const std::string>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::StringSetArg::AllowedArgConstIteratorTag,
                         const std::pair<std::string, std::string> >;
-    extern template class WrappedForwardIterator<args::StringSequenceArg::ConstIteratorTag, const std::string>;
-    extern template class WrappedForwardIterator<args::EnumArg::AllowedArgConstIteratorTag,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::StringSequenceArg::ConstIteratorTag, const std::string>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::EnumArg::AllowedArgConstIteratorTag,
                         const args::AllowedEnumArg>;
 }
 

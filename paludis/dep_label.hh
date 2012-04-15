@@ -156,24 +156,25 @@ namespace paludis
             typedef T_ Tag;
     };
 
-    extern template class SpecificURILabel<URIMirrorsThenListedLabelTag>;
-    extern template class SpecificURILabel<URIMirrorsOnlyLabelTag>;
-    extern template class SpecificURILabel<URIListedOnlyLabelTag>;
-    extern template class SpecificURILabel<URIListedThenMirrorsLabelTag>;
-    extern template class SpecificURILabel<URILocalMirrorsOnlyLabelTag>;
-    extern template class SpecificURILabel<URIManualOnlyLabelTag>;
+    extern template class PALUDIS_VISIBLE SpecificURILabel<URIMirrorsThenListedLabelTag>;
+    extern template class PALUDIS_VISIBLE SpecificURILabel<URIMirrorsOnlyLabelTag>;
+    extern template class PALUDIS_VISIBLE SpecificURILabel<URIListedOnlyLabelTag>;
+    extern template class PALUDIS_VISIBLE SpecificURILabel<URIListedThenMirrorsLabelTag>;
+    extern template class PALUDIS_VISIBLE SpecificURILabel<URILocalMirrorsOnlyLabelTag>;
+    extern template class PALUDIS_VISIBLE SpecificURILabel<URIManualOnlyLabelTag>;
 
-    extern template class SpecificDependenciesLabel<DependenciesBuildLabelTag>;
-    extern template class SpecificDependenciesLabel<DependenciesRunLabelTag>;
-    extern template class SpecificDependenciesLabel<DependenciesPostLabelTag>;
-    extern template class SpecificDependenciesLabel<DependenciesCompileAgainstLabelTag>;
-    extern template class SpecificDependenciesLabel<DependenciesFetchLabelTag>;
-    extern template class SpecificDependenciesLabel<DependenciesInstallLabelTag>;
-    extern template class SpecificDependenciesLabel<DependenciesSuggestionLabelTag>;
-    extern template class SpecificDependenciesLabel<DependenciesRecommendationLabelTag>;
-    extern template class SpecificDependenciesLabel<DependenciesTestLabelTag>;
+    extern template class PALUDIS_VISIBLE SpecificDependenciesLabel<DependenciesBuildLabelTag>;
+    extern template class PALUDIS_VISIBLE SpecificDependenciesLabel<DependenciesRunLabelTag>;
+    extern template class PALUDIS_VISIBLE SpecificDependenciesLabel<DependenciesPostLabelTag>;
+    extern template class PALUDIS_VISIBLE SpecificDependenciesLabel<DependenciesCompileAgainstLabelTag>;
+    extern template class PALUDIS_VISIBLE SpecificDependenciesLabel<DependenciesFetchLabelTag>;
+    extern template class PALUDIS_VISIBLE SpecificDependenciesLabel<DependenciesInstallLabelTag>;
+    extern template class PALUDIS_VISIBLE SpecificDependenciesLabel<DependenciesSuggestionLabelTag>;
+    extern template class PALUDIS_VISIBLE SpecificDependenciesLabel<DependenciesRecommendationLabelTag>;
+    extern template class PALUDIS_VISIBLE SpecificDependenciesLabel<DependenciesTestLabelTag>;
 
-    extern template class WrappedForwardIterator<Sequence<std::shared_ptr<const DependenciesLabel> >::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE Sequence<std::shared_ptr<const DependenciesLabel> >;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Sequence<std::shared_ptr<const DependenciesLabel> >::ConstIteratorTag,
              const std::shared_ptr<const DependenciesLabel> >;
 }
 

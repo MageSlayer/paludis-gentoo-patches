@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,6 +24,9 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/util/named_value.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
+#include <paludis/util/wrapped_output_iterator.hh>
 
 /** \file
  * Declarations for version requirements classes.
@@ -59,6 +62,10 @@ namespace paludis
         NamedValue<n::version_operator, VersionOperator> version_operator;
         NamedValue<n::version_spec, VersionSpec> version_spec;
     };
+
+    extern template class PALUDIS_VISIBLE Sequence<VersionRequirement>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Sequence<VersionRequirement>::ConstIteratorTag, const VersionRequirement>;
+    extern template class PALUDIS_VISIBLE WrappedOutputIterator<Sequence<VersionRequirement>::InserterTag, VersionRequirement>;
 }
 
 #endif

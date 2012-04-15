@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2011 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -47,12 +47,12 @@ namespace paludis
         };
     }
 
-    extern template class Set<resolver::NAGIndex>;
-    extern template class WrappedForwardIterator<Set<resolver::NAGIndex>::ConstIteratorTag, const resolver::NAGIndex>;
-    extern template class WrappedOutputIterator<Set<resolver::NAGIndex>::InserterTag, resolver::NAGIndex>;
+    extern template class PALUDIS_VISIBLE Set<resolver::NAGIndex>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Set<resolver::NAGIndex>::ConstIteratorTag, const resolver::NAGIndex>;
+    extern template class PALUDIS_VISIBLE WrappedOutputIterator<Set<resolver::NAGIndex>::InserterTag, resolver::NAGIndex>;
 
-    extern template class Sequence<resolver::StronglyConnectedComponent>;
-    extern template class WrappedForwardIterator<Sequence<resolver::StronglyConnectedComponent>::ConstIteratorTag, const resolver::StronglyConnectedComponent>;
+    extern template class PALUDIS_VISIBLE Sequence<resolver::StronglyConnectedComponent>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Sequence<resolver::StronglyConnectedComponent>::ConstIteratorTag, const resolver::StronglyConnectedComponent>;
 }
 
 #endif

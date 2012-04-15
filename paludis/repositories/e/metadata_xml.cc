@@ -87,7 +87,7 @@ MetadataXMLPool::metadata_if_exists(const FSPath & f) const
 
 namespace paludis
 {
-    template class Map<ChoiceNameWithPrefix, std::string>;
+    template class PALUDIS_VISIBLE Map<ChoiceNameWithPrefix, std::string>;
     template class Pimp<MetadataXMLPool>;
     template class Singleton<MetadataXMLPool>;
 }

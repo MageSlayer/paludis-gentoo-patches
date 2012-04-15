@@ -60,13 +60,13 @@ namespace paludis
                 void serialise(Serialiser &) const;
         };
 
-        extern template class JobList<PretendJob>;
-        extern template class JobList<ExecuteJob>;
+        extern template class PALUDIS_VISIBLE JobList<PretendJob>;
+        extern template class PALUDIS_VISIBLE JobList<ExecuteJob>;
     }
 
-    extern template class WrappedForwardIterator<resolver::JobListConstIteratorTag<resolver::PretendJob>,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<resolver::JobListConstIteratorTag<resolver::PretendJob>,
            const std::shared_ptr<resolver::PretendJob> >;
-    extern template class WrappedForwardIterator<resolver::JobListConstIteratorTag<resolver::ExecuteJob>,
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<resolver::JobListConstIteratorTag<resolver::ExecuteJob>,
            const std::shared_ptr<resolver::ExecuteJob> >;
 }
 

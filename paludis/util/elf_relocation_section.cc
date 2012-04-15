@@ -140,19 +140,20 @@ RelocationSection<ElfType_, Relocation_>::relocation_end() const
 
 namespace paludis
 {
-    template class RelocationSection<Elf32Type, Relocation<Elf32Type> >;
-    template class WrappedForwardIterator<RelocationSection<Elf32Type, Relocation<Elf32Type> >::RelocationIteratorTag,
+    template class PALUDIS_VISIBLE RelocationSection<Elf32Type, Relocation<Elf32Type> >;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<RelocationSection<Elf32Type, Relocation<Elf32Type> >::RelocationIteratorTag,
              const Relocation<Elf32Type>::Entry>;
 
-    template class RelocationSection<Elf32Type, RelocationA<Elf32Type> >;
-    template class WrappedForwardIterator<RelocationSection<Elf32Type, RelocationA<Elf32Type> >::RelocationIteratorTag,
+    template class PALUDIS_VISIBLE RelocationSection<Elf32Type, RelocationA<Elf32Type> >;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<RelocationSection<Elf32Type, RelocationA<Elf32Type> >::RelocationIteratorTag,
              const RelocationA<Elf32Type>::Entry>;
 
-    template class RelocationSection<Elf64Type, Relocation<Elf64Type> >;
-    template class WrappedForwardIterator<RelocationSection<Elf64Type, Relocation<Elf64Type> >::RelocationIteratorTag,
+    template class PALUDIS_VISIBLE RelocationSection<Elf64Type, Relocation<Elf64Type> >;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<RelocationSection<Elf64Type, Relocation<Elf64Type> >::RelocationIteratorTag,
              const Relocation<Elf64Type>::Entry>;
 
-    template class RelocationSection<Elf64Type, RelocationA<Elf64Type> >;
-    template class WrappedForwardIterator<RelocationSection<Elf64Type, RelocationA<Elf64Type> >::RelocationIteratorTag,
+    template class PALUDIS_VISIBLE RelocationSection<Elf64Type, RelocationA<Elf64Type> >;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<RelocationSection<Elf64Type, RelocationA<Elf64Type> >::RelocationIteratorTag,
              const RelocationA<Elf64Type>::Entry>;
 }
+

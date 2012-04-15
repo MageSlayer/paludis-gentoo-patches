@@ -126,7 +126,7 @@ namespace paludis
         };
     }
 
-    extern template class WrappedForwardIterator<args::ArgsGroup::ConstIteratorTag, args::ArgsOption * const>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsGroup::ConstIteratorTag, args::ArgsOption * const>;
 }
 
 #endif

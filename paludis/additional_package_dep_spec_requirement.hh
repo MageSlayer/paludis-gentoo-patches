@@ -111,8 +111,8 @@ namespace paludis
             virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
-    extern template class Sequence<std::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
-    extern template class WrappedForwardIterator<AdditionalPackageDepSpecRequirements::ConstIteratorTag,
+    extern template class PALUDIS_VISIBLE Sequence<std::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<AdditionalPackageDepSpecRequirements::ConstIteratorTag,
            const std::shared_ptr<const AdditionalPackageDepSpecRequirement> >;
 }
 

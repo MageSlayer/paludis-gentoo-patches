@@ -259,8 +259,8 @@ namespace paludis
     extern template class Pimp<LineConfigFile>;
     extern template class Pimp<KeyValueConfigFile>;
 
-    extern template class WrappedForwardIterator<LineConfigFile::ConstIteratorTag, const std::string>;
-    extern template class WrappedForwardIterator<KeyValueConfigFile::ConstIteratorTag, const std::pair<const std::string, std::string> >;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<LineConfigFile::ConstIteratorTag, const std::string>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<KeyValueConfigFile::ConstIteratorTag, const std::pair<const std::string, std::string> >;
 }
 
 #endif
