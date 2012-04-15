@@ -4,6 +4,33 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.74.0:
+    * The way || dependencies are handled has changed to allow upgrades in
+      certain situations that would previously be blocked.
+
+    * Previously file descriptors would be leaked when adding certain types of
+      files to a tar being created for a pbin. This is now fixed.
+
+    * We now strip certain kinds of trailing garbage from tar files, to deal
+      with upstreams who insist upon distributing corrupted tarballs.
+
+    * We now define ${T} to something usable in pkg_pretend.
+
+    * The order of arguments passed to econf has been tweaked, to make it easier
+      to override defaults.
+
+    * cave print-ids etc now have a '%u' format, for a uniquely identifying
+      spec.
+
+    * Added cave print-checksum, for convenience.
+
+    * We now use metadata/md5-cache if it exists.
+
+    * We now ignore self-blockers for Gentoo EAPIs, to avoid problems with
+      developers screwing up package moves.
+
+    * Compilation with GCC 4.7 should now work.
+
 0.72.2:
     * Added and changed options are now displayed in 'resolve' output, even if
       they are hidden.
