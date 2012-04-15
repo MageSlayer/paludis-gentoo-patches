@@ -66,6 +66,7 @@
 #include <vector>
 #include <list>
 
+#include <unistd.h>
 #include <sys/types.h>
 #include <grp.h>
 #include <pwd.h>
