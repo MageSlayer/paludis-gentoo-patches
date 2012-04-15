@@ -458,8 +458,15 @@ namespace paludis
     struct Imp<EAPILabels>
     {
         std::map<std::string, std::string> v;
+
+        Imp();
+        Imp(const Imp &);
     };
 }
+
+Imp<EAPILabels>::Imp() = default;
+
+Imp<EAPILabels>::Imp(const Imp &) = default;
 
 EAPILabels::EAPILabels(const std::string & s) :
     _imp()
