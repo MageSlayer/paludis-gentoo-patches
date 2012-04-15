@@ -363,7 +363,7 @@ namespace
                 tokenise_whitespace(_imp->environment_variables[use_var], std::back_inserter(tokens));
                 for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
                         t != t_end ; ++t)
-                    _imp->use.insert(std::make_pair("", *t));
+                    _imp->use.insert(std::make_pair(ChoicePrefixName(""), UnprefixedChoiceName(*t)));
             }
         }
         catch (const InternalError &)
@@ -427,7 +427,7 @@ namespace
             tokenise_whitespace(_imp->environment_variables[stringify(*x)], std::back_inserter(uses));
             for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
                     u != u_end ; ++u)
-                _imp->use.insert(std::make_pair(lower_x, *u));
+                _imp->use.insert(std::make_pair(ChoicePrefixName(lower_x), UnprefixedChoiceName(*u)));
         }
     }
 
@@ -468,7 +468,7 @@ namespace
         {
             std::string arch(arch_s);
 
-            _imp->use.insert(std::make_pair(ChoicePrefixName(""), arch));
+            _imp->use.insert(std::make_pair(ChoicePrefixName(""), UnprefixedChoiceName(arch)));
             _imp->stacked_values_list.back().use_force[ChoiceNameWithPrefix(arch)] = true;
         }
         catch (const InternalError &)

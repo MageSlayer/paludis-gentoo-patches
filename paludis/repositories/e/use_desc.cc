@@ -62,9 +62,10 @@ namespace paludis
 
                     std::string::size_type q(lhs.find(':'));
                     if (std::string::npos == q)
-                        global_descs.insert(make_pair(make_pair(prefix, lhs), rhs));
+                        global_descs.insert(std::make_pair(std::make_pair(ChoicePrefixName(prefix), UnprefixedChoiceName(lhs)), rhs));
                     else
-                        local_descs[QualifiedPackageName(lhs.substr(0, q))].insert(make_pair(make_pair(prefix, lhs.substr(q + 1)), rhs));
+                        local_descs[QualifiedPackageName(lhs.substr(0, q))].insert(
+                                std::make_pair(std::make_pair(ChoicePrefixName(prefix), UnprefixedChoiceName(lhs.substr(q + 1))), rhs));
                 }
             }
         }

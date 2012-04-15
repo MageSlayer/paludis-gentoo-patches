@@ -170,9 +170,9 @@ ExheresLayout::ExheresLayout(const Environment * const e, const ERepository * co
 
             std::string p(strip_trailing_string(strip_trailing_string(d->basename(), ".conf"), ".local"));
             if (p == "options")
-                _imp->use_desc_files->push_back(std::make_pair(*d, ""));
+                _imp->use_desc_files->push_back(std::make_pair(*d, ChoicePrefixName("")));
             else
-                _imp->use_desc_files->push_back(std::make_pair(*d, p));
+                _imp->use_desc_files->push_back(std::make_pair(*d, ChoicePrefixName(p)));
         }
     }
 }

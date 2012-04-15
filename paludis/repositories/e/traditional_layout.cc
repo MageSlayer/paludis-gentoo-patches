@@ -161,8 +161,8 @@ TraditionalLayout::TraditionalLayout(
     _imp->info_variables_files->push_back(_imp->tree_root / "profiles" / "info_vars");
     _imp->info_packages_files->push_back(_imp->tree_root / "profiles" / "info_pkgs");
 
-    _imp->use_desc_files->push_back(std::make_pair(_imp->tree_root / "profiles" / "use.desc", ""));
-    _imp->use_desc_files->push_back(std::make_pair(_imp->tree_root / "profiles" / "use.local.desc", ""));
+    _imp->use_desc_files->push_back(std::make_pair(_imp->tree_root / "profiles" / "use.desc", ChoicePrefixName("")));
+    _imp->use_desc_files->push_back(std::make_pair(_imp->tree_root / "profiles" / "use.local.desc", ChoicePrefixName("")));
     FSPath descs(_imp->tree_root / "profiles" / "desc");
     if (descs.stat().is_directory_or_symlink_to_directory())
     {
@@ -170,7 +170,7 @@ TraditionalLayout::TraditionalLayout(
         {
             if (! is_file_with_extension(*d, ".desc", { }))
                 continue;
-            _imp->use_desc_files->push_back(std::make_pair(*d, strip_trailing_string(d->basename(), ".desc")));
+            _imp->use_desc_files->push_back(std::make_pair(*d, ChoicePrefixName(strip_trailing_string(d->basename(), ".desc"))));
         }
     }
 }
