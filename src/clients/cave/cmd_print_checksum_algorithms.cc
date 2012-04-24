@@ -25,6 +25,7 @@
 #include <paludis/args/do_help.hh>
 
 #include <iostream>
+#include <cstdlib>
 
 using namespace paludis;
 using namespace paludis::cave;
