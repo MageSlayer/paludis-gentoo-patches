@@ -1260,19 +1260,20 @@ Decider::find_any_score(
     const std::shared_ptr<const Resolvents> resolvents_unless_block(is_block ? make_null_shared_ptr() :
             _get_resolvents_for(spec, reason_unless_block).first);
     std::list<std::shared_ptr<Decision> > could_install_decisions;
-    for (Resolvents::ConstIterator r(resolvents_unless_block->begin()), r_end(resolvents_unless_block->end()) ;
-            r != r_end ; ++r)
-    {
-        const std::shared_ptr<Resolution> could_install_resolution(_create_resolution_for_resolvent(*r));
-        const std::shared_ptr<ConstraintSequence> could_install_constraints(_make_constraints_from_dependency(
-                    our_resolution, dep, reason_unless_block, si_take));
-        for (ConstraintSequence::ConstIterator c(could_install_constraints->begin()), c_end(could_install_constraints->end()) ;
-                c != c_end ; ++c)
-            could_install_resolution->constraints()->add(*c);
-        auto could_install_decision(_try_to_find_decision_for(could_install_resolution, false, false, false, false, false));
-        if (could_install_decision)
-            could_install_decisions.push_back(could_install_decision);
-    }
+    if (resolvents_unless_block)
+        for (Resolvents::ConstIterator r(resolvents_unless_block->begin()), r_end(resolvents_unless_block->end()) ;
+                r != r_end ; ++r)
+        {
+            const std::shared_ptr<Resolution> could_install_resolution(_create_resolution_for_resolvent(*r));
+            const std::shared_ptr<ConstraintSequence> could_install_constraints(_make_constraints_from_dependency(
+                        our_resolution, dep, reason_unless_block, si_take));
+            for (ConstraintSequence::ConstIterator c(could_install_constraints->begin()), c_end(could_install_constraints->end()) ;
+                    c != c_end ; ++c)
+                could_install_resolution->constraints()->add(*c);
+            auto could_install_decision(_try_to_find_decision_for(could_install_resolution, false, false, false, false, false));
+            if (could_install_decision)
+                could_install_decisions.push_back(could_install_decision);
+        }
 
     /* next: could install, and something similar is installed */
     if (! is_block)
