@@ -4,6 +4,11 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.74.1:
+    * Compilation fix for certain compilers.
+
+    * Fixed a segfault when encountering blockers inside || ( ) dependencies.
+
 0.74.0:
     * The way || dependencies are handled has changed to allow upgrades in
       certain situations that would previously be blocked.
