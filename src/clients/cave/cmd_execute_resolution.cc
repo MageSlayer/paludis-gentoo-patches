@@ -404,8 +404,12 @@ namespace
             return true;
         else if (cmdline.execution_options.a_change_phases_for.argument() == "first")
             return (x == 1);
+        else if (cmdline.execution_options.a_change_phases_for.argument() == "!first")
+            return (x != 1);
         else if (cmdline.execution_options.a_change_phases_for.argument() == "last")
             return (x == y);
+        else if (cmdline.execution_options.a_change_phases_for.argument() == "!last")
+            return (x != y);
         else
             throw args::DoHelp("Don't understand argument '"
                     + cmdline.execution_options.a_change_phases_for.argument() + "' to '--"
