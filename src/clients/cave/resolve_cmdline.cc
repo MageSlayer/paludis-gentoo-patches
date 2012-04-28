@@ -397,7 +397,9 @@ ResolveCommandLineExecutionOptions::ResolveCommandLineExecutionOptions(args::Arg
             ("first",                      "Only the first package on the list")
             ("!first",                     "Everything except the first package on the list")
             ("last",                       "Only the last package on the list")
-            ("!last",                      "Everything except the last package on the list"),
+            ("!last",                      "Everything except the last package on the list")
+            ("targets",                    "Only packages that are targets")
+            ("!targets",                   "Only packages that are not targets"),
             "all")
 {
     a_fetch_jobs.set_argument(-1);

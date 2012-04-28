@@ -398,7 +398,8 @@ namespace
     bool apply_phase(
             const ExecuteResolutionCommandLine & cmdline,
             const int x,
-            const int y)
+            const int y,
+            const bool was_target)
     {
         if (cmdline.execution_options.a_change_phases_for.argument() == "all")
             return true;
@@ -410,6 +411,10 @@ namespace
             return (x == y);
         else if (cmdline.execution_options.a_change_phases_for.argument() == "!last")
             return (x != y);
+        else if (cmdline.execution_options.a_change_phases_for.argument() == "targets")
+            return was_target;
+        else if (cmdline.execution_options.a_change_phases_for.argument() == "!targets")
+            return ! was_target;
         else
             throw args::DoHelp("Don't understand argument '"
                     + cmdline.execution_options.a_change_phases_for.argument() + "' to '--"
@@ -421,7 +426,7 @@ namespace
             const ExecuteResolutionCommandLine & cmdline,
             const int n_fetch_jobs,
             const PackageDepSpec & id_spec,
-            const int x, const int y, const int f, const int s, bool normal_only,
+            const int x, const int y, const int f, const int s, bool normal_only, const bool was_target,
             Mutex & job_mutex,
             JobActiveState & active_state,
             Mutex & executor_mutex)
@@ -444,7 +449,7 @@ namespace
         if (cmdline.execution_options.a_skip_phase.specified() || cmdline.execution_options.a_abort_at_phase.specified()
                 || cmdline.execution_options.a_skip_until_phase.specified())
         {
-            if (apply_phase(cmdline, x, y))
+            if (apply_phase(cmdline, x, y, was_target))
             {
                 if (cmdline.execution_options.a_skip_phase.specified())
                     command.append(" " + cmdline.execution_options.a_skip_phase.forwardable_string());
@@ -484,6 +489,7 @@ namespace
             const std::string & destination_string,
             const int x, const int y,
             const int f, const int s,
+            const bool was_target,
             Mutex & job_mutex,
             JobActiveState & active_state,
             Mutex & executor_mutex)
@@ -509,7 +515,7 @@ namespace
         if (cmdline.execution_options.a_skip_phase.specified() || cmdline.execution_options.a_abort_at_phase.specified()
                 || cmdline.execution_options.a_skip_until_phase.specified())
         {
-            if (apply_phase(cmdline, x, y))
+            if (apply_phase(cmdline, x, y, was_target))
             {
                 if (cmdline.execution_options.a_skip_phase.specified())
                     command.append(" " + cmdline.execution_options.a_skip_phase.forwardable_string());
@@ -546,6 +552,7 @@ namespace
             const PackageDepSpec & id_spec,
             const int x, const int y,
             const int f, const int s,
+            const bool was_target,
             Mutex & job_mutex,
             JobActiveState & active_state,
             Mutex & executor_mutex)
@@ -566,7 +573,7 @@ namespace
         if (cmdline.execution_options.a_skip_phase.specified() || cmdline.execution_options.a_abort_at_phase.specified()
                 || cmdline.execution_options.a_skip_until_phase.specified())
         {
-            if (apply_phase(cmdline, x, y))
+            if (apply_phase(cmdline, x, y, was_target))
             {
                 if (cmdline.execution_options.a_skip_phase.specified())
                     command.append(" " + cmdline.execution_options.a_skip_phase.forwardable_string());
@@ -899,7 +906,7 @@ namespace
                         }
 
                         if (! do_fetch(env, cmdline, n_fetch_jobs, install_item.origin_id_spec(), counts.x_installs, counts.y_installs,
-                                    counts.f_installs, counts.s_installs, false,
+                                    counts.f_installs, counts.s_installs, false, install_item.was_target(),
                                     job_mutex, *active_state, executor_mutex))
                         {
                             Lock lock(job_mutex);
@@ -910,7 +917,8 @@ namespace
 
                         if (! do_install(env, cmdline, n_fetch_jobs, install_item.origin_id_spec(), install_item.destination_repository_name(),
                                     install_item.replacing_specs(), destination_string,
-                                    counts.x_installs, counts.y_installs, counts.f_installs, counts.s_installs, job_mutex, *active_state, executor_mutex))
+                                    counts.x_installs, counts.y_installs, counts.f_installs, counts.s_installs,
+                                    install_item.was_target(), job_mutex, *active_state, executor_mutex))
                         {
                             Lock lock(job_mutex);
                             install_item.set_state(active_state->failed());
@@ -956,7 +964,8 @@ namespace
                                 i_end(uninstall_item.ids_to_remove_specs()->end()) ;
                                 i != i_end ; ++i)
                             if (! do_uninstall(env, cmdline, n_fetch_jobs, *i, counts.x_installs, counts.y_installs,
-                                        counts.f_installs, counts.s_installs, job_mutex, *active_state, executor_mutex))
+                                        counts.f_installs, counts.s_installs, uninstall_item.was_target(),
+                                        job_mutex, *active_state, executor_mutex))
                             {
                                 Lock lock(job_mutex);
                                 uninstall_item.set_state(active_state->failed());
@@ -998,7 +1007,7 @@ namespace
                         }
 
                         if (! do_fetch(env, cmdline, n_fetch_jobs, fetch_item.origin_id_spec(), counts.x_fetches, counts.y_fetches,
-                                    counts.f_fetches, counts.s_fetches, true, job_mutex, *active_state, executor_mutex))
+                                    counts.f_fetches, counts.s_fetches, true, fetch_item.was_target(), job_mutex, *active_state, executor_mutex))
                         {
                             Lock lock(job_mutex);
                             fetch_item.set_state(active_state->failed());
