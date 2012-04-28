@@ -395,6 +395,23 @@ namespace
         active_state.set_output_manager(o);
     }
 
+    bool apply_phase(
+            const ExecuteResolutionCommandLine & cmdline,
+            const int x,
+            const int y)
+    {
+        if (cmdline.execution_options.a_change_phases_for.argument() == "all")
+            return true;
+        else if (cmdline.execution_options.a_change_phases_for.argument() == "first")
+            return (x == 1);
+        else if (cmdline.execution_options.a_change_phases_for.argument() == "last")
+            return (x == y);
+        else
+            throw args::DoHelp("Don't understand argument '"
+                    + cmdline.execution_options.a_change_phases_for.argument() + "' to '--"
+                    + cmdline.execution_options.a_change_phases_for.long_name() + "'");
+    }
+
     bool do_fetch(
             const std::shared_ptr<Environment> & env,
             const ExecuteResolutionCommandLine & cmdline,
@@ -423,20 +440,7 @@ namespace
         if (cmdline.execution_options.a_skip_phase.specified() || cmdline.execution_options.a_abort_at_phase.specified()
                 || cmdline.execution_options.a_skip_until_phase.specified())
         {
-            bool apply(false);
-
-            if (cmdline.execution_options.a_change_phases_for.argument() == "all")
-                apply = true;
-            else if (cmdline.execution_options.a_change_phases_for.argument() == "first")
-                apply = (x == 1);
-            else if (cmdline.execution_options.a_change_phases_for.argument() == "last")
-                apply = (x == y);
-            else
-                throw args::DoHelp("Don't understand argument '"
-                        + cmdline.execution_options.a_change_phases_for.argument() + "' to '--"
-                        + cmdline.execution_options.a_change_phases_for.long_name() + "'");
-
-            if (apply)
+            if (apply_phase(cmdline, x, y))
             {
                 if (cmdline.execution_options.a_skip_phase.specified())
                     command.append(" " + cmdline.execution_options.a_skip_phase.forwardable_string());
@@ -501,20 +505,7 @@ namespace
         if (cmdline.execution_options.a_skip_phase.specified() || cmdline.execution_options.a_abort_at_phase.specified()
                 || cmdline.execution_options.a_skip_until_phase.specified())
         {
-            bool apply(false);
-
-            if (cmdline.execution_options.a_change_phases_for.argument() == "all")
-                apply = true;
-            else if (cmdline.execution_options.a_change_phases_for.argument() == "first")
-                apply = (x == 1);
-            else if (cmdline.execution_options.a_change_phases_for.argument() == "last")
-                apply = (x == y);
-            else
-                throw args::DoHelp("Don't understand argument '"
-                        + cmdline.execution_options.a_change_phases_for.argument() + "' to '--"
-                        + cmdline.execution_options.a_change_phases_for.long_name() + "'");
-
-            if (apply)
+            if (apply_phase(cmdline, x, y))
             {
                 if (cmdline.execution_options.a_skip_phase.specified())
                     command.append(" " + cmdline.execution_options.a_skip_phase.forwardable_string());
@@ -571,20 +562,7 @@ namespace
         if (cmdline.execution_options.a_skip_phase.specified() || cmdline.execution_options.a_abort_at_phase.specified()
                 || cmdline.execution_options.a_skip_until_phase.specified())
         {
-            bool apply(false);
-
-            if (cmdline.execution_options.a_change_phases_for.argument() == "all")
-                apply = true;
-            else if (cmdline.execution_options.a_change_phases_for.argument() == "first")
-                apply = (x == 1);
-            else if (cmdline.execution_options.a_change_phases_for.argument() == "last")
-                apply = (x == y);
-            else
-                throw args::DoHelp("Don't understand argument '"
-                        + cmdline.execution_options.a_change_phases_for.argument() + "' to '--"
-                        + cmdline.execution_options.a_change_phases_for.long_name() + "'");
-
-            if (apply)
+            if (apply_phase(cmdline, x, y))
             {
                 if (cmdline.execution_options.a_skip_phase.specified())
                     command.append(" " + cmdline.execution_options.a_skip_phase.forwardable_string());
