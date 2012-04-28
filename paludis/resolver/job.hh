@@ -67,6 +67,8 @@ namespace paludis
                 virtual const std::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
                 virtual void set_state(const std::shared_ptr<JobState> &) = 0;
 
+                virtual bool was_target() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
                 virtual const std::shared_ptr<const JobRequirements> requirements() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 static const std::shared_ptr<ExecuteJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -83,7 +85,8 @@ namespace paludis
             public:
                 FetchJob(
                         const std::shared_ptr<const JobRequirements> &,
-                        const PackageDepSpec &
+                        const PackageDepSpec &,
+                        const bool was_target
                         );
                 ~FetchJob();
 
@@ -91,6 +94,8 @@ namespace paludis
 
                 virtual const std::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void set_state(const std::shared_ptr<JobState> &);
+
+                virtual bool was_target() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::shared_ptr<const JobRequirements> requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -111,7 +116,8 @@ namespace paludis
                         const PackageDepSpec &,
                         const RepositoryName &,
                         const DestinationType,
-                        const std::shared_ptr<const Sequence<PackageDepSpec> > &);
+                        const std::shared_ptr<const Sequence<PackageDepSpec> > &,
+                        const bool was_target);
                 ~InstallJob();
 
                 const PackageDepSpec origin_id_spec() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -121,6 +127,8 @@ namespace paludis
 
                 virtual const std::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void set_state(const std::shared_ptr<JobState> &);
+
+                virtual bool was_target() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::shared_ptr<const JobRequirements> requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -138,7 +146,8 @@ namespace paludis
             public:
                 UninstallJob(
                         const std::shared_ptr<const JobRequirements> &,
-                        const std::shared_ptr<const Sequence<PackageDepSpec> > &
+                        const std::shared_ptr<const Sequence<PackageDepSpec> > &,
+                        const bool was_target
                         );
                 ~UninstallJob();
 
@@ -146,6 +155,8 @@ namespace paludis
 
                 virtual const std::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual void set_state(const std::shared_ptr<JobState> &);
+
+                virtual bool was_target() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual const std::shared_ptr<const JobRequirements> requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

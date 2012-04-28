@@ -838,6 +838,22 @@ namespace
         return result;
     }
 
+    bool was_target(
+            const std::shared_ptr<const Resolved> & r,
+            const Decision & d)
+    {
+        auto resolution(r->resolutions_by_resolvent()->find(d.resolvent()));
+        if (r->resolutions_by_resolvent()->end() == resolution)
+            throw InternalError(PALUDIS_HERE, "couldn't find " + stringify(d.resolvent()));
+
+        for (auto c((*resolution)->constraints()->begin()), c_end((*resolution)->constraints()->end()) ;
+                c != c_end ; ++c)
+            if (visitor_cast<const TargetReason>(*(*c)->reason()))
+                return true;
+
+        return false;
+    }
+
     struct ExtraScheduler
     {
         const std::shared_ptr<const Resolved> resolved;
@@ -904,7 +920,8 @@ namespace
                                             make_origin_spec(changes_to_make_decision),
                                             changes_to_make_decision.destination()->repository(),
                                             changes_to_make_decision.resolvent().destination_type(),
-                                            replacing
+                                            replacing,
+                                            was_target(resolved, changes_to_make_decision)
                                             )));
 
                         change_or_remove_job_numbers.insert(std::make_pair(index, install_job_n));
@@ -931,7 +948,8 @@ namespace
 
                         JobNumber fetch_job_n(resolved->job_lists()->execute_job_list()->append(std::make_shared<FetchJob>(
                                             requirements,
-                                            make_origin_spec(changes_to_make_decision))));
+                                            make_origin_spec(changes_to_make_decision),
+                                            was_target(resolved, changes_to_make_decision))));
                         fetch_job_numbers.insert(std::make_pair(index.resolvent(), fetch_job_n));
                     }
                     return;
@@ -968,7 +986,8 @@ namespace
 
             JobNumber uninstall_job_n(resolved->job_lists()->execute_job_list()->append(std::make_shared<UninstallJob>(
                                 requirements,
-                                removing
+                                removing,
+                                was_target(resolved, remove_decision)
                                 )));
 
             change_or_remove_job_numbers.insert(std::make_pair(index, uninstall_job_n));

@@ -124,12 +124,15 @@ namespace paludis
         const std::shared_ptr<const JobRequirements> requirements;
         const PackageDepSpec origin_id_spec;
         std::shared_ptr<JobState> state;
+        const bool was_target;
 
         Imp(
                 const std::shared_ptr<const JobRequirements> & r,
-                const PackageDepSpec & o) :
+                const PackageDepSpec & o,
+                const bool t) :
             requirements(r),
-            origin_id_spec(o)
+            origin_id_spec(o),
+            was_target(t)
         {
         }
     };
@@ -137,8 +140,9 @@ namespace paludis
 
 FetchJob::FetchJob(
         const std::shared_ptr<const JobRequirements> & r,
-        const PackageDepSpec & o) :
-    _imp(r, o)
+        const PackageDepSpec & o,
+        const bool t) :
+    _imp(r, o, t)
 {
 }
 
@@ -164,6 +168,12 @@ FetchJob::set_state(const std::shared_ptr<JobState> & s)
     _imp->state = s;
 }
 
+bool
+FetchJob::was_target() const
+{
+    return _imp->was_target;
+}
+
 const std::shared_ptr<const JobRequirements>
 FetchJob::requirements() const
 {
@@ -185,7 +195,8 @@ FetchJob::deserialise(Deserialisation & d)
     std::shared_ptr<FetchJob> result(std::make_shared<FetchJob>(
                 requirements,
                 parse_user_package_dep_spec(v.member<std::string>("origin_id_spec"),
-                    d.deserialiser().environment(), { updso_no_disambiguation })
+                    d.deserialiser().environment(), { updso_no_disambiguation }),
+                v.member<bool>("was_target")
                 ));
     result->set_state(v.member<std::shared_ptr<JobState> >("state"));
     return result;
@@ -198,6 +209,7 @@ FetchJob::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "requirements", requirements())
         .member(SerialiserFlags<>(), "origin_id_spec", stringify(origin_id_spec()))
         .member(SerialiserFlags<serialise::might_be_null>(), "state", state())
+        .member(SerialiserFlags<>(), "was_target", was_target())
         ;
 }
 
@@ -211,6 +223,7 @@ namespace paludis
         const RepositoryName destination_repository_name;
         const DestinationType destination_type;
         const std::shared_ptr<const Sequence<PackageDepSpec> > replacing_specs;
+        const bool was_target;
 
         std::shared_ptr<JobState> state;
 
@@ -219,13 +232,15 @@ namespace paludis
                 const PackageDepSpec & o,
                 const RepositoryName & d,
                 const DestinationType t,
-                const std::shared_ptr<const Sequence<PackageDepSpec> > & r
+                const std::shared_ptr<const Sequence<PackageDepSpec> > & r,
+                const bool w
                 ) :
             requirements(q),
             origin_id_spec(o),
             destination_repository_name(d),
             destination_type(t),
-            replacing_specs(r)
+            replacing_specs(r),
+            was_target(w)
         {
         }
     };
@@ -236,9 +251,10 @@ InstallJob::InstallJob(
         const PackageDepSpec & o,
         const RepositoryName & d,
         const DestinationType t,
-        const std::shared_ptr<const Sequence<PackageDepSpec> > & r
+        const std::shared_ptr<const Sequence<PackageDepSpec> > & r,
+        const bool w
         ) :
-    _imp(q, o, d, t, r)
+    _imp(q, o, d, t, r, w)
 {
 }
 
@@ -282,6 +298,12 @@ InstallJob::set_state(const std::shared_ptr<JobState> & s)
     _imp->state = s;
 }
 
+bool
+InstallJob::was_target() const
+{
+    return _imp->was_target;
+}
+
 const std::shared_ptr<const JobRequirements>
 InstallJob::requirements() const
 {
@@ -314,7 +336,8 @@ InstallJob::deserialise(Deserialisation & d)
                     d.deserialiser().environment(), { updso_no_disambiguation }),
                 RepositoryName(v.member<std::string>("destination_repository_name")),
                 destringify<DestinationType>(v.member<std::string>("destination_type")),
-                replacing_specs
+                replacing_specs,
+                v.member<bool>("was_target")
                 ));
 
     result->set_state(v.member<std::shared_ptr<JobState> >("state"));
@@ -337,6 +360,7 @@ InstallJob::serialise(Serialiser & s) const
         .member(SerialiserFlags<>(), "destination_type", stringify(destination_type()))
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "replacing_specs", replacing_specs_s)
         .member(SerialiserFlags<serialise::might_be_null>(), "state", state())
+        .member(SerialiserFlags<>(), "was_target", was_target())
         ;
 }
 
@@ -347,15 +371,18 @@ namespace paludis
     {
         const std::shared_ptr<const JobRequirements> requirements;
         const std::shared_ptr<const Sequence<PackageDepSpec> > ids_to_remove_specs;
+        const bool was_target;
 
         std::shared_ptr<JobState> state;
 
         Imp(
                 const std::shared_ptr<const JobRequirements> & q,
-                const std::shared_ptr<const Sequence<PackageDepSpec> > & r
+                const std::shared_ptr<const Sequence<PackageDepSpec> > & r,
+                const bool t
                 ) :
             requirements(q),
-            ids_to_remove_specs(r)
+            ids_to_remove_specs(r),
+            was_target(t)
         {
         }
     };
@@ -363,9 +390,10 @@ namespace paludis
 
 UninstallJob::UninstallJob(
         const std::shared_ptr<const JobRequirements> & q,
-        const std::shared_ptr<const Sequence<PackageDepSpec> > & r
+        const std::shared_ptr<const Sequence<PackageDepSpec> > & r,
+        const bool t
         ) :
-    _imp(q, r)
+    _imp(q, r, t)
 {
 }
 
@@ -389,6 +417,12 @@ void
 UninstallJob::set_state(const std::shared_ptr<JobState> & s)
 {
     _imp->state = s;
+}
+
+bool
+UninstallJob::was_target() const
+{
+    return _imp->was_target;
 }
 
 const std::shared_ptr<const JobRequirements>
@@ -419,7 +453,8 @@ UninstallJob::deserialise(Deserialisation & d)
 
     std::shared_ptr<UninstallJob> result(std::make_shared<UninstallJob>(
                 requirements,
-                ids_to_remove_specs
+                ids_to_remove_specs,
+                v.member<bool>("was_target")
                 ));
 
     result->set_state(v.member<std::shared_ptr<JobState> >("state"));
@@ -439,6 +474,7 @@ UninstallJob::serialise(Serialiser & s) const
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "requirements", requirements())
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "ids_to_remove_specs", ids_to_remove_specs_s)
         .member(SerialiserFlags<serialise::might_be_null>(), "state", state())
+        .member(SerialiserFlags<>(), "was_target", was_target())
         ;
 }
 
