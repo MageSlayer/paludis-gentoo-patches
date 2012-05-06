@@ -41,6 +41,7 @@ namespace paludis
     class AllDepSpec;
     class ExactlyOneDepSpec;
     class AnyDepSpec;
+    class AtMostOneDepSpec;
     class ConditionalDepSpec;
     class BlockDepSpec;
     class StringDepSpec;

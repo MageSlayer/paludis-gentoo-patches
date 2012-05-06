@@ -28,6 +28,7 @@ make_nn_NiceNames() {
     name "AllDepSpec"
     name "AnyDepSpec"
     name "ExactlyOneDepSpec"
+    name "AtMostOneDepSpec"
     name "ConditionalDepSpec"
     name "BlockDepSpec"
     name "StringDepSpec"

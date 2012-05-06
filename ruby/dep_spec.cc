@@ -59,6 +59,7 @@ namespace
     static VALUE c_all_dep_spec;
     static VALUE c_any_dep_spec;
     static VALUE c_exactly_one_dep_spec;
+    static VALUE c_at_most_one;
     static VALUE c_conditional_dep_spec;
 
     static VALUE c_version_requirements_mode;
@@ -131,6 +132,7 @@ namespace
             WrappedSpec<AllDepSpec>,
             WrappedSpec<AnyDepSpec>,
             WrappedSpec<ExactlyOneDepSpec>,
+            WrappedSpec<AtMostOneDepSpec>,
             WrappedSpec<ConditionalDepSpec>
         >::Type>
     {
@@ -271,6 +273,12 @@ namespace
         {
             wrapped.reset((new WrappedSpec<ExactlyOneDepSpec>(std::static_pointer_cast<ExactlyOneDepSpec>(node.spec()->clone())))->add_children(node.begin(), node.end()));
             klass = c_exactly_one_dep_spec;
+        }
+
+        void visit(const GenericSpecTree::NodeType<AtMostOneDepSpec>::Type & node)
+        {
+            wrapped.reset((new WrappedSpec<AtMostOneDepSpec>(std::static_pointer_cast<AtMostOneDepSpec>(node.spec()->clone())))->add_children(node.begin(), node.end()));
+            klass = c_at_most_one;
         }
     };
 
@@ -1015,6 +1023,17 @@ namespace
         rb_funcall(c_exactly_one_dep_spec, rb_intern("private_class_method"), 1, rb_str_new2("new"));
         rb_include_module(c_exactly_one_dep_spec, rb_mEnumerable);
         rb_define_method(c_exactly_one_dep_spec, "each", RUBY_FUNC_CAST((&Composite<AllDepSpec>::each)), 0);
+
+        /*
+         * Document-class: Paludis::AtMostOneDepSpec
+         *
+         * Represents a "?? ( )" dependency block. Includes
+         * Enumerable[http://www.ruby-doc.org/core/classes/Enumerable.html].
+         */
+        c_at_most_one = rb_define_class_under(paludis_module(), "AtMostOneDepSpec", c_dep_spec);
+        rb_funcall(c_at_most_one, rb_intern("private_class_method"), 1, rb_str_new2("new"));
+        rb_include_module(c_at_most_one, rb_mEnumerable);
+        rb_define_method(c_at_most_one, "each", RUBY_FUNC_CAST((&Composite<AllDepSpec>::each)), 0);
 
         /*
          * Document-class: Paludis::ConditionalDepSpec

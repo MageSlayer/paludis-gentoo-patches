@@ -24,6 +24,7 @@ make_nn_NiceNames() {
     name "SimpleURIDepSpec"
     name "AllDepSpec"
     name "AnyDepSpec"
+    name "AtMostOneDepSpec"
     name "ExactlyOneDepSpec"
     name "ConditionalDepSpec"
     name "BlockDepSpec"

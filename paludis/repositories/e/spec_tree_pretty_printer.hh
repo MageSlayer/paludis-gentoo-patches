@@ -53,6 +53,7 @@ namespace paludis
                 void visit(const GenericSpecTree::NodeType<AllDepSpec>::Type & node);
                 void visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type & node);
                 void visit(const GenericSpecTree::NodeType<ExactlyOneDepSpec>::Type & node);
+                void visit(const GenericSpecTree::NodeType<AtMostOneDepSpec>::Type & node);
                 void visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & node);
                 void visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type & node);
                 void visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type & node);

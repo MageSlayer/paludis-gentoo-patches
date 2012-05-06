@@ -176,6 +176,25 @@ RequiredUseVerifier::visit(const RequiredUseSpecTree::NodeType<ExactlyOneDepSpec
 }
 
 void
+RequiredUseVerifier::visit(const RequiredUseSpecTree::NodeType<AtMostOneDepSpec>::Type & node)
+{
+    _imp->stack.push_front(Met{0, false});
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+
+    Met met(*_imp->stack.begin());
+    _imp->stack.pop_front();
+
+    if (met.number_met <= 1)
+        ++_imp->stack.begin()->number_met;
+    else if (met.number_met > 1)
+        _imp->stack.begin()->any_unmet = true;
+    else if (met.any_unmet)
+        _imp->stack.begin()->any_unmet = true;
+    else
+        ++_imp->stack.begin()->number_met;
+}
+
+void
 RequiredUseVerifier::visit(const RequiredUseSpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
     if (! node.spec()->condition_met(_imp->env, _imp->id))

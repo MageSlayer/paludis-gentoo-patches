@@ -84,6 +84,7 @@ namespace paludis
             SpecTreeInnerNodeType<AllDepSpec>,
             SpecTreeInnerNodeType<AnyDepSpec>,
             SpecTreeInnerNodeType<ExactlyOneDepSpec>,
+            SpecTreeInnerNodeType<AtMostOneDepSpec>,
             SpecTreeInnerNodeType<ConditionalDepSpec>
         >::Type, AllDepSpec> GenericSpecTree;
 
@@ -112,6 +113,7 @@ namespace paludis
             SpecTreeInnerNodeType<AllDepSpec>,
             SpecTreeInnerNodeType<AnyDepSpec>,
             SpecTreeInnerNodeType<ExactlyOneDepSpec>,
+            SpecTreeInnerNodeType<AtMostOneDepSpec>,
             SpecTreeInnerNodeType<ConditionalDepSpec>
         >::Type, AllDepSpec> RequiredUseSpecTree;
 

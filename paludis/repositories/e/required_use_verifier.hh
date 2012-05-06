@@ -51,6 +51,7 @@ namespace paludis
                 void visit(const RequiredUseSpecTree::NodeType<AllDepSpec>::Type & node);
                 void visit(const RequiredUseSpecTree::NodeType<AnyDepSpec>::Type & node);
                 void visit(const RequiredUseSpecTree::NodeType<ExactlyOneDepSpec>::Type & node);
+                void visit(const RequiredUseSpecTree::NodeType<AtMostOneDepSpec>::Type & node);
                 void visit(const RequiredUseSpecTree::NodeType<ConditionalDepSpec>::Type & node);
         };
     }

@@ -192,6 +192,7 @@ namespace paludis
             SpecTreeInnerNodeType<AllDepSpec>,
             SpecTreeInnerNodeType<AnyDepSpec>,
             SpecTreeInnerNodeType<ExactlyOneDepSpec>,
+            SpecTreeInnerNodeType<AtMostOneDepSpec>,
             SpecTreeInnerNodeType<ConditionalDepSpec>
         >::Type, AllDepSpec>;
 
@@ -233,6 +234,7 @@ namespace paludis
             SpecTreeInnerNodeType<AllDepSpec>,
             SpecTreeInnerNodeType<AnyDepSpec>,
             SpecTreeInnerNodeType<ExactlyOneDepSpec>,
+            SpecTreeInnerNodeType<AtMostOneDepSpec>,
             SpecTreeInnerNodeType<ConditionalDepSpec>
         >::Type, AllDepSpec>;
 
@@ -287,6 +289,7 @@ namespace paludis
         template class PALUDIS_VISIBLE InnerNode<GenericSpecTree, AllDepSpec>;
         template class PALUDIS_VISIBLE InnerNode<GenericSpecTree, AnyDepSpec>;
         template class PALUDIS_VISIBLE InnerNode<GenericSpecTree, ExactlyOneDepSpec>;
+        template class PALUDIS_VISIBLE InnerNode<GenericSpecTree, AtMostOneDepSpec>;
         template class PALUDIS_VISIBLE InnerNode<GenericSpecTree, ConditionalDepSpec>;
     }
 }
@@ -435,6 +438,11 @@ template const std::shared_ptr<RequiredUseSpecTree::NodeType<ExactlyOneDepSpec>:
 template const std::shared_ptr<RequiredUseSpecTree::NodeType<ExactlyOneDepSpec>::Type>
     BasicInnerNode<RequiredUseSpecTree>::append<ExactlyOneDepSpec>(const std::shared_ptr<ExactlyOneDepSpec> &);
 
+template const std::shared_ptr<RequiredUseSpecTree::NodeType<AtMostOneDepSpec>::Type>
+    BasicInnerNode<RequiredUseSpecTree>::append<AtMostOneDepSpec>(const std::shared_ptr<const AtMostOneDepSpec> &);
+template const std::shared_ptr<RequiredUseSpecTree::NodeType<AtMostOneDepSpec>::Type>
+    BasicInnerNode<RequiredUseSpecTree>::append<AtMostOneDepSpec>(const std::shared_ptr<AtMostOneDepSpec> &);
+
 template const std::shared_ptr<RequiredUseSpecTree::NodeType<ConditionalDepSpec>::Type>
     BasicInnerNode<RequiredUseSpecTree>::append<ConditionalDepSpec>(const std::shared_ptr<const ConditionalDepSpec> &);
 template const std::shared_ptr<RequiredUseSpecTree::NodeType<ConditionalDepSpec>::Type>
@@ -452,6 +460,7 @@ namespace paludis
         template class PALUDIS_VISIBLE InnerNode<RequiredUseSpecTree, AllDepSpec>;
         template class PALUDIS_VISIBLE InnerNode<RequiredUseSpecTree, AnyDepSpec>;
         template class PALUDIS_VISIBLE InnerNode<RequiredUseSpecTree, ExactlyOneDepSpec>;
+        template class PALUDIS_VISIBLE InnerNode<RequiredUseSpecTree, AtMostOneDepSpec>;
         template class PALUDIS_VISIBLE InnerNode<RequiredUseSpecTree, ConditionalDepSpec>;
     }
 }
@@ -615,6 +624,7 @@ template LeafNode<PlainTextSpecTree, PlainTextLabelDepSpec>::operator LeafNode<G
 template InnerNode<RequiredUseSpecTree, AllDepSpec>::operator InnerNode<GenericSpecTree, AllDepSpec> () const;
 template InnerNode<RequiredUseSpecTree, AnyDepSpec>::operator InnerNode<GenericSpecTree, AnyDepSpec> () const;
 template InnerNode<RequiredUseSpecTree, ExactlyOneDepSpec>::operator InnerNode<GenericSpecTree, ExactlyOneDepSpec> () const;
+template InnerNode<RequiredUseSpecTree, AtMostOneDepSpec>::operator InnerNode<GenericSpecTree, AtMostOneDepSpec> () const;
 template InnerNode<RequiredUseSpecTree, ConditionalDepSpec>::operator InnerNode<GenericSpecTree, ConditionalDepSpec> () const;
 template LeafNode<RequiredUseSpecTree, PlainTextDepSpec>::operator LeafNode<GenericSpecTree, PlainTextDepSpec> () const;
 

@@ -110,6 +110,18 @@ ExactlyOneDepSpec::clone() const
     return result;
 }
 
+AtMostOneDepSpec::AtMostOneDepSpec()
+{
+}
+
+std::shared_ptr<DepSpec>
+AtMostOneDepSpec::clone() const
+{
+    std::shared_ptr<AtMostOneDepSpec> result(std::make_shared<AtMostOneDepSpec>());
+    result->set_annotations(maybe_annotations());
+    return result;
+}
+
 namespace paludis
 {
     template <>

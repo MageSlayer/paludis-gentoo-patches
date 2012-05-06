@@ -139,6 +139,10 @@ namespace
         {
         }
 
+        void visit(const GenericSpecTree::NodeType<AtMostOneDepSpec>::Type &)
+        {
+        }
+
         void visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type &)
         {
         }
@@ -249,6 +253,42 @@ SpecTreePrettyPrinter::visit(const GenericSpecTree::NodeType<ExactlyOneDepSpec>:
     else if (_imp->need_space)
         _imp->s << " ";
     _imp->s << "^^ (";
+    if (_imp->use_newlines)
+        _imp->s << _imp->pretty_printer.newline();
+    else
+        _imp->need_space = true;
+
+    {
+        Save<unsigned> old_indent(&_imp->indent, _imp->indent + 1);
+        Save<bool> extra_label_indent(&_imp->extra_label_indent, false);
+        std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+    }
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->pretty_printer.indentify(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+    _imp->s << ")";
+
+    do_annotations(*node.spec());
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->pretty_printer.newline();
+    else
+        _imp->need_space = true;
+}
+
+void
+SpecTreePrettyPrinter::visit(const GenericSpecTree::NodeType<AtMostOneDepSpec>::Type & node)
+{
+    Save<bool> old_outer(&_imp->outer_block, false);
+    Save<bool> old_needs_parens(&_imp->all_needs_parens, true);
+
+    if (_imp->use_newlines)
+        _imp->s << _imp->pretty_printer.indentify(_imp->indent);
+    else if (_imp->need_space)
+        _imp->s << " ";
+    _imp->s << "?? (";
     if (_imp->use_newlines)
         _imp->s << _imp->pretty_printer.newline();
     else

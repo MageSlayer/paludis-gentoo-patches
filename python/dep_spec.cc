@@ -152,6 +152,14 @@ PythonExactlyOneDepSpec::PythonExactlyOneDepSpec(const ExactlyOneDepSpec &)
 {
 }
 
+PythonAtMostOneDepSpec::PythonAtMostOneDepSpec()
+{
+}
+
+PythonAtMostOneDepSpec::PythonAtMostOneDepSpec(const AtMostOneDepSpec &)
+{
+}
+
 PythonAllDepSpec::PythonAllDepSpec()
 {
 }
@@ -539,6 +547,15 @@ SpecTreeToPython::visit(const GenericSpecTree::NodeType<ExactlyOneDepSpec>::Type
 }
 
 void
+SpecTreeToPython::visit(const GenericSpecTree::NodeType<AtMostOneDepSpec>::Type & node)
+{
+    std::shared_ptr<PythonAtMostOneDepSpec> py_cds(std::make_shared<PythonAtMostOneDepSpec>(*node.spec()));
+    _current_parent->add_child(py_cds);
+    Save<std::shared_ptr<PythonCompositeDepSpec> > old_parent(&_current_parent, py_cds);
+    std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
+}
+
+void
 SpecTreeToPython::visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type & node)
 {
     std::shared_ptr<PythonConditionalDepSpec> py_cds(std::make_shared<PythonConditionalDepSpec>(*node.spec()));
@@ -657,6 +674,7 @@ struct AllowedTypes<RequiredUseSpecTree>
     AllowedTypes(const AllDepSpec &) {};
     AllowedTypes(const AnyDepSpec &) {};
     AllowedTypes(const ExactlyOneDepSpec &) {};
+    AllowedTypes(const AtMostOneDepSpec &) {};
     AllowedTypes(const ConditionalDepSpec &) {};
     AllowedTypes(const PlainTextDepSpec &) {};
 };
@@ -758,6 +776,13 @@ SpecTreeFromPython<H_>::visit(const PythonExactlyOneDepSpec & d)
 
 template <typename H_>
 void
+SpecTreeFromPython<H_>::visit(const PythonAtMostOneDepSpec & d)
+{
+    dispatch<H_, AtMostOneDepSpec>(this, d);
+}
+
+template <typename H_>
+void
 SpecTreeFromPython<H_>::visit(const PythonConditionalDepSpec & d)
 {
     dispatch<H_, ConditionalDepSpec>(this, d);
@@ -854,6 +879,14 @@ void
 SpecTreeFromPython<H_>::real_visit(const PythonExactlyOneDepSpec & d)
 {
     Save<std::shared_ptr<typename H_::BasicInnerNode> > old_add_to(&_add_to, _add_to->append(std::make_shared<ExactlyOneDepSpec>()));
+    std::for_each(indirect_iterator(d.begin()), indirect_iterator(d.end()), accept_visitor(*this));
+}
+
+template <typename H_>
+void
+SpecTreeFromPython<H_>::real_visit(const PythonAtMostOneDepSpec & d)
+{
+    Save<std::shared_ptr<typename H_::BasicInnerNode> > old_add_to(&_add_to, _add_to->append(std::make_shared<AtMostOneDepSpec>()));
     std::for_each(indirect_iterator(d.begin()), indirect_iterator(d.end()), accept_visitor(*this));
 }
 
@@ -1119,6 +1152,16 @@ void expose_dep_spec()
         (
          "ExactlyOneDepSpec",
          "Represents a \"^^ ( )\" dependency block.",
+         bp::init<>("__init__()")
+        );
+
+    /**
+     * AtMostOneDepSpec
+     */
+    bp::class_<PythonAtMostOneDepSpec, bp::bases<PythonCompositeDepSpec>, boost::noncopyable>
+        (
+         "AtMostOneDepSpec",
+         "Represents a \"?? ( )\" dependency block.",
          bp::init<>("__init__()")
         );
 
