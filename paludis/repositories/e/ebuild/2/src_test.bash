@@ -26,10 +26,10 @@ default_src_test()
         echo "Makefile found, looking for potential test targets"
         if make -j1 -n check ; then
             echo "Found check target"
-            emake -j1 check || die "make check failed"
+            emake check || die "make check failed"
         elif make -j1 -n test ; then
             echo "Found test target"
-            emake -j1 test || die "make test failed"
+            emake test || die "make test failed"
         else
             echo "No check or test target, skipping tests"
         fi
