@@ -75,5 +75,41 @@ REQUIRED_USE="?? ( disabled1 enabled2 enabled3 )"
 S="${WORKDIR}"
 END
 
+mkdir -p "cat/econf-disable-silent-rules" || exit 1
+cat << 'END' > cat/econf-disable-silent-rules/econf-disable-silent-rules-5.ebuild || exit 1
+EAPI="${PV}"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cd "${WORKDIR}"
+
+    cat <<'EOF' > configure
+#!/bin/sh
+
+if echo "$@" | grep -q 'help' ; then
+    echo disable-silent-rules
+    exit 0
+fi
+
+if ! echo "$@" | grep -q 'disable-silent-rules' ; then
+    exit 1
+fi
+
+exit 0
+EOF
+
+    chmod +x configure
+}
+END
+
 cd ..
 cd ..
