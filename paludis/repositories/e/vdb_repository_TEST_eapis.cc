@@ -209,6 +209,7 @@ INSTANTIATE_TEST_CASE_P(Works, PhasesTest, testing::Values(
             std::string("2"),
             std::string("3"),
             std::string("4"),
+            std::string("5"),
             std::string("exheres-0")
             ));
 
@@ -334,6 +335,7 @@ INSTANTIATE_TEST_CASE_P(Works, VarsTest, testing::Values(
             std::string("2"),
             std::string("3"),
             std::string("4"),
+            std::string("5"),
             std::string("exheres-0")
             ));
 

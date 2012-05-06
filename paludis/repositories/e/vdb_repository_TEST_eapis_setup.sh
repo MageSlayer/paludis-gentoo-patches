@@ -141,6 +141,31 @@ pkg_config() {
 }
 END
 
+cat <<'END' > srcrepo/cat/target/target-5.ebuild
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+DEPEND="foo/bar"
+S="${WORKDIR}"
+
+src_install() {
+    echo MONKEY > ${D}/monkey
+}
+
+pkg_info() {
+    echo "This is pkg_info"
+}
+
+pkg_config() {
+    echo "This is pkg_config"
+}
+END
+
 cat <<'END' > srcrepo/cat/target-exheres/target-exheres-0.ebuild
 EAPI="exheres-0"
 DESCRIPTION="The Description"
