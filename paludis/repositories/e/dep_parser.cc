@@ -871,7 +871,10 @@ paludis::erepository::parse_required_use(const std::string & s, const Environmen
                 n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), std::cref(thing_to_star_annotate), _1),
                 n::on_any() = std::bind(&any_all_handler<RequiredUseSpecTree, AnyDepSpec>, std::ref(stack)),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
-                n::on_at_most_one() = std::bind(&at_most_one_not_allowed_handler, s),
+                n::on_at_most_one() =
+                    eapi.supported()->dependency_spec_tree_parse_options()[dstpo_allow_at_most_one] ?
+                    ELikeDepParserAtMostOneFunction(std::bind(&any_all_handler<RequiredUseSpecTree, AtMostOneDepSpec>, std::ref(stack))) :
+                    ELikeDepParserAtMostOneFunction(std::bind(&at_most_one_not_allowed_handler, s)),
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&any_all_handler<RequiredUseSpecTree, ExactlyOneDepSpec>, std::ref(stack)),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),

@@ -12,5 +12,6 @@ make_enum_DependencySpecTreeParseOption()
     key dstpo_double_bang_blocks         "Allow both !block and !!block"
     key dstpo_single_bang_block_is_hard  "!block is a hard block"
     key dstpo_no_self_block              "Blockers never block the containing package"
+    key dstpo_allow_at_most_one          "Allow ?? ( )"
 }
 
