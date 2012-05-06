@@ -238,6 +238,12 @@ namespace
     {
         throw EDepParseError(s, "Exactly one dep specs not allowed here");
     }
+    void at_most_one_not_allowed_handler(const std::string & s) PALUDIS_ATTRIBUTE((noreturn));
+
+    void at_most_one_not_allowed_handler(const std::string & s)
+    {
+        throw EDepParseError(s, "At most one dep specs not allowed here");
+    }
 
     void arrows_not_allowed_handler(const std::string & s, const std::string & f, const std::string & t) PALUDIS_ATTRIBUTE((noreturn));
 
@@ -518,6 +524,7 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
                 n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), std::cref(thing_to_star_annotate), _1),
                 n::on_any() = std::bind(&any_all_handler<DependencySpecTree, AnyDepSpec>, std::ref(stack)),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_at_most_one() = std::bind(&at_most_one_not_allowed_handler, s),
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&dependency_label_handler<DependencySpecTree>, env,
@@ -572,6 +579,7 @@ paludis::erepository::parse_commented_set(const std::string & s, const Environme
                 n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), std::cref(thing_to_star_annotate), _1),
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_at_most_one() = std::bind(&at_most_one_not_allowed_handler, s),
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
@@ -624,6 +632,7 @@ paludis::erepository::parse_fetchable_uri(const std::string & s, const Environme
                 n::on_arrow() = std::bind(&arrow_handler<FetchableURISpecTree>, std::ref(stack),
                     ParseStackTypes<FetchableURISpecTree>::AnnotationsGoHere(std::bind(
                             &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), s, _1, _2, std::cref(eapi)),
+                n::on_at_most_one() = std::bind(&at_most_one_not_allowed_handler, s),
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&fetchable_label_handler<FetchableURISpecTree>, std::ref(stack),
@@ -672,6 +681,7 @@ paludis::erepository::parse_simple_uri(const std::string & s, const Environment 
                 n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), std::cref(thing_to_star_annotate), _1),
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_at_most_one() = std::bind(&at_most_one_not_allowed_handler, s),
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
@@ -718,6 +728,7 @@ paludis::erepository::parse_license(const std::string & s, const Environment * c
                 n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), std::cref(thing_to_star_annotate), _1),
                 n::on_any() = std::bind(&any_all_handler<LicenseSpecTree, AnyDepSpec>, std::ref(stack)),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_at_most_one() = std::bind(&at_most_one_not_allowed_handler, s),
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
@@ -764,6 +775,7 @@ paludis::erepository::parse_plain_text(const std::string & s, const Environment 
                 n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), std::cref(thing_to_star_annotate), _1),
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_at_most_one() = std::bind(&at_most_one_not_allowed_handler, s),
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
@@ -810,6 +822,7 @@ paludis::erepository::parse_myoptions(const std::string & s, const Environment *
                 n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), std::cref(thing_to_star_annotate), _1),
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_at_most_one() = std::bind(&at_most_one_not_allowed_handler, s),
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&plain_text_label_handler<PlainTextSpecTree>, std::ref(stack),
@@ -858,6 +871,7 @@ paludis::erepository::parse_required_use(const std::string & s, const Environmen
                 n::on_annotations() = std::bind(&apply_annotations, std::cref(eapi), std::ref(thing_to_annotate), std::cref(thing_to_star_annotate), _1),
                 n::on_any() = std::bind(&any_all_handler<RequiredUseSpecTree, AnyDepSpec>, std::ref(stack)),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_at_most_one() = std::bind(&at_most_one_not_allowed_handler, s),
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&any_all_handler<RequiredUseSpecTree, ExactlyOneDepSpec>, std::ref(stack)),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),

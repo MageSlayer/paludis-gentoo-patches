@@ -31,6 +31,7 @@ namespace paludis
         typedef Name<struct name_on_annotations> on_annotations;
         typedef Name<struct name_on_any> on_any;
         typedef Name<struct name_on_arrow> on_arrow;
+        typedef Name<struct name_on_at_most_one> on_at_most_one;
         typedef Name<struct name_on_error> on_error;
         typedef Name<struct name_on_exactly_one> on_exactly_one;
         typedef Name<struct name_on_label> on_label;
@@ -48,6 +49,7 @@ namespace paludis
         NamedValue<n::on_annotations, ELikeDepParserAnnotationsFunction> on_annotations;
         NamedValue<n::on_any, ELikeDepParserAnyFunction> on_any;
         NamedValue<n::on_arrow, ELikeDepParserArrowFunction> on_arrow;
+        NamedValue<n::on_at_most_one, ELikeDepParserAtMostOneFunction> on_at_most_one;
         NamedValue<n::on_error, ELikeDepParserErrorFunction> on_error;
         NamedValue<n::on_exactly_one, ELikeDepParserExactlyOneFunction> on_exactly_one;
         NamedValue<n::on_label, ELikeDepParserLabelFunction> on_label;

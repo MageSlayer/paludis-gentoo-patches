@@ -107,6 +107,13 @@ namespace
         throw FakeDepParseError(s, "Exactly one dep specs not allowed here");
     }
 
+    void at_most_one_not_allowed_handler(const std::string & s) PALUDIS_ATTRIBUTE((noreturn));
+
+    void at_most_one_not_allowed_handler(const std::string & s)
+    {
+        throw FakeDepParseError(s, "At most one dep specs not allowed here");
+    }
+
     void arrows_not_allowed_handler(const std::string & s, const std::string & f, const std::string & t) PALUDIS_ATTRIBUTE((noreturn));
 
     void arrows_not_allowed_handler(const std::string & s, const std::string & f, const std::string & t)
@@ -180,6 +187,7 @@ paludis::fakerepository::parse_depend(const std::string & s, const Environment *
                 n::on_annotations() = &discard_annotations,
                 n::on_any() = std::bind(&any_all_handler<DependencySpecTree, AnyDepSpec>, std::ref(stack)),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_at_most_one() = std::bind(&at_most_one_not_allowed_handler, s),
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
@@ -211,6 +219,7 @@ paludis::fakerepository::parse_fetchable_uri(const std::string & s, const Enviro
                 n::on_annotations() = &discard_annotations,
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrow_handler<FetchableURISpecTree>, std::ref(stack), _1, _2),
+                n::on_at_most_one() = std::bind(&at_most_one_not_allowed_handler, s),
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
@@ -242,6 +251,7 @@ paludis::fakerepository::parse_simple_uri(const std::string & s, const Environme
                 n::on_annotations() = &discard_annotations,
                 n::on_any() = std::bind(&any_not_allowed_handler, s),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_at_most_one() = std::bind(&at_most_one_not_allowed_handler, s),
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),
@@ -273,6 +283,7 @@ paludis::fakerepository::parse_license(const std::string & s, const Environment 
                 n::on_annotations() = &discard_annotations,
                 n::on_any() = std::bind(&any_all_handler<LicenseSpecTree, AnyDepSpec>, std::ref(stack)),
                 n::on_arrow() = std::bind(&arrows_not_allowed_handler, s, _1, _2),
+                n::on_at_most_one() = std::bind(&at_most_one_not_allowed_handler, s),
                 n::on_error() = std::bind(&error_handler, s, _1),
                 n::on_exactly_one() = std::bind(&exactly_one_not_allowed_handler, s),
                 n::on_label() = std::bind(&labels_not_allowed_handler, s, _1),

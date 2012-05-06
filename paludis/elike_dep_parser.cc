@@ -213,6 +213,20 @@ namespace
                 callbacks.on_exactly_one()();
                 parse(parser, callbacks, options, true, true);
             }
+            else if (parser.consume(simple_parser::exact("??")))
+            {
+                if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
+                    error(parser, callbacks, "Expected space after '?""?'");
+
+                if (! parser.consume(simple_parser::exact("(")))
+                    error(parser, callbacks, "Expected '(' after '?""?' then space");
+
+                if (! parser.consume(+simple_parser::any_of(" \t\r\n")))
+                    error(parser, callbacks, "Expected space after '?? ('");
+
+                callbacks.on_at_most_one()();
+                parse(parser, callbacks, options, true, true);
+            }
             else if (parser.consume(+simple_parser::any_except(" \t\r\n") >> word))
             {
                 if ('?' == word.at(word.length() - 1))
