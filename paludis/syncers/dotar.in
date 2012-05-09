@@ -54,6 +54,10 @@ while [[ $# -gt 0 ]]; do
             RSYNC_OPTIONS[${#RSYNC_OPTIONS[@]}]="${1#*=}"
             ;;
 
+        --gpg-signature=*)
+            GPG_SIG="${1#*=}"
+            ;;
+
         --help)
             PROTO="${0##*/do}"
             if [[ "${PROTO}" == tar+file ]]; then
@@ -158,7 +162,16 @@ cleanup_and_exit()
 TEMP="$( mktemp -d -p "${TMPDIR}" paludis-tarsync-XXXXXX )" || cleanup_and_exit $?
 TARFILE="${URL##*/}"
 
+if [[ -n "${GPG_SIG}" ]]; then
+    GPG_SIGFILE="${GPG_SIG##*/}"
+    "${FETCHER}" "${FETCHER_OPTIONS[@]}" "${GPG_SIG}" "${TEMP}/${GPG_SIGFILE}" || cleanup_and_exit $?
+fi
+
 "${FETCHER}" "${FETCHER_OPTIONS[@]}" "${URL}" "${TEMP}/${TARFILE}" || cleanup_and_exit $?
+
+if [[ -n "${GPG_SIG}" ]]; then
+    gpg --verify "${TEMP}/${GPG_SIGFILE}" "${TEMP}/${TARFILE}" || cleanup_and_exit $?
+fi
 
 UNPACKDIR="${TEMP}/repository"
 mkdir "${UNPACKDIR}"
@@ -169,6 +182,10 @@ export PALUDIS_UNPACK_FIX_PERMISSIONS=
     "${UNPACK_OPTIONS[@]}" "${TEMP}/${TARFILE}" ) || cleanup_and_exit $?
 
 rm "${TEMP}/${TARFILE}"
+
+if [[ -n "${GPG_SIG}" ]]; then
+    rm "${TEMP}/${GPG_SIGFILE}"
+fi
 
 if [[ -z "$( ls -A "${UNPACKDIR}" )" ]]; then
     eerror "No files were extracted (not an archive?)"
