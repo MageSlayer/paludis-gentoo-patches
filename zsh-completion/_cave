@@ -119,7 +119,7 @@ _cave_cmd_config()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '*:package depspec:_cave_packages' && return 0
+    ':package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_contents]} )) ||
@@ -127,7 +127,7 @@ _cave_cmd_contents()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '*:package depspec:_cave_packages' && return 0
+    ':package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_digest]} )) ||
@@ -135,8 +135,8 @@ _cave_digest()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '*:package depspec:_cave_packages' \
-    '*:repository:_cave_repositories' && return 0
+    ':package depspec:_cave_packages' \
+    ':repository:_cave_repositories' && return 0
 }
 
 
@@ -163,7 +163,7 @@ _cave_cmd_executables()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '*:package depspec:_cave_packages' && return 0
+    ':package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_execute-resolution]} )) ||
@@ -267,7 +267,7 @@ _cave_cmd_has-version()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '*:package depspec:_cave_packages' && return 0
+    ':package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_help]} )) ||
@@ -395,7 +395,7 @@ _cave_cmd_perform()
               '(--ignore-unfetched --no-ignore-unfetched)'{--ignore-unfetched,--no-ignore-unfetched}'[Do not fetch any component that has not already been downloaded]' \
               '(--ignore-manual-fetch-errors --no-ignore-manual-fetch-errors)'{--ignore-manual-fetch-errors,--no-ignore-manual-fetch-errors}'[Ignore any errors that say that manual fetching is required for a component]' \
               '(--regulars-only --no-regulars-only)'{--regulars-only,--no-regulars-only}'[Only fetch regular components]' \
-              '*:package depspec:_cave_packages' && ret=0
+              ':package depspec:_cave_packages' && ret=0
             ;;
           install|pretend)
             _arguments -s : \
@@ -404,12 +404,12 @@ _cave_cmd_perform()
               '*--skip-phase[Skip the named phases]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
               '*--abort-at-phase[Abort when a named phase is encountered]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
               '*--skip-until-phase[Skip every phase until a named phase is encountered]:phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
-              '*:package depspec:_cave_packages' && ret=0
+              ':package depspec:_cave_packages' && ret=0
             ;;
           uninstall)
             _arguments -s : \
               '*--config-protect[Specify additional items to include in the config protection list]:file:_files' \
-              '*:package depspec:_cave_packages' && ret=0
+              ':package depspec:_cave_packages' && ret=0
             ;;
         esac
         ;;
@@ -422,7 +422,7 @@ _cave_cmd_print-best-version()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '(--format -f)'{--format,-f}'[Select the output format]:Format:((full f spec s name n version v name-version V))' \
-    '*:package depspec:_cave_packages' && return 0
+    ':package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_print-categories]} )) ||
@@ -489,7 +489,7 @@ _cave_cmd_print-id-actions()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     ${_cave_print_id_arguments[@]} \
-    '*:package depspec:_cave_packages' && return 0
+    ':package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_print-id-contents]} )) ||
@@ -509,7 +509,7 @@ _cave_cmd_print-id-contents()
                                                                                 s\:"Show only symlink entries"
                                                                                 other\:"Show only other entries"
                                                                                 o\:"Show only other entries"))' \
-    '*:package depspec:_cave_packages' && return 0
+    ':package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_print-id-environment-variable]} )) ||
@@ -520,7 +520,7 @@ _cave_cmd_print-id-environment-variable()
     ${_cave_print_id_arguments[@]} \
     '*--variable-name[Show this environment variable]:environment variable: ' \
     '--format[Select the output format]:format: ' \
-    '*:package depspec:_cave_packages' && return 0
+    ':package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_print-id-executables]} )) ||
@@ -529,7 +529,7 @@ _cave_cmd_print-id-executables()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     ${_cave_print_id_arguments[@]} \
-    '*:package depspec:_cave_packages' && return 0
+    ':package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_print-id-masks]} )) ||
@@ -541,7 +541,7 @@ _cave_cmd_print-id-masks()
     '(--overridden --no-overridden)'{--overridden,--no-overridden}'[Show overridden masks]' \
     '(--no-active --no-no-active)'{--no-active,--no-no-active}'[No not show active (non-overridden) masks]' \
     '--format[Select the output format]:format: ' \
-    '*:package depspec:_cave_packages' && return 0
+    ':package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_print-id-metadata]} )) ||
@@ -553,7 +553,7 @@ _cave_cmd_print-id-metadata()
     '*--raw-name[Show only keys with this raw name]:raw name: ' \
     '*--human-name[Show only keys with this human name]:human name: ' \
     '--format[Select the output format]:output format: ' \
-    '*:package depspec:_cave_packages' && return 0
+    ':package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_print-id-size]} )) ||
@@ -562,7 +562,7 @@ _cave_cmd_print-id-size()
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     ${_cave_print_id_arguments[@]} \
-    '*:package depspec:_cave_packages' && return 0
+    ':package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_print-ids]} )) ||
@@ -622,7 +622,7 @@ _cave_cmd_print-repository-metadata()
     '*--raw-name[Show only keys with this raw name]:raw name: ' \
     '*--human-name[Show only keys with this human name]:human name: ' \
     '--format[Select the output format]:format: ' \
-    '*:repository:_cave_repositories' && return 0
+    ':repository:_cave_repositories' && return 0
 }
 
 (( ${+functions[_cave_cmd_print-set]} )) ||
@@ -657,7 +657,7 @@ _cave_cmd_print-spec()
     '*--version-requirement[Specify a version requirement]:version: ' \
     '--version-requirements-mode[Specify the mode of version requirements]:mode:((default and or))' \
     '*--additional-requirement[Specify an additional requirement]:requirement: ' \
-    '*:package depspec:_cave_packages' && return 0
+    ':package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_print-sync-protocols]} )) ||
@@ -833,7 +833,7 @@ _cave_cmd_size()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '*:package depspec:_cave_packages' && return 0
+    ':package depspec:_cave_packages' && return 0
 }
 
 (( ${+functions[_cave_cmd_sync]} )) ||
@@ -852,7 +852,7 @@ _cave_cmd_sync-protocol-options()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '*:sync protocol:_cave_protocols' && return 0
+    ':sync protocol:_cave_protocols' && return 0
 }
 
 (( ${+functions[_cave_cmd_uninstall]} )) ||
