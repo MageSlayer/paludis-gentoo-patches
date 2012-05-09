@@ -49,6 +49,8 @@ _cave()
     'perform:Perform an action upon a package'
     'print-best-version:Prints the best installed version matching a particular spec'
     'print-categories:Prints a list of known categories'
+    'print-checksum:prints cryptographic checksums'
+    'print-checksum-algorithms:prints supported cryptographic checksum algorithms'
     'print-commands:Prints a list of known cave commands'
     'print-dependent-ids:Prints a list of installed IDs that are dependent upon another installed ID'
     'print-environment-metadata:Prints environment metadata'
@@ -430,6 +432,24 @@ _cave_cmd_print-categories()
     '(--help -h)'{--help,-h}'[Display help messsage]' \
     '*--containing[Show only categories containing this package name]:package name: ' \
     '*--repository[Show only categories in this repository]:repository name:_cave_repositories'
+}
+
+(( ${+functions[_cave_cmd_print-checksum]} )) ||
+_cave_cmd_print-checksum()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]' \
+    '(--file -f --stdin -s --text -t)'{--stdin,-s}'[Calculate the checksum of standard input]' \
+    '(--file -f --stdin -s --text -t)'{--file,-f}'[Calculate the checksum of the contents of the specified file]' \
+    '(--file -f --stdin -s --text -t)'{--text,-t}'[Calculate the checksum of the specified text]' \
+    ':checksum algorithm:_cave_algorithms' && return 0
+}
+
+(( ${+functions[_cave_cmd_print-checksum-algorithms]} )) ||
+_cave_cmd_print-checksum-algorithms()
+{
+  _arguments -s : \
+    '(--help -h)'{--help,-h}'[Display help messsage]'
 }
 
 (( ${+functions[_cave_cmd_print-commands]} )) ||
@@ -862,6 +882,13 @@ _cave_cmd_verify()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]'
+}
+
+(( ${+functions[_cave_algorithms]} )) ||
+_cave_algorithms() {
+  local -a _cave_algorithms
+  _cave_algorithms=( $(cave print-checksum-algorithms) )
+  _describe -t algorithm 'algorithm' _cave_algorithms
 }
 
 (( ${+functions[_cave_packages]} )) ||
