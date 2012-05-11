@@ -183,7 +183,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         bool in_metadata_generation,
         const std::string & s, const std::shared_ptr<OutputManager> & maybe_output_manager)
 {
-    Context context("In ebuild pipe command handler:");
+    Context context("In ebuild pipe command handler for '" + package_id->canonical_form(idcf_full) + "':")
 
     try
     {
