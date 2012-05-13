@@ -51,6 +51,7 @@ IUSE_IMPLICIT="build"
 END
 mkdir -p "cat/prefix"
 cat <<'END' > cat/prefix/prefix-3.ebuild || exit 1
+EAPI="3"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -58,7 +59,6 @@ SLOT="0"
 IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
 
 pkg_setup() {
     [[ "/" == ${EROOT} ]] || die eroot

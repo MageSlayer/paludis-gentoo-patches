@@ -246,7 +246,7 @@ src_compile() {
 END
 mkdir -p "cat/econf-source"
 cat <<END > cat/econf-source/econf-source-0.ebuild || exit 1
-EAPI="\${PV}"
+EAPI="0"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -270,10 +270,12 @@ src_install() {
 }
 END
 cp cat/econf-source/econf-source-{0,1}.ebuild || exit 1
+sed -i -e 's/EAPI="0"/EAPI="1"/' cat/econf-source/econf-source-1.ebuild || exit 1
 cp cat/econf-source/econf-source-{0,2}.ebuild || exit 1
+sed -i -e 's/EAPI="0"/EAPI="2"/' cat/econf-source/econf-source-2.ebuild || exit 1
 mkdir -p "cat/doman"
 cat <<END > cat/doman/doman-0.ebuild || exit 1
-EAPI="\${PV}"
+EAPI="0"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -325,8 +327,9 @@ src_install() {
 }
 END
 cp cat/doman/doman-{0,1}.ebuild || exit 1
+sed -i -e 's/EAPI="0"/EAPI="1"/' cat/doman/doman-1.ebuild || exit 1
 cat <<END > cat/doman/doman-2.ebuild || exit 1
-EAPI="\${PV}"
+EAPI="2"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -378,7 +381,7 @@ src_install() {
 END
 mkdir -p "cat/dosym-success"
 cat <<'END' > cat/dosym-success/dosym-success-1.ebuild || exit 1
-EAPI="${PV}"
+EAPI="1"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -420,7 +423,7 @@ pkg_setup() {
 END
 mkdir -p "cat/has-version"
 cat <<'END' > cat/has-version/has-version-0.ebuild || exit 1
-EAPI="${PV}"
+EAPI="0"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -441,7 +444,7 @@ pkg_setup() {
 END
 mkdir -p "cat/match"
 cat <<'END' > cat/match/match-0.ebuild || exit 1
-EAPI="${PV}"
+EAPI="0"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -472,7 +475,7 @@ DONE
 END
 mkdir -p "cat/vars"
 cat <<'END' > cat/vars/vars-0.ebuild || exit 1
-EAPI="${PV}"
+EAPI="0"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -495,7 +498,7 @@ pkg_preinst() {
 END
 mkdir -p "cat/src_prepare"
 cat <<END > cat/src_prepare/src_prepare-0.ebuild || exit 1
-EAPI="\${PV}"
+EAPI="0"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -509,10 +512,12 @@ src_prepare() {
 }
 END
 cp cat/src_prepare/src_prepare-{0,1}.ebuild || exit 1
+sed -i -e 's/EAPI="0"/EAPI="1"/' cat/src_prepare/src_prepare-1.ebuild || exit 1
 cp cat/src_prepare/src_prepare-{0,2}.ebuild || exit 1
+sed -i -e 's/EAPI="0"/EAPI="2"/' cat/src_prepare/src_prepare-2.ebuild || exit 1
 mkdir -p "cat/src_configure"
 cat <<END > cat/src_configure/src_configure-0.ebuild || exit 1
-EAPI="\${PV}"
+EAPI="0"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -526,10 +531,12 @@ src_configure() {
 }
 END
 cp cat/src_configure/src_configure-{0,1}.ebuild || exit 1
+sed -i -e 's/EAPI="0"/EAPI="1"/' cat/src_configure/src_configure-1.ebuild || exit 1
 cp cat/src_configure/src_configure-{0,2}.ebuild || exit 1
+sed -i -e 's/EAPI="0"/EAPI="2"/' cat/src_configure/src_configure-2.ebuild || exit 1
 mkdir -p "cat/default-src_configure" || exit 1
 cat << END > cat/default-src_configure/default-src_configure-2.ebuild || exit 1
-EAPI="\${PV}"
+EAPI="2"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -553,7 +560,7 @@ src_compile() {
 END
 mkdir -p "cat/default-src_compile" || exit 1
 cat << END > cat/default-src_compile/default-src_compile-2.ebuild || exit 1
-EAPI="\${PV}"
+EAPI="2"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -581,7 +588,7 @@ src_install() {
 END
 mkdir -p "cat/default_src_compile" || exit 1
 cat << END > cat/default_src_compile/default_src_compile-2.ebuild || exit 1
-EAPI="\${PV}"
+EAPI="2"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -610,7 +617,7 @@ src_compile() {
 END
 mkdir -p "cat/src_compile-via-default-func" || exit 1
 cat << END > cat/src_compile-via-default-func/src_compile-via-default-func-2.ebuild || exit 1
-EAPI="\${PV}"
+EAPI="2"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -656,6 +663,7 @@ pkg_setup() {
 END
 mkdir -p "cat/pkg_pretend"
 cat <<"END" > cat/pkg_pretend/pkg_pretend-3.ebuild || exit 1
+EAPI="3"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -663,7 +671,6 @@ SLOT="0"
 IUSE="enabled-weasel broccoli"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
 
 pkg_pretend() {
     einfo "This is my pkg_pretend. There are many like it, but this one is mine."
@@ -671,6 +678,7 @@ pkg_pretend() {
 END
 mkdir -p "cat/pkg_pretend-failure"
 cat <<"END" > cat/pkg_pretend-failure/pkg_pretend-failure-3.ebuild || exit 1
+EAPI="3"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -678,7 +686,6 @@ SLOT="0"
 IUSE="enabled-weasel broccoli"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
 
 pkg_pretend() {
     die "This is my pkg_pretend. There are many like it, but this one is mine."
@@ -686,7 +693,7 @@ pkg_pretend() {
 END
 mkdir -p "cat/default_src_install" || exit 1
 cat << 'END' > cat/default_src_install/default_src_install-3.ebuild || exit 1
-EAPI="${PV}"
+EAPI="3"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -694,7 +701,6 @@ SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
 
 S="${WORKDIR}"
 
@@ -722,7 +728,7 @@ pkg_preinst() {
 END
 mkdir -p "cat/docompress" || exit 1
 cat << 'END' > cat/docompress/docompress-3.ebuild || exit 1
-EAPI="${PV}"
+EAPI="3"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -730,7 +736,6 @@ SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
 
 S="${WORKDIR}"
 
@@ -741,7 +746,7 @@ src_install() {
 END
 mkdir -p "cat/dodoc-r" || exit 1
 cat << 'END' > cat/dodoc-r/dodoc-r-3.ebuild || exit 1
-EAPI="${PV}"
+EAPI="3"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -749,7 +754,6 @@ SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
 
 S="${WORKDIR}"
 
@@ -781,7 +785,7 @@ pkg_preinst() {
 END
 mkdir -p "cat/doins-symlink" || exit 1
 cat << 'END' > cat/doins-symlink/doins-symlink-3.ebuild || exit 1
-EAPI="${PV}"
+EAPI="3"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -789,7 +793,6 @@ SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
 
 S="${WORKDIR}"
 
@@ -834,6 +837,7 @@ pkg_preinst() {
 END
 mkdir -p "cat/banned-functions"
 cat <<END > cat/banned-functions/banned-functions-3.ebuild || exit 1
+EAPI="3"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -841,7 +845,6 @@ SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
 
 S="\${WORKDIR}"
 
@@ -852,7 +855,7 @@ src_install() {
 END
 mkdir -p "cat/econf-disable-dependency-tracking" || exit 1
 cat << 'END' > cat/econf-disable-dependency-tracking/econf-disable-dependency-tracking-0.ebuild || exit 1
-EAPI="${PV}"
+EAPI="0"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -860,7 +863,6 @@ SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="0"
 
 S="${WORKDIR}"
 
@@ -882,7 +884,7 @@ EOF
 }
 END
 cat << 'END' > cat/econf-disable-dependency-tracking/econf-disable-dependency-tracking-3.ebuild || exit 1
-EAPI="${PV}"
+EAPI="3"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -890,7 +892,6 @@ SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
 
 S="${WORKDIR}"
 
@@ -913,7 +914,7 @@ EOF
 END
 mkdir -p "cat/strict-use" || exit 1
 cat << 'END' > cat/strict-use/strict-use-3.ebuild || exit 1
-EAPI="${PV}"
+EAPI="3"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -921,7 +922,6 @@ SLOT="0"
 IUSE="spork enabled"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
 
 S="${WORKDIR}"
 
@@ -932,7 +932,7 @@ pkg_setup() {
 END
 mkdir -p "cat/strict-use-fail" || exit 1
 cat << 'END' > cat/strict-use-fail/strict-use-fail-3.ebuild || exit 1
-EAPI="${PV}"
+EAPI="3"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -940,7 +940,6 @@ SLOT="0"
 IUSE="spork enabled"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
 
 S="${WORKDIR}"
 
@@ -950,7 +949,7 @@ pkg_setup() {
 END
 mkdir -p "cat/strict-use-injection" || exit 1
 cat << 'END' > cat/strict-use-injection/strict-use-injection-3.ebuild || exit 1
-EAPI="${PV}"
+EAPI="3"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -958,7 +957,6 @@ SLOT="0"
 IUSE="spork enabled"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
 
 S="${WORKDIR}"
 
@@ -971,9 +969,10 @@ pkg_setup() {
 END
 mkdir -p "cat/global-scope-use" || exit 1
 cat << 'END' > cat/global-scope-use/global-scope-use-3.ebuild || exit 1
+EAPI="3"
+
 use spork
 
-EAPI="${PV}"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -981,7 +980,6 @@ SLOT="0"
 IUSE="spork enabled"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="3"
 
 S="${WORKDIR}"
 END

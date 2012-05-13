@@ -35,13 +35,13 @@ END
 
 mkdir -p "cat/required-use-at-most-one-none" || exit 1
 cat << 'END' > cat/required-use-at-most-one-none/required-use-at-most-one-none-5.ebuild || exit 1
+EAPI="5"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="5"
 IUSE="disabled1 disabled2 disabled3 enabled1 enabled2 enabled3"
 REQUIRED_USE="?? ( disabled1 disabled2 disabled3 )"
 S="${WORKDIR}"
@@ -49,13 +49,13 @@ END
 
 mkdir -p "cat/required-use-at-most-one-one" || exit 1
 cat << 'END' > cat/required-use-at-most-one-one/required-use-at-most-one-one-5.ebuild || exit 1
+EAPI="5"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="5"
 IUSE="disabled1 disabled2 disabled3 enabled1 enabled2 enabled3"
 REQUIRED_USE="?? ( disabled1 enabled2 disabled3 )"
 S="${WORKDIR}"
@@ -63,13 +63,13 @@ END
 
 mkdir -p "cat/required-use-at-most-one-two" || exit 1
 cat << 'END' > cat/required-use-at-most-one-two/required-use-at-most-one-two-5.ebuild || exit 1
+EAPI="5"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="5"
 IUSE="disabled1 disabled2 disabled3 enabled1 enabled2 enabled3"
 REQUIRED_USE="?? ( disabled1 enabled2 enabled3 )"
 S="${WORKDIR}"
@@ -77,7 +77,7 @@ END
 
 mkdir -p "cat/econf-disable-silent-rules" || exit 1
 cat << 'END' > cat/econf-disable-silent-rules/econf-disable-silent-rules-5.ebuild || exit 1
-EAPI="${PV}"
+EAPI="5"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""

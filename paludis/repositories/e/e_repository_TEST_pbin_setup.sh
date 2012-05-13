@@ -37,6 +37,7 @@ IUSE_IMPLICIT="build"
 END
     mkdir -p "cat/simple"
     cat <<END > cat/simple/simple-1.ebuild || exit 1
+EAPI="${e}"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI=""
@@ -44,7 +45,6 @@ SLOT="0"
 IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="test"
-EAPI="${e}"
 S="\${WORKDIR}"
 
 src_unpack() {
@@ -107,6 +107,7 @@ END
 
     mkdir -p "cat/simple"
     cat <<END > cat/simple/simple-1.ebuild || exit 1
+EAPI="${e}"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 DOWNLOADS=""
@@ -114,7 +115,6 @@ SLOT="0"
 MYOPTIONS=""
 LICENCES="GPL-2"
 PLATFORMS="test"
-EAPI="${e}"
 WORK="\${WORKBASE}"
 
 src_unpack() {
@@ -129,6 +129,7 @@ END
 
     mkdir -p "cat/symlinks"
     cat <<END > cat/symlinks/symlinks-1.ebuild || exit 1
+EAPI="${e}"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 DOWNLOADS=""
@@ -136,7 +137,6 @@ SLOT="0"
 MYOPTIONS=""
 LICENCES="GPL-2"
 PLATFORMS="test"
-EAPI="${e}"
 WORK="\${WORKBASE}"
 
 src_unpack() {

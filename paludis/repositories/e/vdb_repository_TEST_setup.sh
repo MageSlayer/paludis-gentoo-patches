@@ -113,11 +113,7 @@ echo postinsttest >postinsttest_src1/profiles/repo_name
 echo cat >postinsttest_src1/profiles/categories
 
 cat <<END >postinsttest_src1/cat/pkg/pkg-0.ebuild
-if [[ \${PV} == 0* ]]; then
-    EAPI=1
-else
-    EAPI=paludis-1
-fi
+EAPI=1
 KEYWORDS="test"
 if [[ \${PV} == 2* ]]; then
     SLOT="2"
@@ -149,8 +145,9 @@ pkg_postrm() {
 END
 cp postinsttest_src1/cat/pkg/pkg-{0,0.1}.ebuild
 cp postinsttest_src1/cat/pkg/pkg-{0,1}.ebuild
-cp postinsttest_src1/cat/pkg/pkg-{0,1.1}.ebuild
-cp postinsttest_src1/cat/pkg/pkg-{0,2}.ebuild
+sed -i -e 's/EAPI=1/EAPI=paludis-1/' postinsttest_src1/cat/pkg/pkg-1.ebuild
+cp postinsttest_src1/cat/pkg/pkg-{1,1.1}.ebuild
+cp postinsttest_src1/cat/pkg/pkg-{1,2}.ebuild
 
 mkdir -p removestalefilesvdb removestalefiles/{eclass,profiles/profile,cat/pkg} || exit 1
 
