@@ -1695,9 +1695,12 @@ ERepository::make_id(const QualifiedPackageName & q, const FSPath & f) const
 {
     Context context("When creating ID for '" + stringify(q) + "' from '" + stringify(f) + "':");
 
-    std::shared_ptr<EbuildID> result(std::make_shared<EbuildID>(q, extract_package_file_version(q, f),
+    std::string suffix_eapi(FileSuffixes::get_instance()->guess_eapi_from_filename(q, f));
+    std::string eapi(suffix_eapi.empty() ? _imp->params.eapi_when_unknown() : suffix_eapi);
+
+    std::shared_ptr<EbuildID> result(std::make_shared<EbuildID>(q, extract_package_file_version(q, f, eapi),
                 _imp->params.environment(),
-                name(), f, FileSuffixes::get_instance()->guess_eapi_from_filename(q, f),
+                name(), f, eapi,
                 _imp->master_mtime, _imp->eclass_mtimes));
     return result;
 }
@@ -1929,7 +1932,7 @@ ERepository::merge(const MergeParams & m)
 }
 
 VersionSpec
-ERepository::extract_package_file_version(const QualifiedPackageName & n, const FSPath & e) const
+ERepository::extract_package_file_version(const QualifiedPackageName & n, const FSPath & e, const std::string & eapi) const
 {
     Context context("When extracting version from '" + stringify(e) + "':");
     std::string::size_type p(e.basename().rfind('.'));
@@ -1937,7 +1940,7 @@ ERepository::extract_package_file_version(const QualifiedPackageName & n, const 
         throw InternalError(PALUDIS_HERE, "got npos");
     return VersionSpec(strip_leading_string(e.basename().substr(0, p), stringify(n.package()) + "-"),
             EAPIData::get_instance()->eapi_from_string(
-                _imp->params.eapi_when_unknown())->supported()->version_spec_options());
+                eapi)->supported()->version_spec_options());
 }
 
 const std::string

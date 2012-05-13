@@ -204,18 +204,6 @@ namespace paludis
     };
 }
 
-namespace
-{
-    std::string guess_eapi(const std::string & g, const Environment * const env, const RepositoryName & repo_name)
-    {
-        if (! g.empty())
-            return g;
-        auto repo(env->fetch_repository(repo_name));
-        auto e_repo(std::static_pointer_cast<const ERepository>(repo));
-        return e_repo->params().eapi_when_unknown();
-    }
-}
-
 EbuildID::EbuildID(const QualifiedPackageName & q, const VersionSpec & v,
         const Environment * const e,
         const RepositoryName & r,
@@ -223,7 +211,7 @@ EbuildID::EbuildID(const QualifiedPackageName & q, const VersionSpec & v,
         const std::string & g,
         const time_t t,
         const std::shared_ptr<const EclassMtimes> & m) :
-    _imp(q, v, e, r, f, guess_eapi(g, e, r), t, m)
+    _imp(q, v, e, r, f, g, t, m)
 {
 }
 

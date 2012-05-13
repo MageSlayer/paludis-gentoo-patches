@@ -199,7 +199,7 @@ namespace paludis
             ///\name Entries
             ///\{
 
-            VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSPath &) const
+            VersionSpec extract_package_file_version(const QualifiedPackageName &, const FSPath &, const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
             const std::shared_ptr<const erepository::ERepositoryID> make_id(
