@@ -69,6 +69,7 @@
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/upper_lower.hh>
+#include <paludis/util/safe_ifstream.hh>
 
 #include <set>
 #include <iterator>
@@ -140,6 +141,7 @@ namespace paludis
         const RepositoryName repository_name;
         mutable std::shared_ptr<const EAPI> eapi;
         const std::string guessed_eapi;
+        const bool eapi_from_suffix;
         const time_t master_mtime;
         const std::shared_ptr<const EclassMtimes> eclass_mtimes;
         mutable bool has_non_xml_keys;
@@ -187,12 +189,13 @@ namespace paludis
         Imp(const QualifiedPackageName & q, const VersionSpec & v,
                 const Environment * const e,
                 const RepositoryName & r, const FSPath & f, const std::string & g,
-                const time_t t, const std::shared_ptr<const EclassMtimes> & m) :
+                const bool es, const time_t t, const std::shared_ptr<const EclassMtimes> & m) :
             name(q),
             version(v),
             environment(e),
             repository_name(r),
             guessed_eapi(g),
+            eapi_from_suffix(es),
             master_mtime(t),
             eclass_mtimes(m),
             has_non_xml_keys(false),
@@ -209,9 +212,10 @@ EbuildID::EbuildID(const QualifiedPackageName & q, const VersionSpec & v,
         const RepositoryName & r,
         const FSPath & f,
         const std::string & g,
+        const bool es,
         const time_t t,
         const std::shared_ptr<const EclassMtimes> & m) :
-    _imp(q, v, e, r, f, g, t, m)
+    _imp(q, v, e, r, f, g, es, t, m)
 {
 }
 
@@ -281,7 +285,7 @@ EbuildID::need_non_xml_keys_added() const
 
         _imp->environment->trigger_notifier_callback(NotifierCallbackGeneratingMetadataEvent(repository_name()));
 
-        _imp->eapi = EAPIData::get_instance()->eapi_from_string(_imp->guessed_eapi);
+        _imp->eapi = presource_eapi();
 
         if (_imp->eapi->supported())
         {
@@ -418,6 +422,73 @@ EbuildID::need_non_xml_keys_added() const
         _imp->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
                     e_repo, std::bind(return_literal_function(make_null_shared_ptr())));
     add_metadata_key(_imp->choices);
+}
+
+const std::shared_ptr<const EAPI>
+EbuildID::presource_eapi() const
+{
+    auto guessed(EAPIData::get_instance()->eapi_from_string(_imp->guessed_eapi));
+    if (_imp->eapi_from_suffix || ! guessed->supported())
+        return guessed;
+
+    Context ctx("When parsing EAPI from '" + stringify(_imp->fs_location->parse_value()) + "':");
+
+    std::string eapi_assign(guessed->supported()->ebuild_metadata_variables()->eapi()->name());
+    eapi_assign += '=';
+
+    try
+    {
+        SafeIFStream eb(_imp->fs_location->parse_value());
+        std::string line;
+
+        while (std::getline(eb, line))
+        {
+            std::string::size_type past_indent(line.find_first_not_of(" \t"));
+            if (std::string::npos == past_indent || line.at(past_indent) == '#')
+                continue;
+
+            if (line.compare(past_indent, eapi_assign.length(), eapi_assign) != 0)
+                break;
+            std::string::size_type value_start(past_indent + eapi_assign.length());
+
+            char quote('\0');
+            if (line.length() > value_start && (line.at(value_start) == '"' || line.at(value_start) == '\''))
+            {
+                quote = line.at(value_start++);
+                if (line.length() < value_start)
+                    break;
+            }
+
+            std::string::size_type value_end(line.find_first_not_of("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+_.-", value_start));
+            std::string value(line, value_start, std::string::npos == value_end
+                              ? std::string::npos : value_end - value_start);
+
+            if ('\0' != quote && (std::string::npos == value_end || line.at(value_end++) != quote))
+                break;
+
+            if (std::string::npos != value_end)
+            {
+                std::string::size_type trailing(line.find_first_not_of(" \t", value_end));
+                if (std::string::npos != trailing && (trailing == value_end || '#' != line.at(trailing)))
+                    break;
+            }
+
+            if (value.empty())
+            {
+                auto repo(_imp->environment->fetch_repository(repository_name()));
+                auto e_repo(std::static_pointer_cast<const ERepository>(repo));
+                return EAPIData::get_instance()->eapi_from_string(e_repo->params().eapi_when_unspecified());
+            }
+            return EAPIData::get_instance()->eapi_from_string(value);
+        }
+    }
+    catch (const SafeIFStreamError & e)
+    {
+        Log::get_instance()->message("e.ebuild.metadata.eapi_unparsable", ll_warning, lc_context) << e.message();
+        return EAPIData::get_instance()->unknown_eapi();
+    }
+
+    return guessed;
 }
 
 void

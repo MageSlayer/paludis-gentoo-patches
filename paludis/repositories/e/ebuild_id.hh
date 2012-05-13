@@ -42,6 +42,7 @@ namespace paludis
             protected:
                 virtual void need_keys_added() const;
                 void need_non_xml_keys_added() const;
+                const std::shared_ptr<const EAPI> presource_eapi() const;
                 void need_xml_keys_added() const;
 
                 virtual void need_masks_added() const;
@@ -56,6 +57,7 @@ namespace paludis
                         const RepositoryName &,
                         const FSPath & file,
                         const std::string & guessed_eapi,
+                        const bool eapi_from_suffix,
                         const time_t master_mtime,
                         const std::shared_ptr<const EclassMtimes> & eclass_mtimes);
 

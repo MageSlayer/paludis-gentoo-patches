@@ -676,5 +676,170 @@ KEYWORDS="test"
 END
 cd ..
 
+mkdir -p repo20/profiles/profile || exit 1
+mkdir -p repo20/category/package || exit 1
+cd repo20 || exit 1
+echo test-repo-20 >> profiles/repo_name || exit 1
+echo "category" >> profiles/categories || exit 1
+cat <<END > profiles/profile/make.defaults
+ARCH=test
+END
+spaces="   "
+tab=$'\t'
+cat <<END > category/package/package-0.ebuild || exit 1
+SLOT="0"
+END
+cat <<END > category/package/package-1.ebuild || exit 1
+EAPI=0
+SLOT="0"
+END
+cat <<END > category/package/package-2.ebuild || exit 1
+EAPI=
+SLOT="0"
+END
+cat <<END > category/package/package-3.ebuild || exit 1
+#EAPI=1
+SLOT="0"
+END
+cat <<END > category/package/package-4.ebuild || exit 1
+EAPI=1
+SLOT="0"
+END
+cat <<END > category/package/package-5.ebuild || exit 1
+
+EAPI=1
+SLOT="0"
+END
+cat <<END > category/package/package-6.ebuild || exit 1
+${spaces}
+EAPI=1
+SLOT="0"
+END
+cat <<END > category/package/package-7.ebuild || exit 1
+${tab}
+EAPI=1
+SLOT="0"
+END
+cat <<END > category/package/package-8.ebuild || exit 1
+# 123
+EAPI=1
+SLOT="0"
+END
+cat <<END > category/package/package-9.ebuild || exit 1
+   EAPI=1
+SLOT="0"
+END
+cat <<END > category/package/package-10.ebuild || exit 1
+${tab}EAPI=1
+SLOT="0"
+END
+cat <<END > category/package/package-11.ebuild || exit 1
+EAPI=1${spaces}
+SLOT="0"
+END
+cat <<END > category/package/package-12.ebuild || exit 1
+EAPI=1${tab}
+SLOT="0"
+END
+cat <<END > category/package/package-13.ebuild || exit 1
+EAPI=1   # 123
+SLOT="0"
+END
+cat <<END > category/package/package-14.ebuild || exit 1
+EAPI=1${tab}# 123
+SLOT="0"
+END
+cat <<END > category/package/package-15.ebuild || exit 1
+EAPI=1   123
+SLOT="0"
+END
+cat <<END > category/package/package-16.ebuild || exit 1
+EAPI=not-a-real-eapi
+SLOT="0"
+END
+cat <<END > category/package/package-17.ebuild || exit 1
+EAPI=@
+SLOT="0"
+END
+cat <<END > category/package/package-18.ebuild || exit 1
+EAPI=1@
+SLOT="0"
+END
+cat <<END > category/package/package-19.ebuild || exit 1
+EAPI="1"
+SLOT="0"
+END
+cat <<END > category/package/package-20.ebuild || exit 1
+EAPI="1"123
+SLOT="0"
+END
+cat <<END > category/package/package-21.ebuild || exit 1
+EAPI="1"   123
+SLOT="0"
+END
+cat <<END > category/package/package-22.ebuild || exit 1
+EAPI="1"   # 123
+SLOT="0"
+END
+cat <<END > category/package/package-23.ebuild || exit 1
+EAPI="1
+"
+SLOT="0"
+END
+cat <<END > category/package/package-24.ebuild || exit 1
+EAPI="1'
+"
+SLOT="0"
+END
+cat <<END > category/package/package-25.ebuild || exit 1
+EAPI='1'
+SLOT="0"
+END
+cat <<END > category/package/package-26.ebuild || exit 1
+EAPI='1
+'
+SLOT="0"
+END
+cat <<END > category/package/package-27.ebuild || exit 1
+EAPI='1"
+'
+SLOT="0"
+END
+cat <<END > category/package/package-28.ebuild || exit 1
+EAPI=1
+EAPI=2
+SLOT="0"
+END
+cat <<END > category/package/package-29.ebuild || exit 1
+EAPI=1
+EAPI=2
+EAPI=1
+SLOT="0"
+END
+cat <<END > category/package/package-30.ebuild || exit 1
+SLOT="0"
+EAPI=0
+END
+cat <<END > category/package/package-31.ebuild || exit 1
+SLOT="0"
+EAPI=1
+END
+cat <<END > category/package/package-32.ebuild || exit 1
+printf -v EAPI 1
+SLOT="0"
+END
+cat <<END > category/package/package-33.exheres-0 || exit 1
+SLOT="0"
+END
+cat <<END > category/package/package-34.exheres-0 || exit 1
+EAPI=exheres-0
+SLOT="0"
+END
+cat <<END > category/package/package-35.exheres-0 || exit 1
+EAPI=1
+SLOT="0"
+END
+cd ..
+
 cd ..
 

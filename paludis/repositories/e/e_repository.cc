@@ -1700,7 +1700,7 @@ ERepository::make_id(const QualifiedPackageName & q, const FSPath & f) const
 
     std::shared_ptr<EbuildID> result(std::make_shared<EbuildID>(q, extract_package_file_version(q, f, eapi),
                 _imp->params.environment(),
-                name(), f, eapi,
+                name(), f, eapi, ! suffix_eapi.empty(),
                 _imp->master_mtime, _imp->eclass_mtimes));
     return result;
 }

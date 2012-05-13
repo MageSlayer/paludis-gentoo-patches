@@ -512,14 +512,18 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
         Log::get_instance()->message("e.ebuild.preload_eapi.supported", ll_debug, lc_context)
             << "ID pre-load EAPI '" << id->eapi()->name() << "' is supported";
 
-    std::string s;
-    if (! ((s = get(keys, id->eapi()->supported()->ebuild_metadata_variables()->eapi()->name()))).empty())
-        id->set_eapi(s);
-    else
+    std::string s(get(keys, id->eapi()->supported()->ebuild_metadata_variables()->eapi()->name()));
+    if (s.empty())
     {
         auto repo(params.environment()->fetch_repository(id->repository_name()));
         auto e_repo(std::static_pointer_cast<const ERepository>(repo));
-        id->set_eapi(e_repo->params().eapi_when_unspecified());
+        s = e_repo->params().eapi_when_unspecified();
+    }
+    if (id->eapi()->name() != s)
+    {
+        Log::get_instance()->message("e.ebuild.postload_eapi.mismatch", ll_warning, lc_context)
+            << "Post-source EAPI '" << s << "' does not match pre-source EAPI '" << id->eapi()->name() << "', treating as unknown";
+        id->set_eapi(EAPIData::get_instance()->unknown_eapi()->name());
     }
 
     if (! id->eapi()->supported())

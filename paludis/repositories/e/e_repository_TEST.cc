@@ -829,3 +829,33 @@ TEST(ERepository, ManifestCheck)
     id->perform_action(action);
 }
 
+TEST(ERepository, ParseEAPI)
+{
+    TestEnvironment env;
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("eapi_when_unspecified", "paludis-1");
+    keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo20"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo20/profiles/profile"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
+    std::shared_ptr<ERepository> repo(std::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
+                    std::bind(from_keys, keys, std::placeholders::_1))));
+    env.add_repository(1, repo);
+
+    const std::string eapis[] = {
+        "0", "0", "paludis-1", "0", "1", "1", "1", "1", "1", "1",
+        "1", "1", "1", "1", "1", "0", "not-a-real-eapi", "UNKNOWN", "UNKNOWN", "1",
+        "UNKNOWN", "0", "1", "UNKNOWN", "UNKNOWN", "1", "UNKNOWN", "UNKNOWN", "UNKNOWN", "1",
+        "0", "UNKNOWN", "UNKNOWN", "exheres-0", "exheres-0", "UNKNOWN", ""
+    };
+    auto ids(env[selection::AllVersionsSorted(generator::Matches(
+                    PackageDepSpec(parse_user_package_dep_spec("category/package",
+                            &env, { })), make_null_shared_ptr(), { }))]);
+
+    int i(0);
+    for (auto it(ids->begin()), it_end(ids->end()); it_end != it; ++i, ++it)
+        EXPECT_EQ(eapis[i], std::static_pointer_cast<const MetadataValueKey<std::string> >(*(*it)->find_metadata("EAPI"))->parse_value()) << "(i == " << i << ")";
+    EXPECT_EQ("", eapis[i]) << "(i == " << i << ")";
+}
+
