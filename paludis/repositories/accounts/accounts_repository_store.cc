@@ -103,7 +103,7 @@ AccountsRepositoryStore::_load(const RepositoryName & repository_name)
     for (auto r(_imp->env->begin_repositories()), r_end(_imp->env->end_repositories()) ;
             r != r_end ; ++r)
     {
-        Context r_context("When loading data for repository '" + stringify((*r)->name()) + ":");
+        Context r_context("When loading data for repository '" + stringify((*r)->name()) + "':");
 
         Repository::MetadataConstIterator k_iter((*r)->find_metadata("accounts_repository_data_location"));
         if (k_iter == (*r)->end_metadata())
