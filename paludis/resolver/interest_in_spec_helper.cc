@@ -312,6 +312,17 @@ InterestInSpecHelper::operator() (
         if ((! spec_group.empty()) && _imp->ignore_groups.end() != _imp->ignore_groups.find(spec_group))
             return si_ignore;
 
+        /* we also take suggestions and recommendations that have already been installed */
+        if (dep.spec().if_package())
+        {
+            const std::shared_ptr<const PackageIDSequence> installed_ids(
+                    (*_imp->env)[selection::SomeArbitraryVersion(
+                        generator::Matches(*dep.spec().if_package(), dep.from_id(), { }) |
+                        filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))]);
+            if (! installed_ids->empty())
+                return si_take;
+        }
+
         if (dep.spec().if_package() && (suggestion || recommendation))
         {
             auto e(_imp->env->interest_in_suggestion(id, *dep.spec().if_package()));
@@ -335,17 +346,6 @@ InterestInSpecHelper::operator() (
                 return si_take;
             else if (_imp->take_recommendations.is_false())
                 return si_ignore;
-        }
-
-        /* we also take suggestions and recommendations that have already been installed */
-        if (dep.spec().if_package())
-        {
-            const std::shared_ptr<const PackageIDSequence> installed_ids(
-                    (*_imp->env)[selection::SomeArbitraryVersion(
-                        generator::Matches(*dep.spec().if_package(), dep.from_id(), { }) |
-                        filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))]);
-            if (! installed_ids->empty())
-                return si_take;
         }
 
         return si_untaken;
