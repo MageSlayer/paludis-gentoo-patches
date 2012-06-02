@@ -136,11 +136,7 @@ typedef std::map<FSPath, std::string, FSPathComparator> EAPIForFileMap;
 
 namespace
 {
-#ifdef LIBARCHIVE_DOES_GNUTAR
     const std::string pbin_tar_extension = ".tar";
-#else
-    const std::string pbin_tar_extension = ".pax";
-#endif
 
     std::shared_ptr<FSPathSequence> get_master_locations(
             const std::shared_ptr<const ERepositorySequence> & r)
