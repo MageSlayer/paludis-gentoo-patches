@@ -1255,13 +1255,6 @@ AC_MSG_RESULT($enable_ruby_doc)
 
 if test "x$enable_ruby_doc" = "xyes" ; then
 
-	AC_MSG_CHECKING([for allison])
-	if ruby -rubygems -e "require 'allison'" >/dev/null 2>/dev/null ; then
-		AC_MSG_RESULT([yes])
-	else
-		AC_MSG_ERROR([allison (http://blog.evanweaver.com/files/doc/fauna/allison/files/README.html) is needed to build Ruby documentation])
-	fi
-
 	AC_MSG_CHECKING([for syntax])
 	if ruby -rubygems -e "require 'syntax/convertors/html'" >/dev/null 2>/dev/null ; then
 		AC_MSG_RESULT([yes])
