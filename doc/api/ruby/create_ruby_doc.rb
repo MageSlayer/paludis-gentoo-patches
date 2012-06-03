@@ -6,7 +6,7 @@ require 'rdoc/rdoc'
 
 module RDoc
 
-    class C_Parser_Paludis < C_Parser
+    class C_Parser_Paludis < const_defined?(:C_Parser) ? C_Parser : Parser::C
         #override C_Parse
         parse_files_matching(/\.(c|cc|cpp|CC)$/)
 
