@@ -4,6 +4,13 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.76.0:
+    * cave resolve --change-phases-for now has !first and !last options.
+
+    * We no longer use Allison for Ruby documentation.
+
+    * We now require libarchive 3, to avoid tar format issues.
+
 0.74.1:
     * Compilation fix for certain compilers.
 
