@@ -82,6 +82,28 @@ int main(int, char * argv[])
                 records_to_skip = 0;
                 break;
 
+            case 'S':
+                {
+                    std::string s(&buf[124], 12);
+                    std::stringstream ss(s);
+                    if (! (ss >> std::oct >> records_to_skip))
+                    {
+                        std::cerr << argv[0] << ": Unable to determine how many records to skip from '" << s << "'" << std::endl;
+                        return EXIT_FAILURE;
+                    }
+
+                    if (buf[482]) /* isextended */
+                    {
+                        do
+                        {
+                            std::cout.write(buf, 512);
+                            std::cin.read(buf, 512);
+                        } while (buf[504]); /* isextended */
+                    }
+
+                    records_to_skip = (records_to_skip + 511) / 512;
+                }
+
             default:
                 {
                     std::string s(&buf[124], 12);
