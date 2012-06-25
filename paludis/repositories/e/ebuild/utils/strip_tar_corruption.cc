@@ -102,6 +102,7 @@ int main(int, char * argv[])
                     }
 
                     records_to_skip = (records_to_skip + 511) / 512;
+                    break;
                 }
 
             default:
