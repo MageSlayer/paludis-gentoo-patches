@@ -45,7 +45,7 @@ SANDBOX_WRITE="${SANDBOX_WRITE}:${DISTCC_DIR}"
 <h2 id="unmask">Unmask a Package</h2>
 
 <p>First, you need to determine how a package is masked. The easiest way to do
-this is to use <code>paludis --query</code>. Then, if you're sure you really
+this is to use <code>cave show</code>. Then, if you're sure you really
 want to unmask a package, and bearing in mind that doing so might break your
 system, you need to override the mask. How to do this depends upon the mask
 reasons:</p>
