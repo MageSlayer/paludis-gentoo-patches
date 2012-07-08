@@ -106,15 +106,16 @@ install_file() {
             echo "install -m0644 ${path} ${dir}"
             install -m0644 "${path}" "${dir}/${bn}"
         fi
-    elif [[ $recurse == 1 && -d ${path} ]] &&
-            ! has "${bn}" ${disallowed_dirs}; then
-        for f in ${path}/*; do
-            [[ -e ${f} ]] || continue
-            pfx=${bn}
-            [[ -n ${prefix} ]] && pfx="${prefix}/${pfx}"
-            install_file "$(basename "${f}")" "${dn}" "${pfx}"
-            (( ret |= $? ))
-        done
+    elif [[ $recurse == 1 && -d ${path} ]]; then
+        if ! has "${bn}" ${disallowed_dirs}; then
+            for f in ${path}/*; do
+                [[ -e ${f} ]] || continue
+                pfx=${bn}
+                [[ -n ${prefix} ]] && pfx="${prefix}/${pfx}"
+                install_file "$(basename "${f}")" "${dn}" "${pfx}"
+                (( ret |= $? ))
+            done
+        fi
     else
         if [[ -d "${path}" ]] ; then
             echo "!!! Directory '${path}' encountered, but -r not specified"
