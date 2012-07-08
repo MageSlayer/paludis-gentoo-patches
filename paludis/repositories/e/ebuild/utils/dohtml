@@ -28,6 +28,8 @@ if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
     exit 247
 fi
 
+shopt -s dotglob
+
 allowed_exts="css gif htm html jpeg jpg js png"
 disallowed_dirs=""
 allowed_files=""
