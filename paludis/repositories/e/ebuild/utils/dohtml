@@ -31,7 +31,7 @@ fi
 shopt -s dotglob
 
 allowed_exts="css gif htm html jpeg jpg js png"
-disallowed_dirs=""
+disallowed_dirs="CVS"
 allowed_files=""
 recurse=0
 doc_prefix=""
