@@ -27,6 +27,8 @@
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/environment-fwd.hh>
+#include <paludis/package_id-fwd.hh>
+#include <paludis/dep_spec-fwd.hh>
 #include <memory>
 
 namespace paludis
@@ -45,7 +47,10 @@ namespace paludis
                 void add_prefer_name(const QualifiedPackageName &);
                 void add_avoid_name(const QualifiedPackageName &);
 
-                Tribool operator() (const QualifiedPackageName &) const;
+                void add_prefer_matching(const std::shared_ptr<const PackageIDSequence> &);
+                void add_avoid_matching(const std::shared_ptr<const PackageIDSequence> &);
+
+                Tribool operator() (const PackageDepSpec &) const;
         };
     }
 

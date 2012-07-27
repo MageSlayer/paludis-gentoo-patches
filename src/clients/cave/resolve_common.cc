@@ -964,10 +964,16 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_favour.end_args()) ;
             i != i_end ; ++i)
         prefer_or_avoid_helper.add_prefer_name(disambiguate_if_necessary(env.get(), *i));
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_avoid.begin_args()),
-            i_end(resolution_options.a_avoid.end_args()) ;
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_favour_matching.begin_args()),
+            i_end(resolution_options.a_favour_matching.end_args()) ;
             i != i_end ; ++i)
-        prefer_or_avoid_helper.add_avoid_name(disambiguate_if_necessary(env.get(), *i));
+        prefer_or_avoid_helper.add_prefer_matching((*env)[selection::AllVersionsUnsorted(generator::Matches(
+                        parse_spec_with_nice_error(*i, env.get(), { }, filter::All()), make_null_shared_ptr(), { }))]);
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_avoid_matching.begin_args()),
+            i_end(resolution_options.a_avoid_matching.end_args()) ;
+            i != i_end ; ++i)
+        prefer_or_avoid_helper.add_avoid_matching((*env)[selection::AllVersionsUnsorted(generator::Matches(
+                        parse_spec_with_nice_error(*i, env.get(), { }, filter::All()), make_null_shared_ptr(), { }))]);
 
     RemoveIfDependentHelper remove_if_dependent_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_remove_if_dependent.begin_args()),

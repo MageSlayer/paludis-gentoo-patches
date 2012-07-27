@@ -182,7 +182,7 @@ namespace paludis
                 )> OrderEarlyFunction;
 
         typedef std::function<Tribool (
-                const QualifiedPackageName &
+                const PackageDepSpec &
                 )> PreferOrAvoidFunction;
 
         typedef std::function<std::shared_ptr<const PackageIDSequence> (

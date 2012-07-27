@@ -21,8 +21,13 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/tribool.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/options.hh>
 #include <paludis/name.hh>
+#include <paludis/dep_spec.hh>
+#include <paludis/match_package.hh>
 #include <unordered_set>
+#include <list>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -35,6 +40,8 @@ namespace paludis
         const Environment * const env;
         std::unordered_set<QualifiedPackageName, Hash<QualifiedPackageName> > prefer_names;
         std::unordered_set<QualifiedPackageName, Hash<QualifiedPackageName> > avoid_names;
+        std::list<std::shared_ptr<const PackageIDSequence> > prefer_matching;
+        std::list<std::shared_ptr<const PackageIDSequence> > avoid_matching;
 
         Imp(const Environment * const e) :
             env(e)
@@ -62,14 +69,52 @@ PreferOrAvoidHelper::add_avoid_name(const QualifiedPackageName & name)
     _imp->avoid_names.insert(name);
 }
 
-Tribool
-PreferOrAvoidHelper::operator() (const QualifiedPackageName & n) const
+void
+PreferOrAvoidHelper::add_prefer_matching(const std::shared_ptr<const PackageIDSequence> & s)
 {
-    if (_imp->prefer_names.end() != _imp->prefer_names.find(n))
-        return true;
+    _imp->prefer_matching.push_back(s);
+}
 
-    if (_imp->avoid_names.end() != _imp->avoid_names.find(n))
-        return false;
+void
+PreferOrAvoidHelper::add_avoid_matching(const std::shared_ptr<const PackageIDSequence> & s)
+{
+    _imp->avoid_matching.push_back(s);
+}
+
+Tribool
+PreferOrAvoidHelper::operator() (const PackageDepSpec & s) const
+{
+    if (s.package_ptr())
+    {
+        if (_imp->prefer_names.end() != _imp->prefer_names.find(*s.package_ptr()))
+            return true;
+
+        if (_imp->avoid_names.end() != _imp->avoid_names.find(*s.package_ptr()))
+            return false;
+    }
+
+    for (auto p(_imp->prefer_matching.begin()), p_end(_imp->prefer_matching.end()) ;
+            p != p_end ; ++p)
+    {
+        bool all(true);
+        for (auto q((*p)->begin()), q_end((*p)->end()) ; q != q_end ; ++q)
+            if (! match_package(*_imp->env, s, *q, make_null_shared_ptr(), { }))
+            {
+                all = false;
+                break;
+            }
+
+        if (all)
+            return true;
+    }
+
+    for (auto p(_imp->avoid_matching.begin()), p_end(_imp->avoid_matching.end()) ;
+            p != p_end ; ++p)
+    {
+        for (auto q((*p)->begin()), q_end((*p)->end()) ; q != q_end ; ++q)
+            if (match_package(*_imp->env, s, *q, make_null_shared_ptr(), { }))
+                return false;
+    }
 
     return indeterminate;
 }

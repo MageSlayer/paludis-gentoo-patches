@@ -85,7 +85,9 @@ namespace paludis
 
             args::ArgsGroup g_package_options;
             args::StringSetArg a_favour;
+            args::StringSetArg a_favour_matching;
             args::StringSetArg a_avoid;
+            args::StringSetArg a_avoid_matching;
             args::StringSetArg a_preset;
             args::StringSetArg a_hide;
 

@@ -231,8 +231,12 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     g_package_options(this, "Package Selection Options", "Control which packages are selected."),
     a_favour(&g_package_options, "favour", 'F', "If there is a choice (e.g. || ( ) dependencies), favour the "
             "specified package names"),
+    a_favour_matching(&g_package_options, "favour-matching", '\0', "If there is a choice (e.g. || ( ) dependencies), favour specs "
+            "which match all of the packages matching the supplied spec"),
     a_avoid(&g_package_options, "avoid", 'A', "If there is a choice (e.g. || ( ) dependencies), avoid the "
             "specified package names"),
+    a_avoid_matching(&g_package_options, "avoid-matching", '\0', "If there is a choice (e.g. || ( ) dependencies), avoid specs "
+            "which match any of the packages matching the supplied spec"),
     a_preset(&g_package_options, "preset", 'p', "Preset a given constraint. For example, --preset =cat/pkg-2.1 will tell "
             "the resolver to use that particular version. Note that this may lead to errors, if the specified version "
             "does not satisfy other constraints. Also note that specifying a preset will not force a package to be "
