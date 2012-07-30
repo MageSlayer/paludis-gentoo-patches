@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2009, 2010, 2011 Ali Polatel <alip@exherbo.org>
+# Copyright (c) 2009, 2010, 2011, 2012 Ali Polatel <alip@exherbo.org>
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -19,6 +19,15 @@
 # You should have received a copy of the GNU General Public License along with
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
+
+sydbox_internal_api()
+{
+    if [[ -e /dev/sydbox/1 ]]; then
+        echo -n 1
+    else
+        echo -n 0
+    fi
+}
 
 sydbox_internal_cmd()
 {
@@ -38,6 +47,27 @@ sydbox_internal_path()
     for path in "${@}"; do
         [[ "${path:0:1}" == '/' ]] || die "${FUNCNAME} expects absolute path, got: ${path}"
         sydbox_internal_cmd "${cmd}" "${path}"
+    done
+}
+
+sydbox_internal_path_1()
+{
+    local cmd="${1}"
+    local op="${2}"
+
+    case "${op}" in
+    '+'|'-')
+        ;;
+    *)
+        die "${FUNCNAME}: invalid operation character '${op}'"
+        ;;
+    esac
+
+    shift 2
+
+    for path in "${@}"; do
+        [[ "${path:0:1}" == '/' ]] || die "${FUNCNAME} expects absolute path, got: ${path}"
+        [[ -e /dev/sydbox/"${cmd}${op}${path}" ]]
     done
 }
 
@@ -70,11 +100,146 @@ sydbox_internal_net()
     done
 }
 
-esandbox() {
+sydbox_internal_net_1()
+{
+    local cmd="${1}"
+    local op="${2}"
+
+    case "${op}" in
+    '+'|'-')
+        ;;
+    *)
+        die "${FUNCNAME}: invalid operation character '${op}'"
+        ;;
+    esac
+
+    shift 2
+
+    for addr in "${@}"; do
+        [[ -e /dev/sydbox/"${cmd}${op}${addr}" ]]
+    done
+}
+
+esandbox_1()
+{
     local cmd="${1}"
 
     shift
     case "${cmd}" in
+    api)
+        echo -n 1
+        ;;
+    check)
+        [[ -e /dev/sydbox ]]
+        ;;
+    lock)
+        [[ -e "/dev/sydbox/core/trace/magic_lock:on" ]]
+        ;;
+    exec_lock)
+        [[ -e "/dev/sydbox/core/trace/magic_lock:exec" ]]
+        ;;
+    wait_all)
+        [[ -e "/dev/sydbox/core/trace/exit_wait_all:true" ]]
+        ;;
+    wait_eldest)
+        [[ -e "/dev/sydbox/core/trace/exit_wait_all:false" ]]
+        ;;
+    enabled|enabled_path)
+        [[ -e "/dev/sydbox/core/sandbox/write?" ]]
+        ;;
+    enable|enable_path)
+        [[ -e "/dev/sydbox/core/sandbox/write:deny" ]]
+        ;;
+    disable|disable_path)
+        [[ -e "/dev/sydbox/core/sandbox/write:off" ]]
+        ;;
+    enabled_exec)
+        [[ -e "/dev/sydbox/core/sandbox/exec?" ]]
+        ;;
+    enable_exec)
+        [[ -e "/dev/sydbox/core/sandbox/exec:deny" ]]
+        ;;
+    disable_exec)
+        [[ -e "/dev/sydbox/core/sandbox/exec:off" ]]
+        ;;
+    enabled_net)
+        [[ -e "/dev/sydbox/core/sandbox/network?" ]]
+        ;;
+    enable_net)
+        [[ -e "/dev/sydbox/core/sandbox/network:deny" ]]
+        ;;
+    disable_net)
+        [[ -e "/dev/sydbox/core/sandbox/network:off" ]]
+        ;;
+    allow|allow_path)
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
+        sydbox_internal_path_1 "whitelist/write" '+' "${@}"
+        ;;
+    disallow|disallow_path)
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
+        sydbox_internal_path_1 "whitelist/write" '-' "${@}"
+        ;;
+    allow_exec)
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
+        sydbox_internal_path_1 "whitelist/exec" '+' "${@}"
+        ;;
+    disallow_exec)
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
+        sydbox_internal_path_1 "whitelist/exec" '-' "${@}"
+        ;;
+    allow_net)
+        local c="whitelist/network/bind"
+        [[ "${1}" == "--connect" ]] && c="whitelist/network/connect" && shift
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
+        sydbox_internal_net_1 "${c}" '+' "${@}"
+        ;;
+    disallow_net)
+        local c="whitelist/network/bind"
+        [[ "${1}" == "--connect" ]] && c="whitelist/network/connect" && shift
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
+        sydbox_internal_net_1 "${c}" '-' "${@}"
+        ;;
+    addfilter|addfilter_path)
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
+        sydbox_internal_path_1 "filter/write" '+' "${@}"
+        ;;
+    rmfilter|rmfilter_path)
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
+        sydbox_internal_path_1 "filter/write" '-' "${@}"
+        ;;
+    addfilter_exec)
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
+        sydbox_internal_path_1 "filter/exec" '+' "${@}"
+        ;;
+    rmfilter_exec)
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
+        sydbox_internal_path_1 "filter/exec" '-' "${@}"
+        ;;
+    addfilter_net)
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
+        sydbox_internal_net_1 "filter/network" '+' "${@}"
+        ;;
+    rmfilter_net)
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
+        sydbox_internal_net_1 "filter/network" '-' "${@}"
+        ;;
+    hack_toolong|nohack_toolong)
+        ebuild_notice "warning" "${FUNCNAME} ${cmd} is not implemented for sydbox-1"
+        false;;
+    *)
+        die "${FUNCNAME} subcommand ${cmd} unrecognised"
+        ;;
+    esac
+}
+
+esandbox_0() {
+    local cmd="${1}"
+
+    shift
+    case "${cmd}" in
+    api)
+        echo -n 0
+        ;;
     check)
         [[ -e /dev/sydbox ]]
         ;;
@@ -152,31 +317,46 @@ esandbox() {
         sydbox_internal_net "${c}" "${@}"
         ;;
     addfilter|addfilter_path)
-        [[ ${#} < 1 ]] && die "${FUNCTION} ${cmd} takes at least one extra argument"
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
         sydbox_internal_path "addfilter" "${@}"
         ;;
     rmfilter|rmfilter_path)
-        [[ ${#} < 1 ]] && die "${FUNCTION} ${cmd} takes at least one extra argument"
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
         sydbox_internal_path "rmfilter" "${@}"
         ;;
     addfilter_exec)
-        [[ ${#} < 1 ]] && die "${FUNCTION} ${cmd} takes at least one extra argument"
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
         sydbox_internal_path "addfilter_exec" "${@}"
         ;;
     rmfilter_exec)
-        [[ ${#} < 1 ]] && die "${FUNCTION} ${cmd} takes at least one extra argument"
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
         sydbox_internal_path "rmfilter_exec" "${@}"
         ;;
     addfilter_net)
-        [[ ${#} < 1 ]] && die "${FUNCTION} ${cmd} takes at least one extra argument"
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
         sydbox_internal_net "addfilter_net" "${@}"
         ;;
     rmfilter_net)
-        [[ ${#} < 1 ]] && die "${FUNCTION} ${cmd} takes at least one extra argument"
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
         sydbox_internal_net "rmfilter_net" "${@}"
         ;;
     *)
         die "${FUNCNAME} subcommand ${cmd} unrecognised"
+        ;;
+    esac
+}
+
+esandbox() {
+    local api
+
+    api="$(sydbox_internal_api)"
+    case "${api}" in
+    1)
+        esandbox_1 "${@}";;
+    0)
+        esandbox_0 "${@}";;
+    *)
+        die "${FUNCNAME}: unrecognised sydbox API '${api}'"
         ;;
     esac
 }
