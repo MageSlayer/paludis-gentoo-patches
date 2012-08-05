@@ -408,6 +408,31 @@ VDBRepository::perform_uninstall(
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
             phase != phase_end ; ++phase)
     {
+        bool skip(false);
+        do
+        {
+            switch (a.options.want_phase()(phase->equal_option("skipname")))
+            {
+                case wp_yes:
+                    continue;
+
+                case wp_skip:
+                    skip = true;
+                    continue;
+
+                case wp_abort:
+                    throw ActionAbortedError("Told to abort install");
+
+                case last_wp:
+                    break;
+            }
+
+            throw InternalError(PALUDIS_HERE, "bad want_phase");
+        } while (false);
+
+        if (skip)
+            continue;
+
         if (can_skip_phase(_imp->params.environment(), id, *phase))
         {
             output_manager->stdout_stream() << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
@@ -733,7 +758,8 @@ VDBRepository::merge(const MergeParams & m)
                             std::placeholders::_1),
                     n::is_overwrite() = true,
                     n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1),
-                    n::override_contents() = is_replace_contents
+                    n::override_contents() = is_replace_contents,
+                    n::want_phase() = m.want_phase()
                     ));
         m.perform_uninstall()(is_replace, uo);
     }
@@ -755,7 +781,8 @@ VDBRepository::merge(const MergeParams & m)
                                     std::placeholders::_1),
                             n::is_overwrite() = false,
                             n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1),
-                            n::override_contents() = make_null_shared_ptr()
+                            n::override_contents() = make_null_shared_ptr(),
+                            n::want_phase() = m.want_phase()
                             ));
                 m.perform_uninstall()(candidate, uo);
             }

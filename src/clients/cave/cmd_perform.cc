@@ -588,13 +588,15 @@ PerformCommand::run(
             return EXIT_SUCCESS;
 
         OutputManagerFromIPCOrEnvironment output_manager_holder(env.get(), cmdline, id);
+        WantInstallPhase want_phase(cmdline, output_manager_holder);
         UninstallActionOptions options(make_named_values<UninstallActionOptions>(
                     n::config_protect() = cmdline.a_config_protect.argument(),
                     n::if_for_install_id() = make_null_shared_ptr(),
                     n::ignore_for_unmerge() = &ignore_nothing,
                     n::is_overwrite() = false,
                     n::make_output_manager() = std::ref(output_manager_holder),
-                    n::override_contents() = make_null_shared_ptr()
+                    n::override_contents() = make_null_shared_ptr(),
+                    n::want_phase() = want_phase
                     ));
         UninstallAction uninstall_action(options);
         execute(env, cmdline, id, action, uninstall_action, output_manager_holder);

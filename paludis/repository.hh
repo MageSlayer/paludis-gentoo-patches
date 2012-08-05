@@ -77,6 +77,7 @@ namespace paludis
         typedef Name<struct name_replacing> replacing;
         typedef Name<struct name_status> status;
         typedef Name<struct name_used_this_for_config_protect> used_this_for_config_protect;
+        typedef Name<struct name_want_phase> want_phase;
     }
 
     /**
@@ -153,6 +154,13 @@ namespace paludis
         NamedValue<n::replacing, std::shared_ptr<const PackageIDSequence> > replacing;
 
         NamedValue<n::used_this_for_config_protect, std::function<void (const std::string &)> > used_this_for_config_protect;
+
+        /**
+         * Sometimes merging runs phase functions, possibly via perform_uninstall.
+         *
+         * \since 0.77
+         */
+        NamedValue<n::want_phase, std::function<WantPhase (const std::string &)> > want_phase;
     };
 
     /**

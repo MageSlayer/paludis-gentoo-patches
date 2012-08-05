@@ -248,7 +248,8 @@ TEST(InstalledRepository, UninstallLast)
                 n::ignore_for_unmerge() = &ignore_nothing,
                 n::is_overwrite() = false,
                 n::make_output_manager() = &make_standard_output_manager,
-                n::override_contents() = make_null_shared_ptr()
+                n::override_contents() = make_null_shared_ptr(),
+                n::want_phase() = &want_all_phases
             ));
     id->perform_action(action);
 
@@ -295,7 +296,8 @@ TEST(InstalledRepository, UninstallNotLast)
                 n::ignore_for_unmerge() = &ignore_nothing,
                 n::is_overwrite() = false,
                 n::make_output_manager() = &make_standard_output_manager,
-                n::override_contents() = make_null_shared_ptr()
+                n::override_contents() = make_null_shared_ptr(),
+                n::want_phase() = &want_all_phases
             ));
     id->perform_action(action);
 
@@ -530,7 +532,8 @@ TEST(InstalledRepository, MultipleOps)
                     n::ignore_for_unmerge() = &ignore_nothing,
                     n::is_overwrite() = false,
                     n::make_output_manager() = &make_standard_output_manager,
-                    n::override_contents() = make_null_shared_ptr()
+                    n::override_contents() = make_null_shared_ptr(),
+                    n::want_phase() = &want_all_phases
                 ));
         (*env[selection::RequireExactlyOne(generator::Matches(
                 parse_user_package_dep_spec("cat/pkg4a",
@@ -575,7 +578,8 @@ TEST(InstalledRepository, MultipleOps)
                     n::ignore_for_unmerge() = &ignore_nothing,
                     n::is_overwrite() = false,
                     n::make_output_manager() = &make_standard_output_manager,
-                    n::override_contents() = make_null_shared_ptr()
+                    n::override_contents() = make_null_shared_ptr(),
+                    n::want_phase() = &want_all_phases
                 ));
         (*env[selection::RequireExactlyOne(generator::Matches(
                 parse_user_package_dep_spec("cat/pkg4b",

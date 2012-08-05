@@ -167,7 +167,8 @@ TEST(NamesCache, Incremental)
                 n::ignore_for_unmerge() = &ignore_nothing,
                 n::is_overwrite() = false,
                 n::make_output_manager() = &make_standard_output_manager,
-                n::override_contents() = make_null_shared_ptr()
+                n::override_contents() = make_null_shared_ptr(),
+                n::want_phase() = &want_all_phases
             ));
 
     {

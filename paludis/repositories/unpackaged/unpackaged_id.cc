@@ -417,7 +417,8 @@ UnpackagedID::perform_action(Action & action) const
                 n::permit_destination() = std::bind(return_literal_function(true)),
                 n::replacing() = install_action->options.replacing(),
                 n::used_this_for_config_protect() = std::bind(
-                    &used_this_for_config_protect, std::ref(used_config_protect), std::placeholders::_1)
+                    &used_this_for_config_protect, std::ref(used_config_protect), std::placeholders::_1),
+                n::want_phase() = install_action->options.want_phase()
                 ));
 
     switch (install_action->options.want_phase()("check_merge"))
@@ -471,7 +472,8 @@ UnpackagedID::perform_action(Action & action) const
                     n::ignore_for_unmerge() = &ignore_nothing,
                     n::is_overwrite() = false,
                     n::make_output_manager() = std::bind(&this_output_manager, output_manager, std::placeholders::_1),
-                    n::override_contents() = make_null_shared_ptr()
+                    n::override_contents() = make_null_shared_ptr(),
+                    n::want_phase() = install_action->options.want_phase()
                     ));
         install_action->options.perform_uninstall()(*i, uo);
     }

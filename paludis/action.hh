@@ -235,6 +235,11 @@ namespace paludis
          * \since 0.61
          */
         NamedValue<n::override_contents, std::shared_ptr<const Contents> > override_contents;
+
+        /**
+         * \since 0.77
+         */
+        NamedValue<n::want_phase, std::function<WantPhase (const std::string &)> > want_phase;
     };
 
     /**
