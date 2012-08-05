@@ -28,7 +28,7 @@ a rather ugly way of handling things. We do have equivalents to most values:</p>
     <dd>See <a href="howdoi.html#distcc">Use <code>distcc</code></a>.</dd>
 
     <dt>keepwork, keeptemp, noclean</dt>
-    <dd>You can use <code>BUILD_OPTIONS: preserve_work</code> for a similar effect.</dd>
+    <dd>You can use <code>BUILD_OPTIONS: work=preserve</code> for a similar effect.</dd>
 
     <dt>nodoc, noinfo, noman</dt>
     <dd>You could write a hook that removes the relevant directories from

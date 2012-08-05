@@ -1700,8 +1700,8 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
                         shared_from_this(), _imp->environment, build_options));
 
         /* preserve_work */
-        build_options->add(std::make_shared<ELikePreserveWorkChoiceValue>(
-                        shared_from_this(), _imp->environment, build_options, indeterminate));
+        build_options->add(std::make_shared<ELikeWorkChoiceValue>(
+                        shared_from_this(), _imp->environment, build_options, last_ewcvp));
     }
 }
 

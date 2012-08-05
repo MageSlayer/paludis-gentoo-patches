@@ -366,7 +366,7 @@ UnpackagedID::perform_action(Action & action) const
 
     auto choices(choices_key()->parse_value());
     auto symbols_choice(choices->find_by_name_with_prefix(ELikeSymbolsChoiceValue::canonical_name_with_prefix()));
-    auto preserve_work_choice(choices->find_by_name_with_prefix(ELikePreserveWorkChoiceValue::canonical_name_with_prefix()));
+    auto work_choice(choices->find_by_name_with_prefix(ELikeWorkChoiceValue::canonical_name_with_prefix()));
 
     std::string used_config_protect;
 
@@ -400,7 +400,7 @@ UnpackagedID::perform_action(Action & action) const
     }
 
     MergerOptions extra_merger_options;
-    if (preserve_work_choice && preserve_work_choice->enabled())
+    if (work_choice && ELikeWorkChoiceValue::should_merge_nondestructively(work_choice->parameter()))
         extra_merger_options += mo_nondestructive;
 
     MergeParams merge_params(make_named_values<MergeParams>(

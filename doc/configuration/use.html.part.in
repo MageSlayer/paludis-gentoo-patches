@@ -66,10 +66,11 @@ default <code>VIDEO_CARDS</code> from your profile, you will need to use <code>*
     (using <code>set -x</code>). Not generally a good idea, but can be handy to track down why an ebuild is
     misbehaving.</dd>
 
-    <dt>preserve_work</dt>
-    <dd>If set, Paludis will not delete temporary working directories used during the build, and will perform a
-    non-destructive merge that leaves the image directory intact. This will result in the 'tidyup' phase being
-    skipped, but not the 'killold' phase.</dd>
+    <dt>work</dt>
+    <dd>Controls whether Paludis deletes temporary working directories used during the build. If set to
+    <code>preserve</code>, the working directory is always kept (and a non-destructive merge is performed). If set to
+    <code>tidyup</code>, the working directory is removed after a successful build. If set to <code>remove</code>,
+    the working directory is always removed, even after a failed build.</dd>
 
     <dt>jobs</dt>
     <dd>If set to an unsigned integer, specifies the number of jobs to run in parallel when build systems

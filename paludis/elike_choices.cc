@@ -47,10 +47,15 @@ namespace
         const std::shared_ptr<Map<std::string, std::string> > permitted_symbols;
         const std::shared_ptr<const PermittedChoiceValueParameterEnumValue> permitted_symbols_values;
 
+        const std::shared_ptr<Map<std::string, std::string> > permitted_work;
+        const std::shared_ptr<const PermittedChoiceValueParameterEnumValue> permitted_work_values;
+
         CommonValues() :
             permitted_jobs_values(std::make_shared<PermittedChoiceValueParameterIntegerValue>(1, std::numeric_limits<int>::max())),
             permitted_symbols(std::make_shared<Map<std::string, std::string> >()),
-            permitted_symbols_values(std::make_shared<PermittedChoiceValueParameterEnumValue>(permitted_symbols))
+            permitted_symbols_values(std::make_shared<PermittedChoiceValueParameterEnumValue>(permitted_symbols)),
+            permitted_work(std::make_shared<Map<std::string, std::string> >()),
+            permitted_work_values(std::make_shared<PermittedChoiceValueParameterEnumValue>(permitted_work))
         {
             for (EnumIterator<ELikeSymbolsChoiceValueParameter> e, e_end(last_escvp) ;
                     e != e_end ; ++e)
@@ -74,6 +79,30 @@ namespace
                 }
 
                 throw InternalError(PALUDIS_HERE, "Unhandled ELikeSymbolsChoiceValueParameter");
+            }
+
+            for (EnumIterator<ELikeWorkChoiceValueParameter> e, e_end(last_ewcvp) ;
+                    e != e_end ; ++e)
+            {
+                switch (*e)
+                {
+                    case ewcvp_tidyup:
+                        permitted_work->insert("tidyup", "Tidy up work directory after a successful build");
+                        continue;
+                    case ewcvp_preserve:
+                        permitted_work->insert("preserve", "Perserve the working directory");
+                        continue;
+                    case ewcvp_remove:
+                        permitted_work->insert("remove", "Always remove the working directory");
+                        continue;
+                    case ewcvp_leave:
+                        permitted_work->insert("leave", "Do not remove, but allow destructive merges");
+                        continue;
+                    case last_ewcvp:
+                        break;
+                }
+
+                throw InternalError(PALUDIS_HERE, "Unhandled ELikeWorkChoiceValueParameter");
             }
         }
     };
@@ -487,82 +516,6 @@ ELikeTraceChoiceValue::permitted_parameter_values() const
     return make_null_shared_ptr();
 }
 
-const UnprefixedChoiceName
-ELikePreserveWorkChoiceValue::canonical_unprefixed_name()
-{
-    return UnprefixedChoiceName("preserve_work");
-}
-
-const ChoiceNameWithPrefix
-ELikePreserveWorkChoiceValue::canonical_name_with_prefix()
-{
-    return ChoiceNameWithPrefix(stringify(canonical_build_options_prefix()) + ":" +
-            stringify(canonical_unprefixed_name()));
-}
-
-ELikePreserveWorkChoiceValue::ELikePreserveWorkChoiceValue(const std::shared_ptr<const PackageID> & id,
-        const Environment * const env, const std::shared_ptr<const Choice> & choice,
-        const Tribool forced_value) :
-    _enabled(forced_value.is_indeterminate() ? env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true() :
-            forced_value.is_true() ? true : false),
-    _forced(! forced_value.is_indeterminate())
-{
-}
-
-const UnprefixedChoiceName
-ELikePreserveWorkChoiceValue::unprefixed_name() const
-{
-    return canonical_unprefixed_name();
-}
-
-const ChoiceNameWithPrefix
-ELikePreserveWorkChoiceValue::name_with_prefix() const
-{
-    return canonical_name_with_prefix();
-}
-
-bool
-ELikePreserveWorkChoiceValue::enabled() const
-{
-    return _enabled;
-}
-
-bool
-ELikePreserveWorkChoiceValue::enabled_by_default() const
-{
-    return false;
-}
-
-bool
-ELikePreserveWorkChoiceValue::locked() const
-{
-    return false;
-}
-
-const std::string
-ELikePreserveWorkChoiceValue::description() const
-{
-    return "Do not remove build directories, and do not modify the image when merging";
-}
-
-ChoiceOrigin
-ELikePreserveWorkChoiceValue::origin() const
-{
-    return co_special;
-}
-
-const std::string
-ELikePreserveWorkChoiceValue::parameter() const
-{
-    return "";
-}
-
-const std::shared_ptr<const PermittedChoiceValueParameterValues>
-ELikePreserveWorkChoiceValue::permitted_parameter_values() const
-{
-    return make_null_shared_ptr();
-}
-
 namespace
 {
     ELikeSymbolsChoiceValueParameter get_symbols(const std::shared_ptr<const PackageID> & id,
@@ -716,5 +669,160 @@ ELikeSymbolsChoiceValue::should_compress(const std::string & v)
     }
 
     throw InternalError(PALUDIS_HERE, "Unhandled ELikeSymbolsChoiceValueParameter");
+}
+
+namespace
+{
+    ELikeWorkChoiceValueParameter get_work(const std::shared_ptr<const PackageID> & id,
+            const std::string & env_value)
+    {
+        if (env_value.empty())
+            return ewcvp_tidyup;
+
+        try
+        {
+            return destringify<ELikeWorkChoiceValueParameter>(env_value);
+        }
+        catch (const DestringifyError &)
+        {
+            Context context("When getting value of the symbols option for '" + stringify(*id) + "':");
+            Log::get_instance()->message("elike_work_choice_value.invalid", ll_warning, lc_context)
+                << "Value '" << env_value << "' is not a legal value, using \"tidyup\" instead";
+            return ewcvp_tidyup;
+        }
+    }
+}
+
+ELikeWorkChoiceValue::ELikeWorkChoiceValue(const std::shared_ptr<const PackageID> & id,
+        const Environment * const env, const std::shared_ptr<const Choice> & choice, const ELikeWorkChoiceValueParameter _force) :
+    _enabled(! env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_false()),
+    _param(_force != last_ewcvp ? _force : get_work(id, env->value_for_choice_parameter(id, choice, canonical_unprefixed_name())))
+{
+}
+
+const UnprefixedChoiceName
+ELikeWorkChoiceValue::unprefixed_name() const
+{
+    return canonical_unprefixed_name();
+}
+
+const ChoiceNameWithPrefix
+ELikeWorkChoiceValue::name_with_prefix() const
+{
+    return canonical_name_with_prefix();
+}
+
+bool
+ELikeWorkChoiceValue::enabled() const
+{
+    return _enabled;
+}
+
+bool
+ELikeWorkChoiceValue::enabled_by_default() const
+{
+    return true;
+}
+
+bool
+ELikeWorkChoiceValue::locked() const
+{
+    return false;
+}
+
+const std::string
+ELikeWorkChoiceValue::description() const
+{
+    return "Whether to preserve or remove working directories";
+}
+
+ChoiceOrigin
+ELikeWorkChoiceValue::origin() const
+{
+    return co_special;
+}
+
+const std::string
+ELikeWorkChoiceValue::parameter() const
+{
+    return stringify(_param);
+}
+
+const std::shared_ptr<const PermittedChoiceValueParameterValues>
+ELikeWorkChoiceValue::permitted_parameter_values() const
+{
+    return CommonValues::get_instance()->permitted_work_values;
+}
+
+const UnprefixedChoiceName
+ELikeWorkChoiceValue::canonical_unprefixed_name()
+{
+    return UnprefixedChoiceName("work");
+}
+
+const ChoiceNameWithPrefix
+ELikeWorkChoiceValue::canonical_name_with_prefix()
+{
+    return ChoiceNameWithPrefix(stringify(canonical_build_options_prefix()) + ":" + stringify(canonical_unprefixed_name()));
+}
+
+bool
+ELikeWorkChoiceValue::should_remove(const std::string & v)
+{
+    switch (destringify<ELikeWorkChoiceValueParameter>(v))
+    {
+        case ewcvp_tidyup:
+        case ewcvp_remove:
+            return true;
+
+        case ewcvp_preserve:
+        case ewcvp_leave:
+            return false;
+
+        case last_ewcvp:
+            break;
+    }
+
+    throw InternalError(PALUDIS_HERE, "Unhandled ELikeWorkChoiceValueParameter");
+}
+
+bool
+ELikeWorkChoiceValue::should_merge_nondestructively(const std::string & v)
+{
+    switch (destringify<ELikeWorkChoiceValueParameter>(v))
+    {
+        case ewcvp_preserve:
+            return true;
+
+        case ewcvp_tidyup:
+        case ewcvp_remove:
+        case ewcvp_leave:
+            return false;
+
+        case last_ewcvp:
+            break;
+    }
+
+    throw InternalError(PALUDIS_HERE, "Unhandled ELikeWorkChoiceValueParameter");
+}
+
+bool
+ELikeWorkChoiceValue::should_remove_on_failure(const std::string & v)
+{
+    switch (destringify<ELikeWorkChoiceValueParameter>(v))
+    {
+        case ewcvp_remove:
+            return true;
+
+        case ewcvp_tidyup:
+        case ewcvp_preserve:
+        case ewcvp_leave:
+            return false;
+
+        case last_ewcvp:
+            break;
+    }
+
+    throw InternalError(PALUDIS_HERE, "Unhandled ELikeWorkChoiceValueParameter");
 }
 

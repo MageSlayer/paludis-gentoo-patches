@@ -171,11 +171,11 @@ UnpackagedChoicesKey::parse_value() const
         build_options->add(std::make_shared<ELikeSymbolsChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options,
                     strip.is_true() ? escvp_strip : strip.is_false() ? escvp_preserve : last_escvp));
 
-        Tribool preserve_work(indeterminate);
+        ELikeWorkChoiceValueParameter preserve_work(last_ewcvp);
         if (_imp->id->preserve_work_key())
-            preserve_work = _imp->id->preserve_work_key()->parse_value();
+            preserve_work = _imp->id->preserve_work_key()->parse_value() ? ewcvp_preserve : ewcvp_leave;
 
-        build_options->add(std::make_shared<ELikePreserveWorkChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options, preserve_work));
+        build_options->add(std::make_shared<ELikeWorkChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options, preserve_work));
 
         _imp->value->add(build_options);
     }

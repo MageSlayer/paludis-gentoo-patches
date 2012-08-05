@@ -216,7 +216,7 @@ paludis::erepository::do_install_action(
     }
 
     auto choices(id->choices_key()->parse_value());
-    std::shared_ptr<const ChoiceValue> preserve_work_choice(choices->find_by_name_with_prefix(ELikePreserveWorkChoiceValue::canonical_name_with_prefix()));
+    auto work_choice(choices->find_by_name_with_prefix(ELikeWorkChoiceValue::canonical_name_with_prefix()));
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_install());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -253,7 +253,7 @@ paludis::erepository::do_install_action(
             continue;
         }
 
-        if (phase->option("tidyup") && preserve_work_choice && preserve_work_choice->enabled())
+        if (phase->option("tidyup") && work_choice && ! ELikeWorkChoiceValue::should_remove(work_choice->parameter()))
         {
             output_manager->stdout_stream() << "--- Skipping " << phase->equal_option("skipname")
                 << " phase to preserve work" << std::endl;
@@ -268,7 +268,7 @@ paludis::erepository::do_install_action(
                         + "' because destination does not provide destination_interface");
 
             MergerOptions extra_merger_options;
-            if (preserve_work_choice && preserve_work_choice->enabled())
+            if (work_choice && ELikeWorkChoiceValue::should_merge_nondestructively(work_choice->parameter()))
                 extra_merger_options += mo_nondestructive;
 
             Timestamp build_start_time(FSPath(package_builddir / "temp" / "build_start_time").stat().mtim());
@@ -400,7 +400,73 @@ paludis::erepository::do_install_action(
                             ));
 
             EbuildInstallCommand cmd(command_params, install_params);
-            cmd();
+            try
+            {
+                cmd();
+            }
+            catch (const ActionFailedError & e)
+            {
+                if (work_choice && ELikeWorkChoiceValue::should_remove_on_failure(work_choice->parameter()))
+                {
+                    for (EAPIPhases::ConstIterator tidyup_phase(phases.begin_phases()), tidyup_phase_end(phases.end_phases()) ;
+                            tidyup_phase != tidyup_phase_end ; ++tidyup_phase)
+                    {
+                        if (! tidyup_phase->option("tidyup"))
+                            continue;
+
+                        EbuildCommandParams tidyup_command_params(make_named_values<EbuildCommandParams>(
+                                    n::builddir() = repo->params().builddir(),
+                                    n::clearenv() = tidyup_phase->option("clearenv"),
+                                    n::commands() = join(tidyup_phase->begin_commands(), tidyup_phase->end_commands(), " "),
+                                    n::distdir() = repo->params().distdir(),
+                                    n::ebuild_dir() = repo->layout()->package_directory(id->name()),
+                                    n::ebuild_file() = id->fs_location_key()->parse_value(),
+                                    n::eclassdirs() = repo->params().eclassdirs(),
+                                    n::environment() = env,
+                                    n::exlibsdirs() = exlibsdirs,
+                                    n::files_dir() = repo->layout()->package_directory(id->name()) / "files",
+                                    n::maybe_output_manager() = output_manager,
+                                    n::package_builddir() = package_builddir,
+                                    n::package_id() = id,
+                                    n::permitted_directories() = permitted_directories,
+                                    n::portdir() =
+                                    (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
+                                    (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
+                                    n::root() = install_action.options.destination()->installed_root_key() ?
+                                    stringify(install_action.options.destination()->installed_root_key()->parse_value()) :
+                                    "/",
+                                    n::sandbox() = tidyup_phase->option("sandbox"),
+                                    n::sydbox() = tidyup_phase->option("sydbox"),
+                                    n::userpriv() = tidyup_phase->option("userpriv") && userpriv_ok
+                                        ));
+
+                        EbuildInstallCommandParams tidyup_install_params(
+                                make_named_values<EbuildInstallCommandParams>(
+                                    n::a() = archives,
+                                    n::aa() = all_archives,
+                                    n::accept_license() = accept_license,
+                                    n::config_protect() = repo->environment_updated_profile_variable("CONFIG_PROTECT"),
+                                    n::config_protect_mask() = repo->environment_updated_profile_variable("CONFIG_PROTECT_MASK"),
+                                    n::destination() = install_action.options.destination(),
+                                    n::expand_vars() = expand_vars,
+                                    n::is_from_pbin() = id->eapi()->supported()->is_pbin(),
+                                    n::loadsaveenv_dir() = package_builddir / "temp",
+                                    n::profiles() = repo->params().profiles(),
+                                    n::profiles_with_parents() = repo->profile()->profiles_with_parents(),
+                                    n::replacing_ids() = install_action.options.replacing(),
+                                    n::slot() = id->slot_key() ? stringify(id->slot_key()->parse_value()) : "",
+                                    n::use() = use,
+                                    n::use_expand() = join(repo->profile()->use_expand()->begin(), repo->profile()->use_expand()->end(), " "),
+                                    n::use_expand_hidden() = join(repo->profile()->use_expand_hidden()->begin(), repo->profile()->use_expand_hidden()->end(), " ")
+                                    ));
+
+                        EbuildInstallCommand tidyup_cmd(tidyup_command_params, tidyup_install_params);
+                        tidyup_cmd();
+                    }
+                }
+
+                throw;
+            }
         }
     }
 
