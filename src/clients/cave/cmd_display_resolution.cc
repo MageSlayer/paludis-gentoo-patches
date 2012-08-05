@@ -404,15 +404,25 @@ namespace
 
     void display_explanation_constraints(const Constraints & constraints)
     {
-        cout << fuc(fs_explanation_constraints_header());
+        std::map<std::string, std::set<std::string> > reasons_for_constraints;
         for (Constraints::ConstIterator c(constraints.begin()), c_end(constraints.end()) ;
                 c != c_end ; ++c)
         {
-            cout << fuc(fs_explanation_constraint(), fv<'c'>(constraint_as_string(**c)));
+            auto & reasons(reasons_for_constraints.insert(std::make_pair(
+                            constraint_as_string(**c), std::set<std::string>())).first->second);
 
             ReasonNameGetter g(true, true);
-            cout << fuc(fs_explanation_constraint_reason(), fv<'r'>(
-                        (*c)->reason()->accept_returning<std::pair<std::string, Tribool> >(g).first));
+            reasons.insert((*c)->reason()->accept_returning<std::pair<std::string, Tribool> >(g).first);
+        }
+
+        cout << fuc(fs_explanation_constraints_header());
+        for (auto c(reasons_for_constraints.begin()), c_end(reasons_for_constraints.end()) ;
+                c != c_end ; ++c)
+        {
+            cout << fuc(fs_explanation_constraint(), fv<'c'>(c->first));
+            for (auto r(c->second.begin()), r_end(c->second.end()) ;
+                    r != r_end ; ++r)
+                cout << fuc(fs_explanation_constraint_reason(), fv<'r'>(*r));
         }
     }
 
