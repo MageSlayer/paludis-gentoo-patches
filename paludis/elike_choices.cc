@@ -182,6 +182,12 @@ ELikeOptionalTestsChoiceValue::permitted_parameter_values() const
     return make_null_shared_ptr();
 }
 
+bool
+ELikeOptionalTestsChoiceValue::presumed() const
+{
+    return false;
+}
+
 const UnprefixedChoiceName
 ELikeRecommendedTestsChoiceValue::canonical_unprefixed_name()
 {
@@ -254,6 +260,12 @@ const std::shared_ptr<const PermittedChoiceValueParameterValues>
 ELikeRecommendedTestsChoiceValue::permitted_parameter_values() const
 {
     return make_null_shared_ptr();
+}
+
+bool
+ELikeRecommendedTestsChoiceValue::presumed() const
+{
+    return false;
 }
 
 const ChoicePrefixName
@@ -346,6 +358,12 @@ const std::shared_ptr<const PermittedChoiceValueParameterValues>
 ELikeExpensiveTestsChoiceValue::permitted_parameter_values() const
 {
     return make_null_shared_ptr();
+}
+
+bool
+ELikeExpensiveTestsChoiceValue::presumed() const
+{
+    return false;
 }
 
 const UnprefixedChoiceName
@@ -443,6 +461,12 @@ ELikeJobsChoiceValue::permitted_parameter_values() const
     return CommonValues::get_instance()->permitted_jobs_values;
 }
 
+bool
+ELikeJobsChoiceValue::presumed() const
+{
+    return false;
+}
+
 const UnprefixedChoiceName
 ELikeTraceChoiceValue::canonical_unprefixed_name()
 {
@@ -514,6 +538,12 @@ const std::shared_ptr<const PermittedChoiceValueParameterValues>
 ELikeTraceChoiceValue::permitted_parameter_values() const
 {
     return make_null_shared_ptr();
+}
+
+bool
+ELikeTraceChoiceValue::presumed() const
+{
+    return false;
 }
 
 namespace
@@ -597,6 +627,12 @@ const std::shared_ptr<const PermittedChoiceValueParameterValues>
 ELikeSymbolsChoiceValue::permitted_parameter_values() const
 {
     return CommonValues::get_instance()->permitted_symbols_values;
+}
+
+bool
+ELikeSymbolsChoiceValue::presumed() const
+{
+    return false;
 }
 
 const UnprefixedChoiceName
@@ -752,6 +788,12 @@ const std::shared_ptr<const PermittedChoiceValueParameterValues>
 ELikeWorkChoiceValue::permitted_parameter_values() const
 {
     return CommonValues::get_instance()->permitted_work_values;
+}
+
+bool
+ELikeWorkChoiceValue::presumed() const
+{
+    return false;
 }
 
 const UnprefixedChoiceName

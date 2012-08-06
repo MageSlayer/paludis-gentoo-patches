@@ -471,6 +471,11 @@ namespace
         {
             return make_null_shared_ptr();
         }
+
+        virtual bool presumed() const PALUDIS_ATTRIBUTE((warn_unused_result))
+        {
+            return false;
+        }
     };
 }
 

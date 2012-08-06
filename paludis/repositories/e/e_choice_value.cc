@@ -47,6 +47,7 @@ namespace
             ChoiceOrigin origin() const;
             const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
             const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool presumed() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 
@@ -107,6 +108,12 @@ const std::shared_ptr<const PermittedChoiceValueParameterValues>
 EChoiceValue::permitted_parameter_values() const
 {
     return make_null_shared_ptr();
+}
+
+bool
+EChoiceValue::presumed() const
+{
+    return false;
 }
 
 namespace paludis

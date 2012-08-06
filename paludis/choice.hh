@@ -357,6 +357,11 @@ namespace paludis
             virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
+             * Does this flag have to be explicitly accepted when doing matching?
+             */
+            virtual bool presumed() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
              * Is this flag locked (forced or masked)?
              */
             virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
