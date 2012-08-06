@@ -1096,6 +1096,7 @@ SUMMARY=the-description-flat_hash-exlib
 PLATFORMS=the-keywords
 MYOPTIONS=the-iuse
 EAPI=exheres-0
+DEFINED_PHASES=-
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-exlib/flat_hash-exlib-1.ebuild || exit 2
 
@@ -1116,6 +1117,7 @@ SUMMARY=the-description-flat_hash-exlib-percat
 PLATFORMS=the-keywords
 MYOPTIONS=the-iuse
 EAPI=exheres-0
+DEFINED_PHASES=-
 END
 TZ=UTC touch -t 197001010001 cat/flat_hash-exlib-percat/flat_hash-exlib-percat-1.ebuild || exit 2
 
