@@ -162,7 +162,7 @@ namespace paludis
 
                 virtual const std::shared_ptr<const ChoiceValue> make_choice_value(
                         const std::shared_ptr<const Choice> &, const UnprefixedChoiceName &, const Tribool,
-                        const bool, const ChoiceOrigin, const std::string &, const bool) const;
+                        const bool, const ChoiceOrigin, const std::string &, const bool, const bool) const;
 
                 virtual void add_build_options(const std::shared_ptr<Choices> &) const;
 

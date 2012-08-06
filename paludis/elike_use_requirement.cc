@@ -848,3 +848,62 @@ paludis::parse_elike_use_requirement(const std::string & s,
     return result;
 }
 
+namespace
+{
+    class ELikePresumedChoicesRequirement :
+        public AdditionalPackageDepSpecRequirement
+    {
+        public:
+            virtual const std::pair<bool, std::string> requirement_met(
+                    const Environment * const,
+                    const ChangedChoices * const,
+                    const std::shared_ptr<const PackageID> & id,
+                    const std::shared_ptr<const PackageID> &,
+                    const ChangedChoices * const) const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                if (! id->choices_key())
+                    return std::make_pair(true, "");
+
+                auto choices(id->choices_key()->parse_value());
+                for (auto c(choices->begin()), c_end(choices->end()) ; c != c_end ; ++c)
+                    for (auto v((*c)->begin()), v_end((*c)->end()) ; v != v_end ; ++v)
+                        if ((*v)->presumed())
+                        {
+                            return std::make_pair(false, as_human_string(id));
+                        }
+
+                return std::make_pair(true, as_human_string(id));
+            }
+
+            virtual Tribool accumulate_changes_to_make_met(
+                    const Environment * const env,
+                    const ChangedChoices * const maybe_changes_to_owner,
+                    const std::shared_ptr<const PackageID> & id,
+                    const std::shared_ptr<const PackageID> & spec_id,
+                    ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                if (requirement_met(env, maybe_changes_to_owner, id, spec_id, 0).first)
+                    return indeterminate;
+                else
+                    return false;
+            }
+
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return "Remaining explicit flags enabled";
+            }
+
+            virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            {
+                return "";
+            }
+    };
+}
+
+std::shared_ptr<const AdditionalPackageDepSpecRequirement>
+paludis::make_elike_presumed_choices_requirement()
+{
+    return std::make_shared<ELikePresumedChoicesRequirement>();
+}
+

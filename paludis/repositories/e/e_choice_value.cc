@@ -113,7 +113,7 @@ EChoiceValue::permitted_parameter_values() const
 bool
 EChoiceValue::presumed() const
 {
-    return false;
+    return _params.presumed();
 }
 
 namespace paludis
@@ -155,6 +155,7 @@ namespace paludis
             && (a.enabled_by_default() == b.enabled_by_default())
             && (a.origin() == b.origin())
             && (a.locked() == b.locked())
+            && (a.presumed() == b.presumed())
             && (a.unprefixed_choice_name() == b.unprefixed_choice_name())
             ;
     }

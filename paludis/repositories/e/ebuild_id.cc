@@ -1496,7 +1496,8 @@ EbuildID::make_choice_value(
         const bool iuse_default_wins,
         const ChoiceOrigin origin,
         const std::string & override_description,
-        const bool force_locked
+        const bool force_locked,
+        const bool presumed
         ) const
 {
     if (! eapi()->supported())
@@ -1575,6 +1576,7 @@ EbuildID::make_choice_value(
                 n::enabled() = enabled,
                 n::enabled_by_default() = enabled_by_default,
                 n::locked() = force_locked || locked,
+                n::presumed() = presumed,
                 n::origin() = origin,
                 n::unprefixed_choice_name() = value_name
                 ));

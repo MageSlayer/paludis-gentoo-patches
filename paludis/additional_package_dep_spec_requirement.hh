@@ -52,7 +52,7 @@ namespace paludis
              * The string in the return type might be a description of why the
              * requirement was not met. Sometimes better messages can be given
              * than simply the return value of as_human_string() when the ID to
-             * be matched is known. If the bool is false, the string is
+             * be matched is known. If the bool is true, the string is
              * meaningless.
              *
              * \param spec_id The PackageID the spec comes from. May be null. Used for

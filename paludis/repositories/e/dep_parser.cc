@@ -48,6 +48,8 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/always_enabled_dependency_label.hh>
 #include <paludis/elike_blocker.hh>
+#include <paludis/elike_use_requirement.hh>
+#include <paludis/partially_made_package_dep_spec.hh>
 #include <map>
 #include <list>
 #include <set>
@@ -106,11 +108,14 @@ namespace
             typename ParseStackTypes<T_>::Stack & h,
             const typename ParseStackTypes<T_>::AnnotationsGoHere & annotations_go_here,
             const std::string & s,
-            const EAPI & eapi)
+            const EAPI & eapi,
+            bool add_explicit_choices_requirement)
     {
-        std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
-                    parse_elike_package_dep_spec(s, eapi.supported()->package_dep_spec_parse_options(),
-                        eapi.supported()->version_spec_options())));
+        auto data(partial_parse_elike_package_dep_spec(s, eapi.supported()->package_dep_spec_parse_options(),
+                    eapi.supported()->version_spec_options()));
+        if (add_explicit_choices_requirement)
+            data.additional_requirement(make_elike_presumed_choices_requirement());
+        std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(data));
         h.begin()->item()->append(spec);
         h.begin()->children().push_back(spec);
         annotations_go_here(spec);
@@ -128,7 +133,7 @@ namespace
         switch (std::get<0>(p))
         {
             case ebk_no_block:
-                package_dep_spec_string_handler<T_>(h, annotations_go_here, s, eapi);
+                package_dep_spec_string_handler<T_>(h, annotations_go_here, s, eapi, true);
                 break;
 
             case ebk_bang_question:
@@ -593,7 +598,7 @@ paludis::erepository::parse_commented_set(const std::string & s, const Environme
                 n::on_should_be_empty() = std::bind(&should_be_empty_handler<SetSpecTree>, std::ref(stack), s),
                 n::on_string() = std::bind(&package_dep_spec_string_handler<SetSpecTree>, std::ref(stack),
                     ParseStackTypes<SetSpecTree>::AnnotationsGoHere(std::bind(
-                            &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1, eapi),
+                            &set_thing_to_annotate, std::ref(thing_to_annotate), _1)), _1, eapi, false),
                 n::on_use() = std::bind(&use_not_allowed_handler, s, _1),
                 n::on_use_under_any() = std::bind(&use_under_any_handler, s, std::cref(eapi))
             ));

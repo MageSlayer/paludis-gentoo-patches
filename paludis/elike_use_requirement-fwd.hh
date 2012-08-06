@@ -40,6 +40,9 @@ namespace paludis
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> parse_elike_use_requirement(
             const std::string &, const ELikeUseRequirementOptions &)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+
+    std::shared_ptr<const AdditionalPackageDepSpecRequirement> make_elike_presumed_choices_requirement()
+        PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 }
 
 #endif
