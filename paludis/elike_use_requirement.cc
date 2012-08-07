@@ -329,6 +329,31 @@ namespace
             }
     };
 
+    class PALUDIS_VISIBLE EnabledOrDisabledUseRequirement :
+        public UseRequirement
+    {
+        public:
+            EnabledOrDisabledUseRequirement(const std::string & n,
+                    const ELikeUseRequirementOptions & o,
+                    Tribool d, const bool b) :
+                UseRequirement(n, o, d, b)
+            {
+            }
+
+            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag, const ChangedChoices * const,
+                    const std::shared_ptr<const PackageID> & pkg, const std::shared_ptr<const PackageID> &, const ChangedChoices * const changed_choices) const
+            {
+                return icky_use_query(_options, flag, pkg, changed_choices, default_value()) ||
+                    ! icky_use_query(_options, flag, pkg, changed_choices, default_value());
+            }
+
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> &) const
+            {
+                return "Flag '" + stringify(flags()) + "' either enabled or disabled" + default_value_human_string_fragment();
+            }
+    };
+
     class PALUDIS_VISIBLE ConditionalUseRequirement :
         public UseRequirement
     {
@@ -757,6 +782,22 @@ namespace
             if (flag.empty())
                 throw ELikeUseRequirementError(s, "Invalid [] contents");
             factory = make_requirement<DisabledUseRequirement>;
+        }
+        else if ('?' == flag.at(0))
+        {
+            if (options[euro_portage_syntax] && ! options[euro_both_syntaxes])
+            {
+                if (options[euro_strict_parsing])
+                    throw ELikeUseRequirementError(s, "[?use] not safe for use here");
+                else
+                    Log::get_instance()->message("e.use_requirement.question_flag_not_allowed", ll_warning, lc_context)
+                        << "[?use] not safe for use here";
+            }
+
+            flag.erase(0, 1);
+            if (flag.empty())
+                throw ELikeUseRequirementError(s, "Invalid [] contents");
+            factory = make_requirement<EnabledOrDisabledUseRequirement>;
         }
         else
             factory = make_requirement<EnabledUseRequirement>;
