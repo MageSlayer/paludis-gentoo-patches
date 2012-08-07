@@ -55,6 +55,12 @@ namespace
                 id->choices_key()->add(t->substr(0, p), t->substr(p + 1));
         }
     }
+
+    std::shared_ptr<const AdditionalPackageDepSpecRequirement> parse_elike_use_requirement_no_accumulate(
+            const std::string & s, const ELikeUseRequirementOptions & o)
+    {
+        return parse_elike_use_requirement(s, o, make_null_shared_ptr());
+    }
 }
 
 TEST(ELikeUseRequirements, Simple)
@@ -69,25 +75,25 @@ TEST(ELikeUseRequirements, Simple)
     set_conditionals(id, "enabled disabled");
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
-        parse_elike_use_requirement("enabled", { euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("enabled", { euro_strict_parsing }));
     EXPECT_EQ("[enabled]", req1->as_raw_string());
     EXPECT_EQ("Flag 'enabled' enabled", req1->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(req1->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
-        parse_elike_use_requirement("disabled", { euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("disabled", { euro_strict_parsing }));
     EXPECT_EQ("[disabled]", req2->as_raw_string());
     EXPECT_EQ("Flag 'disabled' enabled", req2->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(! req2->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req3(
-        parse_elike_use_requirement("-enabled", { euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("-enabled", { euro_strict_parsing }));
     EXPECT_EQ("[-enabled]", req3->as_raw_string());
     EXPECT_EQ("Flag 'enabled' disabled", req3->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(! req3->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req4(
-        parse_elike_use_requirement("-disabled", { euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("-disabled", { euro_strict_parsing }));
     EXPECT_EQ("[-disabled]", req4->as_raw_string());
     EXPECT_EQ("Flag 'disabled' disabled", req4->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(req4->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
@@ -105,25 +111,25 @@ TEST(ELikeUseRequirements, Portage)
     set_conditionals(id, "enabled disabled");
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
-        parse_elike_use_requirement("enabled", { euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("enabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[enabled]", req1->as_raw_string());
     EXPECT_EQ("Flag 'enabled' enabled", req1->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(req1->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
-        parse_elike_use_requirement("disabled", { euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("disabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[disabled]", req2->as_raw_string());
     EXPECT_EQ("Flag 'disabled' enabled", req2->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(! req2->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req3(
-        parse_elike_use_requirement("-enabled", { euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("-enabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[-enabled]", req3->as_raw_string());
     EXPECT_EQ("Flag 'enabled' disabled", req3->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(! req3->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req4(
-        parse_elike_use_requirement("-disabled", { euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("-disabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[-disabled]", req4->as_raw_string());
     EXPECT_EQ("Flag 'disabled' disabled", req4->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(req4->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
@@ -141,31 +147,31 @@ TEST(ELikeUseRequirements, Multiple)
     set_conditionals(id, "enabled disabled");
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
-        parse_elike_use_requirement("enabled,-disabled", { euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("enabled,-disabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[enabled,-disabled]", req1->as_raw_string());
     EXPECT_EQ("Flag 'enabled' enabled; Flag 'disabled' disabled", req1->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(req1->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
-        parse_elike_use_requirement("enabled,disabled", { euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("enabled,disabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[enabled,disabled]", req2->as_raw_string());
     EXPECT_EQ("Flag 'enabled' enabled; Flag 'disabled' enabled", req2->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(! req2->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req3(
-        parse_elike_use_requirement("-enabled,-disabled", { euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("-enabled,-disabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[-enabled,-disabled]", req3->as_raw_string());
     EXPECT_EQ("Flag 'enabled' disabled; Flag 'disabled' disabled", req3->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(! req3->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req4(
-        parse_elike_use_requirement("enabled,-disabled,-enabled", { euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("enabled,-disabled,-enabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[enabled,-disabled,-enabled]", req4->as_raw_string());
     EXPECT_EQ("Flag 'enabled' enabled; Flag 'disabled' disabled; Flag 'enabled' disabled", req4->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(! req4->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req5(
-        parse_elike_use_requirement("enabled,-disabled,enabled", { euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("enabled,-disabled,enabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[enabled,-disabled,enabled]", req5->as_raw_string());
     EXPECT_EQ("Flag 'enabled' enabled; Flag 'disabled' disabled; Flag 'enabled' enabled", req5->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(req5->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
@@ -185,84 +191,84 @@ TEST(ELikeUseRequirements, Complex)
     set_conditionals(id2, "pkgname");
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
-        parse_elike_use_requirement("pkgname?", { euro_allow_self_deps, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname?", { euro_allow_self_deps, euro_strict_parsing }));
     EXPECT_EQ("[pkgname?]", req1->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is enabled for 'cat/enabled-1:0::fake'", req1->as_human_string(id));
     EXPECT_TRUE(req1->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(! req1->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
-        parse_elike_use_requirement("pkgname?", { euro_allow_self_deps, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname?", { euro_allow_self_deps, euro_strict_parsing }));
     EXPECT_EQ("[pkgname?]", req2->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is enabled for 'cat/disabled-1:0::fake'", req2->as_human_string(id2));
     EXPECT_TRUE(req2->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req2->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req3(
-        parse_elike_use_requirement("-pkgname?", { euro_allow_self_deps, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("-pkgname?", { euro_allow_self_deps, euro_strict_parsing }));
     EXPECT_EQ("[-pkgname?]", req3->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is enabled for 'cat/enabled-1:0::fake'", req3->as_human_string(id));
     EXPECT_TRUE(! req3->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req3->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req4(
-        parse_elike_use_requirement("-pkgname?", { euro_allow_self_deps, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("-pkgname?", { euro_allow_self_deps, euro_strict_parsing }));
     EXPECT_EQ("[-pkgname?]", req4->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is enabled for 'cat/disabled-1:0::fake'", req4->as_human_string(id2));
     EXPECT_TRUE(req4->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req4->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req5(
-        parse_elike_use_requirement("pkgname!?", { euro_allow_self_deps, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname!?", { euro_allow_self_deps, euro_strict_parsing }));
     EXPECT_EQ("[pkgname!?]", req5->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is disabled for 'cat/enabled-1:0::fake'", req5->as_human_string(id));
     EXPECT_TRUE(req5->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req5->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req6(
-        parse_elike_use_requirement("pkgname!?", { euro_allow_self_deps, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname!?", { euro_allow_self_deps, euro_strict_parsing }));
     EXPECT_EQ("[pkgname!?]", req6->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is disabled for 'cat/disabled-1:0::fake'", req6->as_human_string(id2));
     EXPECT_TRUE(req6->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(! req6->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req7(
-        parse_elike_use_requirement("-pkgname!?", { euro_allow_self_deps, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("-pkgname!?", { euro_allow_self_deps, euro_strict_parsing }));
     EXPECT_EQ("[-pkgname!?]", req7->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/enabled-1:0::fake'", req7->as_human_string(id));
     EXPECT_TRUE(req7->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req7->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req8(
-        parse_elike_use_requirement("-pkgname!?", { euro_allow_self_deps, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("-pkgname!?", { euro_allow_self_deps, euro_strict_parsing }));
     EXPECT_EQ("[-pkgname!?]", req8->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/disabled-1:0::fake'", req8->as_human_string(id2));
     EXPECT_TRUE(! req8->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req8->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req9(
-        parse_elike_use_requirement("pkgname=", { euro_allow_self_deps, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname=", { euro_allow_self_deps, euro_strict_parsing }));
     EXPECT_EQ("[pkgname=]", req9->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled like it is for 'cat/enabled-1:0::fake'", req9->as_human_string(id));
     EXPECT_TRUE(req9->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(! req9->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req10(
-        parse_elike_use_requirement("pkgname=", { euro_allow_self_deps, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname=", { euro_allow_self_deps, euro_strict_parsing }));
     EXPECT_EQ("[pkgname=]", req10->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled like it is for 'cat/disabled-1:0::fake'", req10->as_human_string(id2));
     EXPECT_TRUE(! req10->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req10->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req11(
-        parse_elike_use_requirement("pkgname!=", { euro_allow_self_deps, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname!=", { euro_allow_self_deps, euro_strict_parsing }));
     EXPECT_EQ("[pkgname!=]", req11->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/enabled-1:0::fake'", req11->as_human_string(id));
     EXPECT_TRUE(! req11->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req11->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req12(
-        parse_elike_use_requirement("pkgname!=", { euro_allow_self_deps, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname!=", { euro_allow_self_deps, euro_strict_parsing }));
     EXPECT_EQ("[pkgname!=]", req12->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'", req12->as_human_string(id2));
     EXPECT_TRUE(req12->requirement_met(&env, 0, id, id2, 0).first);
@@ -283,56 +289,56 @@ TEST(ELikeUseRequirements, ComplexPortage)
     set_conditionals(id2, "pkgname");
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
-        parse_elike_use_requirement("pkgname?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[pkgname?]", req1->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is enabled for 'cat/enabled-1:0::fake'", req1->as_human_string(id));
     EXPECT_TRUE(req1->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(! req1->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
-        parse_elike_use_requirement("pkgname?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[pkgname?]", req2->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is enabled for 'cat/disabled-1:0::fake'", req2->as_human_string(id2));
     EXPECT_TRUE(req2->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req2->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req7(
-        parse_elike_use_requirement("!pkgname?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("!pkgname?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[!pkgname?]", req7->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/enabled-1:0::fake'", req7->as_human_string(id));
     EXPECT_TRUE(req7->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req7->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req8(
-        parse_elike_use_requirement("!pkgname?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("!pkgname?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[!pkgname?]", req8->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/disabled-1:0::fake'", req8->as_human_string(id2));
     EXPECT_TRUE(! req8->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req8->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req9(
-        parse_elike_use_requirement("pkgname=", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname=", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[pkgname=]", req9->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled like it is for 'cat/enabled-1:0::fake'", req9->as_human_string(id));
     EXPECT_TRUE(req9->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(! req9->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req10(
-        parse_elike_use_requirement("pkgname=", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname=", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[pkgname=]", req10->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled like it is for 'cat/disabled-1:0::fake'", req10->as_human_string(id2));
     EXPECT_TRUE(! req10->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req10->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req11(
-        parse_elike_use_requirement("!pkgname=", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("!pkgname=", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[!pkgname=]", req11->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/enabled-1:0::fake'", req11->as_human_string(id));
     EXPECT_TRUE(! req11->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req11->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req12(
-        parse_elike_use_requirement("!pkgname=", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("!pkgname=", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[!pkgname=]", req12->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'", req12->as_human_string(id2));
     EXPECT_TRUE(req12->requirement_met(&env, 0, id, id2, 0).first);
@@ -353,112 +359,112 @@ TEST(ELikeUseRequirements, Both)
     set_conditionals(id2, "pkgname");
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
-        parse_elike_use_requirement("pkgname?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[pkgname?]", req1->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is enabled for 'cat/enabled-1:0::fake'", req1->as_human_string(id));
     EXPECT_TRUE(req1->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(! req1->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
-        parse_elike_use_requirement("pkgname?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[pkgname?]", req2->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is enabled for 'cat/disabled-1:0::fake'", req2->as_human_string(id2));
     EXPECT_TRUE(req2->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req2->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req7(
-        parse_elike_use_requirement("!pkgname?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("!pkgname?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[!pkgname?]", req7->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/enabled-1:0::fake'", req7->as_human_string(id));
     EXPECT_TRUE(req7->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req7->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req8(
-        parse_elike_use_requirement("!pkgname?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("!pkgname?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[!pkgname?]", req8->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/disabled-1:0::fake'", req8->as_human_string(id2));
     EXPECT_TRUE(! req8->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req8->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req9(
-        parse_elike_use_requirement("pkgname=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[pkgname=]", req9->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled like it is for 'cat/enabled-1:0::fake'", req9->as_human_string(id));
     EXPECT_TRUE(req9->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(! req9->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req10(
-        parse_elike_use_requirement("pkgname=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[pkgname=]", req10->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled like it is for 'cat/disabled-1:0::fake'", req10->as_human_string(id2));
     EXPECT_TRUE(! req10->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req10->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req11(
-        parse_elike_use_requirement("!pkgname=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("!pkgname=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[!pkgname=]", req11->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/enabled-1:0::fake'", req11->as_human_string(id));
     EXPECT_TRUE(! req11->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req11->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req12(
-        parse_elike_use_requirement("!pkgname=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("!pkgname=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[!pkgname=]", req12->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'", req12->as_human_string(id2));
     EXPECT_TRUE(req12->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(! req12->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req13(
-        parse_elike_use_requirement("-pkgname?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("-pkgname?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[-pkgname?]", req13->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is enabled for 'cat/enabled-1:0::fake'", req13->as_human_string(id));
     EXPECT_TRUE(! req13->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req13->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req14(
-        parse_elike_use_requirement("-pkgname?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("-pkgname?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[-pkgname?]", req14->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is enabled for 'cat/disabled-1:0::fake'", req14->as_human_string(id2));
     EXPECT_TRUE(req14->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req14->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req15(
-        parse_elike_use_requirement("pkgname!?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname!?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[pkgname!?]", req15->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is disabled for 'cat/enabled-1:0::fake'", req15->as_human_string(id));
     EXPECT_TRUE(req15->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req15->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req16(
-        parse_elike_use_requirement("pkgname!?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname!?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[pkgname!?]", req16->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is disabled for 'cat/disabled-1:0::fake'", req16->as_human_string(id2));
     EXPECT_TRUE(req16->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(! req16->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req17(
-        parse_elike_use_requirement("-pkgname!?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("-pkgname!?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[-pkgname!?]", req17->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/enabled-1:0::fake'", req17->as_human_string(id));
     EXPECT_TRUE(req17->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req17->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req18(
-        parse_elike_use_requirement("-pkgname!?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("-pkgname!?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[-pkgname!?]", req18->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/disabled-1:0::fake'", req18->as_human_string(id2));
     EXPECT_TRUE(! req18->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req18->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req19(
-        parse_elike_use_requirement("pkgname!=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname!=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[pkgname!=]", req19->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/enabled-1:0::fake'", req19->as_human_string(id));
     EXPECT_TRUE(! req19->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req19->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req20(
-        parse_elike_use_requirement("pkgname!=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("pkgname!=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }));
     EXPECT_EQ("[pkgname!=]", req20->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'", req20->as_human_string(id2));
     EXPECT_TRUE(req20->requirement_met(&env, 0, id, id2, 0).first);
@@ -476,18 +482,18 @@ TEST(ELikeUseRequirements, Malformed)
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
     set_conditionals(id, "pkgname");
 
-    EXPECT_THROW(parse_elike_use_requirement("", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("-", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("?", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("-?", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("!?", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("-!?", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("=", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("!=", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("-", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("?", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("-?", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("!?", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("-!?", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("=", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("!=", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
 
-    EXPECT_THROW(parse_elike_use_requirement("!test?", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("!test=", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("test1,test2", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("!test?", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("!test=", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("test1,test2", { euro_allow_self_deps, euro_strict_parsing }), ELikeUseRequirementError);
 }
 
 TEST(ELikeUseRequirements, MalformedPortage)
@@ -501,22 +507,22 @@ TEST(ELikeUseRequirements, MalformedPortage)
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
     set_conditionals(id, "pkgname");
 
-    EXPECT_THROW(parse_elike_use_requirement("", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("-", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("!?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("=", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("!=", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("-", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("!?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("=", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("!=", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
 
-    EXPECT_THROW(parse_elike_use_requirement(",", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("test,", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement(",test", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("test,,test", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate(",", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("test,", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate(",test", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("test,,test", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
 
-    EXPECT_THROW(parse_elike_use_requirement("test!?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("-test?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("-test!?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("test!=", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("test!?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("-test?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("-test!?", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("test!=", { euro_allow_self_deps, euro_portage_syntax, euro_strict_parsing }), ELikeUseRequirementError);
 }
 
 TEST(ELikeUseRequirements, MalformedBoth)
@@ -530,17 +536,17 @@ TEST(ELikeUseRequirements, MalformedBoth)
     std::shared_ptr<FakePackageID> id(fake->add_version("cat", "enabled", "1"));
     set_conditionals(id, "pkgname");
 
-    EXPECT_THROW(parse_elike_use_requirement("", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("-", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("!?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("!=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("-", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("!?", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("!=", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
 
-    EXPECT_THROW(parse_elike_use_requirement(",", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("test,", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement(",test", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
-    EXPECT_THROW(parse_elike_use_requirement("test,,test", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate(",", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("test,", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate(",test", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
+    EXPECT_THROW(parse_elike_use_requirement_no_accumulate("test,,test", { euro_allow_self_deps, euro_both_syntaxes, euro_strict_parsing }), ELikeUseRequirementError);
 }
 
 TEST(ELikeUseRequirements, ComplexNonStrict)
@@ -557,112 +563,112 @@ TEST(ELikeUseRequirements, ComplexNonStrict)
     set_conditionals(id2, "pkgname");
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
-        parse_elike_use_requirement("pkgname?", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("pkgname?", { euro_allow_self_deps }));
     EXPECT_EQ("[pkgname?]", req1->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is enabled for 'cat/enabled-1:0::fake'", req1->as_human_string(id));
     EXPECT_TRUE(req1->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(! req1->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
-        parse_elike_use_requirement("pkgname?", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("pkgname?", { euro_allow_self_deps }));
     EXPECT_EQ("[pkgname?]", req2->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is enabled for 'cat/disabled-1:0::fake'", req2->as_human_string(id2));
     EXPECT_TRUE(req2->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req2->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req7(
-        parse_elike_use_requirement("!pkgname?", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("!pkgname?", { euro_allow_self_deps }));
     EXPECT_EQ("[!pkgname?]", req7->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/enabled-1:0::fake'", req7->as_human_string(id));
     EXPECT_TRUE(req7->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req7->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req8(
-        parse_elike_use_requirement("!pkgname?", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("!pkgname?", { euro_allow_self_deps }));
     EXPECT_EQ("[!pkgname?]", req8->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/disabled-1:0::fake'", req8->as_human_string(id2));
     EXPECT_TRUE(! req8->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req8->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req9(
-        parse_elike_use_requirement("pkgname=", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("pkgname=", { euro_allow_self_deps }));
     EXPECT_EQ("[pkgname=]", req9->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled like it is for 'cat/enabled-1:0::fake'", req9->as_human_string(id));
     EXPECT_TRUE(req9->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(! req9->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req10(
-        parse_elike_use_requirement("pkgname=", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("pkgname=", { euro_allow_self_deps }));
     EXPECT_EQ("[pkgname=]", req10->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled like it is for 'cat/disabled-1:0::fake'", req10->as_human_string(id2));
     EXPECT_TRUE(! req10->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req10->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req11(
-        parse_elike_use_requirement("!pkgname=", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("!pkgname=", { euro_allow_self_deps }));
     EXPECT_EQ("[!pkgname=]", req11->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/enabled-1:0::fake'", req11->as_human_string(id));
     EXPECT_TRUE(! req11->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req11->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req12(
-        parse_elike_use_requirement("!pkgname=", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("!pkgname=", { euro_allow_self_deps }));
     EXPECT_EQ("[!pkgname=]", req12->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'", req12->as_human_string(id2));
     EXPECT_TRUE(req12->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(! req12->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req13(
-        parse_elike_use_requirement("-pkgname?", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("-pkgname?", { euro_allow_self_deps }));
     EXPECT_EQ("[-pkgname?]", req13->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is enabled for 'cat/enabled-1:0::fake'", req13->as_human_string(id));
     EXPECT_TRUE(! req13->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req13->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req14(
-        parse_elike_use_requirement("-pkgname?", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("-pkgname?", { euro_allow_self_deps }));
     EXPECT_EQ("[-pkgname?]", req14->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is enabled for 'cat/disabled-1:0::fake'", req14->as_human_string(id2));
     EXPECT_TRUE(req14->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req14->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req15(
-        parse_elike_use_requirement("pkgname!?", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("pkgname!?", { euro_allow_self_deps }));
     EXPECT_EQ("[pkgname!?]", req15->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is disabled for 'cat/enabled-1:0::fake'", req15->as_human_string(id));
     EXPECT_TRUE(req15->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req15->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req16(
-        parse_elike_use_requirement("pkgname!?", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("pkgname!?", { euro_allow_self_deps }));
     EXPECT_EQ("[pkgname!?]", req16->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is disabled for 'cat/disabled-1:0::fake'", req16->as_human_string(id2));
     EXPECT_TRUE(req16->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(! req16->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req17(
-        parse_elike_use_requirement("-pkgname!?", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("-pkgname!?", { euro_allow_self_deps }));
     EXPECT_EQ("[-pkgname!?]", req17->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/enabled-1:0::fake'", req17->as_human_string(id));
     EXPECT_TRUE(req17->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req17->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req18(
-        parse_elike_use_requirement("-pkgname!?", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("-pkgname!?", { euro_allow_self_deps }));
     EXPECT_EQ("[-pkgname!?]", req18->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/disabled-1:0::fake'", req18->as_human_string(id2));
     EXPECT_TRUE(! req18->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req18->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req19(
-        parse_elike_use_requirement("pkgname!=", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("pkgname!=", { euro_allow_self_deps }));
     EXPECT_EQ("[pkgname!=]", req19->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/enabled-1:0::fake'", req19->as_human_string(id));
     EXPECT_TRUE(! req19->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req19->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req20(
-        parse_elike_use_requirement("pkgname!=", { euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("pkgname!=", { euro_allow_self_deps }));
     EXPECT_EQ("[pkgname!=]", req20->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'", req20->as_human_string(id2));
     EXPECT_TRUE(req20->requirement_met(&env, 0, id, id2, 0).first);
@@ -683,112 +689,112 @@ TEST(ELikeUseRequirements, PortageNonStrict)
     set_conditionals(id2, "pkgname");
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
-        parse_elike_use_requirement("pkgname?", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("pkgname?", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[pkgname?]", req1->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is enabled for 'cat/enabled-1:0::fake'", req1->as_human_string(id));
     EXPECT_TRUE(req1->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(! req1->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
-        parse_elike_use_requirement("pkgname?", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("pkgname?", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[pkgname?]", req2->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is enabled for 'cat/disabled-1:0::fake'", req2->as_human_string(id2));
     EXPECT_TRUE(req2->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req2->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req7(
-        parse_elike_use_requirement("!pkgname?", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("!pkgname?", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[!pkgname?]", req7->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/enabled-1:0::fake'", req7->as_human_string(id));
     EXPECT_TRUE(req7->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req7->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req8(
-        parse_elike_use_requirement("!pkgname?", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("!pkgname?", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[!pkgname?]", req8->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/disabled-1:0::fake'", req8->as_human_string(id2));
     EXPECT_TRUE(! req8->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req8->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req9(
-        parse_elike_use_requirement("pkgname=", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("pkgname=", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[pkgname=]", req9->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled like it is for 'cat/enabled-1:0::fake'", req9->as_human_string(id));
     EXPECT_TRUE(req9->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(! req9->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req10(
-        parse_elike_use_requirement("pkgname=", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("pkgname=", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[pkgname=]", req10->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled like it is for 'cat/disabled-1:0::fake'", req10->as_human_string(id2));
     EXPECT_TRUE(! req10->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req10->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req11(
-        parse_elike_use_requirement("!pkgname=", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("!pkgname=", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[!pkgname=]", req11->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/enabled-1:0::fake'", req11->as_human_string(id));
     EXPECT_TRUE(! req11->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req11->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req12(
-        parse_elike_use_requirement("!pkgname=", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("!pkgname=", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[!pkgname=]", req12->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'", req12->as_human_string(id2));
     EXPECT_TRUE(req12->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(! req12->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req13(
-        parse_elike_use_requirement("-pkgname?", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("-pkgname?", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[-pkgname?]", req13->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is enabled for 'cat/enabled-1:0::fake'", req13->as_human_string(id));
     EXPECT_TRUE(! req13->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req13->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req14(
-        parse_elike_use_requirement("-pkgname?", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("-pkgname?", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[-pkgname?]", req14->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is enabled for 'cat/disabled-1:0::fake'", req14->as_human_string(id2));
     EXPECT_TRUE(req14->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req14->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req15(
-        parse_elike_use_requirement("pkgname!?", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("pkgname!?", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[pkgname!?]", req15->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is disabled for 'cat/enabled-1:0::fake'", req15->as_human_string(id));
     EXPECT_TRUE(req15->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req15->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req16(
-        parse_elike_use_requirement("pkgname!?", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("pkgname!?", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[pkgname!?]", req16->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled if it is disabled for 'cat/disabled-1:0::fake'", req16->as_human_string(id2));
     EXPECT_TRUE(req16->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(! req16->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req17(
-        parse_elike_use_requirement("-pkgname!?", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("-pkgname!?", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[-pkgname!?]", req17->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/enabled-1:0::fake'", req17->as_human_string(id));
     EXPECT_TRUE(req17->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req17->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req18(
-        parse_elike_use_requirement("-pkgname!?", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("-pkgname!?", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[-pkgname!?]", req18->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' disabled if it is disabled for 'cat/disabled-1:0::fake'", req18->as_human_string(id2));
     EXPECT_TRUE(! req18->requirement_met(&env, 0, id, id2, 0).first);
     EXPECT_TRUE(req18->requirement_met(&env, 0, id2, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req19(
-        parse_elike_use_requirement("pkgname!=", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("pkgname!=", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[pkgname!=]", req19->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/enabled-1:0::fake'", req19->as_human_string(id));
     EXPECT_TRUE(! req19->requirement_met(&env, 0, id, id, 0).first);
     EXPECT_TRUE(req19->requirement_met(&env, 0, id2, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req20(
-        parse_elike_use_requirement("pkgname!=", { euro_allow_self_deps, euro_portage_syntax }));
+        parse_elike_use_requirement_no_accumulate("pkgname!=", { euro_allow_self_deps, euro_portage_syntax }));
     EXPECT_EQ("[pkgname!=]", req20->as_raw_string());
     EXPECT_EQ("Flag 'pkgname' enabled or disabled opposite to how it is for 'cat/disabled-1:0::fake'", req20->as_human_string(id2));
     EXPECT_TRUE(req20->requirement_met(&env, 0, id, id2, 0).first);
@@ -807,25 +813,25 @@ TEST(ELikeUseRequirements, Defaults)
     set_conditionals(id, "enabled disabled");
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
-        parse_elike_use_requirement("missing(+)", { euro_allow_default_values, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("missing(+)", { euro_allow_default_values, euro_strict_parsing }));
     EXPECT_EQ("[missing(+)]", req1->as_raw_string());
     EXPECT_EQ("Flag 'missing' enabled, assuming enabled if missing", req1->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(req1->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
-        parse_elike_use_requirement("missing(-)", { euro_allow_default_values, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("missing(-)", { euro_allow_default_values, euro_strict_parsing }));
     EXPECT_EQ("[missing(-)]", req2->as_raw_string());
     EXPECT_EQ("Flag 'missing' enabled, assuming disabled if missing", req2->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(! req2->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req3(
-        parse_elike_use_requirement("-missing(+)", { euro_allow_default_values, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("-missing(+)", { euro_allow_default_values, euro_strict_parsing }));
     EXPECT_EQ("[-missing(+)]", req3->as_raw_string());
     EXPECT_EQ("Flag 'missing' disabled, assuming enabled if missing", req3->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(! req3->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req4(
-        parse_elike_use_requirement("-missing(-)", { euro_allow_default_values, euro_strict_parsing }));
+        parse_elike_use_requirement_no_accumulate("-missing(-)", { euro_allow_default_values, euro_strict_parsing }));
     EXPECT_EQ("[-missing(-)]", req4->as_raw_string());
     EXPECT_EQ("Flag 'missing' disabled, assuming disabled if missing", req4->as_human_string(make_null_shared_ptr()));
     EXPECT_TRUE(req4->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
@@ -843,12 +849,12 @@ TEST(ELikeUseRequirements, PrefixStar)
     set_conditionals(id, "foo:enabled foo:disabled");
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
-        parse_elike_use_requirement("foo:*", { euro_allow_default_values, euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("foo:*", { euro_allow_default_values, euro_allow_self_deps }));
     EXPECT_EQ("[foo:*]", req1->as_raw_string());
     EXPECT_TRUE(! req1->requirement_met(&env, 0, id, id, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
-        parse_elike_use_requirement("foo:*=", { euro_allow_default_values, euro_allow_self_deps }));
+        parse_elike_use_requirement_no_accumulate("foo:*=", { euro_allow_default_values, euro_allow_self_deps }));
     EXPECT_EQ("[foo:*=]", req2->as_raw_string());
     EXPECT_TRUE(req2->requirement_met(&env, 0, id, id, 0).first);
 }
@@ -869,13 +875,13 @@ TEST(ELikeUseRequirements, QuestionDefaults)
     set_conditionals(id2, "foo:enabled foo:disabled bar:enabled bar:disabled");
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
-        parse_elike_use_requirement("foo:*(?)=", { euro_allow_default_values, euro_allow_self_deps, euro_allow_default_question_values }));
+        parse_elike_use_requirement_no_accumulate("foo:*(?)=", { euro_allow_default_values, euro_allow_self_deps, euro_allow_default_question_values }));
     EXPECT_EQ("[foo:*(?)=]", req1->as_raw_string());
     EXPECT_TRUE(req1->requirement_met(&env, 0, id2, id2, 0).first);
     EXPECT_TRUE(req1->requirement_met(&env, 0, id1, id2, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
-        parse_elike_use_requirement("bar:*(?)=", { euro_allow_default_values, euro_allow_self_deps, euro_allow_default_question_values }));
+        parse_elike_use_requirement_no_accumulate("bar:*(?)=", { euro_allow_default_values, euro_allow_self_deps, euro_allow_default_question_values }));
     EXPECT_EQ("[bar:*(?)=]", req2->as_raw_string());
     EXPECT_TRUE(req2->requirement_met(&env, 0, id2, id2, 0).first);
     EXPECT_TRUE(req2->requirement_met(&env, 0, id1, id2, 0).first);

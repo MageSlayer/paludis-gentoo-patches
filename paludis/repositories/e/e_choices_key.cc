@@ -163,7 +163,7 @@ namespace
                 if (m_role != node.spec()->maybe_annotations()->end())
                     p->second.insert(std::make_pair(n, MyOptionsInfo{ m_role->value(), false })).first->second.description = m_role->value();
                 else
-                    p->second.insert(std::make_pair(n, MyOptionsInfo{ m_role->value(), false }));
+                    p->second.insert(std::make_pair(n, MyOptionsInfo{ "", false }));
 
                 auto n_role(node.spec()->maybe_annotations()->find(dsar_myoptions_presumed));
                 if (n_role != node.spec()->maybe_annotations()->end())

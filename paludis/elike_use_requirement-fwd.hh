@@ -38,10 +38,12 @@ namespace paludis
     typedef Options<ELikeUseRequirementOption> ELikeUseRequirementOptions;
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> parse_elike_use_requirement(
-            const std::string &, const ELikeUseRequirementOptions &)
+            const std::string &, const ELikeUseRequirementOptions &,
+            const std::shared_ptr<Set<std::string> > & maybe_accumulate_mentioned)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
-    std::shared_ptr<const AdditionalPackageDepSpecRequirement> make_elike_presumed_choices_requirement()
+    std::shared_ptr<const AdditionalPackageDepSpecRequirement> make_elike_presumed_choices_requirement(
+            const std::shared_ptr<const Set<std::string> > mentioned)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 }
 

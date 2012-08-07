@@ -52,7 +52,8 @@ namespace paludis
 
     PartiallyMadePackageDepSpec partial_parse_elike_package_dep_spec(const std::string & ss,
             const ELikePackageDepSpecOptions &,
-            const VersionSpecOptions &)
+            const VersionSpecOptions &,
+            const std::shared_ptr<Set<std::string> > & maybe_accumulate_mentioned)
         PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
     void elike_check_sanity(const std::string & s) PALUDIS_VISIBLE;
@@ -61,7 +62,8 @@ namespace paludis
             const ELikePackageDepSpecOptions & options,
             const VersionSpecOptions & version_options,
             bool & had_bracket_version_requirements,
-            bool & had_use_requirements) PALUDIS_VISIBLE;
+            bool & had_use_requirements,
+            const std::shared_ptr<Set<std::string> > & maybe_accumulate_mentioned) PALUDIS_VISIBLE;
 
     void elike_remove_trailing_repo_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
             const ELikePackageDepSpecOptions & options) PALUDIS_VISIBLE;

@@ -23,6 +23,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
@@ -90,7 +91,8 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
         const ELikePackageDepSpecOptions & options,
         const VersionSpecOptions & version_options,
         bool & had_bracket_version_requirements,
-        bool & had_use_requirements)
+        bool & had_use_requirements,
+        const std::shared_ptr<Set<std::string> > & maybe_accumulate_mentioned)
 {
     std::string::size_type use_group_p;
     if (std::string::npos == ((use_group_p = s.rfind('['))))
@@ -238,7 +240,7 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
             if (options[epdso_strict_parsing])
                 euro += euro_strict_parsing;
 
-            std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag, euro));
+            std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag, euro, maybe_accumulate_mentioned));
             result.additional_requirement(req);
 
             break;
@@ -470,7 +472,8 @@ namespace
 PartiallyMadePackageDepSpec
 paludis::partial_parse_elike_package_dep_spec(
         const std::string & ss, const ELikePackageDepSpecOptions & options,
-        const VersionSpecOptions & version_options)
+        const VersionSpecOptions & version_options,
+        const std::shared_ptr<Set<std::string> > & maybe_accumulate_mentioned)
 {
     using namespace std::placeholders;
 
@@ -494,7 +497,8 @@ paludis::partial_parse_elike_package_dep_spec(
                 n::remove_trailing_repo_if_exists() = std::bind(&elike_remove_trailing_repo_if_exists, _1, _2, options),
                 n::remove_trailing_slot_if_exists() = std::bind(&elike_remove_trailing_slot_if_exists, _1, _2, options),
                 n::remove_trailing_square_bracket_if_exists() = std::bind(&elike_remove_trailing_square_bracket_if_exists,
-                        _1, _2, options, version_options, std::ref(had_bracket_version_requirements), std::ref(had_use_requirements))
+                        _1, _2, options, version_options, std::ref(had_bracket_version_requirements), std::ref(had_use_requirements),
+                        std::ref(maybe_accumulate_mentioned))
                 ));
 }
 
@@ -502,6 +506,6 @@ PackageDepSpec
 paludis::parse_elike_package_dep_spec(const std::string & ss, const ELikePackageDepSpecOptions & options,
         const VersionSpecOptions & version_options)
 {
-    return partial_parse_elike_package_dep_spec(ss, options, version_options);
+    return partial_parse_elike_package_dep_spec(ss, options, version_options, make_null_shared_ptr());
 }
 

@@ -111,10 +111,11 @@ namespace
             const EAPI & eapi,
             bool add_explicit_choices_requirement)
     {
+        auto mentioned(std::make_shared<Set<std::string> >());
         auto data(partial_parse_elike_package_dep_spec(s, eapi.supported()->package_dep_spec_parse_options(),
-                    eapi.supported()->version_spec_options()));
+                    eapi.supported()->version_spec_options(), mentioned));
         if (add_explicit_choices_requirement)
-            data.additional_requirement(make_elike_presumed_choices_requirement());
+            data.additional_requirement(make_elike_presumed_choices_requirement(mentioned));
         std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(data));
         h.begin()->item()->append(spec);
         h.begin()->children().push_back(spec);

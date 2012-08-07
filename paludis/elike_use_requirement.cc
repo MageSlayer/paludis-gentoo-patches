@@ -602,16 +602,20 @@ namespace
             const std::string & c,
             Tribool d,
             const bool i,
-            const ELikeUseRequirementOptions & options)
+            const ELikeUseRequirementOptions & options,
+            const std::shared_ptr<Set<std::string> > & maybe_accumulate_mentioned)
     {
         result->add_requirement(factory(c, options, d, i));
+        if (maybe_accumulate_mentioned)
+            maybe_accumulate_mentioned->insert(c);
     }
 
     void
     parse_one_use_requirement(
             const std::shared_ptr<UseRequirements> & result,
             const std::string & s, std::string & flag,
-            const ELikeUseRequirementOptions & options)
+            const ELikeUseRequirementOptions & options,
+            const std::shared_ptr<Set<std::string> > & maybe_accumulate_mentioned)
     {
         Factory factory;
 
@@ -774,7 +778,7 @@ namespace
                 }
 
                 flag.erase(flag.length() - 3, 3);
-                parse_flag(result, factory, flag, Tribool(true), false, options);
+                parse_flag(result, factory, flag, Tribool(true), false, options, maybe_accumulate_mentioned);
             }
             else if ('-' == flag.at(flag.length() - 2))
             {
@@ -788,7 +792,7 @@ namespace
                 }
 
                 flag.erase(flag.length() - 3, 3);
-                parse_flag(result, factory, flag, Tribool(false), false, options);
+                parse_flag(result, factory, flag, Tribool(false), false, options, maybe_accumulate_mentioned);
             }
             else if ('?' == flag.at(flag.length() - 2))
             {
@@ -802,13 +806,13 @@ namespace
                 }
 
                 flag.erase(flag.length() - 3, 3);
-                parse_flag(result, factory, flag, Tribool(false), true, options);
+                parse_flag(result, factory, flag, Tribool(false), true, options, maybe_accumulate_mentioned);
             }
             else
                 throw ELikeUseRequirementError(s, "Invalid [] contents");
         }
         else
-            parse_flag(result, factory, flag, Tribool(indeterminate), false, options);
+            parse_flag(result, factory, flag, Tribool(indeterminate), false, options, maybe_accumulate_mentioned);
     }
 }
 
@@ -819,7 +823,8 @@ ELikeUseRequirementError::ELikeUseRequirementError(const std::string & s, const 
 
 std::shared_ptr<const AdditionalPackageDepSpecRequirement>
 paludis::parse_elike_use_requirement(const std::string & s,
-        const ELikeUseRequirementOptions & options)
+        const ELikeUseRequirementOptions & options,
+        const std::shared_ptr<Set<std::string> > & maybe_accumulate_mentioned)
 {
     Context context("When parsing use requirement '" + s + "':");
 
@@ -829,7 +834,7 @@ paludis::parse_elike_use_requirement(const std::string & s,
     {
         std::string::size_type comma(s.find(',', pos));
         std::string flag(s.substr(pos, std::string::npos == comma ? comma : comma - pos));
-        parse_one_use_requirement(result, s, flag, options);
+        parse_one_use_requirement(result, s, flag, options, maybe_accumulate_mentioned);
         if (std::string::npos == comma)
             break;
 
@@ -853,7 +858,16 @@ namespace
     class ELikePresumedChoicesRequirement :
         public AdditionalPackageDepSpecRequirement
     {
+        private:
+            const std::shared_ptr<const Set<std::string> > _mentioned;
+
         public:
+            ELikePresumedChoicesRequirement(
+                    const std::shared_ptr<const Set<std::string> > m) :
+                _mentioned(m)
+            {
+            }
+
             virtual const std::pair<bool, std::string> requirement_met(
                     const Environment * const,
                     const ChangedChoices * const,
@@ -865,14 +879,32 @@ namespace
                     return std::make_pair(true, "");
 
                 auto choices(id->choices_key()->parse_value());
+                std::string p;
+                int n(0);
                 for (auto c(choices->begin()), c_end(choices->end()) ; c != c_end ; ++c)
+                {
+                    if (_mentioned->end() != _mentioned->find(stringify((*c)->prefix()) + ":*"))
+                        continue;
+
                     for (auto v((*c)->begin()), v_end((*c)->end()) ; v != v_end ; ++v)
                         if ((*v)->presumed())
                         {
-                            return std::make_pair(false, as_human_string(id));
-                        }
+                            if (_mentioned->end() != _mentioned->find(stringify((*v)->name_with_prefix())))
+                                continue;
 
-                return std::make_pair(true, as_human_string(id));
+                            ++n;
+                            if (! p.empty())
+                                p.append("', '");
+                            p.append(stringify((*v)->name_with_prefix()));
+                        }
+                }
+
+                if (n > 1)
+                    return std::make_pair(false, "Flags '" + p + "' enabled (presumed)");
+                else if (n == 1)
+                    return std::make_pair(false, "Flag '" + p + "' enabled (presumed)");
+                else
+                    return std::make_pair(true, as_human_string(id));
             }
 
             virtual Tribool accumulate_changes_to_make_met(
@@ -891,7 +923,7 @@ namespace
             virtual const std::string as_human_string(
                     const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result))
             {
-                return "Remaining explicit flags enabled";
+                return "Remaining presumed flags enabled";
             }
 
             virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result))
@@ -902,8 +934,9 @@ namespace
 }
 
 std::shared_ptr<const AdditionalPackageDepSpecRequirement>
-paludis::make_elike_presumed_choices_requirement()
+paludis::make_elike_presumed_choices_requirement(
+        const std::shared_ptr<const Set<std::string> > mentioned)
 {
-    return std::make_shared<ELikePresumedChoicesRequirement>();
+    return std::make_shared<ELikePresumedChoicesRequirement>(mentioned);
 }
 
