@@ -100,6 +100,13 @@ paludis::erepository::parse_annotations(
                 role = dsar_myoptions_requires;
         }
 
+        /* myoptions requires */
+        if (dsar_none == role)
+        {
+            if (key == eapi.supported()->annotations()->myoptions_presumed())
+                role = dsar_myoptions_presumed;
+        }
+
         /* suggestions */
         if (dsar_none == role)
         {

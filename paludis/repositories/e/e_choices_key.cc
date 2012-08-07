@@ -40,6 +40,7 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/upper_lower.hh>
+#include <paludis/util/destringify.hh>
 
 #include <paludis/environment.hh>
 #include <paludis/choice.hh>
@@ -163,6 +164,19 @@ namespace
                     p->second.insert(std::make_pair(n, MyOptionsInfo{ m_role->value(), false })).first->second.description = m_role->value();
                 else
                     p->second.insert(std::make_pair(n, MyOptionsInfo{ m_role->value(), false }));
+
+                auto n_role(node.spec()->maybe_annotations()->find(dsar_myoptions_presumed));
+                if (n_role != node.spec()->maybe_annotations()->end())
+                {
+                    try
+                    {
+                        p->second.insert(std::make_pair(n, MyOptionsInfo{ "", true })).first->second.presumed = destringify<bool>(n_role->value());
+                    }
+                    catch (const DestringifyError & e)
+                    {
+                        Log::get_instance()->message("e.myoptions_key.bad_presumed", ll_warning, lc_context) << "Bad presumed value '" << n_role->value() << "'";
+                    }
+                }
             }
             else
                 p->second.insert(std::make_pair(n, MyOptionsInfo{ "", false }));

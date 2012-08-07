@@ -30,6 +30,7 @@ make_enum_DepSpecAnnotationRole()
     key dsar_myoptions_n_at_least_one         "MYOPTIONS, at least one"
     key dsar_myoptions_n_at_most_one          "MYOPTIONS, at most one"
     key dsar_myoptions_n_exactly_one          "MYOPTIONS, exactly one"
+    key dsar_myoptions_presumed               "MYOPTIONS, presumed"
 
     key dsar_suggestions_group_name           "Group name for suggestions"
 

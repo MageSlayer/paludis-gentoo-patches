@@ -162,6 +162,7 @@ namespace paludis
         typedef Name<struct name_myoptions_number_selected_at_least_one> myoptions_number_selected_at_least_one;
         typedef Name<struct name_myoptions_number_selected_at_most_one> myoptions_number_selected_at_most_one;
         typedef Name<struct name_myoptions_number_selected_exactly_one> myoptions_number_selected_exactly_one;
+        typedef Name<struct name_myoptions_presumed> myoptions_presumed;
         typedef Name<struct name_myoptions_requires> myoptions_requires;
         typedef Name<struct name_must_not_change_after_source_variables> must_not_change_after_source_variables;
         typedef Name<struct name_must_not_change_variables> must_not_change_variables;
@@ -499,6 +500,7 @@ namespace paludis
             NamedValue<n::myoptions_number_selected_at_least_one, std::string> myoptions_number_selected_at_least_one;
             NamedValue<n::myoptions_number_selected_at_most_one, std::string> myoptions_number_selected_at_most_one;
             NamedValue<n::myoptions_number_selected_exactly_one, std::string> myoptions_number_selected_exactly_one;
+            NamedValue<n::myoptions_presumed, std::string> myoptions_presumed;
             NamedValue<n::myoptions_requires, std::string> myoptions_requires;
             NamedValue<n::suggestions_group_name, std::string> suggestions_group_name;
             NamedValue<n::system_implicit, std::string> system_implicit;

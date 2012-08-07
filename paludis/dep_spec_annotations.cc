@@ -134,6 +134,7 @@ paludis::find_blocker_role_in_annotations(
             case dsar_myoptions_n_at_least_one:
             case dsar_myoptions_n_at_most_one:
             case dsar_myoptions_n_exactly_one:
+            case dsar_myoptions_presumed:
             case dsar_suggestions_group_name:
             case dsar_system_implicit:
             case dsar_licence_last_checked:
