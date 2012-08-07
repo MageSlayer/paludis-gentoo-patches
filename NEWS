@@ -4,6 +4,16 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.78.0:
+    * 'cave resolve --explain' output now groups together similar items.
+
+    * Phase skipping now works for uninstalls too.
+
+    * build_options: preserve_work is now build_options: work=preserve, and
+      other values are now possible.
+
+    * Various bug fixes.
+
 0.76.0:
     * cave resolve --change-phases-for now has !first and !last options.
 
