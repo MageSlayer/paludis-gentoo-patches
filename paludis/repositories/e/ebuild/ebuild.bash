@@ -89,18 +89,6 @@ EBUILD_METADATA_VARIABLES="DEPEND RDEPEND PDEPEND IUSE SRC_URI DOWNLOADS RESTRIC
     PALUDIS_EBUILD_RDEPEND_WAS_SET PALUDIS_EBUILD_DEPEND REQUIRED_USE SCM_REVISION"
 EBUILD_METADATA_VARIABLES_FROM_CPLUSPLUS="SLOT EAPI OPTIONS USE"
 
-if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] ; then
-    export SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}"
-    export SANDBOX_PREDICT="${SANDBOX_PREDICT}/proc/self/maps:/dev/console:/dev/random"
-    export SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}"
-    export SANDBOX_WRITE="${SANDBOX_WRITE}/dev/shm:/dev/stdout:/dev/stderr:/dev/null:/dev/tty:/dev/pts"
-    export SANDBOX_WRITE="${SANDBOX_WRITE}:${PALUDIS_TMPDIR}:/var/cache"
-    export SANDBOX_WRITE="${SANDBOX_WRITE}:/proc/self/attr:/proc/self/task:/selinux/context"
-    export SANDBOX_ON="1"
-    export SANDBOX_BASHRC="/dev/null"
-    unset BASH_ENV
-fi
-
 shopt -s expand_aliases
 [[ -z ${PALUDIS_SHELL_OPTIONS} && unset == ${PALUDIS_SHELL_OPTIONS-unset} ]] &&
     shopt -s extglob
@@ -209,6 +197,41 @@ done
 
 # keep the upgrade from 0.36 to 0.38 working
 [[ -z ${PALUDIS_EBUILD_PHASE_VAR} ]] && export PALUDIS_EBUILD_PHASE_VAR="EBUILD_PHASE"
+
+if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] ; then
+    export SANDBOX_PREDICT="${SANDBOX_PREDICT+${SANDBOX_PREDICT}:}"
+    export SANDBOX_PREDICT="${SANDBOX_PREDICT}/proc/self/maps:/dev/console:/dev/random"
+    export SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}"
+    export SANDBOX_WRITE="${SANDBOX_WRITE}/dev/shm:/dev/stdout:/dev/stderr:/dev/null:/dev/tty:/dev/pts"
+    export SANDBOX_WRITE="${SANDBOX_WRITE}:${PALUDIS_TMPDIR}:/var/cache"
+    export SANDBOX_WRITE="${SANDBOX_WRITE}:/proc/self/attr:/proc/self/task:/selinux/context"
+    export SANDBOX_ON="1"
+    export SANDBOX_BASHRC="/dev/null"
+    unset BASH_ENV
+
+    if esandbox check 2>/dev/null; then
+        esandbox allow \
+            /dev/{stdout,stderr,zero,null,full,console,random,ptmx} \
+            /dev/{fd,tts,pts,shm,tty,pty} \
+            /proc/self/{fd,attr,task} \
+            /selinux/context \
+            /tmp /var/tmp /var/cache \
+            "${PALUDIS_TMPDIR%/}"
+        if [[ -n "${CCACHE_DIR}" ]]; then
+            esandbox allow "${CCACHE_DIR%/}"
+        fi
+
+        esandbox allow_net \
+            LOOPBACK@0 \
+            LOOPBACK@1024-65535 \
+            LOOPBACK6@0 \
+            LOOPBACK6@1024-65535
+
+        esandbox allow_net --connect \
+            unix:/var/run/nscd/socket \
+            unix:/run/nscd/socket
+    fi
+fi
 
 check_paludis_pipe_command()
 {
