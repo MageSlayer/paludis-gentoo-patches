@@ -63,11 +63,6 @@ vdb_path()
     die "Function 'vdb_path' banned in this EAPI"
 }
 
-check_KV()
-{
-    die "check_KV not implemented"
-}
-
 debug-print()
 {
     die "Function 'debug-print' banned in this EAPI"

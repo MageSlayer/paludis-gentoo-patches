@@ -81,11 +81,6 @@ vdb_path()
     return ${r%%;*}
 }
 
-check_KV()
-{
-    die "check_KV not implemented"
-}
-
 debug-print()
 {
     :
