@@ -439,28 +439,28 @@ TEST(VersionSpec, Ordering)
         {
             if (std::distance(v.begin(), v1) < std::distance(v.begin(), v2))
             {
-                ASSERT_TRUE(*v1 < *v2);
-                ASSERT_TRUE(*v2 > *v1);
-                ASSERT_TRUE(*v1 != *v2);
-                ASSERT_TRUE(*v2 != *v1);
-                ASSERT_TRUE(v1->hash() != v2->hash());
-                ASSERT_TRUE(v2->hash() != v1->hash());
+                ASSERT_LT(*v1, *v2);
+                ASSERT_GT(*v2, *v1);
+                ASSERT_NE(*v1, *v2);
+                ASSERT_NE(*v2, *v1);
+                ASSERT_NE(v1->hash(), v2->hash());
+                ASSERT_NE(v2->hash(), v1->hash());
             }
             else if (std::distance(v.begin(), v1) > std::distance(v.begin(), v2))
             {
-                ASSERT_TRUE(*v2 < *v1);
-                ASSERT_TRUE(*v1 > *v2);
-                ASSERT_TRUE(*v2 != *v1);
-                ASSERT_TRUE(*v1 != *v2);
-                ASSERT_TRUE(v1->hash() != v2->hash());
-                ASSERT_TRUE(v2->hash() != v1->hash());
+                ASSERT_LT(*v2, *v1);
+                ASSERT_GT(*v1, *v2);
+                ASSERT_NE(*v2, *v1);
+                ASSERT_NE(*v1, *v2);
+                ASSERT_NE(v1->hash(), v2->hash());
+                ASSERT_NE(v2->hash(), v1->hash());
             }
             else
             {
-                ASSERT_TRUE(*v2 == *v1);
-                ASSERT_TRUE(*v1 == *v2);
-                ASSERT_TRUE(v1->hash() == v2->hash());
-                ASSERT_TRUE(v2->hash() == v1->hash());
+                ASSERT_EQ(*v2, *v1);
+                ASSERT_EQ(*v1, *v2);
+                ASSERT_EQ(v1->hash(), v2->hash());
+                ASSERT_EQ(v2->hash(), v1->hash());
             }
         }
     }
