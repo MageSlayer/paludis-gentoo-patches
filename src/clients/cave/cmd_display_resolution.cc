@@ -197,7 +197,7 @@ namespace
             if (r.sanitised_dependency().spec().if_block())
                 return annotate(r.sanitised_dependency().spec().if_block()->maybe_annotations(),
                         std::make_pair(stringify(*r.sanitised_dependency().spec().if_block())
-                            + " from " + (verbose ? stringify(*r.from_id()) : stringify(r.from_id()->name())),
+                            + " from " + stringify(*r.from_id()),
                             false), true);
             else
             {
@@ -235,7 +235,7 @@ namespace
                     }
 
                     return annotate(r.sanitised_dependency().spec().if_package()->maybe_annotations(),
-                            std::make_pair(stringify(r.from_id()->name()) + ts, false), false);
+                            std::make_pair(stringify(*r.from_id()) + ts, false), false);
                 }
             }
         }
