@@ -345,6 +345,9 @@ TEST(VersionSpec, Ordering)
     ASSERT_TRUE(VersionSpec("1.2-r3", { }).hash() == VersionSpec("1.2-r3.0", { }).hash());
     ASSERT_TRUE(VersionSpec("1.2", { }).hash() == VersionSpec("1.2-r0.0", { }).hash());
 
+    ASSERT_TRUE(VersionSpec("0-scm", { }) < VersionSpec("1", { }));
+    ASSERT_TRUE(VersionSpec("1-try-scm", { }) > VersionSpec("1-try1", { }));
+
     std::vector<VersionSpec> v;
     v.push_back(VersionSpec("1_alpha_alpha", { }));
     v.push_back(VersionSpec("1_alpha", { }));

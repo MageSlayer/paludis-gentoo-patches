@@ -105,7 +105,7 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
         if (options[vso_ignore_leading_v] && parser.consume(
                     (options[vso_ignore_case] ? simple_parser::exact_ignoring_case("v") : simple_parser::exact("v")) >> leading_v_str))
             _imp->parts.push_back(make_named_values<VersionSpecComponent>(
-                        n::number_value() = "",
+                        n::number_value() = "0",
                         n::text() = leading_v_str,
                         n::type() = vsct_ignore
                         ));
@@ -115,7 +115,7 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
     if (parser.consume((options[vso_ignore_case] ? simple_parser::exact_ignoring_case("scm") : simple_parser::exact("scm")) >> scm_str))
     {
         _imp->parts.push_back(make_named_values<VersionSpecComponent>(
-                    n::number_value() = "",
+                    n::number_value() = "0",
                     n::text() = scm_str,
                     n::type() = vsct_scm
                     ));
@@ -147,11 +147,14 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
                 throw BadVersionSpecError(text, "Expected number part not found at offset " + stringify(parser.offset()));
 
             if (first_number || '0' != number_part[0])
+            {
+                std::string number_str(strip_leading(number_part, "0"));
                 _imp->parts.push_back(make_named_values<VersionSpecComponent>(
-                            n::number_value() = strip_leading(number_part, "0"),
+                            n::number_value() = number_str.empty() ? "0" : number_str,
                             n::text() = number_prefix + number_part,
                             n::type() = vsct_number
                             ));
+            }
             else
                 _imp->parts.push_back(make_named_values<VersionSpecComponent>(
                             n::number_value() = number_part,
@@ -258,11 +261,14 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
         if (parser.consume(make_dash_parse_expression("-", "scm", options[vso_ignore_case], options[vso_flexible_dashes]) >> scm_str))
         {
             /* _suffix-scm? */
-            if (_imp->parts.back().number_value().empty())
+            if (_imp->parts.back().number_value().empty() &&
+                    ((_imp->parts.back().type() >= vsct_alpha && _imp->parts.back().type() <= vsct_rc) ||
+                     _imp->parts.back().type() == vsct_patch ||
+                     _imp->parts.back().type() == vsct_trypart))
                 _imp->parts.back().number_value() = "MAX";
 
             _imp->parts.push_back(make_named_values<VersionSpecComponent>(
-                        n::number_value() = "",
+                        n::number_value() = "0",
                         n::text() = scm_str,
                         n::type() = vsct_scm
                         ));
@@ -271,7 +277,10 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
         /* Now we can change empty values to "0" */
         for (Parts::iterator i(_imp->parts.begin()),
                 i_end(_imp->parts.end()) ; i != i_end ; ++i)
-            if ((*i).number_value().empty())
+            if ((*i).number_value().empty() &&
+                    (((*i).type() >= vsct_alpha && (*i).type() <= vsct_rc) ||
+                     (*i).type() == vsct_patch ||
+                     (*i).type() == vsct_trypart))
                 (*i).number_value() = "0";
     }
 
