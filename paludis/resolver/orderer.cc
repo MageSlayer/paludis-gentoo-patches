@@ -483,6 +483,8 @@ Orderer::resolve()
             r_end(_imp->resolved->resolutions_by_resolvent()->end()) ;
             r != r_end ; ++r)
     {
+        Context subcontext("When ordering '" + stringify((*r)->resolvent()) + "':");
+
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
         if (ignore_edges_from_resolvents.end() != ignore_edges_from_resolvents.find((*r)->resolvent()))
@@ -495,7 +497,10 @@ Orderer::resolve()
         for (Constraints::ConstIterator c((*r)->constraints()->begin()),
                 c_end((*r)->constraints()->end()) ;
                 c != c_end ; ++c)
+        {
+            Context subsubcontext("When handling constraint '" + stringify((*c)->spec()) + "':");
             (*c)->reason()->accept(edges_from_reason_visitor);
+        }
     }
 
     _imp->resolved->nag()->verify_edges();
