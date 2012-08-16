@@ -27,6 +27,7 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
+#include <paludis/util/join.hh>
 
 #include <paludis/serialise-impl.hh>
 #include <paludis/changed_choices.hh>
@@ -488,6 +489,65 @@ Reason::deserialise(Deserialisation & d)
         throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 }
 
+namespace
+{
+    std::string stringify_change_by_resolvent(const ChangeByResolvent & r)
+    {
+        return stringify(r.resolvent());
+    }
+
+    struct ReasonStringifier
+    {
+        std::string visit(const TargetReason &) const
+        {
+            return "target";
+        }
+
+        std::string visit(const DependencyReason & r) const
+        {
+            return "dependency from " + stringify(*r.from_id());
+        }
+
+        std::string visit(const DependentReason & r) const
+        {
+            return "dependent upon " + stringify(*r.dependent_upon().package_id());
+        }
+
+        std::string visit(const WasUsedByReason & r) const
+        {
+            return "was used by " + join(r.ids_and_resolvents_being_removed()->begin(), r.ids_and_resolvents_being_removed()->end(),
+                    ", ", stringify_change_by_resolvent);
+        }
+
+        std::string visit(const PresetReason &) const
+        {
+            return "preset";
+        }
+
+        std::string visit(const SetReason & r) const
+        {
+            return "set " + stringify(r.set_name()) + " due to " + r.reason_for_set()->accept_returning<std::string>(*this);
+        }
+
+        std::string visit(const LikeOtherDestinationTypeReason & r) const
+        {
+            return "to be like " + stringify(r.other_resolvent()) + " due to " + r.reason_for_other()->accept_returning<std::string>(*this);
+        }
+
+        std::string visit(const ViaBinaryReason & r) const
+        {
+            return "via binary for " + stringify(r.other_resolvent());
+        }
+    };
+}
+
+std::ostream &
+paludis::operator<< (std::ostream & s, const Reason & d)
+{
+    s << d.accept_returning<std::string>(ReasonStringifier());
+    return s;
+}
+
 namespace paludis
 {
     template class Pimp<TargetReason>;
@@ -502,3 +562,4 @@ namespace paludis
     template class Sequence<std::shared_ptr<const Reason> >;
     template class WrappedForwardIterator<Reasons::ConstIteratorTag, const std::shared_ptr<const Reason> >;
 }
+

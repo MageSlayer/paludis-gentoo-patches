@@ -498,7 +498,7 @@ Orderer::resolve()
                 c_end((*r)->constraints()->end()) ;
                 c != c_end ; ++c)
         {
-            Context subsubcontext("When handling constraint '" + stringify((*c)->spec()) + "':");
+            Context subsubcontext("When handling constraint '" + stringify((*c)->spec()) + "' with reason '" + stringify(*(*c)->reason()) + "':");
             (*c)->reason()->accept(edges_from_reason_visitor);
         }
     }
