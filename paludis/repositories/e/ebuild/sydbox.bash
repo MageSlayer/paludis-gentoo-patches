@@ -223,6 +223,14 @@ esandbox_1()
         [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
         sydbox_internal_net_1 "filter/network" '-' "${@}"
         ;;
+    kill)
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
+        sydbox_internal_path_1 "exec/kill_if_match" "+" "${@}"
+        ;;
+    resume)
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
+        sydbox_internal_path_1 "exec/resume_if_match" "+" "${@}"
+        ;;
     hack_toolong|nohack_toolong)
         ebuild_notice "warning" "${FUNCNAME} ${cmd} is not implemented for sydbox-1"
         false;;
@@ -339,6 +347,9 @@ esandbox_0() {
     rmfilter_net)
         [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
         sydbox_internal_net "rmfilter_net" "${@}"
+        ;;
+    kill|resume)
+        ebuild_notice "warning" "${FUNCNAME} ${cmd} is not implemented for sydbox-0"
         ;;
     *)
         die "${FUNCNAME} subcommand ${cmd} unrecognised"
