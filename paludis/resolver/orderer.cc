@@ -259,10 +259,18 @@ namespace
 
             /* what sort of dep are we? */
             LabelsClassifierBuilder classifier_builder(env, r.from_id());
+            std::string active_labels;
             for (DependenciesLabelSequence::ConstIterator l(r.sanitised_dependency().active_dependency_labels()->begin()),
                     l_end(r.sanitised_dependency().active_dependency_labels()->end()) ;
                     l != l_end ; ++l)
+            {
                 (*l)->accept(classifier_builder);
+                if (! active_labels.empty())
+                    active_labels.append(", ");
+                active_labels.append(stringify(**l));
+            }
+
+            Context labels_context("With active labels '" + active_labels + "':");
 
             auto classifier(classifier_builder.create());
 
