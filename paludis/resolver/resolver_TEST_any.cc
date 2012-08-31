@@ -344,3 +344,24 @@ TEST_F(ResolverAnyTestCase, UpgradeOverAny)
             );
 }
 
+TEST_F(ResolverAnyTestCase, NoActiveLabels)
+{
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("no-active-labels/target"));
+
+    this->check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("no-active-labels/target"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
+}
+

@@ -117,7 +117,7 @@ namespace
         const std::shared_ptr<const Resolution> our_resolution;
         const std::shared_ptr<const PackageID> our_id;
         const std::shared_ptr<const ChangedChoices> changed_choices;
-        const std::function<SanitisedDependency (const PackageOrBlockDepSpec &)> parent_make_sanitised;
+        const std::function<std::shared_ptr<SanitisedDependency> (const PackageOrBlockDepSpec &)> parent_make_sanitised;
 
         bool super_complicated, nested;
 
@@ -131,7 +131,7 @@ namespace
                 const Decider & r, const std::shared_ptr<const Resolution> & q,
                 const std::shared_ptr<const PackageID> & o,
                 const std::shared_ptr<const ChangedChoices> & c,
-                const std::function<SanitisedDependency (const PackageOrBlockDepSpec &)> & f) :
+                const std::function<std::shared_ptr<SanitisedDependency> (const PackageOrBlockDepSpec &)> & f) :
             env(e),
             decider(r),
             our_resolution(q),
@@ -253,7 +253,7 @@ namespace
         }
 
         void commit(
-                const std::function<SanitisedDependency (const PackageOrBlockDepSpec &)> & make_sanitised,
+                const std::function<std::shared_ptr<SanitisedDependency> (const PackageOrBlockDepSpec &)> & maybe_make_sanitised,
                 const std::function<void (const SanitisedDependency &)> & apply)
         {
             if (! seen_any)
@@ -278,12 +278,16 @@ namespace
                     for (std::list<PackageOrBlockDepSpec>::const_iterator h(g->begin()), h_end(g->end()) ;
                             h != h_end ; ++h)
                     {
-                        auto score(decider.find_any_score(our_resolution, our_id, make_sanitised(PackageOrBlockDepSpec(*h))));
-                        Log::get_instance()->message("resolver.sanitised_dependencies.any_score", ll_debug, lc_context)
-                            << "Scored " << *h << " as " << score.first << " " << score.second;
+                        auto s(maybe_make_sanitised(PackageOrBlockDepSpec(*h)));
+                        if (s)
+                        {
+                            auto score(decider.find_any_score(our_resolution, our_id, *s));
+                            Log::get_instance()->message("resolver.sanitised_dependencies.any_score", ll_debug, lc_context)
+                                << "Scored " << *h << " as " << score.first << " " << score.second;
 
-                        if (score < worst_score)
-                            worst_score = score;
+                            if (score < worst_score)
+                                worst_score = score;
+                        }
                     }
 
                     if (worst_score > best_score)
@@ -293,11 +297,17 @@ namespace
                     }
                 }
 
-                if (g_best == child_groups.end())
-                    throw InternalError(PALUDIS_HERE, "why did that happen?");
-                for (std::list<PackageOrBlockDepSpec>::const_iterator h(g_best->begin()), h_end(g_best->end()) ;
-                        h != h_end ; ++h)
-                    apply(make_sanitised(*h));
+                if (g_best != child_groups.end())
+                {
+                    /* might be nothing to do, if no labels are enabled */
+                    for (std::list<PackageOrBlockDepSpec>::const_iterator h(g_best->begin()), h_end(g_best->end()) ;
+                            h != h_end ; ++h)
+                    {
+                        auto s(maybe_make_sanitised(*h));
+                        if (s)
+                            apply(*s);
+                    }
+                }
             }
         }
     };
@@ -346,7 +356,7 @@ namespace
             sanitised_dependencies.add(dep);
         }
 
-        SanitisedDependency make_sanitised(const PackageOrBlockDepSpec & spec)
+        std::shared_ptr<SanitisedDependency> maybe_make_sanitised(const PackageOrBlockDepSpec & spec)
         {
             std::stringstream adl, acs;
             auto classifier_builder(std::make_shared<LabelsClassifierBuilder>(env, our_id));
@@ -358,31 +368,41 @@ namespace
                 (*i)->accept(*classifier_builder);
             }
 
-            for (auto c(conditions_stack.begin()), c_end(conditions_stack.end()) ;
-                    c != c_end ; ++c)
-                acs << (acs.str().empty() ? "" : ", ") << stringify(*c);
+            auto classifier(classifier_builder->create());
+            if (classifier->any_enabled)
+            {
+                for (auto c(conditions_stack.begin()), c_end(conditions_stack.end()) ;
+                        c != c_end ; ++c)
+                    acs << (acs.str().empty() ? "" : ", ") << stringify(*c);
 
-            return make_named_values<SanitisedDependency>(
-                    n::active_conditions_as_string() = acs.str(),
-                    n::active_dependency_labels() = *labels_stack.begin(),
-                    n::active_dependency_labels_as_string() = adl.str(),
-                    n::active_dependency_labels_classifier() = classifier_builder->create(),
-                    n::from_id() = our_id,
-                    n::metadata_key_human_name() = human_name,
-                    n::metadata_key_raw_name() = raw_name,
-                    n::original_specs_as_string() = original_specs_as_string,
-                    n::spec() = spec
-                    );
+                return make_shared_copy(make_named_values<SanitisedDependency>(
+                            n::active_conditions_as_string() = acs.str(),
+                            n::active_dependency_labels() = *labels_stack.begin(),
+                            n::active_dependency_labels_as_string() = adl.str(),
+                            n::active_dependency_labels_classifier() = classifier,
+                            n::from_id() = our_id,
+                            n::metadata_key_human_name() = human_name,
+                            n::metadata_key_raw_name() = raw_name,
+                            n::original_specs_as_string() = original_specs_as_string,
+                            n::spec() = spec
+                            ));
+            }
+            else
+                return make_null_shared_ptr();
         }
 
         void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
         {
-            add(make_sanitised(*node.spec()));
+            auto s(maybe_make_sanitised(*node.spec()));
+            if (s)
+                add(*s);
         }
 
         void visit(const DependencySpecTree::NodeType<BlockDepSpec>::Type & node)
         {
-            add(make_sanitised(*node.spec()));
+            auto s(maybe_make_sanitised(*node.spec()));
+            if (s)
+                add(*s);
         }
 
         void visit(const DependencySpecTree::NodeType<ConditionalDepSpec>::Type & node)
@@ -415,10 +435,10 @@ namespace
             }
 
             AnyDepSpecChildHandler h(env, decider, our_resolution, our_id, changed_choices,
-                    std::bind(&Finder::make_sanitised, this, std::placeholders::_1));
+                    std::bind(&Finder::maybe_make_sanitised, this, std::placeholders::_1));
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(h));
             h.commit(
-                    std::bind(&Finder::make_sanitised, this, std::placeholders::_1),
+                    std::bind(&Finder::maybe_make_sanitised, this, std::placeholders::_1),
                     std::bind(&Finder::add, this, std::placeholders::_1)
                     );
         }

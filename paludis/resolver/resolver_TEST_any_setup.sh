@@ -176,5 +176,26 @@ SLOT="0"
 DEPENDENCIES=""
 END
 
+# no-active-labels
+echo 'no-active-labels' >> metadata/categories.conf
+
+mkdir -p 'packages/no-active-labels/target'
+cat <<END > packages/no-active-labels/target/target-1.exheres-0
+SUMMARY="target"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES="
+    test-expensive: || ( no-active-labels/dep no-active-labels/dep )
+    "
+END
+
+mkdir -p 'packages/no-active-labels/dep'
+cat <<END > packages/no-active-labels/dep/dep-1.exheres-0
+SUMMARY="dep"
+PLATFORMS="test"
+SLOT="0"
+DEPENDENCIES=""
+END
+
 cd ..
 
