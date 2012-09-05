@@ -32,19 +32,11 @@ use_enable()
 
 option_with()
 {
-    if optionq "${1}" ; then
-        echo "--with-${2:-$(optionfmt ${1} )}${3+=${3}}"
-    else
-        echo "--without-${2:-$(optionfmt ${1} )}"
-    fi
+    option "${1}" "--with-${2:-$(optionfmt ${1} )}${3+=${3}}" "--without-${2:-$(optionfmt ${1} )}"
 }
 
 option_enable()
 {
-    if optionq "${1}" ; then
-        echo "--enable-${2:-$(optionfmt ${1} )}${3+=${3}}"
-    else
-        echo "--disable-${2:-$(optionfmt ${1} )}"
-    fi
+    option "${1}" "--enable-${2:-$(optionfmt ${1} )}${3+=${3}}" "--disable-${2:-$(optionfmt ${1} )}"
 }
 

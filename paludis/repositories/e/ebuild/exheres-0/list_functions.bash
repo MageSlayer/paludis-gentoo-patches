@@ -43,17 +43,20 @@ optionfmt()
 
 option()
 {
+    [[ "${#@}" -gt 3 ]] && die "$0 takes at most three arguments"
     optionq "${1}"
+    local r=$?
+    if [[ ${r} -eq 0 ]] ; then
+        [[ -n "${2}" ]] && echo "${2}"
+    else
+        [[ -n "${3}" ]] && echo "${3}"
+    fi
+    return ${r}
 }
 
 optionv()
 {
-    if optionq "${1}" ; then
-        optionfmt "${1}"
-        return 0
-    else
-        return 1
-    fi
+    option "${1}" "$(optionfmt "${1}")"
 }
 
 optionq()
