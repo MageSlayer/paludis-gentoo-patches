@@ -4,6 +4,14 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+0.78.2:
+    * Bug fix: || ( ) dependencies under a non-enabled label are now handled
+      sensibly.
+
+    * Bug fix: the resolver no longer attempts to create binaries for accounts.
+
+    * Bug fix: 0-scm is now ordered correctly.
+
 0.78.1:
     * sydbox-1 is now supported.
 
