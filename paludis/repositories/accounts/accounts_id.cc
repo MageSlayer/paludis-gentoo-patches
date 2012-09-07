@@ -165,6 +165,9 @@ AccountsID::_add_metadata_keys() const
     if (_imp->preferred_gid_key)
         add_metadata_key(_imp->preferred_gid_key);
 
+    if (_imp->behaviours_key)
+        add_metadata_key(_imp->behaviours_key);
+
     _imp->has_metadata_keys = true;
 }
 

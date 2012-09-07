@@ -61,6 +61,7 @@ namespace
         {
             behaviours_value->insert("transient");
             behaviours_value->insert("used");
+            behaviours_value->insert("unbinaryable");
         }
     };
 }
