@@ -40,6 +40,7 @@ namespace paludis
     {
         typedef Name<struct name_allow_tokens_in_mask_files> allow_tokens_in_mask_files;
         typedef Name<struct name_annotations> annotations;
+        typedef Name<struct name_best_has_version_host_root> best_has_version_host_root;
         typedef Name<struct name_binary_from_env_variables> binary_from_env_variables;
         typedef Name<struct name_blocker_resolution> blocker_resolution;
         typedef Name<struct name_blocker_resolution_manual> blocker_resolution_manual;
@@ -462,6 +463,7 @@ namespace paludis
 
         struct EAPIToolsOptions
         {
+            NamedValue<n::best_has_version_host_root, bool> best_has_version_host_root;
             NamedValue<n::dodoc_r, bool> dodoc_r;
             NamedValue<n::doins_symlink, bool> doins_symlink;
             NamedValue<n::doman_lang_filenames, bool> doman_lang_filenames;

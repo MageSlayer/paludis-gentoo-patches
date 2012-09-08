@@ -60,16 +60,26 @@ portageq()
 
 best_version()
 {
+    local type=--root
+    if [[ -n ${PALUDIS_BEST_HAS_VERSION_HOST_ROOT} && ${1} == --host-root ]] ; then
+        type=--slash
+        shift
+    fi
     [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
-    local r=$(paludis_pipe_command BEST_VERSION "$EAPI" --root "$1" )
+    local r=$(paludis_pipe_command BEST_VERSION "$EAPI" $type "$1" )
     echo ${r#*;}
     return ${r%%;*}
 }
 
 has_version()
 {
+    local type=--root
+    if [[ -n ${PALUDIS_BEST_HAS_VERSION_HOST_ROOT} && ${1} == --host-root ]] ; then
+        type=--slash
+        shift
+    fi
     [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
-    local r=$(paludis_pipe_command HAS_VERSION "$EAPI" --root "$1" )
+    local r=$(paludis_pipe_command HAS_VERSION "$EAPI" $type "$1" )
     return ${r%%;*}
 }
 

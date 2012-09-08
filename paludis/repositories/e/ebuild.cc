@@ -239,6 +239,8 @@ EbuildCommand::operator() ()
                 params.package_id()->eapi()->supported()->tools_options()->unpack_fix_permissions() ? "yes" : "")
         .setenv("PALUDIS_UNPACK_SUFFIXES",
                 params.package_id()->eapi()->supported()->tools_options()->unpack_suffixes())
+        .setenv("PALUDIS_BEST_HAS_VERSION_HOST_ROOT",
+                params.package_id()->eapi()->supported()->tools_options()->best_has_version_host_root() ? "yes" : "")
         .setenv("PALUDIS_DODOC_R",
                 params.package_id()->eapi()->supported()->tools_options()->dodoc_r() ? "yes" : "")
         .setenv("PALUDIS_DOINS_SYMLINK",
