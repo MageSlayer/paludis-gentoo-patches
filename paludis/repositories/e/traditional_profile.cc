@@ -216,11 +216,10 @@ namespace
             throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
                     "' because it uses an unsupported EAPI");
 
-        _imp->stacked_values_list.push_back(StackedValues(stringify(dir)));
-
         load_profile_parent(_imp, dir);
         load_profile_make_defaults(_imp, dir);
 
+        _imp->stacked_values_list.push_back(StackedValues(stringify(dir)));
         load_basic_use_file(dir / "use.mask", _imp->stacked_values_list.back().use_mask);
         load_basic_use_file(dir / "use.force", _imp->stacked_values_list.back().use_force);
         load_spec_use_file(*eapi, dir / "package.use", _imp->stacked_values_list.back().package_use);
