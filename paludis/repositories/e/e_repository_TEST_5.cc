@@ -218,3 +218,49 @@ TEST(ERepository, RequiredUse)
     }
 }
 
+TEST(ERepository, UseX)
+{
+    FSPath root(FSPath::cwd() / "e_repository_TEST_5_dir" / "root");
+
+    TestEnvironment env;
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_5_dir" / "repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_5_dir" / "repo/profiles/profile"));
+    keys->insert("layout", "traditional");
+    keys->insert("eapi_when_unknown", "0");
+    keys->insert("eapi_when_unspecified", "0");
+    keys->insert("profile_eapi", "0");
+    keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_5_dir" / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_5_dir" / "build"));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
+
+    std::shared_ptr<FakeInstalledRepository> installed_repo(std::make_shared<FakeInstalledRepository>(
+                make_named_values<FakeInstalledRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("installed"),
+                    n::suitable_destination() = true,
+                    n::supports_uninstall() = true
+                    )));
+    env.add_repository(2, installed_repo);
+
+    {
+        PretendAction pretend_action(make_named_values<PretendActionOptions>(
+                    n::destination() = installed_repo,
+                    n::make_output_manager() = &make_standard_output_manager,
+                    n::replacing() = std::make_shared<PackageIDSequence>()
+                    ));
+
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/usex-5::test-repo",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("5", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(pretend_action);
+        ASSERT_TRUE(! pretend_action.failed());
+    }
+}
+

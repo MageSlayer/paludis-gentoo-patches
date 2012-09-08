@@ -111,5 +111,63 @@ EOF
 }
 END
 
+mkdir -p "cat/usex" || exit 1
+cat << 'END' > cat/usex/usex-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="enabled disabled"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+pkg_pretend() {
+    usex enabled                      >>"${T}"/usex.out || die
+    usex disabled                     >>"${T}"/usex.out || die
+    usex enabled  foo                 >>"${T}"/usex.out || die
+    usex disabled foo                 >>"${T}"/usex.out || die
+    usex enabled  foo bar             >>"${T}"/usex.out || die
+    usex disabled foo bar             >>"${T}"/usex.out || die
+    usex enabled  foo bar xyzzy       >>"${T}"/usex.out || die
+    usex disabled foo bar xyzzy       >>"${T}"/usex.out || die
+    usex enabled  foo bar xyzzy plugh >>"${T}"/usex.out || die
+    usex disabled foo bar xyzzy plugh >>"${T}"/usex.out || die
+    usex enabled  ""  bar xyzzy plugh >>"${T}"/usex.out || die
+    usex disabled ""  bar xyzzy plugh >>"${T}"/usex.out || die
+    usex enabled  foo ""  xyzzy plugh >>"${T}"/usex.out || die
+    usex disabled foo ""  xyzzy plugh >>"${T}"/usex.out || die
+    usex enabled  foo bar ""    plugh >>"${T}"/usex.out || die
+    usex disabled foo bar ""    plugh >>"${T}"/usex.out || die
+    usex enabled  foo bar xyzzy ""    >>"${T}"/usex.out || die
+    usex disabled foo bar xyzzy ""    >>"${T}"/usex.out || die
+
+    cat >"${T}"/usex.expected <<EOF
+yes
+no
+foo
+no
+foo
+bar
+fooxyzzy
+bar
+fooxyzzy
+barplugh
+xyzzy
+barplugh
+fooxyzzy
+plugh
+foo
+barplugh
+fooxyzzy
+bar
+EOF
+
+    diff "${T}"/usex.{expected,out} || die
+}
+END
+
 cd ..
 cd ..

@@ -5,6 +5,7 @@ SUBDIRS = .
 libexecprog5dir = $(libexecdir)/paludis/5
 
 libexecprog5_SCRIPTS = \
+	usex.bash \
 	output_functions.bash
 
 TESTS =

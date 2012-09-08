@@ -1194,6 +1194,22 @@ src_configure() {
     [[ $(use_enable cheese cheese "") == --enable-cheese= ]] || die
 }
 END
+mkdir -p "cat/no-usex"
+cat <<'END' > cat/no-usex/no-usex-4.ebuild || exit 1
+EAPI="4"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+S=${WORKDIR}
+
+pkg_pretend() {
+    [[ -z $(type -t usex) ]] || die
+}
+END
 cd ..
 
 cd ..
