@@ -487,11 +487,11 @@ namespace
         void test_choice(const std::shared_ptr<const PackageID> & p, const std::string & n, bool enabled, bool enabled_by_default, bool locked, const std::string & u = "")
         {
             std::shared_ptr<const ChoiceValue> choice(p->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix(n)));
-            ASSERT_TRUE(bool(choice));
-            EXPECT_EQ(choice->unprefixed_name(), UnprefixedChoiceName(u.empty() ? n : u));
-            EXPECT_EQ(enabled, choice->enabled());
-            EXPECT_EQ(enabled_by_default, choice->enabled_by_default());
-            EXPECT_EQ(locked, choice->locked());
+            ASSERT_TRUE(bool(choice)) << "checking package '" << *p << "' choice '" << n << "'";
+            EXPECT_EQ(choice->unprefixed_name(), UnprefixedChoiceName(u.empty() ? n : u)) << "checking package '" << *p << "' choice '" << n << "'";
+            EXPECT_EQ(enabled, choice->enabled()) << "checking package '" << *p << "' choice '" << n << "'";
+            EXPECT_EQ(enabled_by_default, choice->enabled_by_default()) << "checking package '" << *p << "' choice '" << n << "'";
+            EXPECT_EQ(locked, choice->locked()) << "checking package '" << *p << "' choice '" << n << "'";
         }
     };
 }
