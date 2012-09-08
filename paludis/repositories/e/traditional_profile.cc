@@ -82,10 +82,14 @@ namespace
         std::string origin;
 
         FlagStatusMap use_mask;
+        FlagStatusMap use_stable_mask;
         FlagStatusMap use_force;
+        FlagStatusMap use_stable_force;
         PackageFlagStatusMapList package_use;
         PackageFlagStatusMapList package_use_mask;
+        PackageFlagStatusMapList package_use_stable_mask;
         PackageFlagStatusMapList package_use_force;
+        PackageFlagStatusMapList package_use_stable_force;
 
         StackedValues(const std::string & o) :
             origin(o)
@@ -225,6 +229,13 @@ namespace
         load_spec_use_file(*eapi, dir / "package.use", _imp->stacked_values_list.back().package_use);
         load_spec_use_file(*eapi, dir / "package.use.mask", _imp->stacked_values_list.back().package_use_mask);
         load_spec_use_file(*eapi, dir / "package.use.force", _imp->stacked_values_list.back().package_use_force);
+        if (eapi->supported()->profile_options()->use_stable_mask_force())
+        {
+            load_basic_use_file(dir / "use.stable.mask", _imp->stacked_values_list.back().use_stable_mask);
+            load_basic_use_file(dir / "use.stable.force", _imp->stacked_values_list.back().use_stable_force);
+            load_spec_use_file(*eapi, dir / "package.use.stable.mask", _imp->stacked_values_list.back().package_use_stable_mask);
+            load_spec_use_file(*eapi, dir / "package.use.stable.force", _imp->stacked_values_list.back().package_use_stable_force);
+        }
 
         _imp->packages_file.add_file(dir / "packages");
         _imp->package_mask_file.add_file(dir / "package.mask");
@@ -792,7 +803,7 @@ TraditionalProfile::profiles_with_parents() const
 
 bool
 TraditionalProfile::use_masked(
-        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const EbuildID> & id,
         const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_unprefixed,
         const ChoiceNameWithPrefix & value_prefixed
@@ -810,6 +821,13 @@ TraditionalProfile::use_masked(
         if (i->use_mask.end() != f)
             result = f->second;
 
+        if (id->is_stable())
+        {
+            FlagStatusMap::const_iterator fs(i->use_stable_mask.find(value_prefixed));
+            if (i->use_stable_mask.end() != fs)
+                result = fs->second;
+        }
+
         for (PackageFlagStatusMapList::const_iterator g(i->package_use_mask.begin()),
                 g_end(i->package_use_mask.end()) ; g != g_end ; ++g)
         {
@@ -820,6 +838,20 @@ TraditionalProfile::use_masked(
             if (g->second.end() != h)
                 result = h->second;
         }
+
+        if (id->is_stable())
+        {
+            for (PackageFlagStatusMapList::const_iterator gs(i->package_use_stable_mask.begin()),
+                     gs_end(i->package_use_stable_mask.end()) ; gs != gs_end ; ++gs)
+            {
+                if (! match_package(*_imp->env, *gs->first, id, make_null_shared_ptr(), { }))
+                    continue;
+
+                FlagStatusMap::const_iterator hs(gs->second.find(value_prefixed));
+                if (gs->second.end() != hs)
+                    result = hs->second;
+            }
+        }
     }
 
     return result;
@@ -827,7 +859,7 @@ TraditionalProfile::use_masked(
 
 bool
 TraditionalProfile::use_forced(
-        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const EbuildID> & id,
         const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_unprefixed,
         const ChoiceNameWithPrefix & value_prefixed
@@ -846,6 +878,13 @@ TraditionalProfile::use_forced(
         if (i->use_force.end() != f)
             result = f->second;
 
+        if (id->is_stable())
+        {
+            FlagStatusMap::const_iterator fs(i->use_stable_force.find(value_prefixed));
+            if (i->use_stable_force.end() != fs)
+                result = fs->second;
+        }
+
         for (PackageFlagStatusMapList::const_iterator g(i->package_use_force.begin()),
                 g_end(i->package_use_force.end()) ; g != g_end ; ++g)
         {
@@ -855,6 +894,20 @@ TraditionalProfile::use_forced(
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
             if (g->second.end() != h)
                 result = h->second;
+        }
+
+        if (id->is_stable())
+        {
+            for (PackageFlagStatusMapList::const_iterator gs(i->package_use_stable_force.begin()),
+                     gs_end(i->package_use_stable_force.end()) ; gs != gs_end ; ++gs)
+            {
+                if (! match_package(*_imp->env, *gs->first, id, make_null_shared_ptr(), { }))
+                    continue;
+
+                FlagStatusMap::const_iterator hs(gs->second.find(value_prefixed));
+                if (gs->second.end() != hs)
+                    result = hs->second;
+            }
         }
     }
 

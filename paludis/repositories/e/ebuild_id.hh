@@ -169,6 +169,7 @@ namespace paludis
                 virtual void purge_invalid_cache() const;
 
                 bool might_be_binary() const;
+                bool is_stable() const;
 
                 virtual void set_scm_revision(const std::string &) const;
 

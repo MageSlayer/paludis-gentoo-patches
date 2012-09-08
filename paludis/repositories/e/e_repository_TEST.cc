@@ -568,6 +568,207 @@ TEST_F(ERepositoryQueryUseTest, QueryUse)
     }
 }
 
+TEST_F(ERepositoryQueryUseTest, UseStableMaskForce)
+{
+    bool accept_unstable(false);
+    do
+    {
+        TestEnvironment env(accept_unstable);
+
+        std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+        keys->insert("format", "e");
+        keys->insert("names_cache", "/var/empty");
+        keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo9a"));
+        keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "repo9a/profiles/eapi5/child"));
+        keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_dir" / "build"));
+        std::shared_ptr<ERepository> repo(std::static_pointer_cast<ERepository>(ERepository::repository_factory_create(&env,
+                        std::bind(from_keys, keys, std::placeholders::_1))));
+        env.add_repository(1, repo);
+
+        for (int pass = 1 ; pass <= 2 ; ++pass)
+        {
+            const std::shared_ptr<const PackageID> stable1(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/stable-1",
+                                    &env, { })), make_null_shared_ptr(), { }))]->begin());
+            const std::shared_ptr<const PackageID> stable1r1(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/stable-1-r1",
+                                    &env, { })), make_null_shared_ptr(), { }))]->begin());
+            const std::shared_ptr<const PackageID> stable2(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/stable-2",
+                                    &env, { })), make_null_shared_ptr(), { }))]->begin());
+            const std::shared_ptr<const PackageID> unstable1(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/unstable-1",
+                                    &env, { })), make_null_shared_ptr(), { }))]->begin());
+            const std::shared_ptr<const PackageID> missing1(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/missing-1",
+                                    &env, { })), make_null_shared_ptr(), { }))]->begin());
+
+            test_choice(stable1, "notstmask",     false, false, false);
+            test_choice(stable1, "notpkgstmask",  false, false, false);
+            test_choice(stable1, "notstforce",    false, false, false);
+            test_choice(stable1, "notpkgstforce", false, false, false);
+
+            test_choice(stable1, "stmask", false, false, ! accept_unstable);
+            test_choice(stable1, "pkgstmask", false, false, ! accept_unstable);
+            test_choice(stable1, "stforce", ! accept_unstable, ! accept_unstable, ! accept_unstable);
+            test_choice(stable1, "pkgstforce", ! accept_unstable, ! accept_unstable, ! accept_unstable);
+
+            test_choice(stable1, "mask-stunmask", false, false, accept_unstable);
+            test_choice(stable1, "unmask-stmask", false, false, ! accept_unstable);
+            test_choice(stable1, "stmask-pkgunmask", false, false, false);
+            test_choice(stable1, "stunmask-pkgmask", false, false, true);
+            test_choice(stable1, "pkgmask-pkgstunmask", false, false, accept_unstable);
+            test_choice(stable1, "pkgunmask-pkgstmask", false, false, ! accept_unstable);
+            test_choice(stable1, "pkgstmask-chunmask", false, false, false);
+            test_choice(stable1, "pkgstunmask-chmask", false, false, true);
+            test_choice(stable1, "pkgstmask-chpkgstunmask", false, false, false);
+            test_choice(stable1, "pkgstunmask-chpkgstmask", false, false, ! accept_unstable);
+
+            test_choice(stable1, "force-stunforce", accept_unstable, accept_unstable, accept_unstable);
+            test_choice(stable1, "unforce-stforce", ! accept_unstable, ! accept_unstable, ! accept_unstable);
+            test_choice(stable1, "stforce-pkgunforce", false, false, false);
+            test_choice(stable1, "stunforce-pkgforce", true, true, true);
+            test_choice(stable1, "pkgforce-pkgstunforce", accept_unstable, accept_unstable, accept_unstable);
+            test_choice(stable1, "pkgunforce-pkgstforce", ! accept_unstable, ! accept_unstable, ! accept_unstable);
+            test_choice(stable1, "pkgstforce-chunforce", false, false, false);
+            test_choice(stable1, "pkgstunforce-chforce", true, true, true);
+            test_choice(stable1, "pkgstforce-chpkgstunforce", false, false, false);
+            test_choice(stable1, "pkgstunforce-chpkgstforce", ! accept_unstable, ! accept_unstable, ! accept_unstable);
+
+            test_choice(stable1r1, "notstmask",     false, false, false);
+            test_choice(stable1r1, "notpkgstmask",  false, false, false);
+            test_choice(stable1r1, "notstforce",    false, false, false);
+            test_choice(stable1r1, "notpkgstforce", false, false, false);
+
+            test_choice(stable1r1, "stmask", false, false, ! accept_unstable);
+            test_choice(stable1r1, "pkgstmask", false, false, false);
+            test_choice(stable1r1, "stforce", ! accept_unstable, ! accept_unstable, ! accept_unstable);
+            test_choice(stable1r1, "pkgstforce", false, false, false);
+
+            test_choice(stable1r1, "mask-stunmask", false, false, accept_unstable);
+            test_choice(stable1r1, "unmask-stmask", false, false, ! accept_unstable);
+            test_choice(stable1r1, "stmask-pkgunmask", false, false, ! accept_unstable);
+            test_choice(stable1r1, "stunmask-pkgmask", false, false, false);
+            test_choice(stable1r1, "pkgmask-pkgstunmask", false, false, false);
+            test_choice(stable1r1, "pkgunmask-pkgstmask", false, false, false);
+            test_choice(stable1r1, "pkgstmask-chunmask", false, false, false);
+            test_choice(stable1r1, "pkgstunmask-chmask", false, false, true);
+            test_choice(stable1r1, "pkgstmask-chpkgstunmask", false, false, ! accept_unstable);
+            test_choice(stable1r1, "pkgstunmask-chpkgstmask", false, false, false);
+
+            test_choice(stable1r1, "force-stunforce", accept_unstable, accept_unstable, accept_unstable);
+            test_choice(stable1r1, "unforce-stforce", ! accept_unstable, ! accept_unstable, ! accept_unstable);
+            test_choice(stable1r1, "stforce-pkgunforce", ! accept_unstable, ! accept_unstable, ! accept_unstable);
+            test_choice(stable1r1, "stunforce-pkgforce", false, false, false);
+            test_choice(stable1r1, "pkgforce-pkgstunforce", false, false, false);
+            test_choice(stable1r1, "pkgunforce-pkgstforce", false, false, false);
+            test_choice(stable1r1, "pkgstforce-chunforce", false, false, false);
+            test_choice(stable1r1, "pkgstunforce-chforce", true, true, true);
+            test_choice(stable1r1, "pkgstforce-chpkgstunforce", ! accept_unstable, ! accept_unstable, ! accept_unstable);
+            test_choice(stable1r1, "pkgstunforce-chpkgstforce", false, false, false);
+
+            test_choice(stable2, "notstmask",     false, false, false);
+            test_choice(stable2, "notpkgstmask",  false, false, false);
+            test_choice(stable2, "notstforce",    false, false, false);
+            test_choice(stable2, "notpkgstforce", false, false, false);
+
+            test_choice(stable2, "stmask", false, false, ! accept_unstable);
+            test_choice(stable2, "pkgstmask", false, false, false);
+            test_choice(stable2, "stforce", ! accept_unstable, ! accept_unstable, ! accept_unstable);
+            test_choice(stable2, "pkgstforce", false, false, false);
+
+            test_choice(stable2, "mask-stunmask", false, false, accept_unstable);
+            test_choice(stable2, "unmask-stmask", false, false, ! accept_unstable);
+            test_choice(stable2, "stmask-pkgunmask", false, false, ! accept_unstable);
+            test_choice(stable2, "stunmask-pkgmask", false, false, false);
+            test_choice(stable2, "pkgmask-pkgstunmask", false, false, false);
+            test_choice(stable2, "pkgunmask-pkgstmask", false, false, false);
+            test_choice(stable2, "pkgstmask-chunmask", false, false, false);
+            test_choice(stable2, "pkgstunmask-chmask", false, false, true);
+            test_choice(stable2, "pkgstmask-chpkgstunmask", false, false, false);
+            test_choice(stable2, "pkgstunmask-chpkgstmask", false, false, false);
+
+            test_choice(stable2, "force-stunforce", accept_unstable, accept_unstable, accept_unstable);
+            test_choice(stable2, "unforce-stforce", ! accept_unstable, ! accept_unstable, ! accept_unstable);
+            test_choice(stable2, "stforce-pkgunforce", ! accept_unstable, ! accept_unstable, ! accept_unstable);
+            test_choice(stable2, "stunforce-pkgforce", false, false, false);
+            test_choice(stable2, "pkgforce-pkgstunforce", false, false, false);
+            test_choice(stable2, "pkgunforce-pkgstforce", false, false, false);
+            test_choice(stable2, "pkgstforce-chunforce", false, false, false);
+            test_choice(stable2, "pkgstunforce-chforce", true, true, true);
+            test_choice(stable2, "pkgstforce-chpkgstunforce", false, false, false);
+            test_choice(stable2, "pkgstunforce-chpkgstforce", false, false, false);
+
+            test_choice(unstable1, "notstmask",     false, false, false);
+            test_choice(unstable1, "notpkgstmask",  false, false, false);
+            test_choice(unstable1, "notstforce",    false, false, false);
+            test_choice(unstable1, "notpkgstforce", false, false, false);
+
+            test_choice(unstable1, "stmask", false, false, false);
+            test_choice(unstable1, "pkgstmask", false, false, false);
+            test_choice(unstable1, "stforce", false, false, false);
+            test_choice(unstable1, "pkgstforce", false, false, false);
+
+            test_choice(unstable1, "mask-stunmask", false, false, true);
+            test_choice(unstable1, "unmask-stmask", false, false, false);
+            test_choice(unstable1, "stmask-pkgunmask", false, false, false);
+            test_choice(unstable1, "stunmask-pkgmask", false, false, false);
+            test_choice(unstable1, "pkgmask-pkgstunmask", false, false, false);
+            test_choice(unstable1, "pkgunmask-pkgstmask", false, false, false);
+            test_choice(unstable1, "pkgstmask-chunmask", false, false, false);
+            test_choice(unstable1, "pkgstunmask-chmask", false, false, true);
+            test_choice(unstable1, "pkgstmask-chpkgstunmask", false, false, false);
+            test_choice(unstable1, "pkgstunmask-chpkgstmask", false, false, false);
+
+            test_choice(unstable1, "force-stunforce", true, true, true);
+            test_choice(unstable1, "unforce-stforce", false, false, false);
+            test_choice(unstable1, "stforce-pkgunforce", false, false, false);
+            test_choice(unstable1, "stunforce-pkgforce", false, false, false);
+            test_choice(unstable1, "pkgforce-pkgstunforce", false, false, false);
+            test_choice(unstable1, "pkgunforce-pkgstforce", false, false, false);
+            test_choice(unstable1, "pkgstforce-chunforce", false, false, false);
+            test_choice(unstable1, "pkgstunforce-chforce", true, true, true);
+            test_choice(unstable1, "pkgstforce-chpkgstunforce", false, false, false);
+            test_choice(unstable1, "pkgstunforce-chpkgstforce", false, false, false);
+
+            test_choice(missing1, "notstmask",     false, false, false);
+            test_choice(missing1, "notpkgstmask",  false, false, false);
+            test_choice(missing1, "notstforce",    false, false, false);
+            test_choice(missing1, "notpkgstforce", false, false, false);
+
+            test_choice(missing1, "stmask", false, false, false);
+            test_choice(missing1, "pkgstmask", false, false, false);
+            test_choice(missing1, "stforce", false, false, false);
+            test_choice(missing1, "pkgstforce", false, false, false);
+
+            test_choice(missing1, "mask-stunmask", false, false, true);
+            test_choice(missing1, "unmask-stmask", false, false, false);
+            test_choice(missing1, "stmask-pkgunmask", false, false, false);
+            test_choice(missing1, "stunmask-pkgmask", false, false, false);
+            test_choice(missing1, "pkgmask-pkgstunmask", false, false, false);
+            test_choice(missing1, "pkgunmask-pkgstmask", false, false, false);
+            test_choice(missing1, "pkgstmask-chunmask", false, false, false);
+            test_choice(missing1, "pkgstunmask-chmask", false, false, true);
+            test_choice(missing1, "pkgstmask-chpkgstunmask", false, false, false);
+            test_choice(missing1, "pkgstunmask-chpkgstmask", false, false, false);
+
+            test_choice(missing1, "force-stunforce", true, true, true);
+            test_choice(missing1, "unforce-stforce", false, false, false);
+            test_choice(missing1, "stforce-pkgunforce", false, false, false);
+            test_choice(missing1, "stunforce-pkgforce", false, false, false);
+            test_choice(missing1, "pkgforce-pkgstunforce", false, false, false);
+            test_choice(missing1, "pkgunforce-pkgstforce", false, false, false);
+            test_choice(missing1, "pkgstforce-chunforce", false, false, false);
+            test_choice(missing1, "pkgstunforce-chforce", true, true, true);
+            test_choice(missing1, "pkgstforce-chpkgstunforce", false, false, false);
+            test_choice(missing1, "pkgstunforce-chpkgstforce", false, false, false);
+        }
+
+        accept_unstable = ! accept_unstable;
+    }
+    while (accept_unstable);
+}
+
 TEST(ERepository, Masks)
 {
     TestEnvironment env;

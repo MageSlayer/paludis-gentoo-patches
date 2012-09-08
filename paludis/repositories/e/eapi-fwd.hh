@@ -40,6 +40,7 @@ namespace paludis
         class EAPILabels;
         class EAPIToolsOptions;
         class EAPIPipeCommands;
+        class EAPIProfileOptions;
         class EAPIChoicesOptions;
         class EAPIEbuildEnvironmentVariables;
         class SupportedEAPI;

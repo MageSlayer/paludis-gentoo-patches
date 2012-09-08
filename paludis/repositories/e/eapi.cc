@@ -229,6 +229,13 @@ namespace
                         ));
     }
 
+    std::shared_ptr<const EAPIProfileOptions> make_profile_options(const KeyValueConfigFile & k)
+    {
+        return std::make_shared<EAPIProfileOptions>(make_named_values<EAPIProfileOptions>(
+                        n::use_stable_mask_force() = destringify_key<bool>(k, "use_stable_mask_force")
+                        ));
+    }
+
     std::shared_ptr<const EAPIToolsOptions> make_tool_options(const KeyValueConfigFile & k)
     {
         return std::make_shared<EAPIToolsOptions>(make_named_values<EAPIToolsOptions>(
@@ -368,6 +375,7 @@ namespace
                         n::package_dep_spec_parse_options() = package_dep_spec_parse_options,
                         n::permitted_directories() = check_get(k, "permitted_directories"),
                         n::pipe_commands() = make_pipe_commands(k),
+                        n::profile_options() = make_profile_options(k),
                         n::tools_options() = make_tool_options(k),
                         n::uri_labels() = std::make_shared<const EAPILabels>(check_get(k, "uri_labels")),
                         n::userpriv_cannot_use_root() = destringify_key<bool>(k, "userpriv_cannot_use_root"),

@@ -222,7 +222,7 @@ ExheresProfile::profiles_with_parents() const
 
 bool
 ExheresProfile::use_masked(
-        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const EbuildID> & id,
         const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_unprefixed,
         const ChoiceNameWithPrefix &
@@ -235,7 +235,7 @@ ExheresProfile::use_masked(
 
 bool
 ExheresProfile::use_forced(
-        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const EbuildID> & id,
         const std::shared_ptr<const Choice> & choice,
         const UnprefixedChoiceName & value_unprefixed,
         const ChoiceNameWithPrefix &

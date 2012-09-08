@@ -177,6 +177,7 @@ namespace paludis
         typedef Name<struct name_permitted_directories> permitted_directories;
         typedef Name<struct name_pipe_commands> pipe_commands;
         typedef Name<struct name_profile_iuse_injection> profile_iuse_injection;
+        typedef Name<struct name_profile_options> profile_options;
         typedef Name<struct name_properties> properties;
         typedef Name<struct name_rdepend_defaults_to_depend> rdepend_defaults_to_depend;
         typedef Name<struct name_remote_ids> remote_ids;
@@ -213,6 +214,7 @@ namespace paludis
         typedef Name<struct name_use_expand> use_expand;
         typedef Name<struct name_use_expand_hidden> use_expand_hidden;
         typedef Name<struct name_use_expand_separator> use_expand_separator;
+        typedef Name<struct name_use_stable_mask_force> use_stable_mask_force;
         typedef Name<struct name_use_with_enable_empty_third_argument> use_with_enable_empty_third_argument;
         typedef Name<struct name_userpriv_cannot_use_root> userpriv_cannot_use_root;
         typedef Name<struct name_utility_path_suffixes> utility_path_suffixes;
@@ -309,6 +311,7 @@ namespace paludis
             NamedValue<n::package_dep_spec_parse_options, ELikePackageDepSpecOptions> package_dep_spec_parse_options;
             NamedValue<n::permitted_directories, std::string> permitted_directories;
             NamedValue<n::pipe_commands, std::shared_ptr<const EAPIPipeCommands> > pipe_commands;
+            NamedValue<n::profile_options, std::shared_ptr<const EAPIProfileOptions> > profile_options;
             NamedValue<n::tools_options, std::shared_ptr<const EAPIToolsOptions> > tools_options;
             NamedValue<n::uri_labels, std::shared_ptr<const EAPILabels> > uri_labels;
             NamedValue<n::userpriv_cannot_use_root, bool> userpriv_cannot_use_root;
@@ -459,6 +462,11 @@ namespace paludis
             NamedValue<n::ebuild_pretend, std::string> ebuild_pretend;
             NamedValue<n::ebuild_uninstall, std::string> ebuild_uninstall;
             NamedValue<n::ebuild_variable, std::string> ebuild_variable;
+        };
+
+        struct EAPIProfileOptions
+        {
+            NamedValue<n::use_stable_mask_force, bool> use_stable_mask_force;
         };
 
         struct EAPIToolsOptions

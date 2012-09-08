@@ -54,14 +54,14 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual bool use_masked(
-                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const EbuildID> &,
                         const std::shared_ptr<const Choice> &,
                         const UnprefixedChoiceName & value_unprefixed,
                         const ChoiceNameWithPrefix & value_prefixed
                         ) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual bool use_forced(
-                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const EbuildID> &,
                         const std::shared_ptr<const Choice> &,
                         const UnprefixedChoiceName & value_unprefixed,
                         const ChoiceNameWithPrefix & value_prefixed

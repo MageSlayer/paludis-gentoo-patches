@@ -32,7 +32,7 @@
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/map-fwd.hh>
 #include <paludis/util/singleton.hh>
-#include <paludis/repositories/e/e_repository_id.hh>
+#include <paludis/repositories/e/ebuild_id.hh>
 #include <paludis/repositories/e/mask_info.hh>
 #include <string>
 #include <functional>
@@ -54,14 +54,14 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual bool use_masked(
-                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const EbuildID> &,
                         const std::shared_ptr<const Choice> &,
                         const UnprefixedChoiceName & value_unprefixed,
                         const ChoiceNameWithPrefix & value_prefixed
                         ) const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
                 virtual bool use_forced(
-                        const std::shared_ptr<const PackageID> &,
+                        const std::shared_ptr<const EbuildID> &,
                         const std::shared_ptr<const Choice> &,
                         const UnprefixedChoiceName & value_unprefixed,
                         const ChoiceNameWithPrefix & value_prefixed

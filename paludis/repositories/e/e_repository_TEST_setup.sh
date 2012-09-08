@@ -191,8 +191,7 @@ END
 cd ..
 
 
-mkdir -p repo9/{eclass,distfiles,profiles/{profile,child},cat-one/pkg-one,cat-two/pkg-one} || exit 1
-mkdir -p repo9/{cat-one/pkg-one,cat-two/pkg-two} || exit 1
+mkdir -p repo9/{eclass,distfiles,profiles/{profile,child},cat-one/pkg-one,cat-two/pkg-two} || exit 1
 cd repo9 || exit 1
 echo "test-repo-9" > profiles/repo_name || exit 1
 cat <<END >profiles/categories || exit 1
@@ -250,6 +249,125 @@ EAPI=1
 IUSE="flag1 flag2 flag3 flag4 flag5 +flag6"
 SLOT="0"
 END
+cd ..
+
+mkdir -p repo9a/{eclass,distfiles,profiles/{profile,eapi5,eapi5/child},cat/stable,cat/unstable,cat/missing} || exit 1
+cd repo9a || exit 1
+echo "test-repo-9a" > profiles/repo_name || exit 1
+cat <<END >profiles/categories || exit 1
+cat
+END
+cat <<END > profiles/arch.list || exit 1
+test
+END
+cat <<END >profiles/profile/eapi || exit 1
+4
+END
+cat <<END >profiles/profile/make.defaults || exit 1
+ARCH=test
+END
+cat <<END >profiles/profile/use.stable.mask || exit 1
+notstmask
+END
+cat <<END >profiles/profile/package.use.stable.mask || exit 1
+=cat/stable-1 notpkgstmask
+END
+cat <<END >profiles/profile/use.stable.force || exit 1
+notstforce
+END
+cat <<END >profiles/profile/package.use.stable.force || exit 1
+=cat/stable-1 notpkgstforce
+END
+cat <<END >profiles/eapi5/eapi || exit 1
+5
+END
+cat <<END >profiles/eapi5/parent || exit 1
+../profile
+END
+cat <<END >profiles/eapi5/child/eapi || exit 1
+5
+END
+cat <<END >profiles/eapi5/child/parent || exit 1
+..
+END
+cat <<END >profiles/eapi5/use.mask || exit 1
+mask-stunmask
+-unmask-stmask
+END
+cat <<END >profiles/eapi5/use.stable.mask || exit 1
+stmask
+-mask-stunmask
+unmask-stmask
+stmask-pkgunmask
+-stunmask-pkgmask
+END
+cat <<END >profiles/eapi5/package.use.mask || exit 1
+=cat/stable-1 -stmask-pkgunmask stunmask-pkgmask
+=cat/stable-1 pkgmask-pkgstunmask -pkgunmask-pkgstmask
+END
+cat <<END >profiles/eapi5/package.use.stable.mask || exit 1
+=cat/stable-1 pkgstmask
+=cat/stable-1 -pkgmask-pkgstunmask pkgunmask-pkgstmask
+=cat/stable-1 pkgstmask-chunmask -pkgstunmask-chmask
+~cat/stable-1 pkgstmask-chpkgstunmask -pkgstunmask-chpkgstmask
+END
+cat <<END >profiles/eapi5/child/use.mask || exit 1
+-pkgstmask-chunmask
+pkgstunmask-chmask
+END
+cat <<END >profiles/eapi5/child/package.use.stable.mask || exit 1
+=cat/stable-1 -pkgstmask-chpkgstunmask pkgstunmask-chpkgstmask
+END
+cat <<END >profiles/eapi5/use.force || exit 1
+force-stunforce
+-unforce-stforce
+END
+cat <<END >profiles/eapi5/use.stable.force || exit 1
+stforce
+-force-stunforce
+unforce-stforce
+stforce-pkgunforce
+-stunforce-pkgforce
+END
+cat <<END >profiles/eapi5/package.use.force || exit 1
+=cat/stable-1 -stforce-pkgunforce stunforce-pkgforce
+=cat/stable-1 pkgforce-pkgstunforce -pkgunforce-pkgstforce
+END
+cat <<END >profiles/eapi5/package.use.stable.force || exit 1
+=cat/stable-1 pkgstforce
+=cat/stable-1 -pkgforce-pkgstunforce pkgunforce-pkgstforce
+=cat/stable-1 pkgstforce-chunforce -pkgstunforce-chforce
+~cat/stable-1 pkgstforce-chpkgstunforce -pkgstunforce-chpkgstforce
+END
+cat <<END >profiles/eapi5/child/use.force || exit 1
+-pkgstforce-chunforce
+pkgstunforce-chforce
+END
+cat <<END >profiles/eapi5/child/package.use.stable.force || exit 1
+=cat/stable-1 -pkgstforce-chpkgstunforce pkgstunforce-chpkgstforce
+END
+cat <<END > cat/stable/stable-1.ebuild || exit 1
+KEYWORDS="test"
+IUSE="
+notstmask notpkgstmask notstforce notpkgstforce
+stmask pkgstmask stforce pkgstforce
+mask-stunmask unmask-stmask
+stmask-pkgunmask stunmask-pkgmask
+pkgmask-pkgstunmask pkgunmask-pkgstmask
+pkgstmask-chunmask pkgstunmask-chmask
+pkgstmask-chpkgstunmask pkgstunmask-chpkgstmask
+force-stunforce unforce-stforce
+stforce-pkgunforce stunforce-pkgforce
+pkgforce-pkgstunforce pkgunforce-pkgstforce
+pkgstforce-chunforce pkgstunforce-chforce
+pkgstforce-chpkgstunforce pkgstunforce-chpkgstforce
+"
+SLOT="0"
+END
+cp cat/stable/stable-{1,1-r1}.ebuild || exit 1
+cp cat/stable/stable-{1,2}.ebuild || exit 1
+sed -e '/KEYWORDS/s/test/~test/' cat/stable/stable-1.ebuild > cat/unstable/unstable-1.ebuild || exit 1
+sed -e '/KEYWORDS/s/test/detest/' cat/stable/stable-1.ebuild > cat/missing/missing-1.ebuild || exit 1
 cd ..
 
 mkdir -p repo10/{eclass,distfiles,profiles/profile/subprofile,cat/masked,cat/not_masked,cat/was_masked} || exit 1
