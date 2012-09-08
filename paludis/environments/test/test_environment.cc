@@ -57,12 +57,14 @@ namespace paludis
     {
         std::unordered_map<std::string, Tribool> override_want_choice_enabled;
         FSPath root;
+        bool accept_unstable;
         Sets sets;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > preferred_root_key;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > system_root_key;
 
-        Imp(const FSPath & r) :
+        Imp(const FSPath & r, bool au) :
             root(r),
+            accept_unstable(au),
             preferred_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("root", "Root", mkt_normal, root)),
             system_root_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("system_root", "System Root", mkt_normal, FSPath("/")))
         {
@@ -71,14 +73,28 @@ namespace paludis
 }
 
 TestEnvironment::TestEnvironment() :
-    _imp(FSPath("/"))
+    _imp(FSPath("/"), false)
+{
+    add_metadata_key(_imp->preferred_root_key);
+    add_metadata_key(_imp->system_root_key);
+}
+
+TestEnvironment::TestEnvironment(bool au) :
+    _imp(FSPath("/"), au)
 {
     add_metadata_key(_imp->preferred_root_key);
     add_metadata_key(_imp->system_root_key);
 }
 
 TestEnvironment::TestEnvironment(const FSPath & r) :
-    _imp(r)
+    _imp(r, false)
+{
+    add_metadata_key(_imp->preferred_root_key);
+    add_metadata_key(_imp->system_root_key);
+}
+
+TestEnvironment::TestEnvironment(const FSPath & r, bool au) :
+    _imp(r, au)
 {
     add_metadata_key(_imp->preferred_root_key);
     add_metadata_key(_imp->system_root_key);
@@ -91,7 +107,8 @@ TestEnvironment::~TestEnvironment()
 bool
 TestEnvironment::accept_keywords(const std::shared_ptr<const KeywordNameSet> & k, const std::shared_ptr<const PackageID> &) const
 {
-    return k->end() != k->find(KeywordName("test")) || k->end() != k->find(KeywordName("*"));
+    return k->end() != k->find(KeywordName("test")) || k->end() != k->find(KeywordName("*"))
+        || (_imp->accept_unstable && k->end() != k->find(KeywordName("~test")));
 }
 
 bool

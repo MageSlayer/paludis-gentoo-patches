@@ -54,7 +54,9 @@ namespace paludis
             ///\{
 
             TestEnvironment();
+            TestEnvironment(bool);
             TestEnvironment(const FSPath &);
+            TestEnvironment(const FSPath &, bool);
 
             ~TestEnvironment();
 
