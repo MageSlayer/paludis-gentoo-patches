@@ -32,5 +32,12 @@ if [[ ${#} -ne 2 ]]; then
 fi
 
 rm -rf "${!PALUDIS_TEMP_DIR_VAR}/${2}"
-cp "${1}" "${!PALUDIS_TEMP_DIR_VAR}/${2}"
+
+if [[ ${1} == - && -n ${PALUDIS_NEW_STDIN} ]]; then
+    [[ -t 0 ]] && paludis_die_or_error "requires stdin input"
+    cat > "${!PALUDIS_TEMP_DIR_VAR}/${2}"
+else
+    cp "${1}" "${!PALUDIS_TEMP_DIR_VAR}/${2}"
+fi
+
 dosbin "${!PALUDIS_TEMP_DIR_VAR}/${2}"

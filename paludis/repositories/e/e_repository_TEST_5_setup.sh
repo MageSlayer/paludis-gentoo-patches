@@ -169,5 +169,52 @@ EOF
 }
 END
 
+mkdir -p "cat/new-stdin" || exit 1
+cat << 'END' > cat/new-stdin/new-stdin-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+src_install() {
+    echo testbin    | newbin    - testbin
+    echo testconfd  | newconfd  - testconfd
+    echo testdoc    | newdoc    - testdoc
+    echo testenvd   | newenvd   - testenvd
+    exeinto /usr/libexec
+    echo testexe    | newexe    - testexe
+    echo testinitd  | newinitd  - testinitd
+    insinto /usr/share/test
+    echo testins    | newins    - testins
+    echo testlib.a  | newlib.a  - testlib.a
+    echo testlib.so | newlib.so - testlib.so
+    echo testman.1  | newman    - testman.1
+    echo testsbin   | newsbin   - testsbin
+
+    cat "${D}"/{usr/bin/testbin,etc/conf.d/testconfd,usr/share/doc/${PF}/testdoc,etc/env.d/testenvd,usr/libexec/testexe,etc/init.d/testinitd,usr/share/test/testins,usr/lib*/testlib.a,usr/lib*/testlib.so,usr/share/man/man1/testman.1,usr/sbin/testsbin} > "${T}"/new.out
+    cat >"${T}"/new.expected <<EOF
+testbin
+testconfd
+testdoc
+testenvd
+testexe
+testinitd
+testins
+testlib.a
+testlib.so
+testman.1
+testsbin
+EOF
+
+    diff "${T}"/new.{expected,out} || die
+}
+END
+
 cd ..
 cd ..

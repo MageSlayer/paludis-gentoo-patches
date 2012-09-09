@@ -266,7 +266,7 @@ TEST(ERepository, EAPI4MergeType)
     v_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "vdb"));
     v_keys->insert("root", stringify(root));
     std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
-                std::bind(from_keys, keys, std::placeholders::_1)));
+                std::bind(from_keys, v_keys, std::placeholders::_1)));
     env.add_repository(1, v_repo);
 
     {
@@ -336,7 +336,7 @@ TEST(ERepository, EAPI4MergeTypeBin)
     v_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "vdb"));
     v_keys->insert("root", stringify(root));
     std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
-                std::bind(from_keys, keys, std::placeholders::_1)));
+                std::bind(from_keys, v_keys, std::placeholders::_1)));
     env.add_repository(1, v_repo);
 
     {
@@ -595,6 +595,53 @@ TEST(ERepository, NoUseX)
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         ASSERT_TRUE(! pretend_action.failed());
+    }
+}
+
+TEST(ERepository, NoNewStdin)
+{
+    FSPath root(FSPath::cwd() / "e_repository_TEST_4_dir" / "root");
+
+    TestEnvironment env;
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "repo/profiles/profile"));
+    keys->insert("layout", "traditional");
+    keys->insert("eapi_when_unknown", "0");
+    keys->insert("eapi_when_unspecified", "0");
+    keys->insert("profile_eapi", "0");
+    keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "build"));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
+
+    std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
+    v_keys->insert("format", "vdb");
+    v_keys->insert("names_cache", "/var/empty");
+    v_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_4_dir" / "vdb"));
+    v_keys->insert("root", stringify(root));
+    std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
+                std::bind(from_keys, v_keys, std::placeholders::_1)));
+    env.add_repository(1, v_repo);
+
+    {
+        InstallAction action(make_named_values<InstallActionOptions>(
+                    n::destination() = v_repo,
+                    n::make_output_manager() = &make_standard_output_manager,
+                    n::perform_uninstall() = &cannot_uninstall,
+                    n::replacing() = std::make_shared<PackageIDSequence>(),
+                    n::want_phase() = &want_all_phases
+                    ));
+
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/no-new-stdin-4::test-repo",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
     }
 }
 

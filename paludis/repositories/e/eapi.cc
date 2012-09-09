@@ -248,6 +248,7 @@ namespace
                         n::econf_extra_options() = k.get("econf_extra_options"),
                         n::econf_extra_options_help_dependent() = k.get("econf_extra_options_help_dependent"),
                         n::failure_is_fatal() = destringify_key<bool>(k, "failure_is_fatal"),
+                        n::new_stdin() = destringify_key<bool>(k, "new_stdin"),
                         n::unpack_fix_permissions() = destringify_key<bool>(k, "unpack_fix_permissions"),
                         n::unpack_suffixes() = k.get("unpack_suffixes"),
                         n::unpack_unrecognised_is_fatal() = destringify_key<bool>(k, "unpack_unrecognised_is_fatal"),

@@ -169,6 +169,7 @@ namespace paludis
         typedef Name<struct name_must_not_change_variables> must_not_change_variables;
         typedef Name<struct name_must_not_set_vars_starting_with> must_not_set_vars_starting_with;
         typedef Name<struct name_name> name;
+        typedef Name<struct name_new_stdin> new_stdin;
         typedef Name<struct name_no_s_workdir_fallback> no_s_workdir_fallback;
         typedef Name<struct name_no_slot_or_repo> no_slot_or_repo;
         typedef Name<struct name_non_empty_variables> non_empty_variables;
@@ -480,6 +481,7 @@ namespace paludis
             NamedValue<n::econf_extra_options, std::string> econf_extra_options;
             NamedValue<n::econf_extra_options_help_dependent, std::string> econf_extra_options_help_dependent;
             NamedValue<n::failure_is_fatal, bool> failure_is_fatal;
+            NamedValue<n::new_stdin, bool> new_stdin;
             NamedValue<n::unpack_fix_permissions, bool> unpack_fix_permissions;
             NamedValue<n::unpack_suffixes, std::string> unpack_suffixes;
             NamedValue<n::unpack_unrecognised_is_fatal, bool> unpack_unrecognised_is_fatal;

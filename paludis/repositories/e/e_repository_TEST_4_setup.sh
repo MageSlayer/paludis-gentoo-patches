@@ -1210,6 +1210,28 @@ pkg_pretend() {
     [[ -z $(type -t usex) ]] || die
 }
 END
+mkdir -p "cat/no-new-stdin"
+cat <<'END' > cat/no-new-stdin/no-new-stdin-4.ebuild || exit 1
+EAPI="4"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+S=${WORKDIR}
+
+src_install() {
+    echo foo >-
+    insinto /usr/share/test
+    echo zap | newins - foo
+    [[ $(<"${D}"/usr/share/test/foo) == foo ]] || die
+
+    rm ./-
+    echo zap | nonfatal newins - bar && die
+}
+END
 cd ..
 
 cd ..

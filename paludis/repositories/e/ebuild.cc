@@ -251,6 +251,8 @@ EbuildCommand::operator() ()
                 params.package_id()->eapi()->supported()->tools_options()->doman_lang_filenames_overrides() ? "yes" : "")
         .setenv("PALUDIS_DOSYM_NO_MKDIR",
                 params.package_id()->eapi()->supported()->tools_options()->dosym_mkdir() ? "" : "yes")
+        .setenv("PALUDIS_NEW_STDIN",
+                params.package_id()->eapi()->supported()->tools_options()->new_stdin() ? "yes" : "")
         .setenv("PALUDIS_USE_WITH_ENABLE_EMPTY_THIRD_ARGUMENT",
                 params.package_id()->eapi()->supported()->tools_options()->use_with_enable_empty_third_argument() ? "yes" : "")
         .setenv("PALUDIS_FAILURE_IS_FATAL",
