@@ -111,6 +111,64 @@ EOF
 }
 END
 
+mkdir -p "cat/strict-use" || exit 1
+cat << 'END' > cat/strict-use/strict-use-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork enabled"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+pkg_setup() {
+    use enabled || die "enabled not enabled"
+    use spork && die "sporks are bad"
+}
+END
+
+mkdir -p "cat/strict-use-fail" || exit 1
+cat << 'END' > cat/strict-use-fail/strict-use-fail-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork enabled"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+pkg_setup() {
+    use pony
+}
+END
+
+mkdir -p "cat/strict-use-injection" || exit 1
+cat << 'END' > cat/strict-use-injection/strict-use-injection-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork enabled"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+pkg_setup() {
+    use build && die "build set"
+    use userland_GNU || die "userland_GNU not set"
+    use cheese || die "cheese not set"
+    use otherarch && die "otherarch set"
+}
+END
+
 mkdir -p "cat/usex" || exit 1
 cat << 'END' > cat/usex/usex-5.ebuild || exit 1
 EAPI="5"

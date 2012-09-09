@@ -927,61 +927,6 @@ EOF
     chmod +x configure
 }
 END
-mkdir -p "cat/strict-use" || exit 1
-cat << 'END' > cat/strict-use/strict-use-4.ebuild || exit 1
-EAPI="4"
-DESCRIPTION="The Description"
-HOMEPAGE="http://example.com/"
-SRC_URI=""
-SLOT="0"
-IUSE="spork enabled"
-LICENSE="GPL-2"
-KEYWORDS="test"
-
-S="${WORKDIR}"
-
-pkg_setup() {
-    use enabled || die "enabled not enabled"
-    use spork && die "sporks are bad"
-}
-END
-mkdir -p "cat/strict-use-fail" || exit 1
-cat << 'END' > cat/strict-use-fail/strict-use-fail-4.ebuild || exit 1
-EAPI="4"
-DESCRIPTION="The Description"
-HOMEPAGE="http://example.com/"
-SRC_URI=""
-SLOT="0"
-IUSE="spork enabled"
-LICENSE="GPL-2"
-KEYWORDS="test"
-
-S="${WORKDIR}"
-
-pkg_setup() {
-    use pony
-}
-END
-mkdir -p "cat/strict-use-injection" || exit 1
-cat << 'END' > cat/strict-use-injection/strict-use-injection-4.ebuild || exit 1
-EAPI="4"
-DESCRIPTION="The Description"
-HOMEPAGE="http://example.com/"
-SRC_URI=""
-SLOT="0"
-IUSE="spork enabled"
-LICENSE="GPL-2"
-KEYWORDS="test"
-
-S="${WORKDIR}"
-
-pkg_setup() {
-    use build && die "build set"
-    use userland_GNU || die "userland_GNU not set"
-    use cheese || die "cheese not set"
-    use otherarch && die "otherarch set"
-}
-END
 mkdir -p "cat/global-scope-use" || exit 1
 cat << 'END' > cat/global-scope-use/global-scope-use-4.ebuild || exit 1
 EAPI="4"
