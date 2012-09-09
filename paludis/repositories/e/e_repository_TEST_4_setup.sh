@@ -1194,8 +1194,8 @@ src_configure() {
     [[ $(use_enable cheese cheese "") == --enable-cheese= ]] || die
 }
 END
-mkdir -p "cat/no-usex"
-cat <<'END' > cat/no-usex/no-usex-4.ebuild || exit 1
+mkdir -p "cat/no-eapi5-commands"
+cat <<'END' > cat/no-eapi5-commands/no-eapi5-commands-4.ebuild || exit 1
 EAPI="4"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
@@ -1207,7 +1207,9 @@ KEYWORDS="test"
 S=${WORKDIR}
 
 pkg_pretend() {
-    [[ -z $(type -t usex) ]] || die
+    [[ -z $(type -t usex)      ]] || die
+    [[ -z $(type -t doheader)  ]] || die
+    [[ -z $(type -t newheader) ]] || die
 }
 END
 mkdir -p "cat/no-new-stdin"

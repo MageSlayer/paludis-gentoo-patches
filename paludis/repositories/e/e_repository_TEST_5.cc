@@ -311,3 +311,57 @@ TEST(ERepository, NewStdin)
     }
 }
 
+TEST(ERepository, Doheader)
+{
+    FSPath root(FSPath::cwd() / "e_repository_TEST_5_dir" / "root");
+
+    TestEnvironment env;
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_5_dir" / "repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_5_dir" / "repo/profiles/profile"));
+    keys->insert("layout", "traditional");
+    keys->insert("eapi_when_unknown", "0");
+    keys->insert("eapi_when_unspecified", "0");
+    keys->insert("profile_eapi", "0");
+    keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_5_dir" / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_5_dir" / "build"));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
+
+    std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
+    v_keys->insert("format", "vdb");
+    v_keys->insert("names_cache", "/var/empty");
+    v_keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_5_dir" / "vdb"));
+    v_keys->insert("root", stringify(root));
+    std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
+                std::bind(from_keys, v_keys, std::placeholders::_1)));
+    env.add_repository(1, v_repo);
+
+    {
+        InstallAction action(make_named_values<InstallActionOptions>(
+                    n::destination() = v_repo,
+                    n::make_output_manager() = &make_standard_output_manager,
+                    n::perform_uninstall() = &cannot_uninstall,
+                    n::replacing() = std::make_shared<PackageIDSequence>(),
+                    n::want_phase() = &want_all_phases
+                    ));
+
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/doheader-5::test-repo",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("5", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+
+        const std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/doheader-dies-5::test-repo",
+                                &env, { })), make_null_shared_ptr(), { }))]->last());
+        ASSERT_TRUE(bool(id2));
+        EXPECT_EQ("5", visitor_cast<const MetadataValueKey<std::string> >(**id2->find_metadata("EAPI"))->parse_value());
+        EXPECT_THROW(id2->perform_action(action), ActionFailedError);
+    }
+}
+

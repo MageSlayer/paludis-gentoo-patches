@@ -1,6 +1,6 @@
 include $(top_srcdir)/misc/common-makefile.am
 
-SUBDIRS = . 4 exheres-0
+SUBDIRS = . 4 5 exheres-0
 
 libexecprogdir = $(libexecdir)/paludis/utils
 

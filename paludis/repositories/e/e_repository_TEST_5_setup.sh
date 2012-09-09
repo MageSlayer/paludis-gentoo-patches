@@ -169,6 +169,69 @@ EOF
 }
 END
 
+mkdir -p "cat/doheader" || exit 1
+cat << 'END' > cat/doheader/doheader-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+src_install() {
+    echo foo >foo.h
+    echo foo2 >foo2.h
+    doheader foo.h foo2.h
+    [[ $(<"${D}"/usr/include/foo.h)  == foo ]] || die
+    [[ $(<"${D}"/usr/include/foo2.h) == foo2 ]] || die
+    [[ -x ${D}/usr/include/foo.h  ]] && die
+    [[ -x ${D}/usr/include/foo2.h ]] && die
+
+    echo bar >bar.h
+    newheader bar.h baz.h
+    [[ -e ${D}/usr/include/bar.h ]] && die
+    [[ $(<"${D}"/usr/include/baz.h) == bar ]] || die
+    [[ -x ${D}/usr/include/baz.h ]] && die
+
+    insopts -m0755
+
+    echo xyzzy >xyzzy.h
+    doheader xyzzy.h
+    [[ $(<"${D}"/usr/include/xyzzy.h) == xyzzy ]] || die
+    [[ -x ${D}/usr/include/xyzzy.h ]] || die
+
+    echo plugh >plugh.h
+    newheader plugh.h plover.h
+    [[ -e ${D}/usr/include/plugh.h ]] && die
+    [[ $(<"${D}"/usr/include/plover.h) == plugh ]] || die
+    [[ -x ${D}/usr/include/plover.h ]] || die
+
+    nonfatal doheader missing.h && die
+}
+END
+
+mkdir -p "cat/doheader-dies" || exit 1
+cat << 'END' > cat/doheader-dies/doheader-dies-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+src_install() {
+    doheader missing.h
+}
+END
+
 mkdir -p "cat/new-stdin" || exit 1
 cat << 'END' > cat/new-stdin/new-stdin-5.ebuild || exit 1
 EAPI="5"
@@ -189,6 +252,7 @@ src_install() {
     echo testenvd   | newenvd   - testenvd
     exeinto /usr/libexec
     echo testexe    | newexe    - testexe
+    echo testheader | newheader - testheader
     echo testinitd  | newinitd  - testinitd
     insinto /usr/share/test
     echo testins    | newins    - testins
@@ -197,13 +261,14 @@ src_install() {
     echo testman.1  | newman    - testman.1
     echo testsbin   | newsbin   - testsbin
 
-    cat "${D}"/{usr/bin/testbin,etc/conf.d/testconfd,usr/share/doc/${PF}/testdoc,etc/env.d/testenvd,usr/libexec/testexe,etc/init.d/testinitd,usr/share/test/testins,usr/lib*/testlib.a,usr/lib*/testlib.so,usr/share/man/man1/testman.1,usr/sbin/testsbin} > "${T}"/new.out
+    cat "${D}"/{usr/bin/testbin,etc/conf.d/testconfd,usr/share/doc/${PF}/testdoc,etc/env.d/testenvd,usr/libexec/testexe,usr/include/testheader,etc/init.d/testinitd,usr/share/test/testins,usr/lib*/testlib.a,usr/lib*/testlib.so,usr/share/man/man1/testman.1,usr/sbin/testsbin} > "${T}"/new.out
     cat >"${T}"/new.expected <<EOF
 testbin
 testconfd
 testdoc
 testenvd
 testexe
+testheader
 testinitd
 testins
 testlib.a

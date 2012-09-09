@@ -552,7 +552,7 @@ TEST(ERepository, RequiredUse)
     }
 }
 
-TEST(ERepository, NoUseX)
+TEST(ERepository, NoEAPI5Commands)
 {
     FSPath root(FSPath::cwd() / "e_repository_TEST_4_dir" / "root");
 
@@ -589,7 +589,7 @@ TEST(ERepository, NoUseX)
                     ));
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                        PackageDepSpec(parse_user_package_dep_spec("=cat/no-usex-4::test-repo",
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/no-eapi5-commands-4::test-repo",
                                 &env, { })), make_null_shared_ptr(), { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());

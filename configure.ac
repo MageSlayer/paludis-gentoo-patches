@@ -1835,6 +1835,7 @@ AC_CONFIG_FILES([
 	paludis/repositories/e/ebuild/pbin-1/Makefile
 	paludis/repositories/e/ebuild/utils/Makefile
 	paludis/repositories/e/ebuild/utils/4/Makefile
+	paludis/repositories/e/ebuild/utils/5/Makefile
 	paludis/repositories/e/ebuild/utils/exheres-0/Makefile
 	paludis/repositories/fake/Makefile
 	paludis/repositories/gemcutter/Makefile
