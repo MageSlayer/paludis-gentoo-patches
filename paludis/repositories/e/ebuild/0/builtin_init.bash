@@ -72,9 +72,6 @@ builtin_init()
 
     [[ -n "${PALUDIS_PREFIX_IMAGE_VAR}" ]] && export $PALUDIS_PREFIX_IMAGE_VAR=${D}
 
-    IMAGE="${D}"
-    declare -r IMAGE="${IMAGE}"
-
     export S="${WORKDIR}/${P}"
 
     ebuild_load_em_up_dan

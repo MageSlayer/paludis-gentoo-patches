@@ -37,9 +37,9 @@ CHOST="i286-badger-linux-gnu"
 END
 cat <<END > cat/pkg/pkg-1.ebuild || exit 1
 SLOT="0"
-PLATFORMS="test"
+KEYWORDS="test"
 src_install() {
-	ln -s "\${IMAGE}/foo" "\${IMAGE}/bar" || die
+	ln -s "\${D}/foo" "\${D}/bar" || die
 }
 END
 cd ..

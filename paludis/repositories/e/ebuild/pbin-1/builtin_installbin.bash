@@ -19,11 +19,11 @@
 builtin_installbin()
 {
     if [[ ${!PALUDIS_ARCHIVES_VAR%.tar.bz2} != ${!PALUDIS_ARCHIVES_VAR} ]] ; then
-        echo tar jvxpf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${IMAGE}"/ --exclude PBIN 1>&2
-        tar jvxpf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${IMAGE}"/ --exclude PBIN || die "Couldn't extract image"
+        echo tar jvxpf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${!PALUDIS_IMAGE_DIR_VAR}"/ --exclude PBIN 1>&2
+        tar jvxpf "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} -C "${!PALUDIS_IMAGE_DIR_VAR}"/ --exclude PBIN || die "Couldn't extract image"
     elif [[ ${!PALUDIS_ARCHIVES_VAR%.pax.bz2} != ${!PALUDIS_ARCHIVES_VAR} ]] ; then
-        echo unpaxinate img "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} "${IMAGE}" 1>&2
-        unpaxinate img "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} "${IMAGE}" || die "Couldn't extract image"
+        echo unpaxinate img "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} "${!PALUDIS_IMAGE_DIR_VAR}" 1>&2
+        unpaxinate img "${!PALUDIS_BINARY_DISTDIR_VARIABLE}"/${!PALUDIS_ARCHIVES_VAR} "${!PALUDIS_IMAGE_DIR_VAR}" || die "Couldn't extract image"
     else
         die "Unrecognised extension for '${!PALUDIS_ARCHIVES_VAR}'"
     fi
