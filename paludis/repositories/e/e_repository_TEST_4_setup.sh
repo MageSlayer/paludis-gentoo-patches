@@ -1155,6 +1155,7 @@ pkg_pretend() {
     [[ -z $(type -t usex)      ]] || die
     [[ -z $(type -t doheader)  ]] || die
     [[ -z $(type -t newheader) ]] || die
+    [[ -z ${EBUILD_PHASE_FUNC} ]] || die
 }
 END
 mkdir -p "cat/no-new-stdin"

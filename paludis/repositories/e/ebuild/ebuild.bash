@@ -628,6 +628,8 @@ ebuild_main()
 
     for action in $@ ; do
         export ${PALUDIS_EBUILD_PHASE_VAR}="${action}"
+        [[ -n ${PALUDIS_EBUILD_PHASE_FUNC_VAR} ]] && export ${PALUDIS_EBUILD_PHASE_FUNC_VAR}="$(paludis_phase_to_function_name "${action}")"
+
         perform_hook ebuild_${action}_pre
 
         if [[ ${action} == metadata ]]; then

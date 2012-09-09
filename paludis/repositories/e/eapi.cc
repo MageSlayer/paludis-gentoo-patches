@@ -81,6 +81,7 @@ namespace
                         n::env_d() = check_get(k, "env_d"),
                         n::env_distdir() = check_get(k, "env_distdir"),
                         n::env_ebuild_phase() = check_get(k, "env_ebuild_phase"),
+                        n::env_ebuild_phase_func() = check_get(k, "env_ebuild_phase_func"),
                         n::env_ed() = check_get(k, "env_ed"),
                         n::env_eprefix() = check_get(k, "env_eprefix"),
                         n::env_eroot() = check_get(k, "env_eroot"),

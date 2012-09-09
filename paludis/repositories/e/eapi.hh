@@ -98,6 +98,7 @@ namespace paludis
         typedef Name<struct name_env_d> env_d;
         typedef Name<struct name_env_distdir> env_distdir;
         typedef Name<struct name_env_ebuild_phase> env_ebuild_phase;
+        typedef Name<struct name_env_ebuild_phase_func> env_ebuild_phase_func;
         typedef Name<struct name_env_ed> env_ed;
         typedef Name<struct name_env_eprefix> env_eprefix;
         typedef Name<struct name_env_eroot> env_eroot;
@@ -340,6 +341,7 @@ namespace paludis
             NamedValue<n::env_d, std::string> env_d;
             NamedValue<n::env_distdir, std::string> env_distdir;
             NamedValue<n::env_ebuild_phase, std::string> env_ebuild_phase;
+            NamedValue<n::env_ebuild_phase_func, std::string> env_ebuild_phase_func;
             NamedValue<n::env_ed, std::string> env_ed;
             NamedValue<n::env_eprefix, std::string> env_eprefix;
             NamedValue<n::env_eroot, std::string> env_eroot;

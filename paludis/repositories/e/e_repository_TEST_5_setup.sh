@@ -339,5 +339,22 @@ EOF
 }
 END
 
+mkdir -p "cat/ebuild-phase-func" || exit 1
+cat << 'END' > cat/ebuild-phase-func/ebuild-phase-func-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_pretend() {
+    [[ ${EBUILD_PHASE} == pretend ]] || die
+    [[ ${EBUILD_PHASE_FUNC} == pkg_pretend ]] || die
+}
+END
+
 cd ..
 cd ..
