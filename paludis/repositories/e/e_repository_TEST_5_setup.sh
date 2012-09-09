@@ -356,5 +356,59 @@ pkg_pretend() {
 }
 END
 
+mkdir -p "cat/apply-user-patches" || exit 1
+cat << 'END' > cat/apply-user-patches/apply-user-patches-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+src_prepare() {
+    apply_user_patches && die
+}
+END
+
+mkdir -p "cat/apply-user-patches-default" || exit 1
+cat << 'END' > cat/apply-user-patches-default/apply-user-patches-default-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+src_prepare() {
+    default
+}
+END
+
+mkdir -p "cat/apply-user-patches-uncalled" || exit 1
+cat << 'END' > cat/apply-user-patches-uncalled/apply-user-patches-uncalled-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+src_prepare() {
+    :
+}
+END
+
 cd ..
 cd ..

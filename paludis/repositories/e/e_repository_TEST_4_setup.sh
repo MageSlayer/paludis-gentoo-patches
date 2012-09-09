@@ -1156,6 +1156,7 @@ pkg_pretend() {
     [[ -z $(type -t doheader)  ]] || die
     [[ -z $(type -t newheader) ]] || die
     [[ -z ${EBUILD_PHASE_FUNC} ]] || die
+    [[ -z $(type -t apply_user_patches) ]] || die
 }
 END
 mkdir -p "cat/no-new-stdin"
