@@ -185,6 +185,8 @@ S="${WORKDIR}"
 pkg_pretend() {
     usex enabled                      >>"${T}"/usex.out || die
     usex disabled                     >>"${T}"/usex.out || die
+    usex !enabled                     >>"${T}"/usex.out || die
+    usex !disabled                    >>"${T}"/usex.out || die
     usex enabled  foo                 >>"${T}"/usex.out || die
     usex disabled foo                 >>"${T}"/usex.out || die
     usex enabled  foo bar             >>"${T}"/usex.out || die
@@ -205,6 +207,8 @@ pkg_pretend() {
     cat >"${T}"/usex.expected <<EOF
 yes
 no
+no
+yes
 foo
 no
 foo
