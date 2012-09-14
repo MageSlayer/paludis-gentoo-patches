@@ -45,7 +45,8 @@ paludis::cave::format_package_id(
     m->insert('c', stringify(id->name().category()));
     m->insert('p', stringify(id->name().package()));
     m->insert('v', stringify(id->version()));
-    m->insert('s', id->slot_key() ? stringify(id->slot_key()->parse_value().raw_value()) : "");
+    m->insert('s', id->slot_key() ? stringify(id->slot_key()->parse_value().parallel_value()) : "");
+    m->insert('S', id->slot_key() ? stringify(id->slot_key()->parse_value().raw_value()) : "");
     m->insert(':', id->slot_key() ? ":" : "");
     m->insert('r', stringify(id->repository_name()));
     m->insert('F', id->canonical_form(idcf_full));

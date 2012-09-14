@@ -82,7 +82,8 @@ namespace
                     args::StringSetArg::StringSetArgOptions()),
             g_display_options(main_options_section(), "Display Options", "Controls the output format."),
             a_format(&g_display_options, "format", 'f', "Select the output format. Special tokens recognised are "
-                    "%c for category, %p for package, %v for version, %s for slot, %: for ':' if we have a slot and "
+                    "%c for category, %p for package, %v for version, %s for slot, %s for slot in its native format, "
+                    "%: for ':' if we have a slot and "
                     "empty otherwise, %r for repository, %F for the canonical full form, %V for the canonical full "
                     "version, %W for the canonical full unversioned form, %N for the canonical full unnamed form, "
                     "%u for a uniquely identifying dependency spec, "
