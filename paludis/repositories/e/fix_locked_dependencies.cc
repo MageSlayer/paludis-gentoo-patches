@@ -75,26 +75,7 @@ namespace
             return make_null_shared_ptr();
         }
 
-        std::shared_ptr<const SlotRequirement> visit(const SlotAnyPartialLockedRequirement &) const
-        {
-            std::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
-                        generator::Matches(*spec, id, { }) | filter::InstalledAtRoot(env->system_root_key()->parse_value()))]);
-            if (matches->empty())
-                return make_null_shared_ptr();
-
-            if ((*matches->last())->slot_key())
-            {
-                auto ss((*matches->last())->slot_key()->parse_value());
-                if (ss.match_values().first == ss.match_values().second)
-                    return std::make_shared<ELikeSlotExactPartialRequirement>(ss.match_values().first, spec->slot_requirement_ptr());
-                else
-                    return std::make_shared<ELikeSlotExactFullRequirement>(ss.match_values(), spec->slot_requirement_ptr());
-            }
-            else
-                return make_null_shared_ptr();
-        }
-
-        std::shared_ptr<const SlotRequirement> visit(const SlotAnyAtAllLockedRequirement &) const
+        std::shared_ptr<const SlotRequirement> rewrite() const
         {
             std::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
                         generator::Matches(*spec, id, { }) | filter::InstalledAtRoot(env->system_root_key()->parse_value()))]);
@@ -111,6 +92,16 @@ namespace
             }
             else
                 return make_null_shared_ptr();
+        }
+
+        std::shared_ptr<const SlotRequirement> visit(const SlotAnyPartialLockedRequirement &) const
+        {
+            return rewrite();
+        }
+
+        std::shared_ptr<const SlotRequirement> visit(const SlotAnyAtAllLockedRequirement &) const
+        {
+            return rewrite();
         }
     };
 
