@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -104,10 +104,10 @@ namespace
             if ((*matches->last())->slot_key())
             {
                 auto ss((*matches->last())->slot_key()->parse_value());
-                if (ss.match_values().first == ss.match_values().second)
-                    return std::make_shared<ELikeSlotExactPartialRequirement>(ss.match_values().first, spec->slot_requirement_ptr());
-                else
+                if (eapi.supported()->ebuild_options()->has_subslots())
                     return std::make_shared<ELikeSlotExactFullRequirement>(ss.match_values(), spec->slot_requirement_ptr());
+                else
+                    return std::make_shared<ELikeSlotExactPartialRequirement>(ss.match_values().first, spec->slot_requirement_ptr());
             }
             else
                 return make_null_shared_ptr();
