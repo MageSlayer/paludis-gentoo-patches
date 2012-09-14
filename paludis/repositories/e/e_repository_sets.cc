@@ -312,7 +312,7 @@ ERepositorySets::security_set(bool insecurity) const
                     else
                     {
                         Context local_local_local_context("When finding upgrade for '" + stringify(glsa_pkg->name()) + ":"
-                                + ((*c)->slot_key() ? stringify((*c)->slot_key()->parse_value().raw_value()) : "(none)") + "'");
+                                + ((*c)->slot_key() ? stringify((*c)->slot_key()->parse_value().parallel_value()) : "(none)") + "'");
 
                         /* we need to find the best not vulnerable installable package that isn't masked
                          * that's in the same slot as our vulnerable installed package. */
