@@ -312,3 +312,9 @@ TestEnvironment::update_config_files_for_package_move(const PackageDepSpec &, co
 {
 }
 
+void
+TestEnvironment::set_system_root(const FSPath & p)
+{
+    _imp->system_root_key->change_value(p);
+}
+

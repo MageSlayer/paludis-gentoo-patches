@@ -139,6 +139,8 @@ namespace paludis
 
             virtual void update_config_files_for_package_move(
                     const PackageDepSpec &, const QualifiedPackageName &) const;
+
+            void set_system_root(const FSPath &);
     };
 }
 
