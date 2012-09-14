@@ -1239,7 +1239,7 @@ void
 EbuildID::load_slot(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
     Lock l(_imp->mutex);
-    _imp->slot = ESlotKeyStore::get_instance()->fetch(m, v, mkt_internal);
+    _imp->slot = ESlotKeyStore::get_instance()->fetch(*eapi(), m, v, mkt_internal);
     add_metadata_key(_imp->slot);
 }
 

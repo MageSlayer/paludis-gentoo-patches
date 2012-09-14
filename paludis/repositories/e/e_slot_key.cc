@@ -111,19 +111,31 @@ ESlotKeyStore::~ESlotKeyStore() = default;
 
 const std::shared_ptr<const MetadataValueKey<Slot> >
 ESlotKeyStore::fetch(
+        const EAPI & eapi,
         const std::shared_ptr<const EAPIMetadataVariable> & v,
-        const std::string & s,
-        const MetadataKeyType t) const
+        const std::string & ss,
+        const MetadataKeyType mkt) const
 {
+    std::string s(ss), t(ss);
+    if (eapi.supported()->ebuild_options()->has_subslots())
+    {
+        auto p(s.find('/'));
+        if (std::string::npos != p)
+        {
+            s = ss.substr(0, p);
+            t = ss.substr(p + 1);
+        }
+    }
+
     Lock lock(_imp->mutex);
 
-    ESlotKeyStoreIndex x(v, s, t);
+    ESlotKeyStoreIndex x(v, ss, mkt);
     auto i(_imp->store.find(x));
     if (i == _imp->store.end())
         i = _imp->store.insert(std::make_pair(x, std::make_shared<const ESlotKey>(make_named_values<Slot>(
-                            n::match_values() = std::make_pair(s, s),
+                            n::match_values() = std::make_pair(s, t),
                             n::parallel_value() = s,
-                            n::raw_value() = s), v, t))).first;
+                            n::raw_value() = ss), v, mkt))).first;
     return i->second;
 }
 

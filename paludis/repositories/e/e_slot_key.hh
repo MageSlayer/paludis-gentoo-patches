@@ -41,6 +41,7 @@ namespace paludis
 
             public:
                 const std::shared_ptr<const MetadataValueKey<Slot> > fetch(
+                        const EAPI &,
                         const std::shared_ptr<const EAPIMetadataVariable> &,
                         const std::string &,
                         const MetadataKeyType) const PALUDIS_ATTRIBUTE((warn_unused_result));

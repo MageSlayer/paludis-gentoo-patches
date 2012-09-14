@@ -286,6 +286,7 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
 
     if ("*" == match)
     {
+        /* c/p:* */
         if (! options[epdso_allow_slot_star_deps])
         {
             if (options[epdso_strict_parsing])
@@ -308,9 +309,26 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
         }
 
         if (1 == match.length())
+        {
+            /* c/p:= */
             result.slot_requirement(std::make_shared<ELikeSlotAnyAtAllLockedRequirement>());
+        }
         else
-            result.slot_requirement(std::make_shared<ELikeSlotExactPartialRequirement>(SlotName(s.substr(slot_p + 2)), std::make_shared<ELikeSlotAnyAtAllLockedRequirement>()));
+        {
+            std::string text(s.substr(slot_p + 2));
+            auto p(text.find('/'));
+            if (options[epdso_allow_subslot_deps] && std::string::npos != p)
+            {
+                /* c/p:=s/u */
+                result.slot_requirement(std::make_shared<ELikeSlotExactFullRequirement>(std::make_pair(SlotName(text.substr(0, p)), SlotName(text.substr(p + 1))),
+                            std::make_shared<ELikeSlotAnyAtAllLockedRequirement>()));
+            }
+            else
+            {
+                /* c/p:=s */
+                result.slot_requirement(std::make_shared<ELikeSlotExactPartialRequirement>(SlotName(text), std::make_shared<ELikeSlotAnyAtAllLockedRequirement>()));
+            }
+        }
     }
     else
     {
@@ -322,7 +340,46 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
                 Log::get_instance()->message("e.package_dep_spec.slot_not_allowed", ll_warning, lc_context)
                     << "Slot dependencies not safe for use here";
         }
-        result.slot_requirement(std::make_shared<ELikeSlotExactPartialRequirement>(SlotName(s.substr(slot_p + 1)), make_null_shared_ptr()));
+
+        std::string text(s.substr(slot_p + 1));
+        auto q(text.find('='));
+
+        if (options[epdso_allow_subslot_deps] && options[epdso_allow_slot_equal_deps] && std::string::npos != q)
+        {
+            std::string left_text(text.substr(0, q)), right_text(text.substr(q + 1));
+            auto p(right_text.find('/'));
+            if (std::string::npos != p)
+            {
+                /* c/p:l=s/u */
+                result.slot_requirement(std::make_shared<ELikeSlotExactFullRequirement>(std::make_pair(SlotName(right_text.substr(0, p)), SlotName(right_text.substr(p + 1))),
+                            std::make_shared<ELikeSlotAnyPartialLockedRequirement>(SlotName(left_text))));
+            }
+            else if (right_text.empty())
+            {
+                /* c/p:l= */
+                result.slot_requirement(std::make_shared<ELikeSlotAnyPartialLockedRequirement>(SlotName(left_text)));
+            }
+            else
+            {
+                /* c/p:l=s */
+                result.slot_requirement(std::make_shared<ELikeSlotExactPartialRequirement>(SlotName(right_text),
+                            std::make_shared<ELikeSlotAnyPartialLockedRequirement>(SlotName(left_text))));
+            }
+        }
+        else
+        {
+            auto p(text.find('/'));
+            if (options[epdso_allow_subslot_deps] && std::string::npos != p)
+            {
+                /* c/p:s/u */
+                result.slot_requirement(std::make_shared<ELikeSlotExactFullRequirement>(std::make_pair(SlotName(text.substr(0, p)), SlotName(text.substr(p + 1))), make_null_shared_ptr()));
+            }
+            else
+            {
+                /* c/p:s */
+                result.slot_requirement(std::make_shared<ELikeSlotExactPartialRequirement>(SlotName(text), make_null_shared_ptr()));
+            }
+        }
     }
     s.erase(slot_p);
 }

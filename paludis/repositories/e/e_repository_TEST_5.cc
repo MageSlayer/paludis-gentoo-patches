@@ -49,6 +49,8 @@
 #include <paludis/selection.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
+#include <paludis/slot.hh>
+#include <paludis/unformatted_pretty_printer.hh>
 
 #include <functional>
 #include <set>
@@ -316,6 +318,98 @@ TEST(ERepository, RequiredUse)
         EXPECT_EQ("5", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         ASSERT_TRUE(pretend_action.failed());
+    }
+}
+
+TEST(ERepository, SubSlots)
+{
+    FSPath root(FSPath::cwd() / "e_repository_TEST_5_dir" / "root");
+
+    TestEnvironment env;
+    env.set_system_root(FSPath("e_repository_TEST_5_dir/root").realpath());
+
+    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
+    keys->insert("format", "e");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_5_dir" / "repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_5_dir" / "repo/profiles/profile"));
+    keys->insert("layout", "traditional");
+    keys->insert("eapi_when_unknown", "0");
+    keys->insert("eapi_when_unspecified", "0");
+    keys->insert("profile_eapi", "0");
+    keys->insert("distdir", stringify(FSPath::cwd() / "e_repository_TEST_5_dir" / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_5_dir" / "build"));
+    std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(1, repo);
+
+    keys = std::make_shared<Map<std::string, std::string>>();
+    keys->insert("format", "vdb");
+    keys->insert("names_cache", "/var/empty");
+    keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_5_dir" / "vdb"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "e_repository_TEST_5_dir" / "build"));
+    keys->insert("root", stringify(FSPath("e_repository_TEST_5_dir/root").realpath()));
+    std::shared_ptr<Repository> installed_repo(VDBRepository::VDBRepository::repository_factory_create(&env,
+                std::bind(from_keys, keys, std::placeholders::_1)));
+    env.add_repository(0, installed_repo);
+
+    {
+        InstallAction install_action(make_named_values<InstallActionOptions>(
+                    n::destination() = installed_repo,
+                    n::make_output_manager() = &make_standard_output_manager,
+                    n::perform_uninstall() = &cannot_uninstall,
+                    n::replacing() = std::make_shared<PackageIDSequence>(),
+                    n::want_phase() = &want_all_phases
+                    ));
+
+        {
+            const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/subslots-5",
+                                    &env, { })), make_null_shared_ptr(), { }))]->last());
+            ASSERT_TRUE(bool(id));
+            EXPECT_EQ("5", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+            EXPECT_EQ("foo/bar", id->slot_key()->parse_value().raw_value());
+            EXPECT_EQ(SlotName("foo"), id->slot_key()->parse_value().match_values().first);
+            EXPECT_EQ(SlotName("bar"), id->slot_key()->parse_value().match_values().second);
+            EXPECT_EQ(SlotName("foo"), id->slot_key()->parse_value().parallel_value());
+
+            id->perform_action(install_action);
+        }
+
+        installed_repo->invalidate();
+
+        {
+            const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/subslots-5::installed",
+                                    &env, { })), make_null_shared_ptr(), { }))]->last());
+            ASSERT_TRUE(bool(id));
+            EXPECT_EQ("5", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+            EXPECT_EQ("foo/bar", id->slot_key()->parse_value().raw_value());
+            EXPECT_EQ(SlotName("foo"), id->slot_key()->parse_value().match_values().first);
+            EXPECT_EQ(SlotName("bar"), id->slot_key()->parse_value().match_values().second);
+            EXPECT_EQ(SlotName("foo"), id->slot_key()->parse_value().parallel_value());
+        }
+
+        {
+            const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/subslot-dep-5",
+                                    &env, { })), make_null_shared_ptr(), { }))]->last());
+            ASSERT_TRUE(bool(id));
+            EXPECT_EQ("5", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+            EXPECT_EQ("cat/subslots:= cat/subslots:foo=", id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+            id->perform_action(install_action);
+        }
+
+        installed_repo->invalidate();
+
+        {
+            const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                            PackageDepSpec(parse_user_package_dep_spec("=cat/subslot-dep-5::installed",
+                                    &env, { })), make_null_shared_ptr(), { }))]->last());
+            ASSERT_TRUE(bool(id));
+            EXPECT_EQ("5", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+            EXPECT_EQ("cat/subslots:=foo/bar cat/subslots:foo=foo/bar", id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        }
     }
 }
 

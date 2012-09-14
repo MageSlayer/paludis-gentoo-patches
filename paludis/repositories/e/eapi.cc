@@ -179,6 +179,7 @@ namespace
                         n::fix_mtimes() = destringify_key<bool>(k, "fix_mtimes"),
                         n::fs_location_description() = check_get(k, "fs_location_description"),
                         n::fs_location_name() = check_get(k, "fs_location_name"),
+                        n::has_subslots() = destringify_key<bool>(k, "has_subslots"),
                         n::ignore_pivot_env_functions() = check_get(k, "ignore_pivot_env_functions"),
                         n::ignore_pivot_env_variables() = check_get(k, "ignore_pivot_env_variables"),
                         n::load_modules() = check_get(k, "load_modules"),

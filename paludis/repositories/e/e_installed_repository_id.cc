@@ -226,7 +226,7 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->slot()->name().empty())
         if ((_imp->dir / vars->slot()->name()).stat().exists())
         {
-            _imp->keys->slot = ESlotKeyStore::get_instance()->fetch(vars->slot(), file_contents(_imp->dir / vars->slot()->name()), mkt_internal);
+            _imp->keys->slot = ESlotKeyStore::get_instance()->fetch(*eapi(), vars->slot(), file_contents(_imp->dir / vars->slot()->name()), mkt_internal);
             add_metadata_key(_imp->keys->slot);
         }
 

@@ -143,6 +143,7 @@ namespace paludis
         typedef Name<struct name_has_expensive_tests> has_expensive_tests;
         typedef Name<struct name_has_optional_tests> has_optional_tests;
         typedef Name<struct name_has_recommended_tests> has_recommended_tests;
+        typedef Name<struct name_has_subslots> has_subslots;
         typedef Name<struct name_homepage> homepage;
         typedef Name<struct name_ignore_pivot_env_functions> ignore_pivot_env_functions;
         typedef Name<struct name_ignore_pivot_env_variables> ignore_pivot_env_variables;
@@ -426,6 +427,7 @@ namespace paludis
             NamedValue<n::fix_mtimes, bool> fix_mtimes;
             NamedValue<n::fs_location_description, std::string> fs_location_description;
             NamedValue<n::fs_location_name, std::string> fs_location_name;
+            NamedValue<n::has_subslots, bool> has_subslots;
             NamedValue<n::ignore_pivot_env_functions, std::string> ignore_pivot_env_functions;
             NamedValue<n::ignore_pivot_env_variables, std::string> ignore_pivot_env_variables;
             NamedValue<n::load_modules, std::string> load_modules;
