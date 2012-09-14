@@ -1271,7 +1271,7 @@ namespace
         c_slot_any_at_all_locked_requirement = rb_define_class_under(paludis_module(), "SlotAnyAtAllLockedRequirement", c_slot_requirement);
 
         /*
-         * Document-class: Paludis::ExactSlotRequirement
+         * Document-class: Paludis::SlotAnyUnlockedRequirement
          *
          * An any unlocked slot requiremet (:*)
          */
