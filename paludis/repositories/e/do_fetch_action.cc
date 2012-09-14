@@ -43,6 +43,7 @@
 #include <paludis/environment.hh>
 #include <paludis/action.hh>
 #include <paludis/output_manager.hh>
+#include <paludis/slot.hh>
 
 #include <algorithm>
 #include <set>
@@ -208,7 +209,7 @@ paludis::erepository::do_fetch_action(
                             n::loadsaveenv_dir() = package_builddir / "temp",
                             n::profiles() = repo->params().profiles(),
                             n::profiles_with_parents() = repo->profile()->profiles_with_parents(),
-                            n::slot() = id->slot_key() ? stringify(id->slot_key()->parse_value()) : "",
+                            n::slot() = id->slot_key() ? stringify(id->slot_key()->parse_value().raw_value()) : "",
                             n::use() = use,
                             n::use_expand() = join(repo->profile()->use_expand()->begin(), repo->profile()->use_expand()->end(), " "),
                             n::use_expand_hidden() = join(repo->profile()->use_expand_hidden()->begin(), repo->profile()->use_expand_hidden()->end(), " ")

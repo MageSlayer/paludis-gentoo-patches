@@ -43,6 +43,7 @@
 #include <paludis/mask.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/notifier_callback.hh>
+#include <paludis/slot.hh>
 #include <sys/sysinfo.h>
 #include <cstdlib>
 #include <iostream>

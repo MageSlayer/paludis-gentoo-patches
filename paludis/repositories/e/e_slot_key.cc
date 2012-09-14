@@ -24,8 +24,10 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/pimp-impl.hh>
+#include <paludis/util/make_named_values.hh>
 
 #include <paludis/name.hh>
+#include <paludis/slot.hh>
 
 #include <tuple>
 #include <unordered_map>
@@ -36,13 +38,13 @@ using namespace paludis::erepository;
 namespace
 {
     struct ESlotKey :
-        MetadataValueKey<SlotName>
+        MetadataValueKey<Slot>
     {
-        const SlotName slot_value;
+        const Slot slot_value;
         const std::shared_ptr<const EAPIMetadataVariable> variable;
         const MetadataKeyType key_type;
 
-        ESlotKey(const SlotName & v, const std::shared_ptr<const EAPIMetadataVariable> & m, const MetadataKeyType t) :
+        ESlotKey(const Slot & v, const std::shared_ptr<const EAPIMetadataVariable> & m, const MetadataKeyType t) :
             slot_value(v),
             variable(m),
             key_type(t)
@@ -53,7 +55,7 @@ namespace
         {
         }
 
-        virtual const SlotName parse_value() const
+        virtual const Slot parse_value() const
         {
             return slot_value;
         }
@@ -107,7 +109,7 @@ ESlotKeyStore::ESlotKeyStore() :
 
 ESlotKeyStore::~ESlotKeyStore() = default;
 
-const std::shared_ptr<const MetadataValueKey<SlotName> >
+const std::shared_ptr<const MetadataValueKey<Slot> >
 ESlotKeyStore::fetch(
         const std::shared_ptr<const EAPIMetadataVariable> & v,
         const std::string & s,
@@ -118,7 +120,10 @@ ESlotKeyStore::fetch(
     ESlotKeyStoreIndex x(v, s, t);
     auto i(_imp->store.find(x));
     if (i == _imp->store.end())
-        i = _imp->store.insert(std::make_pair(x, std::make_shared<const ESlotKey>(SlotName(s), v, t))).first;
+        i = _imp->store.insert(std::make_pair(x, std::make_shared<const ESlotKey>(make_named_values<Slot>(
+                            n::match_values() = std::make_pair(s, s),
+                            n::parallel_value() = s,
+                            n::raw_value() = s), v, t))).first;
     return i->second;
 }
 

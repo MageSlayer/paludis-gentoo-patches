@@ -39,6 +39,7 @@
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/slot.hh>
 
 #include <iostream>
 #include <set>
@@ -219,7 +220,7 @@ FixLinkageCommand::run(
         PartiallyMadePackageDepSpec part_spec({ });
         part_spec.package((*pkg_it)->name());
         if ((*pkg_it)->slot_key())
-            part_spec.slot_requirement(std::make_shared<UserSlotExactRequirement>((*pkg_it)->slot_key()->parse_value()));
+            part_spec.slot_requirement(std::make_shared<UserSlotExactPartialRequirement>((*pkg_it)->slot_key()->parse_value().parallel_value()));
 
         if (cmdline.a_exact.specified())
             part_spec.version_requirement(make_named_values<VersionRequirement>(

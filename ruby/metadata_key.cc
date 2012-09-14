@@ -23,6 +23,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/mask.hh>
+#include <paludis/slot.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/visitor_cast.hh>
@@ -115,7 +116,7 @@ namespace
                     new std::shared_ptr<const MetadataKey>(mm));
         }
 
-        void visit(const MetadataValueKey<SlotName> &)
+        void visit(const MetadataValueKey<Slot> &)
         {
             value = Data_Wrap_Struct(c_metadata_slot_key, 0, &Common<std::shared_ptr<const MetadataKey> >::free,
                     new std::shared_ptr<const MetadataKey>(mm));
@@ -305,7 +306,7 @@ namespace
         {
             std::shared_ptr<const MetadataKey> * self_ptr;
             Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
-            return rb_str_new2(stringify((std::static_pointer_cast<const MetadataValueKey<SlotName> >(*self_ptr))->parse_value()).c_str());
+            return rb_str_new2(stringify((std::static_pointer_cast<const MetadataValueKey<Slot> >(*self_ptr))->parse_value().raw_value()).c_str());
         }
         catch (const std::exception & e)
         {

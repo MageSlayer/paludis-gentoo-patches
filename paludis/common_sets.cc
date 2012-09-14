@@ -27,8 +27,9 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
-#include <paludis/elike_slot_requirement.hh>
+#include <paludis/user_dep_spec.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/slot.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/stringify.hh>
@@ -59,8 +60,7 @@ namespace
                 result->top()->append(std::make_shared<PackageDepSpec>(
                                 make_package_dep_spec({ })
                                 .package((*i)->name())
-                                .slot_requirement(std::make_shared<ELikeSlotExactRequirement>(
-                                            (*i)->slot_key()->parse_value(), false))
+                                .slot_requirement(std::make_shared<UserSlotExactPartialRequirement>((*i)->slot_key()->parse_value().parallel_value()))
                                 ));
             else
                 result->top()->append(std::make_shared<PackageDepSpec>(

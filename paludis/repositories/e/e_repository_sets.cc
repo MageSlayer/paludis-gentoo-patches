@@ -31,11 +31,13 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/generator.hh>
+#include <paludis/match_package.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/selection.hh>
 #include <paludis/set_file.hh>
+#include <paludis/slot.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
@@ -169,13 +171,16 @@ ERepositorySets::sets_list() const
 namespace
 {
     bool
-    match_range(const PackageID & e, const erepository::GLSARange & r, const VersionSpecOptions & ver_options, const ELikePackageDepSpecOptions & pds_options)
+    match_range(const Environment * const env, const EAPI & eapi,
+            const std::shared_ptr<const PackageID> & id, const erepository::GLSARange & r, const VersionSpecOptions & ver_options, const ELikePackageDepSpecOptions & pds_options)
     {
         if (r.slot() != "*")
         {
             try
             {
-                if ((! e.slot_key()) || (e.slot_key()->parse_value() != SlotName(r.slot())))
+                PackageDepSpec spec(parse_elike_package_dep_spec(stringify(id->name()) + ":" + r.slot(), eapi.supported()->package_dep_spec_parse_options(),
+                            eapi.supported()->version_spec_options()));
+                if (! match_package(*env, spec, id, make_null_shared_ptr(), { }))
                     return false;
             }
             catch (const SlotNameError &)
@@ -206,12 +211,12 @@ namespace
             our_op = vo_greater_equal;
 
         if (-1 != our_op)
-            return (VersionOperator(our_op).as_version_spec_comparator()(e.version(), VersionSpec(ver, ver_options)));
+            return (VersionOperator(our_op).as_version_spec_comparator()(id->version(), VersionSpec(ver, ver_options)));
 
         if (0 == r.op().compare(0, 1, "r"))
         {
-            return e.version().remove_revision() == VersionSpec(ver, ver_options).remove_revision() &&
-                match_range(e, make_named_values<erepository::GLSARange>(
+            return id->version().remove_revision() == VersionSpec(ver, ver_options).remove_revision() &&
+                match_range(env, eapi, id, make_named_values<erepository::GLSARange>(
                             n::op() = r.op().substr(1),
                             n::slot() = r.slot(),
                             n::version() = r.version()),
@@ -222,14 +227,15 @@ namespace
     }
 
     bool
-    is_vulnerable(const GLSAPackage & glsa_pkg, const PackageID & c, const VersionSpecOptions & ver_options, const ELikePackageDepSpecOptions & pds_options)
+    is_vulnerable(const Environment * const env, const EAPI & eapi,
+            const GLSAPackage & glsa_pkg, const std::shared_ptr<const PackageID> & id, const VersionSpecOptions & ver_options, const ELikePackageDepSpecOptions & pds_options)
     {
         /* a package is affected if it matches any vulnerable line, except if it matches
          * any unaffected line. */
         bool vulnerable(false);
         for (GLSAPackage::RangesConstIterator r(glsa_pkg.begin_vulnerable()), r_end(glsa_pkg.end_vulnerable()) ;
                 r != r_end && ! vulnerable ; ++r)
-            if (match_range(c, *r, ver_options, pds_options))
+            if (match_range(env, eapi, id, *r, ver_options, pds_options))
                 vulnerable = true;
 
         if (! vulnerable)
@@ -237,7 +243,7 @@ namespace
 
         for (GLSAPackage::RangesConstIterator r(glsa_pkg.begin_unaffected()), r_end(glsa_pkg.end_unaffected()) ;
                 r != r_end && vulnerable ; ++r)
-            if (match_range(c, *r, ver_options, pds_options))
+            if (match_range(env, eapi, id, *r, ver_options, pds_options))
                 vulnerable = false;
 
         return vulnerable;
@@ -289,7 +295,7 @@ ERepositorySets::security_set(bool insecurity) const
                 for (PackageIDSequence::ConstIterator c(candidates->begin()), c_end(candidates->end()) ;
                         c != c_end ; ++c)
                 {
-                    if (! is_vulnerable(*glsa_pkg, **c, ver_options, pds_options))
+                    if (! is_vulnerable(_imp->environment, *eapi, *glsa_pkg, *c, ver_options, pds_options))
                         continue;
 
                     if (insecurity)
@@ -306,7 +312,7 @@ ERepositorySets::security_set(bool insecurity) const
                     else
                     {
                         Context local_local_local_context("When finding upgrade for '" + stringify(glsa_pkg->name()) + ":"
-                                + ((*c)->slot_key() ? stringify((*c)->slot_key()->parse_value()) : "(none)") + "'");
+                                + ((*c)->slot_key() ? stringify((*c)->slot_key()->parse_value().raw_value()) : "(none)") + "'");
 
                         /* we need to find the best not vulnerable installable package that isn't masked
                          * that's in the same slot as our vulnerable installed package. */
@@ -320,7 +326,7 @@ ERepositorySets::security_set(bool insecurity) const
 
                         for (PackageIDSequence::ReverseConstIterator r(available->rbegin()), r_end(available->rend()) ; r != r_end ; ++r)
                         {
-                            if (is_vulnerable(*glsa_pkg, **r, ver_options, pds_options))
+                            if (is_vulnerable(_imp->environment, *eapi, *glsa_pkg, *r, ver_options, pds_options))
                             {
                                 Log::get_instance()->message("e.glsa.skipping_vulnerable", ll_debug, lc_context)
                                     << "Skipping '" << **r << "' due to is_vulnerable match";

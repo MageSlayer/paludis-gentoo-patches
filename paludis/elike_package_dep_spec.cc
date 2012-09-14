@@ -308,9 +308,9 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
         }
 
         if (1 == match.length())
-            result.slot_requirement(std::make_shared<ELikeSlotAnyLockedRequirement>());
+            result.slot_requirement(std::make_shared<ELikeSlotAnyAtAllLockedRequirement>());
         else
-            result.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(SlotName(s.substr(slot_p + 2)), true));
+            result.slot_requirement(std::make_shared<ELikeSlotExactPartialRequirement>(SlotName(s.substr(slot_p + 2)), std::make_shared<ELikeSlotAnyAtAllLockedRequirement>()));
     }
     else
     {
@@ -322,7 +322,7 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
                 Log::get_instance()->message("e.package_dep_spec.slot_not_allowed", ll_warning, lc_context)
                     << "Slot dependencies not safe for use here";
         }
-        result.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(SlotName(s.substr(slot_p + 1)), false));
+        result.slot_requirement(std::make_shared<ELikeSlotExactPartialRequirement>(SlotName(s.substr(slot_p + 1)), make_null_shared_ptr()));
     }
     s.erase(slot_p);
 }

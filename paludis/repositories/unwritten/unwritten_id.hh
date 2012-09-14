@@ -65,7 +65,7 @@ namespace paludis
             NamedValue<n::removed_by, std::shared_ptr<const MetadataValueKey<std::string> > > removed_by;
             NamedValue<n::removed_from, std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > > removed_from;
             NamedValue<n::repository, RepositoryName> repository;
-            NamedValue<n::slot, std::shared_ptr<const MetadataValueKey<SlotName> > > slot;
+            NamedValue<n::slot, std::shared_ptr<const MetadataValueKey<Slot> > > slot;
             NamedValue<n::version, VersionSpec> version;
         };
 
@@ -89,7 +89,7 @@ namespace paludis
                  const RepositoryName repository_name() const;
                  virtual PackageDepSpec uniquely_identifying_spec() const;
 
-                 const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
+                 const std::shared_ptr<const MetadataValueKey<Slot> > slot_key() const;
                  const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
                  const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
                      dependencies_key() const;

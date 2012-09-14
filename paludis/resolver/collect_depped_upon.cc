@@ -40,6 +40,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/serialise-impl.hh>
+#include <paludis/slot.hh>
 
 #include <algorithm>
 #include <sstream>
@@ -162,7 +163,7 @@ namespace
                     if (best_eventual_id && best_eventual_id->slot_key())
                     {
                         PartiallyMadePackageDepSpec part_spec(*s.spec());
-                        part_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(best_eventual_id->slot_key()->parse_value(), false));
+                        part_spec.slot_requirement(std::make_shared<ELikeSlotExactPartialRequirement>(best_eventual_id->slot_key()->parse_value().parallel_value(), make_null_shared_ptr()));
                         spec = std::make_shared<PackageDepSpec>(part_spec);
                     }
                 }
@@ -343,3 +344,4 @@ namespace paludis
     template class Sequence<DependentPackageID>;
     template class WrappedForwardIterator<Sequence<DependentPackageID>::ConstIteratorTag, const DependentPackageID>;
 }
+

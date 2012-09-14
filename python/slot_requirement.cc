@@ -46,14 +46,24 @@ namespace
             {
             }
 
-            void visit(const SlotExactRequirement &)
+            void visit(const SlotExactPartialRequirement &)
             {
-                obj = bp::object(std::static_pointer_cast<const SlotExactRequirement>(_m_ptr));
+                obj = bp::object(std::static_pointer_cast<const SlotExactPartialRequirement>(_m_ptr));
             }
 
-            void visit(const SlotAnyLockedRequirement &)
+            void visit(const SlotExactFullRequirement &)
             {
-                obj = bp::object(std::static_pointer_cast<const SlotAnyLockedRequirement>(_m_ptr));
+                obj = bp::object(std::static_pointer_cast<const SlotExactFullRequirement>(_m_ptr));
+            }
+
+            void visit(const SlotAnyAtAllLockedRequirement &)
+            {
+                obj = bp::object(std::static_pointer_cast<const SlotAnyAtAllLockedRequirement>(_m_ptr));
+            }
+
+            void visit(const SlotAnyPartialLockedRequirement &)
+            {
+                obj = bp::object(std::static_pointer_cast<const SlotAnyPartialLockedRequirement>(_m_ptr));
             }
 
             void visit(const SlotAnyUnlockedRequirement &)
@@ -101,38 +111,60 @@ void expose_slot_requirement()
         ;
 
     /**
-     * SlotExactRequirement
+     * SlotExactPartialRequirement
      */
-    register_shared_ptrs_to_python<SlotExactRequirement>(rsp_const);
-    bp::implicitly_convertible<std::shared_ptr<SlotExactRequirement>, std::shared_ptr<SlotRequirement> >();
-    bp::class_<SlotExactRequirement, std::shared_ptr<SlotExactRequirement>, bp::bases<SlotRequirement>, boost::noncopyable>
+    register_shared_ptrs_to_python<SlotExactPartialRequirement>(rsp_const);
+    bp::implicitly_convertible<std::shared_ptr<SlotExactPartialRequirement>, std::shared_ptr<SlotRequirement> >();
+    bp::class_<SlotExactPartialRequirement, std::shared_ptr<SlotExactPartialRequirement>, bp::bases<SlotRequirement>, boost::noncopyable>
         (
-         "SlotExactRequirement",
-         "A SlotExactRequirement is a SlotRequirement for exact slot requirements, "
+         "SlotExactPartialRequirement",
+         "A SlotExactPartialRequirement is a SlotRequirement for exact slot requirements, "
          "such as :3 or :=3 .",
          bp::no_init
         )
 
-        .add_property("slot", &SlotExactRequirement::slot,
+        .add_property("slot", &SlotExactPartialRequirement::slot,
                 "[ro] SlotName\n"
                 "The slot in question."
-                )
-
-        .add_property("from_any_locked", &SlotExactRequirement::from_any_locked,
-                "[ro] bool\n"
-                "If true, indicates we are a :=3 style dependency."
                 )
         ;
 
     /**
-     * SlotAnyLockedRequirement
+     * SlotExactFullRequirement
      */
-    register_shared_ptrs_to_python<SlotAnyLockedRequirement>(rsp_const);
-    bp::implicitly_convertible<std::shared_ptr<SlotAnyLockedRequirement>, std::shared_ptr<SlotRequirement> >();
-    bp::class_<SlotAnyLockedRequirement, std::shared_ptr<SlotAnyLockedRequirement>, bp::bases<SlotRequirement>, boost::noncopyable>
+    register_shared_ptrs_to_python<SlotExactFullRequirement>(rsp_const);
+    bp::implicitly_convertible<std::shared_ptr<SlotExactFullRequirement>, std::shared_ptr<SlotRequirement> >();
+    bp::class_<SlotExactFullRequirement, std::shared_ptr<SlotExactFullRequirement>, bp::bases<SlotRequirement>, boost::noncopyable>
         (
-         "SlotAnyLockedRequirement",
-         "A SlotAnyLockedRequirement is a SlotRequirement for := slot requirements.",
+         "SlotExactFullRequirement",
+         "A SlotExactFullRequirement is a SlotRequirement for exact slot requirements, "
+         "such as :3/3 or :=3/3 .",
+         bp::no_init
+        )
+        ;
+
+    /**
+     * SlotAnyAtAllLockedRequirement
+     */
+    register_shared_ptrs_to_python<SlotAnyAtAllLockedRequirement>(rsp_const);
+    bp::implicitly_convertible<std::shared_ptr<SlotAnyAtAllLockedRequirement>, std::shared_ptr<SlotRequirement> >();
+    bp::class_<SlotAnyAtAllLockedRequirement, std::shared_ptr<SlotAnyAtAllLockedRequirement>, bp::bases<SlotRequirement>, boost::noncopyable>
+        (
+         "SlotAnyAtAllLockedRequirement",
+         "A SlotAnyAtAllLockedRequirement is a SlotRequirement for := slot requirements.",
+         bp::no_init
+        )
+        ;
+
+    /**
+     * SlotAnyPartialLockedRequirement
+     */
+    register_shared_ptrs_to_python<SlotAnyPartialLockedRequirement>(rsp_const);
+    bp::implicitly_convertible<std::shared_ptr<SlotAnyPartialLockedRequirement>, std::shared_ptr<SlotRequirement> >();
+    bp::class_<SlotAnyPartialLockedRequirement, std::shared_ptr<SlotAnyPartialLockedRequirement>, bp::bases<SlotRequirement>, boost::noncopyable>
+        (
+         "SlotAnyPartialLockedRequirement",
+         "A SlotAnyPartialLockedRequirement is a SlotRequirement for :3= slot requirements.",
          bp::no_init
         )
         ;

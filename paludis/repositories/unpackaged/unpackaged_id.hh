@@ -55,7 +55,7 @@ namespace paludis
                 virtual const RepositoryName repository_name() const;
                 virtual PackageDepSpec uniquely_identifying_spec() const;
 
-                virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<Slot> > slot_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;

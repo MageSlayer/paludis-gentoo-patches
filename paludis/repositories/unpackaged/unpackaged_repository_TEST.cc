@@ -30,6 +30,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/standard_output_manager.hh>
+#include <paludis/slot.hh>
 
 #include <paludis/util/sequence.hh>
 #include <paludis/util/join.hh>
@@ -116,7 +117,7 @@ TEST(UnpackagedRepository, Metadata)
             *env[selection::RequireExactlyOne(generator::All())]->begin());
 
     EXPECT_EQ(id->version(), VersionSpec("1.0", { }));
-    EXPECT_EQ(SlotName("foo"), id->slot_key()->parse_value());
+    EXPECT_EQ("foo", id->slot_key()->parse_value().raw_value());
     EXPECT_EQ(QualifiedPackageName("cat/pkg"), id->name());
     EXPECT_EQ(RepositoryName("unpackaged"), id->repository_name());
     ASSERT_TRUE(bool(id->fs_location_key()));

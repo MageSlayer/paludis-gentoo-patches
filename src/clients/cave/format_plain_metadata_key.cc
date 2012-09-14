@@ -29,6 +29,7 @@
 #include <paludis/mask.hh>
 #include <paludis/unformatted_pretty_printer.hh>
 #include <paludis/name.hh>
+#include <paludis/slot.hh>
 #include <sstream>
 
 using namespace paludis;
@@ -75,9 +76,9 @@ namespace
             s << k.parse_value();
         }
 
-        void visit(const MetadataValueKey<SlotName> & k)
+        void visit(const MetadataValueKey<Slot> & k)
         {
-            s << k.parse_value();
+            s << k.parse_value().raw_value();
         }
 
         void visit(const MetadataSpecTreeKey<DependencySpecTree> & k)

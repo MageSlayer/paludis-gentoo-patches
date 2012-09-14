@@ -40,6 +40,7 @@
 #include <paludis/environment.hh>
 #include <paludis/unformatted_pretty_printer.hh>
 #include <paludis/repository.hh>
+#include <paludis/slot.hh>
 
 #include <set>
 #include <map>
@@ -847,7 +848,7 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
             write_kv(cache, m.run_depend()->name(), flatten(id->run_dependencies_key()->parse_value()));
 
         if (! m.slot()->name().empty() && id->slot_key())
-            write_kv(cache, m.slot()->name(), normalise(id->slot_key()->parse_value()));
+            write_kv(cache, m.slot()->name(), normalise(id->slot_key()->parse_value().raw_value()));
 
         if (! m.src_uri()->name().empty() && id->fetches_key())
             write_kv(cache, m.src_uri()->name(), flatten(id->fetches_key()->parse_value()));

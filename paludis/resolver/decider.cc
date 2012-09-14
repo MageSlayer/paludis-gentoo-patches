@@ -73,6 +73,7 @@
 #include <paludis/additional_package_dep_spec_requirement.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/dep_spec_annotations.hh>
+#include <paludis/slot.hh>
 
 #include <paludis/util/pimp-impl.hh>
 
@@ -1336,9 +1337,19 @@ namespace
 {
     struct SlotNameFinder
     {
-        std::shared_ptr<SlotName> visit(const SlotExactRequirement & s)
+        std::shared_ptr<SlotName> visit(const SlotExactPartialRequirement & s)
         {
             return std::make_shared<SlotName>(s.slot());
+        }
+
+        std::shared_ptr<SlotName> visit(const SlotAnyPartialLockedRequirement & s)
+        {
+            return std::make_shared<SlotName>(s.slot());
+        }
+
+        std::shared_ptr<SlotName> visit(const SlotExactFullRequirement & s)
+        {
+            return std::make_shared<SlotName>(s.slots().first);
         }
 
         std::shared_ptr<SlotName> visit(const SlotAnyUnlockedRequirement &)
@@ -1346,7 +1357,7 @@ namespace
             return make_null_shared_ptr();
         }
 
-        std::shared_ptr<SlotName> visit(const SlotAnyLockedRequirement &)
+        std::shared_ptr<SlotName> visit(const SlotAnyAtAllLockedRequirement &)
         {
             return make_null_shared_ptr();
         }
@@ -1429,7 +1440,7 @@ Decider::_get_error_resolvents_for(
             if (! ids->empty())
                 resolvent.slot() = make_named_values<SlotNameOrNull>(
                         n::name_or_null() = (*ids->rbegin())->slot_key() ?
-                            make_shared_copy((*ids->rbegin())->slot_key()->parse_value()) :
+                            make_shared_copy((*ids->rbegin())->slot_key()->parse_value().parallel_value()) :
                             make_null_shared_ptr(),
                         n::null_means_unknown() = true
                         );

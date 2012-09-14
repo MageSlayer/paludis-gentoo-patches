@@ -57,6 +57,7 @@
 #include <paludis/dep_spec_data.hh>
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/match_package.hh>
+#include <paludis/slot.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -164,7 +165,7 @@ namespace
     std::string slot_as_string(const std::shared_ptr<const PackageID> & id)
     {
         if (id->slot_key())
-            return stringify(id->slot_key()->parse_value());
+            return stringify(id->slot_key()->parse_value().raw_value());
         else
             return "";
     }
@@ -698,12 +699,12 @@ namespace
                     );
         }
 
-        void visit(const MetadataValueKey<SlotName> & k)
+        void visit(const MetadataValueKey<Slot> & k)
         {
             out << fuc(
                     (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                     fv<'s'>(cmdline.a_raw_names.specified() ? k.raw_name() : k.human_name()),
-                    fv<'v'>(stringify(k.parse_value())),
+                    fv<'v'>(stringify(k.parse_value().raw_value())),
                     fv<'i'>(std::string(indent, ' ')),
                     fv<'b'>(important ? "true" : ""),
                     fv<'p'>("")

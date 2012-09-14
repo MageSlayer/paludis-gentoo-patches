@@ -51,6 +51,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/slot.hh>
 
 #include <functional>
 
@@ -310,11 +311,11 @@ namespace
         return std::make_pair(uid, gid);
     }
 
-    bool slot_is_same(const std::shared_ptr<const PackageID> & a,
+    bool parallel_slot_is_same(const std::shared_ptr<const PackageID> & a,
             const std::shared_ptr<const PackageID> & b)
     {
         if (a->slot_key())
-            return b->slot_key() && a->slot_key()->parse_value() == b->slot_key()->parse_value();
+            return b->slot_key() && a->slot_key()->parse_value().parallel_value() == b->slot_key()->parse_value().parallel_value();
         else
             return ! b->slot_key();
     }
@@ -347,7 +348,7 @@ ExndbamRepository::merge(const MergeParams & m)
                 v != v_end ; ++v)
         {
             if_same_name_id = *v;
-            if ((*v)->version() == m.package_id()->version() && slot_is_same(*v, m.package_id()))
+            if ((*v)->version() == m.package_id()->version() && parallel_slot_is_same(*v, m.package_id()))
             {
                 if_overwritten_id = *v;
                 break;
@@ -370,7 +371,7 @@ ExndbamRepository::merge(const MergeParams & m)
     }
 
     FSPath target_ver_dir(uid_dir);
-    target_ver_dir /= (stringify(m.package_id()->version()) + ":" + stringify(m.package_id()->slot_key()->parse_value()) + ":" + cookie());
+    target_ver_dir /= (stringify(m.package_id()->version()) + ":" + stringify(m.package_id()->slot_key()->parse_value().parallel_value()) + ":" + cookie());
 
     if (target_ver_dir.stat().exists())
         throw ActionFailedError("Temporary merge directory '" + stringify(target_ver_dir) + "' already exists, probably "
@@ -486,7 +487,7 @@ ExndbamRepository::merge(const MergeParams & m)
                  it_end(replace_candidates->end()); it_end != it; ++it)
         {
             std::shared_ptr<const ERepositoryID> candidate(std::static_pointer_cast<const ERepositoryID>(*it));
-            if (candidate != if_overwritten_id && candidate->fs_location_key()->parse_value() != target_ver_dir && slot_is_same(candidate, m.package_id()))
+            if (candidate != if_overwritten_id && candidate->fs_location_key()->parse_value() != target_ver_dir && parallel_slot_is_same(candidate, m.package_id()))
             {
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                             n::config_protect() = config_protect,

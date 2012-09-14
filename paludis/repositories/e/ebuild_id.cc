@@ -49,6 +49,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/always_enabled_dependency_label.hh>
+#include <paludis/slot.hh>
 
 #include <paludis/util/fs_error.hh>
 #include <paludis/util/stringify.hh>
@@ -151,7 +152,7 @@ namespace paludis
 
         const std::shared_ptr<const LiteralMetadataValueKey<FSPath> > fs_location;
 
-        mutable std::shared_ptr<const MetadataValueKey<SlotName> > slot;
+        mutable std::shared_ptr<const MetadataValueKey<Slot> > slot;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > short_description;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > long_description;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > captured_stdout_key;
@@ -733,14 +734,14 @@ EbuildID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             if (_imp->slot)
-                return stringify(name()) + "-" + stringify(version()) + ":" + stringify(_imp->slot->parse_value()) +
+                return stringify(name()) + "-" + stringify(version()) + ":" + stringify(_imp->slot->parse_value().parallel_value()) +
                     "::" + stringify(repository_name());
 
             return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository_name());
 
         case idcf_no_version:
             if (_imp->slot)
-                return stringify(name()) + ":" + stringify(_imp->slot->parse_value()) +
+                return stringify(name()) + ":" + stringify(_imp->slot->parse_value().parallel_value()) +
                     "::" + stringify(repository_name());
 
             return stringify(name()) + "::" + stringify(repository_name());
@@ -750,7 +751,7 @@ EbuildID::canonical_form(const PackageIDCanonicalForm f) const
 
         case idcf_no_name:
             if (_imp->slot)
-                return stringify(version()) + ":" + stringify(_imp->slot->parse_value()) + "::" +
+                return stringify(version()) + ":" + stringify(_imp->slot->parse_value().parallel_value()) + "::" +
                     stringify(repository_name());
 
             return stringify(version()) + "::" + stringify(repository_name());
@@ -766,7 +767,7 @@ PackageDepSpec
 EbuildID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->parse_value()) : "") + "::" + stringify(repository_name()),
+            (slot_key() ? ":" + stringify(slot_key()->parse_value().parallel_value()) : "") + "::" + stringify(repository_name()),
             _imp->environment, { });
 }
 
@@ -1473,7 +1474,7 @@ EbuildID::choices_key() const
     return _imp->choices;
 }
 
-const std::shared_ptr<const MetadataValueKey<SlotName> >
+const std::shared_ptr<const MetadataValueKey<Slot> >
 EbuildID::slot_key() const
 {
     need_non_xml_keys_added();

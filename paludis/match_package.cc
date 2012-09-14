@@ -29,6 +29,7 @@
 #include <paludis/action.hh>
 #include <paludis/repository.hh>
 #include <paludis/additional_package_dep_spec_requirement.hh>
+#include <paludis/slot.hh>
 
 #include <paludis/util/set.hh>
 #include <paludis/util/options.hh>
@@ -60,12 +61,22 @@ namespace
         {
         }
 
-        void visit(const SlotExactRequirement & s)
+        void visit(const SlotExactPartialRequirement & s)
         {
-            result = id->slot_key() && id->slot_key()->parse_value() == s.slot();
+            result = id->slot_key() && id->slot_key()->parse_value().match_values().first == s.slot();
         }
 
-        void visit(const SlotAnyLockedRequirement &)
+        void visit(const SlotExactFullRequirement & s)
+        {
+            result = id->slot_key() && id->slot_key()->parse_value().match_values() == s.slots();
+        }
+
+        void visit(const SlotAnyPartialLockedRequirement & s)
+        {
+            result = id->slot_key() && id->slot_key()->parse_value().match_values().first == s.slot();
+        }
+
+        void visit(const SlotAnyAtAllLockedRequirement &)
         {
             result = true;
         }

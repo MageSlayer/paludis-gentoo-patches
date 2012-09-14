@@ -573,7 +573,7 @@ namespace
         rb_define_method(c_package_id, "choices_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataValueKey<std::shared_ptr<const Choices> >, &PackageID::choices_key>::fetch)), 0);
         rb_define_method(c_package_id, "slot_key", RUBY_FUNC_CAST((
-                        &KeyValue<MetadataValueKey<SlotName>, &PackageID::slot_key>::fetch)), 0);
+                        &KeyValue<MetadataValueKey<Slot>, &PackageID::slot_key>::fetch)), 0);
         rb_define_method(c_package_id, "behaviours_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataCollectionKey<Set<std::string> >, &PackageID::behaviours_key>::fetch)), 0);
         rb_define_method(c_package_id, "uniquely_identifying_spec", RUBY_FUNC_CAST(&package_id_uniquely_identifying_spec), 0);

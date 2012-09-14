@@ -28,6 +28,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/selection.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/slot.hh>
 
 #include <paludis/util/map.hh>
 #include <paludis/util/sequence.hh>
@@ -355,7 +356,7 @@ TEST(EbuildFlatMetadataCache, EmptyValue)
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("", id->short_description_key()->parse_value());
-    EXPECT_EQ("the-slot", stringify(id->slot_key()->parse_value()));
+    EXPECT_EQ("the-slot", stringify(id->slot_key()->parse_value().raw_value()));
 }
 
 TEST(EbuildFlatMetadataCache, HashStale)

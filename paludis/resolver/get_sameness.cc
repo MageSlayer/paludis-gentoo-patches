@@ -73,9 +73,9 @@ namespace
 
             if (s.slot_requirement_ptr())
             {
-                auto r(visitor_cast<const SlotExactRequirement>(*s.slot_requirement_ptr()));
-                if (r && r->from_any_locked())
-                    tokens.insert("slot_requirement:" + stringify(*std::make_shared<ELikeSlotAnyLockedRequirement>()));
+                auto r(s.slot_requirement_ptr()->maybe_original_requirement_if_rewritten());
+                if (r)
+                    tokens.insert("slot_requirement:" + stringify(*r));
                 else
                     tokens.insert("slot_requirement:" + stringify(*s.slot_requirement_ptr()));
             }

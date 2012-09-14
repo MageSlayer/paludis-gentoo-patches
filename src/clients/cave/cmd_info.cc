@@ -37,6 +37,7 @@
 #include <paludis/selection.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/slot.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/visitor_cast.hh>
@@ -246,10 +247,10 @@ namespace
             cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.parse_value())));
         }
 
-        void visit(const MetadataValueKey<SlotName> & k)
+        void visit(const MetadataValueKey<Slot> & k)
         {
             ColourPrettyPrinter printer(env, make_null_shared_ptr(), indent);
-            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.parse_value())));
+            cout << fuc(fs_metadata(), fv<'h'>(k.human_name()), fv<'i'>(std::string(indent, ' ')), fv<'s'>(stringify(k.parse_value().raw_value())));
         }
 
         void visit(const MetadataValueKey<long> & k)

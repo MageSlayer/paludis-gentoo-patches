@@ -404,7 +404,7 @@ AccountsID::choices_key() const
     return make_null_shared_ptr();
 }
 
-const std::shared_ptr<const MetadataValueKey<SlotName> >
+const std::shared_ptr<const MetadataValueKey<Slot> >
 AccountsID::slot_key() const
 {
     return make_null_shared_ptr();

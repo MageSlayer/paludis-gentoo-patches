@@ -45,6 +45,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/choice.hh>
 #include <paludis/about.hh>
+#include <paludis/slot.hh>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
@@ -264,9 +265,9 @@ namespace
             texts.push_back(stringify(k.parse_value()));
         }
 
-        void visit(const MetadataValueKey<SlotName> & k)
+        void visit(const MetadataValueKey<Slot> & k)
         {
-            texts.push_back(stringify(k.parse_value()));
+            texts.push_back(stringify(k.parse_value().raw_value()));
         }
 
         void visit(const MetadataValueKey<long> & k)

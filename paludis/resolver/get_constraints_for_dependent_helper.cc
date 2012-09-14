@@ -36,6 +36,7 @@
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/elike_slot_requirement.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/slot.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -85,7 +86,7 @@ GetConstraintsForDependentHelper::operator() (
         PartiallyMadePackageDepSpec partial_spec({ });
         partial_spec.package(id->name());
         if (id->slot_key())
-            partial_spec.slot_requirement(std::make_shared<ELikeSlotExactRequirement>(id->slot_key()->parse_value(), false));
+            partial_spec.slot_requirement(std::make_shared<ELikeSlotExactPartialRequirement>(id->slot_key()->parse_value().parallel_value(), make_null_shared_ptr()));
         spec = std::make_shared<PackageDepSpec>(partial_spec);
     }
 

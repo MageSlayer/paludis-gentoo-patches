@@ -26,6 +26,7 @@
 #include <paludis/dep_label.hh>
 #include <paludis/environment.hh>
 #include <paludis/maintainer.hh>
+#include <paludis/slot.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/timestamp.hh>
@@ -57,9 +58,9 @@ class MetadataKeySptrToPythonVisitor
             obj = bp::object(std::static_pointer_cast<const MetadataValueKey<std::string> >(_m_ptr));
         }
 
-        void visit(const MetadataValueKey<SlotName> &)
+        void visit(const MetadataValueKey<Slot> &)
         {
-            obj = bp::object(std::static_pointer_cast<const MetadataValueKey<SlotName> >(_m_ptr));
+            obj = bp::object(std::static_pointer_cast<const MetadataValueKey<Slot> >(_m_ptr));
         }
 
         void visit(const MetadataValueKey<long> &)
@@ -274,10 +275,10 @@ struct MetadataStringKeyWrapper :
 };
 
 struct MetadataSlotNameKeyWrapper :
-    MetadataValueKey<SlotName> ,
-    bp::wrapper<MetadataValueKey<SlotName> >
+    MetadataValueKey<Slot> ,
+    bp::wrapper<MetadataValueKey<Slot> >
 {
-    virtual const SlotName parse_value() const
+    virtual const Slot parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         Lock l(get_mutex());
@@ -996,14 +997,14 @@ void expose_metadata_key()
     /**
      * MetadataSlotNameKey
      */
-    bp::register_ptr_to_python<std::shared_ptr<const MetadataValueKey<SlotName> > >();
+    bp::register_ptr_to_python<std::shared_ptr<const MetadataValueKey<Slot> > >();
     bp::implicitly_convertible<std::shared_ptr<MetadataSlotNameKeyWrapper>,
             std::shared_ptr<MetadataKey> >();
     bp::class_<MetadataSlotNameKeyWrapper, std::shared_ptr<MetadataSlotNameKeyWrapper>,
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataSlotNameKey",
-         "A MetadataStringKey is a MetadataKey that has a SlotName as its\n"
+         "A MetadataStringKey is a MetadataKey that has a Slot as its\n"
          "value.\n\n"
 
          "This class can be subclassed in Python.",
@@ -1011,8 +1012,8 @@ void expose_metadata_key()
              "__init__()"
              )
         )
-        .def("parse_value", bp::pure_virtual(&MetadataValueKey<SlotName> ::parse_value),
-                "parse_value() -> SlotName\n"
+        .def("parse_value", bp::pure_virtual(&MetadataValueKey<Slot> ::parse_value),
+                "parse_value() -> Slot\n"
                 "Fetch our value."
                 )
         ;

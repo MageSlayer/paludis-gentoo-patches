@@ -48,6 +48,7 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/distribution.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/slot.hh>
 
 #include <list>
 #include <vector>
@@ -276,7 +277,7 @@ namespace
             m->insert("id", escape(stringify(*i.package_id())));
             m->insert("full_name", escape(stringify(*i.package_id())));
             if (i.package_id()->slot_key())
-                m->insert("slot", stringify(i.package_id()->slot_key()->parse_value()));
+                m->insert("slot", stringify(i.package_id()->slot_key()->parse_value().raw_value()));
             m->insert("version", stringify(i.package_id()->version()));
             m->insert("repository", stringify(i.package_id()->repository_name()));
             m->insert("category", stringify(i.package_id()->name().category()));

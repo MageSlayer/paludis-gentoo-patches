@@ -25,6 +25,7 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 
 #include <paludis/name.hh>
+#include <paludis/slot.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -202,4 +203,20 @@ void expose_name()
          true
         );
 
+
+    /**
+     * Slot
+     */
+    bp::class_<Slot>
+        (
+         "Slot",
+         "Represents a slot",
+         bp::no_init
+        )
+
+        .add_property("raw_value",
+                &named_values_getter<Slot, n::raw_value, std::string, &Slot::raw_value>,
+                "[ro] String"
+                )
+        ;
 }

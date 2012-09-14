@@ -19,31 +19,62 @@
 
 #include <paludis/elike_slot_requirement.hh>
 #include <paludis/util/stringify.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 
 using namespace paludis;
 
-ELikeSlotExactRequirement::ELikeSlotExactRequirement(const SlotName & s, const bool e) :
+ELikeSlotExactFullRequirement::ELikeSlotExactFullRequirement(const std::pair<SlotName, SlotName> & s, const std::shared_ptr<const SlotRequirement> & o) :
     _s(s),
-    _e(e)
+    _maybe_original_requirement_if_rewritten(o)
 {
 }
 
 const std::string
-ELikeSlotExactRequirement::as_string() const
+ELikeSlotExactFullRequirement::as_string() const
 {
-    return ":" + std::string(_e ? "=" : "") + stringify(_s);
+    if (_maybe_original_requirement_if_rewritten)
+        return _maybe_original_requirement_if_rewritten->as_string() + stringify(_s.first) + "/" + stringify(_s.second);
+    else
+        return ":" + stringify(_s.first) + "/" + stringify(_s.second);
 }
 
-const SlotName
-ELikeSlotExactRequirement::slot() const
+const std::shared_ptr<const SlotRequirement>
+ELikeSlotExactFullRequirement::maybe_original_requirement_if_rewritten() const
+{
+    return _maybe_original_requirement_if_rewritten;
+}
+
+ELikeSlotExactPartialRequirement::ELikeSlotExactPartialRequirement(const SlotName & s, const std::shared_ptr<const SlotRequirement> & o) :
+    _s(s),
+    _maybe_original_requirement_if_rewritten(o)
+{
+}
+
+const std::pair<SlotName, SlotName>
+ELikeSlotExactFullRequirement::slots() const
 {
     return _s;
 }
 
-bool
-ELikeSlotExactRequirement::from_any_locked() const
+const std::string
+ELikeSlotExactPartialRequirement::as_string() const
 {
-    return _e;
+    if (_maybe_original_requirement_if_rewritten)
+        return _maybe_original_requirement_if_rewritten->as_string() + stringify(_s);
+    else
+        return ":" + stringify(_s);
+}
+
+const std::shared_ptr<const SlotRequirement>
+ELikeSlotExactPartialRequirement::maybe_original_requirement_if_rewritten() const
+{
+    return _maybe_original_requirement_if_rewritten;
+}
+
+const SlotName
+ELikeSlotExactPartialRequirement::slot() const
+{
+    return _s;
 }
 
 const std::string
@@ -52,9 +83,44 @@ ELikeSlotAnyUnlockedRequirement::as_string() const
     return ":*";
 }
 
+const std::shared_ptr<const SlotRequirement>
+ELikeSlotAnyUnlockedRequirement::maybe_original_requirement_if_rewritten() const
+{
+    return make_null_shared_ptr();
+}
+
 const std::string
-ELikeSlotAnyLockedRequirement::as_string() const
+ELikeSlotAnyAtAllLockedRequirement::as_string() const
 {
     return ":=";
+}
+
+const std::shared_ptr<const SlotRequirement>
+ELikeSlotAnyAtAllLockedRequirement::maybe_original_requirement_if_rewritten() const
+{
+    return make_null_shared_ptr();
+}
+
+ELikeSlotAnyPartialLockedRequirement::ELikeSlotAnyPartialLockedRequirement(const SlotName & s) :
+    _s(s)
+{
+}
+
+const std::string
+ELikeSlotAnyPartialLockedRequirement::as_string() const
+{
+    return ":" + stringify(_s) + "=";
+}
+
+const std::shared_ptr<const SlotRequirement>
+ELikeSlotAnyPartialLockedRequirement::maybe_original_requirement_if_rewritten() const
+{
+    return make_null_shared_ptr();
+}
+
+const SlotName
+ELikeSlotAnyPartialLockedRequirement::slot() const
+{
+    return _s;
 }
 

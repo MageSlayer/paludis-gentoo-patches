@@ -133,7 +133,7 @@ namespace
             if (cmdline.a_slot_requirement.argument().empty())
                 s.clear_slot_requirement();
             else
-                s.slot_requirement(std::make_shared<UserSlotExactRequirement>(SlotName(cmdline.a_slot_requirement.argument())));
+                s.slot_requirement(std::make_shared<UserSlotExactPartialRequirement>(SlotName(cmdline.a_slot_requirement.argument())));
         }
 
         if (cmdline.a_in_repository.specified())

@@ -62,10 +62,10 @@ namespace
                 cout << indent << left << setw(30) << "    Value:" << " " << key.parse_value() << endl;
             }
 
-            void visit(const MetadataValueKey<SlotName> & key)
+            void visit(const MetadataValueKey<Slot> & key)
             {
                 cout << indent << left << setw(30) << "    Class:" << " " << "MetadataValueKey<SlotName>" << endl;
-                cout << indent << left << setw(30) << "    Value:" << " " << key.parse_value() << endl;
+                cout << indent << left << setw(30) << "    Value:" << " " << key.parse_value().raw_value() << endl;
             }
 
             void visit(const MetadataValueKey<long> & key)

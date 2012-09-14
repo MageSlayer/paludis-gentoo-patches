@@ -24,6 +24,7 @@
 #include <paludis/name-fwd.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/type_list.hh>
+#include <memory>
 
 namespace paludis
 {
@@ -36,7 +37,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE SlotRequirement :
         public virtual DeclareAbstractAcceptMethods<SlotRequirement, MakeTypeList<
-            SlotExactRequirement, SlotAnyLockedRequirement, SlotAnyUnlockedRequirement>::Type>
+            SlotExactPartialRequirement, SlotExactFullRequirement, SlotAnyAtAllLockedRequirement, SlotAnyPartialLockedRequirement, SlotAnyUnlockedRequirement>::Type>
     {
         public:
             /**
@@ -44,44 +45,83 @@ namespace paludis
              * for parsing.
              */
             virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            /**
+             * If we are a rewritten slot, return what the original requirement
+             * would have been; otherwise, returns null.
+             *
+             * \since 0.79
+             */
+            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     /**
-     * A SlotExactRequirement is a SlotRequirement for exact
-     * slot requirements, such as <code>:3</code> or <code>:=3</code>.
+     * A SlotExactPartialRequirement is a SlotRequirement for exact slot
+     * requirements on the main part of the slot, such as <code>:3</code> or
+     * <code>:3=3</code>.
      *
      * \ingroup g_dep_spec
      */
-    class PALUDIS_VISIBLE SlotExactRequirement :
+    class PALUDIS_VISIBLE SlotExactPartialRequirement :
         public SlotRequirement,
-        public ImplementAcceptMethods<SlotRequirement, SlotExactRequirement>
+        public ImplementAcceptMethods<SlotRequirement, SlotExactPartialRequirement>
     {
         public:
             /**
              * The slot in question.
              */
             virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
-
-            /**
-             * If true, indicates we are a <code>:=3</code> style dependency.
-             */
-            virtual bool from_any_locked() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 
     /**
-     * A SlotAnyLockedRequirement is a SlotRequirement for
+     * A SlotExactFullRequirement is a SlotRequirement for exact slot
+     * requirements on both parts of the slot, such as <code>:3/4</code>
+     * or <code>:3=3/4</code>.
+     *
+     * \ingroup g_dep_spec
+     */
+    class PALUDIS_VISIBLE SlotExactFullRequirement :
+        public SlotRequirement,
+        public ImplementAcceptMethods<SlotRequirement, SlotExactFullRequirement>
+    {
+        public:
+            /**
+             * The slot parts in question.
+             */
+            virtual const std::pair<SlotName, SlotName> slots() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
+
+    /**
+     * A SlotAnyAtAllLockedRequirement is a SlotRequirement for
      * <code>:=</code> slot requirements.
      *
      * \ingroup g_dep_spec
      */
-    class PALUDIS_VISIBLE SlotAnyLockedRequirement :
+    class PALUDIS_VISIBLE SlotAnyAtAllLockedRequirement :
         public SlotRequirement,
-        public ImplementAcceptMethods<SlotRequirement, SlotAnyLockedRequirement>
+        public ImplementAcceptMethods<SlotRequirement, SlotAnyAtAllLockedRequirement>
     {
     };
 
     /**
-     * A SlotAnyLockedRequirement is a SlotRequirement for
+     * A SlotAnyPartialLockedRequirement is a SlotRequirement for
+     * <code>:3=</code> slot requirements that do not specify a sub-slot.
+     *
+     * \ingroup g_dep_spec
+     */
+    class PALUDIS_VISIBLE SlotAnyPartialLockedRequirement :
+        public SlotRequirement,
+        public ImplementAcceptMethods<SlotRequirement, SlotAnyPartialLockedRequirement>
+    {
+        public:
+            /**
+             * The slot in question.
+             */
+            virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+    };
+
+    /**
+     * A SlotAnyUnlockedRequirement is a SlotRequirement for
      * <code>:*</code> slot requirements.
      *
      * \ingroup g_dep_spec

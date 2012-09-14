@@ -25,6 +25,7 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -35,6 +36,7 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/slot.hh>
 #include <functional>
 #include <algorithm>
 #include <list>
@@ -50,6 +52,67 @@ namespace
     {
         throw InternalError(PALUDIS_HERE, "Got weird tree");
     }
+
+    struct SlotRewriter
+    {
+        const Environment * const env;
+        const EAPI & eapi;
+        const std::shared_ptr<const PackageID> id;
+        const std::shared_ptr<const PackageDepSpec> spec;
+
+        std::shared_ptr<const SlotRequirement> visit(const SlotExactPartialRequirement &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        std::shared_ptr<const SlotRequirement> visit(const SlotExactFullRequirement &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        std::shared_ptr<const SlotRequirement> visit(const SlotAnyUnlockedRequirement &) const
+        {
+            return make_null_shared_ptr();
+        }
+
+        std::shared_ptr<const SlotRequirement> visit(const SlotAnyPartialLockedRequirement &) const
+        {
+            std::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
+                        generator::Matches(*spec, id, { }) | filter::InstalledAtRoot(env->system_root_key()->parse_value()))]);
+            if (matches->empty())
+                return make_null_shared_ptr();
+
+            if ((*matches->last())->slot_key())
+            {
+                auto ss((*matches->last())->slot_key()->parse_value());
+                if (ss.match_values().first == ss.match_values().second)
+                    return std::make_shared<ELikeSlotExactPartialRequirement>(ss.match_values().first, spec->slot_requirement_ptr());
+                else
+                    return std::make_shared<ELikeSlotExactFullRequirement>(ss.match_values(), spec->slot_requirement_ptr());
+            }
+            else
+                return make_null_shared_ptr();
+        }
+
+        std::shared_ptr<const SlotRequirement> visit(const SlotAnyAtAllLockedRequirement &) const
+        {
+            std::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
+                        generator::Matches(*spec, id, { }) | filter::InstalledAtRoot(env->system_root_key()->parse_value()))]);
+            if (matches->empty())
+                return make_null_shared_ptr();
+
+            if ((*matches->last())->slot_key())
+            {
+                auto ss((*matches->last())->slot_key()->parse_value());
+                if (ss.match_values().first == ss.match_values().second)
+                    return std::make_shared<ELikeSlotExactPartialRequirement>(ss.match_values().first, spec->slot_requirement_ptr());
+                else
+                    return std::make_shared<ELikeSlotExactFullRequirement>(ss.match_values(), spec->slot_requirement_ptr());
+            }
+            else
+                return make_null_shared_ptr();
+        }
+    };
 
     struct Fixer
     {
@@ -102,22 +165,13 @@ namespace
                 if (! node.spec()->slot_requirement_ptr())
                     break;
 
-                const SlotAnyLockedRequirement * const r(visitor_cast<const SlotAnyLockedRequirement>(*node.spec()->slot_requirement_ptr()));
-                if (! r)
+                auto rewritten(node.spec()->slot_requirement_ptr()->accept_returning<std::shared_ptr<const SlotRequirement> >(SlotRewriter{env, eapi, id, node.spec()}));
+                if (! rewritten)
                     break;
 
-                std::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
-                            generator::Matches(*node.spec(), id, { }) | filter::InstalledAtRoot(env->system_root_key()->parse_value()))]);
-                if (matches->empty())
-                    break;
-
-                if ((*matches->last())->slot_key())
-                {
-                    PackageDepSpec new_s(PartiallyMadePackageDepSpec(*node.spec()).slot_requirement(
-                                std::make_shared<ELikeSlotExactRequirement>((*matches->last())->slot_key()->parse_value(), true)));
-                    new_s.set_annotations(node.spec()->maybe_annotations());
-                    c = std::make_shared<PackageDepSpec>(new_s);
-                }
+                PackageDepSpec new_s(PartiallyMadePackageDepSpec(*node.spec()).slot_requirement(rewritten));
+                new_s.set_annotations(node.spec()->maybe_annotations());
+                c = std::make_shared<PackageDepSpec>(new_s);
             } while (false);
 
             if (! c)

@@ -52,6 +52,7 @@
 #include <paludis/always_enabled_dependency_label.hh>
 #include <paludis/pretty_printer.hh>
 #include <paludis/call_pretty_printer.hh>
+#include <paludis/slot.hh>
 
 #include <functional>
 
@@ -348,7 +349,7 @@ namespace paludis
         const FSPath root;
         const NDBAM * const ndbam;
 
-        std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot_key;
+        std::shared_ptr<LiteralMetadataValueKey<Slot> > slot_key;
         std::shared_ptr<InstalledUnpackagedFSPathKey> fs_location_key;
         std::shared_ptr<InstalledUnpackagedTimeKey> installed_time_key;
         std::shared_ptr<InstalledUnpackagedStringSetKey> from_repositories_key;
@@ -373,7 +374,10 @@ namespace paludis
             repository_name(r),
             root(ro),
             ndbam(d),
-            slot_key(std::make_shared<LiteralMetadataValueKey<SlotName> >("slot", "Slot", mkt_internal, s)),
+            slot_key(std::make_shared<LiteralMetadataValueKey<Slot> >("slot", "Slot", mkt_internal, make_named_values<Slot>(
+                            n::match_values() = std::make_pair(s, s),
+                            n::parallel_value() = s,
+                            n::raw_value() = stringify(s)))),
             fs_location_key(std::make_shared<InstalledUnpackagedFSPathKey>(l)),
             behaviours_key(InstalledUnpackagedIDData::get_instance()->behaviours_key)
         {
@@ -444,18 +448,18 @@ InstalledUnpackagedID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             return stringify(_imp->name) + "-" + stringify(_imp->version) + ":" +
-                stringify(slot_key()->parse_value()) + "::" + stringify(_imp->repository_name);
+                stringify(slot_key()->parse_value().parallel_value()) + "::" + stringify(_imp->repository_name);
 
         case idcf_version:
             return stringify(_imp->version);
 
         case idcf_no_version:
-            return stringify(_imp->name) + ":" + stringify(slot_key()->parse_value()) + "::" +
+            return stringify(_imp->name) + ":" + stringify(slot_key()->parse_value().parallel_value()) + "::" +
                 stringify(_imp->repository_name);
 
         case idcf_no_name:
             return stringify(_imp->version) + ":" +
-                stringify(slot_key()->parse_value()) + "::" + stringify(_imp->repository_name);
+                stringify(slot_key()->parse_value().parallel_value()) + "::" + stringify(_imp->repository_name);
 
         case last_idcf:
             break;
@@ -468,7 +472,7 @@ PackageDepSpec
 InstalledUnpackagedID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->parse_value()) : "") + "::" + stringify(repository_name()),
+            (slot_key() ? ":" + stringify(slot_key()->parse_value().parallel_value()) : "") + "::" + stringify(repository_name()),
             _imp->env, { });
 }
 
@@ -575,7 +579,7 @@ InstalledUnpackagedID::fs_location_key() const
     return _imp->fs_location_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<SlotName> >
+const std::shared_ptr<const MetadataValueKey<Slot> >
 InstalledUnpackagedID::slot_key() const
 {
     return _imp->slot_key;
@@ -728,13 +732,13 @@ InstalledUnpackagedID::breaks_portage() const
 bool
 InstalledUnpackagedID::arbitrary_less_than_comparison(const PackageID & other) const
 {
-    return slot_key()->parse_value().value() < (other.slot_key() ? stringify(other.slot_key()->parse_value()) : "");
+    return stringify(slot_key()->parse_value().raw_value()) < (other.slot_key() ? stringify(other.slot_key()->parse_value().raw_value()) : "");
 }
 
 std::size_t
 InstalledUnpackagedID::extra_hash_value() const
 {
-    return Hash<SlotName>()(slot_key()->parse_value());
+    return Hash<std::string>()(slot_key()->parse_value().raw_value());
 }
 
 namespace

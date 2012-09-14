@@ -71,7 +71,7 @@ namespace paludis
                 virtual const RepositoryName repository_name() const;
                 virtual bool is_installed() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const;
+                virtual const std::shared_ptr<const MetadataValueKey<Slot> > slot_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;

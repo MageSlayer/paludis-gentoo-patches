@@ -43,6 +43,7 @@
 #include <paludis/ndbam_merger.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/slot.hh>
 
 #include <iomanip>
 #include <list>
@@ -105,7 +106,7 @@ NDBAMMerger::extend_hook(const Hook & h)
         std::string pn(stringify(_imp->params.package_id()->name().package()));
         std::string pvr(stringify(_imp->params.package_id()->version()));
         std::string pv(stringify(_imp->params.package_id()->version().remove_revision()));
-        std::string slot(_imp->params.package_id()->slot_key() ? stringify(_imp->params.package_id()->slot_key()->parse_value()) : "");
+        std::string slot(_imp->params.package_id()->slot_key() ? stringify(_imp->params.package_id()->slot_key()->parse_value().raw_value()) : "");
 
         return FSMerger::extend_hook(h)
             ("P", pn + "-" + pv)

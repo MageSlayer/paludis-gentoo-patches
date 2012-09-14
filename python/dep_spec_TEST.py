@@ -60,7 +60,7 @@ class TestCase_1_DepSpecs(unittest.TestCase):
 
     def test_04_slot(self):
         self.get_depspecs()
-        self.assert_(isinstance(self.pds.slot_requirement, SlotExactRequirement))
+        self.assert_(isinstance(self.pds.slot_requirement, SlotExactPartialRequirement))
         self.assertEqual(str(self.pds.slot_requirement.slot), "100")
 
         self.assertEqual(self.pds2.slot_requirement, None)

@@ -26,6 +26,7 @@
 #include <paludis/package_id.hh>
 #include <paludis/output_manager.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/slot.hh>
 
 #include <paludis/util/destringify.hh>
 #include <paludis/util/md5.hh>
@@ -101,7 +102,7 @@ NDBAMUnmerger::extend_hook(const Hook & h) const
         std::string pn(stringify(_imp->options.package_id()->name().package()));
         std::string pvr(stringify(_imp->options.package_id()->version()));
         std::string pv(stringify(_imp->options.package_id()->version().remove_revision()));
-        std::string slot(_imp->options.package_id()->slot_key() ? stringify(_imp->options.package_id()->slot_key()->parse_value()) : "");
+        std::string slot(_imp->options.package_id()->slot_key() ? stringify(_imp->options.package_id()->slot_key()->parse_value().raw_value()) : "");
 
         return result
             ("P", pn + "-" + pv)

@@ -26,6 +26,7 @@
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/e_choice_value.hh>
 #include <paludis/repositories/e/e_string_set_key.hh>
+#include <paludis/repositories/e/e_slot_key.hh>
 
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
@@ -51,6 +52,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/elike_choices.hh>
 #include <paludis/always_enabled_dependency_label.hh>
+#include <paludis/slot.hh>
 
 #include <iterator>
 
@@ -68,7 +70,7 @@ namespace
 
     struct EInstalledRepositoryIDKeys
     {
-        std::shared_ptr<const MetadataValueKey<SlotName> > slot;
+        std::shared_ptr<const MetadataValueKey<Slot> > slot;
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > raw_use;
         std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > inherited;
         std::shared_ptr<const MetadataCollectionKey<Set<std::string > > > raw_iuse;
@@ -224,8 +226,7 @@ EInstalledRepositoryID::need_keys_added() const
     if (! vars->slot()->name().empty())
         if ((_imp->dir / vars->slot()->name()).stat().exists())
         {
-            _imp->keys->slot = std::make_shared<LiteralMetadataValueKey<SlotName>>(vars->slot()->name(), vars->slot()->description(),
-                        mkt_internal, SlotName(file_contents(_imp->dir / vars->slot()->name())));
+            _imp->keys->slot = ESlotKeyStore::get_instance()->fetch(vars->slot(), file_contents(_imp->dir / vars->slot()->name()), mkt_internal);
             add_metadata_key(_imp->keys->slot);
         }
 
@@ -618,14 +619,14 @@ EInstalledRepositoryID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             if (_imp->keys && _imp->keys->slot)
-                return stringify(name()) + "-" + stringify(version()) + ":" + stringify(_imp->keys->slot->parse_value()) + "::" +
+                return stringify(name()) + "-" + stringify(version()) + ":" + stringify(_imp->keys->slot->parse_value().parallel_value()) + "::" +
                     stringify(repository_name());
 
             return stringify(name()) + "-" + stringify(version()) + "::" + stringify(repository_name());
 
         case idcf_no_version:
             if (_imp->keys && _imp->keys->slot)
-                return stringify(name()) + ":" + stringify(_imp->keys->slot->parse_value()) + "::" +
+                return stringify(name()) + ":" + stringify(_imp->keys->slot->parse_value().parallel_value()) + "::" +
                     stringify(repository_name());
 
             return stringify(name()) + "::" + stringify(repository_name());
@@ -635,7 +636,7 @@ EInstalledRepositoryID::canonical_form(const PackageIDCanonicalForm f) const
 
         case idcf_no_name:
             if (_imp->keys && _imp->keys->slot)
-                return stringify(version()) + ":" + stringify(_imp->keys->slot->parse_value()) + "::" +
+                return stringify(version()) + ":" + stringify(_imp->keys->slot->parse_value().parallel_value()) + "::" +
                     stringify(repository_name());
 
             return stringify(version()) + "::" + stringify(repository_name());
@@ -651,7 +652,7 @@ PackageDepSpec
 EInstalledRepositoryID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->parse_value()) : "") + "::" + stringify(repository_name()),
+            (slot_key() ? ":" + stringify(slot_key()->parse_value().parallel_value()) : "") + "::" + stringify(repository_name()),
             _imp->environment, { });
 }
 
@@ -1012,7 +1013,7 @@ EInstalledRepositoryID::perform_action(Action & a) const
     a.accept(b);
 }
 
-const std::shared_ptr<const MetadataValueKey<SlotName> >
+const std::shared_ptr<const MetadataValueKey<Slot> >
 EInstalledRepositoryID::slot_key() const
 {
     need_keys_added();

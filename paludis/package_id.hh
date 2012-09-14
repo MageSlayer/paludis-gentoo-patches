@@ -42,6 +42,7 @@
 #include <paludis/contents-fwd.hh>
 #include <paludis/version_spec-fwd.hh>
 #include <paludis/choice-fwd.hh>
+#include <paludis/slot-fwd.hh>
 
 #include <memory>
 
@@ -185,7 +186,7 @@ namespace paludis
              *
              * \since 0.36
              */
-            virtual const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key() const = 0;
+            virtual const std::shared_ptr<const MetadataValueKey<Slot> > slot_key() const = 0;
 
             /**
              * The keywords_key, if non-zero, is used by FindUnusedPackagesTask

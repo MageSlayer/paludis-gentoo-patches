@@ -26,19 +26,34 @@
 
 namespace paludis
 {
-    class PALUDIS_VISIBLE ELikeSlotExactRequirement :
-        public SlotExactRequirement
+    class PALUDIS_VISIBLE ELikeSlotExactFullRequirement :
+        public SlotExactFullRequirement
+    {
+        private:
+            const std::pair<SlotName, SlotName> _s;
+            const std::shared_ptr<const SlotRequirement> _maybe_original_requirement_if_rewritten;
+
+        public:
+            ELikeSlotExactFullRequirement(const std::pair<SlotName, SlotName> &, const std::shared_ptr<const SlotRequirement> &);
+
+            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::pair<SlotName, SlotName> slots() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    class PALUDIS_VISIBLE ELikeSlotExactPartialRequirement :
+        public SlotExactPartialRequirement
     {
         private:
             const SlotName _s;
-            const bool _e;
+            const std::shared_ptr<const SlotRequirement> _maybe_original_requirement_if_rewritten;
 
         public:
-            ELikeSlotExactRequirement(const SlotName &, const bool equals);
+            ELikeSlotExactPartialRequirement(const SlotName &, const std::shared_ptr<const SlotRequirement> &);
 
             virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool from_any_locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE ELikeSlotAnyUnlockedRequirement :
@@ -46,13 +61,29 @@ namespace paludis
     {
         public:
             virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    class PALUDIS_VISIBLE ELikeSlotAnyLockedRequirement :
-        public SlotAnyLockedRequirement
+    class PALUDIS_VISIBLE ELikeSlotAnyAtAllLockedRequirement :
+        public SlotAnyAtAllLockedRequirement
     {
         public:
             virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
+    class PALUDIS_VISIBLE ELikeSlotAnyPartialLockedRequirement :
+        public SlotAnyPartialLockedRequirement
+    {
+        private:
+            const SlotName _s;
+
+        public:
+            ELikeSlotAnyPartialLockedRequirement(const SlotName &);
+
+            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

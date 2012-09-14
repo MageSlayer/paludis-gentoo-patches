@@ -32,6 +32,8 @@
 #include <paludis/pretty_printer-fwd.hh>
 #include <paludis/pretty_print_options-fwd.hh>
 #include <paludis/maintainer-fwd.hh>
+#include <paludis/slot-fwd.hh>
+
 #include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/remove_shared_ptr.hh>
@@ -40,6 +42,7 @@
 #include <paludis/util/timestamp-fwd.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
+
 #include <type_traits>
 #include <string>
 
@@ -103,7 +106,7 @@ namespace paludis
                 MetadataValueKey<long>,
                 MetadataValueKey<bool>,
                 MetadataValueKey<FSPath>,
-                MetadataValueKey<SlotName>,
+                MetadataValueKey<Slot>,
                 MetadataValueKey<std::shared_ptr<const PackageID> >,
                 MetadataValueKey<std::shared_ptr<const Choices> >,
                 MetadataTimeKey,

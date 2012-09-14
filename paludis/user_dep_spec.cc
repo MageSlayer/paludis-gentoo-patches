@@ -32,6 +32,7 @@
 #include <paludis/contents.hh>
 #include <paludis/repository.hh>
 #include <paludis/mask.hh>
+#include <paludis/slot.hh>
 
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
@@ -246,7 +247,7 @@ namespace
         std::string::size_type slot_p(s.rfind(':'));
         if (std::string::npos != slot_p)
         {
-            result.slot_requirement(std::make_shared<UserSlotExactRequirement>(SlotName(s.substr(slot_p + 1))));
+            result.slot_requirement(std::make_shared<UserSlotExactPartialRequirement>(SlotName(s.substr(slot_p + 1))));
             s.erase(slot_p);
         }
     }
@@ -385,26 +386,27 @@ paludis::envless_parse_package_dep_spec_for_tests(const std::string & ss)
             ));
 }
 
-UserSlotExactRequirement::UserSlotExactRequirement(const SlotName & s) :
+
+UserSlotExactPartialRequirement::UserSlotExactPartialRequirement(const SlotName & s) :
     _s(s)
 {
 }
 const SlotName
-UserSlotExactRequirement::slot() const
+UserSlotExactPartialRequirement::slot() const
 {
     return _s;
 }
 
 const std::string
-UserSlotExactRequirement::as_string() const
+UserSlotExactPartialRequirement::as_string() const
 {
     return ":" + stringify(_s);
 }
 
-bool
-UserSlotExactRequirement::from_any_locked() const
+const std::shared_ptr<const SlotRequirement>
+UserSlotExactPartialRequirement::maybe_original_requirement_if_rewritten() const
 {
-    return false;
+    return make_null_shared_ptr();
 }
 
 GotASetNotAPackageDepSpec::GotASetNotAPackageDepSpec(const std::string & s) throw () :
@@ -614,9 +616,9 @@ namespace
             return pattern == stringify(k.parse_value());
         }
 
-        bool visit(const MetadataValueKey<SlotName> & k) const
+        bool visit(const MetadataValueKey<Slot> & k) const
         {
-            return pattern == stringify(k.parse_value());
+            return pattern == stringify(k.parse_value().raw_value());
         }
 
         bool visit(const MetadataValueKey<FSPath> & k) const
@@ -1051,3 +1053,4 @@ namespace paludis
 {
     template class Pimp<UserKeyRequirement>;
 }
+

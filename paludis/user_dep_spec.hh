@@ -53,8 +53,8 @@ namespace paludis
     PackageDepSpec envless_parse_package_dep_spec_for_tests(
             const std::string &) PALUDIS_VISIBLE;
 
-    class PALUDIS_VISIBLE UserSlotExactRequirement :
-        public SlotExactRequirement
+    class PALUDIS_VISIBLE UserSlotExactPartialRequirement :
+        public SlotExactPartialRequirement
     {
         private:
             const SlotName _s;
@@ -63,13 +63,13 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            UserSlotExactRequirement(const SlotName &);
+            UserSlotExactPartialRequirement(const SlotName &);
 
             ///\}
 
             virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool from_any_locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**

@@ -28,6 +28,7 @@
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/spec_tree-fwd.hh>
+#include <paludis/slot-fwd.hh>
 
 namespace paludis
 {
@@ -63,7 +64,7 @@ namespace paludis
             NamedValue<n::remote_ids, std::shared_ptr<const MetadataCollectionKey<Sequence<std::string> > > > remote_ids;
             NamedValue<n::removed_by, std::shared_ptr<const MetadataValueKey<std::string> > > removed_by;
             NamedValue<n::removed_from, std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > > removed_from;
-            NamedValue<n::slot, std::shared_ptr<const MetadataValueKey<SlotName> > > slot;
+            NamedValue<n::slot, std::shared_ptr<const MetadataValueKey<Slot> > > slot;
             NamedValue<n::version, VersionSpec> version;
         };
 

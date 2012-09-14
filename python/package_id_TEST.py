@@ -49,8 +49,8 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(self.ipid.version, VersionSpec("1"))
 
     def test_04_slot(self):
-        self.assertEquals(str(self.ipid.slot_key().parse_value()), "test_slot")
-        self.assertEquals(str(self.pid.slot_key().parse_value()), "0")
+        self.assertEquals(str(self.ipid.slot_key().parse_value().raw_value), "test_slot")
+        self.assertEquals(str(self.pid.slot_key().parse_value().raw_value), "0")
 
     def test_05_repository(self):
         self.assertEquals(str(self.pid.repository_name), "testrepo")

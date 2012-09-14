@@ -48,6 +48,7 @@
 #include <paludis/choice.hh>
 #include <paludis/elike_choices.hh>
 #include <paludis/output_manager.hh>
+#include <paludis/slot.hh>
 
 #include <vector>
 #include <algorithm>
@@ -99,11 +100,11 @@ namespace
         s = v;
     }
 
-    bool slot_is_same(const std::shared_ptr<const PackageID> & a,
+    bool parallel_slot_is_same(const std::shared_ptr<const PackageID> & a,
             const std::shared_ptr<const PackageID> & b)
     {
         if (a->slot_key())
-            return b->slot_key() && a->slot_key()->parse_value() == b->slot_key()->parse_value();
+            return b->slot_key() && a->slot_key()->parse_value().parallel_value() == b->slot_key()->parse_value().parallel_value();
         else
             return ! b->slot_key();
     }
@@ -394,7 +395,7 @@ paludis::erepository::do_install_action(
                             n::profiles() = repo->params().profiles(),
                             n::profiles_with_parents() = repo->profile()->profiles_with_parents(),
                             n::replacing_ids() = install_action.options.replacing(),
-                            n::slot() = id->slot_key() ? stringify(id->slot_key()->parse_value()) : "",
+                            n::slot() = id->slot_key() ? stringify(id->slot_key()->parse_value().raw_value()) : "",
                             n::use() = use,
                             n::use_expand() = join(repo->profile()->use_expand()->begin(), repo->profile()->use_expand()->end(), " "),
                             n::use_expand_hidden() = join(repo->profile()->use_expand_hidden()->begin(), repo->profile()->use_expand_hidden()->end(), " ")
@@ -455,7 +456,7 @@ paludis::erepository::do_install_action(
                                     n::profiles() = repo->params().profiles(),
                                     n::profiles_with_parents() = repo->profile()->profiles_with_parents(),
                                     n::replacing_ids() = install_action.options.replacing(),
-                                    n::slot() = id->slot_key() ? stringify(id->slot_key()->parse_value()) : "",
+                                    n::slot() = id->slot_key() ? stringify(id->slot_key()->parse_value().raw_value()) : "",
                                     n::use() = use,
                                     n::use_expand() = join(repo->profile()->use_expand()->begin(), repo->profile()->use_expand()->end(), " "),
                                     n::use_expand_hidden() = join(repo->profile()->use_expand_hidden()->begin(), repo->profile()->use_expand_hidden()->end(), " ")
@@ -481,7 +482,7 @@ paludis::erepository::do_install_action(
                 continue;
 
             if (id->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
-                if ((*i)->name() == id->name() && slot_is_same(*i, id))
+                if ((*i)->name() == id->name() && parallel_slot_is_same(*i, id))
                     continue;
 
             UninstallActionOptions uo(make_named_values<UninstallActionOptions>(

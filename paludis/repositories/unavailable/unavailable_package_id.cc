@@ -19,6 +19,7 @@
 
 #include <paludis/repositories/unavailable/unavailable_package_id.hh>
 #include <paludis/repositories/unavailable/unavailable_repository.hh>
+
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/visitor_cast.hh>
@@ -26,6 +27,8 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/make_named_values.hh>
+
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -33,6 +36,7 @@
 #include <paludis/action.hh>
 #include <paludis/unchoices_key.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/slot.hh>
 
 using namespace paludis;
 using namespace paludis::unavailable_repository;
@@ -47,7 +51,7 @@ namespace paludis
         const VersionSpec version;
         const RepositoryName repository_name;
 
-        const std::shared_ptr<const MetadataValueKey<SlotName> > slot_key;
+        const std::shared_ptr<const MetadataValueKey<Slot> > slot_key;
         const std::shared_ptr<const MetadataValueKey<std::string> > description_key;
         const std::shared_ptr<const MetadataValueKey<std::string> > repository_homepage_key, repository_description_key;
         const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key;
@@ -60,7 +64,10 @@ namespace paludis
             name(e.name()),
             version(e.version()),
             repository_name(e.repository()),
-            slot_key(std::make_shared<LiteralMetadataValueKey<SlotName>>("SLOT", "Slot", mkt_internal, e.slot())),
+            slot_key(std::make_shared<LiteralMetadataValueKey<Slot> >("SLOT", "Slot", mkt_internal, make_named_values<Slot>(
+                            n::match_values() = std::make_pair(e.slot(), e.slot()),
+                            n::parallel_value() = e.slot(),
+                            n::raw_value() = stringify(e.slot())))),
             description_key(e.description()),
             repository_homepage_key(e.repository_homepage()),
             repository_description_key(e.repository_description()),
@@ -106,11 +113,11 @@ UnavailablePackageID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             return stringify(_imp->name) + "-" + stringify(_imp->version) +
-                ":" + stringify(_imp->slot_key->parse_value()) + "::" + stringify(_imp->repository_name) +
+                ":" + stringify(_imp->slot_key->parse_value().parallel_value()) + "::" + stringify(_imp->repository_name) +
                 " (in ::" + *_imp->from_repositories_key->parse_value()->begin() + ")";
 
         case idcf_no_version:
-            return stringify(_imp->name) + ":" + stringify(_imp->slot_key->parse_value()) +
+            return stringify(_imp->name) + ":" + stringify(_imp->slot_key->parse_value().parallel_value()) +
                 "::" + stringify(_imp->repository_name) +
                 " (in ::" + *_imp->from_repositories_key->parse_value()->begin() + ")";
 
@@ -120,7 +127,7 @@ UnavailablePackageID::canonical_form(const PackageIDCanonicalForm f) const
 
         case idcf_no_name:
             return stringify(_imp->version) +
-                ":" + stringify(_imp->slot_key->parse_value()) + "::" + stringify(_imp->repository_name) +
+                ":" + stringify(_imp->slot_key->parse_value().parallel_value()) + "::" + stringify(_imp->repository_name) +
                 " (in ::" + *_imp->from_repositories_key->parse_value()->begin() + ")";
 
         case last_idcf:
@@ -134,7 +141,7 @@ PackageDepSpec
 UnavailablePackageID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->parse_value()) : "") + "::" + stringify(repository_name()) +
+            (slot_key() ? ":" + stringify(slot_key()->parse_value().parallel_value()) : "") + "::" + stringify(repository_name()) +
             "[." + _imp->from_repositories_key->raw_name() + "=" + *_imp->from_repositories_key->parse_value()->begin() + "]",
             _imp->env, { });
 }
@@ -181,9 +188,9 @@ UnavailablePackageID::arbitrary_less_than_comparison(const PackageID & other) co
     if (! other.slot_key())
         return false;
 
-    if (slot_key()->parse_value() < other.slot_key()->parse_value())
+    if (slot_key()->parse_value().raw_value() < other.slot_key()->parse_value().raw_value())
         return true;
-    if (slot_key()->parse_value() > other.slot_key()->parse_value())
+    if (slot_key()->parse_value().raw_value() > other.slot_key()->parse_value().raw_value())
         return false;
 
     std::shared_ptr<const MetadataCollectionKey<Set<std::string > > > k(other.from_repositories_key());
@@ -201,7 +208,7 @@ std::size_t
 UnavailablePackageID::extra_hash_value() const
 {
     return Hash<std::pair<SlotName, std::string> >()(std::make_pair(
-                slot_key()->parse_value(), *_imp->from_repositories_key->parse_value()->begin()));
+                slot_key()->parse_value().raw_value(), *_imp->from_repositories_key->parse_value()->begin()));
 }
 
 const std::shared_ptr<const MetadataValueKey<FSPath> >
@@ -288,7 +295,7 @@ UnavailablePackageID::choices_key() const
     return _imp->choices_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<SlotName> >
+const std::shared_ptr<const MetadataValueKey<Slot> >
 UnavailablePackageID::slot_key() const
 {
     return _imp->slot_key;

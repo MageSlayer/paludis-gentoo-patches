@@ -90,7 +90,7 @@ namespace paludis
     template class MetadataValueKey<long>;
     template class MetadataValueKey<bool>;
     template class MetadataValueKey<FSPath>;
-    template class MetadataValueKey<SlotName>;
+    template class MetadataValueKey<Slot>;
     template class MetadataValueKey<std::shared_ptr<const PackageID> >;
     template class MetadataValueKey<std::shared_ptr<const Choices> >;
 }

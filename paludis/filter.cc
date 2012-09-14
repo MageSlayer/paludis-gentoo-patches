@@ -27,6 +27,7 @@
 #include <paludis/match_package.hh>
 #include <paludis/repository.hh>
 #include <paludis/action_names.hh>
+#include <paludis/slot.hh>
 
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
@@ -348,7 +349,7 @@ namespace
                     i != i_end ; ++i)
                 if (as_id->slot_key())
                 {
-                    if ((*i)->slot_key() && (*i)->slot_key()->parse_value() == as_id->slot_key()->parse_value())
+                    if ((*i)->slot_key() && (*i)->slot_key()->parse_value().parallel_value() == as_id->slot_key()->parse_value().parallel_value())
                         result->insert(*i);
                 }
                 else
@@ -389,7 +390,7 @@ namespace
 
             for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
                     i != i_end ; ++i)
-                if ((*i)->slot_key() && (*i)->slot_key()->parse_value() == slot)
+                if ((*i)->slot_key() && (*i)->slot_key()->parse_value().parallel_value() == slot)
                     result->insert(*i);
 
             return result;
@@ -553,3 +554,4 @@ namespace paludis
     template class filter::SupportsAction<InfoAction>;
     template class filter::SupportsAction<PretendFetchAction>;
 }
+

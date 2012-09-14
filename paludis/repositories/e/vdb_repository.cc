@@ -54,6 +54,7 @@
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/unformatted_pretty_printer.hh>
+#include <paludis/slot.hh>
 
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/mutex.hh>
@@ -594,11 +595,11 @@ VDBRepository::category_names_containing_package(const PackageNamePart & p, cons
 
 namespace
 {
-    bool slot_is_same(const std::shared_ptr<const PackageID> & a,
+    bool parallel_slot_is_same(const std::shared_ptr<const PackageID> & a,
             const std::shared_ptr<const PackageID> & b)
     {
         if (a->slot_key())
-            return b->slot_key() && a->slot_key()->parse_value() == b->slot_key()->parse_value();
+            return b->slot_key() && a->slot_key()->parse_value().parallel_value() == b->slot_key()->parse_value().parallel_value();
         else
             return ! b->slot_key();
     }
@@ -772,7 +773,7 @@ VDBRepository::merge(const MergeParams & m)
                  it_end(replace_candidates->end()); it_end != it; ++it)
         {
             std::shared_ptr<const ERepositoryID> candidate(std::static_pointer_cast<const ERepositoryID>(*it));
-            if (candidate != is_replace && candidate != new_id && slot_is_same(candidate, m.package_id()))
+            if (candidate != is_replace && candidate != new_id && parallel_slot_is_same(candidate, m.package_id()))
             {
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                             n::config_protect() = config_protect,

@@ -45,6 +45,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/always_enabled_dependency_label.hh>
 #include <paludis/repository.hh>
+#include <paludis/slot.hh>
 
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
@@ -77,7 +78,7 @@ namespace paludis
         const VersionSpec version;
         const RepositoryName repository_name;
 
-        const std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot_key;
+        const std::shared_ptr<LiteralMetadataValueKey<Slot> > slot_key;
         const std::shared_ptr<LiteralMetadataValueKey<FSPath> > fs_location_key;
         const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key;
         const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key;
@@ -102,7 +103,10 @@ namespace paludis
             name(q),
             version(v),
             repository_name(n),
-            slot_key(std::make_shared<LiteralMetadataValueKey<SlotName> >("slot", "Slot", mkt_internal, s)),
+            slot_key(std::make_shared<LiteralMetadataValueKey<Slot> >("slot", "Slot", mkt_internal, make_named_values<Slot>(
+                            n::match_values() = std::make_pair(s, s),
+                            n::parallel_value() = s,
+                            n::raw_value() = stringify(s)))),
             fs_location_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("location", "Location", mkt_normal, l)),
             build_dependencies_key(std::make_shared<UnpackagedDependencyKey>(env, "build_dependencies", "Build dependencies", mkt_dependencies,
                         UnpackagedIDData::get_instance()->build_dependencies_labels, b)),
@@ -157,18 +161,18 @@ UnpackagedID::canonical_form(const PackageIDCanonicalForm f) const
     {
         case idcf_full:
             return stringify(_imp->name) + "-" + stringify(_imp->version) + ":" +
-                stringify(slot_key()->parse_value()) + "::" + stringify(_imp->repository_name);
+                stringify(slot_key()->parse_value().parallel_value()) + "::" + stringify(_imp->repository_name);
 
         case idcf_version:
             return stringify(_imp->version);
 
         case idcf_no_version:
-            return stringify(_imp->name) + ":" + stringify(slot_key()->parse_value()) + "::" +
+            return stringify(_imp->name) + ":" + stringify(slot_key()->parse_value().parallel_value()) + "::" +
                 stringify(_imp->repository_name);
 
         case idcf_no_name:
             return stringify(_imp->version) + ":" +
-                stringify(slot_key()->parse_value()) + "::" + stringify(_imp->repository_name);
+                stringify(slot_key()->parse_value().parallel_value()) + "::" + stringify(_imp->repository_name);
 
         case last_idcf:
             break;
@@ -181,7 +185,7 @@ PackageDepSpec
 UnpackagedID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->parse_value()) : "") + "::" + stringify(repository_name()),
+            (slot_key() ? ":" + stringify(slot_key()->parse_value().parallel_value()) : "") + "::" + stringify(repository_name()),
             _imp->env, { });
 }
 
@@ -275,7 +279,7 @@ UnpackagedID::fs_location_key() const
     return _imp->fs_location_key;
 }
 
-const std::shared_ptr<const MetadataValueKey<SlotName> >
+const std::shared_ptr<const MetadataValueKey<Slot> >
 UnpackagedID::slot_key() const
 {
     return _imp->slot_key;
@@ -307,11 +311,11 @@ UnpackagedID::supports_action(const SupportsActionTestBase & test) const
 
 namespace
 {
-    bool slot_is_same(const std::shared_ptr<const PackageID> & a,
+    bool parallel_slot_is_same(const std::shared_ptr<const PackageID> & a,
             const PackageID * const b)
     {
         if (a->slot_key())
-            return b->slot_key() && a->slot_key()->parse_value() == b->slot_key()->parse_value();
+            return b->slot_key() && a->slot_key()->parse_value().parallel_value() == b->slot_key()->parse_value().parallel_value();
         else
             return ! b->slot_key();
     }
@@ -463,7 +467,7 @@ UnpackagedID::perform_action(Action & action) const
             i != i_end ; ++i)
     {
         Context local_context("When cleaning '" + stringify(**i) + "':");
-        if ((*i)->name() == name() && (*i)->version() == version() && slot_is_same(*i, this))
+        if ((*i)->name() == name() && (*i)->version() == version() && parallel_slot_is_same(*i, this))
             continue;
 
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
@@ -492,13 +496,13 @@ UnpackagedID::breaks_portage() const
 bool
 UnpackagedID::arbitrary_less_than_comparison(const PackageID & other) const
 {
-    return slot_key()->parse_value().value() < (other.slot_key() ? stringify(other.slot_key()->parse_value()) : "");
+    return stringify(slot_key()->parse_value().raw_value()) < (other.slot_key() ? stringify(other.slot_key()->parse_value().raw_value()) : "");
 }
 
 std::size_t
 UnpackagedID::extra_hash_value() const
 {
-    return Hash<SlotName>()(slot_key()->parse_value());
+    return Hash<std::string>()(slot_key()->parse_value().raw_value());
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >

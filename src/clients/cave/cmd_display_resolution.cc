@@ -84,6 +84,7 @@
 #include <paludis/changed_choices.hh>
 #include <paludis/mask_utils.hh>
 #include <paludis/dep_spec_annotations.hh>
+#include <paludis/slot.hh>
 
 #include <set>
 #include <iterator>
@@ -956,9 +957,9 @@ namespace
             cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.parse_value())));
         }
 
-        void visit(const MetadataValueKey<SlotName> & k)
+        void visit(const MetadataValueKey<Slot> & k)
         {
-            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.parse_value())));
+            cout << fuc(fs_mask_by(), fv<'i'>(indent), fv<'k'>(k.human_name()), fv<'v'>(stringify(k.parse_value().raw_value())));
         }
 
         void visit(const MetadataValueKey<long> & k)

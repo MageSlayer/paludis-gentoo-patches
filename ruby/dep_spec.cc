@@ -65,8 +65,10 @@ namespace
     static VALUE c_version_requirements_mode;
 
     static VALUE c_slot_requirement;
-    static VALUE c_slot_exact_requirement;
-    static VALUE c_slot_any_locked_requirement;
+    static VALUE c_slot_exact_partial_requirement;
+    static VALUE c_slot_exact_full_requirement;
+    static VALUE c_slot_any_partial_locked_requirement;
+    static VALUE c_slot_any_at_all_locked_requirement;
     static VALUE c_slot_any_unlocked_requirement;
 
     struct V
@@ -79,15 +81,27 @@ namespace
         {
         }
 
-        void visit(const SlotExactRequirement &)
+        void visit(const SlotExactPartialRequirement &)
         {
-            value = Data_Wrap_Struct(c_slot_exact_requirement, 0, &Common<std::shared_ptr<const SlotRequirement> >::free,
+            value = Data_Wrap_Struct(c_slot_exact_partial_requirement, 0, &Common<std::shared_ptr<const SlotRequirement> >::free,
                     new std::shared_ptr<const SlotRequirement>(mm));
         }
 
-        void visit(const SlotAnyLockedRequirement &)
+        void visit(const SlotExactFullRequirement &)
         {
-            value = Data_Wrap_Struct(c_slot_any_locked_requirement, 0, &Common<std::shared_ptr<const SlotRequirement> >::free,
+            value = Data_Wrap_Struct(c_slot_exact_full_requirement, 0, &Common<std::shared_ptr<const SlotRequirement> >::free,
+                    new std::shared_ptr<const SlotRequirement>(mm));
+        }
+
+        void visit(const SlotAnyAtAllLockedRequirement &)
+        {
+            value = Data_Wrap_Struct(c_slot_any_at_all_locked_requirement, 0, &Common<std::shared_ptr<const SlotRequirement> >::free,
+                    new std::shared_ptr<const SlotRequirement>(mm));
+        }
+
+        void visit(const SlotAnyPartialLockedRequirement &)
+        {
+            value = Data_Wrap_Struct(c_slot_any_partial_locked_requirement, 0, &Common<std::shared_ptr<const SlotRequirement> >::free,
                     new std::shared_ptr<const SlotRequirement>(mm));
         }
 
@@ -976,8 +990,8 @@ namespace
     VALUE
     slot_exact_requirement_slot(VALUE self)
     {
-        std::shared_ptr<const SlotExactRequirement> * ptr;
-        Data_Get_Struct(self, std::shared_ptr<const SlotExactRequirement>, ptr);
+        std::shared_ptr<const SlotExactPartialRequirement> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const SlotExactPartialRequirement>, ptr);
         return rb_str_new2(stringify((*ptr)->slot()).c_str());
     }
 
@@ -1228,19 +1242,33 @@ namespace
         rb_define_method(c_slot_requirement, "to_s", RUBY_FUNC_CAST(&Common<std::shared_ptr<const SlotRequirement> >::to_s_via_ptr), 0);
 
         /*
-         * Document-class: Paludis::ExactSlotRequirement
+         * Document-class: Paludis::SlotExactPartialRequirement
          *
          * An exact slot requiremet (:)
          */
-        c_slot_exact_requirement = rb_define_class_under(paludis_module(), "SlotExactRequirement", c_slot_requirement);
-        rb_define_method(c_slot_exact_requirement, "slot", RUBY_FUNC_CAST(&slot_exact_requirement_slot), 0);
+        c_slot_exact_partial_requirement = rb_define_class_under(paludis_module(), "SlotExactPartialRequirement", c_slot_requirement);
+        rb_define_method(c_slot_exact_partial_requirement, "slot", RUBY_FUNC_CAST(&slot_exact_requirement_slot), 0);
 
         /*
-         * Document-class: Paludis::SlotAnyLockedRequirement
+         * Document-class: Paludis::SlotExactFullRequirement
+         *
+         * An exact slot requiremet
+         */
+        c_slot_exact_full_requirement = rb_define_class_under(paludis_module(), "SlotExactFullRequirement", c_slot_requirement);
+
+        /*
+         * Document-class: Paludis::SlotAnyPartialLockedRequirement
          *
          * An any locked slot requiremet (:=)
          */
-        c_slot_any_locked_requirement = rb_define_class_under(paludis_module(), "SlotAnyLockedRequirement", c_slot_requirement);
+        c_slot_any_partial_locked_requirement = rb_define_class_under(paludis_module(), "SlotAnyPartialLockedRequirement", c_slot_requirement);
+
+        /*
+         * Document-class: Paludis::SlotAnyAtAllLockedRequirement
+         *
+         * An any locked slot requiremet (:=)
+         */
+        c_slot_any_at_all_locked_requirement = rb_define_class_under(paludis_module(), "SlotAnyAtAllLockedRequirement", c_slot_requirement);
 
         /*
          * Document-class: Paludis::ExactSlotRequirement

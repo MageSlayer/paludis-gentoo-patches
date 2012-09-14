@@ -29,6 +29,7 @@
 #include <paludis/name.hh>
 #include <paludis/pretty_printer.hh>
 #include <paludis/call_pretty_printer.hh>
+#include <paludis/slot.hh>
 #include <functional>
 
 using namespace paludis;
@@ -462,7 +463,7 @@ namespace paludis
 {
     template class LiteralMetadataValueKey<FSPath>;
     template class LiteralMetadataValueKey<std::string>;
-    template class LiteralMetadataValueKey<SlotName>;
+    template class LiteralMetadataValueKey<Slot>;
     template class LiteralMetadataValueKey<bool>;
     template class LiteralMetadataValueKey<long>;
     template class LiteralMetadataValueKey<std::shared_ptr<const PackageID> >;

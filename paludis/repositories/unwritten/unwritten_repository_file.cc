@@ -36,6 +36,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/pretty_printer.hh>
+#include <paludis/slot.hh>
 
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
@@ -203,7 +204,7 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
 
     CategoryNamePart category("x");
     PackageNamePart package("x");
-    std::shared_ptr<MetadataValueKey<SlotName> > slot;
+    std::shared_ptr<MetadataValueKey<Slot> > slot;
     std::list<VersionSpec> versions;
     std::shared_ptr<UnwrittenRepositoryFileEntry> entry;
     while (std::getline(file, line))
@@ -250,7 +251,10 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
                     (+simple_parser::any_of(" \t"))
                     ))
         {
-            slot = std::make_shared<LiteralMetadataValueKey<SlotName>>("SLOT", "Slot", mkt_internal, SlotName(token));
+            slot = std::make_shared<LiteralMetadataValueKey<Slot>>("SLOT", "Slot", mkt_internal, make_named_values<Slot>(
+                        n::match_values() = std::make_pair(SlotName(token), SlotName(token)),
+                        n::parallel_value() = SlotName(token),
+                        n::raw_value() = token));
 
             if (entry)
             {

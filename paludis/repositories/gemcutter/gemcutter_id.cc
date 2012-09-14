@@ -29,12 +29,14 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/singleton-impl.hh>
+#include <paludis/util/make_named_values.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/user_dep_spec.hh>
+#include <paludis/slot.hh>
 
 using namespace paludis;
 using namespace paludis::gemcutter_repository;
@@ -127,7 +129,7 @@ namespace paludis
         const VersionSpec version;
         const RepositoryName repository_name;
 
-        std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot_key;
+        std::shared_ptr<LiteralMetadataValueKey<Slot> > slot_key;
         std::shared_ptr<LiteralMetadataValueKey<std::string> > authors_key;
         std::shared_ptr<LiteralMetadataValueKey<std::string> > info_key;
         std::shared_ptr<GemcutterURIKey> bug_tracker_uri_key;
@@ -144,7 +146,10 @@ namespace paludis
             name(CategoryNamePart("gem"), PackageNamePart(e.info().name())),
             version(e.info().version(), { }),
             repository_name(e.repository()),
-            slot_key(std::make_shared<LiteralMetadataValueKey<SlotName> >("slot", "Slot", mkt_internal, SlotName(e.info().version()))),
+            slot_key(std::make_shared<LiteralMetadataValueKey<Slot> >("slot", "Slot", mkt_internal, make_named_values<Slot>(
+                            n::match_values() = std::make_pair(SlotName(e.info().version()), SlotName(e.info().version())),
+                            n::parallel_value() = SlotName(e.info().version()),
+                            n::raw_value() = e.info().version()))),
             authors_key(make_string_key("authors", "Authors", mkt_author, e.info().authors())),
             info_key(make_string_key("info", "Info", mkt_significant, e.info().info())),
             bug_tracker_uri_key(make_uri(
@@ -401,7 +406,7 @@ GemcutterID::choices_key() const
     return make_null_shared_ptr();
 }
 
-const std::shared_ptr<const MetadataValueKey<SlotName> >
+const std::shared_ptr<const MetadataValueKey<Slot> >
 GemcutterID::slot_key() const
 {
     return _imp->slot_key;

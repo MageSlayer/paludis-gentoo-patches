@@ -36,6 +36,8 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/slot.hh>
+
 #include <algorithm>
 #include <functional>
 #include <map>
@@ -102,7 +104,7 @@ namespace
     std::string slot_as_string(const std::shared_ptr<const PackageID> & id)
     {
         if (id->slot_key())
-            return stringify(id->slot_key()->parse_value());
+            return stringify(id->slot_key()->parse_value().parallel_value());
         else
             return "(none)";
     }
@@ -506,3 +508,4 @@ namespace paludis
 {
     template class Pimp<Selection>;
 }
+

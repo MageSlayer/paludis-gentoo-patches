@@ -32,6 +32,7 @@
 #include <paludis/selection.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/contents.hh>
+#include <paludis/slot.hh>
 
 #include <paludis/util/sequence.hh>
 #include <paludis/util/join.hh>
@@ -133,7 +134,7 @@ TEST(InstalledRepository, Metadata)
                         &env, { }), make_null_shared_ptr(), { }))]->begin());
 
     EXPECT_EQ(id1->version(), VersionSpec("1", { }));
-    EXPECT_EQ(SlotName("0"), id1->slot_key()->parse_value());
+    EXPECT_EQ("0", id1->slot_key()->parse_value().raw_value());
     EXPECT_EQ(QualifiedPackageName("cat-one/foo"), id1->name());
     EXPECT_EQ(RepositoryName("installed-unpackaged"), id1->repository_name());
     EXPECT_TRUE(bool(id1->fs_location_key()));
@@ -150,7 +151,7 @@ TEST(InstalledRepository, Metadata)
                         &env, { }), make_null_shared_ptr(), { }))]->begin());
 
     EXPECT_EQ(id2->version(), VersionSpec("2", { }));
-    EXPECT_EQ(SlotName("1"), id2->slot_key()->parse_value());
+    EXPECT_EQ("1", id2->slot_key()->parse_value().raw_value());
     EXPECT_EQ(QualifiedPackageName("cat-one/foo"), id2->name());
     EXPECT_EQ(RepositoryName("installed-unpackaged"), id2->repository_name());
     EXPECT_TRUE(bool(id2->fs_location_key()));

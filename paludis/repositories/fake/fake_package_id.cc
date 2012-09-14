@@ -32,6 +32,7 @@
 #include <paludis/always_enabled_dependency_label.hh>
 #include <paludis/pretty_printer.hh>
 #include <paludis/call_pretty_printer.hh>
+#include <paludis/slot.hh>
 
 #include <paludis/util/stringify.hh>
 #include <paludis/util/mutex.hh>
@@ -641,7 +642,7 @@ namespace paludis
         const QualifiedPackageName name;
         const VersionSpec version;
 
-        mutable std::shared_ptr<LiteralMetadataValueKey<SlotName> > slot;
+        mutable std::shared_ptr<LiteralMetadataValueKey<Slot> > slot;
         mutable std::shared_ptr<FakeMetadataKeywordSetKey> keywords;
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<LicenseSpecTree> > license;
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
@@ -665,7 +666,10 @@ namespace paludis
             repository_name(r),
             name(q),
             version(v),
-            slot(std::make_shared<LiteralMetadataValueKey<SlotName>>("SLOT", "Slot", mkt_internal, SlotName("0"))),
+            slot(std::make_shared<LiteralMetadataValueKey<Slot>>("SLOT", "Slot", mkt_internal, make_named_values<Slot>(
+                            n::match_values() = std::make_pair(SlotName("0"), SlotName("0")),
+                            n::parallel_value() = SlotName("0"),
+                            n::raw_value() = "0"))),
             behaviours_set(std::make_shared<Set<std::string>>()),
             has_masks(false)
         {
@@ -689,17 +693,17 @@ FakePackageID::canonical_form(const PackageIDCanonicalForm f) const
     switch (f)
     {
         case idcf_full:
-            return stringify(_imp->name) + "-" + stringify(_imp->version) + ":" + stringify(_imp->slot->parse_value())
+            return stringify(_imp->name) + "-" + stringify(_imp->version) + ":" + stringify(_imp->slot->parse_value().parallel_value())
                 + "::" + stringify(repository_name());
 
         case idcf_version:
             return stringify(_imp->version);
 
         case idcf_no_version:
-            return stringify(_imp->name) + ":" + stringify(_imp->slot->parse_value()) + "::" + stringify(repository_name());
+            return stringify(_imp->name) + ":" + stringify(_imp->slot->parse_value().parallel_value()) + "::" + stringify(repository_name());
 
         case idcf_no_name:
-            return stringify(_imp->version) + ":" + stringify(_imp->slot->parse_value())
+            return stringify(_imp->version) + ":" + stringify(_imp->slot->parse_value().parallel_value())
                 + "::" + stringify(repository_name());
 
         case last_idcf:
@@ -713,7 +717,7 @@ PackageDepSpec
 FakePackageID::uniquely_identifying_spec() const
 {
     return parse_user_package_dep_spec("=" + stringify(name()) + "-" + stringify(version()) +
-            (slot_key() ? ":" + stringify(slot_key()->parse_value()) : "") + "::" + stringify(repository_name()),
+            (slot_key() ? ":" + stringify(slot_key()->parse_value().parallel_value()) : "") + "::" + stringify(repository_name()),
             _imp->env, { });
 }
 
@@ -863,13 +867,16 @@ FakePackageID::from_repositories_key() const
 void
 FakePackageID::set_slot(const SlotName & s)
 {
-    _imp->slot->change_value(s);
+    _imp->slot->change_value(make_named_values<Slot>(
+                n::match_values() = std::make_pair(s, s),
+                n::parallel_value() = s,
+                n::raw_value() = stringify(s)));
 }
 
 bool
 FakePackageID::arbitrary_less_than_comparison(const PackageID & other) const
 {
-    return slot_key()->parse_value().value() < (other.slot_key() ? stringify(other.slot_key()->parse_value()) : "");
+    return stringify(slot_key()->parse_value().raw_value()) < (other.slot_key() ? stringify(other.slot_key()->parse_value().raw_value()) : "");
 }
 
 void
@@ -929,7 +936,7 @@ FakePackageID::need_keys_added() const
 std::size_t
 FakePackageID::extra_hash_value() const
 {
-    return Hash<SlotName>()(slot_key()->parse_value());
+    return Hash<std::string>()(slot_key()->parse_value().raw_value());
 }
 
 bool
@@ -1169,7 +1176,7 @@ FakePackageID::choices_key()
     return _imp->choices;
 }
 
-const std::shared_ptr<const MetadataValueKey<SlotName> >
+const std::shared_ptr<const MetadataValueKey<Slot> >
 FakePackageID::slot_key() const
 {
     need_keys_added();
