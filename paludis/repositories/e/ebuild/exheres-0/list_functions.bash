@@ -95,13 +95,16 @@ hasq()
 
 expecting_tests()
 {
-    local r=$(paludis_pipe_command EXPECTING_TESTS "$EAPI" "${1:---any}" )
-    if [[ "${#@}" -gt 1 ]] ; then
-        if [[ ${r%%;*} -eq 0 ]] ; then
-            echo "${2}"
-        else
-            echo "${3}"
-        fi
+    local a r
+    case "${1}" in
+        --any|--recommended|--expensive) a="${1}"; shift ;;
+    esac
+    r=$(paludis_pipe_command EXPECTING_TESTS "$EAPI" "${a:---any}" )
+    [[ "${#@}" -gt 2 ]] && die "$0 takes at most three arguments"
+    if [[ ${r%%;*} -eq 0 ]] ; then
+        [[ -n "${1}" ]] && echo "${1}"
+    else
+        [[ -n "${2}" ]] && echo "${2}"
     fi
     return ${r%%;*}
 }
