@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -133,7 +133,7 @@ ESlotKeyStore::fetch(
     auto i(_imp->store.find(x));
     if (i == _imp->store.end())
         i = _imp->store.insert(std::make_pair(x, std::make_shared<const ESlotKey>(make_named_values<Slot>(
-                            n::match_values() = std::make_pair(s, t),
+                            n::match_values() = std::make_pair(SlotName(s), SlotName(t)),
                             n::parallel_value() = s,
                             n::raw_value() = ss), v, mkt))).first;
     return i->second;
