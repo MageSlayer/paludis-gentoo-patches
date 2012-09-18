@@ -208,7 +208,7 @@ std::size_t
 UnavailablePackageID::extra_hash_value() const
 {
     return Hash<std::pair<SlotName, std::string> >()(std::make_pair(
-                slot_key()->parse_value().raw_value(), *_imp->from_repositories_key->parse_value()->begin()));
+                SlotName(slot_key()->parse_value().raw_value()), *_imp->from_repositories_key->parse_value()->begin()));
 }
 
 const std::shared_ptr<const MetadataValueKey<FSPath> >
