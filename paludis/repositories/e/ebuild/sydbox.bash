@@ -223,6 +223,10 @@ esandbox_1()
         [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
         sydbox_internal_net_1 "filter/network" '-' "${@}"
         ;;
+    exec)
+        [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
+        [[ -e "$(sydfmt exec -- ${@})" ]]
+        ;;
     kill)
         [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
         sydbox_internal_path_1 "exec/kill_if_match" "+" "${@}"
@@ -348,7 +352,7 @@ esandbox_0() {
         [[ ${#} < 1 ]] && die "${FUNCNAME} ${cmd} takes at least one extra argument"
         sydbox_internal_net "rmfilter_net" "${@}"
         ;;
-    kill|resume)
+    exec|kill|resume)
         ebuild_notice "warning" "${FUNCNAME} ${cmd} is not implemented for sydbox-0"
         ;;
     *)
