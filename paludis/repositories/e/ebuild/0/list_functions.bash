@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2009 Ciaran McCreesh
+# Copyright (c) 2006, 2009, 2012 Ciaran McCreesh
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -38,8 +38,9 @@ usev()
 useq()
 {
     if [[ -n "${IUSE_EFFECTIVE:+x}" ]] ; then
-        if ! hasq ${1#!} "${IUSE_EFFECTIVE}" ; then
-            die "Flag '${1#!}' is not included in IUSE_EFFECTIVE"
+        local i=( $IUSE_EFFECTIVE )
+        if ! hasq ${1#!} "${i[@]#[+-]}" ; then
+            die "Flag '${1#!}' is not included in IUSE_EFFECTIVE=\"${IUSE_EFFECTIVE}\""
         fi
     fi
 
