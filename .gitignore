@@ -27,6 +27,7 @@ man-*
 *.tmp
 *.log
 paludis-*.*.*.tar.bz2
+tags
 
 !/paludis/repositories/e/ebuild/utils/dolib.a
 !/paludis/repositories/e/ebuild/utils/dolib.so
@@ -43,6 +44,10 @@ paludis-*.*.*.tar.bz2
 /config.status
 /config
 /configure
+/cscope.files
+/cscope.in.out
+/cscope.out
+/cscope.po.out
 /doc/api/cplusplus/cplusplus
 /doc/api/cplusplus/doxygen.conf
 /doc/api/cplusplus/examples/example_about
