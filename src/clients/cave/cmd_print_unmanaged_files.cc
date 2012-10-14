@@ -85,7 +85,7 @@ namespace
     class CollectRecursiveDirectoryContents
     {
         public:
-            CollectRecursiveDirectoryContents(std::set<FSPath, FSPathComparator> * contents)
+            explicit CollectRecursiveDirectoryContents(std::set<FSPath, FSPathComparator> * contents)
                 : _contents(contents)
             {
             }
@@ -102,7 +102,7 @@ namespace
                     try
                     {
                         if (entry->stat().is_directory())
-                            CollectRecursiveDirectoryContents(this->_contents)(*entry);
+                            (*this)(*entry);
                         else
                             _contents->insert(*entry);
                     }
@@ -178,13 +178,13 @@ PrintUnmanagedFilesCommand::run(const std::shared_ptr<Environment> & env,
 
         if (! realpath.stat().is_directory())
         {
-            std::cerr << path << " is not a directory" << std::endl;
+            cerr << path << " is not a directory" << endl;
             return EXIT_FAILURE;
         }
 
         if (! realpath.starts_with(sysroot))
         {
-            std::cerr << path << " is not under " << sysroot << std::endl;
+            cerr << path << " is not under " << sysroot << endl;
             return EXIT_FAILURE;
         }
 
