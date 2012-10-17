@@ -526,6 +526,11 @@ ebuild_load_em_up_dan()
             export SANDBOX_WRITE=${SANDBOX_WRITE}:${CCACHE_DIR}
             esandbox check 2>/dev/null && esandbox allow "${CCACHE_DIR}"
         fi
+        if [[ -n ${TMPDIR} ]] && esandbox check 2>/dev/null; then
+            local tmpdirc="$(canonicalise "${TMPDIR}")"
+            esandbox allow_net unix:"${tmpdirc}" unix-abstract:"${tmpdirc}"
+            unset tmpdirc
+        fi
     fi
 
     [[ -z ${CBUILD} ]] && export CBUILD=${CHOST}
