@@ -33,6 +33,7 @@ export MOPREFIX="${PN}"
 
 keepdir()
 {
+    local keepfile_name=.keep_${CATEGORY}_${PN}-${SLOT%/*}
     if [[ ${#} -lt 1 ]]; then
         paludis_die_unless_nonfatal "at least one argument needed"
     fi
@@ -42,12 +43,12 @@ keepdir()
     dodir "$@"
     if [[ "${1}" == "-R" ]] || [[ "${1}" == "-r" ]] ; then
         shift
-        find "$@" -type d -printf "${!PALUDIS_IMAGE_DIR_VAR}/%p/.keep_${CATEGORY}_${PN}-${SLOT}\0" | xargs -0 touch
-        paludis_assert_unless_nonfatal "Failed to create .keep_${CATEGORY}_${PN}-${SLOT} files" || return 247
+        find "$@" -type d -printf "${!PALUDIS_IMAGE_DIR_VAR}/%p/${keepfile_name}\0" | xargs -0 touch
+        paludis_assert_unless_nonfatal "Failed to create ${keepfile_name} files" || return 247
     else
         local f
         for f in "$@" ; do
-            touch "${!PALUDIS_IMAGE_DIR_VAR}/${f}/.keep_${CATEGORY}_${PN}-${SLOT}" || paludis_die_unless_nonfatal "Couldn't touch .keep_${CATEGORY}_${PN}-${SLOT} in ${f}" || return 247
+            touch "${!PALUDIS_IMAGE_DIR_VAR}/${f}/${keepfile_name}" || paludis_die_unless_nonfatal "Couldn't touch ${keepfile_name} in ${f}" || return 247
         done
     fi
 }
