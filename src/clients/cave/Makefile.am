@@ -65,6 +65,7 @@ command_MANS = \
 	cave-print-sets.1 \
 	cave-print-spec.1 \
 	cave-print-sync-protocols.1 \
+	cave-print-unmanaged-files.1 \
 	cave-print-unused-distfiles.1 \
 	cave-purge.1 \
 	cave-report.1 \

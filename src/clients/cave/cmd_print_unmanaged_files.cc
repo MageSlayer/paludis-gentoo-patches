@@ -60,7 +60,7 @@ namespace
 
         virtual std::string app_synopsis() const
         {
-            return "Prints a list of unamanged files.";
+            return "Prints a list of unmanaged files.";
         }
 
         virtual std::string app_description() const
