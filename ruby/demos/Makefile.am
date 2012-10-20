@@ -15,7 +15,6 @@ DEFS= \
 
 IF_RUBY_DEMOS = \
 	version_spec_distributions.rb \
-	find_unmanaged_files.rb \
 	latest_stable.rb \
 	playman.rb
 
