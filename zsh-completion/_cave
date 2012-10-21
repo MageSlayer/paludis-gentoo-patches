@@ -71,6 +71,7 @@ _cave()
     'print-sets:Prints a list of sets'
     'print-spec:Prints a dependency specification'
     'print-sync-protocols:Prints a list of sync protocols'
+    'print-unmanaged-files:Prints unmanaged files'
     'print-unused-distfiles:Prints all unused distfiles'
     'purge:Uninstall unused packages'
     'report:Display a summary of potential problems with installed packages'
@@ -665,6 +666,14 @@ _cave_cmd_print-sync-protocols()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]'
+}
+
+(( ${+functions[_cave_cmd_print-unmanaged-files]} )) ||
+_cave_cmd_print-unmanaged-files()
+{
+  _arguments -s : \
+    '(--help -h --root -r )'{--help,-h}'[Display help messsage]' \
+    '( --help -h )*'{--root,-r}'[Search under the specified root]:root:_directories' && return 0
 }
 
 (( ${+functions[_cave_cmd_print-unused-distfiles]} )) ||
