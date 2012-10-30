@@ -14,7 +14,7 @@ ln -s build symlinked_build
 
 mkdir -p distdir
 
-for e in 0 1 2 3 4 ; do
+for e in 0 1 2 3 4 5 ; do
     mkdir -p repo${e}/{profiles/profile,metadata,eclass} || exit 1
     cd repo${e} || exit 1
     echo "repo${e}" >> profiles/repo_name || exit 1

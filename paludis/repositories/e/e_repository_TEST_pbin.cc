@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -196,6 +196,7 @@ INSTANTIATE_TEST_CASE_P(Works, ERepositoryInstallEAPIPBinTest, testing::Values(
             std::string("2"),
             std::string("3"),
             std::string("4"),
+            std::string("5"),
             std::string("exheres-0")
             ));
 

@@ -18,6 +18,7 @@ eapis = \
 	pbin-1+2.conf \
 	pbin-1+3.conf \
 	pbin-1+4.conf \
+	pbin-1+5.conf \
 	pbin-1+paludis-1.conf \
 	pbin-1+exheres-0.conf
 
