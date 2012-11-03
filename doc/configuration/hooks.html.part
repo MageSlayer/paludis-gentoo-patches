@@ -164,21 +164,30 @@ hooks.</p>
     <li><code>ebuild_metadata_pre</code></li>
     <li><code>ebuild_metadata_fail</code></li>
     <li><code>ebuild_metadata_post</code></li>
+    <li><code>ebuild_variable_pre</code></li>
+    <li><code>ebuild_variable_fail</code></li>
+    <li><code>ebuild_variable_post</code></li>
     <li><code>ebuild_init_pre</code></li>
     <li><code>ebuild_init_fail</code></li>
     <li><code>ebuild_init_post</code></li>
-    <li><code>ebuild_fetch_pre</code></li>
-    <li><code>ebuild_fetch_fail</code></li>
-    <li><code>ebuild_fetch_post</code></li>
+    <li><code>ebuild_initmisc_pre</code></li>
+    <li><code>ebuild_initmisc_fail</code></li>
+    <li><code>ebuild_initmisc_post</code></li>
+    <li><code>ebuild_fetch_extra_pre</code></li>
+    <li><code>ebuild_fetch_extra_fail</code></li>
+    <li><code>ebuild_fetch_extra_post</code></li>
     <li><code>ebuild_tidyup_pre</code></li>
     <li><code>ebuild_tidyup_fail</code></li>
     <li><code>ebuild_tidyup_post</code></li>
-    <li><code>ebuild_strip_pre</code></li>
-    <li><code>ebuild_strip_fail</code></li>
-    <li><code>ebuild_strip_post</code></li>
     <li><code>ebuild_unpack_pre</code></li>
     <li><code>ebuild_unpack_fail</code></li>
     <li><code>ebuild_unpack_post</code></li>
+    <li><code>ebuild_prepare_pre</code></li>
+    <li><code>ebuild_prepare_fail</code></li>
+    <li><code>ebuild_prepare_post</code></li>
+    <li><code>ebuild_configure_pre</code></li>
+    <li><code>ebuild_configure_fail</code></li>
+    <li><code>ebuild_configure_post</code></li>
     <li><code>ebuild_compile_pre</code></li>
     <li><code>ebuild_compile_fail</code></li>
     <li><code>ebuild_compile_post</code></li>
@@ -188,6 +197,18 @@ hooks.</p>
     <li><code>ebuild_test_pre</code></li>
     <li><code>ebuild_test_fail</code></li>
     <li><code>ebuild_test_post</code></li>
+    <li><code>ebuild_test_expensive_pre</code></li>
+    <li><code>ebuild_test_expensive_fail</code></li>
+    <li><code>ebuild_test_expensive_post</code></li>
+    <li><code>ebuild_pretend_pre</code></li>
+    <li><code>ebuild_pretend_fail</code></li>
+    <li><code>ebuild_pretend_post</code></li>
+    <li><code>ebuild_bad_options_pre</code></li>
+    <li><code>ebuild_bad_options_fail</code></li>
+    <li><code>ebuild_bad_options_post</code></li>
+    <li><code>ebuild_bad_required_use_pre</code></li>
+    <li><code>ebuild_bad_required_use_fail</code></li>
+    <li><code>ebuild_bad_required_use_post</code></li>
     <li><code>ebuild_setup_pre</code></li>
     <li><code>ebuild_setup_fail</code></li>
     <li><code>ebuild_setup_post</code></li>
@@ -209,7 +230,35 @@ hooks.</p>
     <li><code>ebuild_postrm_pre</code></li>
     <li><code>ebuild_postrm_fail</code></li>
     <li><code>ebuild_postrm_post</code></li>
+    <li><code>ebuild_info_pre</code></li>
+    <li><code>ebuild_info_fail</code></li>
+    <li><code>ebuild_info_post</code></li>
+    <li><code>ebuild_infovars_pre</code></li>
+    <li><code>ebuild_infovars_fail</code></li>
+    <li><code>ebuild_infovars_post</code></li>
+    <li><code>ebuild_pivotbin_pre</code></li>
+    <li><code>ebuild_pivotbin_fail</code></li>
+    <li><code>ebuild_pivotbin_post</code></li>
+    <li><code>ebuild_installbin_pre</code></li>
+    <li><code>ebuild_installbin_fail</code></li>
+    <li><code>ebuild_installbin_post</code></li>
+    <li><code>ebuild_saveenv_pre</code></li>
+    <li><code>ebuild_saveenv_fail</code></li>
+    <li><code>ebuild_saveenv_post</code></li>
+    <li><code>ebuild_loadenv_pre</code></li>
+    <li><code>ebuild_loadenv_fail</code></li>
+    <li><code>ebuild_loadenv_post</code></li>
+    <li><code>ebuild_killold_pre</code></li>
+    <li><code>ebuild_killold_fail</code></li>
+    <li><code>ebuild_killold_post</code></li>
+    <li><code>ebuild_tidyup_pre</code></li>
+    <li><code>ebuild_tidyup_fail</code></li>
+    <li><code>ebuild_tidyup_post</code></li>
 </ul>
+
+<p>These are called before and after the corresponding <code>src_</code>,
+<code>pkg_</code> or <code>builtin_</code> phase functions (in particular,
+note <code>src_configure</code> versus <code>pkg_config</code>).
 
 <p>As well as the full ebuild environment, the <code>HOOK</code> environment
 variable will contain the name of the hook being called. The
