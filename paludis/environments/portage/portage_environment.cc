@@ -253,8 +253,8 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
                 &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
     _load_profile((_imp->conf_dir / "make.profile").realpath());
 
-    if ((_imp->conf_dir / "make.globals").stat().exists())
-        _imp->vars = std::make_shared<KeyValueConfigFile>(_imp->conf_dir / "make.globals", KeyValueConfigFileOptions() +
+    if ((FSPath(DATADIR) / "portage" / "config" / "make.globals").stat().exists())
+        _imp->vars = std::make_shared<KeyValueConfigFile>(FSPath(DATADIR) / "portage" / "config" / "make.globals", KeyValueConfigFileOptions() +
                     kvcfo_disallow_space_inside_unquoted_values + kvcfo_allow_inline_comments + kvcfo_allow_multiple_assigns_per_line,
                     std::bind(&predefined, _imp->vars, std::placeholders::_1, std::placeholders::_2),
                     &do_incremental);
