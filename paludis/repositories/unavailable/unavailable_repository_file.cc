@@ -138,7 +138,7 @@ UnavailableRepositoryFile::_load(const FSPath & f)
 
     CategoryNamePart category("x");
     PackageNamePart package("x");
-    SlotName slot("x");
+    SlotName slot("x"), subslot("x");
     while (std::getline(file, line))
     {
         SimpleParser line_parser(line);
@@ -157,7 +157,7 @@ UnavailableRepositoryFile::_load(const FSPath & f)
         }
         else if (line_parser.consume(
                     (+simple_parser::any_of(" \t")) &
-                    (+simple_parser::any_except(" \t/") >> token) &
+                    (+simple_parser::any_except(" \t/:") >> token) &
                     (simple_parser::exact("/"))
                     ))
         {
@@ -174,7 +174,16 @@ UnavailableRepositoryFile::_load(const FSPath & f)
                     (+simple_parser::any_of(" \t"))
                     ))
         {
-            slot = SlotName(token);
+            std::string ss(token);
+
+            auto p(ss.find('/'));
+            if (std::string::npos != p)
+            {
+                slot = SlotName(ss.substr(0, p));
+                subslot = SlotName(ss.substr(p + 1));
+            }
+            else
+                subslot = slot = SlotName(ss);
 
             std::list<VersionSpec> versions;
             while (true)
@@ -217,7 +226,10 @@ UnavailableRepositoryFile::_load(const FSPath & f)
                 _imp->entries.push_back(make_named_values<UnavailableRepositoryFileEntry>(
                             n::description() = desc,
                             n::name() = category + package,
-                            n::slot() = slot,
+                            n::slot() = make_named_values<Slot>(
+                                n::match_values() = std::make_pair(slot, subslot),
+                                n::parallel_value() = slot,
+                                n::raw_value() = ss),
                             n::version() = *v
                         ));
         }

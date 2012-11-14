@@ -64,10 +64,7 @@ namespace paludis
             name(e.name()),
             version(e.version()),
             repository_name(e.repository()),
-            slot_key(std::make_shared<LiteralMetadataValueKey<Slot> >("SLOT", "Slot", mkt_internal, make_named_values<Slot>(
-                            n::match_values() = std::make_pair(e.slot(), e.slot()),
-                            n::parallel_value() = e.slot(),
-                            n::raw_value() = stringify(e.slot())))),
+            slot_key(std::make_shared<LiteralMetadataValueKey<Slot> >("SLOT", "Slot", mkt_internal, e.slot())),
             description_key(e.description()),
             repository_homepage_key(e.repository_homepage()),
             repository_description_key(e.repository_description()),

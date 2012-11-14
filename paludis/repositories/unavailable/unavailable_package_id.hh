@@ -53,7 +53,7 @@ namespace paludis
             NamedValue<n::repository, RepositoryName> repository;
             NamedValue<n::repository_description, std::shared_ptr<const MetadataValueKey<std::string> > > repository_description;
             NamedValue<n::repository_homepage, std::shared_ptr<const MetadataValueKey<std::string> > > repository_homepage;
-            NamedValue<n::slot, SlotName> slot;
+            NamedValue<n::slot, Slot> slot;
             NamedValue<n::version, VersionSpec> version;
         };
 

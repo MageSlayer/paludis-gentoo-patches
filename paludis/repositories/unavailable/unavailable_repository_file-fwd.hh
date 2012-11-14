@@ -22,7 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/named_value.hh>
-#include <paludis/name.hh>
+#include <paludis/slot.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <memory>
@@ -45,7 +45,7 @@ namespace paludis
         {
             NamedValue<n::description, std::shared_ptr<const MetadataValueKey<std::string> > > description;
             NamedValue<n::name, QualifiedPackageName> name;
-            NamedValue<n::slot, SlotName> slot;
+            NamedValue<n::slot, Slot> slot;
             NamedValue<n::version, VersionSpec> version;
         };
     }
