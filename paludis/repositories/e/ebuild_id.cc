@@ -71,6 +71,7 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/upper_lower.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <paludis/util/strip.hh>
 
 #include <set>
 #include <iterator>
@@ -1039,7 +1040,7 @@ EbuildID::load_long_description(const std::string & r, const std::string & h, co
 void
 EbuildID::load_dependencies(const std::string & r, const std::string & h, const std::string & v) const
 {
-    if (! v.empty())
+    if (! strip_leading(v, " \t\r\n").empty())
     {
         Lock l(_imp->mutex);
         _imp->dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
@@ -1052,7 +1053,7 @@ void
 EbuildID::load_build_depend(const std::string & r, const std::string & h, const std::string & v,
         bool rewritten) const
 {
-    if (! v.empty())
+    if (! strip_leading(v, " \t\r\n").empty())
     {
         Lock l(_imp->mutex);
         _imp->build_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
@@ -1065,7 +1066,7 @@ void
 EbuildID::load_run_depend(const std::string & r, const std::string & h, const std::string & v,
         bool rewritten) const
 {
-    if (! v.empty())
+    if (! strip_leading(v, " \t\r\n").empty())
     {
         Lock l(_imp->mutex);
         _imp->run_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
@@ -1078,7 +1079,7 @@ void
 EbuildID::load_post_depend(const std::string & r, const std::string & h, const std::string & v,
         bool rewritten) const
 {
-    if (! v.empty())
+    if (! strip_leading(v, " \t\r\n").empty())
     {
         Lock l(_imp->mutex);
         _imp->post_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
@@ -1114,7 +1115,7 @@ EbuildID::load_license(const std::shared_ptr<const EAPIMetadataVariable> & m, co
 void
 EbuildID::load_restrict(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
-    if (! v.empty())
+    if (! strip_leading(v, " \t\r\n").empty())
     {
         Lock l(_imp->mutex);
         _imp->restrictions = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal, is_installed());
@@ -1125,7 +1126,7 @@ EbuildID::load_restrict(const std::shared_ptr<const EAPIMetadataVariable> & m, c
 void
 EbuildID::load_properties(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
-    if (! v.empty())
+    if (! strip_leading(v, " \t\r\n").empty())
     {
         Lock l(_imp->mutex);
         _imp->properties = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal, is_installed());
@@ -1152,7 +1153,7 @@ EbuildID::load_myoptions(const std::shared_ptr<const EAPIMetadataVariable> & h, 
 void
 EbuildID::load_required_use(const std::shared_ptr<const EAPIMetadataVariable> & k, const std::string & v) const
 {
-    if (! v.empty())
+    if (! strip_leading(v, " \t\r\n").empty())
     {
         Lock l(_imp->mutex);
         _imp->required_use = std::make_shared<ERequiredUseKey>(_imp->environment, k, eapi(), v, mkt_internal, is_installed());
@@ -1187,7 +1188,7 @@ EbuildID::load_inherited(const std::shared_ptr<const EAPIMetadataVariable> & r, 
 void
 EbuildID::load_defined_phases(const std::shared_ptr<const EAPIMetadataVariable> & h, const std::string & v) const
 {
-    if (v.empty())
+    if (strip_leading(v, " \t\r\n").empty())
         throw InternalError(PALUDIS_HERE, "v should not be empty");
 
     Lock l(_imp->mutex);

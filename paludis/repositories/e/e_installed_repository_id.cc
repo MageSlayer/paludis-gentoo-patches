@@ -40,6 +40,7 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/singleton-impl.hh>
+#include <paludis/util/strip.hh>
 
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -242,7 +243,7 @@ EInstalledRepositoryID::need_keys_added() const
         if ((_imp->dir / vars->defined_phases()->name()).stat().exists())
         {
             std::string d(file_contents(_imp->dir / vars->defined_phases()->name()));
-            if (! d.empty())
+            if (! strip_leading(d, " \t\r\n").empty())
             {
                 _imp->keys->defined_phases = EStringSetKeyStore::get_instance()->fetch(vars->defined_phases(),
                         d, mkt_internal);
@@ -299,7 +300,7 @@ EInstalledRepositoryID::need_keys_added() const
         if ((_imp->dir / vars->required_use()->name()).stat().exists())
         {
             std::string v(file_contents(_imp->dir / vars->required_use()->name()));
-            if (! v.empty())
+            if (! strip_leading(v, " \t\r\n").empty())
             {
                 _imp->keys->required_use = std::make_shared<ERequiredUseKey>(_imp->environment, vars->required_use(),
                         eapi(), v, mkt_internal, is_installed());
@@ -336,7 +337,7 @@ EInstalledRepositoryID::need_keys_added() const
         if ((_imp->dir / vars->dependencies()->name()).stat().exists())
         {
             std::string v(file_contents(_imp->dir / vars->dependencies()->name()));
-            if (! v.empty())
+            if (! strip_leading(v, " \t\r\n").empty())
             {
                 _imp->keys->dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name(),
                             vars->dependencies()->description(), v,
@@ -351,7 +352,7 @@ EInstalledRepositoryID::need_keys_added() const
             if ((_imp->dir / vars->build_depend()->name()).stat().exists())
             {
                 std::string v(file_contents(_imp->dir / vars->build_depend()->name()));
-                if (! v.empty())
+                if (! strip_leading(v, " \t\r\n").empty())
                 {
                     _imp->keys->build_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->build_depend()->name(),
                                 vars->build_depend()->description(), v,
@@ -364,7 +365,7 @@ EInstalledRepositoryID::need_keys_added() const
             if ((_imp->dir / vars->run_depend()->name()).stat().exists())
             {
                 std::string v(file_contents(_imp->dir / vars->run_depend()->name()));
-                if (! v.empty())
+                if (! strip_leading(v, " \t\r\n").empty())
                 {
                     _imp->keys->run_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->run_depend()->name(),
                                 vars->run_depend()->description(), v,
@@ -378,7 +379,7 @@ EInstalledRepositoryID::need_keys_added() const
             if ((_imp->dir / vars->pdepend()->name()).stat().exists())
             {
                 std::string v(file_contents(_imp->dir / vars->pdepend()->name()));
-                if (! v.empty())
+                if (! strip_leading(v, " \t\r\n").empty())
                 {
                     _imp->keys->post_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->pdepend()->name(),
                                 vars->pdepend()->description(), v,
@@ -393,7 +394,7 @@ EInstalledRepositoryID::need_keys_added() const
         if ((_imp->dir / vars->restrictions()->name()).stat().exists())
         {
             std::string v(file_contents(_imp->dir / vars->restrictions()->name()));
-            if (! v.empty())
+            if (! strip_leading(v, " \t\r\n").empty())
             {
                 _imp->keys->restrictions = std::make_shared<EPlainTextSpecKey>(_imp->environment, vars->restrictions(),
                             eapi(), v, mkt_internal, is_installed());
@@ -405,7 +406,7 @@ EInstalledRepositoryID::need_keys_added() const
         if ((_imp->dir / vars->properties()->name()).stat().exists())
         {
             std::string v(file_contents(_imp->dir / vars->properties()->name()));
-            if (! v.empty())
+            if (! strip_leading(v, " \t\r\n").empty())
             {
                 _imp->keys->properties = std::make_shared<EPlainTextSpecKey>(_imp->environment, vars->properties(),
                             eapi(), v, mkt_internal, is_installed());
@@ -433,7 +434,7 @@ EInstalledRepositoryID::need_keys_added() const
         if ((_imp->dir / vars->long_description()->name()).stat().exists())
         {
             std::string value(file_contents(_imp->dir / vars->long_description()->name()));
-            if (! value.empty())
+            if (! strip_leading(value, " \t\r\n").empty())
             {
                 _imp->keys->long_description = std::make_shared<LiteralMetadataValueKey<std::string> >(vars->long_description()->name(),
                             vars->long_description()->description(), mkt_significant, value);
@@ -445,7 +446,7 @@ EInstalledRepositoryID::need_keys_added() const
         if ((_imp->dir / vars->upstream_changelog()->name()).stat().exists())
         {
             std::string value(file_contents(_imp->dir / vars->upstream_changelog()->name()));
-            if (! value.empty())
+            if (! strip_leading(value, " \t\r\n").empty())
             {
                 _imp->keys->upstream_changelog = std::make_shared<ESimpleURIKey>(_imp->environment,
                             vars->upstream_changelog(), eapi(), value, mkt_normal, is_installed());
@@ -457,7 +458,7 @@ EInstalledRepositoryID::need_keys_added() const
         if ((_imp->dir / vars->upstream_release_notes()->name()).stat().exists())
         {
             std::string value(file_contents(_imp->dir / vars->upstream_release_notes()->name()));
-            if (! value.empty())
+            if (! strip_leading(value, " \t\r\n").empty())
             {
                 _imp->keys->upstream_release_notes = std::make_shared<ESimpleURIKey>(_imp->environment,
                             vars->upstream_release_notes(), eapi(), value, mkt_normal, is_installed());
@@ -469,7 +470,7 @@ EInstalledRepositoryID::need_keys_added() const
         if ((_imp->dir / vars->upstream_documentation()->name()).stat().exists())
         {
             std::string value(file_contents(_imp->dir / vars->upstream_documentation()->name()));
-            if (! value.empty())
+            if (! strip_leading(value, " \t\r\n").empty())
             {
                 _imp->keys->upstream_documentation = std::make_shared<ESimpleURIKey>(_imp->environment,
                             vars->upstream_documentation(), eapi(), value, mkt_normal, is_installed());
@@ -481,7 +482,7 @@ EInstalledRepositoryID::need_keys_added() const
         if ((_imp->dir / vars->bugs_to()->name()).stat().exists())
         {
             std::string value(file_contents(_imp->dir / vars->bugs_to()->name()));
-            if (! value.empty())
+            if (! strip_leading(value, " \t\r\n").empty())
             {
                 _imp->keys->bugs_to = std::make_shared<EPlainTextSpecKey>(_imp->environment, vars->bugs_to(), eapi(), value, mkt_normal, is_installed());
                 add_metadata_key(_imp->keys->bugs_to);
@@ -492,7 +493,7 @@ EInstalledRepositoryID::need_keys_added() const
         if ((_imp->dir / vars->remote_ids()->name()).stat().exists())
         {
             std::string value(file_contents(_imp->dir / vars->remote_ids()->name()));
-            if (! value.empty())
+            if (! strip_leading(value, " \t\r\n").empty())
             {
                 _imp->keys->remote_ids = std::make_shared<EPlainTextSpecKey>(_imp->environment,
                             vars->remote_ids(), eapi(), value, mkt_internal, is_installed());
