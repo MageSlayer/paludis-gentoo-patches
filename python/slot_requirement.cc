@@ -70,6 +70,11 @@ namespace
             {
                 obj = bp::object(std::static_pointer_cast<const SlotAnyUnlockedRequirement>(_m_ptr));
             }
+
+            void visit(const SlotUnknownRewrittenRequirement &)
+            {
+                obj = bp::object(std::static_pointer_cast<const SlotUnknownRewrittenRequirement>(_m_ptr));
+            }
     };
 
     struct SlotRequirementSptrToPython
@@ -178,6 +183,22 @@ void expose_slot_requirement()
         (
          "SlotAnyUnlockedRequirement",
          "A SlotAnyUnlockedRequirement is a SlotRequirement for :* slot requirements.",
+         bp::no_init
+        )
+        ;
+
+    /**
+     * SlotUnknownRewrittenRequirement
+     */
+    register_shared_ptrs_to_python<SlotUnknownRewrittenRequirement>(rsp_const);
+    bp::implicitly_convertible<std::shared_ptr<SlotUnknownRewrittenRequirement>, std::shared_ptr<SlotRequirement> >();
+    bp::class_<SlotUnknownRewrittenRequirement, std::shared_ptr<SlotUnknownRewrittenRequirement>, bp::bases<SlotRequirement>, boost::noncopyable>
+        (
+         "SlotUnknownRewrittenRequirement",
+         "A SlotUnknownRewrittenRequirement is a SlotRequirement for the "
+         "maybe_original_requirement_if_written() method of :3/3.1= slot "
+         "requirements that do not indicate whether they were originally "
+         "of := or :3= type.",
          bp::no_init
         )
         ;

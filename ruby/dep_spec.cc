@@ -70,6 +70,7 @@ namespace
     static VALUE c_slot_any_partial_locked_requirement;
     static VALUE c_slot_any_at_all_locked_requirement;
     static VALUE c_slot_any_unlocked_requirement;
+    static VALUE c_slot_unknown_rewritten_requirement;
 
     struct V
     {
@@ -108,6 +109,12 @@ namespace
         void visit(const SlotAnyUnlockedRequirement &)
         {
             value = Data_Wrap_Struct(c_slot_any_unlocked_requirement, 0, &Common<std::shared_ptr<const SlotRequirement> >::free,
+                    new std::shared_ptr<const SlotRequirement>(mm));
+        }
+
+        void visit(const SlotUnknownRewrittenRequirement &)
+        {
+            value = Data_Wrap_Struct(c_slot_unknown_rewritten_requirement, 0, &Common<std::shared_ptr<const SlotRequirement> >::free,
                     new std::shared_ptr<const SlotRequirement>(mm));
         }
 
@@ -1244,7 +1251,7 @@ namespace
         /*
          * Document-class: Paludis::SlotExactPartialRequirement
          *
-         * An exact slot requiremet (:)
+         * An exact slot requirement (:slot)
          */
         c_slot_exact_partial_requirement = rb_define_class_under(paludis_module(), "SlotExactPartialRequirement", c_slot_requirement);
         rb_define_method(c_slot_exact_partial_requirement, "slot", RUBY_FUNC_CAST(&slot_exact_requirement_slot), 0);
@@ -1252,30 +1259,37 @@ namespace
         /*
          * Document-class: Paludis::SlotExactFullRequirement
          *
-         * An exact slot requiremet
+         * An exact slot requirement (:slot/sub)
          */
         c_slot_exact_full_requirement = rb_define_class_under(paludis_module(), "SlotExactFullRequirement", c_slot_requirement);
 
         /*
          * Document-class: Paludis::SlotAnyPartialLockedRequirement
          *
-         * An any locked slot requiremet (:=)
+         * A partial locked slot requirement (:slot=)
          */
         c_slot_any_partial_locked_requirement = rb_define_class_under(paludis_module(), "SlotAnyPartialLockedRequirement", c_slot_requirement);
 
         /*
          * Document-class: Paludis::SlotAnyAtAllLockedRequirement
          *
-         * An any locked slot requiremet (:=)
+         * An any locked slot requirement (:=)
          */
         c_slot_any_at_all_locked_requirement = rb_define_class_under(paludis_module(), "SlotAnyAtAllLockedRequirement", c_slot_requirement);
 
         /*
          * Document-class: Paludis::SlotAnyUnlockedRequirement
          *
-         * An any unlocked slot requiremet (:*)
+         * An any unlocked slot requirement (:*)
          */
         c_slot_any_unlocked_requirement = rb_define_class_under(paludis_module(), "SlotAnyUnlockedRequirement", c_slot_requirement);
+
+        /*
+         * Document-class: Paludis::SlotUnknownRewrittenRequirement
+         *
+         * An unknown rewritten slot requirement (either := or :slot=)
+         */
+        c_slot_unknown_rewritten_requirement = rb_define_class_under(paludis_module(), "SlotUnknownRewrittenRequirement", c_slot_requirement);
     }
 }
 

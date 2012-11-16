@@ -31,8 +31,6 @@
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/slot_requirement.hh>
-#include <paludis/partially_made_package_dep_spec.hh>
-#include <paludis/elike_slot_requirement.hh>
 #include <paludis/version_requirements.hh>
 
 #include <set>
@@ -43,6 +41,38 @@ using namespace paludis::resolver;
 
 namespace
 {
+    /* since the EAPI5 syntax for rewritten := deps in the VDB doesn't
+       allow us to tell whether the dep was originally a := kind or
+       a :slot= kind, normalise them all to the same thing to avoid
+       spurious differences */
+    struct SloppySlotStringifier
+    {
+        /* this is probably covered by the generic case that just
+           does a stringify, but a package format could theoretically
+           define a different representation, so assume the standard
+           form here for compatibility with the other two that we're
+           assuming */
+        std::string visit(const SlotAnyAtAllLockedRequirement &) const
+        {
+            return ":=";
+        }
+
+        std::string visit(const SlotAnyPartialLockedRequirement &) const
+        {
+            return ":=";
+        }
+
+        std::string visit(const SlotUnknownRewrittenRequirement &) const
+        {
+            return ":=";
+        }
+
+        std::string visit(const SlotRequirement & r) const
+        {
+            return stringify(r);
+        }
+    };
+
     struct ComparingPrettyPrinter :
         UnformattedPrettyPrinter
     {
@@ -74,10 +104,8 @@ namespace
             if (s.slot_requirement_ptr())
             {
                 auto r(s.slot_requirement_ptr()->maybe_original_requirement_if_rewritten());
-                if (r)
-                    tokens.insert("slot_requirement:" + stringify(*r));
-                else
-                    tokens.insert("slot_requirement:" + stringify(*s.slot_requirement_ptr()));
+                tokens.insert("slot_requirement:" + (r ? r : s.slot_requirement_ptr())
+                    ->accept_returning<std::string>(SloppySlotStringifier()));
             }
 
             if (s.in_repository_ptr())

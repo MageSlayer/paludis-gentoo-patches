@@ -37,7 +37,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE SlotRequirement :
         public virtual DeclareAbstractAcceptMethods<SlotRequirement, MakeTypeList<
-            SlotExactPartialRequirement, SlotExactFullRequirement, SlotAnyAtAllLockedRequirement, SlotAnyPartialLockedRequirement, SlotAnyUnlockedRequirement>::Type>
+            SlotExactPartialRequirement, SlotExactFullRequirement, SlotAnyAtAllLockedRequirement, SlotAnyPartialLockedRequirement, SlotAnyUnlockedRequirement, SlotUnknownRewrittenRequirement>::Type>
     {
         public:
             /**
@@ -130,6 +130,26 @@ namespace paludis
         public SlotRequirement,
         public ImplementAcceptMethods<SlotRequirement, SlotAnyUnlockedRequirement>
     {
+    };
+
+    /**
+     * A SlotUnknownRewrittenRequirement is a SlotRequirement for the
+     * <code>maybe_original_requirement_if_written()</code> method of
+     * <code>:3/3.1=</code> slot requirements that do not indicate whether
+     * they were originally of <code>:=</code> or <code>:3=</code> type.
+     *
+     * \ingroup g_dep_spec
+     */
+    class PALUDIS_VISIBLE SlotUnknownRewrittenRequirement :
+        public SlotRequirement,
+        public ImplementAcceptMethods<SlotRequirement, SlotUnknownRewrittenRequirement>
+    {
+        public:
+            /**
+             * The slot that the original spec might have specified, if
+             * it was of <code>:3=</code> type.
+             */
+            virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
     };
 }
 

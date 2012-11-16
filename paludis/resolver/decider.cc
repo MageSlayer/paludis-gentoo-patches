@@ -1361,6 +1361,11 @@ namespace
         {
             return make_null_shared_ptr();
         }
+
+        std::shared_ptr<SlotName> visit(const SlotUnknownRewrittenRequirement &) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "Should not be finding resolvents matching a SlotUnknownRewrittenRequirement");
+        }
     };
 }
 

@@ -85,6 +85,11 @@ namespace
         {
             result = true;
         }
+
+        void visit(const SlotUnknownRewrittenRequirement &) PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "Should not be matching against SlotUnknownRewrittenRequirement");
+        }
     };
 }
 
