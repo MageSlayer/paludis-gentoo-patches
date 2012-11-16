@@ -27,6 +27,7 @@ namespace paludis
     class ELikeSlotAnyAtAllLockedRequirement;
     class ELikeSlotAnyPartialLockedRequirement;
     class ELikeSlotAnyUnlockedRequirement;
+    class ELikeSlotUnknownRewrittenRequirement;
 }
 
 #endif

@@ -86,7 +86,12 @@ namespace
             {
                 auto ss((*matches->last())->slot_key()->parse_value());
                 if (eapi.supported()->ebuild_options()->has_subslots())
-                    return std::make_shared<ELikeSlotExactFullRequirement>(ss.match_values(), spec->slot_requirement_ptr());
+                {
+                    if (eapi.supported()->package_dep_spec_parse_options()[epdso_allow_slot_equal_deps])
+                        return std::make_shared<ELikeSlotExactFullRequirement>(ss.match_values(), spec->slot_requirement_ptr());
+                    else
+                        return std::make_shared<ELikeSlotExactFullRequirement>(ss.match_values(), std::make_shared<ELikeSlotUnknownRewrittenRequirement>(ss.match_values().first));
+                }
                 else
                     return std::make_shared<ELikeSlotExactPartialRequirement>(ss.match_values().first, spec->slot_requirement_ptr());
             }
@@ -102,6 +107,11 @@ namespace
         std::shared_ptr<const SlotRequirement> visit(const SlotAnyAtAllLockedRequirement &) const
         {
             return rewrite();
+        }
+
+        std::shared_ptr<const SlotRequirement> visit(const SlotUnknownRewrittenRequirement &) const PALUDIS_ATTRIBUTE((noreturn))
+        {
+            throw InternalError(PALUDIS_HERE, "Should not be rewriting SlotUnknownRewrittenRequirement");
         }
     };
 

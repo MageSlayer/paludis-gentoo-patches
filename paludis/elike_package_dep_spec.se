@@ -8,7 +8,8 @@ make_enum_ELikePackageDepSpecOption()
 
     key epdso_allow_slot_deps                    "Allow :slot deps"
     key epdso_allow_slot_star_deps               "Allow :* slot deps"
-    key epdso_allow_slot_equal_deps              "Allow := and :=blah slot deps"
+    key epdso_allow_slot_equal_deps              "Allow := and :blah= slot deps"
+    key epdso_allow_slot_equal_deps_portage      "Allow := and :blah= slot deps with Portage rewriting rules"
     key epdso_allow_subslot_deps                 "Allow subslots in slot deps"
     key epdso_allow_repository_deps              "Allow ::repo deps"
     key epdso_allow_use_deps                     "Allow [use] deps"

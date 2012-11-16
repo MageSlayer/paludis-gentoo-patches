@@ -20,6 +20,7 @@
 #include <paludis/elike_slot_requirement.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/visitor_cast.hh>
 
 using namespace paludis;
 
@@ -33,7 +34,12 @@ const std::string
 ELikeSlotExactFullRequirement::as_string() const
 {
     if (_maybe_original_requirement_if_rewritten)
-        return _maybe_original_requirement_if_rewritten->as_string() + stringify(_s.first) + "/" + stringify(_s.second);
+    {
+        if (visitor_cast<const SlotUnknownRewrittenRequirement>(*_maybe_original_requirement_if_rewritten))
+            return ":" + stringify(_s.first) + "/" + stringify(_s.second) + "=";
+        else
+            return _maybe_original_requirement_if_rewritten->as_string() + stringify(_s.first) + "/" + stringify(_s.second);
+    }
     else
         return ":" + stringify(_s.first) + "/" + stringify(_s.second);
 }
@@ -120,6 +126,29 @@ ELikeSlotAnyPartialLockedRequirement::maybe_original_requirement_if_rewritten() 
 
 const SlotName
 ELikeSlotAnyPartialLockedRequirement::slot() const
+{
+    return _s;
+}
+
+ELikeSlotUnknownRewrittenRequirement::ELikeSlotUnknownRewrittenRequirement(const SlotName & s) :
+    _s(s)
+{
+}
+
+const std::string
+ELikeSlotUnknownRewrittenRequirement::as_string() const
+{
+    throw InternalError(PALUDIS_HERE, "Should not be stringifying ELikeUnknownRewrittenSlotRequirement");
+}
+
+const std::shared_ptr<const SlotRequirement>
+ELikeSlotUnknownRewrittenRequirement::maybe_original_requirement_if_rewritten() const
+{
+    return make_null_shared_ptr();
+}
+
+const SlotName
+ELikeSlotUnknownRewrittenRequirement::slot() const
 {
     return _s;
 }

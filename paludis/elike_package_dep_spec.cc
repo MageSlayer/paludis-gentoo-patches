@@ -299,7 +299,7 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
     }
     else if ('=' == match.at(0))
     {
-        if (! options[epdso_allow_slot_equal_deps])
+        if (! options[epdso_allow_slot_equal_deps] && ! options[epdso_allow_slot_equal_deps_portage])
         {
             if (options[epdso_strict_parsing])
                 throw PackageDepSpecError("Slot '=' dependencies not safe for use here");
@@ -315,6 +315,15 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
         }
         else
         {
+            if (! options[epdso_allow_slot_equal_deps])
+            {
+                if (options[epdso_strict_parsing])
+                    throw PackageDepSpecError("Slot '=slot' or '=slot/sub' dependencies not safe for use here");
+                else
+                    Log::get_instance()->message("e.package_dep_spec.slot_equals_non_portage_not_allowed", ll_warning, lc_context)
+                        << "Slot '=slot' or '=slot/sub' dependencies not safe for use here";
+            }
+
             std::string text(s.substr(slot_p + 2));
             auto p(text.find('/'));
             if (options[epdso_allow_subslot_deps] && std::string::npos != p)
@@ -344,20 +353,50 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
         std::string text(s.substr(slot_p + 1));
         auto q(text.find('='));
 
-        if (options[epdso_allow_subslot_deps] && options[epdso_allow_slot_equal_deps] && std::string::npos != q)
+        if (options[epdso_allow_subslot_deps]
+                && (options[epdso_allow_slot_equal_deps] || options[epdso_allow_slot_equal_deps_portage])
+                && std::string::npos != q)
         {
             std::string left_text(text.substr(0, q)), right_text(text.substr(q + 1));
             auto p(right_text.find('/'));
             if (std::string::npos != p)
             {
+                if (! options[epdso_allow_slot_equal_deps])
+                {
+                    if (options[epdso_strict_parsing])
+                        throw PackageDepSpecError("Slot 'slot=slot/sub' dependencies not safe for use here");
+                    else
+                        Log::get_instance()->message("e.package_dep_spec.slot_equals_non_portage_not_allowed", ll_warning, lc_context)
+                            << "Slot 'slot=slot/sub' dependencies not safe for use here";
+                }
+
                 /* c/p:l=s/u */
                 result.slot_requirement(std::make_shared<ELikeSlotExactFullRequirement>(std::make_pair(SlotName(right_text.substr(0, p)), SlotName(right_text.substr(p + 1))),
                             std::make_shared<ELikeSlotAnyPartialLockedRequirement>(SlotName(left_text))));
             }
             else if (right_text.empty())
             {
-                /* c/p:l= */
-                result.slot_requirement(std::make_shared<ELikeSlotAnyPartialLockedRequirement>(SlotName(left_text)));
+                auto r(left_text.find('/'));
+                if (std::string::npos != r)
+                {
+                    if (! options[epdso_allow_slot_equal_deps_portage])
+                    {
+                        if (options[epdso_strict_parsing])
+                            throw PackageDepSpecError("Slot 'slot/sub=' dependencies not safe for use here");
+                        else
+                            Log::get_instance()->message("e.package_dep_spec.slot_equals_portage_not_allowed", ll_warning, lc_context)
+                                << "Slot 'slot/sub=' dependencies not safe for use here";
+                    }
+
+                    /* c/p:s/u= */
+                    result.slot_requirement(std::make_shared<ELikeSlotExactFullRequirement>(std::make_pair(SlotName(left_text.substr(0, r)), SlotName(left_text.substr(r + 1))),
+                                std::make_shared<ELikeSlotUnknownRewrittenRequirement>(SlotName(left_text.substr(0, r)))));
+                }
+                else
+                {
+                    /* c/p:l= */
+                    result.slot_requirement(std::make_shared<ELikeSlotAnyPartialLockedRequirement>(SlotName(left_text)));
+                }
             }
             else
             {

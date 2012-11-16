@@ -85,6 +85,20 @@ namespace paludis
             virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+    class PALUDIS_VISIBLE ELikeSlotUnknownRewrittenRequirement :
+        public SlotUnknownRewrittenRequirement
+    {
+        private:
+            const SlotName _s;
+
+        public:
+            ELikeSlotUnknownRewrittenRequirement(const SlotName &);
+
+            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((noreturn));
+            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
 }
 
 #endif
