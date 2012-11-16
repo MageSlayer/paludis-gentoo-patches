@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -138,7 +138,7 @@ TEST_P(DependRdependTest, Works)
         if (special)
             EXPECT_EQ("the/depend", id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
         else
-            EXPECT_EQ("", id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+            EXPECT_FALSE(id->run_dependencies_key());
 
         id->perform_action(action);
 
@@ -159,7 +159,7 @@ TEST_P(DependRdependTest, Works)
         std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Package(
                         QualifiedPackageName("cat/eapi" + eapi + "ronly")))]->begin());
 
-        EXPECT_EQ("", id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        EXPECT_FALSE(id->build_dependencies_key());
         EXPECT_EQ("the/rdepend", id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
 
         id->perform_action(action);

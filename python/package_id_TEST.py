@@ -110,11 +110,11 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(self.ipid.build_dependencies_key(), None)
 
     def test_19_run_dependencies_key(self):
-        self.assert_(isinstance(self.pid.run_dependencies_key(), MetadataDependencySpecTreeKey))
+        self.assertEquals(self.pid.run_dependencies_key(), None)
         self.assertEquals(self.ipid.run_dependencies_key(), None)
 
     def test_20_post_dependencies_key(self):
-        self.assert_(isinstance(self.pid.post_dependencies_key(), MetadataDependencySpecTreeKey))
+        self.assertEquals(self.pid.post_dependencies_key(), None)
         self.assertEquals(self.ipid.post_dependencies_key(), None)
 
     def test_22_fetches_key(self):

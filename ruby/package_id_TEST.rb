@@ -155,7 +155,7 @@ module Paludis
 
         def test_each_metadata
             keys = { "DESCRIPTION" => 1, "INHERITED" => 1, "KEYWORDS" => 1, "EAPI" => 1,
-                "DEPEND" => 1, "RDEPEND" => 1, "PDEPEND" => 1, "LICENSE" => 1,
+                "DEPEND" => 1, "LICENSE" => 1,
                 "RESTRICT" => 1, "SRC_URI" => 1, "HOMEPAGE" => 1, "EBUILD" => 1, "IUSE" => 1,
                 "PALUDIS_CHOICES" => 1, "DEFINED_PHASES" => 1, "SLOT" => 1 }
             pid_testrepo.each_metadata do | key |
