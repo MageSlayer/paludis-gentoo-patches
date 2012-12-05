@@ -57,27 +57,6 @@ UnpackagedStripper::~UnpackagedStripper()
 }
 
 void
-UnpackagedStripper::on_strip(const FSPath & f)
-{
-    _imp->options.output_manager()->stdout_stream() << "str " << f.strip_leading(_imp->options.image_dir()) << std::endl;
-}
-
-void
-UnpackagedStripper::on_split(const FSPath & f, const FSPath & g)
-{
-    _imp->options.output_manager()->stdout_stream()
-        << ((_imp->options.compress_splits()) ? "spz " : "spl ")
-        << f.strip_leading(_imp->options.image_dir())
-        << " -> " << g.strip_leading(_imp->options.image_dir()) << std::endl;
-}
-
-void
-UnpackagedStripper::on_unknown(const FSPath & f)
-{
-    _imp->options.output_manager()->stdout_stream() << "--- " << f.strip_leading(_imp->options.image_dir()) << std::endl;
-}
-
-void
 UnpackagedStripper::on_enter_dir(const FSPath &)
 {
 }
@@ -88,9 +67,35 @@ UnpackagedStripper::on_leave_dir(const FSPath &)
 }
 
 void
+UnpackagedStripper::on_strip(const FSPath & f)
+{
+    _imp->options.output_manager()->stdout_stream()
+        << strip_action_desc() << " "
+        << f.strip_leading(_imp->options.image_dir()) << std::endl;
+}
+
+void
+UnpackagedStripper::on_split(const FSPath & f, const FSPath & g)
+{
+    _imp->options.output_manager()->stdout_stream()
+        << split_action_desc() << " "
+        << f.strip_leading(_imp->options.image_dir())
+        << " -> " << g.strip_leading(_imp->options.image_dir()) << std::endl;
+}
+
+void
+UnpackagedStripper::on_unknown(const FSPath & f)
+{
+    _imp->options.output_manager()->stdout_stream()
+        << unknown_action_desc() << " "
+        << f.strip_leading(_imp->options.image_dir()) << std::endl;
+}
+
+void
 UnpackagedStripper::strip()
 {
-    _imp->options.output_manager()->stdout_stream() << ">>> Stripping inside " << _imp->options.image_dir() << std::endl;
+    _imp->options.output_manager()->stdout_stream()
+        << ">>> Stripping inside " << _imp->options.image_dir() << std::endl;
     Stripper::strip();
 }
 

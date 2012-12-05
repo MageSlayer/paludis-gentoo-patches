@@ -75,6 +75,10 @@ namespace paludis
             virtual void do_split(const FSPath &, const FSPath &);
             virtual void do_strip(const FSPath &, const std::string &);
 
+            virtual std::string strip_action_desc() const;
+            virtual std::string split_action_desc() const;
+            virtual std::string unknown_action_desc() const;
+
         public:
             ///\name Basic operations
             ///\{

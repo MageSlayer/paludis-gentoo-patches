@@ -282,3 +282,21 @@ Stripper::do_split(const FSPath & f, const FSPath & g)
         g.chmod(g.stat().permissions() & ~(S_IXGRP | S_IXUSR | S_IXOTH | S_IWOTH));
 }
 
+std::string
+Stripper::strip_action_desc() const
+{
+    return "str";
+}
+
+std::string
+Stripper::split_action_desc() const
+{
+    return (_imp->options.compress_splits() ? "spz" : "spl");
+}
+
+std::string
+Stripper::unknown_action_desc() const
+{
+    return "---";
+}
+
