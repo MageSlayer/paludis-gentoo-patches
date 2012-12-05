@@ -1677,6 +1677,11 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
             mask_expensive_tests = true;
         }
 
+        /* dwarf compression */
+        build_options->add(std::make_shared<ELikeDwarfCompressionChoiceValue>(shared_from_this(),
+                                                                              _imp->environment,
+                                                                              build_options));
+
         /* optional_tests */
         if (eapi()->supported()->choices_options()->has_optional_tests())
             build_options->add(std::make_shared<ELikeOptionalTestsChoiceValue>(shared_from_this(), _imp->environment, build_options,

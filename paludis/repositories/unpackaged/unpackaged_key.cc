@@ -171,6 +171,10 @@ UnpackagedChoicesKey::parse_value() const
         build_options->add(std::make_shared<ELikeSymbolsChoiceValue>(_imp->id->shared_from_this(), _imp->env, build_options,
                     strip.is_true() ? escvp_strip : strip.is_false() ? escvp_preserve : last_escvp));
 
+        build_options->add(std::make_shared<ELikeDwarfCompressionChoiceValue>(_imp->id->shared_from_this(),
+                                                                              _imp->env,
+                                                                              build_options));
+
         ELikeWorkChoiceValueParameter preserve_work(last_ewcvp);
         if (_imp->id->preserve_work_key())
             preserve_work = _imp->id->preserve_work_key()->parse_value() ? ewcvp_preserve : ewcvp_leave;

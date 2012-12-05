@@ -44,6 +44,7 @@ EStripper::EStripper(const EStripperOptions & options) :
     Stripper(make_named_values<StripperOptions>(
                 n::compress_splits() = options.compress_splits(),
                 n::debug_dir() = options.debug_dir(),
+                n::dwarf_compression() = options.dwarf_compression(),
                 n::image_dir() = options.image_dir(),
                 n::split() = options.split(),
                 n::strip() = options.strip()
@@ -81,6 +82,14 @@ EStripper::on_split(const FSPath & f, const FSPath & g)
         << split_action_desc() << " "
         << f.strip_leading(_imp->options.image_dir())
         << " -> " << g.strip_leading(_imp->options.image_dir()) << std::endl;
+}
+
+void
+EStripper::on_dwarf_compress(const FSPath & f)
+{
+    _imp->options.output_manager()->stdout_stream()
+        << dwarf_compress_desc() << " "
+        << f.strip_leading(_imp->options.image_dir()) << std::endl;
 }
 
 void

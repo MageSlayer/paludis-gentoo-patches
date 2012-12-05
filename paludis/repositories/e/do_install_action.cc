@@ -310,10 +310,13 @@ paludis::erepository::do_install_action(
                 std::shared_ptr<const ChoiceValue> symbols_choice(choices->find_by_name_with_prefix(
                             ELikeSymbolsChoiceValue::canonical_name_with_prefix()));
 
+                auto dwarf_compression(choices->find_by_name_with_prefix(ELikeDwarfCompressionChoiceValue::canonical_name_with_prefix()));
+
                 EStripper stripper(make_named_values<EStripperOptions>(
                             n::compress_splits() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_compress(
                                 symbols_choice->parameter()),
                             n::debug_dir() = package_builddir / "image" / "usr" / libdir / "debug",
+                            n::dwarf_compression() = dwarf_compression && dwarf_compression->enabled(),
                             n::image_dir() = package_builddir / "image",
                             n::output_manager() = output_manager,
                             n::package_id() = id,

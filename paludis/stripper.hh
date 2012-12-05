@@ -34,6 +34,7 @@ namespace paludis
     {
         typedef Name<struct name_compress_splits> compress_splits;
         typedef Name<struct name_debug_dir> debug_dir;
+        typedef Name<struct name_dwarf_compression> dwarf_compression;
         typedef Name<struct name_image_dir> image_dir;
         typedef Name<struct name_split> split;
         typedef Name<struct name_strip> strip;
@@ -43,6 +44,7 @@ namespace paludis
     {
         NamedValue<n::compress_splits, bool> compress_splits;
         NamedValue<n::debug_dir, FSPath> debug_dir;
+        NamedValue<n::dwarf_compression, bool> dwarf_compression;
         NamedValue<n::image_dir, FSPath> image_dir;
         NamedValue<n::split, bool> split;
         NamedValue<n::strip, bool> strip;
@@ -66,6 +68,7 @@ namespace paludis
 
             virtual void on_strip(const FSPath &) = 0;
             virtual void on_split(const FSPath &, const FSPath &) = 0;
+            virtual void on_dwarf_compress(const FSPath &) = 0;
             virtual void on_unknown(const FSPath &) = 0;
 
             virtual void do_dir_recursive(const FSPath &);
@@ -74,10 +77,12 @@ namespace paludis
 
             virtual void do_split(const FSPath &, const FSPath &);
             virtual void do_strip(const FSPath &, const std::string &);
+            virtual void do_dwarf_compress(const FSPath &);
 
             virtual std::string strip_action_desc() const;
             virtual std::string split_action_desc() const;
             virtual std::string unknown_action_desc() const;
+            virtual std::string dwarf_compress_desc() const;
 
         public:
             ///\name Basic operations

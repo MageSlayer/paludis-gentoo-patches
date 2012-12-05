@@ -868,3 +868,86 @@ ELikeWorkChoiceValue::should_remove_on_failure(const std::string & v)
     throw InternalError(PALUDIS_HERE, "Unhandled ELikeWorkChoiceValueParameter");
 }
 
+// ELikeDwarfCompressionChoiceValue
+
+const UnprefixedChoiceName
+ELikeDwarfCompressionChoiceValue::canonical_unprefixed_name()
+{
+    return UnprefixedChoiceName("dwarf_compress");
+}
+
+const ChoiceNameWithPrefix
+ELikeDwarfCompressionChoiceValue::canonical_name_with_prefix()
+{
+    return ChoiceNameWithPrefix(stringify(canonical_build_options_prefix())
+                                + ":" +
+                                stringify(canonical_unprefixed_name()));
+}
+
+ELikeDwarfCompressionChoiceValue::ELikeDwarfCompressionChoiceValue(const std::shared_ptr<const PackageID> & id,
+                                                                   const Environment * const env,
+                                                                   const std::shared_ptr<const Choice> & choice)
+    : _enabled(env->want_choice_enabled(id, choice, canonical_unprefixed_name()).is_true())
+{
+}
+
+const UnprefixedChoiceName
+ELikeDwarfCompressionChoiceValue::unprefixed_name() const
+{
+    return canonical_unprefixed_name();
+}
+
+const ChoiceNameWithPrefix
+ELikeDwarfCompressionChoiceValue::name_with_prefix() const
+{
+    return canonical_name_with_prefix();
+}
+
+bool
+ELikeDwarfCompressionChoiceValue::enabled() const
+{
+    return _enabled;
+}
+
+bool
+ELikeDwarfCompressionChoiceValue::enabled_by_default() const
+{
+    return false;
+}
+
+bool
+ELikeDwarfCompressionChoiceValue::presumed() const
+{
+    return false;
+}
+
+bool
+ELikeDwarfCompressionChoiceValue::locked() const
+{
+    return false;
+}
+
+const std::string
+ELikeDwarfCompressionChoiceValue::description() const
+{
+    return "Compress DWARF2+ debug information";
+}
+
+ChoiceOrigin
+ELikeDwarfCompressionChoiceValue::origin() const
+{
+    return co_special;
+}
+
+const std::string
+ELikeDwarfCompressionChoiceValue::parameter() const
+{
+    return "";
+}
+
+const std::shared_ptr<const PermittedChoiceValueParameterValues>
+ELikeDwarfCompressionChoiceValue::permitted_parameter_values() const
+{
+    return make_null_shared_ptr();
+}
+

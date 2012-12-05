@@ -31,6 +31,7 @@ namespace paludis
     {
         typedef Name<struct name_compress_splits> compress_splits;
         typedef Name<struct name_debug_dir> debug_dir;
+        typedef Name<struct name_dwarf_compression> dwarf_compression;
         typedef Name<struct name_image_dir> image_dir;
         typedef Name<struct name_output_manager> output_manager;
         typedef Name<struct name_package_id> package_id;
@@ -44,6 +45,7 @@ namespace paludis
         {
             NamedValue<n::compress_splits, bool> compress_splits;
             NamedValue<n::debug_dir, FSPath> debug_dir;
+            NamedValue<n::dwarf_compression, bool> dwarf_compression;
             NamedValue<n::image_dir, FSPath> image_dir;
             NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
             NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
@@ -63,6 +65,7 @@ namespace paludis
 
                 virtual void on_strip(const FSPath &);
                 virtual void on_split(const FSPath &, const FSPath &);
+                virtual void on_dwarf_compress(const FSPath &);
                 virtual void on_unknown(const FSPath &);
 
             public:

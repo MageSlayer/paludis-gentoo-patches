@@ -50,6 +50,10 @@ namespace
         {
         }
 
+        virtual void on_dwarf_compress(const FSPath &)
+        {
+        }
+
         virtual void on_unknown(const FSPath &)
         {
         }
@@ -66,6 +70,7 @@ TEST(Stripper, Works)
     TestStripper s(make_named_values<StripperOptions>(
                 n::compress_splits() = false,
                 n::debug_dir() = FSPath("stripper_TEST_dir/image").realpath() / "usr" / "lib" / "debug",
+                n::dwarf_compression() = false,
                 n::image_dir() = FSPath("stripper_TEST_dir/image").realpath(),
                 n::split() = true,
                 n::strip() = true

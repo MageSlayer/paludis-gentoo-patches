@@ -201,6 +201,8 @@ Stripper::do_dir_recursive(const FSPath & f)
                 std::string t(file_type(*d));
                 if (std::string::npos != t.find("SB executable") || std::string::npos != t.find("SB shared object"))
                 {
+                    if (_imp->options.dwarf_compression())
+                        do_dwarf_compress(*d);
                     if (_imp->options.split())
                     {
                         FSPath target(_imp->options.debug_dir() / d->strip_leading(_imp->options.image_dir()));
@@ -282,6 +284,19 @@ Stripper::do_split(const FSPath & f, const FSPath & g)
         g.chmod(g.stat().permissions() & ~(S_IXGRP | S_IXUSR | S_IXOTH | S_IWOTH));
 }
 
+void
+Stripper::do_dwarf_compress(const FSPath & f)
+{
+    Context context("When compressing DWARF information for '" + stringify(f) + "'");
+
+    on_dwarf_compress(f);
+
+    Process dwz_process(ProcessCommand({ "dwz", /* quiet => */ "-q", stringify(f) }));
+    if (dwz_process.run().wait() != 0)
+        Log::get_instance()->message("strip.failure", ll_warning, lc_context)
+            << "Couldn't compress DWARF information for '" << f << "'";
+}
+
 std::string
 Stripper::strip_action_desc() const
 {
@@ -291,12 +306,23 @@ Stripper::strip_action_desc() const
 std::string
 Stripper::split_action_desc() const
 {
-    return (_imp->options.compress_splits() ? "spz" : "spl");
+    const char desc[3] = {
+        _imp->options.dwarf_compression() ? 'd' : 's',
+        'p',
+        _imp->options.compress_splits() ? 'z' : 'l',
+    };
+    return std::string(desc, sizeof(desc));
 }
 
 std::string
 Stripper::unknown_action_desc() const
 {
     return "---";
+}
+
+std::string
+Stripper::dwarf_compress_desc() const
+{
+    return "dwz";
 }
 

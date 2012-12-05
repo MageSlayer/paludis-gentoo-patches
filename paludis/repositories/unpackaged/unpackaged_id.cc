@@ -371,6 +371,7 @@ UnpackagedID::perform_action(Action & action) const
     auto choices(choices_key()->parse_value());
     auto symbols_choice(choices->find_by_name_with_prefix(ELikeSymbolsChoiceValue::canonical_name_with_prefix()));
     auto work_choice(choices->find_by_name_with_prefix(ELikeWorkChoiceValue::canonical_name_with_prefix()));
+    auto dwarf_compression(choices->find_by_name_with_prefix(ELikeDwarfCompressionChoiceValue::canonical_name_with_prefix()));
 
     std::string used_config_protect;
 
@@ -382,6 +383,7 @@ UnpackagedID::perform_action(Action & action) const
                             n::compress_splits() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_compress(
                                 symbols_choice->parameter()),
                             n::debug_dir() = fs_location_key()->parse_value() / "usr" / libdir / "debug",
+                            n::dwarf_compression() = dwarf_compression && dwarf_compression->enabled(),
                             n::image_dir() = fs_location_key()->parse_value(),
                             n::output_manager() = output_manager,
                             n::package_id() = shared_from_this(),
