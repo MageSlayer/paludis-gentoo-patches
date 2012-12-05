@@ -82,6 +82,12 @@ default <code>VIDEO_CARDS</code> from your profile, you will need to use <code>*
     symbols are split out into files in <code>/usr/lib/debug/</code>. If set to <code>compress</code>, symbols are also
     split out, and debug sections are compressed. Note that <code>compress</code> will only work with <code>binutils
         &gt;=2.21.51.0.4</code>, and may cause problems with older versions of <code>gdb</code>.</dd>
+
+    <dt>dwarf_compress</dt>
+    <dd>Compress the DWARF sections in executables and libraries.  If set, duplicated DIEs are combined into a global
+    DIE section and DW_TAG_partial_unit is used to reference the moved DIEs.  Certain DW_FORM_refs may be rewritten if
+    they result in a more compact representation.  This option <b>requires</b> the <code>dwz</code> tool to be present
+    and in the default <code>PATH</code>.</dd>
 </dl>
 
 <p>Note that these special flags are <em>not</em> use flags from an ebuild perspective. They are used only by Paludis
