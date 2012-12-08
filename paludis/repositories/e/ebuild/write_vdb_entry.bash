@@ -32,11 +32,11 @@ shopt -s extglob
 export PATH="/usr/bin:/usr/sbin:/bin:/sbin${PATH:+:${PATH}}"
 
 if [[ -n "${PALUDIS_EBUILD_DIR_FALLBACK}" ]] ; then
-    export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils:${PATH}"
+    export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils${PATH:+:${PATH}}"
 fi
-export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
+export PATH="${PALUDIS_EBUILD_DIR}/utils${PATH:+:${PATH}}"
 for p in ${PALUDIS_UTILITY_PATH_SUFFIXES} ; do
-    export PATH="${PALUDIS_EBUILD_DIR}/utils/${p}:${PATH}"
+    export PATH="${PALUDIS_EBUILD_DIR}/utils/${p}${PATH:+:${PATH}}"
 done
 
 EBUILD_MODULES_DIR=$(canonicalise $(dirname $0 ) )
