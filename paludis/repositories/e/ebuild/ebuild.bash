@@ -52,7 +52,7 @@ ebuild_sanitise_envvars()
 
     # Force a few more things into PATH, since some users have crazy setups.
     # See ticket:374.
-    export PATH="/bin:/sbin:/usr/bin:/usr/sbin${PATH:+:${PATH}}"
+    export PATH="/usr/bin:/usr/sbin:/bin:/sbin${PATH:+:${PATH}}"
 
     # Automake likes to scatter our utilities over two directories.
     if [[ -n "${PALUDIS_EBUILD_DIR_FALLBACK}" ]] ; then

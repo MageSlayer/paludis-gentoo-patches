@@ -24,6 +24,13 @@ eval unset LANG ${!LC_*}
 shopt -s expand_aliases
 shopt -s extglob
 
+# Force a few more things into PATH, since some users have crazy setups.
+# See ticket:374.
+# NOTE(compnerd) this must be done first to ensure that the fallback directory
+# and utils directory take precedence over the path as some of our utilities
+# overload standard commands.
+export PATH="/usr/bin:/usr/sbin:/bin:/sbin${PATH:+:${PATH}}"
+
 if [[ -n "${PALUDIS_EBUILD_DIR_FALLBACK}" ]] ; then
     export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils:${PATH}"
 fi
@@ -31,10 +38,6 @@ export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
 for p in ${PALUDIS_UTILITY_PATH_SUFFIXES} ; do
     export PATH="${PALUDIS_EBUILD_DIR}/utils/${p}:${PATH}"
 done
-
-# Force a few more things into PATH, since some users have crazy setups.
-# See ticket:374.
-export PATH="${PATH}:/bin:/sbin:/usr/bin:/usr/sbin"
 
 EBUILD_MODULES_DIR=$(canonicalise $(dirname $0 ) )
 if ! [[ -d ${EBUILD_MODULES_DIR} ]] ; then
