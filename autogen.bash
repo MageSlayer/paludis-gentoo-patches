@@ -30,11 +30,7 @@ get() {
     kill $KILL_PID
 }
 
-misc/do_m4.bash paludis/Makefile.am || exit $?
-misc/do_m4.bash paludis/paludis.hh || exit $?
-misc/do_m4.bash paludis/util/util.hh || exit $?
-misc/do_m4.bash paludis/util/Makefile.am || exit $?
-misc/do_m4.bash hooks/Makefile.am || exit $?
+./autotools_prepare.bash || exit $?
 run mkdir -p config
 run $(get libtoolize 1.5 ) --copy --force --automake
 rm -f config.cache
