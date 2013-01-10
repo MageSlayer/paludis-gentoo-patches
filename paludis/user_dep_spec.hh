@@ -53,6 +53,20 @@ namespace paludis
     PackageDepSpec envless_parse_package_dep_spec_for_tests(
             const std::string &) PALUDIS_VISIBLE;
 
+    class PALUDIS_VISIBLE UserSlotExactFullRequirement :
+        public SlotExactFullRequirement
+    {
+        private:
+            const std::pair<SlotName, SlotName> _s;
+
+        public:
+            UserSlotExactFullRequirement(const std::pair<SlotName, SlotName> &);
+
+            virtual const std::pair<SlotName, SlotName> slots() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
     class PALUDIS_VISIBLE UserSlotExactPartialRequirement :
         public SlotExactPartialRequirement
     {

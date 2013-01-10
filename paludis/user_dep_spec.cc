@@ -244,11 +244,21 @@ namespace
     void
     user_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePackageDepSpec & result)
     {
-        std::string::size_type slot_p(s.rfind(':'));
-        if (std::string::npos != slot_p)
+        std::string::size_type slot_p;
+        if (std::string::npos == ((slot_p = s.rfind(':'))))
+            return;
+
+        std::string text(s.substr(slot_p + 1));
+        s.erase(slot_p);
+
+        auto p(text.find('/'));
+        if (std::string::npos != p)
         {
-            result.slot_requirement(std::make_shared<UserSlotExactPartialRequirement>(SlotName(s.substr(slot_p + 1))));
-            s.erase(slot_p);
+            result.slot_requirement(std::make_shared<UserSlotExactFullRequirement>(std::make_pair(SlotName(text.substr(0, p)), SlotName(text.substr(p + 1)))));
+        }
+        else
+        {
+            result.slot_requirement(std::make_shared<UserSlotExactPartialRequirement>(SlotName(text)));
         }
     }
 
@@ -386,6 +396,29 @@ paludis::envless_parse_package_dep_spec_for_tests(const std::string & ss)
             ));
 }
 
+
+UserSlotExactFullRequirement::UserSlotExactFullRequirement(const std::pair<SlotName, SlotName> & s) :
+    _s(s)
+{
+}
+
+const std::pair<SlotName, SlotName>
+UserSlotExactFullRequirement::slots() const
+{
+    return _s;
+}
+
+const std::string
+UserSlotExactFullRequirement::as_string() const
+{
+    return ":" + stringify(_s.first) + "/" + stringify(_s.second);
+}
+
+const std::shared_ptr<const SlotRequirement>
+UserSlotExactFullRequirement::maybe_original_requirement_if_rewritten() const
+{
+    return make_null_shared_ptr();
+}
 
 UserSlotExactPartialRequirement::UserSlotExactPartialRequirement(const SlotName & s) :
     _s(s)

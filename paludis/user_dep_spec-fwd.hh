@@ -63,6 +63,7 @@ namespace paludis
             ///\}
     };
 
+    struct UserSlotExactFullRequirement;
     struct UserSlotExactPartialRequirement;
 
     struct UserKeyRequirement;
