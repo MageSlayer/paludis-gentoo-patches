@@ -25,6 +25,7 @@
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <paludis/util/map-fwd.hh>
 #include <string>
+#include <sys/types.h>
 
 /** \file
  * Declarations for the Manifest2Reader class
