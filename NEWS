@@ -4,6 +4,11 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+1.0.0:
+    * EAPI 5 style subslot specs are allowed in user dependency specs.
+
+    * We now support DWARF compression.
+
 0.82.0:
     * Various EAPI 5 related fixes.
 
