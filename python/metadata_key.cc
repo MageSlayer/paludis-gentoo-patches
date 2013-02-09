@@ -783,7 +783,7 @@ struct class_set_key :
         bp::implicitly_convertible<std::shared_ptr<MetadataCollectionKeyWrapper<C_> >,
                 std::shared_ptr<MetadataKey> >();
 
-        def("parse_value", bp::pure_virtual(&MetadataCollectionKey<C_>::parse_value),
+        this->def("parse_value", bp::pure_virtual(&MetadataCollectionKey<C_>::parse_value),
                 ("parse_value() -> " + set + "\n"
                  "Fetch our value.").c_str()
            );
@@ -812,7 +812,7 @@ struct class_spec_tree_key :
         bp::implicitly_convertible<std::shared_ptr<MetadataSpecTreeKeyWrapper<C_> >,
                 std::shared_ptr<MetadataKey> >();
 
-        def("parse_value", bp::pure_virtual(&MetadataSpecTreeKey<C_>::parse_value),
+        this->def("parse_value", bp::pure_virtual(&MetadataSpecTreeKey<C_>::parse_value),
                 ("parse_value() -> " + spec_tree + "\n"
                  "Fetch our value").c_str()
            );
@@ -843,12 +843,12 @@ struct class_spec_tree_key<FetchableURISpecTree> :
         bp::implicitly_convertible<std::shared_ptr<MetadataSpecTreeKeyWrapper<FetchableURISpecTree> >,
                 std::shared_ptr<MetadataKey> >();
 
-        def("parse_value", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::parse_value),
+        this->def("parse_value", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::parse_value),
                 ("parse_value() -> " + spec_tree + "\n"
                  "Fetch our value").c_str()
            );
 
-        def("initial_label", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::initial_label),
+        this->def("initial_label", bp::pure_virtual(&MetadataSpecTreeKey<FetchableURISpecTree>::initial_label),
                 "initial_label() -> URILabel\n"
                 "Return a URILabel that represents the initial label to use when\n"
                 "deciding the behaviour of individual items in the heirarchy."
@@ -880,12 +880,12 @@ struct class_spec_tree_key<DependencySpecTree> :
         bp::implicitly_convertible<std::shared_ptr<MetadataSpecTreeKeyWrapper<DependencySpecTree> >,
                 std::shared_ptr<MetadataKey> >();
 
-        def("parse_value", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::parse_value),
+        this->def("parse_value", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::parse_value),
                 ("parse_value() -> " + spec_tree + "\n"
                  "Fetch our value").c_str()
            );
 
-        def("initial_labels", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::initial_labels),
+        this->def("initial_labels", bp::pure_virtual(&MetadataSpecTreeKey<DependencySpecTree>::initial_labels),
                 "initial_label() -> DependenciesLabelSequence\n"
                 "Return a DependenciesLabelSequence that represents the initial labels to use when\n"
                 "deciding the behaviour of individual items in the heirarchy."

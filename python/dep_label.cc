@@ -66,7 +66,7 @@ struct class_concrete_dependencies_label :
          bp::no_init
         )
     {
-        def("__init__",
+        this->def("__init__",
                 bp::make_constructor(&make_concrete_dependencies_label<L_>),
                 "__init__(String)"
            );
