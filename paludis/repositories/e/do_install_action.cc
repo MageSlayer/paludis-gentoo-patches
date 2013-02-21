@@ -358,14 +358,17 @@ paludis::erepository::do_install_action(
                     continue;
             }
 
+            const auto params = repo->params();
+            const auto profile = repo->profile();
+
             EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                    n::builddir() = repo->params().builddir(),
+                    n::builddir() = params.builddir(),
                     n::clearenv() = phase->option("clearenv"),
                     n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
-                    n::distdir() = repo->params().distdir(),
+                    n::distdir() = params.distdir(),
                     n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                     n::ebuild_file() = id->fs_location_key()->parse_value(),
-                    n::eclassdirs() = repo->params().eclassdirs(),
+                    n::eclassdirs() = params.eclassdirs(),
                     n::environment() = env,
                     n::exlibsdirs() = exlibsdirs,
                     n::files_dir() = repo->layout()->package_directory(id->name()) / "files",
@@ -374,8 +377,8 @@ paludis::erepository::do_install_action(
                     n::package_id() = id,
                     n::permitted_directories() = permitted_directories,
                     n::portdir() =
-                        (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
-                        (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
+                        (params.master_repositories() && ! params.master_repositories()->empty()) ?
+                        (*params.master_repositories()->begin())->params().location() : params.location(),
                     n::root() = install_action.options.destination()->installed_root_key() ?
                         stringify(install_action.options.destination()->installed_root_key()->parse_value()) :
                         "/",
@@ -395,13 +398,13 @@ paludis::erepository::do_install_action(
                             n::expand_vars() = expand_vars,
                             n::is_from_pbin() = id->eapi()->supported()->is_pbin(),
                             n::loadsaveenv_dir() = package_builddir / "temp",
-                            n::profiles() = repo->params().profiles(),
-                            n::profiles_with_parents() = repo->profile()->profiles_with_parents(),
+                            n::profiles() = params.profiles(),
+                            n::profiles_with_parents() = profile->profiles_with_parents(),
                             n::replacing_ids() = install_action.options.replacing(),
                             n::slot() = id->slot_key() ? stringify(id->slot_key()->parse_value().raw_value()) : "",
                             n::use() = use,
-                            n::use_expand() = join(repo->profile()->use_expand()->begin(), repo->profile()->use_expand()->end(), " "),
-                            n::use_expand_hidden() = join(repo->profile()->use_expand_hidden()->begin(), repo->profile()->use_expand_hidden()->end(), " ")
+                            n::use_expand() = join(profile->use_expand()->begin(), profile->use_expand()->end(), " "),
+                            n::use_expand_hidden() = join(profile->use_expand_hidden()->begin(), profile->use_expand_hidden()->end(), " ")
                             ));
 
             EbuildInstallCommand cmd(command_params, install_params);
@@ -420,13 +423,13 @@ paludis::erepository::do_install_action(
                             continue;
 
                         EbuildCommandParams tidyup_command_params(make_named_values<EbuildCommandParams>(
-                                    n::builddir() = repo->params().builddir(),
+                                    n::builddir() = params.builddir(),
                                     n::clearenv() = tidyup_phase->option("clearenv"),
                                     n::commands() = join(tidyup_phase->begin_commands(), tidyup_phase->end_commands(), " "),
-                                    n::distdir() = repo->params().distdir(),
+                                    n::distdir() = params.distdir(),
                                     n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                                     n::ebuild_file() = id->fs_location_key()->parse_value(),
-                                    n::eclassdirs() = repo->params().eclassdirs(),
+                                    n::eclassdirs() = params.eclassdirs(),
                                     n::environment() = env,
                                     n::exlibsdirs() = exlibsdirs,
                                     n::files_dir() = repo->layout()->package_directory(id->name()) / "files",
@@ -435,8 +438,9 @@ paludis::erepository::do_install_action(
                                     n::package_id() = id,
                                     n::permitted_directories() = permitted_directories,
                                     n::portdir() =
-                                    (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
-                                    (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
+                                        (params.master_repositories() && ! params.master_repositories()->empty())
+                                            ? (*params.master_repositories()->begin())->params().location()
+                                            : params.location(),
                                     n::root() = install_action.options.destination()->installed_root_key() ?
                                     stringify(install_action.options.destination()->installed_root_key()->parse_value()) :
                                     "/",
@@ -456,13 +460,13 @@ paludis::erepository::do_install_action(
                                     n::expand_vars() = expand_vars,
                                     n::is_from_pbin() = id->eapi()->supported()->is_pbin(),
                                     n::loadsaveenv_dir() = package_builddir / "temp",
-                                    n::profiles() = repo->params().profiles(),
-                                    n::profiles_with_parents() = repo->profile()->profiles_with_parents(),
+                                    n::profiles() = params.profiles(),
+                                    n::profiles_with_parents() = profile->profiles_with_parents(),
                                     n::replacing_ids() = install_action.options.replacing(),
                                     n::slot() = id->slot_key() ? stringify(id->slot_key()->parse_value().raw_value()) : "",
                                     n::use() = use,
-                                    n::use_expand() = join(repo->profile()->use_expand()->begin(), repo->profile()->use_expand()->end(), " "),
-                                    n::use_expand_hidden() = join(repo->profile()->use_expand_hidden()->begin(), repo->profile()->use_expand_hidden()->end(), " ")
+                                    n::use_expand() = join(profile->use_expand()->begin(), profile->use_expand()->end(), " "),
+                                    n::use_expand_hidden() = join(profile->use_expand_hidden()->begin(), profile->use_expand_hidden()->end(), " ")
                                     ));
 
                         EbuildInstallCommand tidyup_cmd(tidyup_command_params, tidyup_install_params);

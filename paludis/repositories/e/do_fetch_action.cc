@@ -178,14 +178,17 @@ paludis::erepository::do_fetch_action(
                 if (can_skip_phase(env, id, *phase))
                     continue;
 
+                const auto params = repo->params();
+                const auto profile = repo->profile();
+
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                        n::builddir() = repo->params().builddir(),
+                        n::builddir() = params.builddir(),
                         n::clearenv() = phase->option("clearenv"),
                         n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
-                        n::distdir() = repo->params().distdir(),
+                        n::distdir() = params.distdir(),
                         n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                         n::ebuild_file() = id->fs_location_key()->parse_value(),
-                        n::eclassdirs() = repo->params().eclassdirs(),
+                        n::eclassdirs() = params.eclassdirs(),
                         n::environment() = env,
                         n::exlibsdirs() = exlibsdirs,
                         n::files_dir() = repo->layout()->package_directory(id->name()) / "files",
@@ -194,8 +197,9 @@ paludis::erepository::do_fetch_action(
                         n::package_id() = id,
                         n::permitted_directories() = make_null_shared_ptr(),
                         n::portdir() =
-                            (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
-                            (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
+                            (params.master_repositories() && ! params.master_repositories()->empty())
+                                ? (*params.master_repositories()->begin())->params().location()
+                                : params.location(),
                         n::root() = "/",
                         n::sandbox() = phase->option("sandbox"),
                         n::sydbox() = phase->option("sydbox"),
@@ -207,12 +211,12 @@ paludis::erepository::do_fetch_action(
                             n::aa() = all_archives,
                             n::expand_vars() = expand_vars,
                             n::loadsaveenv_dir() = package_builddir / "temp",
-                            n::profiles() = repo->params().profiles(),
-                            n::profiles_with_parents() = repo->profile()->profiles_with_parents(),
+                            n::profiles() = params.profiles(),
+                            n::profiles_with_parents() = profile->profiles_with_parents(),
                             n::slot() = id->slot_key() ? stringify(id->slot_key()->parse_value().raw_value()) : "",
                             n::use() = use,
-                            n::use_expand() = join(repo->profile()->use_expand()->begin(), repo->profile()->use_expand()->end(), " "),
-                            n::use_expand_hidden() = join(repo->profile()->use_expand_hidden()->begin(), repo->profile()->use_expand_hidden()->end(), " ")
+                            n::use_expand() = join(profile->use_expand()->begin(), profile->use_expand()->end(), " "),
+                            n::use_expand_hidden() = join(profile->use_expand_hidden()->begin(), profile->use_expand_hidden()->end(), " ")
                             ));
 
                 if (! fetch_extra_cmd())

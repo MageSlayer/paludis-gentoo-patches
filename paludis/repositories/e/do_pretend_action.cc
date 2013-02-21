@@ -104,24 +104,27 @@ paludis::erepository::do_pretend_action(
                 if (! output_manager)
                     output_manager = a.options.make_output_manager()(a);
 
+                const auto params = repo->params();
+                const auto profile = repo->profile();
+
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                            n::builddir() = repo->params().builddir(),
+                            n::builddir() = params.builddir(),
                             n::clearenv() = phase->option("clearenv"),
                             n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
-                            n::distdir() = repo->params().distdir(),
+                            n::distdir() = params.distdir(),
                             n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                             n::ebuild_file() = id->fs_location_key()->parse_value(),
-                            n::eclassdirs() = repo->params().eclassdirs(),
+                            n::eclassdirs() = params.eclassdirs(),
                             n::environment() = env,
                             n::exlibsdirs() = exlibsdirs,
                             n::files_dir() = repo->layout()->package_directory(id->name()) / "files",
                             n::maybe_output_manager() = output_manager,
-                            n::package_builddir() = repo->params().builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-bad_options"),
+                            n::package_builddir() = params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-bad_options"),
                             n::package_id() = id,
                             n::permitted_directories() = make_null_shared_ptr(),
                             n::portdir() =
-                                (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
-                                (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
+                                (params.master_repositories() && ! params.master_repositories()->empty()) ?
+                                (*params.master_repositories()->begin())->params().location() : params.location(),
                             n::root() = a.options.destination()->installed_root_key() ?
                                 stringify(a.options.destination()->installed_root_key()->parse_value()) :
                                 "/",
@@ -133,12 +136,12 @@ paludis::erepository::do_pretend_action(
                 EbuildBadOptionsCommand bad_options_cmd(command_params,
                         make_named_values<EbuildBadOptionsCommandParams>(
                             n::expand_vars() = expand_vars,
-                            n::profiles() = repo->params().profiles(),
-                            n::profiles_with_parents() = repo->profile()->profiles_with_parents(),
+                            n::profiles() = params.profiles(),
+                            n::profiles_with_parents() = profile->profiles_with_parents(),
                             n::unmet_requirements() = verifier.unmet_requirements(),
                             n::use() = use,
-                            n::use_expand() = join(repo->profile()->use_expand()->begin(), repo->profile()->use_expand()->end(), " "),
-                            n::use_expand_hidden() = join(repo->profile()->use_expand_hidden()->begin(), repo->profile()->use_expand_hidden()->end(), " ")
+                            n::use_expand() = join(profile->use_expand()->begin(), profile->use_expand()->end(), " "),
+                            n::use_expand_hidden() = join(profile->use_expand_hidden()->begin(), profile->use_expand_hidden()->end(), " ")
                             ));
 
                 if (! bad_options_cmd())
@@ -166,24 +169,28 @@ paludis::erepository::do_pretend_action(
                 if (! output_manager)
                     output_manager = a.options.make_output_manager()(a);
 
+                const auto params = repo->params();
+                const auto profile = repo->profile();
+
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                            n::builddir() = repo->params().builddir(),
+                            n::builddir() = params.builddir(),
                             n::clearenv() = phase->option("clearenv"),
                             n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
-                            n::distdir() = repo->params().distdir(),
+                            n::distdir() = params.distdir(),
                             n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                             n::ebuild_file() = id->fs_location_key()->parse_value(),
-                            n::eclassdirs() = repo->params().eclassdirs(),
+                            n::eclassdirs() = params.eclassdirs(),
                             n::environment() = env,
                             n::exlibsdirs() = exlibsdirs,
                             n::files_dir() = repo->layout()->package_directory(id->name()) / "files",
                             n::maybe_output_manager() = output_manager,
-                            n::package_builddir() = repo->params().builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-bad_options"),
+                            n::package_builddir() = params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-bad_options"),
                             n::package_id() = id,
                             n::permitted_directories() = make_null_shared_ptr(),
                             n::portdir() =
-                                (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
-                                (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
+                                (params.master_repositories() && ! params.master_repositories()->empty())
+                                    ? (*params.master_repositories()->begin())->params().location()
+                                    : params.location(),
                             n::root() = a.options.destination()->installed_root_key() ?
                                 stringify(a.options.destination()->installed_root_key()->parse_value()) :
                                 "/",
@@ -195,12 +202,12 @@ paludis::erepository::do_pretend_action(
                 EbuildBadOptionsCommand bad_options_cmd(command_params,
                         make_named_values<EbuildBadOptionsCommandParams>(
                             n::expand_vars() = expand_vars,
-                            n::profiles() = repo->params().profiles(),
-                            n::profiles_with_parents() = repo->profile()->profiles_with_parents(),
+                            n::profiles() = params.profiles(),
+                            n::profiles_with_parents() = profile->profiles_with_parents(),
                             n::unmet_requirements() = verifier.unmet_requirements(),
                             n::use() = use,
-                            n::use_expand() = join(repo->profile()->use_expand()->begin(), repo->profile()->use_expand()->end(), " "),
-                            n::use_expand_hidden() = join(repo->profile()->use_expand_hidden()->begin(), repo->profile()->use_expand_hidden()->end(), " ")
+                            n::use_expand() = join(profile->use_expand()->begin(), profile->use_expand()->end(), " "),
+                            n::use_expand_hidden() = join(profile->use_expand_hidden()->begin(), profile->use_expand_hidden()->end(), " ")
                             ));
 
                 if (! bad_options_cmd())
@@ -226,24 +233,28 @@ paludis::erepository::do_pretend_action(
         if (! output_manager)
             output_manager = a.options.make_output_manager()(a);
 
+        const auto params = repo->params();
+        const auto profile = repo->profile();
+
         EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
-                n::builddir() = repo->params().builddir(),
+                n::builddir() = params.builddir(),
                 n::clearenv() = phase->option("clearenv"),
                 n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
-                n::distdir() = repo->params().distdir(),
+                n::distdir() = params.distdir(),
                 n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                 n::ebuild_file() = id->fs_location_key()->parse_value(),
-                n::eclassdirs() = repo->params().eclassdirs(),
+                n::eclassdirs() = params.eclassdirs(),
                 n::environment() = env,
                 n::exlibsdirs() = exlibsdirs,
                 n::files_dir() = repo->layout()->package_directory(id->name()) / "files",
                 n::maybe_output_manager() = output_manager,
-                n::package_builddir() = repo->params().builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-pretend"),
+                n::package_builddir() = params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-pretend"),
                 n::package_id() = id,
                 n::permitted_directories() = make_null_shared_ptr(),
                 n::portdir() =
-                    (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
-                    (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
+                    (params.master_repositories() && ! params.master_repositories()->empty())
+                        ? (*params.master_repositories()->begin())->params().location()
+                        : params.location(),
                 n::root() = a.options.destination()->installed_root_key() ?
                     stringify(a.options.destination()->installed_root_key()->parse_value()) :
                     "/",
@@ -257,12 +268,12 @@ paludis::erepository::do_pretend_action(
                     n::destination() = a.options.destination(),
                     n::expand_vars() = expand_vars,
                     n::is_from_pbin() = id->eapi()->supported()->is_pbin(),
-                    n::profiles() = repo->params().profiles(),
-                    n::profiles_with_parents() = repo->profile()->profiles_with_parents(),
+                    n::profiles() = params.profiles(),
+                    n::profiles_with_parents() = profile->profiles_with_parents(),
                     n::replacing_ids() = a.options.replacing(),
                     n::use() = use,
-                    n::use_expand() = join(repo->profile()->use_expand()->begin(), repo->profile()->use_expand()->end(), " "),
-                    n::use_expand_hidden() = join(repo->profile()->use_expand_hidden()->begin(), repo->profile()->use_expand_hidden()->end(), " ")
+                    n::use_expand() = join(profile->use_expand()->begin(), profile->use_expand()->end(), " "),
+                    n::use_expand_hidden() = join(profile->use_expand_hidden()->begin(), profile->use_expand_hidden()->end(), " ")
                     ));
 
         if (! pretend_cmd())
