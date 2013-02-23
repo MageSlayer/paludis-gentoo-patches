@@ -43,6 +43,7 @@
 #include <paludis/ndbam_merger.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/partitioning.hh>
 #include <paludis/slot.hh>
 
 #include <iomanip>
@@ -84,6 +85,7 @@ NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
                 n::merged_entries() = p.merged_entries(),
                 n::no_chown() = ! getenv_with_default(env_vars::no_chown, "").empty(),
                 n::options() = p.options(),
+                n::parts() = p.parts(),
                 n::permit_destination() = p.permit_destination(),
                 n::root() = p.root()
                 )),
@@ -177,10 +179,16 @@ NDBAMMerger::record_install_file(const FSPath & src, const FSPath & dst_dir, con
         line.append(" (" + FSPath(tidy).basename() + ")");
     display_override(line);
 
+    std::string part;
+    if (_imp->params.parts())
+        part = _imp->params.parts()->classify(FSPath(tidy)).value();
+
     *_imp->contents_file << "type=file";
     *_imp->contents_file << " path=" << escape(tidy_real);
     *_imp->contents_file << " md5=" << md5.hexsum();
     *_imp->contents_file << " mtime=" << timestamp;
+    if (!part.empty())
+        *_imp->contents_file << " part=" << part;
     *_imp->contents_file << std::endl;
 }
 

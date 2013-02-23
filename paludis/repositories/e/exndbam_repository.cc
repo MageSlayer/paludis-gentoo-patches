@@ -447,6 +447,7 @@ ExndbamRepository::merge(const MergeParams & m)
                 n::options() = m.options(),
                 n::output_manager() = m.output_manager(),
                 n::package_id() = m.package_id(),
+                n::parts() = m.parts(),
                 n::permit_destination() = m.permit_destination(),
                 n::root() = installed_root_key()->parse_value()
             ));
@@ -636,6 +637,7 @@ ExndbamRepository::perform_uninstall(
                         n::maybe_output_manager() = output_manager,
                         n::package_builddir() = package_builddir,
                         n::package_id() = id,
+                        n::parts() = make_null_shared_ptr(),
                         n::permitted_directories() = make_null_shared_ptr(),
                         n::portdir() = _imp->params.location(),
                         n::root() = stringify(_imp->params.root()),

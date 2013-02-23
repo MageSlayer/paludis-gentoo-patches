@@ -131,6 +131,17 @@ namespace paludis
     typedef WrappedValue<SetNameTag> SetName;
 
     typedef Set<SetName> SetNameSet;
+
+    class PartNameTag;
+    class PartNameError;
+    template <> struct WrappedValueTraits<PartNameTag>;
+
+    /**
+     * A PartName holds a std::string that is a valid name for a part.
+     *
+     * \ingroup g_names
+     */
+    typedef WrappedValue<PartNameTag> PartName;
 }
 
 #endif

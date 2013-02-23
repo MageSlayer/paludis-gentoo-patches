@@ -508,6 +508,7 @@ VDBRepository::perform_uninstall(
                     n::maybe_output_manager() = output_manager,
                     n::package_builddir() = package_builddir,
                     n::package_id() = id,
+                    n::parts() = make_null_shared_ptr(),
                     n::permitted_directories() = make_null_shared_ptr(),
                     n::portdir() = _imp->params.location(),
                     n::root() = stringify(_imp->params.root()),

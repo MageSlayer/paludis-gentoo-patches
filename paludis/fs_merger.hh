@@ -29,6 +29,7 @@
 #include <paludis/merger.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/hook-fwd.hh>
+#include <paludis/partitioning-fwd.hh>
 #include <iosfwd>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -58,6 +59,7 @@ namespace paludis
         typedef Name<struct name_merged_entries> merged_entries;
         typedef Name<struct name_no_chown> no_chown;
         typedef Name<struct name_options> options;
+        typedef Name<struct name_parts> parts;
         typedef Name<struct name_permit_destination> permit_destination;
         typedef Name<struct name_root> root;
     }
@@ -105,6 +107,8 @@ namespace paludis
 
         NamedValue<n::no_chown, bool> no_chown;
         NamedValue<n::options, MergerOptions> options;
+
+        NamedValue<n::parts, std::shared_ptr<const Partitioning> > parts;
 
         ///\since 0.66
         NamedValue<n::permit_destination, PermitDestinationFn> permit_destination;

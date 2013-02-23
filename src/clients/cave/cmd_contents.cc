@@ -82,7 +82,11 @@ namespace
     {
         std::string visit(const ContentsFileEntry & e) const
         {
-            return fuc(fs_file(), fv<'s'>(stringify(e.location_key()->parse_value())));
+            return fuc(fs_file(),
+                       fv<'p'>(e.part_key()
+                                ? stringify(e.part_key()->parse_value())
+                                : ""),
+                       fv<'s'>(stringify(e.location_key()->parse_value())));
         }
 
         std::string visit(const ContentsDirEntry & e) const
@@ -93,8 +97,11 @@ namespace
         std::string visit(const ContentsSymEntry & e) const
         {
             return fuc(fs_sym(),
-                    fv<'s'>(stringify(e.location_key()->parse_value())),
-                    fv<'t'>(stringify(e.target_key()->parse_value())));
+                       fv<'p'>(e.part_key()
+                                ? stringify(e.part_key()->parse_value())
+                                : ""),
+                       fv<'s'>(stringify(e.location_key()->parse_value())),
+                       fv<'t'>(stringify(e.target_key()->parse_value())));
         }
 
         std::string visit(const ContentsOtherEntry & e) const

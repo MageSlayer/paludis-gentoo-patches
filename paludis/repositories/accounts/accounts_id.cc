@@ -480,6 +480,7 @@ AccountsID::perform_action(Action & action) const
                 n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                 n::output_manager() = output_manager,
                 n::package_id() = shared_from_this(),
+                n::parts() = make_null_shared_ptr(),
                 n::perform_uninstall() = install_action->options.perform_uninstall(),
                 n::permit_destination() = std::bind(return_literal_function(true)),
                 n::replacing() = install_action->options.replacing(),

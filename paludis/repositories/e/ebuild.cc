@@ -146,8 +146,14 @@ EbuildCommand::operator() ()
 
     using namespace std::placeholders;
 
-    process.pipe_command_handler("PALUDIS_PIPE_COMMAND", std::bind(&pipe_command_handler, params.environment(),
-                params.package_id(), params.permitted_directories(), in_metadata_generation(), _1, params.maybe_output_manager()));
+    process.pipe_command_handler("PALUDIS_PIPE_COMMAND",
+                                 std::bind(&pipe_command_handler,
+                                           params.environment(),
+                                           params.package_id(),
+                                           params.permitted_directories(),
+                                           params.parts(),
+                                           in_metadata_generation(), _1,
+                                           params.maybe_output_manager()));
 
     std::shared_ptr<const FSPathSequence> syncers_dirs(params.environment()->syncers_dirs());
     std::shared_ptr<const FSPathSequence> bashrc_files(params.environment()->bashrc_files());
@@ -1056,8 +1062,13 @@ WriteVDBEntryCommand::operator() ()
                 params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_ebuild_phase_func())
         .setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
         .setenv("PALUDIS_PIPE_COMMANDS_STATUS_SUPPORTED", "yes")
-        .pipe_command_handler("PALUDIS_PIPE_COMMAND", std::bind(&pipe_command_handler, params.environment(),
-                    params.package_id(), make_null_shared_ptr(), false, _1, params.maybe_output_manager()));
+        .pipe_command_handler("PALUDIS_PIPE_COMMAND",
+                              std::bind(&pipe_command_handler,
+                                        params.environment(),
+                                        params.package_id(),
+                                        make_null_shared_ptr(),
+                                        make_null_shared_ptr(), false, _1,
+                                        params.maybe_output_manager()));
 
     if (! params.package_id()->eapi()->supported()->ebuild_metadata_variables()->iuse_effective()->name().empty())
         if (params.package_id()->raw_iuse_effective_key())
@@ -1315,8 +1326,13 @@ WriteBinaryEbuildCommand::operator() ()
                 params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_ebuild_phase_func())
         .setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
         .setenv("PALUDIS_PIPE_COMMANDS_STATUS_SUPPORTED", "yes")
-        .pipe_command_handler("PALUDIS_PIPE_COMMAND", std::bind(&pipe_command_handler, params.environment(),
-                    params.package_id(), make_null_shared_ptr(), false, _1, params.maybe_output_manager()));
+        .pipe_command_handler("PALUDIS_PIPE_COMMAND",
+                              std::bind(&pipe_command_handler,
+                                        params.environment(),
+                                        params.package_id(),
+                                        make_null_shared_ptr(),
+                                        make_null_shared_ptr(), false, _1,
+                                        params.maybe_output_manager()));
 
     if (! params.package_id()->eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name().empty())
         if (params.package_id()->scm_revision_key())

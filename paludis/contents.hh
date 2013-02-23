@@ -107,11 +107,23 @@ namespace paludis
         public ContentsEntry,
         public ImplementAcceptMethods<ContentsEntry, ContentsFileEntry>
     {
+        private:
+            Pimp<ContentsFileEntry> _imp;
+
         public:
             ///\name Basic operations
             ///\{
 
-            ContentsFileEntry(const FSPath &);
+            ContentsFileEntry(const FSPath &, const std::string &);
+            ~ContentsFileEntry();
+
+            ///\}
+
+            ///\name Specific metadata keys
+            ///\{
+
+            const std::shared_ptr<const MetadataValueKey<std::string> >
+                part_key() const;
 
             ///\}
     };
@@ -172,7 +184,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ContentsSymEntry(const FSPath &, const std::string & target);
+            ContentsSymEntry(const FSPath &, const std::string &,
+                             const std::string &);
             ~ContentsSymEntry();
 
             ///\}
@@ -186,6 +199,9 @@ namespace paludis
              * \since 0.36
              */
             const std::shared_ptr<const MetadataValueKey<std::string> > target_key() const;
+
+            const std::shared_ptr<const MetadataValueKey<std::string> >
+                part_key() const;
 
             ///\}
     };
@@ -234,6 +250,7 @@ namespace paludis
     extern template class Pimp<Contents>;
     extern template class Pimp<ContentsEntry>;
     extern template class Pimp<ContentsSymEntry>;
+    extern template class Pimp<ContentsFileEntry>;
 
     extern template class PALUDIS_VISIBLE WrappedForwardIterator<Contents::ConstIteratorTag, const std::shared_ptr<const ContentsEntry> >;
 }

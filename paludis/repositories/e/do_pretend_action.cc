@@ -121,6 +121,7 @@ paludis::erepository::do_pretend_action(
                             n::maybe_output_manager() = output_manager,
                             n::package_builddir() = params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-bad_options"),
                             n::package_id() = id,
+                            n::parts() = make_null_shared_ptr(),
                             n::permitted_directories() = make_null_shared_ptr(),
                             n::portdir() =
                                 (params.master_repositories() && ! params.master_repositories()->empty()) ?
@@ -186,6 +187,7 @@ paludis::erepository::do_pretend_action(
                             n::maybe_output_manager() = output_manager,
                             n::package_builddir() = params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-bad_options"),
                             n::package_id() = id,
+                            n::parts() = make_null_shared_ptr(),
                             n::permitted_directories() = make_null_shared_ptr(),
                             n::portdir() =
                                 (params.master_repositories() && ! params.master_repositories()->empty())
@@ -250,6 +252,7 @@ paludis::erepository::do_pretend_action(
                 n::maybe_output_manager() = output_manager,
                 n::package_builddir() = params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-pretend"),
                 n::package_id() = id,
+                n::parts() = make_null_shared_ptr(),
                 n::permitted_directories() = make_null_shared_ptr(),
                 n::portdir() =
                     (params.master_repositories() && ! params.master_repositories()->empty())

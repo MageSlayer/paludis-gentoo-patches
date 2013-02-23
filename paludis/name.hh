@@ -244,10 +244,37 @@ namespace paludis
         static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    /**
+     * A PartNameError is thrown if an invalid value is assigned to a PartName.
+     *
+     * \ingroup g_exceptions
+     * \ingroup g_names
+     */
+    class PALUDIS_VISIBLE PartNameError : public NameError
+    {
+        public:
+            /**
+             * Constructor
+             */
+            PartNameError(const std::string & name) throw ();
+    };
+
+    template <>
+    struct PALUDIS_VISIBLE WrappedValueTraits<PartNameTag>
+    {
+        typedef std::string UnderlyingType;
+        typedef void ValidationParamsType;
+        typedef PartNameError ExceptionType;
+
+        static bool validate(const std::string &)
+            PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
+
     extern template class PALUDIS_VISIBLE WrappedValue<RepositoryNameTag>;
     extern template class PALUDIS_VISIBLE WrappedValue<SlotNameTag>;
     extern template class PALUDIS_VISIBLE WrappedValue<KeywordNameTag>;
     extern template class PALUDIS_VISIBLE WrappedValue<SetNameTag>;
+    extern template class PALUDIS_VISIBLE WrappedValue<PartNameTag>;
 
     extern template class PALUDIS_VISIBLE Set<QualifiedPackageName>;
     extern template class PALUDIS_VISIBLE WrappedForwardIterator<Set<QualifiedPackageName>::ConstIteratorTag, const QualifiedPackageName>;

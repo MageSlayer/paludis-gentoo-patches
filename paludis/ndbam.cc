@@ -544,6 +544,10 @@ NDBAM::parse_contents(const PackageID & id,
             }
             std::string md5(tokens.find("md5")->second);
 
+            std::string part;
+            if (tokens.count("part"))
+                part = tokens.find("part")->second;
+
             if (! tokens.count("mtime"))
             {
                 Log::get_instance()->message("ndbam.contents.no_key.mtime", ll_warning, lc_context) <<
@@ -552,7 +556,7 @@ NDBAM::parse_contents(const PackageID & id,
             }
             time_t mtime(destringify<time_t>(tokens.find("mtime")->second));
 
-            std::shared_ptr<ContentsFileEntry> entry(std::make_shared<ContentsFileEntry>(FSPath(path)));
+            std::shared_ptr<ContentsFileEntry> entry(std::make_shared<ContentsFileEntry>(FSPath(path), part));
             entry->add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("md5", "md5", mkt_normal, md5));
             entry->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal, Timestamp(mtime, 0)));
             on_file(entry);
@@ -580,7 +584,11 @@ NDBAM::parse_contents(const PackageID & id,
             }
             time_t mtime(destringify<time_t>(tokens.find("mtime")->second));
 
-            std::shared_ptr<ContentsSymEntry> entry(std::make_shared<ContentsSymEntry>(FSPath(path), target));
+            std::string part;
+            if (tokens.count("part"))
+                part = tokens.find("part")->second;
+
+            std::shared_ptr<ContentsSymEntry> entry(std::make_shared<ContentsSymEntry>(FSPath(path), target, part));
             entry->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal, Timestamp(mtime, 0)));
             on_sym(entry);
         }

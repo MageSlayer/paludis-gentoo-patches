@@ -48,6 +48,7 @@
 #include <paludis/choice.hh>
 #include <paludis/elike_choices.hh>
 #include <paludis/output_manager.hh>
+#include <paludis/partitioning.hh>
 #include <paludis/slot.hh>
 
 #include <vector>
@@ -216,6 +217,7 @@ paludis::erepository::do_install_action(
         }
     }
 
+    auto parts(std::make_shared<Partitioning>());
     auto choices(id->choices_key()->parse_value());
     auto work_choice(choices->find_by_name_with_prefix(ELikeWorkChoiceValue::canonical_name_with_prefix()));
 
@@ -283,8 +285,12 @@ paludis::erepository::do_install_action(
                         n::options() = id->eapi()->supported()->merger_options() | extra_merger_options,
                         n::output_manager() = output_manager,
                         n::package_id() = id,
+                        n::parts() = parts,
                         n::perform_uninstall() = install_action.options.perform_uninstall(),
-                        n::permit_destination() = std::bind(&PermittedDirectories::permit, permitted_directories, std::placeholders::_1),
+                        n::permit_destination() =
+                            std::bind(&PermittedDirectories::permit,
+                                      permitted_directories,
+                                      std::placeholders::_1),
                         n::replacing() = install_action.options.replacing(),
                         n::used_this_for_config_protect() = std::bind(
                                 &used_this_for_config_protect, std::ref(used_config_protect), std::placeholders::_1),
@@ -375,6 +381,7 @@ paludis::erepository::do_install_action(
                     n::maybe_output_manager() = output_manager,
                     n::package_builddir() = package_builddir,
                     n::package_id() = id,
+                    n::parts() = parts,
                     n::permitted_directories() = permitted_directories,
                     n::portdir() =
                         (params.master_repositories() && ! params.master_repositories()->empty()) ?
@@ -436,6 +443,7 @@ paludis::erepository::do_install_action(
                                     n::maybe_output_manager() = output_manager,
                                     n::package_builddir() = package_builddir,
                                     n::package_id() = id,
+                                    n::parts() = parts,
                                     n::permitted_directories() = permitted_directories,
                                     n::portdir() =
                                         (params.master_repositories() && ! params.master_repositories()->empty())

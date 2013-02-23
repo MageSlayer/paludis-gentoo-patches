@@ -18,6 +18,7 @@
  */
 
 #include <paludis/contents.hh>
+#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -62,9 +63,38 @@ ContentsEntry::location_key() const
     return _imp->location_key;
 }
 
-ContentsFileEntry::ContentsFileEntry(const FSPath & our_name) :
-    ContentsEntry(our_name)
+namespace paludis
 {
+    template <>
+    struct Imp<ContentsFileEntry>
+    {
+        const std::shared_ptr<const MetadataValueKey<std::string> > part_key;
+
+        Imp(const std::string & part) :
+            part_key(part.empty()
+                        ? make_null_shared_ptr()
+                        : std::make_shared<LiteralMetadataValueKey<std::string>>("part", "part", mkt_normal, part))
+        {
+        }
+    };
+}
+
+ContentsFileEntry::ContentsFileEntry(const FSPath & our_name,
+                                     const std::string & our_part) :
+    ContentsEntry(our_name), _imp(our_part)
+{
+    if (_imp->part_key)
+        add_metadata_key(_imp->part_key);
+}
+
+ContentsFileEntry::~ContentsFileEntry()
+{
+}
+
+const std::shared_ptr<const MetadataValueKey<std::string> >
+ContentsFileEntry::part_key() const
+{
+    return _imp->part_key;
 }
 
 ContentsDirEntry::ContentsDirEntry(const FSPath & our_name) :
@@ -83,19 +113,26 @@ namespace paludis
     struct Imp<ContentsSymEntry>
     {
         const std::shared_ptr<const MetadataValueKey<std::string> > target_key;
+        const std::shared_ptr<const MetadataValueKey<std::string> > part_key;
 
-        Imp(const std::string & t) :
-            target_key(std::make_shared<LiteralMetadataValueKey<std::string>>("target", "target", mkt_normal, t))
+        Imp(const std::string & target, const std::string & part) :
+            target_key(std::make_shared<LiteralMetadataValueKey<std::string>>("target", "target", mkt_normal, target)),
+            part_key(part.empty()
+                        ? make_null_shared_ptr()
+                        : std::make_shared<LiteralMetadataValueKey<std::string>>("part", "part", mkt_normal, part))
         {
         }
     };
 }
 
-ContentsSymEntry::ContentsSymEntry(const FSPath & our_name, const std::string & our_target) :
-    ContentsEntry(our_name),
-    _imp(our_target)
+ContentsSymEntry::ContentsSymEntry(const FSPath & our_name,
+                                   const std::string & our_target,
+                                   const std::string & our_part) :
+    ContentsEntry(our_name), _imp(our_target, our_part)
 {
     add_metadata_key(_imp->target_key);
+    if (_imp->part_key)
+        add_metadata_key(_imp->part_key);
 }
 
 ContentsSymEntry::~ContentsSymEntry()
@@ -106,6 +143,12 @@ const std::shared_ptr<const MetadataValueKey<std::string> >
 ContentsSymEntry::target_key() const
 {
     return _imp->target_key;
+}
+
+const std::shared_ptr<const MetadataValueKey<std::string> >
+ContentsSymEntry::part_key() const
+{
+    return _imp->part_key;
 }
 
 namespace paludis
@@ -155,6 +198,7 @@ namespace paludis
     template class Pimp<Contents>;
     template class Pimp<ContentsEntry>;
     template class Pimp<ContentsSymEntry>;
+    template class Pimp<ContentsFileEntry>;
 
     template class WrappedForwardIterator<Contents::ConstIteratorTag, const std::shared_ptr<const ContentsEntry> >;
 }

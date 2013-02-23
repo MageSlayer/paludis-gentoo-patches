@@ -49,4 +49,8 @@ exdirectory()
     paludis_pipe_command PERMIT_DIRECTORY "$EAPI" "$@" >/dev/null
 }
 
+expart()
+{
+    paludis_pipe_command PARTITION "$EAPI" "$@" >/dev/null
+}
 

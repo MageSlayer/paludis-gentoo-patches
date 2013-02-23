@@ -33,6 +33,7 @@
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/partitioning-fwd.hh>
 #include <paludis/merger.hh>
 
 #include <string>
@@ -85,6 +86,7 @@ namespace paludis
         typedef Name<struct name_output_directory> output_directory;
         typedef Name<struct name_package_builddir> package_builddir;
         typedef Name<struct name_package_id> package_id;
+        typedef Name<struct name_parts> parts;
         typedef Name<struct name_permitted_directories> permitted_directories;
         typedef Name<struct name_portdir> portdir;
         typedef Name<struct name_profiles> profiles;
@@ -131,6 +133,7 @@ namespace paludis
             NamedValue<n::maybe_output_manager, std::shared_ptr<OutputManager> > maybe_output_manager;
             NamedValue<n::package_builddir, FSPath> package_builddir;
             NamedValue<n::package_id, std::shared_ptr<const erepository::ERepositoryID> > package_id;
+            NamedValue<n::parts, std::shared_ptr<Partitioning> > parts;
             NamedValue<n::permitted_directories, std::shared_ptr<erepository::PermittedDirectories> > permitted_directories;
             NamedValue<n::portdir, FSPath> portdir;
             NamedValue<n::root, std::string> root;

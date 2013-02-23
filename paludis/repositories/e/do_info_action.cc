@@ -104,6 +104,7 @@ paludis::erepository::do_info_action(
                 n::maybe_output_manager() = output_manager,
                 n::package_builddir() = params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-info"),
                 n::package_id() = id,
+                n::parts() = make_null_shared_ptr(),
                 n::permitted_directories() = make_null_shared_ptr(),
                 n::portdir() =
                     (params.master_repositories() && ! params.master_repositories()->empty())

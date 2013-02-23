@@ -26,6 +26,7 @@
 #include <paludis/spec_tree-fwd.hh>
 #include <paludis/name.hh>
 #include <paludis/package_id-fwd.hh>
+#include <paludis/partitioning-fwd.hh>
 #include <paludis/util/attributes.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_path.hh>
@@ -70,6 +71,7 @@ namespace paludis
         typedef Name<struct name_options> options;
         typedef Name<struct name_output_manager> output_manager;
         typedef Name<struct name_package_id> package_id;
+        typedef Name<struct name_parts> parts;
         typedef Name<struct name_path> path;
         typedef Name<struct name_perform_uninstall> perform_uninstall;
         typedef Name<struct name_permit_destination> permit_destination;
@@ -132,6 +134,12 @@ namespace paludis
         NamedValue<n::options, MergerOptions> options;
         NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
         NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
+
+        /**
+         * Package partioning.
+         * \since 1.1.0
+         */
+        NamedValue<n::parts, std::shared_ptr<Partitioning> > parts;
 
         /**
          * Some merges need to do an uninstall mid-way through the merge process.

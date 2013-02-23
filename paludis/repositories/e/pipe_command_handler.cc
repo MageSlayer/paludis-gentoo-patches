@@ -3,6 +3,7 @@
 /*
  * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
  * Copyright (c) 2009 Ingmar Vanhassel
+ * Copyright (c) 2013 Saleem Abdulrasool <compnerd@compnerd.org>
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -52,9 +53,11 @@
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/unformatted_pretty_printer.hh>
 #include <paludis/version_spec.hh>
+#include <paludis/partitioning.hh>
 #include <paludis/repository.hh>
 #include <paludis/elike_choices.hh>
 
+#include <list>
 #include <vector>
 #include <limits>
 #include <sstream>
@@ -180,6 +183,7 @@ std::string
 paludis::erepository::pipe_command_handler(const Environment * const environment,
         const std::shared_ptr<const ERepositoryID> & package_id,
         const std::shared_ptr<PermittedDirectories> & maybe_permitted_directories,
+        const std::shared_ptr<Partitioning> & maybe_partitioning,
         bool in_metadata_generation,
         const std::string & s, const std::shared_ptr<OutputManager> & maybe_output_manager)
 {
@@ -563,6 +567,55 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
             maybe_permitted_directories->add(FSPath(tokens[3]), permit);
             return "O0;";
+        }
+        else if (tokens[0] == "PARTITION")
+        {
+            bool exclude(false);
+            std::shared_ptr<const EAPI> eapi =
+                EAPIData::get_instance()->eapi_from_string(tokens[1]);
+            if (! eapi->supported())
+                return "EPARTITION EAPI " + tokens[1] + " unsupported";
+
+            if (tokens.size() < 4 ||
+                ((exclude = (tokens[2] == "--exclude")) && tokens.size() < 5))
+            {
+                Log::get_instance()->message("e.pipe_commands.partition.bad",
+                                             ll_warning, lc_context)
+                    << "Got bad PARTITION pipe command";
+                return "Ebad PARTITION command";
+            }
+
+            const std::string partition_id(tokens[2]);
+            std::vector<FSPath> contents;
+
+            for (auto token = tokens.begin() + (exclude ? 3 : 2),
+                       last = tokens.end();
+                 token != last; ++token)
+                 contents.push_back(FSPath(*token));
+
+            try
+            {
+                if (maybe_partitioning == NULL)
+                {
+                    Log::get_instance()->message("e.pipe_commands.partitioning.unsupported",
+                                                 ll_warning, lc_context)
+                        << "parts not supported by destination repository";
+                    return "EPARTITION EXPART not supported by destination repository";
+                }
+                else
+                {
+                    maybe_partitioning->mark(contents,
+                                             exclude ? PartName("")
+                                                     : PartName(partition_id));
+                }
+
+                return "O0;";
+            }
+            catch (const Exception & e)
+            {
+                return "Egot error '" + e.message() + "' (" + e.what() + ") "
+                       "when trying to create partition";
+            }
         }
         else if (tokens[0] == "REWRITE_VAR")
         {

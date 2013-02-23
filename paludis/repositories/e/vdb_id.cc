@@ -64,6 +64,9 @@ VDBID::contents_filename() const
 const std::shared_ptr<const Contents>
 VDBID::contents() const
 {
+    // NOTE(compnerd) VDB does not support parts
+    static const std::string kNoPart = "";
+
     FSPath contents_location(fs_location_key()->parse_value() / "CONTENTS");
     Context context("When creating contents from '" + stringify(contents_location) + "':");
 
@@ -94,7 +97,8 @@ VDBID::contents() const
 
         if ("obj" == tokens.at(0))
         {
-            std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsFileEntry>(FSPath(tokens.at(1))));
+            auto e(std::make_shared<ContentsFileEntry>(FSPath(tokens.at(1)),
+                                                       kNoPart));
             e->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal,
                             Timestamp(destringify<time_t>(tokens.at(3)), 0)));
             e->add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("md5", "md5", mkt_normal, tokens.at(2)));
@@ -107,7 +111,8 @@ VDBID::contents() const
         }
         else if ("sym" == tokens.at(0))
         {
-            std::shared_ptr<ContentsEntry> e(std::make_shared<ContentsSymEntry>(FSPath(tokens.at(1)), tokens.at(2)));
+            auto e(std::make_shared<ContentsSymEntry>(FSPath(tokens.at(1)),
+                                                      tokens.at(2), kNoPart));
             e->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal,
                             Timestamp(destringify<time_t>(tokens.at(3)), 0)));
             value->add(e);

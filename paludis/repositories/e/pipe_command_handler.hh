@@ -24,6 +24,7 @@
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
+#include <paludis/partitioning-fwd.hh>
 #include <functional>
 #include <string>
 
@@ -36,6 +37,7 @@ namespace paludis
         std::string pipe_command_handler(const Environment * const,
                 const std::shared_ptr<const ERepositoryID> &,
                 const std::shared_ptr<PermittedDirectories> &,
+                const std::shared_ptr<Partitioning> &,
                 bool in_metadata_generation,
                 const std::string & s,
                 const std::shared_ptr<OutputManager> & maybe_output_manager);

@@ -175,6 +175,7 @@ namespace
                         n::merged_entries() = std::make_shared<FSPathSet>(),
                         n::no_chown() = true,
                         n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
+                        n::parts() = make_null_shared_ptr(),
                         n::permit_destination() = std::bind(return_literal_function(true)),
                         n::root() = root_dir.realpath()
                         ))
@@ -198,6 +199,7 @@ namespace
                     n::merged_entries() = std::make_shared<FSPathSet>(),
                     n::no_chown() = true,
                     n::options() = o,
+                    n::parts() = make_null_shared_ptr(),
                     n::permit_destination() = std::bind(return_literal_function(true)),
                     n::root() = root_dir.realpath()
                     ))

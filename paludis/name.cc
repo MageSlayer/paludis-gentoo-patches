@@ -41,6 +41,7 @@ namespace paludis
     template class WrappedValue<SlotNameTag>;
     template class WrappedValue<KeywordNameTag>;
     template class WrappedValue<SetNameTag>;
+    template class WrappedValue<PartNameTag>;
 
     template class PALUDIS_VISIBLE Sequence<RepositoryName>;
     template class PALUDIS_VISIBLE WrappedForwardIterator<Sequence<RepositoryName>::ConstIteratorTag, const RepositoryName>;
@@ -79,6 +80,7 @@ template PALUDIS_VISIBLE std::ostream & paludis::operator<< (std::ostream &, con
 template PALUDIS_VISIBLE std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<SlotNameTag> &);
 template PALUDIS_VISIBLE std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<KeywordNameTag> &);
 template PALUDIS_VISIBLE std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<SetNameTag> &);
+template PALUDIS_VISIBLE std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<PartNameTag> &);
 
 std::ostream &
 paludis::operator<< (std::ostream & s, const QualifiedPackageName & q)
@@ -335,6 +337,22 @@ WrappedValueTraits<SetNameTag>::validate(const std::string & s)
 SetNameError::SetNameError(const std::string & name) throw () :
     NameError(name, "set")
 {
+}
+
+PartNameError::PartNameError(const std::string & name) throw () :
+    NameError(name, "part")
+{
+}
+
+bool
+WrappedValueTraits<PartNameTag>::validate(const std::string & name)
+{
+    static const std::string allowed_chars(
+            "abcdefghijklmnopqrstuvwxyz"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789-+_");
+
+    return name.find_first_not_of(allowed_chars) == std::string::npos;
 }
 
 std::size_t
