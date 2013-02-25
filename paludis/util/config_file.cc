@@ -213,7 +213,7 @@ LineConfigFile::LineConfigFile(const Source & sr, const LineConfigFileOptions & 
                     }
                     else
                         throw ConfigFileError(sr.filename(),
-                                "Something is very strange at line '" + stringify(parser.current_line_number() + "'"));
+                                "Something is very strange at line '" + stringify(parser.current_line_number()) + "'");
                 }
                 continue;
             }
@@ -276,7 +276,7 @@ LineConfigFile::LineConfigFile(const Source & sr, const LineConfigFileOptions & 
                 if (! parser.consume(simple_parser::exact("\n")))
                     if (! parser.eof())
                         throw ConfigFileError(sr.filename(),
-                                "Something is very strange at line '" + stringify(parser.current_line_number() + "'"));
+                                "Something is very strange at line '" + stringify(parser.current_line_number()) + "'");
                 break;
             }
             else if (parser.consume(simple_parser::exact("#") >> word))
@@ -603,7 +603,7 @@ KeyValueConfigFile::KeyValueConfigFile(
                     }
                     else
                         throw ConfigFileError(sr.filename(),
-                                "Something is very strange at line '" + stringify(parser.current_line_number() + "'"));
+                                "Something is very strange at line '" + stringify(parser.current_line_number()) + "'");
                 }
                 continue;
             }
@@ -634,7 +634,7 @@ KeyValueConfigFile::KeyValueConfigFile(
                         << "No newline at end of file";
                 else
                     throw ConfigFileError(sr.filename(),
-                            "Something is very strange at line '" + stringify(parser.current_line_number() + "'"));
+                            "Something is very strange at line '" + stringify(parser.current_line_number()) + "'");
             }
             continue;
         }
@@ -710,7 +710,7 @@ KeyValueConfigFile::KeyValueConfigFile(
                         << "No newline at end of file";
                 else
                     throw ConfigFileError(sr.filename(), "Expected newline after ']' at line "
-                            + stringify(parser.current_line_number() + "'"));
+                            + stringify(parser.current_line_number()) + "'");
             }
 
             if (sec_s.empty())
@@ -790,7 +790,7 @@ KeyValueConfigFile::KeyValueConfigFile(
                             << "No newline at end of file";
                     else
                         throw ConfigFileError(sr.filename(),
-                                "Something is very strange at line '" + stringify(parser.current_line_number() + "'"));
+                                "Something is very strange at line '" + stringify(parser.current_line_number()) + "'");
                 }
                 break;
             }
