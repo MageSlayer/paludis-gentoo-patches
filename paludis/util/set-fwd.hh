@@ -32,7 +32,7 @@ namespace paludis
     struct DefaultSetComparator;
 
     template <typename T_, typename C_ = DefaultSetComparator<T_> >
-    struct Set;
+    class Set;
 
     template <typename T_, typename C_>
     struct SetConstIteratorTag;

@@ -33,7 +33,7 @@ namespace paludis
 {
     namespace accounts_repository
     {
-        struct AccountsRepository;
+        class AccountsRepository;
 
         class PALUDIS_VISIBLE AccountsRepositoryStore
         {

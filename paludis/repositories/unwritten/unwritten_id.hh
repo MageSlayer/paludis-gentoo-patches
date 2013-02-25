@@ -48,7 +48,7 @@ namespace paludis
 
     namespace unwritten_repository
     {
-        struct UnwrittenRepository;
+        class UnwrittenRepository;
 
         struct UnwrittenIDParams
         {

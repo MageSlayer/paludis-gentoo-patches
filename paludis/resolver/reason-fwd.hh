@@ -29,15 +29,15 @@ namespace paludis
 {
     namespace resolver
     {
-        struct Reason;
-        struct DependencyReason;
-        struct TargetReason;
-        struct PresetReason;
-        struct SetReason;
-        struct DependentReason;
-        struct WasUsedByReason;
-        struct LikeOtherDestinationTypeReason;
-        struct ViaBinaryReason;
+        class Reason;
+        class DependencyReason;
+        class TargetReason;
+        class PresetReason;
+        class SetReason;
+        class DependentReason;
+        class WasUsedByReason;
+        class LikeOtherDestinationTypeReason;
+        class ViaBinaryReason;
 
         typedef Sequence<std::shared_ptr<const Reason> > Reasons;
     }

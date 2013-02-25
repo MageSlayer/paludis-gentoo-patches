@@ -25,7 +25,7 @@
 namespace paludis
 {
     template <typename T_>
-    struct ActiveObjectPtr;
+    class ActiveObjectPtr;
 }
 
 #endif

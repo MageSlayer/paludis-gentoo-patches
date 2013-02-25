@@ -24,7 +24,7 @@ namespace paludis
 {
     namespace resolver
     {
-        struct RemoveIfDependentHelper;
+        class RemoveIfDependentHelper;
     }
 }
 

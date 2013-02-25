@@ -22,7 +22,7 @@
 
 namespace paludis
 {
-    struct ChangedChoices;
+    class ChangedChoices;
 }
 
 #endif

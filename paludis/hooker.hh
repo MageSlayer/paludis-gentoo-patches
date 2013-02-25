@@ -43,7 +43,7 @@ namespace paludis
 {
     class Environment;
     class Hook;
-    class HookResult;
+    struct HookResult;
 
     /**
      * A HookFile provides an abstraction of a hook file.

@@ -70,7 +70,7 @@ namespace paludis
         static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template struct PALUDIS_VISIBLE WrappedValue<PackageNamePartTag>;
+    extern template class PALUDIS_VISIBLE WrappedValue<PackageNamePartTag>;
 
     /**
      * A CategoryNamePartError is thrown if an invalid value is assigned to
@@ -99,7 +99,7 @@ namespace paludis
         static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template struct PALUDIS_VISIBLE WrappedValue<CategoryNamePartTag>;
+    extern template class PALUDIS_VISIBLE WrappedValue<CategoryNamePartTag>;
 
     /**
      * Represents a category plus package name.
@@ -244,14 +244,14 @@ namespace paludis
         static bool validate(const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template struct PALUDIS_VISIBLE WrappedValue<RepositoryNameTag>;
-    extern template struct PALUDIS_VISIBLE WrappedValue<SlotNameTag>;
-    extern template struct PALUDIS_VISIBLE WrappedValue<KeywordNameTag>;
-    extern template struct PALUDIS_VISIBLE WrappedValue<SetNameTag>;
+    extern template class PALUDIS_VISIBLE WrappedValue<RepositoryNameTag>;
+    extern template class PALUDIS_VISIBLE WrappedValue<SlotNameTag>;
+    extern template class PALUDIS_VISIBLE WrappedValue<KeywordNameTag>;
+    extern template class PALUDIS_VISIBLE WrappedValue<SetNameTag>;
 
-    extern template struct PALUDIS_VISIBLE Set<QualifiedPackageName>;
-    extern template struct PALUDIS_VISIBLE WrappedForwardIterator<Set<QualifiedPackageName>::ConstIteratorTag, const QualifiedPackageName>;
-    extern template struct PALUDIS_VISIBLE WrappedOutputIterator<Set<QualifiedPackageName>::InserterTag, QualifiedPackageName>;
+    extern template class PALUDIS_VISIBLE Set<QualifiedPackageName>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Set<QualifiedPackageName>::ConstIteratorTag, const QualifiedPackageName>;
+    extern template class PALUDIS_VISIBLE WrappedOutputIterator<Set<QualifiedPackageName>::InserterTag, QualifiedPackageName>;
 }
 
 #endif

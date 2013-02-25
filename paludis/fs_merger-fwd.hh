@@ -52,7 +52,7 @@ namespace paludis
      */
     typedef Options<FSMergerOption> FSMergerOptions;
 
-    class FSMergerParams;
+    struct FSMergerParams;
     class FSMergerError;
     class FSMerger;
 }

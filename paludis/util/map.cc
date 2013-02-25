@@ -28,7 +28,7 @@ using namespace paludis;
 namespace paludis
 {
     template class Map<std::string, std::string>;
-    template class PALUDIS_VISIBLE DefaultMapComparator<std::string>;
+    template struct PALUDIS_VISIBLE DefaultMapComparator<std::string>;
     template class WrappedForwardIterator<Map<std::string, std::string>::ConstIteratorTag, const std::pair<const std::string, std::string> >;
     template class PALUDIS_VISIBLE WrappedOutputIterator<Map<std::string, std::string>::InserterTag, std::pair<const std::string, std::string> >;
 }

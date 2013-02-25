@@ -22,14 +22,14 @@
 
 namespace paludis
 {
-    struct ProcessError;
+    class ProcessError;
 
-    struct ProcessCommand;
+    class ProcessCommand;
 
-    struct Process;
+    class Process;
 
     struct RunningProcessThread;
-    struct RunningProcessHandle;
+    class RunningProcessHandle;
 }
 
 #endif

@@ -90,7 +90,7 @@ namespace paludis
             const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
-    extern template struct Pimp<SimpleParser>;
+    extern template class Pimp<SimpleParser>;
 }
 
 #endif

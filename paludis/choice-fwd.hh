@@ -38,7 +38,7 @@ namespace paludis
     class Choice;
     class ChoiceValue;
 
-    class ChoiceParams;
+    struct ChoiceParams;
 
     struct ChoicePrefixNameTag;
     struct ChoiceNameWithPrefixTag;

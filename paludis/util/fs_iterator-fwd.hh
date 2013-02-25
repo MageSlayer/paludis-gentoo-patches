@@ -26,7 +26,7 @@
 
 namespace paludis
 {
-    struct FSIterator;
+    class FSIterator;
 
 #include <paludis/util/fs_iterator-se.hh>
 

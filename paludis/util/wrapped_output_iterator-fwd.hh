@@ -23,12 +23,12 @@
 namespace paludis
 {
     template <typename Tag_, typename Value_>
-    struct WrappedOutputIterator;
+    class WrappedOutputIterator;
 
     template <typename Tag_>
     struct WrappedOutputIteratorTraits;
 
-    struct WrappedOutputIteratorUnderlyingIteratorHolder;
+    class WrappedOutputIteratorUnderlyingIteratorHolder;
 }
 
 #endif

@@ -39,18 +39,18 @@
 
 namespace paludis
 {
-    struct PaludisEnvironment;
+    class PaludisEnvironment;
 
     namespace paludis_environment
     {
-        struct KeywordsConf;
-        struct UseConf;
-        struct LicensesConf;
-        struct PackageMaskConf;
-        struct MirrorsConf;
-        struct OutputConf;
-        struct World;
-        struct SuggestionsConf;
+        class KeywordsConf;
+        class UseConf;
+        class LicensesConf;
+        class PackageMaskConf;
+        class MirrorsConf;
+        class OutputConf;
+        class World;
+        class SuggestionsConf;
 
         /**
          * A PaludisConfigError is thrown if a configuration error is encountered

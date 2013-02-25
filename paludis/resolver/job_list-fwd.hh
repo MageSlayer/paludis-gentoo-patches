@@ -25,7 +25,7 @@ namespace paludis
     namespace resolver
     {
         template <typename Job_>
-        struct JobList;
+        class JobList;
 
         typedef int JobNumber;
     }

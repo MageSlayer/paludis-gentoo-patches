@@ -40,7 +40,7 @@ namespace paludis
         class LeafNode;
 
         template <typename Tree_, typename Item_>
-        struct InnerNode;
+        class InnerNode;
 
         template <typename Tree_>
         class BasicInnerNode;

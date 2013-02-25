@@ -30,7 +30,7 @@ namespace paludis
 
 #include <paludis/resolver/nag-se.hh>
 
-        struct NAG;
+        class NAG;
         struct NAGIndex;
         struct NAGEdgeProperties;
 

@@ -33,7 +33,7 @@ namespace paludis
 {
     namespace erepository
     {
-        class EAPI;
+        struct EAPI;
 
         class PALUDIS_VISIBLE TraditionalMaskFile
         {

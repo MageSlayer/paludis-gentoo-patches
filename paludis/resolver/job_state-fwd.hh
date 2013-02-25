@@ -24,13 +24,13 @@ namespace paludis
 {
     namespace resolver
     {
-        struct JobState;
+        class JobState;
 
-        struct JobPendingState;
-        struct JobActiveState;
-        struct JobSucceededState;
-        struct JobFailedState;
-        struct JobSkippedState;
+        class JobPendingState;
+        class JobActiveState;
+        class JobSucceededState;
+        class JobFailedState;
+        class JobSkippedState;
     }
 }
 

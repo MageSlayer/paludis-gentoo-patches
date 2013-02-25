@@ -29,7 +29,7 @@ namespace paludis
 
     template <typename Iter_, typename Value_ = typename IndirectIteratorValueType<
         typename std::iterator_traits<Iter_>::value_type>::Type>
-    struct IndirectIterator;
+    class IndirectIterator;
 
     template <typename Iter_>
     IndirectIterator<Iter_> indirect_iterator(const Iter_ &);

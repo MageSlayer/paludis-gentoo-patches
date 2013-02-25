@@ -22,7 +22,7 @@
 
 namespace paludis
 {
-    struct Timestamp;
+    class Timestamp;
 }
 
 #endif

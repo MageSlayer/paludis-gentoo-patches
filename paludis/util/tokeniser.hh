@@ -196,7 +196,7 @@ namespace paludis
         };
 
         template <typename DelimKind_, typename DelimMode_ = delim_mode::DelimiterTag>
-        struct Tokeniser;
+        class Tokeniser;
 
         template <typename DelimMode_>
         class Tokeniser<delim_kind::AnyOfTag, DelimMode_>

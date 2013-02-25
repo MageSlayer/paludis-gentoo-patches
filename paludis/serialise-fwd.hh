@@ -22,10 +22,10 @@
 
 namespace paludis
 {
-    struct Serialiser;
+    class Serialiser;
 
-    struct Deserialiser;
-    struct Deserialisation;
+    class Deserialiser;
+    class Deserialisation;
 }
 
 #endif

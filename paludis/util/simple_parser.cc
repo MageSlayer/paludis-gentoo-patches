@@ -294,5 +294,5 @@ SimpleParser::current_line_number() const
 
 namespace paludis
 {
-    template struct Pimp<SimpleParser>;
+    template class Pimp<SimpleParser>;
 }

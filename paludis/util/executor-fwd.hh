@@ -22,8 +22,8 @@
 
 namespace paludis
 {
-    struct Executor;
-    struct Executive;
+    class Executor;
+    class Executive;
 }
 
 #endif

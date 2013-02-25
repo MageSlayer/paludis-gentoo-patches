@@ -63,10 +63,10 @@ namespace paludis
             ///\}
     };
 
-    struct UserSlotExactFullRequirement;
-    struct UserSlotExactPartialRequirement;
+    class UserSlotExactFullRequirement;
+    class UserSlotExactPartialRequirement;
 
-    struct UserKeyRequirement;
+    class UserKeyRequirement;
 
     /**
      * The VersionSpecOptions to use for parsing a user spec.

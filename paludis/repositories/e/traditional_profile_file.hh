@@ -31,7 +31,7 @@
 
 namespace paludis
 {
-    struct ERepository;
+    class ERepository;
 
     namespace erepository
     {

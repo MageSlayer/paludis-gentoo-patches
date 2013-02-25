@@ -22,11 +22,11 @@
 
 namespace paludis
 {
-    struct IPCOutputManager;
+    class IPCOutputManager;
 
-    struct IPCInputManager;
+    class IPCInputManager;
 
-    struct OutputManagerFromIPC;
+    class OutputManagerFromIPC;
 }
 
 #endif

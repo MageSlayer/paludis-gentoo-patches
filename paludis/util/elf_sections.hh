@@ -36,8 +36,8 @@ namespace paludis
     template <typename ElfType_> class GenericSection;
     template <typename ElfType_, class RelocationType_> class RelocationSection;
 
-    template <typename ElfType_> class Relocation;
-    template <typename ElfType_> class RelocationA;
+    template <typename ElfType_> struct Relocation;
+    template <typename ElfType_> struct RelocationA;
 
     namespace littlelf_internals
     {

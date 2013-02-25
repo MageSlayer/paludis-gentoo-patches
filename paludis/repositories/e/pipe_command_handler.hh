@@ -31,7 +31,7 @@ namespace paludis
 {
     namespace erepository
     {
-        struct ERepositoryID;
+        class ERepositoryID;
 
         std::string pipe_command_handler(const Environment * const,
                 const std::shared_ptr<const ERepositoryID> &,

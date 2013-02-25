@@ -34,7 +34,7 @@
 
 namespace paludis
 {
-    class VersionRequirement;
+    struct VersionRequirement;
 
     /**
      * A collection of VersionRequirement instances, usually for a

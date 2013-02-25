@@ -35,42 +35,42 @@ using namespace paludis;
 
 namespace paludis
 {
-    template struct WrappedValue<RepositoryNameTag>;
-    template struct WrappedValue<CategoryNamePartTag>;
-    template struct WrappedValue<PackageNamePartTag>;
-    template struct WrappedValue<SlotNameTag>;
-    template struct WrappedValue<KeywordNameTag>;
-    template struct WrappedValue<SetNameTag>;
+    template class WrappedValue<RepositoryNameTag>;
+    template class WrappedValue<CategoryNamePartTag>;
+    template class WrappedValue<PackageNamePartTag>;
+    template class WrappedValue<SlotNameTag>;
+    template class WrappedValue<KeywordNameTag>;
+    template class WrappedValue<SetNameTag>;
 
-    template struct PALUDIS_VISIBLE Sequence<RepositoryName>;
-    template struct PALUDIS_VISIBLE WrappedForwardIterator<Sequence<RepositoryName>::ConstIteratorTag, const RepositoryName>;
+    template class PALUDIS_VISIBLE Sequence<RepositoryName>;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<Sequence<RepositoryName>::ConstIteratorTag, const RepositoryName>;
 
-    template struct PALUDIS_VISIBLE Set<RepositoryName>;
-    template struct PALUDIS_VISIBLE WrappedForwardIterator<Set<RepositoryName>::ConstIteratorTag, const RepositoryName>;
-    template struct PALUDIS_VISIBLE WrappedOutputIterator<Set<RepositoryName>::InserterTag, RepositoryName>;
+    template class PALUDIS_VISIBLE Set<RepositoryName>;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<Set<RepositoryName>::ConstIteratorTag, const RepositoryName>;
+    template class PALUDIS_VISIBLE WrappedOutputIterator<Set<RepositoryName>::InserterTag, RepositoryName>;
 
-    template struct PALUDIS_VISIBLE Set<PackageNamePart>;
-    template struct PALUDIS_VISIBLE WrappedForwardIterator<Set<PackageNamePart>::ConstIteratorTag, const PackageNamePart>;
-    template struct PALUDIS_VISIBLE WrappedOutputIterator<Set<PackageNamePart>::InserterTag, PackageNamePart>;
+    template class PALUDIS_VISIBLE Set<PackageNamePart>;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<Set<PackageNamePart>::ConstIteratorTag, const PackageNamePart>;
+    template class PALUDIS_VISIBLE WrappedOutputIterator<Set<PackageNamePart>::InserterTag, PackageNamePart>;
 
-    template struct PALUDIS_VISIBLE Set<CategoryNamePart>;
-    template struct PALUDIS_VISIBLE WrappedForwardIterator<Set<CategoryNamePart>::ConstIteratorTag, const CategoryNamePart>;
-    template struct PALUDIS_VISIBLE WrappedOutputIterator<Set<CategoryNamePart>::InserterTag, CategoryNamePart>;
+    template class PALUDIS_VISIBLE Set<CategoryNamePart>;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<Set<CategoryNamePart>::ConstIteratorTag, const CategoryNamePart>;
+    template class PALUDIS_VISIBLE WrappedOutputIterator<Set<CategoryNamePart>::InserterTag, CategoryNamePart>;
 
-    template struct Set<QualifiedPackageName>;
-    template struct WrappedForwardIterator<Set<QualifiedPackageName>::ConstIteratorTag, const QualifiedPackageName>;
-    template struct WrappedOutputIterator<Set<QualifiedPackageName>::InserterTag, QualifiedPackageName>;
+    template class Set<QualifiedPackageName>;
+    template class WrappedForwardIterator<Set<QualifiedPackageName>::ConstIteratorTag, const QualifiedPackageName>;
+    template class WrappedOutputIterator<Set<QualifiedPackageName>::InserterTag, QualifiedPackageName>;
 
-    template struct PALUDIS_VISIBLE Set<KeywordName>;
-    template struct PALUDIS_VISIBLE WrappedForwardIterator<Set<KeywordName>::ConstIteratorTag, const KeywordName>;
-    template struct PALUDIS_VISIBLE WrappedOutputIterator<Set<KeywordName>::InserterTag, KeywordName>;
+    template class PALUDIS_VISIBLE Set<KeywordName>;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<Set<KeywordName>::ConstIteratorTag, const KeywordName>;
+    template class PALUDIS_VISIBLE WrappedOutputIterator<Set<KeywordName>::InserterTag, KeywordName>;
 
-    template struct PALUDIS_VISIBLE Set<SetName>;
-    template struct PALUDIS_VISIBLE WrappedForwardIterator<Set<SetName>::ConstIteratorTag, const SetName>;
-    template struct PALUDIS_VISIBLE WrappedOutputIterator<Set<SetName>::InserterTag, SetName>;
+    template class PALUDIS_VISIBLE Set<SetName>;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<Set<SetName>::ConstIteratorTag, const SetName>;
+    template class PALUDIS_VISIBLE WrappedOutputIterator<Set<SetName>::InserterTag, SetName>;
 
-    template struct PALUDIS_VISIBLE WrappedForwardIterator<Set<std::string>::ConstIteratorTag, const std::string>;
-    template struct PALUDIS_VISIBLE WrappedOutputIterator<Set<std::string>::InserterTag, std::string>;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<Set<std::string>::ConstIteratorTag, const std::string>;
+    template class PALUDIS_VISIBLE WrappedOutputIterator<Set<std::string>::InserterTag, std::string>;
 }
 
 template PALUDIS_VISIBLE std::ostream & paludis::operator<< (std::ostream &, const WrappedValue<RepositoryNameTag> &);

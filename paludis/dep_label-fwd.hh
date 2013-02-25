@@ -33,9 +33,9 @@
 
 namespace paludis
 {
-    struct URILabel;
+    class URILabel;
 
-    template <typename T_> struct SpecificURILabel;
+    template <typename T_> class SpecificURILabel;
 
     struct URIMirrorsThenListedLabelTag;
     typedef SpecificURILabel<URIMirrorsThenListedLabelTag> URIMirrorsThenListedLabel;
@@ -63,10 +63,10 @@ namespace paludis
      */
     std::ostream & operator<< (std::ostream &, const URILabel &) PALUDIS_VISIBLE;
 
-    struct DependenciesLabel;
+    class DependenciesLabel;
 
     template <typename>
-    struct SpecificDependenciesLabel;
+    class SpecificDependenciesLabel;
 
     /**
      * Tag for DependenciesBuildLabel.

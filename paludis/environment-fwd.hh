@@ -42,9 +42,9 @@ namespace paludis
 
     class Environment;
 
-    struct CreateOutputManagerInfo;
-    struct CreateOutputManagerForPackageIDActionInfo;
-    struct CreateOutputManagerForRepositorySyncInfo;
+    class CreateOutputManagerInfo;
+    class CreateOutputManagerForPackageIDActionInfo;
+    class CreateOutputManagerForRepositorySyncInfo;
 }
 
 #endif

@@ -22,7 +22,7 @@
 
 namespace paludis
 {
-    struct BufferOutputStream;
+    class BufferOutputStream;
 }
 
 #endif

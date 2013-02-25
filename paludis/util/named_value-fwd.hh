@@ -26,7 +26,7 @@ namespace paludis
     class NamedValue;
 
     template <typename T_>
-    struct Name;
+    class Name;
 }
 
 #endif

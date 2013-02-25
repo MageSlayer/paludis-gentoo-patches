@@ -28,14 +28,14 @@
 
 namespace paludis
 {
-    struct ELikeOptionalTestsChoiceValue;
-    struct ELikeRecommendedTestsChoiceValue;
-    struct ELikeExpensiveTestsChoiceValue;
-    struct ELikeJobsChoiceValue;
-    struct ELikeTraceChoiceValue;
-    struct ELikeSymbolsChoiceValue;
-    struct ELikeWorkChoiceValue;
-    struct ELikeDwarfCompressionChoiceValue;
+    class ELikeOptionalTestsChoiceValue;
+    class ELikeRecommendedTestsChoiceValue;
+    class ELikeExpensiveTestsChoiceValue;
+    class ELikeJobsChoiceValue;
+    class ELikeTraceChoiceValue;
+    class ELikeSymbolsChoiceValue;
+    class ELikeWorkChoiceValue;
+    class ELikeDwarfCompressionChoiceValue;
 
     const ChoicePrefixName canonical_build_options_prefix() PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
     const std::string canonical_build_options_raw_name() PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));

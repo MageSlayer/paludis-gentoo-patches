@@ -22,7 +22,7 @@
 
 namespace paludis
 {
-    struct FormattedPrettyPrinter;
+    class FormattedPrettyPrinter;
 }
 
 #endif

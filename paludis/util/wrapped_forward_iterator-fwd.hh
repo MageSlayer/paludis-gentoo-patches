@@ -23,7 +23,7 @@
 namespace paludis
 {
     template <typename Tag_, typename Value_>
-    struct WrappedForwardIterator;
+    class WrappedForwardIterator;
 
     template <typename Tag_>
     struct WrappedForwardIteratorTraits;

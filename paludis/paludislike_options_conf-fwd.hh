@@ -22,7 +22,7 @@
 
 namespace paludis
 {
-    struct PaludisLikeOptionsConf;
+    class PaludisLikeOptionsConf;
     struct PaludisLikeOptionsConfParams;
 }
 

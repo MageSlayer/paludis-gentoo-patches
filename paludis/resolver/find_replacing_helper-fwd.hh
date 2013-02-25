@@ -7,7 +7,7 @@ namespace paludis
 {
     namespace resolver
     {
-        struct FindReplacingHelper;
+        class FindReplacingHelper;
     }
 }
 

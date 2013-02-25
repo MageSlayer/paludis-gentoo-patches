@@ -32,7 +32,7 @@ namespace paludis
     struct DefaultMapComparator;
 
     template <typename K_, typename V_, typename C_ = DefaultMapComparator<K_> >
-    struct Map;
+    class Map;
 
     template <typename K_, typename V_, typename C_ = DefaultMapComparator<K_> >
     struct MapConstIteratorTag;

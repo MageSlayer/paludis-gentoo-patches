@@ -23,7 +23,7 @@
 namespace paludis
 {
     class Stripper;
-    class StripperOptions;
+    struct StripperOptions;
 }
 
 #endif

@@ -22,7 +22,7 @@
 
 namespace paludis
 {
-    struct CommandOutputManager;
+    class CommandOutputManager;
 }
 
 #endif

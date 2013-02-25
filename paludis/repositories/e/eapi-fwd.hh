@@ -31,22 +31,22 @@ namespace paludis
 {
     namespace erepository
     {
-        class EAPIAnnotations;
+        struct EAPIAnnotations;
         class EAPIData;
         class EAPIConfigurationError;
-        class EAPIEbuildPhases;
-        class EAPIEbuildMetadataVariables;
-        class EAPIEbuildOptions;
+        struct EAPIEbuildPhases;
+        struct EAPIEbuildMetadataVariables;
+        struct EAPIEbuildOptions;
         class EAPILabels;
-        class EAPIToolsOptions;
-        class EAPIPipeCommands;
-        class EAPIProfileOptions;
-        class EAPIChoicesOptions;
-        class EAPIEbuildEnvironmentVariables;
-        class SupportedEAPI;
-        class EAPI;
+        struct EAPIToolsOptions;
+        struct EAPIPipeCommands;
+        struct EAPIProfileOptions;
+        struct EAPIChoicesOptions;
+        struct EAPIEbuildEnvironmentVariables;
+        struct SupportedEAPI;
+        struct EAPI;
 
-        class EAPIMetadataVariable;
+        struct EAPIMetadataVariable;
 
         typedef std::function<const std::string (const FSPath &)> EAPIForFileFunction;
 

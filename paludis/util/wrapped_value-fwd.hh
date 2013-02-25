@@ -26,7 +26,7 @@
 namespace paludis
 {
     template <typename Tag_>
-    struct WrappedValue;
+    class WrappedValue;
 
     template <typename Tag_>
     struct WrappedValueTraits;

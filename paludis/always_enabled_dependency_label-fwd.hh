@@ -23,7 +23,7 @@
 namespace paludis
 {
     template <typename Label_>
-    struct AlwaysEnabledDependencyLabel;
+    class AlwaysEnabledDependencyLabel;
 }
 
 #endif

@@ -22,7 +22,7 @@
 
 namespace paludis
 {
-    struct StringListStream;
+    class StringListStream;
 }
 
 #endif

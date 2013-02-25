@@ -26,9 +26,10 @@
 namespace paludis
 {
     template <>
-    struct DeclareAbstractVisitMethods<TypeListTail>
+    class DeclareAbstractVisitMethods<TypeListTail>
     {
-        void forward_visit(const NoType<0u> &);
+        public:
+            void forward_visit(const NoType<0u> &);
     };
 
     template <typename TypeList_>

@@ -25,31 +25,31 @@
 namespace paludis
 {
     template <typename TypeList_>
-    struct DeclareAbstractVisitMethods;
+    class DeclareAbstractVisitMethods;
 
     template <>
-    struct DeclareAbstractVisitMethods<TypeListTail>;
+    class DeclareAbstractVisitMethods<TypeListTail>;
 
     template <typename TypeList_>
-    struct WrappedVisitorBase;
+    class WrappedVisitorBase;
 
     template <typename RealClass_, typename TypeList_>
-    struct ImplementVisitMethods;
+    class ImplementVisitMethods;
 
     template <typename RealClass_>
-    struct ImplementVisitMethods<RealClass_, TypeListTail>;
+    class ImplementVisitMethods<RealClass_, TypeListTail>;
 
     template <typename TypeList_, typename UnwrappedVisitor_>
-    struct WrappedVoidResultVisitor;
+    class WrappedVoidResultVisitor;
 
     template <typename TypeList_, typename Result_, typename UnwrappedVisitor_>
-    struct WrappedNonVoidResultVisitor;
+    class WrappedNonVoidResultVisitor;
 
     template <typename BaseClass_, typename VisitableTypeList_>
-    struct DeclareAbstractAcceptMethods;
+    class DeclareAbstractAcceptMethods;
 
     template <typename BaseClass_, typename RealClass_>
-    struct ImplementAcceptMethods;
+    class ImplementAcceptMethods;
 }
 
 #endif

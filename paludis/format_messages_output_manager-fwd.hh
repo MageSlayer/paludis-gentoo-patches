@@ -22,7 +22,7 @@
 
 namespace paludis
 {
-    struct FormatMessagesOutputManager;
+    class FormatMessagesOutputManager;
 }
 
 #endif

@@ -23,7 +23,7 @@
 namespace paludis
 {
     template <typename>
-    struct DeferredConstructionPtr;
+    class DeferredConstructionPtr;
 }
 
 #endif

@@ -27,7 +27,7 @@ namespace paludis
 {
     namespace unpackaged_repositories
     {
-        struct UnpackagedID;
+        class UnpackagedID;
 
         class UnpackagedDependencyKey :
             public MetadataSpecTreeKey<DependencySpecTree>

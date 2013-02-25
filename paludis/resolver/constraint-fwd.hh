@@ -29,7 +29,7 @@ namespace paludis
     namespace resolver
     {
         struct Constraint;
-        struct Constraints;
+        class Constraints;
 
         typedef Sequence<std::shared_ptr<const Constraint> > ConstraintSequence;
     }

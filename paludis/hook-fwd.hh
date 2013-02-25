@@ -35,7 +35,7 @@ namespace paludis
 
 #include <paludis/hook-se.hh>
 
-    class HookResult;
+    struct HookResult;
     class Hook;
 }
 

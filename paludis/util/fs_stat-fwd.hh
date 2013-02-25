@@ -22,7 +22,7 @@
 
 namespace paludis
 {
-    struct FSStat;
+    class FSStat;
 }
 
 #endif

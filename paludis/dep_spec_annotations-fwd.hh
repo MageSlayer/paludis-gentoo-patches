@@ -26,7 +26,7 @@
 
 namespace paludis
 {
-    class DepSpecAnnotation;
+    struct DepSpecAnnotation;
     class DepSpecAnnotations;
 
 #include <paludis/dep_spec_annotations-se.hh>

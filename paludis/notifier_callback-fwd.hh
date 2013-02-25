@@ -24,17 +24,17 @@
 
 namespace paludis
 {
-    struct NotifierCallbackEvent;
-    struct NotifierCallbackGeneratingMetadataEvent;
-    struct NotifierCallbackResolverStepEvent;
-    struct NotifierCallbackResolverStageEvent;
-    struct NotifierCallbackLinkageStepEvent;
+    class NotifierCallbackEvent;
+    class NotifierCallbackGeneratingMetadataEvent;
+    class NotifierCallbackResolverStepEvent;
+    class NotifierCallbackResolverStageEvent;
+    class NotifierCallbackLinkageStepEvent;
 
     typedef std::function<void (const NotifierCallbackEvent &) > NotifierCallbackFunction;
 
     typedef unsigned NotifierCallbackID;
 
-    struct ScopedNotifierCallback;
+    class ScopedNotifierCallback;
 }
 
 #endif

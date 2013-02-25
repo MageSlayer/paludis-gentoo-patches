@@ -30,7 +30,7 @@ namespace paludis
     namespace resolver
     {
         template <typename Decision_, typename Notes_ = NoType<0u> *>
-        struct Decisions;
+        class Decisions;
 
         typedef Decisions<ChangeOrRemoveDecision, std::shared_ptr<const OrdererNotes> > OrderedChangeOrRemoveDecisions;
     }

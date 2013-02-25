@@ -26,7 +26,7 @@
 
 namespace paludis
 {
-    struct Tribool;
+    class Tribool;
 
     typedef NoType<0u> * (* TriboolIndeterminateValueType) (const NoType<0u> * const);
 

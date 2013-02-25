@@ -25,7 +25,7 @@
 namespace paludis
 {
     template <typename E_>
-    struct EnumIterator;
+    class EnumIterator;
 
     template <typename E_>
     EnumIterator<E_> enum_iterator(const E_) PALUDIS_ATTRIBUTE((warn_unused_result));

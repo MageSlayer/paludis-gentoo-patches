@@ -22,7 +22,7 @@
 
 namespace paludis
 {
-    struct PackageDepSpecCollection;
+    class PackageDepSpecCollection;
 }
 
 #endif

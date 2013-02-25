@@ -29,8 +29,8 @@ namespace paludis
 {
     namespace args
     {
-        struct ArgsGroup;
-        struct ArgsHandler;
+        class ArgsGroup;
+        class ArgsHandler;
 
         /**
          * Holds a number of ArgsGroup instances.

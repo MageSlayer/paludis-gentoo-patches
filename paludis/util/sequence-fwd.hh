@@ -29,16 +29,16 @@
 namespace paludis
 {
     template <typename T_>
-    struct Sequence;
+    class Sequence;
 
     template <typename T_>
-    struct SequenceConstIteratorTag;
+    class SequenceConstIteratorTag;
 
     template <typename T_>
-    struct SequenceReverseConstIteratorTag;
+    class SequenceReverseConstIteratorTag;
 
     template <typename T_>
-    struct SequenceInserterTag;
+    class SequenceInserterTag;
 }
 
 #endif

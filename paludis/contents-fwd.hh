@@ -31,13 +31,13 @@
 
 namespace paludis
 {
-    struct ContentsEntry;
-    struct ContentsFileEntry;
-    struct ContentsDirEntry;
-    struct ContentsSymEntry;
-    struct ContentsOtherEntry;
+    class ContentsEntry;
+    class ContentsFileEntry;
+    class ContentsDirEntry;
+    class ContentsSymEntry;
+    class ContentsOtherEntry;
 
-    struct Contents;
+    class Contents;
 }
 
 #endif

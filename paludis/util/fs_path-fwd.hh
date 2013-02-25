@@ -28,8 +28,8 @@
 
 namespace paludis
 {
-    struct FSPath;
-    struct FSPathComparator;
+    class FSPath;
+    class FSPathComparator;
 
     typedef Sequence<FSPath> FSPathSequence;
 

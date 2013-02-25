@@ -27,13 +27,13 @@ namespace paludis
 {
     namespace resolver
     {
-        struct RequiredConfirmation;
-        struct DowngradeConfirmation;
-        struct NotBestConfirmation;
-        struct BreakConfirmation;
-        struct RemoveSystemPackageConfirmation;
-        struct MaskedConfirmation;
-        struct ChangedChoicesConfirmation;
+        class RequiredConfirmation;
+        class DowngradeConfirmation;
+        class NotBestConfirmation;
+        class BreakConfirmation;
+        class RemoveSystemPackageConfirmation;
+        class MaskedConfirmation;
+        class ChangedChoicesConfirmation;
 
         typedef Sequence<std::shared_ptr<const RequiredConfirmation> > RequiredConfirmations;
     }
