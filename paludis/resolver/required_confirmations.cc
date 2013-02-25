@@ -28,8 +28,6 @@ using namespace paludis::resolver;
 const std::shared_ptr<RequiredConfirmation>
 RequiredConfirmation::deserialise(Deserialisation & d)
 {
-    std::shared_ptr<RequiredConfirmation> result;
-
     if (d.class_name() == "DowngradeConfirmation")
         return DowngradeConfirmation::deserialise(d);
     else if (d.class_name() == "NotBestConfirmation")
@@ -42,10 +40,9 @@ RequiredConfirmation::deserialise(Deserialisation & d)
         return MaskedConfirmation::deserialise(d);
     else if (d.class_name() == "ChangedChoicesConfirmation")
         return ChangedChoicesConfirmation::deserialise(d);
-    else
-        throw InternalError(PALUDIS_HERE, "unknown class '" + stringify(d.class_name()) + "'");
 
-    return result;
+    throw InternalError(PALUDIS_HERE,
+                        "unknown class '" + stringify(d.class_name()) + "'");
 }
 
 const std::shared_ptr<DowngradeConfirmation>

@@ -491,21 +491,22 @@ namespace
         bool illegal(false);
         try
         {
-            do
+            FSPath name_file(tree_root);
+            name_file /= "profiles";
+            name_file /= "repo_name";
+
+            if (name_file.stat().is_regular_file())
             {
-                FSPath name_file(tree_root);
-                name_file /= "profiles";
-                name_file /= "repo_name";
+                LineConfigFile f(name_file,
+                                 {
+                                    lcfo_disallow_comments,
+                                    lcfo_disallow_continuations,
+                                    lcfo_no_skip_blank_lines
+                                 });
 
-                if (! name_file.stat().is_regular_file())
-                    break;
-
-                LineConfigFile f(name_file, { lcfo_disallow_comments, lcfo_disallow_continuations, lcfo_no_skip_blank_lines });
-                if (f.begin() == f.end())
-                    break;
-                return RepositoryName(*f.begin());
-
-            } while (false);
+                if (f.begin() != f.end())
+                    return RepositoryName(*f.begin());
+            }
         }
         catch (const RepositoryNameError &)
         {

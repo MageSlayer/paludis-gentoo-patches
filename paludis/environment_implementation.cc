@@ -483,6 +483,50 @@ namespace
             return ! _map->find(qpn)->second.second;
         }
     };
+
+    void disambiguate_package_from(const PackageNamePart & p,
+                                   std::list<QualifiedPackageName> & qpns,
+                                   const EnvironmentImplementation * const env,
+                                   const std::shared_ptr<QPNIMap> & result)
+    {
+        using namespace std::placeholders;
+
+        const IsImportant is_important(result);
+        const IsInstalled is_installed(env);
+        const IsInUnimportantRepo is_in_unimportant_repo(result);
+
+        std::remove_copy_if(first_iterator(result->begin()),
+                            first_iterator(result->end()),
+                            std::front_inserter(qpns),
+                            std::bind(std::logical_and<bool>(),
+                                      std::bind(std::not1(is_important), _1),
+                                      std::bind(std::not1(is_installed), _1)));
+        if (! qpns.empty() && next(qpns.begin()) == qpns.end())
+            return;
+
+        qpns.remove_if(std::bind(is_in_unimportant_repo, _1));
+        if (! qpns.empty() && next(qpns.begin()) == qpns.end())
+            return;
+
+        qpns.remove_if(std::bind(std::logical_and<bool>(),
+                       std::bind(is_important, _1),
+                       std::bind(std::not1(is_installed), _1)));
+        if (! qpns.empty() && next(qpns.begin()) == qpns.end())
+            return;
+
+        qpns.remove_if(std::bind(std::logical_and<bool>(),
+                       std::bind(std::not1(is_important), _1),
+                       std::bind(is_installed, _1)));
+        if (! qpns.empty() && next(qpns.begin()) == qpns.end())
+            return;
+
+        auto candidates(std::make_shared<Sequence<std::string> >());
+        std::transform(first_iterator(result->begin()),
+                       first_iterator(result->end()),
+                       candidates->back_inserter(),
+                       &stringify<QualifiedPackageName>);
+        throw AmbiguousPackageNameError(stringify(p), candidates);
+    }
 }
 
 QualifiedPackageName
@@ -523,49 +567,9 @@ EnvironmentImplementation::fetch_unique_qualified_package_name(const PackageName
         throw NoSuchPackageError(stringify(p));
     if (result->size() > 1)
     {
-        using namespace std::placeholders;
-
         std::list<QualifiedPackageName> qpns;
 
-        do
-        {
-            const IsImportant is_important(result);
-            const IsInstalled is_installed(this);
-            const IsInUnimportantRepo is_in_unimportant_repo(result);
-
-            std::remove_copy_if(first_iterator(result->begin()), first_iterator(result->end()),
-                    std::front_inserter(qpns),
-                    std::bind(std::logical_and<bool>(),
-                        std::bind(std::not1(is_important), _1),
-                        std::bind(std::not1(is_installed), _1)));
-
-            if (! qpns.empty() && next(qpns.begin()) == qpns.end())
-                break;
-
-            qpns.remove_if(std::bind(is_in_unimportant_repo, _1));
-
-            if (! qpns.empty() && next(qpns.begin()) == qpns.end())
-                break;
-
-            qpns.remove_if(std::bind(std::logical_and<bool>(),
-                        std::bind(is_important, _1),
-                        std::bind(std::not1(is_installed), _1)));
-
-            if (! qpns.empty() && next(qpns.begin()) == qpns.end())
-                break;
-
-            qpns.remove_if(std::bind(std::logical_and<bool>(),
-                        std::bind(std::not1(is_important), _1),
-                        std::bind(is_installed, _1)));
-
-            if (! qpns.empty() && next(qpns.begin()) == qpns.end())
-                break;
-
-            auto candidates(std::make_shared<Sequence<std::string> >());
-            std::transform(first_iterator(result->begin()), first_iterator(result->end()), candidates->back_inserter(),
-                    &stringify<QualifiedPackageName>);
-            throw AmbiguousPackageNameError(stringify(p), candidates);
-        } while (false);
+        disambiguate_package_from(p, qpns, this, result);
 
         if (! disambiguate)
         {

@@ -451,11 +451,10 @@ Merger::do_ownership_fixes_recursive(const FSPath & dir)
 
             case et_misc:
                 throw MergerError("Unexpected 'et_misc' entry found at: " + stringify(*d));
-                continue;
 
             case et_nothing:
             case last_et:
-                ;
+                break;
         }
 
         throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");

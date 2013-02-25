@@ -495,11 +495,10 @@ FSMerger::track_renamed_dir_recursive(const FSPath & dst)
 
             case et_misc:
                 throw FSMergerError("Unexpected 'et_misc' entry found at: " + stringify(*d));
-                continue;
 
             case et_nothing:
             case last_et:
-                ;
+                break;
         }
 
         throw InternalError(PALUDIS_HERE, "Unexpected entry_type '" + stringify(m) + "'");
