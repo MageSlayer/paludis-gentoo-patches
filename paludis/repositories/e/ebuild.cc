@@ -420,16 +420,6 @@ EbuildMetadataCommand::in_metadata_generation() const
     return true;
 }
 
-namespace
-{
-    std::string purdy(const std::string & s)
-    {
-        std::list<std::string> tokens;
-        tokenise_whitespace(s, std::back_inserter(tokens));
-        return join(tokens.begin(), tokens.end(), " \\n ");
-    }
-}
-
 bool
 EbuildMetadataCommand::do_run_command(Process & process)
 {

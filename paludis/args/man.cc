@@ -90,21 +90,6 @@ namespace
         {
         }
     };
-
-    std::string escape_html_char(char c)
-    {
-        switch (c)
-        {
-            case '&':
-                return "&amp;";
-            case '<':
-                return "&lt;";
-            case '>':
-                return "&gt;";
-            default:
-                return std::string(1, c);
-        }
-    }
 }
 
 

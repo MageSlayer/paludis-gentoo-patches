@@ -544,14 +544,14 @@ paludis::elike_add_package_requirement(const std::string & s, PartiallyMadePacka
     {
         throw PackageDepSpecError("Wildcard '*' not allowed here");
 
-        if (0 != s.compare(s.length() - 2, 2, "/*"))
-            result.package_name_part(PackageNamePart(s.substr(2)));
+        // if (0 != s.compare(s.length() - 2, 2, "/*"))
+        //     result.package_name_part(PackageNamePart(s.substr(2)));
     }
     else if (s.length() >= 3 && (0 == s.compare(s.length() - 2, 2, "/*")))
     {
         throw PackageDepSpecError("Wildcard '*' not allowed here");
 
-        result.category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
+        // result.category_name_part(CategoryNamePart(s.substr(0, s.length() - 2)));
     }
     else
         result.package(QualifiedPackageName(s));

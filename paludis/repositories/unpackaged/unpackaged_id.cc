@@ -330,10 +330,6 @@ namespace
         return o;
     }
 
-    void installed_this(const FSPath &)
-    {
-    }
-
     bool ignore_nothing(const FSPath &)
     {
         return false;

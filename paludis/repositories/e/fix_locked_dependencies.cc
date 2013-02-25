@@ -46,13 +46,6 @@ using namespace paludis::erepository;
 
 namespace
 {
-    void cannot_add(const std::shared_ptr<const DependencySpecTree> &) PALUDIS_ATTRIBUTE((noreturn));
-
-    void cannot_add(const std::shared_ptr<const DependencySpecTree> &)
-    {
-        throw InternalError(PALUDIS_HERE, "Got weird tree");
-    }
-
     struct SlotRewriter
     {
         const Environment * const env;
