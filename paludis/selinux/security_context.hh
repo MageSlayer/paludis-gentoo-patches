@@ -36,6 +36,28 @@ namespace paludis
 {
     class FSCreateCon;
     class MatchPathCon;
+    class SecurityContext;
+
+    /**
+     * Thin wrapper around setfilecon()
+     *
+     * \ingroup grplibpaludisselinux
+     */
+    int setfilecon(const FSPath & file, const std::shared_ptr<const SecurityContext> & con) PALUDIS_VISIBLE;
+
+    /**
+     * Whether SELinux is enabled. Ideally, you are not using this function.
+     *
+     * \ingroup grplibpaludisselinux
+     */
+    bool is_selinux_enabled() PALUDIS_VISIBLE;
+
+    /**
+     * A SecurityContext can be written to a stream.
+     *
+     * \ingroup grplibpaludisselinux
+     */
+    std::ostream& operator<<(std::ostream&, const SecurityContext &) PALUDIS_VISIBLE;
 
     /**
      * Error class for SELinux-related functions
@@ -101,13 +123,6 @@ namespace paludis
     };
 
     /**
-     * A SecurityContext can be written to a stream.
-     *
-     * \ingroup grplibpaludisselinux
-     */
-    std::ostream& operator<<(std::ostream&, const SecurityContext &) PALUDIS_VISIBLE;
-
-    /**
      * RAII-style wrapper for setfscreatecon().
      *
      * Create an FSCreateCon object to set the security context of newly created file objects.
@@ -169,20 +184,6 @@ namespace paludis
              */
             bool good() const;
     };
-
-    /**
-     * Thin wrapper around setfilecon()
-     *
-     * \ingroup grplibpaludisselinux
-     */
-    int setfilecon(const FSPath & file, const std::shared_ptr<const SecurityContext> & con) PALUDIS_VISIBLE;
-
-    /**
-     * Whether SELinux is enabled. Ideally, you are not using this function.
-     *
-     * \ingroup grplibpaludisselinux
-     */
-    bool is_selinux_enabled() PALUDIS_VISIBLE;
 }
 
 #endif
