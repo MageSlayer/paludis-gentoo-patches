@@ -119,8 +119,10 @@ namespace paludis
     class PALUDIS_VISIBLE NoGraphTopologicalOrderExistsError :
         public GraphError
     {
-        private:
+        public:
             class RemainingNodes;
+
+        private:
             std::shared_ptr<const RemainingNodes> _remaining_nodes;
 
         public:
