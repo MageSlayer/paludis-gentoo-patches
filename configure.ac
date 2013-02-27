@@ -1548,7 +1548,7 @@ AC_DEFUN([ENVIRONMENT_GROUP_IF], [
 enable_$1_environment=
 if echo $environments | tr ' ' '\n' | grep '^$1$' >/dev/null ; then
 	enable_$1_environment=yes
-	AC_DEFINE_UNQUOTED([ENVIRONMENT_GROUP_IF_$1], [$1], [The $1 environment])
+	AC_DEFINE_UNQUOTED([ENVIRONMENT_GROUP_IF_$1], [environment_groups::$1], [The $1 environment])
 	AC_DEFINE_UNQUOTED(ENABLE_[]m4_translit($1, [a-z], [A-Z])_ENVIRONMENT, [1], [Enable $1 environment])
 else
 	AC_DEFINE_UNQUOTED([ENVIRONMENT_GROUP_IF_$1], [], [Do not have the $1 environment])
