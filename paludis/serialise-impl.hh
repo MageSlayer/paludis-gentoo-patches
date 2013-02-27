@@ -34,6 +34,7 @@
 #include <list>
 #include <ostream>
 #include <istream>
+#include <sstream>
 
 namespace paludis
 {
@@ -298,7 +299,8 @@ namespace paludis
             const std::string & str,
             const std::string & class_name)
     {
-        Deserialiser d(env, str);
+        std::istringstream stream(str);
+        Deserialiser d(env, stream);
         Deserialisation dd(class_name, d);
         return T_::deserialise(dd);
     }
