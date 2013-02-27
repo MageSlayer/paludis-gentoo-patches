@@ -1217,7 +1217,10 @@ paludis::cave::resolve_common(
     return retcode | 1;
 }
 
-template class Sequence<std::pair<std::string, std::string> >;
-template class WrappedForwardIterator<Sequence<std::pair<std::string, std::string> >::ConstIteratorTag,
-         const std::pair<std::string, std::string> >;
+namespace paludis
+{
+    template class Sequence<std::pair<std::string, std::string> >;
+    template class WrappedForwardIterator<Sequence<std::pair<std::string, std::string> >::ConstIteratorTag,
+             const std::pair<std::string, std::string> >;
+}
 

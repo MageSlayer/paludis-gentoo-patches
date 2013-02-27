@@ -123,5 +123,8 @@ FormatUserConfigFile::fetch(const std::string & v, int vi, const std::string & d
         return result;
 }
 
-template class Singleton<cave::FormatUserConfigFile>;
+namespace paludis
+{
+    template class Singleton<cave::FormatUserConfigFile>;
+}
 

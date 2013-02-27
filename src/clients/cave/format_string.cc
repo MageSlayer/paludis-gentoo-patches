@@ -180,5 +180,8 @@ paludis::cave::format_string(
     return result;
 }
 
-template class Map<char, std::string>;
+namespace paludis
+{
+    template class Map<char, std::string>;
+}
 
