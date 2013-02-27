@@ -59,7 +59,11 @@ namespace paludis
 
             FindCandidatesFunction find_candidates_function;
 
-            SearchExtrasHandle();
+            SearchExtrasHandle()
+#ifndef ENABLE_SEARCH_INDEX
+                PALUDIS_ATTRIBUTE((noreturn))
+#endif
+                ;
             ~SearchExtrasHandle();
         };
     }

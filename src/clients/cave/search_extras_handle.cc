@@ -49,8 +49,7 @@ SearchExtrasHandle::SearchExtrasHandle() :
 {
 #ifndef ENABLE_SEARCH_INDEX
     throw NotAvailableError("cave was built without support for search indexes");
-#endif
-
+#else
     handle = ::dlopen(("libcavesearchextras_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);
     if (! handle)
         throw args::DoHelp("Search index creation not available because dlopen said " + stringify(::dlerror()));
@@ -82,6 +81,7 @@ SearchExtrasHandle::SearchExtrasHandle() :
     find_candidates_function = STUPID_CAST(FindCandidatesFunction, ::dlsym(handle, "cave_search_extras_find_candidates"));
     if (! find_candidates_function)
         throw args::DoHelp("Search index not available because dlsym said " + stringify(::dlerror()));
+#endif
 }
 
 SearchExtrasHandle::~SearchExtrasHandle()

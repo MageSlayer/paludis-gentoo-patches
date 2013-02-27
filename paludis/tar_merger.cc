@@ -57,11 +57,13 @@ namespace
         CleanupPtr cleanup;
 
         TarMergerHandle()
+#ifndef ENABLE_PBINS
+            PALUDIS_ATTRIBUTE((noreturn))
+#endif
         {
 #ifndef ENABLE_PBINS
             throw NotAvailableError("Paludis was built without support for pbins");
-#endif
-
+#else
             handle = ::dlopen(("libpaludistarextras_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);
             if (! handle)
                 throw MergerError("Unable to open libpaludistarextras due to error '" + stringify(::dlerror()) + "' from dlopen");
@@ -81,6 +83,7 @@ namespace
             cleanup = STUPID_CAST(CleanupPtr, ::dlsym(handle, "paludis_tar_extras_cleanup"));
             if (! cleanup)
                 throw MergerError("Unable to cleanup from libpaludistarextras due to error '" + stringify(::dlerror()) + "' from dlsym");
+#endif
         }
 
         ~TarMergerHandle()
