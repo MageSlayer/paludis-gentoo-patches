@@ -47,8 +47,10 @@ namespace
         const std::string bold_yellow() { return "${bold_yellow}"; }
         const std::string blue() { return "${blue}"; }
         const std::string bold_blue() { return "${bold_blue}"; }
+#if PALUDIS_COLOUR_PINK
         const std::string pink() { return "${pink}"; }
         const std::string bold_pink() { return "${bold_pink}"; }
+#endif
         const std::string normal() { return "${normal}"; }
         const std::string bold_normal() { return "${bold_normal}"; }
 
