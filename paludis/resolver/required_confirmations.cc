@@ -55,8 +55,9 @@ DowngradeConfirmation::deserialise(Deserialisation & d)
 void
 DowngradeConfirmation::serialise(Serialiser & s) const
 {
-    s.object("DowngradeConfirmation")
-        ;
+    SerialiserObjectWriter writer =
+        s.object("DowngradeConfirmation")
+            ;
 }
 
 const std::shared_ptr<NotBestConfirmation>
@@ -69,8 +70,9 @@ NotBestConfirmation::deserialise(Deserialisation & d)
 void
 NotBestConfirmation::serialise(Serialiser & s) const
 {
-    s.object("NotBestConfirmation")
-        ;
+    SerialiserObjectWriter writer =
+        s.object("NotBestConfirmation")
+            ;
 }
 
 const std::shared_ptr<BreakConfirmation>
@@ -83,8 +85,9 @@ BreakConfirmation::deserialise(Deserialisation & d)
 void
 BreakConfirmation::serialise(Serialiser & s) const
 {
-    s.object("BreakConfirmation")
-        ;
+    SerialiserObjectWriter writer =
+        s.object("BreakConfirmation")
+            ;
 }
 
 const std::shared_ptr<RemoveSystemPackageConfirmation>
@@ -97,8 +100,9 @@ RemoveSystemPackageConfirmation::deserialise(Deserialisation & d)
 void
 RemoveSystemPackageConfirmation::serialise(Serialiser & s) const
 {
-    s.object("RemoveSystemPackageConfirmation")
-        ;
+    SerialiserObjectWriter writer =
+        s.object("RemoveSystemPackageConfirmation")
+            ;
 }
 
 const std::shared_ptr<MaskedConfirmation>
@@ -111,8 +115,9 @@ MaskedConfirmation::deserialise(Deserialisation & d)
 void
 MaskedConfirmation::serialise(Serialiser & s) const
 {
-    s.object("MaskedConfirmation")
-        ;
+    SerialiserObjectWriter writer =
+        s.object("MaskedConfirmation")
+            ;
 }
 
 const std::shared_ptr<ChangedChoicesConfirmation>
@@ -125,8 +130,9 @@ ChangedChoicesConfirmation::deserialise(Deserialisation & d)
 void
 ChangedChoicesConfirmation::serialise(Serialiser & s) const
 {
-    s.object("ChangedChoicesConfirmation")
-        ;
+    SerialiserObjectWriter writer =
+        s.object("ChangedChoicesConfirmation")
+            ;
 }
 
 namespace paludis

@@ -87,8 +87,9 @@ JobPendingState::deserialise(Deserialisation & d)
 void
 JobPendingState::serialise(Serialiser & s) const
 {
-    s.object("JobPendingState")
-        ;
+    SerialiserObjectWriter writer =
+        s.object("JobPendingState")
+            ;
 }
 
 const std::shared_ptr<JobSkippedState>
@@ -101,8 +102,9 @@ JobSkippedState::deserialise(Deserialisation & d)
 void
 JobSkippedState::serialise(Serialiser & s) const
 {
-    s.object("JobSkippedState")
-        ;
+    SerialiserObjectWriter writer =
+        s.object("JobSkippedState")
+            ;
 }
 
 JobActiveState::JobActiveState() :
@@ -148,8 +150,9 @@ JobActiveState::deserialise(Deserialisation & d)
 void
 JobActiveState::serialise(Serialiser & s) const
 {
-    s.object("JobActiveState")
-        ;
+    SerialiserObjectWriter writer =
+        s.object("JobActiveState")
+            ;
 }
 
 JobSucceededState::JobSucceededState(const std::shared_ptr<OutputManager> & m) :
@@ -177,8 +180,9 @@ JobSucceededState::deserialise(Deserialisation & d)
 void
 JobSucceededState::serialise(Serialiser & s) const
 {
-    s.object("JobSucceededState")
-        ;
+    SerialiserObjectWriter writer =
+        s.object("JobSucceededState")
+            ;
 }
 
 JobFailedState::JobFailedState(const std::shared_ptr<OutputManager> & m) :
@@ -206,7 +210,8 @@ JobFailedState::deserialise(Deserialisation & d)
 void
 JobFailedState::serialise(Serialiser & s) const
 {
-    s.object("JobFailedState")
-        ;
+    SerialiserObjectWriter writer =
+        s.object("JobFailedState")
+            ;
 }
 
