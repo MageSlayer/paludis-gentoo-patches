@@ -96,7 +96,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            Hooker(const Environment * const) PALUDIS_ATTRIBUTE((nonnull(1)));
+            Hooker(const Environment * const) PALUDIS_ATTRIBUTE((nonnull(2)));
             ~Hooker();
 
             Hooker(const Hooker &) = delete;
