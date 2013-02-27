@@ -210,7 +210,7 @@ namespace
         if (r.op() == "ge")
             our_op = vo_greater_equal;
 
-        if (-1 != our_op)
+        if (static_cast<VersionOperatorValue>(-1) != our_op)
             return (VersionOperator(our_op).as_version_spec_comparator()(id->version(), VersionSpec(ver, ver_options)));
 
         if (0 == r.op().compare(0, 1, "r"))

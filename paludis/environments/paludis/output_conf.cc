@@ -173,7 +173,7 @@ namespace
             if (rule.action_requirement() != "*" && rule.action_requirement() != "sync")
                 return false;
 
-            if (-1 != rule.output_exclusivity_requirement() &&
+            if (static_cast<OutputExclusivity>(-1) != rule.output_exclusivity_requirement() &&
                     rule.output_exclusivity_requirement() != i.output_exclusivity())
                 return false;
 
@@ -197,7 +197,7 @@ namespace
             if (rule.action_requirement() != "*" && rule.action_requirement() != i.action_name())
                 return false;
 
-            if (-1 != rule.output_exclusivity_requirement() &&
+            if (static_cast<OutputExclusivity>(-1) != rule.output_exclusivity_requirement() &&
                     rule.output_exclusivity_requirement() != i.output_exclusivity())
                 return false;
 
