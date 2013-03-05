@@ -454,19 +454,33 @@ namespace paludis
     {
         std::string key;
         std::string value;
-        char op;
+        UserKeyRequirementOperator op;
 
         Imp(const std::string & s)
         {
-            std::string::size_type p(s.find_first_of("=<>?"));
-            if (std::string::npos == p)
-                throw PackageDepSpecError("Expected an =, a <, a > or a ? inside '[." + s + "]'");
+            int op_size = 1;
+            std::string::size_type p = std::string::npos;
+
+            if (std::string::npos != (p = s.find("!=")))
+            {
+                op_size = 2;
+                op = ukro_not_equal;
+            }
+            else if (std::string::npos != (p = s.find("=")))
+                op = ukro_equal;
+            else if (std::string::npos != (p = s.find(">")))
+                op = ukro_greater;
+            else if (std::string::npos != (p = s.find("<")))
+                op = ukro_less_or_subset;
+            else if (std::string::npos != (p = s.find("?")))
+                op = ukro_exists;
+            else
+                throw PackageDepSpecError("Expected an =, an !=, a <, a > or a ? inside '[." + s + "]'");
 
             key = s.substr(0, p);
-            value = s.substr(p + 1);
-            op = s.at(p);
+            value = s.substr(p + op_size);
 
-            if (op == '?' && ! value.empty())
+            if (op == ukro_exists && ! value.empty())
                 throw PackageDepSpecError("Operator '?' takes no value inside '[." + s + "]'");
         }
     };
@@ -633,11 +647,13 @@ namespace
         {
             switch (op)
             {
-                case '=':
+                case ukro_equal:
                     return pattern == stringify(k.parse_value().seconds());
-                case '<':
+                case ukro_not_equal:
+                    return pattern != stringify(k.parse_value().seconds());
+                case ukro_less_or_subset:
                     return k.parse_value().seconds() < destringify<time_t>(pattern);
-                case '>':
+                case ukro_greater:
                     return k.parse_value().seconds() > destringify<time_t>(pattern);
             }
 
@@ -646,33 +662,67 @@ namespace
 
         bool visit(const MetadataValueKey<std::string> & k) const
         {
-            return pattern == stringify(k.parse_value());
+            switch (op)
+            {
+                case ukro_equal:
+                    return pattern == stringify(k.parse_value());
+                case ukro_not_equal:
+                    return pattern != stringify(k.parse_value());
+            }
+
+            return false;
         }
 
         bool visit(const MetadataValueKey<Slot> & k) const
         {
-            return pattern == stringify(k.parse_value().raw_value());
+            switch (op)
+            {
+                case ukro_equal:
+                    return pattern == stringify(k.parse_value().raw_value());
+                case ukro_not_equal:
+                    return pattern != stringify(k.parse_value().raw_value());
+            }
+
+            return false;
         }
 
         bool visit(const MetadataValueKey<FSPath> & k) const
         {
-            return pattern == stringify(k.parse_value());
+            switch (op)
+            {
+                case ukro_equal:
+                    return pattern == stringify(k.parse_value());
+                case ukro_not_equal:
+                    return pattern != stringify(k.parse_value());
+            }
+
+            return false;
         }
 
         bool visit(const MetadataValueKey<bool> & k) const
         {
-            return pattern == stringify(k.parse_value());
+            switch (op)
+            {
+                case ukro_equal:
+                    return pattern == stringify(k.parse_value());
+                case ukro_not_equal:
+                    return pattern != stringify(k.parse_value());
+            }
+
+            return false;
         }
 
         bool visit(const MetadataValueKey<long> & k) const
         {
             switch (op)
             {
-                case '=':
+                case ukro_equal:
                     return pattern == stringify(k.parse_value());
-                case '<':
+                case ukro_not_equal:
+                    return pattern != stringify(k.parse_value());
+                case ukro_less_or_subset:
                     return k.parse_value() < destringify<long>(pattern);
-                case '>':
+                case ukro_greater:
                     return k.parse_value() > destringify<long>(pattern);
             }
 
@@ -686,16 +736,24 @@ namespace
 
         bool visit(const MetadataValueKey<std::shared_ptr<const PackageID> > & k) const
         {
-            return pattern == stringify(*k.parse_value());
+            switch (op)
+            {
+                case ukro_equal:
+                    return pattern == stringify(*k.parse_value());
+                case ukro_not_equal:
+                    return pattern != stringify(*k.parse_value());
+            }
+
+            return false;
         }
 
         bool visit(const MetadataSpecTreeKey<DependencySpecTree> & s) const
         {
             switch (op)
             {
-                case '=':
+                case ukro_equal:
                     return false;
-                case '<':
+                case ukro_less_or_subset:
                     return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
             }
 
@@ -706,9 +764,9 @@ namespace
         {
             switch (op)
             {
-                case '=':
+                case ukro_equal:
                     return false;
-                case '<':
+                case ukro_less_or_subset:
                     return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
             }
 
@@ -719,9 +777,9 @@ namespace
         {
             switch (op)
             {
-                case '=':
+                case ukro_equal:
                     return false;
-                case '<':
+                case ukro_less_or_subset:
                     return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
             }
 
@@ -732,9 +790,9 @@ namespace
         {
             switch (op)
             {
-                case '=':
+                case ukro_equal:
                     return false;
-                case '<':
+                case ukro_less_or_subset:
                     return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
             }
 
@@ -745,9 +803,9 @@ namespace
         {
             switch (op)
             {
-                case '=':
+                case ukro_equal:
                     return false;
-                case '<':
+                case ukro_less_or_subset:
                     return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
             }
 
@@ -758,9 +816,9 @@ namespace
         {
             switch (op)
             {
-                case '=':
+                case ukro_equal:
                     return false;
-                case '<':
+                case ukro_less_or_subset:
                     return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
             }
 
@@ -771,9 +829,9 @@ namespace
         {
             switch (op)
             {
-                case '=':
+                case ukro_equal:
                     return false;
-                case '<':
+                case ukro_less_or_subset:
                     return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
             }
 
@@ -785,9 +843,9 @@ namespace
             auto v(s.parse_value());
             switch (op)
             {
-                case '=':
+                case ukro_equal:
                     return pattern == join(v->begin(), v->end(), " ");
-                case '<':
+                case ukro_less_or_subset:
                     return v->end() != std::find_if(v->begin(), v->end(),
                             StringifyEqual(pattern));
             }
@@ -800,9 +858,9 @@ namespace
             auto v(s.parse_value());
             switch (op)
             {
-                case '=':
+                case ukro_equal:
                     return pattern == join(indirect_iterator(v->begin()), indirect_iterator(v->end()), " ");
-                case '<':
+                case ukro_less_or_subset:
                     return indirect_iterator(v->end()) != std::find_if(
                             indirect_iterator(v->begin()),
                             indirect_iterator(v->end()),
@@ -817,9 +875,9 @@ namespace
             auto v(s.parse_value());
             switch (op)
             {
-                case '=':
+                case ukro_equal:
                     return pattern == join(v->begin(), v->end(), " ");
-                case '<':
+                case ukro_less_or_subset:
                     return v->end() != std::find_if(v->begin(), v->end(),
                             StringifyEqual(pattern));
             }
@@ -832,9 +890,9 @@ namespace
             auto v(s.parse_value());
             switch (op)
             {
-                case '=':
+                case ukro_equal:
                     return pattern == join(v->begin(), v->end(), " ");
-                case '<':
+                case ukro_less_or_subset:
                     return v->end() != std::find_if(v->begin(), v->end(),
                             StringifyEqual(pattern));
             }
@@ -852,9 +910,9 @@ namespace
             auto v(s.parse_value());
             switch (op)
             {
-                case '=':
+                case ukro_equal:
                     return pattern == join(v->begin(), v->end(), " ");
-                case '<':
+                case ukro_less_or_subset:
                     return v->end() != std::find_if(v->begin(), v->end(),
                             StringifyEqual(pattern));
             }
@@ -867,9 +925,9 @@ namespace
             auto v(s.parse_value());
             switch (op)
             {
-                case '=':
+                case ukro_equal:
                     return pattern == join(v->begin(), v->end(), " ");
-                case '<':
+                case ukro_less_or_subset:
                     return v->end() != std::find_if(v->begin(), v->end(), StringifyEqual(pattern));
             }
 
@@ -1019,7 +1077,7 @@ UserKeyRequirement::requirement_met(
     if ((! key) && (! mask))
         return std::make_pair(false, as_human_string(from_id));
 
-    if (_imp->op == '?')
+    if (_imp->op == ukro_exists)
         return std::make_pair(true, as_human_string(from_id));
 
     if (mask && ! key)
@@ -1045,13 +1103,15 @@ UserKeyRequirement::as_human_string(const std::shared_ptr<const PackageID> &) co
 
     switch (_imp->op)
     {
-        case '=':
+        case ukro_equal:
             return "Key " + key_str + " has simple string value '" + _imp->value + "'";
-        case '<':
+        case ukro_not_equal:
+            return "Key " + key_str + " has a different string value than'" + _imp->value + "'";
+        case ukro_less_or_subset:
             return "Key " + key_str + " contains or is less than '" + _imp->value + "'";
-        case '>':
+        case ukro_greater:
             return "Key " + key_str + " is greater than '" + _imp->value + "'";
-        case '?':
+        case ukro_exists:
             return "Key " + key_str + " exists";
     }
 
@@ -1061,7 +1121,22 @@ UserKeyRequirement::as_human_string(const std::shared_ptr<const PackageID> &) co
 const std::string
 UserKeyRequirement::as_raw_string() const
 {
-    return "[." + _imp->key + std::string(1, _imp->op) + _imp->value + "]";
+    std::string op_string = "";
+    switch (_imp->op)
+    {
+        case ukro_equal:
+            return "[." + _imp->key + "=" + _imp->value + "]";
+        case ukro_not_equal:
+            return "[." + _imp->key + "!=" + _imp->value + "]";
+        case ukro_less_or_subset:
+            return "[." + _imp->key + "<" + _imp->value + "]";
+        case ukro_greater:
+            return "[." + _imp->key + ">" + _imp->value + "]";
+        case ukro_exists:
+            return "[." + _imp->key + "?" + _imp->value + "]";
+    }
+
+    throw InternalError(PALUDIS_HERE, "unknown op");
 }
 
 Tribool

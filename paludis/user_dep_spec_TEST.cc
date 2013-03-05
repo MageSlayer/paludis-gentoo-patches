@@ -244,6 +244,12 @@ TEST_F(UserDepSpecTest, Parsing)
 
     PackageDepSpec r(parse_user_package_dep_spec("foo/bar[.$short_description=value]", &env, { }));
     check_spec(r, "foo/bar", "", "", "", "", "", "", "", "[.$short_description=value]");
+
+    PackageDepSpec s(parse_user_package_dep_spec("foo/bar[.key!=value]", &env, { }));
+    check_spec(s, "foo/bar", "", "", "", "", "", "", "", "[.key!=value]");
+
+    PackageDepSpec t(parse_user_package_dep_spec("foo/bar[.$short_description!=value]", &env, { }));
+    check_spec(t, "foo/bar", "", "", "", "", "", "", "", "[.$short_description!=value]");
 }
 
 TEST_F(UserDepSpecTest, Unspecified)
@@ -485,5 +491,20 @@ TEST_F(UserDepSpecTest, Keys)
 
     PackageDepSpec s(parse_user_package_dep_spec("cat/pkg1[.::format=e]", &env, { }));
     EXPECT_TRUE(! match_package(env, s, pkg1, make_null_shared_ptr(), { }));
+
+    PackageDepSpec t(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER!=42]", &env, { }));
+    EXPECT_TRUE(! match_package(env, t, pkg1, make_null_shared_ptr(), { }));
+
+    PackageDepSpec u(parse_user_package_dep_spec("cat/pkg1[.::$format!=fake]", &env, { }));
+    EXPECT_TRUE(! match_package(env, u, pkg1, make_null_shared_ptr(), { }));
+
+    PackageDepSpec v(parse_user_package_dep_spec("cat/pkg1[.::$format!=e]", &env, { }));
+    EXPECT_TRUE(match_package(env, v, pkg1, make_null_shared_ptr(), { }));
+
+    PackageDepSpec w(parse_user_package_dep_spec("cat/pkg1[.::format!=fake]", &env, { }));
+    EXPECT_TRUE(! match_package(env, w, pkg1, make_null_shared_ptr(), { }));
+
+    PackageDepSpec x(parse_user_package_dep_spec("cat/pkg1[.::format!=e]", &env, { }));
+    EXPECT_TRUE(match_package(env, x, pkg1, make_null_shared_ptr(), { }));
 }
 

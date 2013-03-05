@@ -1,6 +1,26 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et ft=sh :
 
+make_enum_UserKeyRequirementOperator()
+{
+    prefix ukro
+
+    key ukro_equal           "'='  : Matches if key is equal to value, only ever matches for simple values, sets and sequences"
+    key ukro_not_equal       "'!=' : Matches if key is not equal to value, only ever matches for simple values, sets and sequences"
+    key ukro_greater         "'>'  : Matches if key is greater-than value, only ever matches for numeric values"
+    key ukro_less_or_subset  "'<'  : Matches if key is less-than value for numeric values or if values is part-of key for sets, sequences and spec trees"
+    key ukro_exists          "'?'  : Matches only if the specified key exists, takes no value"
+
+    doxygen_comment << "END"
+        /**
+         * Comparators for UserKeyRequirement.
+         *
+         * \ingroup g_dep_spec
+         * \since 1.0.1
+         */
+END
+}
+
 make_enum_UserPackageDepSpecOption()
 {
     prefix updso
