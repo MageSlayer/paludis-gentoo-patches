@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,6 +17,8 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
+
 #include "search_extras_handle.hh"
 
 #include <paludis/util/singleton-impl.hh>
@@ -29,8 +31,6 @@
 #include <string.h>
 #include <dlfcn.h>
 #include <stdint.h>
-
-#include "config.h"
 
 #define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
 
