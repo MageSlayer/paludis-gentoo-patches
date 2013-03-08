@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -1113,6 +1113,8 @@ UserKeyRequirement::as_human_string(const std::shared_ptr<const PackageID> &) co
             return "Key " + key_str + " is greater than '" + _imp->value + "'";
         case ukro_exists:
             return "Key " + key_str + " exists";
+        case last_ukro:
+            break;
     }
 
     throw InternalError(PALUDIS_HERE, "unknown op");
@@ -1134,6 +1136,8 @@ UserKeyRequirement::as_raw_string() const
             return "[." + _imp->key + ">" + _imp->value + "]";
         case ukro_exists:
             return "[." + _imp->key + "?" + _imp->value + "]";
+        case last_ukro:
+            break;
     }
 
     throw InternalError(PALUDIS_HERE, "unknown op");
