@@ -26,10 +26,11 @@ class TestCase_Contents(unittest.TestCase):
         self.assertRaises(Exception, ContentsEntry)
 
     def test_02_file_entry(self):
-        e = ContentsFileEntry("/foo")
+        e = ContentsFileEntry("/foo", "bar")
 
         self.assert_(isinstance(e, ContentsEntry))
         self.assertEquals(e.location_key().parse_value(), "/foo")
+        self.assertEquals(e.part_key().parse_value(), "bar")
 
     def test_03_dir_entry(self):
         e = ContentsDirEntry("/foo")
@@ -44,16 +45,17 @@ class TestCase_Contents(unittest.TestCase):
         self.assertEquals(e.location_key().parse_value(), "/foo")
 
     def test_07_sym_entry(self):
-        e = ContentsSymEntry("/foo", "/blah")
+        e = ContentsSymEntry("/foo", "/blah", "baz")
 
         self.assert_(isinstance(e, ContentsEntry))
         self.assertEquals(e.location_key().parse_value(), "/foo")
         self.assertEquals(e.target_key().parse_value(), "/blah")
+        self.assertEquals(e.part_key().parse_value(), "baz")
 
     def test_08_contents(self):
         entries = []
-        entries.append(ContentsSymEntry("/foo", "/blah"))
-        entries.append(ContentsFileEntry("/foo"))
+        entries.append(ContentsSymEntry("/foo", "/blah", "x"))
+        entries.append(ContentsFileEntry("/foo", "x"))
         entries.append(ContentsOtherEntry("/dev/foo"))
         entries.append(ContentsDirEntry("/bar"))
 
@@ -66,6 +68,8 @@ class TestCase_Contents(unittest.TestCase):
             self.assertEquals(type(entry), type(entries[i]))
             if i==0:
                 self.assertEquals(entry.target_key().parse_value(), entries[i].target_key().parse_value())
+            if i==0 or i==1:
+                self.assertEquals(entry.part_key().parse_value(), entries[i].part_key().parse_value())
             if i>3:
                 self.assertEquals("TOO MANY ENTRIES", "OK")
 

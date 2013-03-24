@@ -80,8 +80,10 @@ void expose_contents()
         (
          "ContentsFileEntry",
          "A file contents entry.",
-         bp::init<const FSPath &>("__init__(location)")
-        );
+         bp::init<const FSPath &, const std::string &>("__init__(location, part)")
+        )
+        .def("part_key", &ContentsFileEntry::part_key)
+        ;
 
     /**
      * ContentsDirEntry
@@ -110,12 +112,13 @@ void expose_contents()
         (
          "ContentsSymEntry",
          "A sym contents entry.",
-         bp::init<const FSPath &, const std::string &>("__init__(location, target_string)")
+         bp::init<const FSPath &, const std::string &, const std::string &>("__init__(location, target_string, part)")
         )
 
         .def("target_key", &ContentsSymEntry::target_key,
                 "The target_key, which will not be None, holds the symlink's target (as per readlink)."
             )
+        .def("part_key", &ContentsSymEntry::part_key)
         ;
 
     /**

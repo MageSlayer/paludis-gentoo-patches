@@ -31,7 +31,7 @@ module Paludis
 
     class TestCase_ContentsFileEntry < Test::Unit::TestCase
         def get_ce
-            ContentsFileEntry.new('test')
+            ContentsFileEntry.new('test', 'foo')
         end
 
         def test_create
@@ -44,22 +44,32 @@ module Paludis
             end
 
             assert_raise ArgumentError do
-                ContentsFileEntry.new('a','b')
+                ContentsFileEntry.new('a')
             end
 
             assert_raise TypeError do
-                ContentsFileEntry.new(1)
+                ContentsFileEntry.new(1, 'b')
+            end
+
+            assert_raise TypeError do
+                ContentsFileEntry.new('a', 2)
             end
         end
 
         def test_respond_to
             ce = get_ce
             assert_respond_to ce, :location_key
+            assert_respond_to ce, :part_key
         end
 
         def test_name
             ce = get_ce
             assert_equal 'test', ce.location_key.parse_value
+        end
+
+        def test_part
+            ce = get_ce
+            assert_equal 'foo', ce.part_key.parse_value
         end
     end
 
@@ -133,7 +143,7 @@ module Paludis
 
     class TestCase_ContentsSymEntry < Test::Unit::TestCase
         def get_ce
-            ContentsSymEntry.new('test_name', 'test_target')
+            ContentsSymEntry.new('test_name', 'test_target', 'test_part')
         end
 
         def test_create
@@ -150,15 +160,19 @@ module Paludis
             end
 
             assert_raise ArgumentError do
-                ContentsSymEntry.new('a','b','c')
+                ContentsSymEntry.new('a','b')
             end
 
             assert_raise TypeError do
-                ContentsSymEntry.new('a',1)
+                ContentsSymEntry.new('a','b',1)
             end
 
             assert_raise TypeError do
-                ContentsSymEntry.new(1,'b')
+                ContentsSymEntry.new('a',1,'c')
+            end
+
+            assert_raise TypeError do
+                ContentsSymEntry.new(1,'b','c')
             end
         end
 
@@ -166,6 +180,7 @@ module Paludis
             ce = get_ce
             assert_respond_to ce, :location_key
             assert_respond_to ce, :target_key
+            assert_respond_to ce, :part_key
         end
 
         def test_name
@@ -177,14 +192,19 @@ module Paludis
             ce = get_ce
             assert_equal 'test_target', ce.target_key.parse_value
         end
+
+        def test_part
+            ce = get_ce
+            assert_equal 'test_part', ce.part_key.parse_value
+        end
     end
     class TestCase_Contents < Test::Unit::TestCase
         def get_cfe
-            ContentsFileEntry.new('test')
+            ContentsFileEntry.new('test', 'foo')
         end
 
         def get_cse
-            ContentsSymEntry.new('test_name', 'test_target')
+            ContentsSymEntry.new('test_name', 'test_target', 'foo')
         end
 
         def get_c

@@ -192,19 +192,44 @@ namespace
         }
     };
 
-    VALUE contents_sym_entry_new(int argc, VALUE * argv, VALUE self)
+    VALUE contents_file_entry_new(int argc, VALUE * argv, VALUE self)
     {
         std::shared_ptr<const ContentsEntry> * ptr(0);
         try
         {
             if (2 == argc)
             {
-                ptr = new std::shared_ptr<const ContentsEntry>(std::make_shared<ContentsSymEntry>(
+                ptr = new std::shared_ptr<const ContentsEntry>(std::make_shared<ContentsFileEntry>(
                             FSPath(StringValuePtr(argv[0])), StringValuePtr(argv[1])));
             }
             else
             {
                 rb_raise(rb_eArgError, "ContentsSymEntry expects two arguments, but got %d",argc);
+            }
+            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<const ContentsEntry> >::free, ptr));
+            rb_obj_call_init(tdata, argc, argv);
+            return tdata;
+        }
+        catch (const std::exception & e)
+        {
+            delete ptr;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    VALUE contents_sym_entry_new(int argc, VALUE * argv, VALUE self)
+    {
+        std::shared_ptr<const ContentsEntry> * ptr(0);
+        try
+        {
+            if (3 == argc)
+            {
+                ptr = new std::shared_ptr<const ContentsEntry>(std::make_shared<ContentsSymEntry>(
+                            FSPath(StringValuePtr(argv[0])), StringValuePtr(argv[1]), StringValuePtr(argv[2])));
+            }
+            else
+            {
+                rb_raise(rb_eArgError, "ContentsSymEntry expects three arguments, but got %d",argc);
             }
             VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<const ContentsEntry> >::free, ptr));
             rb_obj_call_init(tdata, argc, argv);
@@ -230,6 +255,14 @@ namespace
         return metadata_key_to_value((*ptr)->location_key());
     }
 
+    static VALUE
+    contents_file_entry_part_key(VALUE self)
+    {
+        std::shared_ptr<const ContentsEntry> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const ContentsEntry>, ptr);
+        return metadata_key_to_value((std::static_pointer_cast<const ContentsFileEntry>(*ptr))->part_key());
+    }
+
     /*
      * Document-method: target_key
      *
@@ -241,6 +274,14 @@ namespace
         std::shared_ptr<const ContentsEntry> * ptr;
         Data_Get_Struct(self, std::shared_ptr<const ContentsEntry>, ptr);
         return metadata_key_to_value((std::static_pointer_cast<const ContentsSymEntry>(*ptr))->target_key());
+    }
+
+    static VALUE
+    contents_sym_entry_part_key(VALUE self)
+    {
+        std::shared_ptr<const ContentsEntry> * ptr;
+        Data_Get_Struct(self, std::shared_ptr<const ContentsEntry>, ptr);
+        return metadata_key_to_value((std::static_pointer_cast<const ContentsSymEntry>(*ptr))->part_key());
     }
 
     /*
@@ -296,7 +337,8 @@ namespace
          * A file ContentsEntry
          */
         c_contents_file_entry = rb_define_class_under(paludis_module(), "ContentsFileEntry", c_contents_entry);
-        rb_define_singleton_method(c_contents_file_entry, "new", RUBY_FUNC_CAST((&ContentsNew<ContentsFileEntry>::contents_entry_new)), -1);
+        rb_define_singleton_method(c_contents_file_entry, "new", RUBY_FUNC_CAST(&contents_file_entry_new), -1);
+        rb_define_method(c_contents_file_entry, "part_key", RUBY_FUNC_CAST(&contents_file_entry_part_key), 0);
 
         /*
          * Document-class: Paludis::ContentsDirEntry
@@ -323,6 +365,7 @@ namespace
         c_contents_sym_entry = rb_define_class_under(paludis_module(), "ContentsSymEntry", c_contents_entry);
         rb_define_singleton_method(c_contents_sym_entry, "new", RUBY_FUNC_CAST(&contents_sym_entry_new), -1);
         rb_define_method(c_contents_sym_entry, "target_key", RUBY_FUNC_CAST(&contents_sym_entry_target_key), 0);
+        rb_define_method(c_contents_sym_entry, "part_key", RUBY_FUNC_CAST(&contents_sym_entry_part_key), 0);
     }
 }
 

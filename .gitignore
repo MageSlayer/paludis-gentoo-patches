@@ -266,6 +266,7 @@ tags
 /paludis/ihateautomake.cc
 /paludis/name_TEST
 /paludis/paludis.hh
+/paludis/partitioning_TEST
 /paludis/repositories/accounts/accounts_repository_TEST
 /paludis/repositories/e/aa_visitor_TEST
 /paludis/repositories/e/dep_parser_TEST
