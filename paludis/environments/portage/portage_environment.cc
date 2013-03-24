@@ -258,7 +258,13 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
                     std::bind(&predefined, _imp->vars, std::placeholders::_1, std::placeholders::_2),
                     &do_incremental);
 
-    _load_profile((_imp->conf_dir / "make.profile").realpath());
+    if ((_imp->conf_dir / "portage" / "make.profile").stat().is_directory_or_symlink_to_directory())
+        _load_profile((_imp->conf_dir / "portage" / "make.profile").realpath());
+    else if ((_imp->conf_dir / "make.profile").stat().is_directory_or_symlink_to_directory())
+        _load_profile((_imp->conf_dir / "make.profile").realpath());
+    else
+        throw PortageEnvironmentConfigurationError("Neither '" + stringify(_imp->conf_dir / "portage" / "make.profile")
+                + "' nor '" + stringify(_imp->conf_dir / "make.profile") + "' exists and is a directory");
 
     if ((_imp->conf_dir / "make.conf").stat().exists())
         _imp->vars = std::make_shared<KeyValueConfigFile>(_imp->conf_dir / "make.conf", KeyValueConfigFileOptions() +
@@ -496,7 +502,8 @@ PortageEnvironment::_add_ebuild_repository(const FSPath & portdir, const std::st
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("root", stringify(preferred_root_key()->parse_value()));
     keys->insert("location", stringify(portdir));
-    keys->insert("profiles", stringify((_imp->conf_dir / "make.profile").realpath()) + " " +
+    keys->insert("profiles", stringify(((_imp->conf_dir / "portage" / "make.profile").stat().is_directory_or_symlink_to_directory() ?
+             _imp->conf_dir / "portage" / "make.profile" : _imp->conf_dir / "make.profile").realpath()) + " " +
             ((_imp->conf_dir / "portage" / "profile").stat().is_directory() ?
              stringify(_imp->conf_dir / "portage" / "profile") : ""));
     keys->insert("format", "e");
