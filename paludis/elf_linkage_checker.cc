@@ -229,6 +229,11 @@ Imp<ElfLinkageChecker>::handle_library(const FSPath & file, const ElfArchitectur
             join(second_iterator(range.first), second_iterator(range.second), " ");
         std::transform(second_iterator(range.first), second_iterator(range.second),
                        std::back_inserter(libraries[arch]), std::mem_fn(&FSPath::basename));
+        using namespace std::placeholders;
+        std::transform(second_iterator(range.first), second_iterator(range.second),
+                       std::back_inserter(libraries[arch]),
+                       std::bind(static_cast<std::string (*)(const FSPath &)>(stringify),
+                                 std::bind(&FSPath::strip_leading, _1, root)));
     }
 }
 
