@@ -171,9 +171,13 @@ FixLinkageCommand::run(
     {
         libraries->push_back(*l);
         if (std::string::npos != l->find('/'))
+        {
+            FSPath f(*l);
+            libraries->push_back(f.basename());
             Log::get_instance()->message("cave.fix_linkage.library_path", ll_warning, lc_no_context)
                 << "Argument --" << cmdline.a_libraries.long_name() << " '" << *l << "' includes a '/', which "
                 "probably does not do what you want. Generally you should not specify a path to a library.";
+        }
     }
 
     std::shared_ptr<BrokenLinkageFinder> finder;
