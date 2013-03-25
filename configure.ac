@@ -429,8 +429,8 @@ AC_PREPROC_IFELSE([AC_LANG_SOURCE([
 #  error not gcc 4
 #endif
 
-#if __GNUC_MINOR__ != 4 && __GNUC_MINOR__ != 5 && __GNUC_MINOR__ != 6 && __GNUC_MINOR__ != 7
-#  error not gcc 4.4 to 4.7
+#if __GNUC_MINOR__ != 4 && __GNUC_MINOR__ != 5 && __GNUC_MINOR__ != 6 && __GNUC_MINOR__ != 7 && __GNUC_MINOR__ != 8
+#  error not gcc 4.4 to 4.8
 #endif
 ])],
 	[AC_MSG_RESULT([yes])
