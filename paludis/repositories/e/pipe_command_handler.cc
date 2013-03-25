@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012 Ciaran McCreesh
  * Copyright (c) 2009 Ingmar Vanhassel
  * Copyright (c) 2013 Saleem Abdulrasool <compnerd@compnerd.org>
  *
@@ -595,7 +595,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
             try
             {
-                if (maybe_partitioning == NULL)
+                if (! maybe_partitioning)
                 {
                     Log::get_instance()->message("e.pipe_commands.partitioning.unsupported",
                                                  ll_warning, lc_context)
