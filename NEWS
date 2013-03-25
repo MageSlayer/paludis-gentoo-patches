@@ -4,6 +4,15 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+1.2.0:
+    * Bug fixes.
+
+    * Dep specs can now use '[.key!=value]'. The behaviour of '<' and '>' has
+      changed: for key types where order comparisons don't make sense, the match
+      now always fails.
+
+    * Various compiler-compatibility fixes.
+
 1.0.0:
     * EAPI 5 style subslot specs are allowed in user dependency specs.
 
