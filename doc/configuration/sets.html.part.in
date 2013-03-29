@@ -51,8 +51,8 @@ which is a dynamic standard configuration file. Sets may be specified in any of 
     <li><code><em>DATADIR</em>/paludis/sets/</code>. On most
     systems, <code><em>DATADIR</em></code> is <code>/usr/share</code>.</li>
 
-    <li><code><em>LIBDIR</em>/paludis/sets/</code>. On most
-    systems, <code><em>LIBDIR</em></code> is <code>/usr/lib</code> or <code>/usr/lib64</code>.</li>
+    <li><code><em>LIBEXECDIR</em>/paludis/sets/</code>. On most
+    systems, <code><em>LIBEXECDIR</em></code> is <code>/usr/libexec</code>.</li>
 </ul>
 
 <div class="note">
