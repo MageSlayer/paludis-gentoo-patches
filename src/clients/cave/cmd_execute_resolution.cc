@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -465,7 +465,7 @@ namespace
             for (args::StringSetArg::ConstIterator p(cmdline.import_options.a_unpackaged_repository_params.begin_args()),
                     p_end(cmdline.import_options.a_unpackaged_repository_params.end_args()) ;
                     p != p_end ; ++p)
-                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
+                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " " + args::escape(*p));
         }
 
         IPCInputManager input_manager(env.get(), std::bind(&set_output_manager, std::ref(job_mutex),
@@ -531,7 +531,7 @@ namespace
             for (args::StringSetArg::ConstIterator p(cmdline.import_options.a_unpackaged_repository_params.begin_args()),
                     p_end(cmdline.import_options.a_unpackaged_repository_params.end_args()) ;
                     p != p_end ; ++p)
-                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
+                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " " + args::escape(*p));
         }
 
         IPCInputManager input_manager(env.get(), std::bind(&set_output_manager, std::ref(job_mutex),
@@ -589,7 +589,7 @@ namespace
             for (args::StringSetArg::ConstIterator p(cmdline.import_options.a_unpackaged_repository_params.begin_args()),
                     p_end(cmdline.import_options.a_unpackaged_repository_params.end_args()) ;
                     p != p_end ; ++p)
-                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " '" + *p + "'");
+                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " " + args::escape(*p));
         }
 
         IPCInputManager input_manager(env.get(), std::bind(&set_output_manager, std::ref(job_mutex),
