@@ -19,9 +19,23 @@ fetchers can be replaced (for example, if you want to use something other than <
 <h2>User Defined Fetchers</h2>
 
 <p>To write your own fetcher for protocol <code>proto</code>, create an executable script named <code>doproto</code> (the
-<code>do</code> prefix is essential) and place it in <code>SHAREDIR/paludis/fetchers/</code>, where <code>SHAREDIR</code>
-is probably <code>/usr/share</code>. This directory has priority over the usual Paludis fetcher locations, so it can be
-used to override existing fetchers as well as creating new ones.</p>
+<code>do</code> prefix is essential). Fetchers may be located in any of the following directories:
+
+<ul>
+    <li><code><em>confdir</em>/fetchers/</code>, where
+    <code><em>confdir</em></code> is the directory in which <code>use.conf</code>
+    et al. reside.</li>
+
+    <li><code><em>DATADIR</em>/paludis/fetchers/</code>. On most
+    systems, <code><em>DATADIR</em></code> is <code>/usr/share</code>.</li>
+
+    <li><code><em>LIBEXECDIR</em>/paludis/fetchers/</code>. On most
+    systems, <code><em>LIBEXECDIR</em></code> is <code>/usr/libexec</code>.</li>
+</ul>
+
+<p>Paludis places its own fetchers in
+<code><em>LIBEXECDIR</em>/fetchers/<em>doproto</em></code>. This directory is
+not for end user use.</p>
 
 <p>A fetcher is called with two parameters, the source URI and the destination filename. It indicates success or failure
 via its exit status.</p>

@@ -29,9 +29,23 @@ Paludis.</p>
 <h2>User Defined Syncers</h2>
 
 <p>To write your own syncer for protocol <code>proto</code>, create an executable script named <code>doproto</code> (the
-<code>do</code> prefix is essential) and place it in <code>SHAREDIR/paludis/syncers/</code>, where <code>SHAREDIR</code>
-is probably <code>/usr/share</code>. This directory has priority over the usual Paludis syncer locations, so it can be
-used to override existing syncers as well as creating new ones.</p>
+<code>do</code> prefix is essential). Syncers may be located in any of the following directories:
+
+<ul>
+    <li><code><em>confdir</em>/syncers/</code>, where
+    <code><em>confdir</em></code> is the directory in which <code>use.conf</code>
+    et al. reside.</li>
+
+    <li><code><em>DATADIR</em>/paludis/syncers/</code>. On most
+    systems, <code><em>DATADIR</em></code> is <code>/usr/share</code>.</li>
+
+    <li><code><em>LIBEXECDIR</em>/paludis/syncers/</code>. On most
+    systems, <code><em>LIBEXECDIR</em></code> is <code>/usr/libexec</code>.</li>
+</ul>
+
+<p>Paludis places its own syncers in
+<code><em>LIBEXECDIR</em>/syncers/<em>doproto</em></code>. This directory is
+not for end user use.</p>
 
 <p>A syncer script can be called in two ways:</p>
 
