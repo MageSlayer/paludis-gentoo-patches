@@ -72,6 +72,12 @@
 #  define PALUDIS_HIDDEN
 #endif
 
+#if defined(PALUDIS_HAVE_NOEXCEPT)
+#  define PALUDIS_NOEXCEPT(x) noexcept(x)
+#else
+#  define PALUDIS_NOEXCEPT(x)
+#endif
+
 #define PALUDIS_TLS static __thread
 
 #endif

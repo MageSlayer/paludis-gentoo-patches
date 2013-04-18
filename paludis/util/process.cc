@@ -1012,7 +1012,7 @@ RunningProcessHandle::RunningProcessHandle(pid_t p, std::unique_ptr<RunningProce
 {
 }
 
-RunningProcessHandle::~RunningProcessHandle()
+RunningProcessHandle::~RunningProcessHandle() PALUDIS_NOEXCEPT(false)
 {
     if (-1 != _imp->pid)
     {

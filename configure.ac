@@ -896,6 +896,20 @@ enum class C : long { c };
 	])
 dnl }}}
 
+dnl {{{ c++0x noexcept
+AC_MSG_CHECKING([for c++0x noexcept])
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+struct C { ~C() noexcept(false); };
+C::~C() noexcept(false) {}
+])],
+	[AC_MSG_RESULT([yes])
+	 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_HAVE_NOEXCEPT=1"
+	 PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_HAVE_NOEXCEPT=1"
+	],
+	[AC_MSG_RESULT([no])
+	])
+dnl }}}
+
 CXXFLAGS="$save_CXXFLAGS"
 
 AC_MSG_CHECKING([whether to enable visibility])
