@@ -138,7 +138,7 @@ SafeOFStream::SafeOFStream(const FSPath & p, const int open_flags, const bool b)
 {
 }
 
-SafeOFStream::~SafeOFStream()
+SafeOFStream::~SafeOFStream() PALUDIS_NOEXCEPT(false)
 {
     buf.write_buffered();
 
