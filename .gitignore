@@ -460,6 +460,7 @@ tags
 /paludis/util/sha512_TEST
 /paludis/util/simple_parser_TEST
 /paludis/util/singleton_TEST
+/paludis/util/stream_holder_TEST
 /paludis/util/stringify_TEST
 /paludis/util/string_list_stream_TEST
 /paludis/util/strip_TEST
