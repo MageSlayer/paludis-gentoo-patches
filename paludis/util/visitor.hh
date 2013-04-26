@@ -20,6 +20,7 @@
 #ifndef PALUDIS_GUARD_PALUDIS_UTIL_VISITOR_HH
 #define PALUDIS_GUARD_PALUDIS_UTIL_VISITOR_HH 1
 
+#include <paludis/util/attributes.hh>
 #include <paludis/util/visitor-fwd.hh>
 #include <paludis/util/no_type.hh>
 
@@ -190,7 +191,7 @@ namespace paludis
     };
 
     template <typename BaseClass_, typename RealClass_>
-    class ImplementAcceptMethods :
+    class PALUDIS_VISIBLE ImplementAcceptMethods :
         public virtual DeclareAbstractAcceptMethods<BaseClass_, typename BaseClass_::VisitableTypeList>
     {
         private:
