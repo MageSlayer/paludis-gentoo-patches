@@ -24,6 +24,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/pimp.hh>
+#include <paludis/util/stream_holder.hh>
 #include <ostream>
 
 /** \file
@@ -106,7 +107,7 @@ namespace paludis
      */
     class PALUDIS_VISIBLE SafeOFStream :
         protected SafeOFStreamBase,
-        public std::ostream
+        public StreamHolder<std::ostream>
     {
         private:
             const bool _close;

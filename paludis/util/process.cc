@@ -567,7 +567,7 @@ Process::run()
             if (! _imp->capture_stdout)
             {
                 thread->own_capture_stdout.reset(new SafeOFStream(STDOUT_FILENO, false));
-                _imp->capture_stdout = thread->own_capture_stdout.get();
+                _imp->capture_stdout = *thread->own_capture_stdout;
             }
         }
 
@@ -577,7 +577,7 @@ Process::run()
             if (! _imp->capture_stderr)
             {
                 thread->own_capture_stderr.reset(new SafeOFStream(STDERR_FILENO, false));
-                _imp->capture_stderr = thread->own_capture_stderr.get();
+                _imp->capture_stderr = *thread->own_capture_stderr;
             }
         }
 

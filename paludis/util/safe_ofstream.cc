@@ -109,7 +109,7 @@ SafeOFStreamBase::SafeOFStreamBase(const int f, const bool b) :
 
 SafeOFStream::SafeOFStream(const int f, const bool buffer) :
     SafeOFStreamBase(f, buffer),
-    std::ostream(&buf),
+    StreamHolder<std::ostream>(&buf),
     _close(false)
 {
 }
@@ -133,7 +133,7 @@ namespace
 
 SafeOFStream::SafeOFStream(const FSPath & p, const int open_flags, const bool b) :
     SafeOFStreamBase(check_open_path(p, open_flags), b),
-    std::ostream(&buf),
+    StreamHolder<std::ostream>(&buf),
     _close(true)
 {
 }
