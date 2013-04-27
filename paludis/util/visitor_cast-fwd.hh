@@ -21,10 +21,12 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_VISITOR_CAST_FWD_HH 1
 
 #include <paludis/util/attributes.hh>
+#include <type_traits>
 
 namespace paludis
 {
-    template <typename To_, typename From_>
+    template <typename To_, typename From_,
+              typename = typename std::enable_if<std::is_base_of<From_, To_>::value>::type>
     To_ * visitor_cast(From_ &) PALUDIS_ATTRIBUTE((warn_unused_result));
 }
 

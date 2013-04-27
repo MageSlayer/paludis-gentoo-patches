@@ -40,17 +40,6 @@ namespace paludis
         }
     };
 
-    template <typename To_, typename From_, bool ok_>
-    struct VerifyVisitorCastType
-    {
-    };
-
-    template <typename To_, typename From_>
-    struct VerifyVisitorCastType<To_, From_, true>
-    {
-        typedef int IsOK;
-    };
-
     template <typename C_, typename T_>
     struct CopyConst
     {
@@ -63,13 +52,10 @@ namespace paludis
         typedef const T_ Type;
     };
 
-    template <typename To_, typename From_>
-    To_ * visitor_cast(From_ & from)
+    template <typename To_, typename From_, typename>
+    To_ *
+    visitor_cast(From_ & from)
     {
-        /* verify that we are attempting to visitor_cast something that
-         * could potentially be true */
-        typedef typename VerifyVisitorCastType<To_, From_, std::is_base_of<From_, To_>::value>::IsOK TypeIsOK;
-
         VisitorCaster<To_, typename CopyConst<From_, typename From_::VisitableBaseClass>::Type> q;
         return from.template accept_returning<To_ *>(q);
     }
