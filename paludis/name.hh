@@ -276,6 +276,10 @@ namespace paludis
     extern template class PALUDIS_VISIBLE WrappedValue<SetNameTag>;
     extern template class PALUDIS_VISIBLE WrappedValue<PartNameTag>;
 
+    extern template class PALUDIS_VISIBLE Set<CategoryNamePart>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Set<CategoryNamePart>::ConstIteratorTag, const CategoryNamePart>;
+    extern template class PALUDIS_VISIBLE WrappedOutputIterator<Set<CategoryNamePart>::InserterTag, CategoryNamePart>;
+
     extern template class PALUDIS_VISIBLE Set<QualifiedPackageName>;
     extern template class PALUDIS_VISIBLE WrappedForwardIterator<Set<QualifiedPackageName>::ConstIteratorTag, const QualifiedPackageName>;
     extern template class PALUDIS_VISIBLE WrappedOutputIterator<Set<QualifiedPackageName>::InserterTag, QualifiedPackageName>;

@@ -28,6 +28,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/name.hh>
 
 #include <paludis/util/log.hh>
 #include <paludis/util/save.hh>

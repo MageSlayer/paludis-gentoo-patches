@@ -54,9 +54,9 @@ namespace paludis
     template class PALUDIS_VISIBLE WrappedForwardIterator<Set<PackageNamePart>::ConstIteratorTag, const PackageNamePart>;
     template class PALUDIS_VISIBLE WrappedOutputIterator<Set<PackageNamePart>::InserterTag, PackageNamePart>;
 
-    template class PALUDIS_VISIBLE Set<CategoryNamePart>;
-    template class PALUDIS_VISIBLE WrappedForwardIterator<Set<CategoryNamePart>::ConstIteratorTag, const CategoryNamePart>;
-    template class PALUDIS_VISIBLE WrappedOutputIterator<Set<CategoryNamePart>::InserterTag, CategoryNamePart>;
+    template class Set<CategoryNamePart>;
+    template class WrappedForwardIterator<Set<CategoryNamePart>::ConstIteratorTag, const CategoryNamePart>;
+    template class WrappedOutputIterator<Set<CategoryNamePart>::InserterTag, CategoryNamePart>;
 
     template class Set<QualifiedPackageName>;
     template class WrappedForwardIterator<Set<QualifiedPackageName>::ConstIteratorTag, const QualifiedPackageName>;
