@@ -227,6 +227,8 @@ namespace paludis
         typedef Name<struct name_want_portage_emulation_vars> want_portage_emulation_vars;
     }
 
+    extern template class PALUDIS_VISIBLE Singleton<erepository::EAPIData>;
+
     namespace erepository
     {
         class PALUDIS_VISIBLE EAPILabels

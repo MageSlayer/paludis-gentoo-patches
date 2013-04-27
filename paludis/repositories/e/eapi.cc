@@ -22,6 +22,7 @@
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
 
+#include <paludis/util/attributes.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/strip.hh>
