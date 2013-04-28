@@ -242,12 +242,13 @@ void
 Merger::on_file(bool is_check, const FSPath & src, const FSPath & dst)
 {
     Context context("When handling file '" + stringify(src) + "' to '" + stringify(dst) + "':");
+    const auto staged(dst / src.basename());
 
     if (is_check &&
         0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_file_pre")
                          ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))),
+                         ("INSTALL_DESTINATION", stringify(staged))),
             _imp->params.maybe_output_manager()).max_exit_status())
         make_check_fail();
 
@@ -256,7 +257,7 @@ Merger::on_file(bool is_check, const FSPath & src, const FSPath & dst)
         HookResult hr(_imp->params.environment()->perform_hook(extend_hook(
                         Hook("merger_install_file_override")
                         ("INSTALL_SOURCE", stringify(src))
-                        ("INSTALL_DESTINATION", stringify(dst / src.basename()))
+                        ("INSTALL_DESTINATION", stringify(staged))
                         .grab_output(Hook::AllowedOutputValues()("skip"))),
                     _imp->params.maybe_output_manager()));
 
@@ -265,7 +266,7 @@ Merger::on_file(bool is_check, const FSPath & src, const FSPath & dst)
                 << stringify(src) << "' to '" << stringify(dst) << "' skip hooks returned non-zero";
         else if (hr.output() == "skip")
         {
-            std::string tidy(stringify((dst / src.basename()).strip_leading(_imp->params.root().realpath())));
+            std::string tidy(stringify(staged.strip_leading(_imp->params.root().realpath())));
             display_override("--- [skp] " + tidy);
             return;
         }
@@ -281,7 +282,7 @@ Merger::on_file(bool is_check, const FSPath & src, const FSPath & dst)
         0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_file_post")
                          ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))),
+                         ("INSTALL_DESTINATION", stringify(staged))),
             _imp->params.maybe_output_manager()).max_exit_status())
         make_check_fail();
 }
@@ -290,12 +291,13 @@ void
 Merger::on_dir(bool is_check, const FSPath & src, const FSPath & dst)
 {
     Context context("When handling dir '" + stringify(src) + "' to '" + stringify(dst) + "':");
+    const auto staged(dst / src.basename());
 
     if (is_check &&
         0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_dir_pre")
                          ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))),
+                         ("INSTALL_DESTINATION", stringify(staged))),
             _imp->params.maybe_output_manager()).max_exit_status())
         make_check_fail();
 
@@ -304,7 +306,7 @@ Merger::on_dir(bool is_check, const FSPath & src, const FSPath & dst)
         HookResult hr(_imp->params.environment()->perform_hook(extend_hook(
                         Hook("merger_install_dir_override")
                         ("INSTALL_SOURCE", stringify(src))
-                        ("INSTALL_DESTINATION", stringify(dst / src.basename()))
+                        ("INSTALL_DESTINATION", stringify(staged))
                         .grab_output(Hook::AllowedOutputValues()("skip"))),
                     _imp->params.maybe_output_manager()));
 
@@ -313,7 +315,7 @@ Merger::on_dir(bool is_check, const FSPath & src, const FSPath & dst)
                 << stringify(src) << "' to '" << stringify(dst) << "' skip hooks returned non-zero";
         else if (hr.output() == "skip")
         {
-            std::string tidy(stringify((dst / src.basename()).strip_leading(_imp->params.root().realpath())));
+            std::string tidy(stringify(staged.strip_leading(_imp->params.root().realpath())));
             display_override("--- [skp] " + tidy);
             _imp->skip_dir = true;
             return;
@@ -326,7 +328,7 @@ Merger::on_dir(bool is_check, const FSPath & src, const FSPath & dst)
         0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_dir_post")
                          ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))),
+                         ("INSTALL_DESTINATION", stringify(staged))),
             _imp->params.maybe_output_manager()).max_exit_status())
         make_check_fail();
 }
@@ -335,12 +337,13 @@ void
 Merger::on_sym(bool is_check, const FSPath & src, const FSPath & dst)
 {
     Context context("When handling sym '" + stringify(src) + "' to '" + stringify(dst) + "':");
+    const auto staged(dst / src.basename());
 
     if (is_check &&
         0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_sym_pre")
                          ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))),
+                         ("INSTALL_DESTINATION", stringify(staged))),
             _imp->params.maybe_output_manager()).max_exit_status())
         make_check_fail();
 
@@ -349,7 +352,7 @@ Merger::on_sym(bool is_check, const FSPath & src, const FSPath & dst)
         HookResult hr(_imp->params.environment()->perform_hook(extend_hook(
                         Hook("merger_install_sym_override")
                         ("INSTALL_SOURCE", stringify(src))
-                        ("INSTALL_DESTINATION", stringify(dst / src.basename()))
+                        ("INSTALL_DESTINATION", stringify(staged))
                         .grab_output(Hook::AllowedOutputValues()("skip"))),
                     _imp->params.maybe_output_manager()));
 
@@ -358,11 +361,10 @@ Merger::on_sym(bool is_check, const FSPath & src, const FSPath & dst)
                 << stringify(src) << "' to '" << stringify(dst) << "' skip hooks returned non-zero";
         else if (hr.output() == "skip")
         {
-            std::string tidy(stringify((dst / src.basename()).strip_leading(_imp->params.root().realpath())));
+            std::string tidy(stringify(staged.strip_leading(_imp->params.root().realpath())));
             display_override("--- [skp] " + tidy);
             return;
         }
-
     }
 
     if (symlink_needs_rewriting(src))
@@ -379,7 +381,7 @@ Merger::on_sym(bool is_check, const FSPath & src, const FSPath & dst)
         0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_sym_post")
                          ("INSTALL_SOURCE", stringify(src))
-                         ("INSTALL_DESTINATION", stringify(dst / src.basename()))),
+                         ("INSTALL_DESTINATION", stringify(staged))),
             _imp->params.maybe_output_manager()).max_exit_status())
         make_check_fail();
 }
