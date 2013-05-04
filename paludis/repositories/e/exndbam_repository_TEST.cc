@@ -43,6 +43,9 @@ using namespace paludis;
 
 namespace
 {
+    const auto exndbam_repository_TEST_dir =
+        FSPath::cwd() / "exndbam_repository_TEST_dir";
+
     void do_uninstall(const std::shared_ptr<const PackageID> & id, const UninstallActionOptions & u)
     {
         UninstallAction a(u);
@@ -90,46 +93,55 @@ namespace
                     PackageDepSpec(parse_user_package_dep_spec(chosen_one,
                             &env, { })), make_null_shared_ptr(), { }))]->begin())->perform_action(install_action);
     }
+
+    std::shared_ptr<Repository>
+    make_exndbam_repository(Environment & env, const FSPath & root,
+                            const std::string & name)
+    {
+        using namespace std::placeholders;
+
+        auto keys(std::make_shared<Map<std::string, std::string>>());
+
+        keys->insert("format", "exndbam");
+        keys->insert("location", stringify(root / name));
+        keys->insert("builddir", stringify(root / "build"));
+
+        keys->insert("root", stringify(root / "root"));
+
+        return ExndbamRepository::repository_factory_create(&env,
+                                                            std::bind(from_keys,
+                                                                      keys, _1));
+    }
 }
 
 TEST(ExndbamRepository, RepoName)
 {
     TestEnvironment env;
-    std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-    keys->insert("format", "exndbam");
-    keys->insert("location", stringify(FSPath::cwd() / "exndbam_repository_TEST_dir" / "repo1"));
-    keys->insert("builddir", stringify(FSPath::cwd() / "exndbam_repository_TEST_dir" / "build"));
-    std::shared_ptr<Repository> repo(ExndbamRepository::ExndbamRepository::repository_factory_create(&env,
-                std::bind(from_keys, keys, std::placeholders::_1)));
+    auto repo(make_exndbam_repository(env, exndbam_repository_TEST_dir, "repo1"));
     EXPECT_EQ("installed", stringify(repo->name()));
 }
 
 TEST(ExndbamRepository, PhaseOrdering)
 {
-    TestEnvironment env(FSPath("exndbam_repository_TEST_dir/root").realpath());
+    TestEnvironment env(exndbam_repository_TEST_dir / "root");
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("location", stringify(FSPath::cwd() / "exndbam_repository_TEST_dir" / "postinsttest_src1"));
-    keys->insert("profiles", stringify(FSPath::cwd() / "exndbam_repository_TEST_dir" / "postinsttest_src1/profiles/profile"));
+    keys->insert("location", stringify(exndbam_repository_TEST_dir / "postinsttest_src1"));
+    keys->insert("profiles", stringify(exndbam_repository_TEST_dir / "postinsttest_src1/profiles/profile"));
     keys->insert("layout", "traditional");
     keys->insert("eapi_when_unknown", "0");
     keys->insert("eapi_when_unspecified", "0");
     keys->insert("profile_eapi", "0");
-    keys->insert("distdir", stringify(FSPath::cwd() / "exndbam_repository_TEST_dir" / "distdir"));
-    keys->insert("builddir", stringify(FSPath::cwd() / "exndbam_repository_TEST_dir" / "build"));
-    keys->insert("root", stringify(FSPath("exndbam_repository_TEST_dir/root").realpath()));
+    keys->insert("distdir", stringify(exndbam_repository_TEST_dir / "distdir"));
+    keys->insert("builddir", stringify(exndbam_repository_TEST_dir / "build"));
+    keys->insert("root", stringify(exndbam_repository_TEST_dir / "root"));
     std::shared_ptr<Repository> repo1(ERepository::repository_factory_create(&env,
                 std::bind(from_keys, keys, std::placeholders::_1)));
     env.add_repository(1, repo1);
 
-    keys = std::make_shared<Map<std::string, std::string>>();
-    keys->insert("format", "exndbam");
-    keys->insert("location", stringify(FSPath::cwd() / "exndbam_repository_TEST_dir" / "postinsttest"));
-    keys->insert("builddir", stringify(FSPath::cwd() / "exndbam_repository_TEST_dir" / "build"));
-    keys->insert("root", stringify(FSPath("exndbam_repository_TEST_dir/root").realpath()));
-    std::shared_ptr<Repository> exndbam_repo(ExndbamRepository::ExndbamRepository::repository_factory_create(&env,
-                std::bind(from_keys, keys, std::placeholders::_1)));
+    auto exndbam_repo(make_exndbam_repository(env, exndbam_repository_TEST_dir,
+                                              "postinsttest"));
     env.add_repository(0, exndbam_repo);
 
     EXPECT_TRUE(exndbam_repo->package_ids(QualifiedPackageName("cat/pkg"), { })->empty());
