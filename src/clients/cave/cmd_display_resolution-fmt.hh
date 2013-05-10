@@ -264,8 +264,11 @@ const auto fs_display_taken = make_format_string_fetcher("display-resolution/dis
 const auto fs_nothing_to_do = make_format_string_fetcher("display-resolution/nothing_to_do", 1)
     << "(nothing to do)\\n";
 
-const auto fs_display_done = make_format_string_fetcher("display-resolution/display_done", 1)
+const auto fs_display_one_done = make_format_string_fetcher("display-resolution/display_one_done", 1)
     << "\\n";
+
+const auto fs_display_done = make_format_string_fetcher("display-resolution/display_done", 2)
+    << "";
 
 const auto fs_totals_start = make_format_string_fetcher("display-resolution/totals_start", 1)
     << "Total: ";
