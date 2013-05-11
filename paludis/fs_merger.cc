@@ -19,6 +19,7 @@
  */
 
 #include <paludis/fs_merger.hh>
+#include <paludis/util/enum_iterator.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/fd_holder.hh>
 #include <paludis/util/log.hh>
@@ -1003,5 +1004,59 @@ FSMerger::do_dir_recursive(bool is_check, const FSPath & src, const FSPath & dst
         throw MergerError("Destination directory '" + stringify(dst) + "' is not a directory");
 
     Merger::do_dir_recursive(is_check, src, dst);
+}
+
+std::string
+FSMerger::make_arrows(const FSMergerStatusFlags & flags) const
+{
+    std::string result(">>>");
+
+    for (EnumIterator<FSMergerStatusFlag> m, m_end(last_msi); m != m_end; ++m)
+    {
+        if (! flags[*m])
+            continue;
+
+        switch (*m)
+        {
+            case msi_unlinked_first:
+                result[0] = '<';
+                continue;
+
+            case msi_used_existing:
+                result[0] = '=';
+                continue;
+
+            case msi_parent_rename:
+                result[1] = '^';
+                continue;
+
+            case msi_rename:
+                result[1] = '-';
+                continue;
+
+            case msi_as_hardlink:
+                result[1] = '&';
+                continue;
+
+            case msi_fixed_ownership:
+                result[2] = '~';
+                continue;
+
+            case msi_setid_bits:
+                result[2] = '*';
+                continue;
+
+            case msi_xattr:
+                result[2] = '+';
+                continue;
+
+            case last_msi:
+                break;
+        }
+
+        throw InternalError(PALUDIS_HERE, "Unhandled MergeStatusFlag '" + stringify(static_cast<long>(*m)) + "'");
+    }
+
+    return result;
 }
 

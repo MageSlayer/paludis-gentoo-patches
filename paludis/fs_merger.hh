@@ -228,6 +228,8 @@ namespace paludis
 
             ///\}
 
+            virtual std::string make_arrows(const FSMergerStatusFlags & flags) const;
+
         public:
             ///\name Basic operations
             ///\{

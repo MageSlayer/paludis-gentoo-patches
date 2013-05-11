@@ -80,7 +80,6 @@ namespace paludis
     {
         private:
             void display_override(const std::string &) const;
-            std::string make_arrows(const FSMergerStatusFlags &) const;
 
             Pimp<NDBAMMerger> _imp;
 

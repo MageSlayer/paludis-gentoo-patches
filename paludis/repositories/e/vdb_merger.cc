@@ -31,7 +31,6 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
-#include <paludis/util/enum_iterator.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/env_var_names.hh>
 #include <paludis/util/safe_ofstream.hh>
@@ -342,58 +341,5 @@ void
 VDBMerger::display_override(const std::string & message) const
 {
     _imp->params.output_manager()->stdout_stream() << message << std::endl;
-}
-
-std::string
-VDBMerger::make_arrows(const FSMergerStatusFlags & flags) const
-{
-    std::string result(">>>");
-    for (EnumIterator<FSMergerStatusFlag> m, m_end(last_msi) ;
-            m != m_end ; ++m)
-    {
-        if (! flags[*m])
-            continue;
-
-        switch (*m)
-        {
-            case msi_unlinked_first:
-                result[0] = '<';
-                continue;
-
-            case msi_used_existing:
-                result[0] = '=';
-                continue;
-
-            case msi_parent_rename:
-                result[1] = '^';
-                continue;
-
-            case msi_rename:
-                result[1] = '-';
-                continue;
-
-            case msi_as_hardlink:
-                result[1] = '&';
-                continue;
-
-            case msi_fixed_ownership:
-                result[2] = '~';
-                continue;
-
-            case msi_setid_bits:
-                result[2] = '*';
-                continue;
-
-            case msi_xattr:
-                result[2] = '+';
-                continue;
-
-            case last_msi:
-                break;
-        }
-        throw InternalError(PALUDIS_HERE, "Unhandled MergeStatusFlag '" + stringify(static_cast<long>(*m)) + "'");
-    }
-
-    return result;
 }
 
