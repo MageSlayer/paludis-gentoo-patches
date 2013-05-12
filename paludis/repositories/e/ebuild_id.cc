@@ -353,20 +353,20 @@ EbuildID::need_non_xml_keys_added() const
 
     add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("EAPI", "EAPI", mkt_internal, _imp->eapi->name()));
 
-    if (_imp->eapi->supported())
+    if (auto supported_eapi = _imp->eapi->supported())
     {
         _imp->raw_use_expand = std::make_shared<LiteralMetadataStringSetKey>(
-                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand()->name(),
-                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand()->description(),
+                    supported_eapi->ebuild_metadata_variables()->use_expand()->name(),
+                    supported_eapi->ebuild_metadata_variables()->use_expand()->description(),
                     mkt_internal,
                     e_repo->profile()->use_expand());
         _imp->raw_use_expand_hidden = std::make_shared<LiteralMetadataStringSetKey>(
-                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden()->name(),
-                    _imp->eapi->supported()->ebuild_metadata_variables()->use_expand_hidden()->description(),
+                    supported_eapi->ebuild_metadata_variables()->use_expand_hidden()->name(),
+                    supported_eapi->ebuild_metadata_variables()->use_expand_hidden()->description(),
                     mkt_internal,
                     e_repo->profile()->use_expand_hidden());
 
-        if (_imp->eapi->supported()->choices_options()->profile_iuse_injection())
+        if (supported_eapi->choices_options()->profile_iuse_injection())
         {
             std::shared_ptr<Set<std::string> > iuse_effective(std::make_shared<Set<std::string>>());
             if (! _imp->raw_iuse)
@@ -379,7 +379,7 @@ EbuildID::need_non_xml_keys_added() const
 
             const std::shared_ptr<const Set<std::string> > use_expand(e_repo->profile()->use_expand());
             const std::shared_ptr<const Set<std::string> > use_expand_unprefixed(e_repo->profile()->use_expand_unprefixed());
-            const std::string separator(stringify(_imp->eapi->supported()->choices_options()->use_expand_separator()));
+            const std::string separator(stringify(supported_eapi->choices_options()->use_expand_separator()));
 
             for (Set<std::string>::ConstIterator x(e_repo->profile()->use_expand_implicit()->begin()),
                     x_end(e_repo->profile()->use_expand_implicit()->end()) ;
@@ -405,19 +405,19 @@ EbuildID::need_non_xml_keys_added() const
             }
 
             _imp->raw_iuse_effective = std::make_shared<LiteralMetadataStringSetKey>(
-                    _imp->eapi->supported()->ebuild_metadata_variables()->iuse_effective()->name(),
-                    _imp->eapi->supported()->ebuild_metadata_variables()->iuse_effective()->description(),
+                    supported_eapi->ebuild_metadata_variables()->iuse_effective()->name(),
+                    supported_eapi->ebuild_metadata_variables()->iuse_effective()->description(),
                     mkt_internal,
                     iuse_effective);
             add_metadata_key(_imp->raw_iuse_effective);
         }
 
         _imp->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
-                    _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
+                    supported_eapi->ebuild_environment_variables()->description_choices(),
                     mkt_normal, e_repo,
                     std::bind(&EbuildID::choice_descriptions, this));
 
-        if (_imp->eapi->supported()->is_pbin())
+        if (supported_eapi->is_pbin())
         {
             _imp->behaviours = EbuildIDData::get_instance()->pbin_behaviours_key;
             add_metadata_key(_imp->behaviours);
