@@ -464,7 +464,7 @@ FSMerger::track_renamed_dir_recursive(const FSPath & dst)
 {
     for (FSIterator d(dst, { fsio_include_dotfiles, fsio_inode_sort }), d_end ; d != d_end ; ++d)
     {
-        FSMergerStatusFlags merged_how;
+        FSMergerStatusFlags merged_how({ msi_parent_rename });
         if (fixed_ownership_for(_imp->params.image() / *d))
             merged_how += msi_fixed_ownership;
         EntryType m(entry_type(*d));
@@ -472,7 +472,7 @@ FSMerger::track_renamed_dir_recursive(const FSPath & dst)
         {
             case et_sym:
                 rewrite_symlink_as_needed(*d, dst);
-                track_install_sym(*d, dst, merged_how + msi_parent_rename);
+                track_install_sym(*d, dst, merged_how);
                 _imp->merged_ids.insert(make_pair(d->stat().lowlevel_id(), stringify(*d)));
                 continue;
 
@@ -485,12 +485,12 @@ FSMerger::track_renamed_dir_recursive(const FSPath & dst)
                     if (touch && ! _imp->params.options()[mo_preserve_mtimes])
                         if (! d->utime(Timestamp::now()))
                             throw FSMergerError("utime(" + stringify(*d) + ", 0) failed: " + stringify(::strerror(errno)));
-                    track_install_file(*d, dst, stringify(d->basename()), merged_how + msi_parent_rename);
+                    track_install_file(*d, dst, stringify(d->basename()), merged_how);
                 }
                 continue;
 
             case et_dir:
-                track_install_dir(*d, d->dirname(), merged_how + msi_parent_rename);
+                track_install_dir(*d, d->dirname(), merged_how);
                 track_renamed_dir_recursive(*d);
                 continue;
 
