@@ -1060,3 +1060,38 @@ FSMerger::make_arrows(const FSMergerStatusFlags & flags) const
     return result;
 }
 
+void
+FSMerger::display_merge(const EntryType & type, const FSPath & path,
+                        const FSMergerStatusFlags & flags,
+                        const std::string & renamed) const
+{
+    const auto real_path(path.strip_leading(_imp->params.root().realpath()));
+    std::ostringstream message;
+
+    message << make_arrows(flags);
+
+    switch (type)
+    {
+        case et_dir:
+            message << " [dir] ";
+            break;
+        case et_file:
+            message << " [obj] ";
+            break;
+        case et_sym:
+            message << " [sym] ";
+            break;
+
+        case et_misc:
+        case et_nothing:
+        case last_et:
+            throw FSMergerError("Unexpected entry type merged at: " + stringify(real_path));
+    }
+
+    message << stringify(real_path);
+    if (!renamed.empty())
+        message << " (" << renamed << ")";
+
+    display_override(message.str());
+}
+

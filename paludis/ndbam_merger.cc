@@ -159,24 +159,24 @@ namespace
 void
 NDBAMMerger::record_install_file(const FSPath & src, const FSPath & dst_dir, const std::string & dst_name, const FSMergerStatusFlags & flags)
 {
-    std::string tidy(stringify((dst_dir / dst_name).strip_leading(_imp->realroot))),
-            tidy_real(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
+    const auto file(dst_dir / src.basename());
+    const auto renamed_file(dst_dir / dst_name);
 
-    FSPath dst_dir_name(dst_dir / dst_name);
-    FSStat dst_dir_name_stat(dst_dir_name);
+    const std::string tidy(stringify(renamed_file.strip_leading(_imp->realroot))),
+                      tidy_real(stringify(file.strip_leading(_imp->realroot)));
+
+    FSStat dst_dir_name_stat(renamed_file);
 
     time_t timestamp(dst_dir_name_stat.mtim().seconds());
 
-    SafeIFStream infile(dst_dir_name);
+    SafeIFStream infile(renamed_file);
     if (! infile)
-        throw FSMergerError("Cannot read '" + stringify(dst_dir_name) + "'");
+        throw FSMergerError("Cannot read '" + stringify(renamed_file) + "'");
 
     MD5 md5(infile);
 
-    std::string line(make_arrows(flags) + " [obj] " + tidy_real);
-    if (tidy_real != tidy)
-        line.append(" (" + FSPath(tidy).basename() + ")");
-    display_override(line);
+    display_merge(et_file, file, flags,
+                  src.basename() == dst_name ? "" : dst_name);
 
     std::string part;
     if (_imp->params.parts())
@@ -194,8 +194,10 @@ NDBAMMerger::record_install_file(const FSPath & src, const FSPath & dst_dir, con
 void
 NDBAMMerger::record_install_dir(const FSPath & src, const FSPath & dst_dir, const FSMergerStatusFlags & flags)
 {
-    std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
-    display_override(make_arrows(flags) + " [dir] " + tidy);
+    const auto dir(dst_dir / src.basename());
+    const std::string tidy(stringify(dir.strip_leading(_imp->realroot)));
+
+    display_merge(et_dir, dir, flags);
 
     *_imp->contents_file << "type=dir path=" << escape(tidy) << std::endl;
 }
@@ -203,8 +205,9 @@ NDBAMMerger::record_install_dir(const FSPath & src, const FSPath & dst_dir, cons
 void
 NDBAMMerger::record_install_under_dir(const FSPath & dst, const FSMergerStatusFlags & flags)
 {
-    std::string tidy(stringify(dst.strip_leading(_imp->realroot)));
-    display_override(make_arrows(flags) + " [dir] " + tidy);
+    const std::string tidy(stringify(dst.strip_leading(_imp->realroot)));
+
+    display_merge(et_dir, dst, flags);
 
     *_imp->contents_file << "type=dir path=" << escape(tidy) << std::endl;
 }
@@ -212,11 +215,12 @@ NDBAMMerger::record_install_under_dir(const FSPath & dst, const FSMergerStatusFl
 void
 NDBAMMerger::record_install_sym(const FSPath & src, const FSPath & dst_dir, const FSMergerStatusFlags & flags)
 {
-    std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
-    std::string target((dst_dir / src.basename()).readlink());
-    Timestamp timestamp((dst_dir / src.basename()).stat().mtim());
+    const auto sym(dst_dir / src.basename());
+    const std::string tidy(stringify(sym.strip_leading(_imp->realroot)));
+    const std::string target(sym.readlink());
+    const Timestamp timestamp(sym.stat().mtim());
 
-    display_override(make_arrows(flags) + " [sym] " + tidy);
+    display_merge(et_sym, sym, flags);
 
     *_imp->contents_file << "type=sym path=" << escape(tidy);
     *_imp->contents_file << " target=" << escape(target);

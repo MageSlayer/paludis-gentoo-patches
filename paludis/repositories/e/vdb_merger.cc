@@ -148,20 +148,21 @@ VDBMerger::extend_hook(const Hook & h)
 void
 VDBMerger::record_install_file(const FSPath & src, const FSPath & dst_dir, const std::string & dst_name, const FSMergerStatusFlags & flags)
 {
-    std::string tidy(stringify((dst_dir / dst_name).strip_leading(_imp->realroot))),
-            tidy_real(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
-    Timestamp timestamp((dst_dir / dst_name).stat().mtim());
+    const auto file(dst_dir / src.basename());
+    const auto renamed_file(dst_dir / dst_name);
 
-    SafeIFStream infile(FSPath(dst_dir / dst_name));
+    const std::string tidy(stringify(renamed_file.strip_leading(_imp->realroot))),
+                      tidy_real(stringify(file.strip_leading(_imp->realroot)));
+    const Timestamp timestamp(renamed_file.stat().mtim());
+
+    SafeIFStream infile(renamed_file);
     if (! infile)
-        throw FSMergerError("Cannot read '" + stringify(FSPath(dst_dir / dst_name)) + "'");
+        throw FSMergerError("Cannot read '" + stringify(renamed_file) + "'");
 
     MD5 md5(infile);
 
-    std::string line(make_arrows(flags) + " [obj] " + tidy_real);
-    if (tidy_real != tidy)
-        line.append(" (" + FSPath(tidy).basename() + ")");
-    display_override(line);
+    display_merge(et_file, renamed_file, flags,
+                  src.basename() == dst_name ? "" : dst_name);
 
     *_imp->contents_file << "obj " << tidy_real << " " << md5.hexsum() << " " << timestamp.seconds() << std::endl;
 }
@@ -169,8 +170,10 @@ VDBMerger::record_install_file(const FSPath & src, const FSPath & dst_dir, const
 void
 VDBMerger::record_install_dir(const FSPath & src, const FSPath & dst_dir, const FSMergerStatusFlags & flags)
 {
-    std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
-    display_override(make_arrows(flags) + " [dir] " + tidy);
+    const auto dir(dst_dir / src.basename());
+    const std::string tidy(stringify(dir.strip_leading(_imp->realroot)));
+
+    display_merge(et_dir, dir, flags);
 
     *_imp->contents_file << "dir " << tidy << std::endl;
 }
@@ -178,8 +181,9 @@ VDBMerger::record_install_dir(const FSPath & src, const FSPath & dst_dir, const 
 void
 VDBMerger::record_install_under_dir(const FSPath & dst_dir, const FSMergerStatusFlags & flags)
 {
-    std::string tidy(stringify(dst_dir.strip_leading(_imp->realroot)));
-    display_override(make_arrows(flags) + " [dir] " + tidy);
+    const std::string tidy(stringify(dst_dir.strip_leading(_imp->realroot)));
+
+    display_merge(et_dir, dst_dir, flags);
 
     *_imp->contents_file << "dir " << tidy << std::endl;
 }
@@ -187,11 +191,12 @@ VDBMerger::record_install_under_dir(const FSPath & dst_dir, const FSMergerStatus
 void
 VDBMerger::record_install_sym(const FSPath & src, const FSPath & dst_dir, const FSMergerStatusFlags & flags)
 {
-    std::string tidy(stringify((dst_dir / src.basename()).strip_leading(_imp->realroot)));
-    std::string target((dst_dir / src.basename()).readlink());
-    Timestamp timestamp((dst_dir / src.basename()).stat().mtim());
+    const auto sym(dst_dir / src.basename());
+    const std::string tidy(stringify(sym.strip_leading(_imp->realroot)));
+    const std::string target(sym.readlink());
+    const Timestamp timestamp(sym.stat().mtim());
 
-    display_override(make_arrows(flags) + " [sym] " + tidy);
+    display_merge(et_sym, sym, flags);
 
     *_imp->contents_file << "sym " << tidy << " -> " << target << " " << timestamp.seconds() << std::endl;
 }
