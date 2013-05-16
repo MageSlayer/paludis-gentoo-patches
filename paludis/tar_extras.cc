@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -46,9 +46,9 @@ paludis_tar_extras_init(const std::string & f, const std::string & compress)
         throw MergerError("archive_write_new returned null");
 
     if (compress == "bz2")
-        archive_write_set_compression_bzip2(extras->archive);
+        archive_write_add_filter_bzip2(extras->archive);
     else
-        archive_write_set_compression_none(extras->archive);
+        archive_write_add_filter_none(extras->archive);
 
     archive_write_set_format_gnutar(extras->archive);
 
@@ -102,7 +102,7 @@ paludis_tar_extras_add_file(PaludisTarExtras * const extras, const std::string &
         if (ARCHIVE_OK != archive_write_finish_entry(extras->archive))
             throw MergerError("archive_write_finish_entry failed");
 
-        if (ARCHIVE_OK != archive_read_finish(disk_archive))
+        if (ARCHIVE_OK != archive_read_free(disk_archive))
             throw MergerError("archive_read_finish failed");
     }
     else
@@ -142,8 +142,8 @@ paludis_tar_extras_cleanup(PaludisTarExtras * const extras)
 {
     if (ARCHIVE_OK != archive_write_close(extras->archive))
         throw MergerError("archive_write_close failed");
-    if (ARCHIVE_OK != archive_write_finish(extras->archive))
-        throw MergerError("archive_write_finish failed");
+    if (ARCHIVE_OK != archive_write_free(extras->archive))
+        throw MergerError("archive_write_free failed");
     archive_entry_linkresolver_free(extras->linkresolver);
     delete extras;
 }

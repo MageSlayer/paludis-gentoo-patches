@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
         return EXIT_FAILURE;
 
     archive * archive(archive_read_new());
-    archive_read_support_compression_all(archive);
+    archive_read_support_filter_all(archive);
     archive_read_support_format_all(archive);
 
     int x;
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
         done_any = true;
     }
 
-    if (ARCHIVE_OK != ((x = archive_read_finish(archive))))
+    if (ARCHIVE_OK != ((x = archive_read_free(archive))))
     {
         std::cerr << "Could not finish reading '" << archive_file << "': libarchive returned " <<
             x << ", archive_errno " << archive_errno(archive) << ": " << archive_error_string(archive) << std::endl;
