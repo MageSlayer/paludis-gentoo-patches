@@ -30,7 +30,6 @@
 
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <list>
 
@@ -59,7 +58,7 @@ namespace
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> parse_elike_use_requirement_no_accumulate(
             const std::string & s, const ELikeUseRequirementOptions & o)
     {
-        return parse_elike_use_requirement(s, o, make_null_shared_ptr());
+        return parse_elike_use_requirement(s, o, nullptr);
     }
 }
 
@@ -77,26 +76,26 @@ TEST(ELikeUseRequirements, Simple)
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
         parse_elike_use_requirement_no_accumulate("enabled", { euro_strict_parsing }));
     EXPECT_EQ("[enabled]", req1->as_raw_string());
-    EXPECT_EQ("Flag 'enabled' enabled", req1->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(req1->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'enabled' enabled", req1->as_human_string(nullptr));
+    EXPECT_TRUE(req1->requirement_met(&env, 0, id, nullptr, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
         parse_elike_use_requirement_no_accumulate("disabled", { euro_strict_parsing }));
     EXPECT_EQ("[disabled]", req2->as_raw_string());
-    EXPECT_EQ("Flag 'disabled' enabled", req2->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(! req2->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'disabled' enabled", req2->as_human_string(nullptr));
+    EXPECT_TRUE(! req2->requirement_met(&env, 0, id, nullptr, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req3(
         parse_elike_use_requirement_no_accumulate("-enabled", { euro_strict_parsing }));
     EXPECT_EQ("[-enabled]", req3->as_raw_string());
-    EXPECT_EQ("Flag 'enabled' disabled", req3->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(! req3->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'enabled' disabled", req3->as_human_string(nullptr));
+    EXPECT_TRUE(! req3->requirement_met(&env, 0, id, nullptr, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req4(
         parse_elike_use_requirement_no_accumulate("-disabled", { euro_strict_parsing }));
     EXPECT_EQ("[-disabled]", req4->as_raw_string());
-    EXPECT_EQ("Flag 'disabled' disabled", req4->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(req4->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'disabled' disabled", req4->as_human_string(nullptr));
+    EXPECT_TRUE(req4->requirement_met(&env, 0, id, nullptr, 0).first);
 }
 
 TEST(ELikeUseRequirements, Portage)
@@ -113,26 +112,26 @@ TEST(ELikeUseRequirements, Portage)
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
         parse_elike_use_requirement_no_accumulate("enabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[enabled]", req1->as_raw_string());
-    EXPECT_EQ("Flag 'enabled' enabled", req1->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(req1->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'enabled' enabled", req1->as_human_string(nullptr));
+    EXPECT_TRUE(req1->requirement_met(&env, 0, id, nullptr, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
         parse_elike_use_requirement_no_accumulate("disabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[disabled]", req2->as_raw_string());
-    EXPECT_EQ("Flag 'disabled' enabled", req2->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(! req2->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'disabled' enabled", req2->as_human_string(nullptr));
+    EXPECT_TRUE(! req2->requirement_met(&env, 0, id, nullptr, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req3(
         parse_elike_use_requirement_no_accumulate("-enabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[-enabled]", req3->as_raw_string());
-    EXPECT_EQ("Flag 'enabled' disabled", req3->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(! req3->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'enabled' disabled", req3->as_human_string(nullptr));
+    EXPECT_TRUE(! req3->requirement_met(&env, 0, id, nullptr, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req4(
         parse_elike_use_requirement_no_accumulate("-disabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[-disabled]", req4->as_raw_string());
-    EXPECT_EQ("Flag 'disabled' disabled", req4->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(req4->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'disabled' disabled", req4->as_human_string(nullptr));
+    EXPECT_TRUE(req4->requirement_met(&env, 0, id, nullptr, 0).first);
 }
 
 TEST(ELikeUseRequirements, Multiple)
@@ -149,32 +148,32 @@ TEST(ELikeUseRequirements, Multiple)
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
         parse_elike_use_requirement_no_accumulate("enabled,-disabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[enabled,-disabled]", req1->as_raw_string());
-    EXPECT_EQ("Flag 'enabled' enabled; Flag 'disabled' disabled", req1->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(req1->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'enabled' enabled; Flag 'disabled' disabled", req1->as_human_string(nullptr));
+    EXPECT_TRUE(req1->requirement_met(&env, 0, id, nullptr, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
         parse_elike_use_requirement_no_accumulate("enabled,disabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[enabled,disabled]", req2->as_raw_string());
-    EXPECT_EQ("Flag 'enabled' enabled; Flag 'disabled' enabled", req2->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(! req2->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'enabled' enabled; Flag 'disabled' enabled", req2->as_human_string(nullptr));
+    EXPECT_TRUE(! req2->requirement_met(&env, 0, id, nullptr, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req3(
         parse_elike_use_requirement_no_accumulate("-enabled,-disabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[-enabled,-disabled]", req3->as_raw_string());
-    EXPECT_EQ("Flag 'enabled' disabled; Flag 'disabled' disabled", req3->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(! req3->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'enabled' disabled; Flag 'disabled' disabled", req3->as_human_string(nullptr));
+    EXPECT_TRUE(! req3->requirement_met(&env, 0, id, nullptr, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req4(
         parse_elike_use_requirement_no_accumulate("enabled,-disabled,-enabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[enabled,-disabled,-enabled]", req4->as_raw_string());
-    EXPECT_EQ("Flag 'enabled' enabled; Flag 'disabled' disabled; Flag 'enabled' disabled", req4->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(! req4->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'enabled' enabled; Flag 'disabled' disabled; Flag 'enabled' disabled", req4->as_human_string(nullptr));
+    EXPECT_TRUE(! req4->requirement_met(&env, 0, id, nullptr, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req5(
         parse_elike_use_requirement_no_accumulate("enabled,-disabled,enabled", { euro_portage_syntax, euro_strict_parsing }));
     EXPECT_EQ("[enabled,-disabled,enabled]", req5->as_raw_string());
-    EXPECT_EQ("Flag 'enabled' enabled; Flag 'disabled' disabled; Flag 'enabled' enabled", req5->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(req5->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'enabled' enabled; Flag 'disabled' disabled; Flag 'enabled' enabled", req5->as_human_string(nullptr));
+    EXPECT_TRUE(req5->requirement_met(&env, 0, id, nullptr, 0).first);
 }
 
 TEST(ELikeUseRequirements, Complex)
@@ -815,26 +814,26 @@ TEST(ELikeUseRequirements, Defaults)
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req1(
         parse_elike_use_requirement_no_accumulate("missing(+)", { euro_allow_default_values, euro_strict_parsing }));
     EXPECT_EQ("[missing(+)]", req1->as_raw_string());
-    EXPECT_EQ("Flag 'missing' enabled, assuming enabled if missing", req1->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(req1->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'missing' enabled, assuming enabled if missing", req1->as_human_string(nullptr));
+    EXPECT_TRUE(req1->requirement_met(&env, 0, id, nullptr, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req2(
         parse_elike_use_requirement_no_accumulate("missing(-)", { euro_allow_default_values, euro_strict_parsing }));
     EXPECT_EQ("[missing(-)]", req2->as_raw_string());
-    EXPECT_EQ("Flag 'missing' enabled, assuming disabled if missing", req2->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(! req2->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'missing' enabled, assuming disabled if missing", req2->as_human_string(nullptr));
+    EXPECT_TRUE(! req2->requirement_met(&env, 0, id, nullptr, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req3(
         parse_elike_use_requirement_no_accumulate("-missing(+)", { euro_allow_default_values, euro_strict_parsing }));
     EXPECT_EQ("[-missing(+)]", req3->as_raw_string());
-    EXPECT_EQ("Flag 'missing' disabled, assuming enabled if missing", req3->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(! req3->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'missing' disabled, assuming enabled if missing", req3->as_human_string(nullptr));
+    EXPECT_TRUE(! req3->requirement_met(&env, 0, id, nullptr, 0).first);
 
     std::shared_ptr<const AdditionalPackageDepSpecRequirement> req4(
         parse_elike_use_requirement_no_accumulate("-missing(-)", { euro_allow_default_values, euro_strict_parsing }));
     EXPECT_EQ("[-missing(-)]", req4->as_raw_string());
-    EXPECT_EQ("Flag 'missing' disabled, assuming disabled if missing", req4->as_human_string(make_null_shared_ptr()));
-    EXPECT_TRUE(req4->requirement_met(&env, 0, id, make_null_shared_ptr(), 0).first);
+    EXPECT_EQ("Flag 'missing' disabled, assuming disabled if missing", req4->as_human_string(nullptr));
+    EXPECT_TRUE(req4->requirement_met(&env, 0, id, nullptr, 0).first);
 }
 
 TEST(ELikeUseRequirements, PrefixStar)

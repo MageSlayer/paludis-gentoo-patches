@@ -45,7 +45,6 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/executor.hh>
 #include <paludis/util/timestamp.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/process.hh>
 #include <paludis/resolver/resolutions_by_resolvent.hh>
 #include <paludis/resolver/reason.hh>
@@ -159,7 +158,7 @@ namespace
             const PackageDepSpec & spec)
     {
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(
-                    generator::Matches(spec, make_null_shared_ptr(), { }))]);
+                    generator::Matches(spec, nullptr, { }))]);
         if (ids->empty())
             return stringify(spec);
         else
@@ -320,7 +319,7 @@ namespace
                 else
                     r.append(", ");
 
-                const auto replacing_ids((*env)[selection::BestVersionOnly(generator::Matches(*i, make_null_shared_ptr(), { }))]);
+                const auto replacing_ids((*env)[selection::BestVersionOnly(generator::Matches(*i, nullptr, { }))]);
                 if (replacing_ids->empty())
                     r.append(stringify(*i));
                 else if (id_specs->empty() || *id_specs->begin()->package_ptr() != (*replacing_ids->begin())->name())
@@ -345,7 +344,7 @@ namespace
                 if (! r.empty())
                     r.append(", ");
 
-                const auto ids((*env)[selection::BestVersionOnly(generator::Matches(*i, make_null_shared_ptr(), { }))]);
+                const auto ids((*env)[selection::BestVersionOnly(generator::Matches(*i, nullptr, { }))]);
                 if (ids->empty())
                     r.append(stringify(*i));
                 else
@@ -748,7 +747,7 @@ namespace
 
         if (0 != env->perform_hook(Hook("pretend_all_pre")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " ")),
-                    make_null_shared_ptr()).max_exit_status())
+                    nullptr).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
         for (JobList<PretendJob>::ConstIterator c(lists->pretend_job_list()->begin()),
@@ -772,7 +771,7 @@ namespace
 
         if (0 != env->perform_hook(Hook("pretend_all_post")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " ")),
-                    make_null_shared_ptr()).max_exit_status())
+                    nullptr).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
         return failed ? 1 : 0;
@@ -947,7 +946,7 @@ namespace
                 case x1_pre:
                     {
                         ++counts.x_installs;
-                        starting_action(env, "remove", uninstall_item.ids_to_remove_specs(), make_null_shared_ptr(), counts.x_installs, counts.y_installs,
+                        starting_action(env, "remove", uninstall_item.ids_to_remove_specs(), nullptr, counts.x_installs, counts.y_installs,
                                 counts.f_installs, counts.s_installs);
                     }
                     break;
@@ -979,7 +978,7 @@ namespace
                     break;
 
                 case x1_post:
-                    done_action(env, "remove", uninstall_item.ids_to_remove_specs(), make_null_shared_ptr(), 0 == retcode);
+                    done_action(env, "remove", uninstall_item.ids_to_remove_specs(), nullptr, 0 == retcode);
                     break;
             }
 
@@ -993,7 +992,7 @@ namespace
                 case x1_pre:
                     {
                         ++counts.x_fetches;
-                        starting_action(env, "fetch", ensequence(fetch_item.origin_id_spec()), make_null_shared_ptr(), counts.x_fetches, counts.y_fetches,
+                        starting_action(env, "fetch", ensequence(fetch_item.origin_id_spec()), nullptr, counts.x_fetches, counts.y_fetches,
                                 counts.f_fetches, counts.s_fetches);
                     }
                     break;
@@ -1021,7 +1020,7 @@ namespace
                     break;
 
                 case x1_post:
-                    done_action(env, "fetch", ensequence(fetch_item.origin_id_spec()), make_null_shared_ptr(), 0 == retcode);
+                    done_action(env, "fetch", ensequence(fetch_item.origin_id_spec()), nullptr, 0 == retcode);
                     break;
             }
 
@@ -1210,12 +1209,12 @@ namespace
 
         const std::shared_ptr<OutputManager> visit(const JobSkippedState &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         const std::shared_ptr<OutputManager> visit(const JobPendingState &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
     };
 
@@ -1526,7 +1525,7 @@ namespace
 
         if (0 != env->perform_hook(Hook("install_all_pre")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " ")),
-                    make_null_shared_ptr()).max_exit_status())
+                    nullptr).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
         JobRequirementIf require_if(last_jri);
@@ -1556,7 +1555,7 @@ namespace
 
         if (0 != env->perform_hook(Hook("install_all_post")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " ")),
-                    make_null_shared_ptr()).max_exit_status())
+                    nullptr).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
         return retcode;
@@ -1609,7 +1608,7 @@ namespace
             std::string r;
             if (! j.replacing_specs()->empty())
             {
-                const auto origin_ids((*env)[selection::BestVersionOnly(generator::Matches(j.origin_id_spec(), make_null_shared_ptr(), { }))]);
+                const auto origin_ids((*env)[selection::BestVersionOnly(generator::Matches(j.origin_id_spec(), nullptr, { }))]);
 
                 for (auto i(j.replacing_specs()->begin()), i_end(j.replacing_specs()->end()) ;
                         i != i_end ; ++i)
@@ -1619,7 +1618,7 @@ namespace
                     else
                         r.append(", ");
 
-                    const auto ids((*env)[selection::BestVersionOnly(generator::Matches(*i, make_null_shared_ptr(), { }))]);
+                    const auto ids((*env)[selection::BestVersionOnly(generator::Matches(*i, nullptr, { }))]);
                     if (ids->empty())
                         r.append(stringify(*i));
                     else if (origin_ids->empty() || (*origin_ids->begin())->name() != (*ids->begin())->name())
@@ -1718,7 +1717,7 @@ namespace
                 c != c_end ; ++c)
         {
             (*c)->state()->accept(SummaryDisplayer(env, *c, something_failed, done_heading));
-            (*c)->set_state(make_null_shared_ptr());
+            (*c)->set_state(nullptr);
         }
     }
 
@@ -1733,7 +1732,7 @@ namespace
         int retcode(0);
         if (0 != env->perform_hook(Hook("install_task_execute_pre")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " ")),
-                    make_null_shared_ptr()).max_exit_status())
+                    nullptr).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
         try
@@ -1752,7 +1751,7 @@ namespace
                         ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                         ("PRETEND", stringify(cmdline.a_pretend.specified()))
                         ("SUCCESS", stringify(false)),
-                        make_null_shared_ptr()).max_exit_status())
+                        nullptr).max_exit_status())
                 throw ActionAbortedError("Aborted by hook");
             throw;
         }
@@ -1767,7 +1766,7 @@ namespace
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " "))
                     ("PRETEND", stringify(cmdline.a_pretend.specified()))
                     ("SUCCESS", stringify(true)),
-                    make_null_shared_ptr()).max_exit_status())
+                    nullptr).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
         return retcode;
@@ -1822,7 +1821,7 @@ ExecuteResolutionCommand::run(
         const std::shared_ptr<Environment> & env,
         const std::shared_ptr<const Sequence<std::string > > & args)
 {
-    return run(env, args, make_null_shared_ptr());
+    return run(env, args, nullptr);
 }
 
 std::shared_ptr<args::ArgsHandler>

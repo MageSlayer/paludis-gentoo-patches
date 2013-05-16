@@ -26,7 +26,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <vector>
 #include <map>
@@ -85,11 +84,11 @@ LicenceGroups::maybe_expand_licence_nonrecursively(const std::string & s) const
     {
         auto i(_imp->store.find(s.substr(1)));
         if (_imp->store.end() == i)
-            return make_null_shared_ptr();
+            return nullptr;
         else
             return i->second;
     }
     else
-        return make_null_shared_ptr();
+        return nullptr;
 }
 

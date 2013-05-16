@@ -24,7 +24,6 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/metadata_key.hh>
@@ -214,7 +213,7 @@ UnwrittenID::fs_location_key() const
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 UnwrittenID::behaviours_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
@@ -298,7 +297,7 @@ UnwrittenID::choices_key() const
 const std::shared_ptr<const Contents>
 UnwrittenID::contents() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 namespace paludis

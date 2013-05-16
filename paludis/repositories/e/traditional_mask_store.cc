@@ -26,7 +26,6 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/match_package.hh>
@@ -125,7 +124,7 @@ TraditionalMaskStore::query(const std::shared_ptr<const PackageID> & id) const
     auto r(_imp->repo_mask.find(id->name()));
     if (_imp->repo_mask.end() != r)
         for (auto k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->env, k->first, id, make_null_shared_ptr(), { }))
+            if (match_package(*_imp->env, k->first, id, nullptr, { }))
                 result->push_back(*k->second);
 
     return result;

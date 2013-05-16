@@ -34,7 +34,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/fs_stat.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/stringify.hh>
 
@@ -408,7 +407,7 @@ TEST(ERepository, MetadataUncached)
         {
             const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                    &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                    &env, { })), nullptr, { }))]->begin());
 
             EXPECT_TRUE(id1->end_metadata() != id1->find_metadata("EAPI"));
             EXPECT_TRUE(visitor_cast<const MetadataValueKey<std::string> >(**id1->find_metadata("EAPI")));
@@ -427,7 +426,7 @@ TEST(ERepository, MetadataUncached)
 
             const std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-2",
-                                    &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                    &env, { })), nullptr, { }))]->begin());
 
             ASSERT_TRUE(id2->end_metadata() != id2->find_metadata("EAPI"));
             ASSERT_TRUE(bool(id2->short_description_key()));
@@ -443,7 +442,7 @@ TEST(ERepository, MetadataUncached)
 
             const std::shared_ptr<const PackageID> id3(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-3",
-                                    &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                    &env, { })), nullptr, { }))]->begin());
 
             ASSERT_TRUE(id3->end_metadata() != id3->find_metadata("EAPI"));
             ASSERT_TRUE(bool(id3->short_description_key()));
@@ -471,7 +470,7 @@ TEST(ERepository, MetadataUnparsable)
     {
         const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-1",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
 
         ASSERT_TRUE(id1->end_metadata() != id1->find_metadata("EAPI"));
         EXPECT_EQ("UNKNOWN", std::static_pointer_cast<const erepository::ERepositoryID>(id1)->eapi()->name());
@@ -513,13 +512,13 @@ TEST_F(ERepositoryQueryUseTest, QueryUse)
     {
         const std::shared_ptr<const PackageID> p1(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         const std::shared_ptr<const PackageID> p2(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat-two/pkg-two-1",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         const std::shared_ptr<const PackageID> p4(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-2",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
 
         test_choice(p1, "flag1",     true,  true,  false);
         test_choice(p1, "flag2",     false, false, true);
@@ -589,19 +588,19 @@ TEST_F(ERepositoryQueryUseTest, UseStableMaskForce)
         {
             const std::shared_ptr<const PackageID> stable1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/stable-1",
-                                    &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                    &env, { })), nullptr, { }))]->begin());
             const std::shared_ptr<const PackageID> stable1r1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/stable-1-r1",
-                                    &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                    &env, { })), nullptr, { }))]->begin());
             const std::shared_ptr<const PackageID> stable2(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/stable-2",
-                                    &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                    &env, { })), nullptr, { }))]->begin());
             const std::shared_ptr<const PackageID> unstable1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/unstable-1",
-                                    &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                    &env, { })), nullptr, { }))]->begin());
             const std::shared_ptr<const PackageID> missing1(*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/missing-1",
-                                    &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                    &env, { })), nullptr, { }))]->begin());
 
             test_choice(stable1, "notstmask",     false, false, false);
             test_choice(stable1, "notpkgstmask",  false, false, false);
@@ -795,29 +794,29 @@ TEST(ERepository, Masks)
 
     EXPECT_TRUE((*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=category/package-1::test-repo-18",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin())->masked());
+                                &env, { })), nullptr, { }))]->begin())->masked());
     EXPECT_TRUE((*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=category/package-2::test-repo-18",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin())->masked());
+                                &env, { })), nullptr, { }))]->begin())->masked());
     EXPECT_TRUE(! (*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=category/package-3::test-repo-18",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin())->masked());
+                                &env, { })), nullptr, { }))]->begin())->masked());
     EXPECT_TRUE(! (*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=category/package-4::test-repo-18",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin())->masked());
+                                &env, { })), nullptr, { }))]->begin())->masked());
 
     EXPECT_TRUE((*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=category/package-1::test-repo-19",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin())->masked());
+                                &env, { })), nullptr, { }))]->begin())->masked());
     EXPECT_TRUE(! (*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=category/package-2::test-repo-19",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin())->masked());
+                                &env, { })), nullptr, { }))]->begin())->masked());
     EXPECT_TRUE((*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=category/package-3::test-repo-19",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin())->masked());
+                                &env, { })), nullptr, { }))]->begin())->masked());
     EXPECT_TRUE(! (*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=category/package-4::test-repo-19",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin())->masked());
+                                &env, { })), nullptr, { }))]->begin())->masked());
 }
 
 TEST(ERepository, ProfileMasks)
@@ -837,13 +836,13 @@ TEST(ERepository, ProfileMasks)
     {
         EXPECT_TRUE((*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/masked-0",
-                                    &env, { })), make_null_shared_ptr(), { }))]->begin())->masked());
+                                    &env, { })), nullptr, { }))]->begin())->masked());
         EXPECT_TRUE(! (*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/was_masked-0",
-                                    &env, { })), make_null_shared_ptr(), { }))]->begin())->masked());
+                                    &env, { })), nullptr, { }))]->begin())->masked());
         EXPECT_TRUE(! (*env[selection::RequireExactlyOne(generator::Matches(
                             PackageDepSpec(parse_user_package_dep_spec("=cat/not_masked-0",
-                                    &env, { })), make_null_shared_ptr(), { }))]->begin())->masked());
+                                    &env, { })), nullptr, { }))]->begin())->masked());
     }
 }
 
@@ -928,7 +927,7 @@ TEST(ERepository, Fetch)
     {
         const std::shared_ptr<const PackageID> no_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("cat/no-files",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(no_files_id));
         ASSERT_TRUE(bool(no_files_id->short_description_key()));
         EXPECT_EQ("The Short Description", no_files_id->short_description_key()->parse_value());
@@ -938,7 +937,7 @@ TEST(ERepository, Fetch)
     {
         const std::shared_ptr<const PackageID> fetched_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("cat/fetched-files",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(fetched_files_id));
         EXPECT_TRUE((FSPath("e_repository_TEST_dir") / "distdir" / "already-fetched.txt").stat().is_regular_file());
         fetched_files_id->perform_action(action);
@@ -949,7 +948,7 @@ TEST(ERepository, Fetch)
         EXPECT_TRUE(! (FSPath("e_repository_TEST_dir") / "distdir" / "fetchable-1.txt").stat().is_regular_file());
         const std::shared_ptr<const PackageID> fetchable_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("cat/fetchable-files",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(fetchable_files_id));
         fetchable_files_id->perform_action(action);
         EXPECT_TRUE((FSPath("e_repository_TEST_dir") / "distdir" / "fetchable-1.txt").stat().is_regular_file());
@@ -959,7 +958,7 @@ TEST(ERepository, Fetch)
         EXPECT_TRUE(! (FSPath("e_repository_TEST_dir") / "distdir" / "arrowed.txt").stat().is_regular_file());
         const std::shared_ptr<const PackageID> arrow_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("cat/arrow-files",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(arrow_files_id));
         arrow_files_id->perform_action(action);
         EXPECT_TRUE((FSPath("e_repository_TEST_dir") / "distdir" / "arrowed.txt").stat().is_regular_file());
@@ -968,7 +967,7 @@ TEST(ERepository, Fetch)
     {
         const std::shared_ptr<const PackageID> unfetchable_files_id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("cat/unfetchable-files",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(unfetchable_files_id));
         EXPECT_THROW(unfetchable_files_id->perform_action(action), ActionFailedError);
     }
@@ -976,7 +975,7 @@ TEST(ERepository, Fetch)
     {
         const std::shared_ptr<const PackageID> no_files_restricted_id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("cat/no-files-restricted",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(no_files_restricted_id));
         no_files_restricted_id->perform_action(action);
     }
@@ -984,7 +983,7 @@ TEST(ERepository, Fetch)
     {
         const std::shared_ptr<const PackageID> fetched_files_restricted_id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("cat/fetched-files-restricted",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(fetched_files_restricted_id));
         fetched_files_restricted_id->perform_action(action);
     }
@@ -992,7 +991,7 @@ TEST(ERepository, Fetch)
     {
         const std::shared_ptr<const PackageID> fetchable_files_restricted_id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("cat/fetchable-files-restricted",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(fetchable_files_restricted_id));
         EXPECT_THROW(fetchable_files_restricted_id->perform_action(action), ActionFailedError);
     }
@@ -1024,7 +1023,7 @@ TEST(ERepository, ManifestCheck)
 
     const std::shared_ptr<const PackageID> id(*env[selection::AllVersionsSorted(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("category/package",
-                            &env, { })), make_null_shared_ptr(), { }))]->last());
+                            &env, { })), nullptr, { }))]->last());
     ASSERT_TRUE(bool(id));
     repo->make_manifest(id->name());
     id->perform_action(action);
@@ -1052,7 +1051,7 @@ TEST(ERepository, ParseEAPI)
     };
     auto ids(env[selection::AllVersionsSorted(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("category/package",
-                            &env, { })), make_null_shared_ptr(), { }))]);
+                            &env, { })), nullptr, { }))]);
 
     int i(0);
     for (auto it(ids->begin()), it_end(ids->end()); it_end != it; ++i, ++it)

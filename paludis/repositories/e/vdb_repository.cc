@@ -68,7 +68,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/safe_ifstream.hh>
@@ -508,8 +507,8 @@ VDBRepository::perform_uninstall(
                     n::maybe_output_manager() = output_manager,
                     n::package_builddir() = package_builddir,
                     n::package_id() = id,
-                    n::parts() = make_null_shared_ptr(),
-                    n::permitted_directories() = make_null_shared_ptr(),
+                    n::parts() = nullptr,
+                    n::permitted_directories() = nullptr,
                     n::portdir() = _imp->params.location(),
                     n::root() = stringify(_imp->params.root()),
                     n::sandbox() = phase->option("sandbox"),
@@ -783,7 +782,7 @@ VDBRepository::merge(const MergeParams & m)
                                     std::placeholders::_1),
                             n::is_overwrite() = false,
                             n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1),
-                            n::override_contents() = make_null_shared_ptr(),
+                            n::override_contents() = nullptr,
                             n::want_phase() = m.want_phase()
                             ));
                 m.perform_uninstall()(candidate, uo);
@@ -927,7 +926,7 @@ VDBRepository::installed_root_key() const
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 VDBRepository::sync_host_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 namespace
@@ -1206,7 +1205,7 @@ VDBRepository::perform_updates()
                             SlotName old_slot(tokens.at(2)), new_slot(tokens.at(3));
 
                             const std::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
-                                        (generator::Matches(old_spec, make_null_shared_ptr(), { }) & generator::InRepository(name())) |
+                                        (generator::Matches(old_spec, nullptr, { }) & generator::InRepository(name())) |
                                         filter::Slot(old_slot)
                                         )]);
                             if (! ids->empty())

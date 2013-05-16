@@ -366,7 +366,7 @@ DeserialisatorHandler<std::shared_ptr<const PackageID> >::handle(Deserialisation
     Context context("When deserialising:");
 
     if (v.null())
-        return make_null_shared_ptr();
+        return nullptr;
 
     return *(*v.deserialiser().environment())[
         selection::RequireExactlyOne(generator::Matches(
@@ -378,7 +378,7 @@ DeserialisatorHandler<std::shared_ptr<const PackageID> >::handle(Deserialisation
                         epdso_allow_slot_deps, epdso_allow_key_requirements,
                         epdso_allow_use_dep_question_defaults, epdso_allow_subslot_deps },
                         { vso_flexible_dashes, vso_flexible_dots, vso_ignore_case,
-                        vso_letters_anywhere, vso_dotted_suffixes }), make_null_shared_ptr(), { }))]->begin();
+                        vso_letters_anywhere, vso_dotted_suffixes }), nullptr, { }))]->begin();
 }
 
 namespace paludis

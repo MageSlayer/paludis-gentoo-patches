@@ -29,7 +29,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/process.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/return_literal_function.hh>
 
@@ -97,7 +96,7 @@ TEST(TarMerger, Works)
                 n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
                 n::image() = FSPath("tar_merger_TEST_dir") / "simple",
                 n::install_under() = FSPath("/"),
-                n::maybe_output_manager() = make_null_shared_ptr(),
+                n::maybe_output_manager() = nullptr,
                 n::merged_entries() = std::make_shared<FSPathSet>(),
                 n::no_chown() = true,
                 n::options() = MergerOptions() + mo_rewrite_symlinks,
@@ -152,7 +151,7 @@ TEST(TarMerger, NotAvailable)
                 n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
                 n::image() = FSPath("tar_merger_TEST_dir") / "simple",
                 n::install_under() = FSPath("/"),
-                n::maybe_output_manager() = make_null_shared_ptr(),
+                n::maybe_output_manager() = nullptr,
                 n::merged_entries() = std::make_shared<FSPathSet>(),
                 n::no_chown() = true,
                 n::options() = MergerOptions(),

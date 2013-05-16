@@ -38,7 +38,6 @@
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/fs_stat.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/stringify.hh>
 
@@ -83,7 +82,7 @@ TEST(EbuildFlatMetadataCache, FlatList)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("the-description-flat_list", id->short_description_key()->parse_value());
@@ -105,7 +104,7 @@ TEST(EbuildFlatMetadataCache, FlatListStale)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-stale-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
     EXPECT_EQ("The Generated Description flat_list-stale", id1->short_description_key()->parse_value());
@@ -128,7 +127,7 @@ TEST(EbuildFlatMetadataCache, GuessedEAPI)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-guessed-eapi-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
     EXPECT_EQ("The Generated Description flat_list-guessed-eapi", id1->short_description_key()->parse_value());
@@ -150,7 +149,7 @@ TEST(EbuildFlatMetadataCache, EclassCached)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("the-description-flat_list-eclass", id->short_description_key()->parse_value());
@@ -175,7 +174,7 @@ TEST(EbuildFlatMetadataCache, EclassStale)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-stale-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
     EXPECT_EQ("The Generated Description flat_list-eclass-stale", id1->short_description_key()->parse_value());
@@ -197,7 +196,7 @@ TEST(EbuildFlatMetadataCache, EclassWrong)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-wrong-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
     EXPECT_EQ("The Generated Description flat_list-eclass-wrong", id1->short_description_key()->parse_value());
@@ -219,7 +218,7 @@ TEST(EbuildFlatMetadataCache, EclassGone)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-eclass-gone-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
     EXPECT_EQ("The Generated Description flat_list-eclass-gone", id1->short_description_key()->parse_value());
@@ -241,7 +240,7 @@ TEST(EbuildFlatMetadataCache, FlatListDetection)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_list-detection-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("the-description-flat_list-detection", id->short_description_key()->parse_value());
@@ -263,7 +262,7 @@ TEST(EbuildFlatMetadataCache, FlatHash)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("the-description-flat_hash", id->short_description_key()->parse_value());
@@ -286,7 +285,7 @@ TEST(EbuildFlatMetadataCache, FlatHashGuessedEAPI)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-guessed-eapi-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-guessed-eapi", id1->short_description_key()->parse_value());
@@ -308,7 +307,7 @@ TEST(EbuildFlatMetadataCache, FlatHashGuessedExtension)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-guessed-eapi-extension-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-guessed-eapi-extension", id1->short_description_key()->parse_value());
@@ -330,7 +329,7 @@ TEST(EbuildFlatMetadataCache, FlatHashNoGuessedEAPI)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-guessed-eapi-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("the-description-flat_hash-no-guessed-eapi", id->short_description_key()->parse_value());
@@ -352,7 +351,7 @@ TEST(EbuildFlatMetadataCache, EmptyValue)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-empty-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("", id->short_description_key()->parse_value());
@@ -375,7 +374,7 @@ TEST(EbuildFlatMetadataCache, HashStale)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-stale-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-stale", id1->short_description_key()->parse_value());
@@ -397,7 +396,7 @@ TEST(EbuildFlatMetadataCache, HashNoMTime)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-mtime-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
     EXPECT_EQ("the-description-flat_hash-no-mtime", id1->short_description_key()->parse_value());
@@ -419,7 +418,7 @@ TEST(EbuildFlatMetadataCache, HashNoMTimeStale)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-mtime-stale-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-no-mtime-stale", id1->short_description_key()->parse_value());
@@ -441,7 +440,7 @@ TEST(EbuildFlatMetadataCache, HashBadMtime)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-bad-mtime-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-bad-mtime", id1->short_description_key()->parse_value());
@@ -463,7 +462,7 @@ TEST(EbuildFlatMetadataCache, HashMD5)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-md5-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
     EXPECT_EQ("The Description flat_hash-md5", id1->short_description_key()->parse_value());
@@ -485,7 +484,7 @@ TEST(EbuildFlatMetadataCache, HashBadMD5)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-bad-md5-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-bad-md5", id1->short_description_key()->parse_value());
@@ -507,7 +506,7 @@ TEST(EbuildFlatMetadataCache, HashNoEAPI)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-no-eapi-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
     EXPECT_EQ("The Description flat_hash-no-eapi", id1->short_description_key()->parse_value());
@@ -529,7 +528,7 @@ TEST(EbuildFlatMetadataCache, HashDuplicateKey)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-duplicate-key-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id1->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-duplicate-key", id1->short_description_key()->parse_value());
@@ -551,7 +550,7 @@ TEST(EbuildFlatMetadataCache, HashEclass)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("the-description-flat_hash-eclass", id->short_description_key()->parse_value());
@@ -575,7 +574,7 @@ TEST(EbuildFlatMetadataCache, HashEclassStale)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-stale-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-eclass-stale", id->short_description_key()->parse_value());
@@ -597,7 +596,7 @@ TEST(EbuildFlatMetadataCache, HashEclassWrong)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-wrong-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-eclass-wrong", id->short_description_key()->parse_value());
@@ -618,7 +617,7 @@ TEST(EbuildFlatMetadataCache, HashEclassGone)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-gone-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-eclass-gone", id->short_description_key()->parse_value());
@@ -640,7 +639,7 @@ TEST(EbuildFlatMetadataCache, HashFullEclass)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("the-description-flat_hash-full-eclass", id->short_description_key()->parse_value());
@@ -664,7 +663,7 @@ TEST(EbuildFlatMetadataCache, HashFullEclassNonStandard)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-nonstandard-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("the-description-flat_hash-full-eclass-nonstandard", id->short_description_key()->parse_value());
@@ -688,7 +687,7 @@ TEST(EbuildFlatMetadataCache, HashFullEclassStale)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-stale-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-full-eclass-stale", id->short_description_key()->parse_value());
@@ -710,7 +709,7 @@ TEST(EbuildFlatMetadataCache, HashFullEclassWrong)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-wrong-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-full-eclass-wrong", id->short_description_key()->parse_value());
@@ -732,7 +731,7 @@ TEST(EbuildFlatMetadataCache, HashFullEclassGone)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-full-eclass-gone-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-full-eclass-gone", id->short_description_key()->parse_value());
@@ -754,14 +753,14 @@ TEST(EbuildFlatMetadataCache, HashEclassTruncated)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-truncated-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-eclasses-truncated", id->short_description_key()->parse_value());
 
     std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-truncated-2",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id2->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-eclasses-truncated-2", id2->short_description_key()->parse_value());
@@ -783,7 +782,7 @@ TEST(EbuildFlatMetadataCache, HashEclassBadMtime)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-bad-mtime-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-eclasses-bad-mtime", id->short_description_key()->parse_value());
@@ -805,7 +804,7 @@ TEST(EbuildFlatMetadataCache, HashEclassSpaces)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclasses-spaces-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-eclasses-spaces", id->short_description_key()->parse_value());
@@ -827,7 +826,7 @@ TEST(EbuildFlatMetadataCache, HashEclassMD5)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-md5-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Description flat_hash-eclass-md5", id->short_description_key()->parse_value());
@@ -849,7 +848,7 @@ TEST(EbuildFlatMetadataCache, HashEclassBadMD5)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-bad-md5-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-eclass-bad-md5", id->short_description_key()->parse_value());
@@ -871,7 +870,7 @@ TEST(EbuildFlatMetadataCache, HashEclassTruncatedMD5)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-truncated-md5-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-eclass-truncated-md5", id->short_description_key()->parse_value());
@@ -893,7 +892,7 @@ TEST(EbuildFlatMetadataCache, HashEclassGoneMD5)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-eclass-gone-md5-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-eclass-gone-md5", id->short_description_key()->parse_value());
@@ -916,7 +915,7 @@ TEST(EbuildFlatMetadataCache, HashExlib)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("the-description-flat_hash-exlib", id->short_description_key()->parse_value());
@@ -941,7 +940,7 @@ TEST(EbuildFlatMetadataCache, HashExlibPerCategory)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-percat-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("the-description-flat_hash-exlib-percat", id->short_description_key()->parse_value());
@@ -966,7 +965,7 @@ TEST(EbuildFlatMetadataCache, HashExlibStale)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-stale-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-exlib-stale", id->short_description_key()->parse_value());
@@ -989,7 +988,7 @@ TEST(EbuildFlatMetadataCache, HashExlibWrong)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-wrong-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-exlib-wrong", id->short_description_key()->parse_value());
@@ -1012,7 +1011,7 @@ TEST(EbuildFlatMetadataCache, HashExlibGone)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlib-gone-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-exlib-gone", id->short_description_key()->parse_value());
@@ -1035,14 +1034,14 @@ TEST(EbuildFlatMetadataCache, HashExlibTruncated)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-truncated-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-exlibs-truncated", id->short_description_key()->parse_value());
 
     std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-truncated-2",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id2->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-exlibs-truncated-2", id2->short_description_key()->parse_value());
@@ -1065,7 +1064,7 @@ TEST(EbuildFlatMetadataCache, HashExlibBadMtime)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-bad-mtime-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-exlibs-bad-mtime", id->short_description_key()->parse_value());
@@ -1088,7 +1087,7 @@ TEST(EbuildFlatMetadataCache, HashExlibSpaces)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/flat_hash-exlibs-spaces-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ("The Generated Description flat_hash-exlibs-spaces", id->short_description_key()->parse_value());
@@ -1111,7 +1110,7 @@ TEST(EbuildFlatMetadataCache, Write)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/write-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ(contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-1"));
@@ -1135,7 +1134,7 @@ TEST(EbuildFlatMetadataCache, Write1)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/write-eapi1-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ(contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-eapi1-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eapi1-1"));
@@ -1161,7 +1160,7 @@ TEST(EbuildFlatMetadataCache, WriteEclasses)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/write-eclasses-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ(contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-eclasses-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-eclasses-1"));
@@ -1186,7 +1185,7 @@ TEST(EbuildFlatMetadataCache, WriteExlibs)
 
     std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat/write-exlibs-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(id->short_description_key()));
     EXPECT_EQ(contents("ebuild_flat_metadata_cache_TEST_dir/cache/expected/cat/write-exlibs-1"), contents("ebuild_flat_metadata_cache_TEST_dir/cache/test-repo/cat/write-exlibs-1"));

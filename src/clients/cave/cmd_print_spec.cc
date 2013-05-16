@@ -28,7 +28,6 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>

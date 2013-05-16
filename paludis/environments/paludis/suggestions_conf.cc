@@ -29,7 +29,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/environment.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
@@ -164,7 +163,7 @@ SuggestionsConf::add(const FSPath & filename)
         catch (const GotASetNotAPackageDepSpec &)
         {
             NamedSetMap::iterator i(_imp->set.insert(std::make_pair(SetName(tokens.at(0)), std::make_pair(
-                                make_null_shared_ptr(), ValuesList()))).first);
+                                nullptr, ValuesList()))).first);
 
             for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                     t != t_end ; ++t)
@@ -194,7 +193,7 @@ SuggestionsConf::interest_in_suggestion(
             for (PDSToValuesList::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
                     j != j_end ; ++j)
             {
-                if (! match_package(*_imp->env, *j->first, from_id, make_null_shared_ptr(), { }))
+                if (! match_package(*_imp->env, *j->first, from_id, nullptr, { }))
                     continue;
 
                 for (ValuesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;
@@ -269,7 +268,7 @@ SuggestionsConf::interest_in_suggestion(
     for (PDSToValuesList::const_iterator j(_imp->unqualified.begin()), j_end(_imp->unqualified.end()) ;
             j != j_end ; ++j)
     {
-        if (! match_package(*_imp->env, *j->first, from_id, make_null_shared_ptr(), { }))
+        if (! match_package(*_imp->env, *j->first, from_id, nullptr, { }))
             continue;
 
         for (ValuesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;

@@ -29,7 +29,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 
 #include <paludis/package_id.hh>
@@ -140,7 +139,7 @@ TEST_P(ReplacingTest, Works)
 
     const std::shared_ptr<const PackageIDSequence> rlist(env[selection::AllVersionsSorted(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec(info.replacing, &env, { })),
-                    make_null_shared_ptr(), { }) |
+                    nullptr, { }) |
                 filter::InstalledAtRoot(env.preferred_root_key()->parse_value()))]);
 
     InstallAction action(make_named_values<InstallActionOptions>(
@@ -153,7 +152,7 @@ TEST_P(ReplacingTest, Works)
 
     const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("cat/" + info.test,
-                            &env, { })), make_null_shared_ptr(), { }) |
+                            &env, { })), nullptr, { }) |
                 filter::SupportsAction<InstallAction>())]->last());
     ASSERT_TRUE(bool(id));
     id->perform_action(action);

@@ -42,7 +42,6 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/pretty_print.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/enum_iterator.hh>
 
 #include <paludis/resolver/resolutions_by_resolvent.hh>
@@ -311,17 +310,17 @@ namespace
 
         const std::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         const std::shared_ptr<const PackageID> visit(const RemoveDecision &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         const std::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
     };
 
@@ -338,7 +337,7 @@ namespace
     {
         const std::shared_ptr<const PackageID> maybe_id(id_for_decision_or_null(decision));
         if (maybe_id)
-            return match_package(*env, spec, maybe_id, make_null_shared_ptr(), { });
+            return match_package(*env, spec, maybe_id, nullptr, { });
         else
         {
             /* could also match slot here too */
@@ -1409,7 +1408,7 @@ namespace
 
         cout << fuc(fs_uninstall_end());
 
-        display_reasons(resolution, make_null_shared_ptr(), more_annotations);
+        display_reasons(resolution, nullptr, more_annotations);
         if (untaken)
             display_untaken_remove(decision);
         if (confirmations)
@@ -1433,7 +1432,7 @@ namespace
         else
             cout << fuc(fs_unable_taken(), fv<'s'>(stringify(d.resolvent().package())));
 
-        display_reasons(resolution, make_null_shared_ptr(), true);
+        display_reasons(resolution, nullptr, true);
 
         if (untaken)
             return;
@@ -1559,7 +1558,7 @@ namespace
     std::pair<std::shared_ptr<const ConfirmableDecision>, std::shared_ptr<const OrdererNotes> >
     get_decision_and_notes(const std::shared_ptr<const ConfirmableDecision> & d)
     {
-        return std::make_pair(d, make_null_shared_ptr());
+        return std::make_pair(d, nullptr);
     }
 
     std::pair<std::shared_ptr<const ConfirmableDecision>, std::shared_ptr<const OrdererNotes> >
@@ -1584,7 +1583,7 @@ namespace
         cout << fuc(fs_break_id(), fv<'i'>(decision.existing_id()->canonical_form(idcf_no_name)));
 
         cout << fuc(fs_break_by());
-        display_reasons(resolution, make_null_shared_ptr(), more_annotations);
+        display_reasons(resolution, nullptr, more_annotations);
         display_confirmations(decision);
     }
 
@@ -1844,7 +1843,7 @@ namespace
     {
         if (! resolved->taken_unorderable_decisions()->empty())
             display_a_changes_and_removes(env, resolved, resolved->taken_unorderable_decisions(),
-                    cmdline, choices_to_explain, false, false, false, true, make_null_shared_ptr(), already_cycle_notes);
+                    cmdline, choices_to_explain, false, false, false, true, nullptr, already_cycle_notes);
     }
 
     void display_untaken_changes_and_removes(
@@ -1856,7 +1855,7 @@ namespace
     {
         if (! resolved->untaken_change_or_remove_decisions()->empty())
             display_a_changes_and_removes(env, resolved, resolved->untaken_change_or_remove_decisions(),
-                    cmdline, choices_to_explain, true, false, true, false, make_null_shared_ptr(), already_cycle_notes);
+                    cmdline, choices_to_explain, true, false, true, false, nullptr, already_cycle_notes);
     }
 
     void display_an_errors(
@@ -1914,7 +1913,7 @@ namespace
         ChoicesToExplain ignore_choices_to_explain;
         if (! resolved->taken_unconfirmed_decisions()->empty())
             display_a_changes_and_removes(env, resolved, resolved->taken_unconfirmed_decisions(),
-                    cmdline, ignore_choices_to_explain, true, true, false, false, make_null_shared_ptr(), already_cycle_notes);
+                    cmdline, ignore_choices_to_explain, true, true, false, false, nullptr, already_cycle_notes);
     }
 }
 
@@ -1971,7 +1970,7 @@ DisplayResolutionCommand::run(
         const std::shared_ptr<Environment> & env,
         const std::shared_ptr<const Sequence<std::string > > & args)
 {
-    return run(env, args, make_null_shared_ptr());
+    return run(env, args, nullptr);
 }
 
 std::shared_ptr<args::ArgsHandler>

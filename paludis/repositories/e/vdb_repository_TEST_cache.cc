@@ -32,7 +32,6 @@
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/metadata_key.hh>
 #include <paludis/standard_output_manager.hh>
@@ -97,7 +96,7 @@ namespace
         if (! victim.empty())
             replacing->push_back(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec(victim,
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
         InstallAction install_action(make_named_values<InstallActionOptions>(
                     n::destination() = vdb_repo,
                     n::make_output_manager() = &make_standard_output_manager,
@@ -107,7 +106,7 @@ namespace
                 ));
         (*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec(chosen_one,
-                            &env, { })), make_null_shared_ptr(), { }))]->begin())->perform_action(install_action);
+                            &env, { })), nullptr, { }))]->begin())->perform_action(install_action);
     }
 
     void read_cache(const FSPath & names_cache, std::vector<FSPath> & vec)
@@ -163,11 +162,11 @@ TEST(NamesCache, Incremental)
 
     UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
                 n::config_protect() = "",
-                n::if_for_install_id() = make_null_shared_ptr(),
+                n::if_for_install_id() = nullptr,
                 n::ignore_for_unmerge() = &ignore_nothing,
                 n::is_overwrite() = false,
                 n::make_output_manager() = &make_standard_output_manager,
-                n::override_contents() = make_null_shared_ptr(),
+                n::override_contents() = nullptr,
                 n::want_phase() = &want_all_phases
             ));
 
@@ -235,7 +234,7 @@ TEST(NamesCache, Incremental)
     {
         const std::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-2::installed",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         inst_id->perform_action(uninstall_action);
         vdb_repo->invalidate();
 
@@ -262,7 +261,7 @@ TEST(NamesCache, Incremental)
     {
         const std::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg2-1::installed",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         inst_id->perform_action(uninstall_action);
         vdb_repo->invalidate();
 
@@ -287,7 +286,7 @@ TEST(NamesCache, Incremental)
     {
         const std::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat2/pkg1-1::installed",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         inst_id->perform_action(uninstall_action);
         vdb_repo->invalidate();
 
@@ -301,7 +300,7 @@ TEST(NamesCache, Incremental)
     {
         const std::shared_ptr<const PackageID> inst_id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat1/pkg1-1::installed",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         inst_id->perform_action(uninstall_action);
         vdb_repo->invalidate();
 

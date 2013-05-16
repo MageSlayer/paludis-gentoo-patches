@@ -35,7 +35,6 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ifstream.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/join.hh>
@@ -292,7 +291,7 @@ ExndbamRepository::installed_root_key() const
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 ExndbamRepository::sync_host_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 void
@@ -475,7 +474,7 @@ ExndbamRepository::merge(const MergeParams & m)
                             std::placeholders::_1),
                     n::is_overwrite() = true,
                     n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1),
-                    n::override_contents() = make_null_shared_ptr(),
+                    n::override_contents() = nullptr,
                     n::want_phase() = m.want_phase()
                     ));
         m.perform_uninstall()(if_overwritten_id, uo);
@@ -498,7 +497,7 @@ ExndbamRepository::merge(const MergeParams & m)
                                     std::placeholders::_1),
                             n::is_overwrite() = false,
                             n::make_output_manager() = std::bind(&this_output_manager, m.output_manager(), std::placeholders::_1),
-                            n::override_contents() = make_null_shared_ptr(),
+                            n::override_contents() = nullptr,
                             n::want_phase() = m.want_phase()
                             ));
                 m.perform_uninstall()(candidate, uo);
@@ -638,8 +637,8 @@ ExndbamRepository::perform_uninstall(
                         n::maybe_output_manager() = output_manager,
                         n::package_builddir() = package_builddir,
                         n::package_id() = id,
-                        n::parts() = make_null_shared_ptr(),
-                        n::permitted_directories() = make_null_shared_ptr(),
+                        n::parts() = nullptr,
+                        n::permitted_directories() = nullptr,
                         n::portdir() = _imp->params.location(),
                         n::root() = stringify(_imp->params.root()),
                         n::sandbox() = phase->option("sandbox"),

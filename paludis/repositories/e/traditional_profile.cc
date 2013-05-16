@@ -42,7 +42,6 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_error.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/upper_lower.hh>
 
 #include <paludis/choice.hh>
@@ -831,7 +830,7 @@ TraditionalProfile::use_masked(
         for (PackageFlagStatusMapList::const_iterator g(i->package_use_mask.begin()),
                 g_end(i->package_use_mask.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, id, make_null_shared_ptr(), { }))
+            if (! match_package(*_imp->env, *g->first, id, nullptr, { }))
                 continue;
 
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
@@ -844,7 +843,7 @@ TraditionalProfile::use_masked(
             for (PackageFlagStatusMapList::const_iterator gs(i->package_use_stable_mask.begin()),
                      gs_end(i->package_use_stable_mask.end()) ; gs != gs_end ; ++gs)
             {
-                if (! match_package(*_imp->env, *gs->first, id, make_null_shared_ptr(), { }))
+                if (! match_package(*_imp->env, *gs->first, id, nullptr, { }))
                     continue;
 
                 FlagStatusMap::const_iterator hs(gs->second.find(value_prefixed));
@@ -888,7 +887,7 @@ TraditionalProfile::use_forced(
         for (PackageFlagStatusMapList::const_iterator g(i->package_use_force.begin()),
                 g_end(i->package_use_force.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, id, make_null_shared_ptr(), { }))
+            if (! match_package(*_imp->env, *g->first, id, nullptr, { }))
                 continue;
 
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
@@ -901,7 +900,7 @@ TraditionalProfile::use_forced(
             for (PackageFlagStatusMapList::const_iterator gs(i->package_use_stable_force.begin()),
                      gs_end(i->package_use_stable_force.end()) ; gs != gs_end ; ++gs)
             {
-                if (! match_package(*_imp->env, *gs->first, id, make_null_shared_ptr(), { }))
+                if (! match_package(*_imp->env, *gs->first, id, nullptr, { }))
                     continue;
 
                 FlagStatusMap::const_iterator hs(gs->second.find(value_prefixed));
@@ -931,7 +930,7 @@ TraditionalProfile::use_state_ignoring_masks(
         for (PackageFlagStatusMapList::const_iterator g(i->package_use.begin()),
                 g_end(i->package_use.end()) ; g != g_end ; ++g)
         {
-            if (! match_package(*_imp->env, *g->first, id, make_null_shared_ptr(), { }))
+            if (! match_package(*_imp->env, *g->first, id, nullptr, { }))
                 continue;
 
             FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
@@ -1032,7 +1031,7 @@ TraditionalProfile::profile_masks(const std::shared_ptr<const PackageID> & id) c
     {
         for (std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const MaskInfo> > >::const_iterator k(rr->second.begin()),
                 k_end(rr->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->env, *k->first, id, make_null_shared_ptr(), { }))
+            if (match_package(*_imp->env, *k->first, id, nullptr, { }))
                 result->push_back(*k->second);
     }
 

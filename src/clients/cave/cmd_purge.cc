@@ -24,7 +24,6 @@
 
 #include <paludis/args/do_help.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -55,11 +54,11 @@ namespace
         std::shared_ptr<ResolveCommandLineProgramOptions> program_options;
 
         PurgeCommandLine(const bool for_docs) :
-            resolution_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineResolutionOptions>(this)),
-            execution_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineExecutionOptions>(this)),
-            display_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineDisplayOptions>(this)),
-            graph_jobs_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineGraphJobsOptions>(this)),
-            program_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineProgramOptions>(this))
+            resolution_options(for_docs ? nullptr : std::make_shared<ResolveCommandLineResolutionOptions>(this)),
+            execution_options(for_docs ? nullptr : std::make_shared<ResolveCommandLineExecutionOptions>(this)),
+            display_options(for_docs ? nullptr : std::make_shared<ResolveCommandLineDisplayOptions>(this)),
+            graph_jobs_options(for_docs ? nullptr : std::make_shared<ResolveCommandLineGraphJobsOptions>(this)),
+            program_options(for_docs ? nullptr : std::make_shared<ResolveCommandLineProgramOptions>(this))
         {
             add_usage_line("[ -x|--execute ]");
             add_note("All options available for 'cave resolve' are also permitted. See 'man cave-resolve' for details.");
@@ -108,7 +107,7 @@ PurgeCommand::run(
     cmdline.resolution_options->a_purge.add_argument("*/*");
 
     return resolve_common(env, *cmdline.resolution_options, *cmdline.execution_options, *cmdline.display_options,
-            *cmdline.graph_jobs_options, *cmdline.program_options, make_null_shared_ptr(), make_null_shared_ptr(), make_null_shared_ptr(), true);
+            *cmdline.graph_jobs_options, *cmdline.program_options, nullptr, nullptr, nullptr, true);
 }
 
 std::shared_ptr<args::ArgsHandler>

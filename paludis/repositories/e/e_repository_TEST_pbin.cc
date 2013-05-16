@@ -34,7 +34,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/fs_stat.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/stringify.hh>
 
@@ -161,7 +160,7 @@ TEST_P(ERepositoryInstallEAPIPBinTest, Works)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/simple-1",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ(base_eapi, visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(bin_action);
@@ -181,7 +180,7 @@ TEST_P(ERepositoryInstallEAPIPBinTest, Works)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/simple-1::binrepo" + base_eapi,
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("pbin-1+" + base_eapi, visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(install_action);
@@ -261,7 +260,7 @@ TEST(Symlinks, Works)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/symlinks-1",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("exheres-0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(bin_action);
@@ -283,7 +282,7 @@ TEST(Symlinks, Works)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/symlinks-1::binrepoexheres-0",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("pbin-1+exheres-0", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(install_action);

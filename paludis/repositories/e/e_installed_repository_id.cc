@@ -36,7 +36,6 @@
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/return_literal_function.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/strip.hh>
@@ -515,10 +514,10 @@ EInstalledRepositoryID::need_keys_added() const
     if (_imp->eapi->supported())
         _imp->keys->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES",
                     _imp->eapi->supported()->ebuild_environment_variables()->description_choices(),
-                    mkt_normal, make_null_shared_ptr(), std::bind(return_literal_function(make_null_shared_ptr())));
+                    mkt_normal, nullptr, std::bind(return_literal_function(nullptr)));
     else
         _imp->keys->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
-                    make_null_shared_ptr(), std::bind(return_literal_function(make_null_shared_ptr())));
+                    nullptr, std::bind(return_literal_function(nullptr)));
 
     add_metadata_key(_imp->keys->choices);
 
@@ -763,7 +762,7 @@ EInstalledRepositoryID::license_key() const
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 EInstalledRepositoryID::behaviours_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >

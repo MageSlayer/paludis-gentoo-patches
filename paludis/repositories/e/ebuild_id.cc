@@ -62,7 +62,6 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/accept_visitor.hh>
@@ -313,11 +312,11 @@ EbuildID::need_non_xml_keys_added() const
                     n::environment() = _imp->environment,
                     n::exlibsdirs() = e_repo->layout()->exlibsdirs(name()),
                     n::files_dir() = e_repo->layout()->package_directory(name()) / "files",
-                    n::maybe_output_manager() = make_null_shared_ptr(),
+                    n::maybe_output_manager() = nullptr,
                     n::package_builddir() = e_repo->params().builddir() / (stringify(name().category()) + "-" + stringify(name().package()) + "-" + stringify(version()) + "-metadata"),
                     n::package_id() = shared_from_this(),
-                    n::parts() = make_null_shared_ptr(),
-                    n::permitted_directories() = make_null_shared_ptr(),
+                    n::parts() = nullptr,
+                    n::permitted_directories() = nullptr,
                     n::portdir() =
                         (e_repo->params().master_repositories() && ! e_repo->params().master_repositories()->empty()) ?
                         (*e_repo->params().master_repositories()->begin())->params().location() : e_repo->params().location(),
@@ -424,7 +423,7 @@ EbuildID::need_non_xml_keys_added() const
     }
     else
         _imp->choices = std::make_shared<EChoicesKey>(_imp->environment, shared_from_this(), "PALUDIS_CHOICES", "Choices", mkt_normal,
-                    e_repo, std::bind(return_literal_function(make_null_shared_ptr())));
+                    e_repo, std::bind(return_literal_function(nullptr)));
     add_metadata_key(_imp->choices);
 }
 
@@ -543,7 +542,7 @@ EbuildID::choice_descriptions() const
     if (m)
         return m->uses();
     else
-        return make_null_shared_ptr();
+        return nullptr;
 }
 
 namespace
@@ -959,7 +958,7 @@ EbuildID::from_repositories_key() const
         return _imp->generated_from;
     }
     else
-        return make_null_shared_ptr();
+        return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -1805,6 +1804,6 @@ EbuildID::set_scm_revision(const std::string & s) const
 const std::shared_ptr<const Contents>
 EbuildID::contents() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 

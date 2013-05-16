@@ -24,7 +24,6 @@
 #include <paludis/resolver/decision_utils.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/tribool.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_dep_spec_collection.hh>
 
@@ -42,8 +41,8 @@ namespace paludis
 
         Imp(const Environment * const e) :
             env(e),
-            early_specs(make_null_shared_ptr()),
-            late_specs(make_null_shared_ptr())
+            early_specs(nullptr),
+            late_specs(nullptr)
         {
         }
     };

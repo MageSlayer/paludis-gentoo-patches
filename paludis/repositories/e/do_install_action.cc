@@ -38,7 +38,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/tokeniser.hh>
 
@@ -507,7 +506,7 @@ paludis::erepository::do_install_action(
                             std::placeholders::_1),
                         n::is_overwrite() = false,
                         n::make_output_manager() = std::bind(&this_output_manager, output_manager, std::placeholders::_1),
-                        n::override_contents() = make_null_shared_ptr(),
+                        n::override_contents() = nullptr,
                         n::want_phase() = install_action.options.want_phase()
                         ));
             install_action.options.perform_uninstall()(*i, uo);

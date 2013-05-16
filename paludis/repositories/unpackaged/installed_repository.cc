@@ -32,7 +32,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ofstream.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/return_literal_function.hh>
@@ -516,12 +515,12 @@ InstalledUnpackagedRepository::sync(
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 InstalledUnpackagedRepository::sync_host_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const Set<std::string> >
 InstalledUnpackagedRepository::maybe_expand_licence_nonrecursively(const std::string &) const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 

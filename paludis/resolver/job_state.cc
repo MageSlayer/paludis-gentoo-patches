@@ -19,7 +19,6 @@
 
 #include <paludis/resolver/job_state.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/serialise-impl.hh>
 
 using namespace paludis;
@@ -174,7 +173,7 @@ const std::shared_ptr<JobSucceededState>
 JobSucceededState::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobSucceededState");
-    return std::make_shared<JobSucceededState>(make_null_shared_ptr());
+    return std::make_shared<JobSucceededState>(nullptr);
 }
 
 void
@@ -204,7 +203,7 @@ const std::shared_ptr<JobFailedState>
 JobFailedState::deserialise(Deserialisation & d)
 {
     Deserialisator v(d, "JobFailedState");
-    return std::make_shared<JobFailedState>(make_null_shared_ptr());
+    return std::make_shared<JobFailedState>(nullptr);
 }
 
 void

@@ -29,7 +29,6 @@
 #include <paludis/util/simple_parser.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
@@ -131,7 +130,7 @@ GemcutterRepository::location_key() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 GemcutterRepository::installed_root_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 void
@@ -299,13 +298,13 @@ GemcutterRepository::perform_hook(const Hook &, const std::shared_ptr<OutputMana
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 GemcutterRepository::sync_host_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const Set<std::string> >
 GemcutterRepository::maybe_expand_licence_nonrecursively(const std::string &) const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 namespace paludis

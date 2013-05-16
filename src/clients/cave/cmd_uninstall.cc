@@ -26,7 +26,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -66,11 +65,11 @@ namespace
             g_target_options(main_options_section(), "Target options", "Target options"),
             a_all_versions(&g_target_options, "all-versions", 'a', "If a supplied spec matches multiple versions, "
                     "uninstall all versions rather than erroring", true),
-            resolution_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineResolutionOptions>(this)),
-            execution_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineExecutionOptions>(this)),
-            display_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineDisplayOptions>(this)),
-            graph_jobs_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineGraphJobsOptions>(this)),
-            program_options(for_docs ? make_null_shared_ptr() : std::make_shared<ResolveCommandLineProgramOptions>(this))
+            resolution_options(for_docs ? nullptr : std::make_shared<ResolveCommandLineResolutionOptions>(this)),
+            execution_options(for_docs ? nullptr : std::make_shared<ResolveCommandLineExecutionOptions>(this)),
+            display_options(for_docs ? nullptr : std::make_shared<ResolveCommandLineDisplayOptions>(this)),
+            graph_jobs_options(for_docs ? nullptr : std::make_shared<ResolveCommandLineGraphJobsOptions>(this)),
+            program_options(for_docs ? nullptr : std::make_shared<ResolveCommandLineProgramOptions>(this))
         {
             add_usage_line("[ -x|--execute ] spec ...");
             add_note("All options available for 'cave resolve' are also permitted. See 'man cave-resolve' for details.");
@@ -138,7 +137,7 @@ UninstallCommand::run(
     {
         PackageDepSpec spec(parse_spec_with_nice_error(*p, env.get(), { updso_allow_wildcards }, filter::All()));
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
-                    generator::Matches(spec, make_null_shared_ptr(), { }) | filter::SupportsAction<UninstallAction>())]);
+                    generator::Matches(spec, nullptr, { }) | filter::SupportsAction<UninstallAction>())]);
         if (ids->empty())
             nothing_matching_error(env.get(), *p, filter::SupportsAction<UninstallAction>());
         else if ((! cmdline.a_all_versions.specified()) && has_multiple_versions(ids))
@@ -185,7 +184,7 @@ UninstallCommand::run(
     }
 
     return resolve_common(env, *cmdline.resolution_options, *cmdline.execution_options, *cmdline.display_options,
-            *cmdline.graph_jobs_options, *cmdline.program_options, make_null_shared_ptr(), targets, targets_cleaned_up, false);
+            *cmdline.graph_jobs_options, *cmdline.program_options, nullptr, targets, targets_cleaned_up, false);
 }
 
 std::shared_ptr<args::ArgsHandler>

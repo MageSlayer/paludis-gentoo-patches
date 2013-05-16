@@ -26,7 +26,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/destringify.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/action.hh>
@@ -309,12 +308,12 @@ UnpackagedRepository::sync(
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 UnpackagedRepository::sync_host_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const Set<std::string> >
 UnpackagedRepository::maybe_expand_licence_nonrecursively(const std::string &) const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 

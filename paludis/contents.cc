@@ -18,7 +18,6 @@
  */
 
 #include <paludis/contents.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/literal_metadata_key.hh>
@@ -72,7 +71,7 @@ namespace paludis
 
         Imp(const std::string & part) :
             part_key(part.empty()
-                        ? make_null_shared_ptr()
+                        ? nullptr
                         : std::make_shared<LiteralMetadataValueKey<std::string>>("part", "part", mkt_normal, part))
         {
         }
@@ -118,7 +117,7 @@ namespace paludis
         Imp(const std::string & target, const std::string & part) :
             target_key(std::make_shared<LiteralMetadataValueKey<std::string>>("target", "target", mkt_normal, target)),
             part_key(part.empty()
-                        ? make_null_shared_ptr()
+                        ? nullptr
                         : std::make_shared<LiteralMetadataValueKey<std::string>>("part", "part", mkt_normal, part))
         {
         }

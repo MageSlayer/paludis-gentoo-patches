@@ -37,7 +37,6 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/accept_visitor.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <algorithm>
 #include <set>
@@ -116,7 +115,7 @@ paludis::cave::executables_common(
                 filter::InstalledAtRoot(env->preferred_root_key()->parse_value())));
 
     std::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(spec, make_null_shared_ptr(), { }) |
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, nullptr, { }) |
                 filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
 
     if (entries->empty())

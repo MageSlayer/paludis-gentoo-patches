@@ -35,7 +35,6 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <algorithm>
 #include <functional>
 #include <list>
@@ -109,7 +108,7 @@ PackageMaskConf::add(const FSPath & filename)
         }
         catch (const GotASetNotAPackageDepSpec &)
         {
-            _imp->sets.push_back(std::make_pair(SetName(spec), std::make_pair(make_null_shared_ptr(), reasons)));
+            _imp->sets.push_back(std::make_pair(SetName(spec), std::make_pair(nullptr, reasons)));
         }
     }
 }
@@ -121,7 +120,7 @@ PackageMaskConf::query(const std::shared_ptr<const PackageID> & e, const std::st
 
     for (auto i(_imp->masks.begin()), i_end(_imp->masks.end()) ;
             i != i_end ; ++i)
-        if (match_package(*_imp->env, *i->first, e, make_null_shared_ptr(), MatchPackageOptions()))
+        if (match_package(*_imp->env, *i->first, e, nullptr, MatchPackageOptions()))
         {
             if (r.empty())
             {

@@ -24,7 +24,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
 
@@ -61,10 +60,10 @@ TEST(PaludisEnvironment, Use)
     std::shared_ptr<Environment> env(std::make_shared<PaludisEnvironment>(""));
     const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
                 generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                            env.get(), { })), make_null_shared_ptr(), { }))]->begin());
+                            env.get(), { })), nullptr, { }))]->begin());
     const std::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
                 generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
-                            env.get(), { })), make_null_shared_ptr(), { }))]->begin());
+                            env.get(), { })), nullptr, { }))]->begin());
 
     EXPECT_TRUE(get_use("foo", one));
     EXPECT_TRUE(! get_use("foofoo", one));
@@ -90,7 +89,7 @@ TEST(PaludisEnvironment, KnownUse)
 
     const std::shared_ptr<const PackageID> id1(*(*env)[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                            env.get(), { })), make_null_shared_ptr(), { }))]->begin());
+                            env.get(), { })), nullptr, { }))]->begin());
     std::shared_ptr<const Choice> foo_cards;
     auto choices(id1->choices_key()->parse_value());
     for (Choices::ConstIterator c(choices->begin()), c_end(choices->end()) ;
@@ -112,10 +111,10 @@ TEST(PaludisEnvironment, UseMinusStar)
 
     const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
                 generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                            env.get(), { })), make_null_shared_ptr(), { }))]->begin());
+                            env.get(), { })), nullptr, { }))]->begin());
     const std::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
                 generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
-                            env.get(), { })), make_null_shared_ptr(), { }))]->begin());
+                            env.get(), { })), nullptr, { }))]->begin());
 
     EXPECT_TRUE(get_use("foo", one));
     EXPECT_TRUE(! get_use("foofoo", one));
@@ -140,10 +139,10 @@ TEST(PaludisEnvironment, UseMinusPartialStar)
 
     const std::shared_ptr<const PackageID> one(*(*env)[selection::RequireExactlyOne(
                 generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                            env.get(), { })), make_null_shared_ptr(), { }))]->begin());
+                            env.get(), { })), nullptr, { }))]->begin());
     const std::shared_ptr<const PackageID> three(*(*env)[selection::RequireExactlyOne(
                 generator::Matches(PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-two-3",
-                            env.get(), { })), make_null_shared_ptr(), { }))]->begin());
+                            env.get(), { })), nullptr, { }))]->begin());
 
     EXPECT_TRUE(get_use("foo", one));
     EXPECT_TRUE(! get_use("foofoo", one));

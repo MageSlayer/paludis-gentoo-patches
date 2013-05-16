@@ -388,7 +388,7 @@ namespace
                             ));
             }
             else
-                return make_null_shared_ptr();
+                return nullptr;
         }
 
         void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)
@@ -567,7 +567,7 @@ SanitisedDependency::deserialise(Deserialisation & d, const std::shared_ptr<cons
 
     return make_named_values<SanitisedDependency>(
             n::active_conditions_as_string() = v.member<std::string>("active_conditions_as_string"),
-            n::active_dependency_labels() = make_null_shared_ptr(),
+            n::active_dependency_labels() = nullptr,
             n::active_dependency_labels_as_string() = v.member<std::string>("active_dependency_labels_as_string"),
             n::active_dependency_labels_classifier() = v.member<std::shared_ptr<const LabelsClassifier> >("active_dependency_labels_classifier"),
             n::from_id() = v.member<std::shared_ptr<const PackageID> >("from_id"),

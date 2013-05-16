@@ -33,7 +33,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/stringify.hh>
 
@@ -100,7 +99,7 @@ TEST_P(FilterTestCaseBase, Works)
 
     std::shared_ptr<const PackageIDSequence> got_none(env[selection::AllVersionsSorted(
                 generator::Matches(parse_user_package_dep_spec("not/exist", &env,
-                        { }), make_null_shared_ptr(), { }) | *info.filter)]);
+                        { }), nullptr, { }) | *info.filter)]);
     ASSERT_TRUE(bool(got_none));
     EXPECT_EQ("", join(indirect_iterator(got_none->begin()), indirect_iterator(got_none->end()), ", "));
 }
@@ -147,21 +146,21 @@ INSTANTIATE_TEST_CASE_P(FilterTest, FilterTestCaseBase, testing::Values(
                 "cat/c-3:0::repo2") },
 
             TestInfo{ std::make_shared<filter::Matches>(envless_parse_package_dep_spec_for_tests(
-                        "cat/a"), make_null_shared_ptr(), MatchPackageOptions()), std::string(
+                        "cat/a"), nullptr, MatchPackageOptions()), std::string(
                 "cat/a-1:0::inst_repo1, "
                 "cat/a-1:0::repo1, "
                 "cat/a-1:0::repo2, "
                 "cat/a-2:0::repo2") },
 
             TestInfo{ std::make_shared<filter::Matches>(envless_parse_package_dep_spec_for_tests(
-                        "*/a"), make_null_shared_ptr(), MatchPackageOptions()), std::string(
+                        "*/a"), nullptr, MatchPackageOptions()), std::string(
                 "cat/a-1:0::inst_repo1, "
                 "cat/a-1:0::repo1, "
                 "cat/a-1:0::repo2, "
                 "cat/a-2:0::repo2") },
 
             TestInfo{ std::make_shared<filter::Matches>(envless_parse_package_dep_spec_for_tests(
-                        "cat/*"), make_null_shared_ptr(), MatchPackageOptions()), std::string(
+                        "cat/*"), nullptr, MatchPackageOptions()), std::string(
                 "cat/a-1:0::inst_repo1, "
                 "cat/a-1:0::repo1, "
                 "cat/a-1:0::repo2, "
@@ -170,7 +169,7 @@ INSTANTIATE_TEST_CASE_P(FilterTest, FilterTestCaseBase, testing::Values(
                 "cat/c-3:0::repo2" ) },
 
             TestInfo{ std::make_shared<filter::Matches>(envless_parse_package_dep_spec_for_tests(
-                        ">=*/*-2"), make_null_shared_ptr(), MatchPackageOptions()), std::string(
+                        ">=*/*-2"), nullptr, MatchPackageOptions()), std::string(
                 "cat/a-2:0::repo2, "
                 "cat/b-2:0::repo1, "
                 "cat/c-3:0::repo2" ) }

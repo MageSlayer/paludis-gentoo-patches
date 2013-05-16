@@ -36,7 +36,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/active_object_ptr.hh>
@@ -671,7 +670,7 @@ TraditionalLayout::binary_ebuild_directory(const QualifiedPackageName & q) const
 std::shared_ptr<MetadataValueKey<FSPath> >
 TraditionalLayout::accounts_repository_data_location_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 std::shared_ptr<MetadataValueKey<FSPath> >
@@ -681,7 +680,7 @@ TraditionalLayout::e_updates_location_key() const
         return std::make_shared<LiteralMetadataValueKey<FSPath>>("e_updates_location",
                     "VDBRepository updates data location", mkt_internal, _imp->tree_root / "profiles" / "updates");
     else
-        return make_null_shared_ptr();
+        return nullptr;
 }
 
 std::shared_ptr<MetadataValueKey<FSPath> >
@@ -691,7 +690,7 @@ TraditionalLayout::licence_groups_location_key() const
         return std::make_shared<LiteralMetadataValueKey<FSPath>>("licence_groups_location",
                     "License groups data location", mkt_internal, _imp->tree_root / "profiles" / "license_groups");
     else
-        return make_null_shared_ptr();
+        return nullptr;
 }
 
 std::shared_ptr<const MasksInfo>

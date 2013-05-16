@@ -66,10 +66,10 @@ ChangedChoices::add_additional_requirements_to(PartiallyMadePackageDepSpec & spe
     {
         if (o->second)
             spec.additional_requirement(parse_elike_use_requirement("" + stringify(o->first) + "(-)",
-                        { euro_allow_default_values }, make_null_shared_ptr()));
+                        { euro_allow_default_values }, nullptr));
         else
             spec.additional_requirement(parse_elike_use_requirement("-" + stringify(o->first) + "(-)",
-                        { euro_allow_default_values }, make_null_shared_ptr()));
+                        { euro_allow_default_values }, nullptr));
     }
 }
 

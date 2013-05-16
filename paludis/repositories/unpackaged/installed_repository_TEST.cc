@@ -40,7 +40,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 
 #include <algorithm>
@@ -131,7 +130,7 @@ TEST(InstalledRepository, Metadata)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
                 generator::Matches(parse_user_package_dep_spec("cat-one/foo:0",
-                        &env, { }), make_null_shared_ptr(), { }))]->begin());
+                        &env, { }), nullptr, { }))]->begin());
 
     EXPECT_EQ(id1->version(), VersionSpec("1", { }));
     EXPECT_EQ("0", id1->slot_key()->parse_value().raw_value());
@@ -148,7 +147,7 @@ TEST(InstalledRepository, Metadata)
 
     const std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(
                 generator::Matches(parse_user_package_dep_spec("cat-one/foo:1",
-                        &env, { }), make_null_shared_ptr(), { }))]->begin());
+                        &env, { }), nullptr, { }))]->begin());
 
     EXPECT_EQ(id2->version(), VersionSpec("2", { }));
     EXPECT_EQ("1", id2->slot_key()->parse_value().raw_value());
@@ -178,13 +177,13 @@ TEST(InstalledRepository, Masks)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
                 generator::Matches(parse_user_package_dep_spec("cat-one/foo:0",
-                        &env, { }), make_null_shared_ptr(), { }))]->begin());
+                        &env, { }), nullptr, { }))]->begin());
 
     EXPECT_TRUE(! id1->masked());
 
     const std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(
                 generator::Matches(parse_user_package_dep_spec("cat-one/foo:1",
-                        &env, { }), make_null_shared_ptr(), { }))]->begin());
+                        &env, { }), nullptr, { }))]->begin());
 
     EXPECT_TRUE(! id2->masked());
 }
@@ -209,7 +208,7 @@ TEST(InstalledRepository, Actions)
 
     const std::shared_ptr<const PackageID> id1(*env[selection::RequireExactlyOne(
                 generator::Matches(parse_user_package_dep_spec("cat-one/foo:1",
-                        &env, { }), make_null_shared_ptr(), { }))]->begin());
+                        &env, { }), nullptr, { }))]->begin());
 
     EXPECT_TRUE(! id1->supports_action(SupportsActionTest<InstallAction>()));
     EXPECT_TRUE(! id1->supports_action(SupportsActionTest<ConfigAction>()));
@@ -245,11 +244,11 @@ TEST(InstalledRepository, UninstallLast)
 
     UninstallAction action(make_named_values<UninstallActionOptions>(
                 n::config_protect() = "",
-                n::if_for_install_id() = make_null_shared_ptr(),
+                n::if_for_install_id() = nullptr,
                 n::ignore_for_unmerge() = &ignore_nothing,
                 n::is_overwrite() = false,
                 n::make_output_manager() = &make_standard_output_manager,
-                n::override_contents() = make_null_shared_ptr(),
+                n::override_contents() = nullptr,
                 n::want_phase() = &want_all_phases
             ));
     id->perform_action(action);
@@ -289,15 +288,15 @@ TEST(InstalledRepository, UninstallNotLast)
 
     const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(
                 generator::Matches(parse_user_package_dep_spec("cat-one/foo:fred",
-                        &env, { }), make_null_shared_ptr(), { }))]->begin());
+                        &env, { }), nullptr, { }))]->begin());
 
     UninstallAction action(make_named_values<UninstallActionOptions>(
                 n::config_protect() = "",
-                n::if_for_install_id() = make_null_shared_ptr(),
+                n::if_for_install_id() = nullptr,
                 n::ignore_for_unmerge() = &ignore_nothing,
                 n::is_overwrite() = false,
                 n::make_output_manager() = &make_standard_output_manager,
-                n::override_contents() = make_null_shared_ptr(),
+                n::override_contents() = nullptr,
                 n::want_phase() = &want_all_phases
             ));
     id->perform_action(action);
@@ -529,16 +528,16 @@ TEST(InstalledRepository, MultipleOps)
 
         UninstallAction action(make_named_values<UninstallActionOptions>(
                     n::config_protect() = "",
-                    n::if_for_install_id() = make_null_shared_ptr(),
+                    n::if_for_install_id() = nullptr,
                     n::ignore_for_unmerge() = &ignore_nothing,
                     n::is_overwrite() = false,
                     n::make_output_manager() = &make_standard_output_manager,
-                    n::override_contents() = make_null_shared_ptr(),
+                    n::override_contents() = nullptr,
                     n::want_phase() = &want_all_phases
                 ));
         (*env[selection::RequireExactlyOne(generator::Matches(
                 parse_user_package_dep_spec("cat/pkg4a",
-                    &env, { }), make_null_shared_ptr(), { }))]->begin())->perform_action(action);
+                    &env, { }), nullptr, { }))]->begin())->perform_action(action);
 
         EXPECT_TRUE(FSPath("installed_repository_TEST_dir/root4/dir").stat().is_directory());
         EXPECT_TRUE(! FSPath("installed_repository_TEST_dir/root4/dir/4a").stat().is_regular_file());
@@ -575,16 +574,16 @@ TEST(InstalledRepository, MultipleOps)
 
         UninstallAction action(make_named_values<UninstallActionOptions>(
                     n::config_protect() = "",
-                    n::if_for_install_id() = make_null_shared_ptr(),
+                    n::if_for_install_id() = nullptr,
                     n::ignore_for_unmerge() = &ignore_nothing,
                     n::is_overwrite() = false,
                     n::make_output_manager() = &make_standard_output_manager,
-                    n::override_contents() = make_null_shared_ptr(),
+                    n::override_contents() = nullptr,
                     n::want_phase() = &want_all_phases
                 ));
         (*env[selection::RequireExactlyOne(generator::Matches(
                 parse_user_package_dep_spec("cat/pkg4b",
-                    &env, { }), make_null_shared_ptr(), { }))]->begin())->perform_action(action);
+                    &env, { }), nullptr, { }))]->begin())->perform_action(action);
 
         EXPECT_TRUE(! FSPath("installed_repository_TEST_dir/root4/dir").stat().is_directory());
 

@@ -24,7 +24,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec_annotations.hh>
 
 using namespace paludis;

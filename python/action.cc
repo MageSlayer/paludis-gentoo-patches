@@ -23,7 +23,6 @@
 #include <paludis/action.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/repository.hh>
 #include <memory>
@@ -89,11 +88,11 @@ namespace
     {
         return new UninstallActionOptions(make_named_values<UninstallActionOptions>(
                     n::config_protect() = c,
-                    n::if_for_install_id() = make_null_shared_ptr(),
+                    n::if_for_install_id() = nullptr,
                     n::ignore_for_unmerge() = &ignore_nothing,
                     n::is_overwrite() = false,
                     n::make_output_manager() = &make_standard_output_manager,
-                    n::override_contents() = make_null_shared_ptr(),
+                    n::override_contents() = nullptr,
                     n::want_phase() = &want_all_phases
                     ));
     }

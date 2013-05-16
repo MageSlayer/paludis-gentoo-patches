@@ -48,7 +48,6 @@ add(`is_file_with_extension',            `hh', `cc', `se', `gtest', `testscript'
 add(`join',                              `hh', `gtest')
 add(`log',                               `hh', `cc', `se', `gtest')
 add(`make_named_values',                 `hh', `cc')
-add(`make_null_shared_ptr',              `hh')
 add(`make_shared_copy',                  `hh', `fwd')
 add(`map',                               `hh', `fwd', `impl', `cc')
 add(`member_iterator',                   `hh', `fwd', `impl', `gtest')

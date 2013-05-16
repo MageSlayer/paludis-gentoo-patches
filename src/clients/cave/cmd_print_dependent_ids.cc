@@ -31,7 +31,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/resolver/collect_depped_upon.hh>
 #include <paludis/generator.hh>
@@ -115,7 +114,7 @@ PrintDependentIDsCommand::run(
     auto installed_filter(filter::InstalledAtRoot(env->system_root_key()->parse_value()));
     auto spec(parse_spec_with_nice_error(*cmdline.begin_parameters(), env.get(), { }, installed_filter));
     auto ids((*env)[selection::AllVersionsSorted(
-                generator::Matches(spec, make_null_shared_ptr(), { }) |
+                generator::Matches(spec, nullptr, { }) |
                 installed_filter)]);
 
     if (ids->empty())

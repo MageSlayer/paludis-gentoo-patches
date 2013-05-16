@@ -45,7 +45,6 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/tribool.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/join.hh>
 
 #include <algorithm>
@@ -84,7 +83,7 @@ namespace
             if (options[updso_no_disambiguation])
                 throw PackageDepSpecError("Need an explicit category specified");
             result.package(env->fetch_unique_qualified_package_name(PackageNamePart(s),
-                filter::And(filter, filter::Matches(result, make_null_shared_ptr(), { }))));
+                filter::And(filter, filter::Matches(result, nullptr, { }))));
         }
     }
 
@@ -230,7 +229,7 @@ namespace
 
             default:
                 {
-                    std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag, { }, make_null_shared_ptr()));
+                    std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(parse_elike_use_requirement(flag, { }, nullptr));
                     result.additional_requirement(req);
                 }
                 break;
@@ -417,7 +416,7 @@ UserSlotExactFullRequirement::as_string() const
 const std::shared_ptr<const SlotRequirement>
 UserSlotExactFullRequirement::maybe_original_requirement_if_rewritten() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 UserSlotExactPartialRequirement::UserSlotExactPartialRequirement(const SlotName & s) :
@@ -439,7 +438,7 @@ UserSlotExactPartialRequirement::as_string() const
 const std::shared_ptr<const SlotRequirement>
 UserSlotExactPartialRequirement::maybe_original_requirement_if_rewritten() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 GotASetNotAPackageDepSpec::GotASetNotAPackageDepSpec(const std::string & s) throw () :

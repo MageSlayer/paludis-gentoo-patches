@@ -31,7 +31,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/dep_spec_flattener.hh>
 #include <paludis/metadata_key.hh>
@@ -121,8 +120,8 @@ paludis::erepository::do_pretend_action(
                             n::maybe_output_manager() = output_manager,
                             n::package_builddir() = params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-bad_options"),
                             n::package_id() = id,
-                            n::parts() = make_null_shared_ptr(),
-                            n::permitted_directories() = make_null_shared_ptr(),
+                            n::parts() = nullptr,
+                            n::permitted_directories() = nullptr,
                             n::portdir() =
                                 (params.master_repositories() && ! params.master_repositories()->empty()) ?
                                 (*params.master_repositories()->begin())->params().location() : params.location(),
@@ -187,8 +186,8 @@ paludis::erepository::do_pretend_action(
                             n::maybe_output_manager() = output_manager,
                             n::package_builddir() = params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-bad_options"),
                             n::package_id() = id,
-                            n::parts() = make_null_shared_ptr(),
-                            n::permitted_directories() = make_null_shared_ptr(),
+                            n::parts() = nullptr,
+                            n::permitted_directories() = nullptr,
                             n::portdir() =
                                 (params.master_repositories() && ! params.master_repositories()->empty())
                                     ? (*params.master_repositories()->begin())->params().location()
@@ -252,8 +251,8 @@ paludis::erepository::do_pretend_action(
                 n::maybe_output_manager() = output_manager,
                 n::package_builddir() = params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-pretend"),
                 n::package_id() = id,
-                n::parts() = make_null_shared_ptr(),
-                n::permitted_directories() = make_null_shared_ptr(),
+                n::parts() = nullptr,
+                n::permitted_directories() = nullptr,
                 n::portdir() =
                     (params.master_repositories() && ! params.master_repositories()->empty())
                         ? (*params.master_repositories()->begin())->params().location()

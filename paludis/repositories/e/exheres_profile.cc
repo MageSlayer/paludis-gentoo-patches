@@ -34,7 +34,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/safe_ifstream.hh>
 
@@ -135,18 +134,18 @@ ExheresProfile::ExheresProfile(
         _load_dir(*l);
 
     const std::shared_ptr<const Set<UnprefixedChoiceName> > s(_imp->options_conf.known_choice_value_names(
-                make_null_shared_ptr(), ChoicePrefixName("suboptions")));
+                nullptr, ChoicePrefixName("suboptions")));
     for (Set<UnprefixedChoiceName>::ConstIterator f(s->begin()), f_end(s->end()) ;
             f != f_end ; ++f)
-        if (_imp->options_conf.want_choice_enabled_locked(make_null_shared_ptr(),
+        if (_imp->options_conf.want_choice_enabled_locked(nullptr,
                     ChoicePrefixName("suboptions"), *f).first.is_true())
             _imp->use_expand->insert(stringify(*f));
 
     const std::shared_ptr<const Set<UnprefixedChoiceName> > sh(_imp->options_conf.known_choice_value_names(
-                make_null_shared_ptr(), ChoicePrefixName("hidden_suboptions")));
+                nullptr, ChoicePrefixName("hidden_suboptions")));
     for (Set<UnprefixedChoiceName>::ConstIterator f(sh->begin()), f_end(sh->end()) ;
             f != f_end ; ++f)
-        if (_imp->options_conf.want_choice_enabled_locked(make_null_shared_ptr(),
+        if (_imp->options_conf.want_choice_enabled_locked(nullptr,
                     ChoicePrefixName("hidden_suboptions"), *f).first.is_true())
             _imp->use_expand_hidden->insert(stringify(*f));
 }
@@ -185,7 +184,7 @@ ExheresProfile::_load_dir(const FSPath & f)
             auto eapi(EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(f / "system.conf")));
             auto specs(parse_commented_set(file_text, _imp->env, *EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(f / "system.conf"))));
 
-            DepSpecFlattener<SetSpecTree, PackageDepSpec> flat_specs(_imp->env, make_null_shared_ptr());
+            DepSpecFlattener<SetSpecTree, PackageDepSpec> flat_specs(_imp->env, nullptr);
             specs->top()->accept(flat_specs);
 
             for (auto s(flat_specs.begin()), s_end(flat_specs.end()) ;

@@ -46,7 +46,6 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/set.hh>
@@ -131,7 +130,7 @@ ERepositorySets::package_set(const SetName & ss) const
         return f.contents();
     }
     else
-        return make_null_shared_ptr();
+        return nullptr;
 }
 
 std::shared_ptr<const SetNameSet>
@@ -180,7 +179,7 @@ namespace
             {
                 PackageDepSpec spec(parse_elike_package_dep_spec(stringify(id->name()) + ":" + r.slot(), eapi.supported()->package_dep_spec_parse_options(),
                             eapi.supported()->version_spec_options()));
-                if (! match_package(*env, spec, id, make_null_shared_ptr(), { }))
+                if (! match_package(*env, spec, id, nullptr, { }))
                     return false;
             }
             catch (const SlotNameError &)

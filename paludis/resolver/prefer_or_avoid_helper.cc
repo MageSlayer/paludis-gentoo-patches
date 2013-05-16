@@ -21,7 +21,6 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/tribool.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/options.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
@@ -98,7 +97,7 @@ PreferOrAvoidHelper::operator() (const PackageDepSpec & s) const
     {
         bool all(true);
         for (auto q((*p)->begin()), q_end((*p)->end()) ; q != q_end ; ++q)
-            if (! match_package(*_imp->env, s, *q, make_null_shared_ptr(), { }))
+            if (! match_package(*_imp->env, s, *q, nullptr, { }))
             {
                 all = false;
                 break;
@@ -112,7 +111,7 @@ PreferOrAvoidHelper::operator() (const PackageDepSpec & s) const
             p != p_end ; ++p)
     {
         for (auto q((*p)->begin()), q_end((*p)->end()) ; q != q_end ; ++q)
-            if (match_package(*_imp->env, s, *q, make_null_shared_ptr(), { }))
+            if (match_package(*_imp->env, s, *q, nullptr, { }))
                 return false;
     }
 

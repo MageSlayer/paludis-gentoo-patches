@@ -21,7 +21,6 @@
 
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/options.hh>
 
 #include <paludis/dep_spec.hh>
@@ -42,7 +41,7 @@ namespace paludis
 
         Imp(const Environment * const e) :
             env(e),
-            hide_specs(make_null_shared_ptr())
+            hide_specs(nullptr)
         {
         }
     };

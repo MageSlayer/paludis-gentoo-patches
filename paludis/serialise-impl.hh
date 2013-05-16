@@ -25,7 +25,6 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
 #include <type_traits>
@@ -253,7 +252,7 @@ namespace paludis
         static std::shared_ptr<T_> handle(Deserialisation & v)
         {
             if (v.null())
-                return make_null_shared_ptr();
+                return nullptr;
             else
                 return T_::deserialise(v);
         }

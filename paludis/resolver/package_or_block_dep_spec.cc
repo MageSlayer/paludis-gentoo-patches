@@ -23,7 +23,6 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/serialise-impl.hh>
 #include <paludis/dep_spec_annotations.hh>
@@ -44,12 +43,12 @@ paludis::resolver::operator<< (std::ostream & s, const PackageOrBlockDepSpec & d
 
 PackageOrBlockDepSpec::PackageOrBlockDepSpec(const BlockDepSpec & s) :
     if_block(n::if_block() = std::make_shared<BlockDepSpec>(s)),
-    if_package(n::if_package() = make_null_shared_ptr())
+    if_package(n::if_package() = nullptr)
 {
 }
 
 PackageOrBlockDepSpec::PackageOrBlockDepSpec(const PackageDepSpec & s) :
-    if_block(n::if_block() = make_null_shared_ptr()),
+    if_block(n::if_block() = nullptr),
     if_package(n::if_package() = std::make_shared<PackageDepSpec>(s))
 {
 }

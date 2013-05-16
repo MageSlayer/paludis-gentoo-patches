@@ -36,7 +36,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 
 #include <functional>
@@ -259,6 +258,6 @@ paludis::match_package_in_set(
     target.top()->accept(f);
     return indirect_iterator(f.end()) != std::find_if(
             indirect_iterator(f.begin()), indirect_iterator(f.end()),
-            std::bind(&match_package, std::cref(env), _1, std::cref(id), make_null_shared_ptr(), std::cref(options)));
+            std::bind(&match_package, std::cref(env), _1, std::cref(id), nullptr, std::cref(options)));
 }
 

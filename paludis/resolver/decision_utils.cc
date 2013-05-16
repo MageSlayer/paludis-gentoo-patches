@@ -19,7 +19,6 @@
 
 #include <paludis/resolver/decision_utils.hh>
 #include <paludis/resolver/decision.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -45,17 +44,17 @@ namespace
 
         std::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         std::shared_ptr<const PackageID> visit(const RemoveDecision &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         std::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
     };
 }

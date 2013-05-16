@@ -26,7 +26,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/extract_host_from_url.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
@@ -416,7 +415,7 @@ UnwrittenRepository::sync_host_key() const
 const std::shared_ptr<const Set<std::string> >
 UnwrittenRepository::maybe_expand_licence_nonrecursively(const std::string &) const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 namespace paludis

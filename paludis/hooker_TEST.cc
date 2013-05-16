@@ -24,7 +24,6 @@
 
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/safe_ifstream.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <iterator>
 
@@ -43,23 +42,23 @@ TEST(Hooker, Works)
     hooker.add_dir(FSPath("hooker_TEST_dir/"), false);
 #ifdef ENABLE_PYTHON_HOOKS
     result = hooker.perform_hook(Hook("py_hook"),
-            make_null_shared_ptr());
+            nullptr);
     EXPECT_EQ(0, result.max_exit_status());
 #endif
     result = hooker.perform_hook(Hook("simple_hook"),
-            make_null_shared_ptr());
+            nullptr);
     EXPECT_EQ(3, result.max_exit_status());
     EXPECT_EQ("", result.output());
     result = hooker.perform_hook(Hook("fancy_hook"),
-            make_null_shared_ptr());
+            nullptr);
     EXPECT_EQ(5, result.max_exit_status());
     EXPECT_EQ("", result.output());
     result = hooker.perform_hook(Hook("so_hook"),
-            make_null_shared_ptr());
+            nullptr);
     EXPECT_EQ(6, result.max_exit_status());
     EXPECT_EQ("", result.output());
     result = hooker.perform_hook(Hook("several_hooks"),
-            make_null_shared_ptr());
+            nullptr);
     EXPECT_EQ(7, result.max_exit_status());
     EXPECT_EQ("", result.output());
 
@@ -74,7 +73,7 @@ TEST(Hooker, Ordering)
 
     hooker.add_dir(FSPath("hooker_TEST_dir/"), false);
     HookResult result(hooker.perform_hook(Hook("ordering"),
-                make_null_shared_ptr()));
+                nullptr));
     EXPECT_EQ(0, result.max_exit_status());
     EXPECT_EQ("", result.output());
 
@@ -98,7 +97,7 @@ TEST(Hooker, BadHooks)
 
     hooker.add_dir(FSPath("hooker_TEST_dir/"), false);
     HookResult result(hooker.perform_hook(Hook("bad_hooks"),
-                make_null_shared_ptr()));
+                nullptr));
     EXPECT_EQ(123, result.max_exit_status());
     EXPECT_EQ("", result.output());
 
@@ -117,7 +116,7 @@ TEST(Hooker, Cycles)
 
     hooker.add_dir(FSPath("hooker_TEST_dir/"), false);
     HookResult result(hooker.perform_hook(Hook("cycles"),
-                make_null_shared_ptr()));
+                nullptr));
     EXPECT_EQ(0, result.max_exit_status());
     EXPECT_EQ("", result.output());
 
@@ -139,51 +138,51 @@ TEST(Hooker, Output)
 
     result = hooker.perform_hook(Hook("simple_hook_output")
             .grab_output(Hook::AllowedOutputValues()("foo")),
-            make_null_shared_ptr());
+            nullptr);
     EXPECT_EQ(0, result.max_exit_status());
     EXPECT_EQ("foo", result.output());
 
     result = hooker.perform_hook(Hook("fancy_hook_output")
             .grab_output(Hook::AllowedOutputValues()("foo")),
-            make_null_shared_ptr());
+            nullptr);
     EXPECT_EQ(0, result.max_exit_status());
     EXPECT_EQ("foo", result.output());
 
     result = hooker.perform_hook(Hook("so_hook_output")
              .grab_output(Hook::AllowedOutputValues()("foo")),
-             make_null_shared_ptr());
+             nullptr);
     EXPECT_EQ(0, result.max_exit_status());
     EXPECT_EQ("foo", result.output());
 
 #ifdef ENABLE_PYTHON_HOOKS
     result = hooker.perform_hook(Hook("py_hook_output")
              .grab_output(Hook::AllowedOutputValues()("foo")),
-             make_null_shared_ptr());
+             nullptr);
     EXPECT_EQ(0, result.max_exit_status());
     EXPECT_EQ("foo", result.output());
 #endif
 
     result = hooker.perform_hook(Hook("several_hooks_output")
             .grab_output(Hook::AllowedOutputValues()),
-            make_null_shared_ptr());
+            nullptr);
     EXPECT_EQ(0, result.max_exit_status());
     EXPECT_EQ("one", result.output());
 
     result = hooker.perform_hook(Hook("several_hooks_output")
             .grab_output(Hook::AllowedOutputValues()("one")),
-            make_null_shared_ptr());
+            nullptr);
     EXPECT_EQ(0, result.max_exit_status());
     EXPECT_EQ("one", result.output());
 
     result = hooker.perform_hook(Hook("several_hooks_output")
             .grab_output(Hook::AllowedOutputValues()("two")("three")),
-            make_null_shared_ptr());
+            nullptr);
     EXPECT_EQ(0, result.max_exit_status());
     EXPECT_EQ("two", result.output());
 
     result = hooker.perform_hook(Hook("several_hooks_output")
             .grab_output(Hook::AllowedOutputValues()("blah")),
-            make_null_shared_ptr());
+            nullptr);
     EXPECT_EQ("", result.output());
     EXPECT_EQ(0, result.max_exit_status());
 
@@ -205,7 +204,7 @@ TEST(Hooker, BadOutput)
 
     HookResult result(hooker.perform_hook(Hook("several_hooks_output_bad")
                 .grab_output(Hook::AllowedOutputValues()),
-                make_null_shared_ptr()));
+                nullptr));
     EXPECT_EQ("two", result.output());
     EXPECT_EQ(99, result.max_exit_status());
 

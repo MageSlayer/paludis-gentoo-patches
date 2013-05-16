@@ -42,7 +42,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/iterator_funcs.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <cstdlib>
 #include <iostream>
@@ -414,7 +413,7 @@ PerformCommand::run(
 
     const auto spec_str(*next(cmdline.begin_parameters()));
     const auto spec(parse_spec_with_nice_error(spec_str, env.get(), { }, filter::All()));
-    const auto ids((*env)[selection::AllVersionsUnsorted(generator::Matches(spec, make_null_shared_ptr(), { }))]);
+    const auto ids((*env)[selection::AllVersionsUnsorted(generator::Matches(spec, nullptr, { }))]);
     if (ids->empty())
         nothing_matching_error(env.get(), spec_str, filter::All());
     else if (1 != std::distance(ids->begin(), ids->end()))
@@ -434,7 +433,7 @@ PerformCommand::run(
             p != p_end ; ++p)
     {
         PackageDepSpec rspec(parse_spec_with_nice_error(*p, env.get(), { }, filter::All()));
-        const std::shared_ptr<const PackageIDSequence> rids((*env)[selection::AllVersionsUnsorted(generator::Matches(rspec, make_null_shared_ptr(), { }))]);
+        const std::shared_ptr<const PackageIDSequence> rids((*env)[selection::AllVersionsUnsorted(generator::Matches(rspec, nullptr, { }))]);
         if (rids->empty())
             nothing_matching_error(env.get(), *p, filter::All());
         else if (1 != std::distance(rids->begin(), rids->end()))
@@ -591,11 +590,11 @@ PerformCommand::run(
         WantInstallPhase want_phase(cmdline, output_manager_holder);
         UninstallActionOptions options(make_named_values<UninstallActionOptions>(
                     n::config_protect() = cmdline.a_config_protect.argument(),
-                    n::if_for_install_id() = make_null_shared_ptr(),
+                    n::if_for_install_id() = nullptr,
                     n::ignore_for_unmerge() = &ignore_nothing,
                     n::is_overwrite() = false,
                     n::make_output_manager() = std::ref(output_manager_holder),
-                    n::override_contents() = make_null_shared_ptr(),
+                    n::override_contents() = nullptr,
                     n::want_phase() = want_phase
                     ));
         UninstallAction uninstall_action(options);

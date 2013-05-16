@@ -31,7 +31,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/fs_stat.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/selection.hh>
@@ -188,7 +187,7 @@ InfoPkgsMetadataKey::need_keys_added() const
             std::shared_ptr<const PackageIDSequence> q((*_imp->env)[selection::AllVersionsSorted(
                         generator::Matches(parse_elike_package_dep_spec(i->first,
                                 eapi->supported()->package_dep_spec_parse_options(),
-                                eapi->supported()->version_spec_options()), make_null_shared_ptr(), { }) |
+                                eapi->supported()->version_spec_options()), nullptr, { }) |
                         filter::InstalledAtRoot(_imp->env->preferred_root_key()->parse_value()))]);
 
             if (q->empty())

@@ -34,7 +34,6 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/stringify.hh>
 
@@ -133,7 +132,7 @@ TEST(ERepository, InstallEAPI4)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/pkg_pretend-4",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
@@ -149,7 +148,7 @@ TEST(ERepository, InstallEAPI4)
                     ));
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/pkg_pretend-failure-4",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action2);
@@ -159,7 +158,7 @@ TEST(ERepository, InstallEAPI4)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/default_src_install-4",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
@@ -168,7 +167,7 @@ TEST(ERepository, InstallEAPI4)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/docompress-4",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
@@ -177,7 +176,7 @@ TEST(ERepository, InstallEAPI4)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/dodoc-r-4",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
@@ -186,7 +185,7 @@ TEST(ERepository, InstallEAPI4)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/doins-symlink-4",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
@@ -195,7 +194,7 @@ TEST(ERepository, InstallEAPI4)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions-4",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         EXPECT_THROW(id->perform_action(action), ActionFailedError);
@@ -204,7 +203,7 @@ TEST(ERepository, InstallEAPI4)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/econf-disable-dependency-tracking-4_beta",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
@@ -213,7 +212,7 @@ TEST(ERepository, InstallEAPI4)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/econf-disable-dependency-tracking-4",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
@@ -222,7 +221,7 @@ TEST(ERepository, InstallEAPI4)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/global-scope-use-4",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
@@ -231,7 +230,7 @@ TEST(ERepository, InstallEAPI4)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/doman-4",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
@@ -240,7 +239,7 @@ TEST(ERepository, InstallEAPI4)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/use-with-enable-empty-third-4",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         id->perform_action(action);
     }
@@ -248,7 +247,7 @@ TEST(ERepository, InstallEAPI4)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/no-eapi5-commands-4::test-repo",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
@@ -258,7 +257,7 @@ TEST(ERepository, InstallEAPI4)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/no-new-stdin-4::test-repo",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
@@ -306,7 +305,7 @@ TEST(ERepository, EAPI4MergeType)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-4::test-repo",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
@@ -376,7 +375,7 @@ TEST(ERepository, EAPI4MergeTypeBin)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-bin-4::test-repo",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
@@ -394,7 +393,7 @@ TEST(ERepository, EAPI4MergeTypeBin)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-bin-4::binrepo",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("pbin-1+4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
@@ -441,7 +440,7 @@ TEST(ERepository, RequiredUse)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-all-good-4::test-repo",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
@@ -457,7 +456,7 @@ TEST(ERepository, RequiredUse)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-all-empty-4::test-repo",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
@@ -473,7 +472,7 @@ TEST(ERepository, RequiredUse)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-all-one-not-good-4::test-repo",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
@@ -489,7 +488,7 @@ TEST(ERepository, RequiredUse)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-any-good-4::test-repo",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
@@ -505,7 +504,7 @@ TEST(ERepository, RequiredUse)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-any-empty-4::test-repo",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
@@ -521,7 +520,7 @@ TEST(ERepository, RequiredUse)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-any-none-4::test-repo",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
@@ -537,7 +536,7 @@ TEST(ERepository, RequiredUse)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-one-none-4::test-repo",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
@@ -553,7 +552,7 @@ TEST(ERepository, RequiredUse)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-one-none-4::test-repo",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
@@ -569,7 +568,7 @@ TEST(ERepository, RequiredUse)
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/required-use-one-good-4::test-repo",
-                                &env, { })), make_null_shared_ptr(), { }))]->last());
+                                &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("4", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);

@@ -20,7 +20,6 @@
 #include <paludis/resolver/can_use_helper.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_dep_spec_collection.hh>
@@ -38,7 +37,7 @@ namespace paludis
 
         Imp(const Environment * const e) :
             env(e),
-            cannot_use_specs(make_null_shared_ptr())
+            cannot_use_specs(nullptr)
         {
         }
     };

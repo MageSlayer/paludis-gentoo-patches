@@ -26,7 +26,6 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/fs_stat.hh>
@@ -157,7 +156,7 @@ ExheresMaskStore::_populate()
         try
         {
             auto specs(parse_commented_set(file_text, _imp->env, *EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(*f))));
-            DepSpecFlattener<SetSpecTree, PackageDepSpec> flat_specs(_imp->env, make_null_shared_ptr());
+            DepSpecFlattener<SetSpecTree, PackageDepSpec> flat_specs(_imp->env, nullptr);
             specs->top()->accept(flat_specs);
 
             for (auto s(flat_specs.begin()), s_end(flat_specs.end()) ;
@@ -191,7 +190,7 @@ ExheresMaskStore::query(const std::shared_ptr<const PackageID> & id) const
     auto r(_imp->repo_mask.find(id->name()));
     if (_imp->repo_mask.end() != r)
         for (auto k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->env, k->first, id, make_null_shared_ptr(), { }))
+            if (match_package(*_imp->env, k->first, id, nullptr, { }))
                 result->push_back(*k->second);
 
     return result;

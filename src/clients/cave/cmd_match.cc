@@ -32,7 +32,6 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/accept_visitor.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/log.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
@@ -423,7 +422,7 @@ MatchCommand::run_hosted(
     std::shared_ptr<const PackageID> id;
     try
     {
-        id = (*((*env)[selection::RequireExactlyOne(generator::Matches(spec, make_null_shared_ptr(), { }))])->begin());
+        id = (*((*env)[selection::RequireExactlyOne(generator::Matches(spec, nullptr, { }))])->begin());
     }
     catch (const DidNotGetExactlyOneError & e)
     {

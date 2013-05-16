@@ -56,7 +56,7 @@ int main(int argc, char * argv[])
         {
             /* Is it paludis? */
             if (match_package(*env, make_package_dep_spec({ }).package(
-                            QualifiedPackageName("sys-apps/paludis")), *i, make_null_shared_ptr(), { }))
+                            QualifiedPackageName("sys-apps/paludis")), *i, nullptr, { }))
                 cout << left << setw(50) << (stringify(**i) + ":") << " " << "paludis" << endl;
 
             /* No. Is it in system or world? */

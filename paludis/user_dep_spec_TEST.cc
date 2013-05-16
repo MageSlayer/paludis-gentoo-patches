@@ -29,7 +29,6 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
 
@@ -422,89 +421,89 @@ TEST_F(UserDepSpecTest, Keys)
     pkg3->keywords_key()->set_from_string("~d");
 
     PackageDepSpec a(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~a]", &env, { }));
-    EXPECT_TRUE(match_package(env, a, pkg1, make_null_shared_ptr(), { }));
-    EXPECT_TRUE(match_package(env, a, pkg2, make_null_shared_ptr(), { }));
-    EXPECT_TRUE(! match_package(env, a, pkg3, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(match_package(env, a, pkg1, nullptr, { }));
+    EXPECT_TRUE(match_package(env, a, pkg2, nullptr, { }));
+    EXPECT_TRUE(! match_package(env, a, pkg3, nullptr, { }));
 
     PackageDepSpec b(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~b]", &env, { }));
-    EXPECT_TRUE(match_package(env, b, pkg1, make_null_shared_ptr(), { }));
-    EXPECT_TRUE(! match_package(env, b, pkg2, make_null_shared_ptr(), { }));
-    EXPECT_TRUE(! match_package(env, b, pkg3, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(match_package(env, b, pkg1, nullptr, { }));
+    EXPECT_TRUE(! match_package(env, b, pkg2, nullptr, { }));
+    EXPECT_TRUE(! match_package(env, b, pkg3, nullptr, { }));
 
     PackageDepSpec c(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS<~c]", &env, { }));
-    EXPECT_TRUE(! match_package(env, c, pkg1, make_null_shared_ptr(), { }));
-    EXPECT_TRUE(match_package(env, c, pkg2, make_null_shared_ptr(), { }));
-    EXPECT_TRUE(! match_package(env, c, pkg3, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(! match_package(env, c, pkg1, nullptr, { }));
+    EXPECT_TRUE(match_package(env, c, pkg2, nullptr, { }));
+    EXPECT_TRUE(! match_package(env, c, pkg3, nullptr, { }));
 
     PackageDepSpec d(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS>~a]", &env, { }));
-    EXPECT_TRUE(! match_package(env, d, pkg1, make_null_shared_ptr(), { }));
-    EXPECT_TRUE(! match_package(env, d, pkg2, make_null_shared_ptr(), { }));
-    EXPECT_TRUE(! match_package(env, d, pkg3, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(! match_package(env, d, pkg1, nullptr, { }));
+    EXPECT_TRUE(! match_package(env, d, pkg2, nullptr, { }));
+    EXPECT_TRUE(! match_package(env, d, pkg3, nullptr, { }));
 
     PackageDepSpec e(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS=~d]", &env, { }));
-    EXPECT_TRUE(! match_package(env, e, pkg1, make_null_shared_ptr(), { }));
-    EXPECT_TRUE(! match_package(env, e, pkg2, make_null_shared_ptr(), { }));
-    EXPECT_TRUE(match_package(env, e, pkg3, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(! match_package(env, e, pkg1, nullptr, { }));
+    EXPECT_TRUE(! match_package(env, e, pkg2, nullptr, { }));
+    EXPECT_TRUE(match_package(env, e, pkg3, nullptr, { }));
 
     PackageDepSpec f(parse_user_package_dep_spec("cat/pkg1[.KEYWORDS=~a ~c]", &env, { }));
-    EXPECT_TRUE(! match_package(env, f, pkg1, make_null_shared_ptr(), { }));
-    EXPECT_TRUE(match_package(env, f, pkg2, make_null_shared_ptr(), { }));
-    EXPECT_TRUE(! match_package(env, f, pkg3, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(! match_package(env, f, pkg1, nullptr, { }));
+    EXPECT_TRUE(match_package(env, f, pkg2, nullptr, { }));
+    EXPECT_TRUE(! match_package(env, f, pkg3, nullptr, { }));
 
     PackageDepSpec g(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER=42]", &env, { }));
-    EXPECT_TRUE(match_package(env, g, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(match_package(env, g, pkg1, nullptr, { }));
 
     PackageDepSpec h(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<41]", &env, { }));
-    EXPECT_TRUE(! match_package(env, h, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(! match_package(env, h, pkg1, nullptr, { }));
 
     PackageDepSpec i(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<42]", &env, { }));
-    EXPECT_TRUE(! match_package(env, i, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(! match_package(env, i, pkg1, nullptr, { }));
 
     PackageDepSpec j(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER<43]", &env, { }));
-    EXPECT_TRUE(match_package(env, j, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(match_package(env, j, pkg1, nullptr, { }));
 
     PackageDepSpec k(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER>42]", &env, { }));
-    EXPECT_TRUE(! match_package(env, k, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(! match_package(env, k, pkg1, nullptr, { }));
 
     PackageDepSpec l(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER>41]", &env, { }));
-    EXPECT_TRUE(match_package(env, l, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(match_package(env, l, pkg1, nullptr, { }));
 
     PackageDepSpec m(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER?]", &env, { }));
-    EXPECT_TRUE(match_package(env, m, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(match_package(env, m, pkg1, nullptr, { }));
 
     PackageDepSpec n(parse_user_package_dep_spec("cat/pkg1[.SPOON?]", &env, { }));
-    EXPECT_TRUE(! match_package(env, n, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(! match_package(env, n, pkg1, nullptr, { }));
 
     PackageDepSpec o(parse_user_package_dep_spec("cat/pkg1[.$keywords<~a]", &env, { }));
-    EXPECT_TRUE(match_package(env, o, pkg1, make_null_shared_ptr(), { }));
-    EXPECT_TRUE(match_package(env, o, pkg2, make_null_shared_ptr(), { }));
-    EXPECT_TRUE(! match_package(env, o, pkg3, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(match_package(env, o, pkg1, nullptr, { }));
+    EXPECT_TRUE(match_package(env, o, pkg2, nullptr, { }));
+    EXPECT_TRUE(! match_package(env, o, pkg3, nullptr, { }));
 
     PackageDepSpec p(parse_user_package_dep_spec("cat/pkg1[.::$format=fake]", &env, { }));
-    EXPECT_TRUE(match_package(env, p, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(match_package(env, p, pkg1, nullptr, { }));
 
     PackageDepSpec q(parse_user_package_dep_spec("cat/pkg1[.::$format=e]", &env, { }));
-    EXPECT_TRUE(! match_package(env, q, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(! match_package(env, q, pkg1, nullptr, { }));
 
     PackageDepSpec r(parse_user_package_dep_spec("cat/pkg1[.::format=fake]", &env, { }));
-    EXPECT_TRUE(match_package(env, r, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(match_package(env, r, pkg1, nullptr, { }));
 
     PackageDepSpec s(parse_user_package_dep_spec("cat/pkg1[.::format=e]", &env, { }));
-    EXPECT_TRUE(! match_package(env, s, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(! match_package(env, s, pkg1, nullptr, { }));
 
     PackageDepSpec t(parse_user_package_dep_spec("cat/pkg1[.HITCHHIKER!=42]", &env, { }));
-    EXPECT_TRUE(! match_package(env, t, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(! match_package(env, t, pkg1, nullptr, { }));
 
     PackageDepSpec u(parse_user_package_dep_spec("cat/pkg1[.::$format!=fake]", &env, { }));
-    EXPECT_TRUE(! match_package(env, u, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(! match_package(env, u, pkg1, nullptr, { }));
 
     PackageDepSpec v(parse_user_package_dep_spec("cat/pkg1[.::$format!=e]", &env, { }));
-    EXPECT_TRUE(match_package(env, v, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(match_package(env, v, pkg1, nullptr, { }));
 
     PackageDepSpec w(parse_user_package_dep_spec("cat/pkg1[.::format!=fake]", &env, { }));
-    EXPECT_TRUE(! match_package(env, w, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(! match_package(env, w, pkg1, nullptr, { }));
 
     PackageDepSpec x(parse_user_package_dep_spec("cat/pkg1[.::format!=e]", &env, { }));
-    EXPECT_TRUE(match_package(env, x, pkg1, make_null_shared_ptr(), { }));
+    EXPECT_TRUE(match_package(env, x, pkg1, nullptr, { }));
 }
 

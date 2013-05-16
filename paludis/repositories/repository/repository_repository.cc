@@ -29,7 +29,6 @@
 #include <paludis/util/simple_parser.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/safe_ofstream.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
@@ -136,7 +135,7 @@ RepositoryRepository::format_key() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 RepositoryRepository::location_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<FSPath> >
@@ -320,7 +319,7 @@ RepositoryRepository::perform_hook(const Hook &, const std::shared_ptr<OutputMan
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 RepositoryRepository::sync_host_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 bool
@@ -475,7 +474,7 @@ RepositoryRepository::merge(const MergeParams & m)
 const std::shared_ptr<const Set<std::string> >
 RepositoryRepository::maybe_expand_licence_nonrecursively(const std::string &) const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 namespace paludis

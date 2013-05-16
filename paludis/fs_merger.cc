@@ -29,7 +29,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_error.hh>

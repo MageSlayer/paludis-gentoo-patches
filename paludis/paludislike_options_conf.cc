@@ -32,7 +32,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/active_object_ptr.hh>
 #include <paludis/util/deferred_construction_ptr.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/choice.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/name.hh>
@@ -427,7 +426,7 @@ namespace
         {
             if (maybe_id)
             {
-                if (! match_package(*env, i->spec(), maybe_id, make_null_shared_ptr(), { }))
+                if (! match_package(*env, i->spec(), maybe_id, nullptr, { }))
                     continue;
             }
             else
@@ -454,7 +453,7 @@ namespace
         {
             if (maybe_id)
             {
-                if (! match_package(*env, i->spec(), maybe_id, make_null_shared_ptr(), { }))
+                if (! match_package(*env, i->spec(), maybe_id, nullptr, { }))
                     continue;
             }
             else

@@ -33,7 +33,6 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/md5.hh>
 #include <paludis/util/fs_stat.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
@@ -216,7 +215,7 @@ VerifyCommand::run(
                 { updso_allow_wildcards }, filter::InstalledAtRoot(env->preferred_root_key()->parse_value())));
 
     std::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(spec, make_null_shared_ptr(), { }) |
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, nullptr, { }) |
                 filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
 
     if (entries->empty())

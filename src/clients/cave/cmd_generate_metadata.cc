@@ -28,7 +28,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/visitor_cast.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/thread_pool.hh>
 #include <paludis/util/stringify.hh>
@@ -294,7 +293,7 @@ GenerateMetadataCommand::run(
                 m != m_end ; ++m)
         {
             PackageDepSpec s(parse_user_package_dep_spec(*m, env.get(), { updso_allow_wildcards }));
-            g = g & generator::Matches(s, make_null_shared_ptr(), { });
+            g = g & generator::Matches(s, nullptr, { });
         }
     }
 

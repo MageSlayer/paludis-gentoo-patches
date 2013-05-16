@@ -36,7 +36,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <list>
 #include <map>
 #include <mutex>
@@ -122,7 +121,7 @@ KeywordsConf::add(const FSPath & filename)
         catch (const GotASetNotAPackageDepSpec &)
         {
             NamedSetMap::iterator i(_imp->set.insert(std::make_pair(SetName(tokens.at(0)), std::make_pair(
-                                make_null_shared_ptr(), KeywordsList()))).first);
+                                nullptr, KeywordsList()))).first);
 
             for (std::vector<std::string>::const_iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                     t != t_end ; ++t)
@@ -149,7 +148,7 @@ KeywordsConf::query(const std::shared_ptr<const KeywordNameSet> & k, const std::
             for (PDSToKeywordsList::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
                     j != j_end ; ++j)
             {
-                if (! match_package(*_imp->env, *j->first, e, make_null_shared_ptr(), { }))
+                if (! match_package(*_imp->env, *j->first, e, nullptr, { }))
                     continue;
 
                 for (KeywordsList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;
@@ -215,7 +214,7 @@ KeywordsConf::query(const std::shared_ptr<const KeywordNameSet> & k, const std::
     for (PDSToKeywordsList::const_iterator j(_imp->unqualified.begin()), j_end(_imp->unqualified.end()) ;
             j != j_end ; ++j)
     {
-        if (! match_package(*_imp->env, *j->first, e, make_null_shared_ptr(), { }))
+        if (! match_package(*_imp->env, *j->first, e, nullptr, { }))
             continue;
 
         for (KeywordsList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;

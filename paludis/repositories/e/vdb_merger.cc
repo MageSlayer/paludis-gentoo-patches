@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,7 +30,7 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
+#include <paludis/util/enum_iterator.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/env_var_names.hh>
 #include <paludis/util/safe_ofstream.hh>
@@ -98,7 +98,7 @@ VDBMerger::VDBMerger(const VDBMergerParams & p) :
                 n::merged_entries() = p.merged_entries(),
                 n::no_chown() = ! getenv_with_default(env_vars::no_chown, "").empty(),
                 n::options() = p.options(),
-                n::parts() = make_null_shared_ptr(),
+                n::parts() = nullptr,
                 n::permit_destination() = p.permit_destination(),
                 n::root() = p.root()
             )),

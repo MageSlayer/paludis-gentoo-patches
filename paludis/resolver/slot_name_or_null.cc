@@ -20,7 +20,6 @@
 #include <paludis/resolver/slot_name_or_null.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/serialise-impl.hh>
 #include <ostream>
 
@@ -71,7 +70,7 @@ SlotNameOrNull::deserialise(Deserialisation & d)
     std::string s(v.member<std::string>("name_or_null"));
 
     return make_named_values<SlotNameOrNull>(
-            n::name_or_null() = s.empty() ? make_null_shared_ptr() : std::make_shared<SlotName>(s),
+            n::name_or_null() = s.empty() ? nullptr : std::make_shared<SlotName>(s),
             n::null_means_unknown() = v.member<bool>("null_means_unknown")
             );
 }

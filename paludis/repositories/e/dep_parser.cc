@@ -32,7 +32,6 @@
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/visitor_cast.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/elike_dep_parser.hh>
 #include <paludis/elike_conditional_dep_spec.hh>

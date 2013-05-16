@@ -29,7 +29,6 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/version_spec.hh>
@@ -128,7 +127,7 @@ PrintOwnersCommand::run(
                 m != m_end ; ++m)
         {
             PackageDepSpec s(parse_user_package_dep_spec(*m, env.get(), { updso_allow_wildcards }));
-            matches = filter::And(matches, filter::Matches(s, make_null_shared_ptr(), { }));
+            matches = filter::And(matches, filter::Matches(s, nullptr, { }));
         }
     }
 

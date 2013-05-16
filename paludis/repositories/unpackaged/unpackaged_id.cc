@@ -28,7 +28,6 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/return_literal_function.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/timestamp.hh>
@@ -114,9 +113,9 @@ namespace paludis
                         UnpackagedIDData::get_instance()->run_dependencies_labels, r)),
             description_key(std::make_shared<LiteralMetadataValueKey<std::string> >("description", "Description", mkt_significant, d)),
             choices_key(std::make_shared<UnpackagedChoicesKey>(env, "choices", "Choices", mkt_normal, id)),
-            strip_key(ds.is_indeterminate() ? make_null_shared_ptr() :
+            strip_key(ds.is_indeterminate() ? nullptr :
                     std::make_shared<LiteralMetadataValueKey<bool>>("strip", "Strip", mkt_internal, ds.is_true() ? true : false)),
-            preserve_work_key(dw.is_indeterminate() ? make_null_shared_ptr() :
+            preserve_work_key(dw.is_indeterminate() ? nullptr :
                     std::make_shared<LiteralMetadataValueKey<bool>>("preserve_work", "Preserve work", mkt_internal, dw.is_true() ? true : false))
         {
         }
@@ -216,7 +215,7 @@ UnpackagedID::keywords_key() const
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnpackagedID::dependencies_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -288,7 +287,7 @@ UnpackagedID::slot_key() const
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 UnpackagedID::behaviours_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<bool> >
@@ -415,7 +414,7 @@ UnpackagedID::perform_action(Action & action) const
                 | extra_merger_options,
                 n::output_manager() = output_manager,
                 n::package_id() = shared_from_this(),
-                n::parts() = make_null_shared_ptr(),
+                n::parts() = nullptr,
                 n::perform_uninstall() = install_action->options.perform_uninstall(),
                 n::permit_destination() = std::bind(return_literal_function(true)),
                 n::replacing() = install_action->options.replacing(),
@@ -475,7 +474,7 @@ UnpackagedID::perform_action(Action & action) const
                     n::ignore_for_unmerge() = &ignore_nothing,
                     n::is_overwrite() = false,
                     n::make_output_manager() = std::bind(&this_output_manager, output_manager, std::placeholders::_1),
-                    n::override_contents() = make_null_shared_ptr(),
+                    n::override_contents() = nullptr,
                     n::want_phase() = install_action->options.want_phase()
                     ));
         install_action->options.perform_uninstall()(*i, uo);
@@ -513,6 +512,6 @@ UnpackagedID::choices_key() const
 const std::shared_ptr<const Contents>
 UnpackagedID::contents() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 

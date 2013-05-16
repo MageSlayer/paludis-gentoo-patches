@@ -26,7 +26,6 @@
 #include <paludis/resolver/required_confirmations.hh>
 #include <paludis/resolver/decision_utils.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_dep_spec_collection.hh>
@@ -47,9 +46,9 @@ namespace paludis
 
         Imp(const Environment * const e) :
             env(e),
-            permit_downgrade_specs(make_null_shared_ptr()),
-            permit_old_version_specs(make_null_shared_ptr()),
-            allowed_to_break_specs(make_null_shared_ptr()),
+            permit_downgrade_specs(nullptr),
+            permit_old_version_specs(nullptr),
+            allowed_to_break_specs(nullptr),
             allowed_to_break_system(false)
         {
         }

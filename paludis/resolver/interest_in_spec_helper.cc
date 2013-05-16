@@ -28,7 +28,6 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/tribool.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/selection.hh>
 #include <paludis/generator.hh>
@@ -66,8 +65,8 @@ namespace paludis
 
         Imp(const Environment * const e) :
             env(e),
-            no_blockers_from_specs(make_null_shared_ptr()),
-            no_dependencies_from_specs(make_null_shared_ptr()),
+            no_blockers_from_specs(nullptr),
+            no_dependencies_from_specs(nullptr),
             follow_installed_build_dependencies(false),
             follow_installed_dependencies(true),
             take_suggestions(indeterminate),
@@ -276,7 +275,7 @@ InterestInSpecHelper::operator() (
         for (auto l(_imp->take_from_specs.begin()), l_end(_imp->take_from_specs.end()) ;
                 l != l_end ; ++l)
         {
-            if (match_package(*_imp->env, *l, id, make_null_shared_ptr(), { }))
+            if (match_package(*_imp->env, *l, id, nullptr, { }))
                 return si_take;
         }
 
@@ -305,7 +304,7 @@ InterestInSpecHelper::operator() (
         for (auto l(_imp->ignore_from_specs.begin()), l_end(_imp->ignore_from_specs.end()) ;
                 l != l_end ; ++l)
         {
-            if (match_package(*_imp->env, *l, id, make_null_shared_ptr(), { }))
+            if (match_package(*_imp->env, *l, id, nullptr, { }))
                 return si_ignore;
         }
 

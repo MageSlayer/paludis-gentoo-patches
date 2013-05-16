@@ -41,7 +41,6 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/tribool.hh>
@@ -193,7 +192,7 @@ namespace
                     p != p_end ; ++p)
             {
                 PackageDepSpec s(parse_spec_with_nice_error(*p, env.get(), { }, installed_filter));
-                auto ids((*env)[selection::AllVersionsSorted(generator::Matches(s, make_null_shared_ptr(), { }) | installed_filter)]);
+                auto ids((*env)[selection::AllVersionsSorted(generator::Matches(s, nullptr, { }) | installed_filter)]);
                 if (ids->empty())
                     throw args::DoHelp("Found nothing installed matching '" + *p + "' for --" + resolution_options.a_reinstall_dependents_of.long_name());
 
@@ -671,7 +670,7 @@ namespace
                     r != r_end ; ++r)
                 if (visitor_cast<const DependentReason>(*(*r)->reason()))
                     return make_shared_copy((*remove_decision->ids()->begin())->name());
-        return make_null_shared_ptr();
+        return nullptr;
     }
 
     std::shared_ptr<Sequence<std::string> > get_removed_if_dependent_names(
@@ -838,7 +837,7 @@ paludis::cave::resolve_common(
     for (args::StringSetArg::ConstIterator i(resolution_options.a_preset.begin_args()),
             i_end(resolution_options.a_preset.end_args()) ;
             i != i_end ; ++i)
-        get_initial_constraints_for_helper.add_preset_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()), make_null_shared_ptr());
+        get_initial_constraints_for_helper.add_preset_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()), nullptr);
 
     get_initial_constraints_for_helper.set_reinstall_scm_days(reinstall_scm_days(resolution_options));
 
@@ -975,12 +974,12 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_favour_matching.end_args()) ;
             i != i_end ; ++i)
         prefer_or_avoid_helper.add_prefer_matching((*env)[selection::AllVersionsUnsorted(generator::Matches(
-                        parse_spec_with_nice_error(*i, env.get(), { }, filter::All()), make_null_shared_ptr(), { }))]);
+                        parse_spec_with_nice_error(*i, env.get(), { }, filter::All()), nullptr, { }))]);
     for (args::StringSetArg::ConstIterator i(resolution_options.a_avoid_matching.begin_args()),
             i_end(resolution_options.a_avoid_matching.end_args()) ;
             i != i_end ; ++i)
         prefer_or_avoid_helper.add_avoid_matching((*env)[selection::AllVersionsUnsorted(generator::Matches(
-                        parse_spec_with_nice_error(*i, env.get(), { }, filter::All()), make_null_shared_ptr(), { }))]);
+                        parse_spec_with_nice_error(*i, env.get(), { }, filter::All()), nullptr, { }))]);
 
     RemoveIfDependentHelper remove_if_dependent_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_remove_if_dependent.begin_args()),

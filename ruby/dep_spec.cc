@@ -29,7 +29,6 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <algorithm>
 #include <list>
@@ -330,7 +329,7 @@ namespace
         std::shared_ptr<H_> result;
         std::shared_ptr<typename H_::BasicInnerNode> add_to;
 
-        ValueToTree(VALUE val, std::shared_ptr<H_> r = make_null_shared_ptr()) :
+        ValueToTree(VALUE val, std::shared_ptr<H_> r = nullptr) :
             result(r)
         {
             if (result)

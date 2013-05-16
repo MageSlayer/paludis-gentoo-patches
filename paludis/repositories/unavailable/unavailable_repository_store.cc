@@ -32,7 +32,6 @@
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>

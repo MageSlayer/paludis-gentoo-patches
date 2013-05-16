@@ -33,7 +33,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/join.hh>
 
 #include <gtest/gtest.h>
@@ -118,21 +117,21 @@ INSTANTIATE_TEST_CASE_P(GeneratorTest, GeneratorTestCaseBase, testing::Values(
                 "cat/c-3:0::repo2" ) },
 
             TestInfo{ std::make_shared<generator::Matches>(
-                envless_parse_package_dep_spec_for_tests("cat/a"), make_null_shared_ptr(), MatchPackageOptions()), std::string(
+                envless_parse_package_dep_spec_for_tests("cat/a"), nullptr, MatchPackageOptions()), std::string(
                 "cat/a-1:0::inst_repo1, "
                 "cat/a-1:0::repo1, "
                 "cat/a-1:0::repo2, "
                 "cat/a-2:0::repo2") },
 
             TestInfo{ std::make_shared<generator::Matches>(
-                envless_parse_package_dep_spec_for_tests("*/a"), make_null_shared_ptr(), MatchPackageOptions()), std::string(
+                envless_parse_package_dep_spec_for_tests("*/a"), nullptr, MatchPackageOptions()), std::string(
                 "cat/a-1:0::inst_repo1, "
                 "cat/a-1:0::repo1, "
                 "cat/a-1:0::repo2, "
                 "cat/a-2:0::repo2") },
 
             TestInfo{ std::make_shared<generator::Matches>(
-                envless_parse_package_dep_spec_for_tests("cat/*"), make_null_shared_ptr(), MatchPackageOptions()), std::string(
+                envless_parse_package_dep_spec_for_tests("cat/*"), nullptr, MatchPackageOptions()), std::string(
                 "cat/a-1:0::inst_repo1, "
                 "cat/a-1:0::repo1, "
                 "cat/a-1:0::repo2, "
@@ -141,7 +140,7 @@ INSTANTIATE_TEST_CASE_P(GeneratorTest, GeneratorTestCaseBase, testing::Values(
                 "cat/c-3:0::repo2") },
 
             TestInfo{ std::make_shared<generator::Matches>(
-                envless_parse_package_dep_spec_for_tests(">=*/*-2"), make_null_shared_ptr(), MatchPackageOptions()), std::string(
+                envless_parse_package_dep_spec_for_tests(">=*/*-2"), nullptr, MatchPackageOptions()), std::string(
                 "cat/a-2:0::repo2, "
                 "cat/b-2:0::repo1, "
                 "cat/c-3:0::repo2") },
@@ -174,8 +173,8 @@ INSTANTIATE_TEST_CASE_P(GeneratorTest, GeneratorTestCaseBase, testing::Values(
                 "") },
 
             TestInfo{ std::make_shared<generator::Intersection>(
-                    generator::Matches(envless_parse_package_dep_spec_for_tests("*/a"), make_null_shared_ptr(), MatchPackageOptions()),
-                    generator::Matches(envless_parse_package_dep_spec_for_tests("cat/*"), make_null_shared_ptr(), MatchPackageOptions())
+                    generator::Matches(envless_parse_package_dep_spec_for_tests("*/a"), nullptr, MatchPackageOptions()),
+                    generator::Matches(envless_parse_package_dep_spec_for_tests("cat/*"), nullptr, MatchPackageOptions())
                     ), std::string(
                 "cat/a-1:0::inst_repo1, "
                 "cat/a-1:0::repo1, "

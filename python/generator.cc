@@ -24,7 +24,6 @@
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
 #include <paludis/dep_spec.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 using namespace paludis;
 using namespace paludis::python;
@@ -34,7 +33,7 @@ namespace
 {
     generator::Matches * make_generator_matches(const PackageDepSpec & spec, const MatchPackageOptions & o)
     {
-        return new generator::Matches(spec, make_null_shared_ptr(), o);
+        return new generator::Matches(spec, nullptr, o);
     }
 }
 

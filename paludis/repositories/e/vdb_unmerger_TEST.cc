@@ -30,7 +30,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/fs_stat.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/standard_output_manager.hh>
 #include <paludis/user_dep_spec.hh>
@@ -117,7 +116,7 @@ namespace
             env.add_repository(0, repo);
 
             auto id(*env[selection::RequireExactlyOne(generator::Matches(
-                            parse_user_package_dep_spec("cat/" + fix(what), &env, { }), make_null_shared_ptr(), { }))]->begin());
+                            parse_user_package_dep_spec("cat/" + fix(what), &env, { }), nullptr, { }))]->begin());
 
             unmerger = std::make_shared<VDBUnmergerNoDisplay>(make_named_values<VDBUnmergerOptions>(
                             n::config_protect() = "/protected_file /protected_dir",

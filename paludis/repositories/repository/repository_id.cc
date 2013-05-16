@@ -25,7 +25,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -225,7 +224,7 @@ RepositoryID::post_dependencies_key() const
 const std::shared_ptr<const MetadataValueKey<std::string> >
 RepositoryID::short_description_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
@@ -255,25 +254,25 @@ RepositoryID::installed_time_key() const
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 RepositoryID::from_repositories_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >
 RepositoryID::choices_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<Slot> >
 RepositoryID::slot_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const Contents>
 RepositoryID::contents() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 namespace paludis

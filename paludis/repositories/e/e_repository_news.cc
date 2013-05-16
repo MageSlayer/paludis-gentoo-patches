@@ -33,7 +33,6 @@
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/environment.hh>
 #include <paludis/distribution.hh>
@@ -177,7 +176,7 @@ ERepositoryNews::update_news() const
                     if (! (*_imp->environment)[selection::SomeArbitraryVersion(
                                 generator::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
                                             eapi.supported()->package_dep_spec_parse_options(),
-                                            eapi.supported()->version_spec_options())), make_null_shared_ptr(), { }) |
+                                            eapi.supported()->version_spec_options())), nullptr, { }) |
                                 filter::InstalledAtRoot(_imp->environment->preferred_root_key()->parse_value()))]->empty())
                         local_show = true;
                 show &= local_show;

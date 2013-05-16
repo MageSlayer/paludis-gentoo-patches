@@ -261,7 +261,7 @@ GraphJobsCommand::run(
         const std::shared_ptr<Environment> & env,
         const std::shared_ptr<const Sequence<std::string > > & args)
 {
-    return run(env, args, make_null_shared_ptr());
+    return run(env, args, nullptr);
 }
 
 std::shared_ptr<args::ArgsHandler>

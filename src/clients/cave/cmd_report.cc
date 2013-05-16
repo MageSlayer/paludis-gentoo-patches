@@ -46,7 +46,6 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/stringify.hh>
@@ -112,7 +111,7 @@ namespace
                                     .version_requirement(make_named_values<VersionRequirement>(
                                             n::version_operator() = vo_equal,
                                             n::version_spec() = id->version())),
-                                    make_null_shared_ptr(), { })) |
+                                    nullptr, { })) |
                             filter::SupportsAction<InstallAction>())]);
 
                 if (! ids->empty())
@@ -120,7 +119,7 @@ namespace
             }
         }
 
-        return make_null_shared_ptr();
+        return nullptr;
     }
 
     void need_heading(

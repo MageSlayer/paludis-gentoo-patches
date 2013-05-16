@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -52,7 +52,6 @@
 #include <paludis/util/tribool.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/visitor_cast.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
@@ -478,7 +477,7 @@ Decider::_create_resolution_for_resolvent(const Resolvent & r) const
 {
     return std::make_shared<Resolution>(make_named_values<Resolution>(
                     n::constraints() = _imp->fns.get_initial_constraints_for_fn()(r),
-                    n::decision() = make_null_shared_ptr(),
+                    n::decision() = nullptr,
                     n::resolvent() = r
                     ));
 }
@@ -498,7 +497,7 @@ Decider::_resolution_for_resolvent(const Resolvent & r, const Tribool if_not_exi
             throw InternalError(PALUDIS_HERE, "resolver bug: expected resolution for "
                     + stringify(r) + " to exist, but it doesn't");
         else
-            return make_null_shared_ptr();
+            return nullptr;
     }
 
     return *i;
@@ -518,7 +517,7 @@ Decider::_make_constraints_from_target(
         result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = resolution->resolvent().destination_type(),
                             n::force_unable() = false,
-                            n::from_id() = make_null_shared_ptr(),
+                            n::from_id() = nullptr,
                             n::nothing_is_fine_too() = existing.second,
                             n::reason() = reason,
                             n::spec() = spec,
@@ -672,12 +671,12 @@ namespace
         bool visit(const ChangesToMakeDecision & decision) const
         {
             return ok(decision.origin_id(),
-                    decision.if_changed_choices() ? decision.if_changed_choices()->changed_choices() : make_null_shared_ptr());
+                    decision.if_changed_choices() ? decision.if_changed_choices()->changed_choices() : nullptr);
         }
 
         bool visit(const ExistingNoChangeDecision & decision) const
         {
-            return ok(decision.existing_id(), make_null_shared_ptr());
+            return ok(decision.existing_id(), nullptr);
         }
 
         bool visit(const NothingNoChangeDecision &) const
@@ -763,17 +762,17 @@ namespace
     {
         const std::shared_ptr<const ChangedChoices> visit(const TargetReason &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         const std::shared_ptr<const ChangedChoices> visit(const DependentReason &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         const std::shared_ptr<const ChangedChoices> visit(const PresetReason &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         const std::shared_ptr<const ChangedChoices> visit(const DependencyReason & r) const
@@ -783,17 +782,17 @@ namespace
 
         const std::shared_ptr<const ChangedChoices> visit(const ViaBinaryReason &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         const std::shared_ptr<const ChangedChoices> visit(const WasUsedByReason &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         const std::shared_ptr<const ChangedChoices> visit(const LikeOtherDestinationTypeReason &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         const std::shared_ptr<const ChangedChoices> visit(const SetReason & r) const
@@ -812,32 +811,32 @@ namespace
     {
         const std::shared_ptr<const ChangedChoices> visit(const ChangesToMakeDecision & d) const
         {
-            return d.if_changed_choices() ? d.if_changed_choices()->changed_choices() : make_null_shared_ptr();
+            return d.if_changed_choices() ? d.if_changed_choices()->changed_choices() : nullptr;
         }
 
         const std::shared_ptr<const ChangedChoices> visit(const ExistingNoChangeDecision &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         const std::shared_ptr<const ChangedChoices> visit(const NothingNoChangeDecision &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         const std::shared_ptr<const ChangedChoices> visit(const UnableToMakeDecision &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         const std::shared_ptr<const ChangedChoices> visit(const RemoveDecision &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         const std::shared_ptr<const ChangedChoices> visit(const BreakDecision &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
     };
 
@@ -1048,39 +1047,39 @@ namespace
     {
         const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(const NothingNoChangeDecision &) const
         {
-            return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
+            return std::make_pair(nullptr, nullptr);
         }
 
         const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(const RemoveDecision &) const
         {
-            return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
+            return std::make_pair(nullptr, nullptr);
         }
 
         const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(const UnableToMakeDecision &) const
         {
-            return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
+            return std::make_pair(nullptr, nullptr);
         }
 
         const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(const ExistingNoChangeDecision & decision) const
         {
             if (decision.taken())
-                return std::make_pair(decision.existing_id(), make_null_shared_ptr());
+                return std::make_pair(decision.existing_id(), nullptr);
             else
-                return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
+                return std::make_pair(nullptr, nullptr);
         }
 
         const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(const ChangesToMakeDecision & decision) const
         {
             if (decision.taken())
                 return std::make_pair(decision.origin_id(),
-                        decision.if_changed_choices() ? decision.if_changed_choices()->changed_choices() : make_null_shared_ptr());
+                        decision.if_changed_choices() ? decision.if_changed_choices()->changed_choices() : nullptr);
             else
-                return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
+                return std::make_pair(nullptr, nullptr);
         }
 
         const std::pair<std::shared_ptr<const PackageID>, std::shared_ptr<const ChangedChoices> > visit(const BreakDecision &) const
         {
-            return std::make_pair(make_null_shared_ptr(), make_null_shared_ptr());
+            return std::make_pair(nullptr, nullptr);
         }
     };
 }
@@ -1256,9 +1255,9 @@ Decider::find_any_score(
             return std::make_pair(acs_vacuous_blocker, operator_bias);
     }
 
-    const std::shared_ptr<DependencyReason> reason_unless_block(is_block ? make_null_shared_ptr() : std::make_shared<DependencyReason>(
-                our_id, make_null_shared_ptr(), our_resolution->resolvent(), dep, _package_dep_spec_already_met(*dep.spec().if_package(), our_id)));
-    const std::shared_ptr<const Resolvents> resolvents_unless_block(is_block ? make_null_shared_ptr() :
+    const std::shared_ptr<DependencyReason> reason_unless_block(is_block ? nullptr : std::make_shared<DependencyReason>(
+                our_id, nullptr, our_resolution->resolvent(), dep, _package_dep_spec_already_met(*dep.spec().if_package(), our_id)));
+    const std::shared_ptr<const Resolvents> resolvents_unless_block(is_block ? nullptr :
             _get_resolvents_for(spec, reason_unless_block).first);
     std::list<std::shared_ptr<Decision> > could_install_decisions;
     if (resolvents_unless_block)
@@ -1354,12 +1353,12 @@ namespace
 
         std::shared_ptr<SlotName> visit(const SlotAnyUnlockedRequirement &)
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         std::shared_ptr<SlotName> visit(const SlotAnyAtAllLockedRequirement &)
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         std::shared_ptr<SlotName> visit(const SlotUnknownRewrittenRequirement &) PALUDIS_ATTRIBUTE((noreturn))
@@ -1436,7 +1435,7 @@ Decider::_get_error_resolvents_for(
         if (destination_types[*t])
         {
             Resolvent resolvent(spec, make_named_values<SlotNameOrNull>(
-                        n::name_or_null() = make_null_shared_ptr(),
+                        n::name_or_null() = nullptr,
                         n::null_means_unknown() = true
                         ),
                     *t);
@@ -1446,7 +1445,7 @@ Decider::_get_error_resolvents_for(
                 resolvent.slot() = make_named_values<SlotNameOrNull>(
                         n::name_or_null() = (*ids->rbegin())->slot_key() ?
                             make_shared_copy((*ids->rbegin())->slot_key()->parse_value().parallel_value()) :
-                            make_null_shared_ptr(),
+                            nullptr,
                         n::null_means_unknown() = true
                         );
 
@@ -1474,7 +1473,7 @@ Decider::_try_to_find_decision_for(
         const bool try_removes_if_allowed) const
 {
     if (resolution->constraints()->any_force_unable())
-        return make_null_shared_ptr();
+        return nullptr;
 
     const std::shared_ptr<const PackageID> existing_id(_find_existing_id_for(resolution));
 
@@ -1506,7 +1505,7 @@ Decider::_try_to_find_decision_for(
                     best,
                     last_ct,
                     ! resolution->constraints()->all_untaken(),
-                    make_null_shared_ptr(),
+                    nullptr,
                     std::bind(&Decider::_fixup_changes_to_make_decision, this, resolution, std::placeholders::_1)
                     );
     }
@@ -1525,11 +1524,11 @@ Decider::_try_to_find_decision_for(
             case ue_if_same:
             case ue_if_same_version:
                 if (! is_transient)
-                    return make_null_shared_ptr();
+                    return nullptr;
                 break;
 
             case ue_never:
-                return make_null_shared_ptr();
+                return nullptr;
 
             case last_ue:
                 break;
@@ -1558,7 +1557,7 @@ Decider::_try_to_find_decision_for(
         else if (also_try_masked && ! try_masked_this_time)
             return _try_to_find_decision_for(resolution, also_try_option_changes, try_option_changes_this_time, true, true, try_removes_if_allowed);
         else
-            return make_null_shared_ptr();
+            return nullptr;
     }
     else if (existing_id && installable_id)
     {
@@ -1580,7 +1579,7 @@ Decider::_try_to_find_decision_for(
                     best,
                     last_ct,
                     ! resolution->constraints()->all_untaken(),
-                    make_null_shared_ptr(),
+                    nullptr,
                     std::bind(&Decider::_fixup_changes_to_make_decision, this, resolution, std::placeholders::_1)
                     ));
 
@@ -1803,7 +1802,7 @@ Decider::_find_id_for_from(
 
             if (ok)
                 return FoundID(*i,
-                        why_changed_choices->changed_choices()->empty() ? make_null_shared_ptr() : why_changed_choices,
+                        why_changed_choices->changed_choices()->empty() ? nullptr : why_changed_choices,
                         (*i)->version() == best_version->version());
         }
     }
@@ -1811,7 +1810,7 @@ Decider::_find_id_for_from(
     if (try_changing_choices && ! trying_changing_choices)
         return _find_id_for_from(resolution, ids, true, true);
     else
-        return FoundID(make_null_shared_ptr(), make_null_shared_ptr(), false);
+        return FoundID(nullptr, nullptr, false);
 }
 
 const std::shared_ptr<const Constraints>
@@ -1842,11 +1841,11 @@ Decider::_get_unmatching_constraints(
             decision = std::make_shared<ChangesToMakeDecision>(
                         resolution->resolvent(),
                         id,
-                        make_null_shared_ptr(),
+                        nullptr,
                         false,
                         last_ct,
                         ! (*c)->untaken(),
-                        make_null_shared_ptr(),
+                        nullptr,
                         std::function<void (const ChangesToMakeDecision &)>()
                         );
         if (! _check_constraint(*c, decision))

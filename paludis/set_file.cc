@@ -28,7 +28,6 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/safe_ofstream.hh>
 #include <paludis/util/process.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/env_var_names.hh>
 
 #include <paludis/environment.hh>
@@ -271,7 +270,7 @@ namespace
                                     make_package_dep_spec({ })
                                     .package(*spec->package_ptr())
                                     .slot_requirement(spec->slot_requirement_ptr()),
-                                    make_null_shared_ptr(), { }) |
+                                    nullptr, { }) |
                                 filter::InstalledAtRoot(params.environment()->preferred_root_key()->parse_value()))]->empty())
                         result->top()->append(spec);
                 }

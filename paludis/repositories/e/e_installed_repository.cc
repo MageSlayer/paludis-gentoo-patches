@@ -41,7 +41,6 @@
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/is_file_with_extension.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
@@ -266,8 +265,8 @@ EInstalledRepository::perform_config(
                     n::maybe_output_manager() = output_manager,
                     n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-config"),
                     n::package_id() = id,
-                    n::parts() = make_null_shared_ptr(),
-                    n::permitted_directories() = make_null_shared_ptr(),
+                    n::parts() = nullptr,
+                    n::permitted_directories() = nullptr,
                     n::portdir() = ver_dir,
                     n::root() = stringify(_imp->params.root()),
                     n::sandbox() = phase->option("sandbox"),
@@ -375,8 +374,8 @@ EInstalledRepository::perform_info(
                     n::maybe_output_manager() = output_manager,
                     n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-info"),
                     n::package_id() = id,
-                    n::parts() = make_null_shared_ptr(),
-                    n::permitted_directories() = make_null_shared_ptr(),
+                    n::parts() = nullptr,
+                    n::permitted_directories() = nullptr,
                     n::portdir() = ver_dir,
                     n::root() = stringify(_imp->params.root()),
                     n::sandbox() = phase->option("sandbox"),
@@ -417,6 +416,6 @@ EInstalledRepository::sync(const std::string &, const std::string &, const std::
 const std::shared_ptr<const Set<std::string> >
 EInstalledRepository::maybe_expand_licence_nonrecursively(const std::string &) const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 

@@ -24,7 +24,6 @@
 #include <paludis/args/args.hh>
 #include <paludis/args/do_help.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/environment.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/filtered_generator.hh>
@@ -134,7 +133,7 @@ PrintIDEnvironmentVariableCommand::run(
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { updso_allow_wildcards }));
 
     std::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(spec, make_null_shared_ptr(), { }))]);
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, nullptr, { }))]);
 
     if (entries->empty())
         throw NothingMatching(spec);

@@ -22,7 +22,6 @@
 
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/slot_requirement.hh>
 #include <paludis/name.hh>
 #include <memory>

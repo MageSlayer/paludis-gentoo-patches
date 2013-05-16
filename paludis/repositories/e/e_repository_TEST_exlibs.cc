@@ -34,7 +34,6 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 
 #include <paludis/package_id.hh>
@@ -153,7 +152,7 @@ TEST_P(ExlibsTest, Works)
 
     const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("cat/" + info.test,
-                            &env, { })), make_null_shared_ptr(), { }))]->last());
+                            &env, { })), nullptr, { }))]->last());
     ASSERT_TRUE(bool(id));
     switch (info.expected_result)
     {

@@ -29,7 +29,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/output_manager.hh>
@@ -108,7 +107,7 @@ namespace paludis
             fs_location_key(std::make_shared<LiteralMetadataValueKey<FSPath>>("location", "Location", mkt_internal, l)),
             from_repositories_key(f),
             behaviours_key(AccountsIDBehaviours::get_instance()->behaviours_key),
-            mask(m ? std::make_shared<AccountsInstalledMask>() : make_null_shared_ptr()),
+            mask(m ? std::make_shared<AccountsInstalledMask>() : nullptr),
             is_user(u),
             has_file_keys(false),
             has_metadata_keys(false)
@@ -313,7 +312,7 @@ AccountsID::uniquely_identifying_spec() const
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 AccountsID::keywords_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -333,7 +332,7 @@ AccountsID::run_dependencies_key() const
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 AccountsID::post_dependencies_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -346,13 +345,13 @@ AccountsID::dependencies_key() const
 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 AccountsID::fetches_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 AccountsID::homepage_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
@@ -370,13 +369,13 @@ AccountsID::short_description_key() const
 const std::shared_ptr<const MetadataValueKey<std::string> >
 AccountsID::long_description_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataTimeKey>
 AccountsID::installed_time_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -400,13 +399,13 @@ AccountsID::behaviours_key() const
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >
 AccountsID::choices_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<Slot> >
 AccountsID::slot_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 std::shared_ptr<const Set<std::string> >
@@ -479,7 +478,7 @@ AccountsID::perform_action(Action & action) const
                 n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                 n::output_manager() = output_manager,
                 n::package_id() = shared_from_this(),
-                n::parts() = make_null_shared_ptr(),
+                n::parts() = nullptr,
                 n::perform_uninstall() = install_action->options.perform_uninstall(),
                 n::permit_destination() = std::bind(return_literal_function(true)),
                 n::replacing() = install_action->options.replacing(),
@@ -542,7 +541,7 @@ AccountsID::perform_action(Action & action) const
                         n::ignore_for_unmerge() = &ignore_nothing,
                         n::is_overwrite() = false,
                         n::make_output_manager() = std::bind(&this_output_manager, output_manager, std::placeholders::_1),
-                        n::override_contents() = make_null_shared_ptr(),
+                        n::override_contents() = nullptr,
                         n::want_phase() = install_action->options.want_phase()
                         ));
             install_action->options.perform_uninstall()(*i, uo);
@@ -555,6 +554,6 @@ AccountsID::perform_action(Action & action) const
 const std::shared_ptr<const Contents>
 AccountsID::contents() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 

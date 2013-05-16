@@ -23,7 +23,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/filter.hh>
 #include <paludis/package_id.hh>
@@ -133,7 +132,7 @@ Resolvent::Resolvent(
     slot(make_named_values<SlotNameOrNull>(
                 n::name_or_null() = id->slot_key() ?
                     std::make_shared<SlotName>(id->slot_key()->parse_value().parallel_value()) :
-                    make_null_shared_ptr(),
+                    nullptr,
                 n::null_means_unknown() = false
                 ))
 {

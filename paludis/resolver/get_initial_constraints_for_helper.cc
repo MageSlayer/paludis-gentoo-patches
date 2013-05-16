@@ -33,7 +33,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/timestamp.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
@@ -91,7 +90,7 @@ GetInitialConstraintsForHelper::add_preset_spec(const PackageDepSpec & spec, con
 {
     Context context("When adding preset for '" + stringify(spec) + "':");
 
-    auto reason(std::make_shared<PresetReason>("preset", make_null_shared_ptr()));
+    auto reason(std::make_shared<PresetReason>("preset", nullptr));
 
     auto ids((*_imp->env)[selection::BestVersionInEachSlot(generator::Matches(spec, from_id, { }))]);
     for (auto i(ids->begin()), i_end(ids->end()) ;
@@ -237,9 +236,9 @@ GetInitialConstraintsForHelper::_make_initial_constraints_for(
         result->add(std::make_shared<Constraint>(make_named_values<Constraint>(
                         n::destination_type() = resolvent.destination_type(),
                         n::force_unable() = false,
-                        n::from_id() = make_null_shared_ptr(),
+                        n::from_id() = nullptr,
                         n::nothing_is_fine_too() = true,
-                        n::reason() = std::make_shared<PresetReason>("is scm", make_null_shared_ptr()),
+                        n::reason() = std::make_shared<PresetReason>("is scm", nullptr),
                         n::spec() = make_package_dep_spec({ }).package(resolvent.package()),
                         n::untaken() = false,
                         n::use_existing() = ue_only_if_transient

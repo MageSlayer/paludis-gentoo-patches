@@ -24,7 +24,6 @@
 #include <paludis/resolver/resolution.hh>
 #include <paludis/resolver/decision_utils-fwd.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_dep_spec_collection.hh>
 
@@ -41,7 +40,7 @@ namespace paludis
 
         Imp(const Environment * const e) :
             env(e),
-            no_restarts_for_specs(make_null_shared_ptr())
+            no_restarts_for_specs(nullptr)
         {
         }
     };

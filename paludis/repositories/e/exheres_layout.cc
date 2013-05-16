@@ -38,7 +38,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_stat.hh>
 
@@ -653,13 +652,13 @@ ExheresLayout::accounts_repository_data_location_key() const
         return std::make_shared<LiteralMetadataValueKey<FSPath>>("accounts_repository_data_location",
                     "AccountsRepository data location", mkt_internal, _imp->tree_root / "metadata" / "accounts");
     else
-        return make_null_shared_ptr();
+        return nullptr;
 }
 
 std::shared_ptr<MetadataValueKey<FSPath> >
 ExheresLayout::e_updates_location_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 std::shared_ptr<MetadataValueKey<FSPath> >
@@ -669,7 +668,7 @@ ExheresLayout::licence_groups_location_key() const
         return std::make_shared<LiteralMetadataValueKey<FSPath>>("licence_groups_location",
                     "License groups data location", mkt_internal, _imp->tree_root / "metadata" / "licence_groups.conf");
     else
-        return make_null_shared_ptr();
+        return nullptr;
 }
 
 std::shared_ptr<const MasksInfo>

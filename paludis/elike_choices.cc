@@ -25,7 +25,6 @@
 #include <paludis/util/destringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/singleton-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/enum_iterator.hh>
 #include <paludis/util/map.hh>
 #include <set>
@@ -179,7 +178,7 @@ ELikeOptionalTestsChoiceValue::parameter() const
 const std::shared_ptr<const PermittedChoiceValueParameterValues>
 ELikeOptionalTestsChoiceValue::permitted_parameter_values() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 bool
@@ -259,7 +258,7 @@ ELikeRecommendedTestsChoiceValue::parameter() const
 const std::shared_ptr<const PermittedChoiceValueParameterValues>
 ELikeRecommendedTestsChoiceValue::permitted_parameter_values() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 bool
@@ -357,7 +356,7 @@ ELikeExpensiveTestsChoiceValue::parameter() const
 const std::shared_ptr<const PermittedChoiceValueParameterValues>
 ELikeExpensiveTestsChoiceValue::permitted_parameter_values() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 bool
@@ -537,7 +536,7 @@ ELikeTraceChoiceValue::parameter() const
 const std::shared_ptr<const PermittedChoiceValueParameterValues>
 ELikeTraceChoiceValue::permitted_parameter_values() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 bool
@@ -948,6 +947,6 @@ ELikeDwarfCompressionChoiceValue::parameter() const
 const std::shared_ptr<const PermittedChoiceValueParameterValues>
 ELikeDwarfCompressionChoiceValue::permitted_parameter_values() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 

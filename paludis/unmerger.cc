@@ -22,7 +22,6 @@
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/contents.hh>
 #include <paludis/metadata_key.hh>

@@ -64,13 +64,13 @@ int main(int argc, char * argv[])
          * simplest form, it takes a Generator as a parameter. */
         show_selection(env, selection::AllVersionsSorted(
                     generator::Matches(make_package_dep_spec({ }).package(
-                            QualifiedPackageName("sys-apps/paludis")), make_null_shared_ptr(), { })));
+                            QualifiedPackageName("sys-apps/paludis")), nullptr, { })));
 
         /* Generators can be passed through a Filter. The Selection optimises
          * the code internally to avoid doing excess work. */
         show_selection(env, selection::AllVersionsSorted(
                     generator::Matches(make_package_dep_spec({ }).package(
-                            QualifiedPackageName("sys-apps/paludis")), make_null_shared_ptr(), { }) |
+                            QualifiedPackageName("sys-apps/paludis")), nullptr, { }) |
                     filter::InstalledAtSlash()));
 
         /* Filters can be combined. Usually filter::NotMasked should be combined
@@ -78,7 +78,7 @@ int main(int argc, char * argv[])
          * aren't masked. */
         show_selection(env, selection::AllVersionsSorted(
                     generator::Matches(make_package_dep_spec({ }).package(
-                            QualifiedPackageName("sys-apps/paludis")), make_null_shared_ptr(), { }) |
+                            QualifiedPackageName("sys-apps/paludis")), nullptr, { }) |
                     filter::SupportsAction<InstallAction>() |
                     filter::NotMasked()));
 
@@ -87,7 +87,7 @@ int main(int argc, char * argv[])
          * you only need the best matching or some arbitrary matching ID. */
         show_selection(env, selection::BestVersionOnly(
                     generator::Matches(make_package_dep_spec({ }).package(
-                            QualifiedPackageName("sys-apps/paludis")), make_null_shared_ptr(), { }) |
+                            QualifiedPackageName("sys-apps/paludis")), nullptr, { }) |
                     filter::SupportsAction<InstallAction>() |
                     filter::NotMasked()));
     }

@@ -29,7 +29,6 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/serialise-impl.hh>
 #include <paludis/changed_choices.hh>
 #include <sstream>
@@ -450,7 +449,7 @@ ChangesToMakeDecision::serialise(Serialiser & s) const
         .member(SerialiserFlags<>(), "change_type", stringify(change_type()))
         .member(SerialiserFlags<serialise::might_be_null>(), "destination", destination())
         .member(SerialiserFlags<serialise::might_be_null>(), "if_via_new_binary_in", if_via_new_binary_in() ?
-                make_shared_copy(stringify(*if_via_new_binary_in())) : make_null_shared_ptr())
+                make_shared_copy(stringify(*if_via_new_binary_in())) : nullptr)
         .member(SerialiserFlags<>(), "taken", taken())
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "required_confirmations_if_any", required_confirmations_if_any())
         ;

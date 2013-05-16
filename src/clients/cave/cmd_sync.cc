@@ -26,7 +26,6 @@
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/executor.hh>
 #include <paludis/util/timestamp.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
 #include <paludis/output_manager.hh>
@@ -173,7 +172,7 @@ namespace
                             ("NUMBER_DONE", stringify(executor->done()))
                             ("NUMBER_ACTIVE", stringify(executor->active()))
                             ("NUMBER_PENDING", stringify(executor->pending())),
-                            make_null_shared_ptr()).max_exit_status())
+                            nullptr).max_exit_status())
                     throw SyncFailedError("Sync aborted by hook");
 
                 const std::shared_ptr<Repository> repo(env->fetch_repository(name));
@@ -275,7 +274,7 @@ namespace
                                 ("NUMBER_DONE", stringify(executor->done()))
                                 ("NUMBER_ACTIVE", stringify(executor->active()))
                                 ("NUMBER_PENDING", stringify(executor->pending())),
-                                make_null_shared_ptr()).max_exit_status())
+                                nullptr).max_exit_status())
                         throw SyncFailedError("Sync aborted by hook");
                 }
 
@@ -395,7 +394,7 @@ SyncCommand::run(
 
     if (0 != env->perform_hook(Hook("sync_all_pre")
                 ("TARGETS", join(repos.begin(), repos.end(), " ")),
-                make_null_shared_ptr()).max_exit_status())
+                nullptr).max_exit_status())
         throw SyncFailedError("Sync aborted by hook");
 
     cout << fuc(fs_repos_title());
@@ -410,7 +409,7 @@ SyncCommand::run(
 
     if (0 != env->perform_hook(Hook("sync_all_post")
                 ("TARGETS", join(repos.begin(), repos.end(), " ")),
-                make_null_shared_ptr()).max_exit_status())
+                nullptr).max_exit_status())
         throw SyncFailedError("Sync aborted by hook");
 
     return retcode;

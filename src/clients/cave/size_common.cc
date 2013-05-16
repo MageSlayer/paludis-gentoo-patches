@@ -39,7 +39,6 @@
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/iterator_funcs.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <algorithm>
 #include <functional>
 #include <iostream>
@@ -94,7 +93,7 @@ paludis::cave::size_common(
         const bool best)
 {
     PackageDepSpec spec(parse_spec_with_nice_error(q, env.get(), { }, filter::All()));
-    std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(generator::Matches(spec, make_null_shared_ptr(), { }) |
+    std::shared_ptr<const PackageIDSequence> entries((*env)[selection::AllVersionsSorted(generator::Matches(spec, nullptr, { }) |
                 filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
 
     if (entries->empty())

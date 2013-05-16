@@ -30,7 +30,6 @@
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/timestamp.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_stat.hh>
@@ -503,7 +502,7 @@ InstalledUnpackagedID::keywords_key() const
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 InstalledUnpackagedID::dependencies_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >

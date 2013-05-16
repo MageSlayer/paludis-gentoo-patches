@@ -37,7 +37,6 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/simple_parser.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/user_dep_spec.hh>
 #include <paludis/create_output_manager_info.hh>
@@ -202,7 +201,7 @@ namespace
                 return false;
 
             if (rule.matches_requirement() && ! match_package(*env, *rule.matches_requirement(),
-                        i.package_id(), make_null_shared_ptr(), { }))
+                        i.package_id(), nullptr, { }))
                 return false;
 
             if (! rule.ignore_unfetched_requirement().is_indeterminate())
@@ -395,7 +394,7 @@ OutputConf::add(const FSPath & filename, const FSPath & root)
                     n::action_requirement() = "*",
                     n::ignore_unfetched_requirement() = Tribool(indeterminate),
                     n::manager() = "unset",
-                    n::matches_requirement() = make_null_shared_ptr(),
+                    n::matches_requirement() = nullptr,
                     n::name_requirement() = "*",
                     n::output_exclusivity_requirement() = static_cast<OutputExclusivity>(-1),
                     n::type_requirement() = "*"

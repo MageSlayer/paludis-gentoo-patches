@@ -25,7 +25,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/environment.hh>
 #include <paludis/environments/test/test_environment.hh>
 #include <paludis/repositories/fake/fake_repository.hh>
@@ -81,7 +80,7 @@ namespace environment
 
         e.set(SetName("set"));
 
-        e.perform_hook(Hook("test"), make_null_shared_ptr());
+        e.perform_hook(Hook("test"), nullptr);
 
         e.distribution();
 

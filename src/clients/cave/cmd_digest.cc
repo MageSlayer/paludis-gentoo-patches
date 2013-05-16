@@ -30,7 +30,6 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 
 #include <paludis/name.hh>
@@ -116,7 +115,7 @@ DigestCommand::run(
         throw args::DoHelp("digest takes exactly two parameters");
 
     RepositoryName repo(*next(cmdline.begin_parameters()));
-    Filter repo_filter(filter::Matches(make_package_dep_spec({ }).in_repository(repo), make_null_shared_ptr(), { }));
+    Filter repo_filter(filter::Matches(make_package_dep_spec({ }).in_repository(repo), nullptr, { }));
     QualifiedPackageName pkg(std::string::npos == cmdline.begin_parameters()->find('/') ?
             env->fetch_unique_qualified_package_name(PackageNamePart(*cmdline.begin_parameters()), repo_filter) :
             QualifiedPackageName(*cmdline.begin_parameters()));

@@ -23,7 +23,6 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_spec.hh>
@@ -411,12 +410,12 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
             if (options[epdso_allow_subslot_deps] && std::string::npos != p)
             {
                 /* c/p:s/u */
-                result.slot_requirement(std::make_shared<ELikeSlotExactFullRequirement>(std::make_pair(SlotName(text.substr(0, p)), SlotName(text.substr(p + 1))), make_null_shared_ptr()));
+                result.slot_requirement(std::make_shared<ELikeSlotExactFullRequirement>(std::make_pair(SlotName(text.substr(0, p)), SlotName(text.substr(p + 1))), nullptr));
             }
             else
             {
                 /* c/p:s */
-                result.slot_requirement(std::make_shared<ELikeSlotExactPartialRequirement>(SlotName(text), make_null_shared_ptr()));
+                result.slot_requirement(std::make_shared<ELikeSlotExactPartialRequirement>(SlotName(text), nullptr));
             }
         }
     }
@@ -602,6 +601,6 @@ PackageDepSpec
 paludis::parse_elike_package_dep_spec(const std::string & ss, const ELikePackageDepSpecOptions & options,
         const VersionSpecOptions & version_options)
 {
-    return partial_parse_elike_package_dep_spec(ss, options, version_options, make_null_shared_ptr());
+    return partial_parse_elike_package_dep_spec(ss, options, version_options, nullptr);
 }
 

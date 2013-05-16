@@ -29,7 +29,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
@@ -268,7 +267,7 @@ PrintIDsCommand::run(
                 m != m_end ; ++m)
         {
             PackageDepSpec s(parse_user_package_dep_spec(*m, env.get(), { updso_allow_wildcards }));
-            g = g & generator::Matches(s, make_null_shared_ptr(), { });
+            g = g & generator::Matches(s, nullptr, { });
         }
     }
 

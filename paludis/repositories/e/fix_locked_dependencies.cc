@@ -25,7 +25,6 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/environment.hh>
 #include <paludis/package_id.hh>
@@ -55,17 +54,17 @@ namespace
 
         std::shared_ptr<const SlotRequirement> visit(const SlotExactPartialRequirement &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         std::shared_ptr<const SlotRequirement> visit(const SlotExactFullRequirement &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         std::shared_ptr<const SlotRequirement> visit(const SlotAnyUnlockedRequirement &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         std::shared_ptr<const SlotRequirement> rewrite() const
@@ -73,7 +72,7 @@ namespace
             std::shared_ptr<const PackageIDSequence> matches((*env)[selection::AllVersionsSorted(
                         generator::Matches(*spec, id, { }) | filter::InstalledAtRoot(env->system_root_key()->parse_value()))]);
             if (matches->empty())
-                return make_null_shared_ptr();
+                return nullptr;
 
             if ((*matches->last())->slot_key())
             {
@@ -89,7 +88,7 @@ namespace
                     return std::make_shared<ELikeSlotExactPartialRequirement>(ss.match_values().first, spec->slot_requirement_ptr());
             }
             else
-                return make_null_shared_ptr();
+                return nullptr;
         }
 
         std::shared_ptr<const SlotRequirement> visit(const SlotAnyPartialLockedRequirement &) const

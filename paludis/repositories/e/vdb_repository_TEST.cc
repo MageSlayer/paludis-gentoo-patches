@@ -46,7 +46,6 @@
 #include <paludis/contents.hh>
 
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <functional>
 #include <algorithm>
@@ -134,7 +133,7 @@ namespace
         if (! victim.empty())
             replacing->push_back(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec(victim,
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
         InstallAction install_action(make_named_values<InstallActionOptions>(
                     n::destination() = vdb_repo,
                     n::make_output_manager() = &make_standard_output_manager,
@@ -144,7 +143,7 @@ namespace
                 ));
         (*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec(chosen_one,
-                            &env, { })), make_null_shared_ptr(), { }))]->begin())->perform_action(install_action);
+                            &env, { })), nullptr, { }))]->begin())->perform_action(install_action);
     }
 }
 
@@ -191,7 +190,7 @@ TEST(VDBRepository, QueryUse)
 
     std::shared_ptr<const PackageID> e1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
 
     ASSERT_TRUE(bool(e1->choices_key()));
     ASSERT_TRUE(bool(e1->choices_key()->parse_value()));
@@ -220,7 +219,7 @@ TEST(VDBRepository, Contents)
 
     std::shared_ptr<const PackageID> e1(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("=cat-one/pkg-one-1",
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
     ContentsGatherer gatherer;
     auto contents(e1->contents());
     std::for_each(indirect_iterator(contents->begin()),
@@ -313,7 +312,7 @@ TEST(VDBRepository, Reinstall)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::reinstalltest_src1",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         id->perform_action(install_action);
         vdb_repo->invalidate();
 
@@ -324,7 +323,7 @@ TEST(VDBRepository, Reinstall)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::reinstalltest_src1",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         id->perform_action(install_action);
         vdb_repo->invalidate();
 
@@ -335,7 +334,7 @@ TEST(VDBRepository, Reinstall)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/pkg-1::reinstalltest_src2",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         id->perform_action(install_action);
         vdb_repo->invalidate();
 

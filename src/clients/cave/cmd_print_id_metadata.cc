@@ -26,7 +26,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/environment.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/user_dep_spec.hh>
@@ -152,7 +151,7 @@ PrintIDMetadataCommand::run(
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { updso_allow_wildcards }));
 
     std::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(spec, make_null_shared_ptr(), { }))]);
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, nullptr, { }))]);
 
     if (entries->empty())
         throw NothingMatching(spec);

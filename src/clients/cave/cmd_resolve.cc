@@ -20,7 +20,6 @@
 #include "cmd_resolve.hh"
 #include "resolve_cmdline.hh"
 #include "resolve_common.hh"
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <iostream>
 #include <cstdlib>
@@ -98,7 +97,7 @@ ResolveCommand::run(
         targets->push_back(std::make_pair(*p, ""));
 
     return resolve_common(env, cmdline.resolution_options, cmdline.execution_options, cmdline.display_options,
-            cmdline.graph_jobs_options, cmdline.program_options, make_null_shared_ptr(), targets, make_null_shared_ptr(), false);
+            cmdline.graph_jobs_options, cmdline.program_options, nullptr, targets, nullptr, false);
 }
 
 std::shared_ptr<args::ArgsHandler>

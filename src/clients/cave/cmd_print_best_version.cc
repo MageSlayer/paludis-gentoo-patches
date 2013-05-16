@@ -28,7 +28,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/filter.hh>
@@ -108,7 +107,7 @@ PrintBestVersionCommand::run(
         throw args::DoHelp("print-best-version takes exactly one parameter");
 
     auto s(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { }));
-    auto ids((*env)[selection::BestVersionOnly(generator::Matches(s, make_null_shared_ptr(), { }) | filter::InstalledAtRoot(
+    auto ids((*env)[selection::BestVersionOnly(generator::Matches(s, nullptr, { }) | filter::InstalledAtRoot(
                     env->preferred_root_key()->parse_value()))]);
 
     if (ids->empty())

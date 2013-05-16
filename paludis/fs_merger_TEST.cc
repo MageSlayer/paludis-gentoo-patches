@@ -28,7 +28,6 @@
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/timestamp.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_path.hh>
@@ -171,11 +170,11 @@ namespace
                         n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
                         n::image() = image_dir,
                         n::install_under() = FSPath("/"),
-                        n::maybe_output_manager() = make_null_shared_ptr(),
+                        n::maybe_output_manager() = nullptr,
                         n::merged_entries() = std::make_shared<FSPathSet>(),
                         n::no_chown() = true,
                         n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
-                        n::parts() = make_null_shared_ptr(),
+                        n::parts() = nullptr,
                         n::permit_destination() = std::bind(return_literal_function(true)),
                         n::root() = root_dir.realpath()
                         ))
@@ -195,11 +194,11 @@ namespace
                     n::get_new_ids_or_minus_one() = &get_new_ids_or_minus_one,
                     n::image() = image_dir,
                     n::install_under() = FSPath("/"),
-                    n::maybe_output_manager() = make_null_shared_ptr(),
+                    n::maybe_output_manager() = nullptr,
                     n::merged_entries() = std::make_shared<FSPathSet>(),
                     n::no_chown() = true,
                     n::options() = o,
-                    n::parts() = make_null_shared_ptr(),
+                    n::parts() = nullptr,
                     n::permit_destination() = std::bind(return_literal_function(true)),
                     n::root() = root_dir.realpath()
                     ))

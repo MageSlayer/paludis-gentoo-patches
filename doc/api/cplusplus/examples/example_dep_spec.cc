@@ -133,7 +133,7 @@ int main(int argc, char * argv[])
                     if (need_join)
                         cout << " and ";
 
-                    cout << (*u)->as_raw_string() + " (meaning: " + (*u)->as_human_string(make_null_shared_ptr()) + ")";
+                    cout << (*u)->as_raw_string() + " (meaning: " + (*u)->as_human_string(nullptr) + ")";
                     need_join = true;
                 }
                 cout << endl;
@@ -142,7 +142,7 @@ int main(int argc, char * argv[])
             /* And display packages matching that spec */
             cout << "    " << left << setw(24) << "Matches:" << " ";
             std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
-                        generator::Matches(spec, make_null_shared_ptr(), { }))]);
+                        generator::Matches(spec, nullptr, { }))]);
             bool need_indent(false);
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                     i != i_end ; ++i)

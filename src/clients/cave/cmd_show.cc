@@ -43,7 +43,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/timestamp.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
@@ -195,7 +194,7 @@ namespace
                     annotations << m->key() << " = [" << (m->value().empty() ? " " : " " + m->value() + " ") << "] ";
             }
 
-            out << fuc(select_format_for_spec(env, *node.spec(), make_null_shared_ptr(),
+            out << fuc(select_format_for_spec(env, *node.spec(), nullptr,
                         fs_set_spec_installed(),
                         fs_set_spec_installable(),
                         fs_set_spec_unavailable()),
@@ -246,7 +245,7 @@ namespace
     {
         cout << fuc(fs_wildcard_heading(), fv<'s'>(stringify(s)));
 
-        const std::shared_ptr<const PackageIDSequence> names((*env)[selection::BestVersionOnly(generator::Matches(s, make_null_shared_ptr(), { }))]);
+        const std::shared_ptr<const PackageIDSequence> names((*env)[selection::BestVersionOnly(generator::Matches(s, nullptr, { }))]);
         if (names->empty())
             throw NothingMatching(s);
 
@@ -254,7 +253,7 @@ namespace
                 i != i_end ; ++i)
         {
             PackageDepSpec name_spec(make_package_dep_spec({ }).package((*i)->name()));
-            cout << fuc(select_format_for_spec(env, name_spec, make_null_shared_ptr(),
+            cout << fuc(select_format_for_spec(env, name_spec, nullptr,
                         fs_wildcard_spec_installed(),
                         fs_wildcard_spec_installable(),
                         fs_wildcard_spec_unavailable()
@@ -1002,7 +1001,7 @@ namespace
         {
             if (! m.unaccepted_key_name().empty())
             {
-                InfoDisplayer i(env, cmdline, basic_ppos, indent, false, make_null_shared_ptr(), make_null_shared_ptr(), false, out);
+                InfoDisplayer i(env, cmdline, basic_ppos, indent, false, nullptr, nullptr, false, out);
                 (*id->find_metadata(m.unaccepted_key_name()))->accept(i);
             }
             else
@@ -1078,8 +1077,8 @@ namespace
         for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
                 k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
         {
-            InfoDisplayer i(env, cmdline, basic_ppos, 0, ((*k)->type() == mkt_significant), make_null_shared_ptr(), make_null_shared_ptr(), false, cout);
-            if (want_key(cmdline, *k, make_null_shared_ptr()))
+            InfoDisplayer i(env, cmdline, basic_ppos, 0, ((*k)->type() == mkt_significant), nullptr, nullptr, false, cout);
+            if (want_key(cmdline, *k, nullptr))
                 accept_visitor(i)(**k);
         }
         cout << endl;
@@ -1250,7 +1249,7 @@ namespace
         else if (cmdline.a_one_version.specified())
         {
             if (best_installable)
-                do_one_package_id(cmdline, env, basic_ppos, best_installable, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin(),
+                do_one_package_id(cmdline, env, basic_ppos, best_installable, all_installed->empty() ? nullptr : *all_installed->rbegin(),
                         true, rest_out);
             else if (! all_installed->empty())
                 do_one_package_id(cmdline, env, basic_ppos, *all_installed->rbegin(), best_installable,
@@ -1264,7 +1263,7 @@ namespace
 
             for (PackageIDSequence::ConstIterator i(all_not_installed->begin()), i_end(all_not_installed->end()) ;
                     i != i_end ; ++i)
-                do_one_package_id(cmdline, env, basic_ppos, *i, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin(), true, rest_out);
+                do_one_package_id(cmdline, env, basic_ppos, *i, all_installed->empty() ? nullptr : *all_installed->rbegin(), true, rest_out);
         }
         else
         {
@@ -1272,7 +1271,7 @@ namespace
                     i != i_end ; ++i)
                 do_one_package_id(cmdline, env, basic_ppos, *i, best_installable, false, rest_out);
             if (best_installable)
-                do_one_package_id(cmdline, env, basic_ppos, best_installable, all_installed->empty() ? make_null_shared_ptr() : *all_installed->rbegin(),
+                do_one_package_id(cmdline, env, basic_ppos, best_installable, all_installed->empty() ? nullptr : *all_installed->rbegin(),
                         true, rest_out);
         }
     }
@@ -1285,7 +1284,7 @@ namespace
     {
         cout << fuc(fs_package_heading(), fv<'s'>(stringify(s)));
 
-        auto ids((*env)[selection::AllVersionsGroupedBySlot(generator::Matches(s, make_null_shared_ptr(), { }))]);
+        auto ids((*env)[selection::AllVersionsGroupedBySlot(generator::Matches(s, nullptr, { }))]);
         if (ids->empty())
             throw NothingMatching(s);
 
@@ -1300,7 +1299,7 @@ namespace
             for (auto r(repos.begin()), r_end(repos.end()) ; r != r_end ; ++r)
             {
                 auto r_ids((*env)[selection::AllVersionsGroupedBySlot(generator::Matches(
-                                PartiallyMadePackageDepSpec(s).in_repository(*r), make_null_shared_ptr(), { }))]);
+                                PartiallyMadePackageDepSpec(s).in_repository(*r), nullptr, { }))]);
                 if (! r_ids->empty())
                     do_one_package_with_ids(cmdline, env, basic_ppos, s, r_ids, cout, rest_out);
             }
@@ -1321,7 +1320,7 @@ namespace
             const PackageDepSpec & s)
     {
         const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::BestVersionOnly(generator::Matches(s,
-                        make_null_shared_ptr(), { }))]);
+                        nullptr, { }))]);
         if (ids->empty())
             throw NothingMatching(s);
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -29,7 +29,6 @@
 #include <paludis/util/deferred_construction_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/action.hh>
 #include <paludis/package_id.hh>
@@ -247,7 +246,7 @@ AccountsRepository::format_key() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 AccountsRepository::location_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<FSPath> >
@@ -259,7 +258,7 @@ AccountsRepository::installed_root_key() const
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 AccountsRepository::sync_host_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 void
@@ -444,7 +443,7 @@ AccountsRepository::sync(
 const std::shared_ptr<const Set<std::string> >
 AccountsRepository::maybe_expand_licence_nonrecursively(const std::string &) const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 namespace paludis

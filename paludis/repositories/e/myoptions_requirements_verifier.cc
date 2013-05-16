@@ -28,7 +28,6 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/choice.hh>
 #include <paludis/metadata_key.hh>
@@ -115,7 +114,7 @@ namespace
             }
         }
 
-        return make_null_shared_ptr();
+        return nullptr;
     }
 }
 

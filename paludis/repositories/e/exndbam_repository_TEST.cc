@@ -28,7 +28,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/fs_path.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/standard_output_manager.hh>
 #include <paludis/action.hh>
@@ -81,7 +80,7 @@ namespace
         if (! victim.empty())
             replacing->push_back(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec(victim,
-                            &env, { })), make_null_shared_ptr(), { }))]->begin());
+                            &env, { })), nullptr, { }))]->begin());
         InstallAction install_action(make_named_values<InstallActionOptions>(
                     n::destination() = exndbam_repo,
                     n::make_output_manager() = &make_standard_output_manager,
@@ -91,7 +90,7 @@ namespace
                 ));
         (*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec(chosen_one,
-                            &env, { })), make_null_shared_ptr(), { }))]->begin())->perform_action(install_action);
+                            &env, { })), nullptr, { }))]->begin())->perform_action(install_action);
     }
 
     std::shared_ptr<Repository>

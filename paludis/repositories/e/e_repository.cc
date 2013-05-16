@@ -79,7 +79,6 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/options.hh>
@@ -1745,11 +1744,11 @@ ERepository::get_environment_variable(
             n::environment() = _imp->params.environment(),
             n::exlibsdirs() = exlibsdirs,
             n::files_dir() = layout()->package_directory(id->name()) / "files",
-            n::maybe_output_manager() = make_null_shared_ptr(),
+            n::maybe_output_manager() = nullptr,
             n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-variable"),
             n::package_id() = id,
-            n::parts() = make_null_shared_ptr(),
-            n::permitted_directories() = make_null_shared_ptr(),
+            n::parts() = nullptr,
+            n::permitted_directories() = nullptr,
             n::portdir() =
                 (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                 (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),
@@ -1776,7 +1775,7 @@ namespace
                 i != i_end ; ++i)
             if ((*i)->version() == v)
                 return *i;
-        return make_null_shared_ptr();
+        return nullptr;
     }
 }
 

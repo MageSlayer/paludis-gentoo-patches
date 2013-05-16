@@ -27,7 +27,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/name.hh>
@@ -47,7 +46,7 @@ namespace
             const std::string & r, const std::string & h, const MetadataKeyType t, const std::string & v)
     {
         if (v.empty())
-            return make_null_shared_ptr();
+            return nullptr;
         else
             return std::make_shared<LiteralMetadataValueKey<std::string> >(r, h, t, v);
     }
@@ -56,7 +55,7 @@ namespace
             const std::string * const r, const std::string * const h, const MetadataKeyType t, const std::string & v)
     {
         if (v.empty())
-            return make_null_shared_ptr();
+            return nullptr;
         else
             return std::make_shared<GemcutterURIKey>(r, h, t, v);
     }
@@ -331,7 +330,7 @@ GemcutterID::fs_location_key() const
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 GemcutterID::behaviours_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
@@ -397,13 +396,13 @@ GemcutterID::installed_time_key() const
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 GemcutterID::from_repositories_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >
 GemcutterID::choices_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<Slot> >
@@ -415,7 +414,7 @@ GemcutterID::slot_key() const
 const std::shared_ptr<const Contents>
 GemcutterID::contents() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 namespace paludis

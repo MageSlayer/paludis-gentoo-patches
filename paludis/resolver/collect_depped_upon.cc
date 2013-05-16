@@ -23,7 +23,6 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set-impl.hh>
@@ -163,7 +162,7 @@ namespace
                     if (best_eventual_id && best_eventual_id->slot_key())
                     {
                         PartiallyMadePackageDepSpec part_spec(*s.spec());
-                        part_spec.slot_requirement(std::make_shared<ELikeSlotExactPartialRequirement>(best_eventual_id->slot_key()->parse_value().parallel_value(), make_null_shared_ptr()));
+                        part_spec.slot_requirement(std::make_shared<ELikeSlotExactPartialRequirement>(best_eventual_id->slot_key()->parse_value().parallel_value(), nullptr));
                         spec = std::make_shared<PackageDepSpec>(part_spec);
                     }
                 }

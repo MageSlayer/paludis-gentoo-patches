@@ -26,7 +26,6 @@
 #include <paludis/resolver/destination_utils.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/visitor_cast.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
 #include <paludis/metadata_key.hh>
@@ -45,7 +44,7 @@ namespace paludis
 
         Imp(const Environment * const e) :
             env(e),
-            always_via_binary_specs(make_null_shared_ptr())
+            always_via_binary_specs(nullptr)
         {
         }
     };

@@ -28,7 +28,6 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
@@ -229,13 +228,13 @@ InstalledAccountsID::uniquely_identifying_spec() const
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 InstalledAccountsID::keywords_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 InstalledAccountsID::build_dependencies_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -248,7 +247,7 @@ InstalledAccountsID::run_dependencies_key() const
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 InstalledAccountsID::post_dependencies_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -261,43 +260,43 @@ InstalledAccountsID::dependencies_key() const
 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 InstalledAccountsID::fetches_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 InstalledAccountsID::homepage_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
 InstalledAccountsID::short_description_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
 InstalledAccountsID::long_description_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataTimeKey>
 InstalledAccountsID::installed_time_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 InstalledAccountsID::from_repositories_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 InstalledAccountsID::fs_location_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -309,13 +308,13 @@ InstalledAccountsID::behaviours_key() const
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >
 InstalledAccountsID::choices_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<Slot> >
 InstalledAccountsID::slot_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 std::shared_ptr<const Set<std::string> >
@@ -351,6 +350,6 @@ InstalledAccountsID::perform_action(Action & action) const
 const std::shared_ptr<const Contents>
 InstalledAccountsID::contents() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 

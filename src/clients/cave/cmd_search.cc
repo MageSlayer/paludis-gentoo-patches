@@ -46,7 +46,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/iterator_funcs.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 
 #include <cstdlib>
@@ -115,7 +114,7 @@ namespace
             const PackageDepSpec & spec)
     {
         const std::shared_ptr<const PackageID> id(*((*env)[selection::RequireExactlyOne(
-                        generator::Matches(spec, make_null_shared_ptr(), { }))])->begin());
+                        generator::Matches(spec, nullptr, { }))])->begin());
         result->insert(id->name());
     }
 

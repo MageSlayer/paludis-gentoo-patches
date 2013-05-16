@@ -28,7 +28,6 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 
@@ -72,7 +71,7 @@ GetConstraintsForViaBinaryHelper::operator() (
     result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                     n::destination_type() = resolution->resolvent().destination_type(),
                     n::force_unable() = false,
-                    n::from_id() = make_null_shared_ptr(),
+                    n::from_id() = nullptr,
                     n::nothing_is_fine_too() = false,
                     n::reason() = reason,
                     n::spec() = spec,

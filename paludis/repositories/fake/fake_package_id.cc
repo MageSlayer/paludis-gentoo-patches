@@ -44,7 +44,6 @@
 #include <paludis/util/tribool.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/accept_visitor.hh>
@@ -469,7 +468,7 @@ namespace
 
         virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         virtual bool presumed() const PALUDIS_ATTRIBUTE((warn_unused_result))
@@ -804,7 +803,7 @@ FakePackageID::post_dependencies_key()
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 FakePackageID::dependencies_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
@@ -1198,7 +1197,7 @@ FakePackageID::behaviours_set()
 const std::shared_ptr<const Contents>
 FakePackageID::contents() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 namespace paludis

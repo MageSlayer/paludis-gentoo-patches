@@ -42,7 +42,6 @@
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/visitor_cast.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 
 #include <cstdlib>
@@ -194,7 +193,7 @@ FindCandidatesCommand::run_hosted(
                 for (auto m(matches.begin()), m_end(matches.end()) ;
                         m != m_end ; ++m)
                     if (match_package(*env, *m, *(*env)[selection::RequireExactlyOne(generator::Matches(
-                                        parse_user_package_dep_spec(*s, env.get(), { }), make_null_shared_ptr(), { }))]->begin(), make_null_shared_ptr(), { }))
+                                        parse_user_package_dep_spec(*s, env.get(), { }), nullptr, { }))]->begin(), nullptr, { }))
                     {
                         ok = true;
                         break;
@@ -311,7 +310,7 @@ FindCandidatesCommand::run_hosted(
                 k_end(search_options.a_matching.end_args()) ;
                 k != k_end ; ++k)
         {
-            generator::Matches m(parse_user_package_dep_spec(*k, env.get(), { updso_allow_wildcards }), make_null_shared_ptr(), { });
+            generator::Matches m(parse_user_package_dep_spec(*k, env.get(), { updso_allow_wildcards }), nullptr, { });
 
             if (match_generator)
                 match_generator = std::make_shared<generator::Union>(*match_generator, m);

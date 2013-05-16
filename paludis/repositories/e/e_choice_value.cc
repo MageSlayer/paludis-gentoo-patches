@@ -19,7 +19,6 @@
 
 #include <paludis/repositories/e/e_choice_value.hh>
 #include <paludis/repositories/e/use_desc.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/pool-impl.hh>
@@ -107,7 +106,7 @@ EChoiceValue::parameter() const
 const std::shared_ptr<const PermittedChoiceValueParameterValues>
 EChoiceValue::permitted_parameter_values() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 bool

@@ -26,7 +26,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/make_named_values.hh>
 
 #include <paludis/name.hh>
@@ -217,7 +216,7 @@ UnavailablePackageID::fs_location_key() const
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 UnavailablePackageID::behaviours_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
@@ -301,7 +300,7 @@ UnavailablePackageID::slot_key() const
 const std::shared_ptr<const Contents>
 UnavailablePackageID::contents() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 namespace paludis

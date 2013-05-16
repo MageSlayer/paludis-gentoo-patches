@@ -26,7 +26,6 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/name.hh>
@@ -229,7 +228,7 @@ UnavailableRepositoryID::perform_action(Action & action) const
                 n::options() = MergerOptions(),
                 n::output_manager() = output_manager,
                 n::package_id() = shared_from_this(),
-                n::parts() = make_null_shared_ptr(),
+                n::parts() = nullptr,
                 n::perform_uninstall() = install_action->options.perform_uninstall(),
                 n::permit_destination() = std::bind(return_literal_function(true)),
                 n::replacing() = install_action->options.replacing(),
@@ -289,7 +288,7 @@ UnavailableRepositoryID::perform_action(Action & action) const
                     n::is_overwrite() = false,
                     n::make_output_manager() = std::bind(
                             &this_output_manager, output_manager, std::placeholders::_1),
-                    n::override_contents() = make_null_shared_ptr(),
+                    n::override_contents() = nullptr,
                     n::want_phase() = install_action->options.want_phase()
                     ));
         install_action->options.perform_uninstall()(*i, uo);
@@ -391,25 +390,25 @@ UnavailableRepositoryID::installed_time_key() const
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 UnavailableRepositoryID::from_repositories_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >
 UnavailableRepositoryID::choices_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<Slot> >
 UnavailableRepositoryID::slot_key() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::shared_ptr<const Contents>
 UnavailableRepositoryID::contents() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 namespace paludis

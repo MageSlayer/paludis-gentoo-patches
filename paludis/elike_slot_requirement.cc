@@ -19,7 +19,6 @@
 
 #include <paludis/elike_slot_requirement.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/visitor_cast.hh>
 
 using namespace paludis;
@@ -92,7 +91,7 @@ ELikeSlotAnyUnlockedRequirement::as_string() const
 const std::shared_ptr<const SlotRequirement>
 ELikeSlotAnyUnlockedRequirement::maybe_original_requirement_if_rewritten() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const std::string
@@ -104,7 +103,7 @@ ELikeSlotAnyAtAllLockedRequirement::as_string() const
 const std::shared_ptr<const SlotRequirement>
 ELikeSlotAnyAtAllLockedRequirement::maybe_original_requirement_if_rewritten() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 ELikeSlotAnyPartialLockedRequirement::ELikeSlotAnyPartialLockedRequirement(const SlotName & s) :
@@ -121,7 +120,7 @@ ELikeSlotAnyPartialLockedRequirement::as_string() const
 const std::shared_ptr<const SlotRequirement>
 ELikeSlotAnyPartialLockedRequirement::maybe_original_requirement_if_rewritten() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const SlotName
@@ -144,7 +143,7 @@ ELikeSlotUnknownRewrittenRequirement::as_string() const
 const std::shared_ptr<const SlotRequirement>
 ELikeSlotUnknownRewrittenRequirement::maybe_original_requirement_if_rewritten() const
 {
-    return make_null_shared_ptr();
+    return nullptr;
 }
 
 const SlotName

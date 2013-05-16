@@ -28,7 +28,6 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/package_id.hh>
@@ -51,7 +50,7 @@ namespace paludis
 
         Imp(const Environment * const e) :
             env(e),
-            purge_specs(make_null_shared_ptr())
+            purge_specs(nullptr)
         {
         }
     };
@@ -81,7 +80,7 @@ GetConstraintsForPurgeHelper::operator() (
     PartiallyMadePackageDepSpec partial_spec({ });
     partial_spec.package(id->name());
     if (id->slot_key())
-        partial_spec.slot_requirement(std::make_shared<ELikeSlotExactPartialRequirement>(id->slot_key()->parse_value().parallel_value(), make_null_shared_ptr()));
+        partial_spec.slot_requirement(std::make_shared<ELikeSlotExactPartialRequirement>(id->slot_key()->parse_value().parallel_value(), nullptr));
     PackageDepSpec spec(partial_spec);
 
     const std::shared_ptr<WasUsedByReason> reason(std::make_shared<WasUsedByReason>(was_used_by_ids));

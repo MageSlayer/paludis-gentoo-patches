@@ -39,7 +39,6 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/env_var_names.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/join.hh>
@@ -279,7 +278,7 @@ EnvironmentImplementation::set(const SetName & s) const
     if (_imp->sets.end() != i)
         return i->second.first();
     else
-        return make_null_shared_ptr();
+        return nullptr;
 }
 
 void
@@ -544,7 +543,7 @@ EnvironmentImplementation::fetch_unique_qualified_package_name(const PackageName
     std::set<std::pair<CategoryNamePart, RepositoryName>, CategoryRepositoryNamePairComparator> checked;
 
     std::shared_ptr<const PackageIDSequence> pkgs((*this)[selection::AllVersionsUnsorted(
-                generator::Matches(make_package_dep_spec({ }).package_name_part(p), make_null_shared_ptr(), { }) | f)]);
+                generator::Matches(make_package_dep_spec({ }).package_name_part(p), nullptr, { }) | f)]);
 
     for (IndirectIterator<PackageIDSequence::ConstIterator> it(pkgs->begin()),
              it_end(pkgs->end()); it_end != it; ++it)

@@ -34,7 +34,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/safe_ifstream.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
 
 #include <paludis/standard_output_manager.hh>
@@ -128,7 +127,7 @@ TEST(ERepository, SymlinkRewriting)
 
     const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                     PackageDepSpec(parse_user_package_dep_spec("cat/pkg",
-                            &env, { })), make_null_shared_ptr(), { }))]->last());
+                            &env, { })), nullptr, { }))]->last());
     ASSERT_TRUE(bool(id));
 
     id->perform_action(action);

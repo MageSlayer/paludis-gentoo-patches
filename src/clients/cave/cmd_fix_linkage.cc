@@ -26,7 +26,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/broken_linkage_finder.hh>
@@ -259,7 +258,7 @@ FixLinkageCommand::run(
             resolve_cmdline.display_options,
             resolve_cmdline.graph_jobs_options,
             resolve_cmdline.program_options,
-            make_null_shared_ptr(), targets, make_null_shared_ptr(), false);
+            nullptr, targets, nullptr, false);
 }
 
 std::shared_ptr<args::ArgsHandler>

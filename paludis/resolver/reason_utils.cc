@@ -19,7 +19,6 @@
 
 #include <paludis/resolver/reason_utils.hh>
 #include <paludis/resolver/reason.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -78,27 +77,27 @@ namespace
 
         std::shared_ptr<const PackageID> visit(const DependentReason &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         std::shared_ptr<const PackageID> visit(const WasUsedByReason &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         std::shared_ptr<const PackageID> visit(const PresetReason &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         std::shared_ptr<const PackageID> visit(const ViaBinaryReason &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         std::shared_ptr<const PackageID> visit(const TargetReason &) const
         {
-            return make_null_shared_ptr();
+            return nullptr;
         }
 
         std::shared_ptr<const PackageID> visit(const LikeOtherDestinationTypeReason & r) const

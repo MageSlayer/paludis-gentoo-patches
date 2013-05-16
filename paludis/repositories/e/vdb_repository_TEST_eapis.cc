@@ -45,7 +45,6 @@
 #include <paludis/unformatted_pretty_printer.hh>
 
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <functional>
 #include <algorithm>
@@ -140,11 +139,11 @@ TEST_P(PhasesTest, Works)
 
     UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
                 n::config_protect() = "",
-                n::if_for_install_id() = make_null_shared_ptr(),
+                n::if_for_install_id() = nullptr,
                 n::ignore_for_unmerge() = &ignore_nothing,
                 n::is_overwrite() = false,
                 n::make_output_manager() = &make_standard_output_manager,
-                n::override_contents() = make_null_shared_ptr(),
+                n::override_contents() = nullptr,
                 n::want_phase() = &want_all_phases
             ));
 
@@ -162,7 +161,7 @@ TEST_P(PhasesTest, Works)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         ASSERT_TRUE(bool(id));
         id->perform_action(install_action);
     }
@@ -172,7 +171,7 @@ TEST_P(PhasesTest, Works)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         ASSERT_TRUE(bool(id));
         id->perform_action(install_action);
     }
@@ -182,7 +181,7 @@ TEST_P(PhasesTest, Works)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         ASSERT_TRUE(bool(id));
         id->perform_action(info_action);
     }
@@ -190,7 +189,7 @@ TEST_P(PhasesTest, Works)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         ASSERT_TRUE(bool(id));
         id->perform_action(config_action);
     }
@@ -198,7 +197,7 @@ TEST_P(PhasesTest, Works)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         ASSERT_TRUE(bool(id));
         id->perform_action(uninstall_action);
     }
@@ -267,11 +266,11 @@ TEST_P(VarsTest, Works)
 
     UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
                 n::config_protect() = "",
-                n::if_for_install_id() = make_null_shared_ptr(),
+                n::if_for_install_id() = nullptr,
                 n::ignore_for_unmerge() = &ignore_nothing,
                 n::is_overwrite() = false,
                 n::make_output_manager() = &make_standard_output_manager,
-                n::override_contents() = make_null_shared_ptr(),
+                n::override_contents() = nullptr,
                 n::want_phase() = &want_all_phases
             ));
 
@@ -289,7 +288,7 @@ TEST_P(VarsTest, Works)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         ASSERT_TRUE(bool(id));
         id->perform_action(install_action);
     }
@@ -299,7 +298,7 @@ TEST_P(VarsTest, Works)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::srcrepo",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         ASSERT_TRUE(bool(id));
         id->perform_action(install_action);
     }
@@ -309,7 +308,7 @@ TEST_P(VarsTest, Works)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         ASSERT_TRUE(bool(id));
         id->perform_action(info_action);
     }
@@ -317,7 +316,7 @@ TEST_P(VarsTest, Works)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         ASSERT_TRUE(bool(id));
         id->perform_action(config_action);
     }
@@ -325,7 +324,7 @@ TEST_P(VarsTest, Works)
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/target-" + eapi + "::installed",
-                                &env, { })), make_null_shared_ptr(), { }))]->begin());
+                                &env, { })), nullptr, { }))]->begin());
         ASSERT_TRUE(bool(id));
         id->perform_action(uninstall_action);
     }

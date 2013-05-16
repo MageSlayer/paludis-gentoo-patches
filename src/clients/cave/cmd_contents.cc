@@ -31,7 +31,6 @@
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/stringify.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/filter.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
@@ -138,7 +137,7 @@ ContentsCommand::run(
                 { }, filter::InstalledAtRoot(env->preferred_root_key()->parse_value())));
 
     std::shared_ptr<const PackageIDSequence> entries(
-            (*env)[selection::AllVersionsSorted(generator::Matches(spec, make_null_shared_ptr(), { })
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, nullptr, { })
                 | filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
 
     if (entries->empty())

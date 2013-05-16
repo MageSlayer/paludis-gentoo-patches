@@ -24,7 +24,6 @@
 #include <paludis/args/do_help.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
 #include <paludis/user_dep_spec.hh>
@@ -96,7 +95,7 @@ ConfigCommand::run(
 
     PackageDepSpec spec(parse_spec_with_nice_error(*cmdline.begin_parameters(), env.get(), { }, filter::SupportsAction<ConfigAction>()));
     const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
-                generator::Matches(spec, make_null_shared_ptr(), { }) | filter::SupportsAction<ConfigAction>())]);
+                generator::Matches(spec, nullptr, { }) | filter::SupportsAction<ConfigAction>())]);
     if (ids->empty())
         nothing_matching_error(env.get(), *cmdline.begin_parameters(), filter::SupportsAction<ConfigAction>());
     else if (1 != std::distance(ids->begin(), ids->end()))

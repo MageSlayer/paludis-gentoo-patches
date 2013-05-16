@@ -40,7 +40,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/env_var_names.hh>
-#include <paludis/util/make_null_shared_ptr.hh>
 
 #include <paludis/about.hh>
 #include <paludis/environment.hh>
@@ -1066,8 +1065,8 @@ WriteVDBEntryCommand::operator() ()
                               std::bind(&pipe_command_handler,
                                         params.environment(),
                                         params.package_id(),
-                                        make_null_shared_ptr(),
-                                        make_null_shared_ptr(), false, _1,
+                                        nullptr,
+                                        nullptr, false, _1,
                                         params.maybe_output_manager()));
 
     if (! params.package_id()->eapi()->supported()->ebuild_metadata_variables()->iuse_effective()->name().empty())
@@ -1330,8 +1329,8 @@ WriteBinaryEbuildCommand::operator() ()
                               std::bind(&pipe_command_handler,
                                         params.environment(),
                                         params.package_id(),
-                                        make_null_shared_ptr(),
-                                        make_null_shared_ptr(), false, _1,
+                                        nullptr,
+                                        nullptr, false, _1,
                                         params.maybe_output_manager()));
 
     if (! params.package_id()->eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name().empty())
