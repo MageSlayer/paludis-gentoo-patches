@@ -4,6 +4,13 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+1.4.0:
+    * Tweaked 'cave resolve' output to add blank lines.
+
+    * Support for libarchive 3.1.2.
+
+    * Compatibility fixes for GCC 4.8.
+
 1.2.0:
     * Bug fixes.
 
