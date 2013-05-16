@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,8 +19,8 @@
 
 #include <paludis/util/singleton.hh>
 #include <paludis/util/singleton-impl.hh>
-#include <paludis/util/thread.hh>
 #include <paludis/util/mutex.hh>
+#include <paludis/util/thread_pool.hh>
 
 #include <functional>
 #include <algorithm>
@@ -139,9 +139,9 @@ TEST(Singleton, Threaded)
     ASSERT_EQ(0, MyThreadedClass::instances);
     ASSERT_TRUE(c == std::count(a.begin(), a.end(), static_cast<void *>(0)));
     {
-        std::vector<std::shared_ptr<Thread> > t(c);
+        ThreadPool p;
         for (int x(0) ; x < c ; ++x)
-            t[x] = std::make_shared<Thread>(std::bind(&thread_func, &a[x]));
+            p.create_thread(std::bind(&thread_func, &a[x]));
     }
     ASSERT_EQ(1, MyThreadedClass::instances);
     ASSERT_TRUE(0 == std::count(a.begin(), a.end(), static_cast<void *>(0)));

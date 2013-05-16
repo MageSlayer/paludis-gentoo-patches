@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,7 +35,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/string_list_stream.hh>
-#include <paludis/util/thread.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/make_shared_copy.hh>
@@ -112,6 +111,7 @@
 #include <cstdlib>
 #include <list>
 #include <map>
+#include <thread>
 
 #include "config.h"
 
@@ -249,7 +249,7 @@ namespace
         Context context("When displaying chosen resolution:");
 
         StringListStream ser_stream;
-        Thread ser_thread(std::bind(&serialise_resolved,
+        std::thread ser_thread(std::bind(&serialise_resolved,
                     std::ref(ser_stream),
                     std::cref(*resolved)));
 
@@ -271,6 +271,7 @@ namespace
                 p != p_end ; ++p)
             args->push_back(p->first);
 
+        int result;
         if (program_options.a_display_resolution_program.specified())
         {
             std::string command(program_options.a_display_resolution_program.argument());
@@ -292,10 +293,13 @@ namespace
             process
                 .send_input_to_fd(ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
 
-            return process.run().wait();
+            result = process.run().wait();
         }
         else
-            return DisplayResolutionCommand().run(env, args, resolved);
+            result = DisplayResolutionCommand().run(env, args, resolved);
+
+        ser_thread.join();
+        return result;
     }
 
     int graph_jobs(
@@ -313,7 +317,7 @@ namespace
             return 0;
 
         StringListStream ser_stream;
-        Thread ser_thread(std::bind(&serialise_resolved,
+        std::thread ser_thread(std::bind(&serialise_resolved,
                     std::ref(ser_stream),
                     std::cref(*resolved)));
 
@@ -347,6 +351,7 @@ namespace
                 p != p_end ; ++p)
             args->push_back(p->first);
 
+        int result;
         if (program_options.a_graph_jobs_program.specified())
         {
             std::string command(program_options.a_graph_jobs_program.argument());
@@ -368,10 +373,13 @@ namespace
             process
                 .send_input_to_fd(ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
 
-            return process.run().wait();
+            result = process.run().wait();
         }
         else
-            return GraphJobsCommand().run(env, args, resolved);
+            result = GraphJobsCommand().run(env, args, resolved);
+
+        ser_thread.join();
+        return result;
     }
 
     void serialise_job_lists(StringListStream & ser_stream, const JobLists & job_lists)

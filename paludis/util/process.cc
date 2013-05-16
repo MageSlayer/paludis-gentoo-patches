@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,7 +19,6 @@
 
 #include <paludis/util/process.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/thread.hh>
 #include <paludis/util/pipe.hh>
 #include <paludis/util/pty.hh>
 #include <paludis/util/fs_path.hh>
@@ -36,6 +35,7 @@
 #include <map>
 #include <cstdlib>
 #include <cstring>
+#include <thread>
 
 #include <errno.h>
 #include <unistd.h>
@@ -194,7 +194,7 @@ namespace paludis
         bool as_main_process;
 
         /* must be last, so the thread gets join()ed before its FDs vanish */
-        std::unique_ptr<Thread> thread;
+        std::thread thread;
 
         RunningProcessThread() :
             ctl_pipe(true),
@@ -204,6 +204,12 @@ namespace paludis
             send_input_to_fd(0),
             as_main_process(false)
         {
+        }
+
+        ~RunningProcessThread()
+        {
+            if (thread.joinable())
+                thread.join();
         }
 
         void thread_func();
@@ -481,7 +487,7 @@ RunningProcessThread::thread_func()
 void
 RunningProcessThread::start()
 {
-    thread.reset(new Thread(std::bind(&RunningProcessThread::thread_func, this)));
+    thread = std::thread(std::bind(&RunningProcessThread::thread_func, this));
 }
 
 namespace paludis

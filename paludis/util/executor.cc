@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,11 +21,11 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/condition_variable.hh>
-#include <paludis/util/thread.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <map>
 #include <list>
+#include <thread>
 
 using namespace paludis;
 
@@ -110,7 +110,7 @@ Executor::add(const std::shared_ptr<Executive> & x)
 void
 Executor::execute()
 {
-    typedef std::map<std::string, std::pair<std::shared_ptr<Thread>, std::shared_ptr<Executive> > > Running;
+    typedef std::map<std::string, std::pair<std::thread, std::shared_ptr<Executive> > > Running;
     Running running;
 
     Lock lock(_imp->mutex);
@@ -129,8 +129,7 @@ Executor::execute()
             ++_imp->active;
             --_imp->pending;
             (*q->second.begin())->pre_execute_exclusive();
-            running.insert(std::make_pair(q->first, std::make_pair(std::make_shared<Thread>(
-                                std::bind(&Executor::_one, this, *q->second.begin())), *q->second.begin())));
+            running.insert(std::make_pair(q->first, std::make_pair(std::thread(std::bind(&Executor::_one, this, *q->second.begin())), *q->second.begin())));
             q->second.erase(q->second.begin());
             if (q->second.empty())
                 _imp->queues.erase(q++);
@@ -157,7 +156,9 @@ Executor::execute()
         {
             --_imp->active;
             ++_imp->done;
-            running.erase((*p)->queue_name());
+            auto r = running.find((*p)->queue_name());
+            r->second.first.join();
+            running.erase(r);
             (*p)->post_execute_exclusive();
         }
 
@@ -175,3 +176,4 @@ namespace paludis
 {
     template class Pimp<Executor>;
 }
+

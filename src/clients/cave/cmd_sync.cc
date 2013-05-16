@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,7 +25,6 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/condition_variable.hh>
-#include <paludis/util/thread.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/executor.hh>
 #include <paludis/util/timestamp.hh>

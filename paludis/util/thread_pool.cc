@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,10 +18,10 @@
  */
 
 #include <paludis/util/thread_pool.hh>
-#include <paludis/util/thread.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <memory>
 #include <deque>
+#include <thread>
 
 using namespace paludis;
 
@@ -30,7 +30,7 @@ namespace paludis
     template <>
     struct Imp<ThreadPool>
     {
-        std::deque<std::shared_ptr<Thread> > threads;
+        std::deque<std::thread> threads;
     };
 }
 
@@ -41,12 +41,14 @@ ThreadPool::ThreadPool() :
 
 ThreadPool::~ThreadPool()
 {
+    for (auto & t : _imp->threads)
+        t.join();
 }
 
 void
 ThreadPool::create_thread(const std::function<void () throw ()> & f)
 {
-    _imp->threads.push_back(std::make_shared<Thread>(f));
+    _imp->threads.emplace_back(f);
 }
 
 unsigned
@@ -59,3 +61,4 @@ namespace paludis
 {
     template class Pimp<ThreadPool>;
 }
+

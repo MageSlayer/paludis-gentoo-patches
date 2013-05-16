@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,10 +18,10 @@
  */
 
 #include <paludis/util/string_list_stream.hh>
-#include <paludis/util/thread.hh>
 #include <paludis/util/stringify.hh>
 
 #include <functional>
+#include <thread>
 
 #include <gtest/gtest.h>
 
@@ -64,7 +64,7 @@ TEST(StringListStream, Works)
 TEST(StringListStream, Threads)
 {
     StringListStream s;
-    Thread t(std::bind(&write_to, std::ref(s)));
+    std::thread t(std::bind(&write_to, std::ref(s)));
 
     std::string l;
     for (int n(0) ; n < 100 ; ++n)
@@ -74,5 +74,7 @@ TEST(StringListStream, Threads)
     }
 
     ASSERT_TRUE(! std::getline(s, l));
+
+    t.join();
 }
 

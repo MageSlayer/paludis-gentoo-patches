@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,7 +31,6 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/thread.hh>
 #include <paludis/util/pipe.hh>
 #include <paludis/util/mutex.hh>
 #include <paludis/util/options.hh>
@@ -43,6 +42,7 @@
 #include <vector>
 #include <cstdlib>
 #include <cstring>
+#include <thread>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -220,7 +220,7 @@ namespace paludis
 
         Pipe stdout_pipe, stderr_pipe, finished_pipe;
 
-        std::shared_ptr<Thread> copy_thread;
+        std::thread copy_thread;
 
         Imp(const Environment * const e,
                 const std::function<void (const std::shared_ptr<OutputManager> &)> & c) :
@@ -250,6 +250,9 @@ IPCInputManager::~IPCInputManager()
     char c('x');
     if (1 != write(_imp->finished_pipe.write_fd(), &c, 1))
         throw InternalError(PALUDIS_HERE, "write failed");
+
+    if (_imp->copy_thread.joinable())
+        _imp->copy_thread.join();
 }
 
 const std::function<std::string (const std::string &)>
@@ -326,7 +329,7 @@ IPCInputManager::_pipe_command_handler(const std::string & s)
         Log::get_instance()->message("ipc_input_manager.pipe_command.starting_thread", ll_debug, lc_context)
             << "Starting copy thread";
 
-        _imp->copy_thread = std::make_shared<Thread>(std::bind(&IPCInputManager::_copy_thread, this));
+        _imp->copy_thread = std::thread(std::bind(&IPCInputManager::_copy_thread, this));
 
         Log::get_instance()->message("ipc_input_manager.pipe_command.started_thread", ll_debug, lc_context)
             << "Started copy thread";

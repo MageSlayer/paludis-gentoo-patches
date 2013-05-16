@@ -710,6 +710,20 @@ int main(int, char **)
 	 AC_MSG_ERROR([Your compiler does not support unordered containers])])
 dnl }}}
 
+dnl {{{ check for threads
+AC_MSG_CHECKING([for threads])
+AC_COMPILE_IFELSE([AC_LANG_SOURCE([
+#include <thread>
+int main(int, char **)
+{
+	std::thread t;
+}
+])],
+	[AC_MSG_RESULT([yes])],
+	[AC_MSG_RESULT([no])
+	 AC_MSG_ERROR([Your compiler does not support threads])])
+dnl }}}
+
 dnl {{{ shared pointers
 AC_MSG_CHECKING([for std::shared_ptr<>])
 AC_COMPILE_IFELSE([AC_LANG_SOURCE([
