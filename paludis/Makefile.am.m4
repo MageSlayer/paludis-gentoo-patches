@@ -104,7 +104,6 @@ condrepo(repository)
 condrepo(unavailable)
 condrepo(unpackaged)
 condrepo(unwritten)
-condrepo(virtuals)
 
 environments_libadd =
 

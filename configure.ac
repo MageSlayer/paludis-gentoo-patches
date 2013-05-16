@@ -1482,15 +1482,15 @@ AC_SUBST([VIM_INSTALL_DIR])
 dnl }}}
 
 dnl {{{ repositories
-m4_define(ALL_REPOSITORIES_m4, [accounts,e,fake,gemcutter,repository,unavailable,unpackaged,unwritten,virtuals])
+m4_define(ALL_REPOSITORIES_m4, [accounts,e,fake,gemcutter,repository,unavailable,unpackaged,unwritten])
 ALL_REPOSITORIES=`echo ALL_REPOSITORIES_m4 | tr , ' '`
-DEFAULT_REPOSITORIES="e fake repository unavailable unpackaged unwritten virtuals"
+DEFAULT_REPOSITORIES="e fake repository unavailable unpackaged unwritten"
 AC_MSG_CHECKING([which repositories to build...])
 AC_ARG_WITH([repositories],
 			[  --with-repositories=foo,bar,...
 			  Build the specified repositories:
 			  all             All available repositories
-			  default         Equivalent to e,fake,unavailable,unpackaged,unwritten,virtuals
+			  default         Equivalent to e,fake,unavailable,unpackaged,unwritten
 
 			  accounts        Account management (requires distribution support)
 			  e               Ebuild, Ebin, Exheres, VDB etc
@@ -1499,8 +1499,7 @@ AC_ARG_WITH([repositories],
 			  repository      Automatic repository config generation (via 'unavailable')
 			  unavailable     Unavailable
 			  unpackaged      Unpackaged (for cave import)
-			  unwritten       Unwritten
-			  virtuals        Old style Gentoo virtuals (non-functional, for backwards compatibility)],
+			  unwritten       Unwritten],
 			[repositories="`echo $with_repositories | tr ',' ' '`"],
 			[repositories="$DEFAULT_REPOSITORIES"])
 repositories=`echo $repositories | tr ' ' '\n' \
@@ -1872,7 +1871,6 @@ AC_CONFIG_FILES([
 	paludis/repositories/unavailable/Makefile
 	paludis/repositories/unpackaged/Makefile
 	paludis/repositories/unwritten/Makefile
-	paludis/repositories/virtuals/Makefile
 	paludis/resolver/Makefile
 	paludis/selinux/Makefile
 	paludis/syncers/Makefile
