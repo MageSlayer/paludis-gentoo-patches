@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -69,29 +69,29 @@ MetadataSpecTreeKey<DependencySpecTree>::~MetadataSpecTreeKey()
 
 namespace paludis
 {
-    template class MetadataCollectionKey<KeywordNameSet>;
-    template class MetadataCollectionKey<Set<std::string> >;
-    template class MetadataCollectionKey<Sequence<std::string> >;
-    template class MetadataCollectionKey<Map<std::string, std::string> >;
-    template class MetadataCollectionKey<PackageIDSequence>;
-    template class MetadataCollectionKey<FSPathSequence>;
-    template class MetadataCollectionKey<Maintainers>;
+    template class PALUDIS_VISIBLE MetadataCollectionKey<KeywordNameSet>;
+    template class PALUDIS_VISIBLE MetadataCollectionKey<Set<std::string> >;
+    template class PALUDIS_VISIBLE MetadataCollectionKey<Sequence<std::string> >;
+    template class PALUDIS_VISIBLE MetadataCollectionKey<Map<std::string, std::string> >;
+    template class PALUDIS_VISIBLE MetadataCollectionKey<PackageIDSequence>;
+    template class PALUDIS_VISIBLE MetadataCollectionKey<FSPathSequence>;
+    template class PALUDIS_VISIBLE MetadataCollectionKey<Maintainers>;
 
-    template class MetadataSpecTreeKey<LicenseSpecTree>;
-    template class MetadataSpecTreeKey<PlainTextSpecTree>;
-    template class MetadataSpecTreeKey<RequiredUseSpecTree>;
+    template class PALUDIS_VISIBLE MetadataSpecTreeKey<LicenseSpecTree>;
+    template class PALUDIS_VISIBLE MetadataSpecTreeKey<PlainTextSpecTree>;
+    template class PALUDIS_VISIBLE MetadataSpecTreeKey<RequiredUseSpecTree>;
 #ifndef PALUDIS_NO_EXPLICIT_FULLY_SPECIALISED
     template class MetadataSpecTreeKey<FetchableURISpecTree>;
     template class MetadataSpecTreeKey<DependencySpecTree>;
 #endif
-    template class MetadataSpecTreeKey<SimpleURISpecTree>;
+    template class PALUDIS_VISIBLE MetadataSpecTreeKey<SimpleURISpecTree>;
 
-    template class MetadataValueKey<std::string>;
-    template class MetadataValueKey<long>;
-    template class MetadataValueKey<bool>;
-    template class MetadataValueKey<FSPath>;
-    template class MetadataValueKey<Slot>;
-    template class MetadataValueKey<std::shared_ptr<const PackageID> >;
-    template class MetadataValueKey<std::shared_ptr<const Choices> >;
+    template class PALUDIS_VISIBLE MetadataValueKey<std::string>;
+    template class PALUDIS_VISIBLE MetadataValueKey<long>;
+    template class PALUDIS_VISIBLE MetadataValueKey<bool>;
+    template class PALUDIS_VISIBLE MetadataValueKey<FSPath>;
+    template class PALUDIS_VISIBLE MetadataValueKey<Slot>;
+    template class PALUDIS_VISIBLE MetadataValueKey<std::shared_ptr<const PackageID> >;
+    template class PALUDIS_VISIBLE MetadataValueKey<std::shared_ptr<const Choices> >;
 }
 
