@@ -128,6 +128,7 @@ AC_CHECK_FUNCS([popen],        [], [AC_MSG_ERROR([I need popen])])
 AC_CHECK_FUNCS([posix_openpt], [], [AC_MSG_ERROR([I need posix_openpt])])
 AC_CHECK_FUNCS([grantpt],      [], [AC_MSG_ERROR([I need grantpt])])
 AC_CHECK_FUNCS([unlockpt],     [], [AC_MSG_ERROR([I need unlockpt])])
+AC_CHECK_FUNCS([pipe2],        [], [AC_MSG_ERROR([I need pipe2])])
 dnl }}}
 
 dnl {{{ check for ptsname_r or ptsname function
