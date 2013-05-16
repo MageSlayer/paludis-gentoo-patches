@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,7 +32,6 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/strip.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/make_named_values.hh>
@@ -145,7 +144,7 @@ namespace paludis
     template <>
     struct Imp<EInstalledRepositoryID>
     {
-        mutable Mutex mutex;
+        mutable std::recursive_mutex mutex;
 
         const QualifiedPackageName name;
         const VersionSpec version;
@@ -187,7 +186,7 @@ EInstalledRepositoryID::~EInstalledRepositoryID()
 void
 EInstalledRepositoryID::need_keys_added() const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
 
     if (_imp->keys)
         return;
@@ -678,7 +677,7 @@ EInstalledRepositoryID::repository_name() const
 const std::shared_ptr<const EAPI>
 EInstalledRepositoryID::eapi() const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
 
     if (_imp->eapi)
         return _imp->eapi;
@@ -885,7 +884,7 @@ EInstalledRepositoryID::fs_location_key() const
     // Avoid loading whole metadata
     if (! _imp->fs_location)
     {
-        Lock l(_imp->mutex);
+        std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
 
         _imp->fs_location = std::make_shared<LiteralMetadataValueKey<FSPath> >(fs_location_raw_name(),
                     fs_location_human_name(), mkt_internal, _imp->dir);
@@ -1089,7 +1088,7 @@ EInstalledRepositoryID::purge_invalid_cache() const
 void
 EInstalledRepositoryID::can_drop_in_memory_cache() const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
 
     clear_metadata_keys();
     _imp->keys.reset();

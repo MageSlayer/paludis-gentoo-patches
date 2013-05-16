@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,19 +21,19 @@
 #define PALUDIS_GUARD_PALUDIS_DISTRIBUTION_IMPL_HH 1
 
 #include <paludis/distribution.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <unordered_map>
+#include <mutex>
 
 namespace paludis
 {
     template <typename Data_>
     struct Imp<ExtraDistributionData<Data_> >
     {
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         mutable std::unordered_map<std::string, std::shared_ptr<const Data_>, Hash<std::string> > values;
     };
 
@@ -55,7 +55,7 @@ namespace paludis
     const std::shared_ptr<const Data_>
     ExtraDistributionData<Data_>::data_from_distribution(const Distribution & d) const
     {
-        Lock lock(this->_imp->mutex);
+        std::unique_lock<std::mutex> lock(this->_imp->mutex);
         typename std::unordered_map<std::string, std::shared_ptr<const Data_>, Hash<std::string> >::const_iterator v(
                 this->_imp->values.find(d.name()));
         if (this->_imp->values.end() != v)

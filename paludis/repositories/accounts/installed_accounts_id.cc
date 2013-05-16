@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,7 +27,6 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/singleton-impl.hh>
@@ -78,7 +77,7 @@ namespace paludis
         const RepositoryName repository_name;
         const std::shared_ptr<const LiteralMetadataStringSetKey> behaviours_key;
 
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         mutable std::shared_ptr<const AccountsDepKey> dependencies_key;
 
         const bool is_user;
@@ -111,7 +110,7 @@ InstalledAccountsID::~InstalledAccountsID()
 void
 InstalledAccountsID::need_keys_added() const
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
 
     if (_imp->is_user && ! _imp->dependencies_key)
     {

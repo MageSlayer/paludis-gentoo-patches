@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2011 Ciaran McCreesh
+ * Copyright (c) 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -131,7 +131,7 @@ namespace paludis
     template <>
     struct Imp<EKeywordsKeyStore>
     {
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         mutable std::unordered_map<EKeywordsKeyStoreIndex, std::shared_ptr<const EKeywordsKey>, EKeywordsKeyHash, EKeywordsKeyStoreCompare> store;
     };
 }
@@ -149,7 +149,7 @@ EKeywordsKeyStore::fetch(
         const std::string & s,
         const MetadataKeyType t) const
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
 
     auto k(std::make_shared<Set<KeywordName> >());
     tokenise_whitespace(s, create_inserter<KeywordName>(k->inserter()));

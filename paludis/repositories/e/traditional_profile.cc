@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -39,7 +39,6 @@
 #include <paludis/util/create_iterator-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/hashes.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/fs_error.hh>
@@ -59,6 +58,7 @@
 #include <algorithm>
 #include <set>
 #include <vector>
+#include <mutex>
 
 #include <strings.h>
 
@@ -127,7 +127,7 @@ namespace paludis
         std::shared_ptr<Set<std::string> > iuse_implicit;
         std::unordered_map<std::string, std::shared_ptr<Set<std::string> > > use_expand_values;
         KnownMap known_choice_value_names;
-        mutable Mutex known_choice_value_names_for_separator_mutex;
+        mutable std::mutex known_choice_value_names_for_separator_mutex;
         mutable std::unordered_map<char, KnownMap> known_choice_value_names_for_separator;
         StackedValuesList stacked_values_list;
 
@@ -971,7 +971,7 @@ TraditionalProfile::known_choice_value_names(
         const std::shared_ptr<const Choice> & choice
         ) const
 {
-    Lock l(_imp->known_choice_value_names_for_separator_mutex);
+    std::unique_lock<std::mutex> l(_imp->known_choice_value_names_for_separator_mutex);
 
     char separator(id->eapi()->supported()->choices_options()->use_expand_separator());
     std::unordered_map<char, KnownMap>::iterator it(_imp->known_choice_value_names_for_separator.find(separator));

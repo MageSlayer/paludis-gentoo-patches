@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -33,7 +33,6 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/graph-impl.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
@@ -45,6 +44,7 @@
 
 #include <list>
 #include <iterator>
+#include <mutex>
 #include <dlfcn.h>
 #include <stdint.h>
 
@@ -469,7 +469,7 @@ namespace paludis
         const Environment * const env;
         std::list<std::pair<FSPath, bool> > dirs;
 
-        mutable Mutex hook_files_mutex;
+        mutable std::recursive_mutex hook_files_mutex;
         mutable std::map<std::string, std::shared_ptr<Sequence<std::shared_ptr<HookFile> > > > hook_files;
         mutable std::map<std::string, std::map<std::string, std::shared_ptr<HookFile> > > auto_hook_files;
         mutable bool has_auto_hook_files;
@@ -482,7 +482,7 @@ namespace paludis
 
         void need_auto_hook_files() const
         {
-            Lock l(hook_files_mutex);
+            std::unique_lock<std::recursive_mutex> l(hook_files_mutex);
 
             if (has_auto_hook_files)
                 return;
@@ -543,7 +543,7 @@ Hooker::~Hooker()
 void
 Hooker::add_dir(const FSPath & dir, const bool v)
 {
-    Lock l(_imp->hook_files_mutex);
+    std::unique_lock<std::recursive_mutex> l(_imp->hook_files_mutex);
     _imp->hook_files.clear();
     _imp->auto_hook_files.clear();
     _imp->dirs.push_back(std::make_pair(dir, v));
@@ -554,7 +554,7 @@ namespace
     struct PyHookFileHandle :
         Singleton<PyHookFileHandle>
     {
-        Mutex mutex;
+        std::mutex mutex;
         void * handle;
         std::shared_ptr<HookFile> (* create_py_hook_file_handle)(const FSPath &,
                 const bool, const Environment * const);
@@ -630,7 +630,7 @@ Hooker::_find_hooks(const Hook & hook) const
                 static bool load_ok(false);
 
                 {
-                    Lock lock(PyHookFileHandle::get_instance()->mutex);
+                    std::unique_lock<std::mutex> lock(PyHookFileHandle::get_instance()->mutex);
 
                     if (! load_try)
                     {
@@ -780,7 +780,7 @@ Hooker::perform_hook(
 
     /* file hooks, but only if necessary */
 
-    Lock l(_imp->hook_files_mutex);
+    std::unique_lock<std::recursive_mutex> l(_imp->hook_files_mutex);
     std::map<std::string, std::shared_ptr<Sequence<std::shared_ptr<HookFile> > > >::iterator h(_imp->hook_files.find(hook.name()));
 
     if (h == _imp->hook_files.end())

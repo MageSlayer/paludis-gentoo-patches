@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -49,7 +49,6 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/options.hh>
@@ -65,6 +64,7 @@
 #include <algorithm>
 #include <list>
 #include <map>
+#include <mutex>
 #include <unistd.h>
 
 using namespace paludis;
@@ -75,14 +75,14 @@ namespace paludis
     template<>
     struct Imp<PaludisEnvironment>
     {
-        mutable Mutex hook_mutex;
+        mutable std::mutex hook_mutex;
         mutable bool done_hooks;
         mutable std::shared_ptr<Hooker> hooker;
         mutable std::list<std::pair<FSPath, bool> > hook_dirs;
 
         std::shared_ptr<PaludisConfig> config;
 
-        mutable Mutex sets_mutex;
+        mutable std::mutex sets_mutex;
         mutable std::map<SetName, std::shared_ptr<const SetSpecTree> > sets;
 
         std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
@@ -206,7 +206,7 @@ PaludisEnvironment::perform_hook(
         const Hook & hook,
         const std::shared_ptr<OutputManager> & optional_output_manager) const
 {
-    Lock lock(_imp->hook_mutex);
+    std::unique_lock<std::mutex> lock(_imp->hook_mutex);
 
     if (! _imp->hooker)
     {
@@ -223,7 +223,7 @@ PaludisEnvironment::perform_hook(
 std::shared_ptr<const FSPathSequence>
 PaludisEnvironment::hook_dirs() const
 {
-    Lock lock(_imp->hook_mutex);
+    std::unique_lock<std::mutex> lock(_imp->hook_mutex);
 
     _imp->need_hook_dirs(FSPath(_imp->config->config_dir()));
 
@@ -514,7 +514,7 @@ namespace
 void
 PaludisEnvironment::populate_sets() const
 {
-    Lock lock(_imp->sets_mutex);
+    std::unique_lock<std::mutex> lock(_imp->sets_mutex);
     add_set(SetName("world"), SetName("world::environment"), std::bind(&make_world_set, _imp->config->world()), true);
 
     std::list<FSPath> sets_dirs;

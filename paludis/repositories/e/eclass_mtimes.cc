@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010, 2011, 2013 Ciaran McCreesh
  * Copyright (c) 2008, 2012 David Leverton
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -24,12 +24,12 @@
 #include <paludis/name.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/md5.hh>
 #include <paludis/util/safe_ifstream.hh>
+#include <mutex>
 #include <unordered_map>
 
 using namespace paludis;
@@ -77,7 +77,7 @@ namespace paludis
         mutable Cache eclasses;
         mutable std::unordered_map<QualifiedPackageName, Cache, Hash<QualifiedPackageName> > exlibs;
         mutable MD5Map md5s;
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
 
         Imp(const ERepository * r, const std::shared_ptr<const FSPathSequence> & d) :
             repo(r),
@@ -99,14 +99,14 @@ EclassMtimes::~EclassMtimes()
 const std::pair<FSPath, FSStat> *
 EclassMtimes::eclass(const std::string & e) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     return lookup(e + ".eclass", _imp->eclasses);
 }
 
 const std::pair<FSPath, FSStat> *
 EclassMtimes::exlib(const std::string & e, const QualifiedPackageName & qpn) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     std::unordered_map<QualifiedPackageName, Cache, Hash<QualifiedPackageName> >::iterator cache(_imp->exlibs.find(qpn));
     if (_imp->exlibs.end() == cache)
         cache = _imp->exlibs.insert(std::make_pair(qpn, Cache(_imp->repo->layout()->exlibsdirs(qpn)))).first;
@@ -116,7 +116,7 @@ EclassMtimes::exlib(const std::string & e, const QualifiedPackageName & qpn) con
 std::string
 EclassMtimes::md5(const FSPath & p) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     MD5Map::const_iterator it(_imp->md5s.find(p));
     if (_imp->md5s.end() != it)
         return it->second;

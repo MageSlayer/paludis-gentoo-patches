@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,7 +21,6 @@
 #include <paludis/repositories/e/dep_parser.hh>
 #include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/dep_label.hh>
@@ -39,7 +38,7 @@ namespace
     struct URILabelsStore :
         Singleton<URILabelsStore>
     {
-        Mutex mutex;
+        std::mutex mutex;
         std::map<URILabelsIndex, std::shared_ptr<URILabel> > store;
 
         std::shared_ptr<URILabel> make(const std::string & class_name, const std::string & text)
@@ -62,7 +61,7 @@ namespace
 
         std::shared_ptr<URILabel> get(const std::string & eapi_name, const std::string & class_name, const std::string & text)
         {
-            Lock lock(mutex);
+            std::unique_lock<std::mutex> lock(mutex);
             URILabelsIndex x{eapi_name, class_name, text};
 
             auto i(store.find(x));

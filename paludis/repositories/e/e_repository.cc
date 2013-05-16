@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -82,7 +82,6 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/process.hh>
@@ -200,12 +199,12 @@ namespace paludis
     {
         struct Mutexes
         {
-            Mutex arch_flags_mutex;
-            Mutex mirrors_mutex;
-            Mutex use_desc_mutex;
-            Mutex profile_ptr_mutex;
-            Mutex news_ptr_mutex;
-            Mutex eapi_for_file_mutex;
+            std::mutex arch_flags_mutex;
+            std::mutex mirrors_mutex;
+            std::mutex use_desc_mutex;
+            std::mutex profile_ptr_mutex;
+            std::mutex news_ptr_mutex;
+            std::mutex eapi_for_file_mutex;
         };
 
         ERepository * const repo;
@@ -421,7 +420,7 @@ namespace paludis
     void
     Imp<ERepository>::need_profiles() const
     {
-        Lock l(mutexes->profile_ptr_mutex);
+        std::unique_lock<std::mutex> l(mutexes->profile_ptr_mutex);
 
         if (profile_ptr)
             return;
@@ -633,7 +632,7 @@ ERepository::package_ids(const QualifiedPackageName & n, const RepositoryContent
 const std::shared_ptr<const Set<UnprefixedChoiceName> >
 ERepository::arch_flags() const
 {
-    Lock l(_imp->mutexes->arch_flags_mutex);
+    std::unique_lock<std::mutex> l(_imp->mutexes->arch_flags_mutex);
     if (! _imp->arch_flags)
     {
         Context context("When loading arch list:");
@@ -679,7 +678,7 @@ namespace
 void
 ERepository::need_mirrors() const
 {
-    Lock l(_imp->mutexes->mirrors_mutex);
+    std::unique_lock<std::mutex> l(_imp->mutexes->mirrors_mutex);
 
     if (! _imp->has_mirrors)
     {
@@ -850,7 +849,7 @@ ERepository::purge_invalid_cache() const
 void
 ERepository::update_news() const
 {
-    Lock l(_imp->mutexes->news_ptr_mutex);
+    std::unique_lock<std::mutex> l(_imp->mutexes->news_ptr_mutex);
 
     if (! _imp->news_ptr)
         _imp->news_ptr = std::make_shared<ERepositoryNews>(_imp->params.environment(), this, _imp->params);
@@ -1594,7 +1593,7 @@ ERepository::repository_factory_dependencies(
 const std::shared_ptr<const UseDesc>
 ERepository::use_desc() const
 {
-    Lock l(_imp->mutexes->use_desc_mutex);
+    std::unique_lock<std::mutex> l(_imp->mutexes->use_desc_mutex);
     if (! _imp->use_desc)
     {
         _imp->use_desc = std::make_shared<UseDesc>(_imp->layout->use_desc_files());
@@ -1607,7 +1606,7 @@ const std::string
 ERepository::eapi_for_file(const FSPath & f) const
 {
     FSPath dir(f.dirname());
-    Lock lock(_imp->mutexes->eapi_for_file_mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutexes->eapi_for_file_mutex);
     EAPIForFileMap::const_iterator i(_imp->eapi_for_file_map.find(dir));
     if (i == _imp->eapi_for_file_map.end())
     {

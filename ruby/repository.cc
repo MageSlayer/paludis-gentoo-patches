@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011, 2012 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011, 2012, 2013 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008 Richard Brown
  * Copyright (c) 2007 David Leverton
  *
@@ -29,8 +29,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/mutex.hh>
-#include <paludis/util/condition_variable.hh>
 #include <paludis/util/make_named_values.hh>
 #include <ruby.h>
 #include <list>

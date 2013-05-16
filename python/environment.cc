@@ -55,7 +55,7 @@ class EnvironmentImplementationWrapper :
 
         virtual void populate_sets() const
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("populate_sets"))
                 f();
@@ -66,7 +66,7 @@ class EnvironmentImplementationWrapper :
         virtual bool accept_license(const std::string & s, const std::shared_ptr<const PackageID> & p) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("accept_license"))
                 return f(s, p);
@@ -77,7 +77,7 @@ class EnvironmentImplementationWrapper :
         virtual bool accept_keywords(const std::shared_ptr<const KeywordNameSet> & k, const std::shared_ptr<const PackageID> & p) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("accept_keywords"))
                 return f(k, p);
@@ -88,7 +88,7 @@ class EnvironmentImplementationWrapper :
         virtual const std::shared_ptr<const Mask> mask_for_breakage(const std::shared_ptr<const PackageID> & p) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("mask_for_breakage"))
                 return f(p);
@@ -99,7 +99,7 @@ class EnvironmentImplementationWrapper :
         virtual const std::shared_ptr<const Mask> mask_for_user(const std::shared_ptr<const PackageID> & p, const bool b) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("mask_for_user"))
                 return f(p, b);
@@ -110,7 +110,7 @@ class EnvironmentImplementationWrapper :
         virtual bool unmasked_by_user(const std::shared_ptr<const PackageID> & p, const std::string & s) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("unmasked_by_user"))
                 return f(p, s);
@@ -121,7 +121,7 @@ class EnvironmentImplementationWrapper :
         virtual std::shared_ptr<const FSPathSequence> bashrc_files() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("bashrc_files"))
                 return f();
@@ -137,7 +137,7 @@ class EnvironmentImplementationWrapper :
         virtual std::shared_ptr<const FSPathSequence> syncers_dirs() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("syncers_dirs"))
                 return f();
@@ -153,7 +153,7 @@ class EnvironmentImplementationWrapper :
         virtual std::shared_ptr<const FSPathSequence> fetchers_dirs() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("fetchers_dirs"))
                 return f();
@@ -169,7 +169,7 @@ class EnvironmentImplementationWrapper :
         virtual std::shared_ptr<const FSPathSequence> hook_dirs() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("hook_dirs"))
                 return f();
@@ -179,7 +179,7 @@ class EnvironmentImplementationWrapper :
 
         virtual uid_t reduced_uid() const
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("reduced_uid"))
                 return f();
@@ -189,7 +189,7 @@ class EnvironmentImplementationWrapper :
 
         virtual gid_t reduced_gid() const
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("reduced_gid"))
                 return f();
@@ -201,7 +201,7 @@ class EnvironmentImplementationWrapper :
         virtual std::shared_ptr<const MirrorsSequence> mirrors(const std::string & s) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("mirrors"))
                 return f(s);
@@ -212,7 +212,7 @@ class EnvironmentImplementationWrapper :
         virtual std::shared_ptr<const SetNameSet> set_names() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("set_names"))
                 return f();
@@ -228,7 +228,7 @@ class EnvironmentImplementationWrapper :
         virtual const std::shared_ptr<const SetSpecTree> set(const SetName & s) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("set"))
                 return f(boost::cref(s));
@@ -251,7 +251,7 @@ class EnvironmentImplementationWrapper :
         virtual std::string distribution() const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("distribution"))
                 return f();
@@ -266,7 +266,7 @@ class EnvironmentImplementationWrapper :
 
         virtual bool add_to_world(const QualifiedPackageName & s) const
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
             if (bp::override f = get_override("add_to_world"))
                 return f(s);
             else
@@ -275,7 +275,7 @@ class EnvironmentImplementationWrapper :
 
         virtual bool add_to_world(const SetName & s) const
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
             if (bp::override f = get_override("add_to_world"))
                 return f(s);
             else
@@ -284,7 +284,7 @@ class EnvironmentImplementationWrapper :
 
         virtual bool remove_from_world(const QualifiedPackageName & s) const
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
             if (bp::override f = get_override("remove_from_world"))
                 return f(s);
             else
@@ -293,7 +293,7 @@ class EnvironmentImplementationWrapper :
 
         virtual bool remove_from_world(const SetName & s) const
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
             if (bp::override f = get_override("remove_from_world"))
                 return f(s);
             else
@@ -303,7 +303,7 @@ class EnvironmentImplementationWrapper :
         virtual std::shared_ptr<PackageIDSequence> operator[] (const Selection & fg) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("__getitem__"))
                 return f(fg);
@@ -318,7 +318,7 @@ class EnvironmentImplementationWrapper :
 
         virtual void need_keys_added() const
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("need_keys_added"))
                 f();
@@ -328,7 +328,7 @@ class EnvironmentImplementationWrapper :
 
         virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("format_key"))
                 return f();
@@ -338,7 +338,7 @@ class EnvironmentImplementationWrapper :
 
         virtual const std::shared_ptr<const MetadataValueKey<FSPath> > config_location_key() const
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("config_location_key"))
                 return f();
@@ -348,7 +348,7 @@ class EnvironmentImplementationWrapper :
 
         virtual const std::shared_ptr<const MetadataValueKey<FSPath> > preferred_root_key() const
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("preferred_root_key"))
                 return f();
@@ -358,7 +358,7 @@ class EnvironmentImplementationWrapper :
 
         virtual const std::shared_ptr<const MetadataValueKey<FSPath> > system_root_key() const
         {
-            Lock l(get_mutex());
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
 
             if (bp::override f = get_override("system_root_key"))
                 return f();

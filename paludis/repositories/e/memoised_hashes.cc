@@ -19,7 +19,6 @@
 
 #include <paludis/repositories/e/memoised_hashes.hh>
 
-#include <paludis/util/mutex.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/safe_ifstream.hh>
@@ -40,7 +39,7 @@ namespace paludis
     template <>
     struct Imp<MemoisedHashes>
     {
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         mutable HashesMap hashes;
 
         Imp()
@@ -64,7 +63,7 @@ MemoisedHashes::get(const std::string & algo, const FSPath & file, SafeIFStream 
     std::pair<std::string, std::string> key(stringify(file), algo);
     Timestamp mtime(file.stat().mtim());
 
-    Lock l(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
 
     HashesMap::iterator i(_imp->hashes.find(key));
 

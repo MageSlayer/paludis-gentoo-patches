@@ -84,7 +84,7 @@ struct MaskWrapper :
 {
     virtual char key() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("key"))
             return f();
@@ -94,7 +94,7 @@ struct MaskWrapper :
 
     virtual const std::string description() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("description"))
             return f();
@@ -109,7 +109,7 @@ struct UserMaskWrapper :
 {
     virtual char key() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("key"))
             return f();
@@ -119,7 +119,7 @@ struct UserMaskWrapper :
 
     virtual const std::string description() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("description"))
             return f();
@@ -134,7 +134,7 @@ struct UnacceptedMaskWrapper :
 {
     virtual const std::string unaccepted_key_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("unaccepted_key_name"))
             return f();
@@ -144,7 +144,7 @@ struct UnacceptedMaskWrapper :
 
     virtual char key() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("key"))
             return f();
@@ -154,7 +154,7 @@ struct UnacceptedMaskWrapper :
 
     virtual const std::string description() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("description"))
             return f();
@@ -169,7 +169,7 @@ struct RepositoryMaskWrapper :
 {
     virtual const std::string mask_key_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("mask_key_name"))
             return f();
@@ -179,7 +179,7 @@ struct RepositoryMaskWrapper :
 
     virtual char key() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("key"))
             return f();
@@ -189,7 +189,7 @@ struct RepositoryMaskWrapper :
 
     virtual const std::string description() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("description"))
             return f();
@@ -199,7 +199,7 @@ struct RepositoryMaskWrapper :
 
     virtual const std::string comment() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("comment"))
             return f();
@@ -209,7 +209,7 @@ struct RepositoryMaskWrapper :
 
     virtual const std::string token() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("token"))
             return f();
@@ -219,7 +219,7 @@ struct RepositoryMaskWrapper :
 
     virtual const FSPath mask_file() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("mask_file"))
             return f();
@@ -234,7 +234,7 @@ struct UnsupportedMaskWrapper :
 {
     virtual const std::string explanation() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("explanation"))
             return f();
@@ -244,7 +244,7 @@ struct UnsupportedMaskWrapper :
 
     virtual char key() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("key"))
             return f();
@@ -254,7 +254,7 @@ struct UnsupportedMaskWrapper :
 
     virtual const std::string description() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("description"))
             return f();

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,9 +23,9 @@
 #include <paludis/util/executor-fwd.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
-#include <paludis/util/mutex-fwd.hh>
-#include <string>
 #include <memory>
+#include <mutex>
+#include <string>
 
 namespace paludis
 {
@@ -63,7 +63,7 @@ namespace paludis
 
             void execute();
 
-            Mutex & exclusivity_mutex() PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::mutex & exclusivity_mutex() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     extern template class Pimp<Executor>;

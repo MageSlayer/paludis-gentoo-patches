@@ -23,7 +23,6 @@
 #include <paludis/util/config_file.hh>
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
@@ -37,6 +36,7 @@
 #include <cerrno>
 #include <functional>
 #include <vector>
+#include <mutex>
 
 using namespace paludis;
 
@@ -49,7 +49,7 @@ namespace paludis
     {
         FSPath root;
 
-        Mutex mutex;
+        std::mutex mutex;
 
         Breakage breakage;
 
@@ -131,7 +131,7 @@ LibtoolLinkageChecker::check_file(const FSPath & file)
                     ll_debug, lc_context) << "Dependency '" << *it <<
                     "' is missing or not a regular file in '" << _imp->root << "'";
 
-                Lock l(_imp->mutex);
+                std::unique_lock<std::mutex> l(_imp->mutex);
                 _imp->breakage.push_back(std::make_pair(file, *it));
             }
 

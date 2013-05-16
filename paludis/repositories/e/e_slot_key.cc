@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011, 2012 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2012, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -97,7 +97,7 @@ namespace paludis
     template <>
     struct Imp<ESlotKeyStore>
     {
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         mutable std::unordered_map<ESlotKeyStoreIndex, std::shared_ptr<const ESlotKey>, ESlotKeyStoreHash> store;
     };
 }
@@ -127,7 +127,7 @@ ESlotKeyStore::fetch(
         }
     }
 
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
 
     ESlotKeyStoreIndex x(v, ss, mkt);
     auto i(_imp->store.find(x));

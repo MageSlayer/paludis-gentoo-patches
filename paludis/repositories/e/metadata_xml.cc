@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,6 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/map-impl.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/fs_path.hh>
@@ -41,7 +40,7 @@ namespace paludis
     template <>
     struct Imp<MetadataXMLPool>
     {
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         mutable Store store;
     };
 }
@@ -61,7 +60,7 @@ MetadataXMLPool::metadata_if_exists(const FSPath & f) const
     Context context("When handling metadata.xml file '" + stringify(f) + "':");
 
     FSPath f_real(f.realpath_if_exists());
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     Store::const_iterator i(_imp->store.find(f_real));
     if (i != _imp->store.end())
         return i->second;

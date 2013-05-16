@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -28,7 +28,6 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/tribool.hh>
@@ -47,10 +46,11 @@
 #include <paludis/elike_choices.hh>
 #include <paludis/dep_spec_annotations.hh>
 
-#include <list>
 #include <algorithm>
-#include <set>
+#include <list>
 #include <map>
+#include <mutex>
+#include <set>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -60,7 +60,7 @@ namespace paludis
     template <>
     struct Imp<EChoicesKey>
     {
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         mutable std::shared_ptr<Choices> value;
 
         const Environment * const env;
@@ -278,7 +278,7 @@ namespace
 const std::shared_ptr<const Choices>
 EChoicesKey::parse_value() const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     if (_imp->value)
         return _imp->value;
 

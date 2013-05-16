@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011, 2012 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2012, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,13 +19,13 @@
 
 #include <paludis/util/executor.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/mutex.hh>
-#include <paludis/util/condition_variable.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <map>
 #include <list>
 #include <thread>
+#include <mutex>
+#include <condition_variable>
 
 using namespace paludis;
 
@@ -49,8 +49,8 @@ namespace paludis
 
         Queues queues;
         ReadyForPost ready_for_post;
-        Mutex mutex;
-        ConditionVariable condition;
+        std::mutex mutex;
+        std::condition_variable condition;
 
         Imp(int u) :
             ms_update_interval(u),
@@ -76,9 +76,9 @@ Executor::_one(const std::shared_ptr<Executive> executive)
 {
     executive->execute_threaded();
 
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     _imp->ready_for_post.push_back(executive);
-    _imp->condition.signal();
+    _imp->condition.notify_all();
 }
 
 
@@ -113,7 +113,7 @@ Executor::execute()
     typedef std::map<std::string, std::pair<std::thread, std::shared_ptr<Executive> > > Running;
     Running running;
 
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     while (true)
     {
         bool any(false);
@@ -145,7 +145,7 @@ Executor::execute()
             break;
         }
 
-        _imp->condition.timed_wait(_imp->mutex, _imp->ms_update_interval / 1000, _imp->ms_update_interval % 1000);
+        _imp->condition.wait_for(lock, std::chrono::milliseconds(_imp->ms_update_interval));
 
         for (Running::iterator r(running.begin()), r_end(running.end()) ;
                 r != r_end ; ++r)
@@ -166,7 +166,7 @@ Executor::execute()
     }
 }
 
-Mutex &
+std::mutex &
 Executor::exclusivity_mutex()
 {
     return _imp->mutex;

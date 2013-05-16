@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,7 +30,6 @@
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/enum_iterator.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/hashes.hh>
 
@@ -47,6 +46,7 @@
 #include <algorithm>
 #include <tuple>
 #include <unordered_map>
+#include <mutex>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -80,7 +80,7 @@ namespace paludis
         bool want_installed_slots_otherwise;
         bool fallback_to_other_slots_otherwise;
 
-        mutable Mutex cache_mutex;
+        mutable std::mutex cache_mutex;
         mutable std::unordered_map<
             CacheKey,
             std::pair<std::shared_ptr<const Resolvents>, bool>,
@@ -320,7 +320,7 @@ GetResolventsForHelper::operator() (
 
     if (cache_ok)
     {
-        Lock lock(_imp->cache_mutex);
+        std::unique_lock<std::mutex> lock(_imp->cache_mutex);
         auto c(_imp->cache.find(cache_key));
         if (_imp->cache.end() != c)
             return c->second;
@@ -398,7 +398,7 @@ GetResolventsForHelper::operator() (
 
     if (cache_ok)
     {
-        Lock lock(_imp->cache_mutex);
+        std::unique_lock<std::mutex> lock(_imp->cache_mutex);
         _imp->cache.insert(std::make_pair(cache_key, result));
     }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2011 Ciaran McCreesh
+ * Copyright (c) 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,11 +21,11 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_POOL_IMPL_HH 1
 
 #include <paludis/util/pool.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/stringify.hh>
 #include <unordered_map>
 #include <memory>
+#include <mutex>
 
 namespace paludis
 {
@@ -49,7 +49,7 @@ namespace paludis
     template <typename T_>
     struct Imp<Pool<T_> >
     {
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         mutable std::unordered_map<PoolKeys, std::shared_ptr<const T_>, PoolKeysHasher, PoolKeysComparator> store;
         mutable unsigned reused;
 
@@ -94,7 +94,7 @@ namespace paludis
         PoolKeys keys;
         keys.add(args...);
 
-        Lock lock(_imp->mutex);
+        std::unique_lock<std::mutex> lock(_imp->mutex);
         auto i(_imp->store.find(keys));
         if (i == _imp->store.end())
         {

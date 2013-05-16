@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -27,7 +27,6 @@
 #include <paludis/util/hashes.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/tokeniser.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
@@ -82,7 +81,7 @@ namespace paludis
 
         const bool is_user;
 
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         mutable bool has_file_keys;
         mutable bool has_metadata_keys;
 
@@ -135,7 +134,7 @@ AccountsID::~AccountsID()
 void
 AccountsID::_add_metadata_keys() const
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
 
     if (_imp->has_metadata_keys)
         return;
@@ -177,7 +176,7 @@ AccountsID::_need_file_keys() const
     if (_imp->has_file_keys)
         return;
 
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
 
     KeyValueConfigFile k(_imp->fs_location_key->parse_value(), { },
             &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
@@ -252,7 +251,7 @@ AccountsID::need_keys_added() const
 void
 AccountsID::clear_metadata_keys() const
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     _imp->has_metadata_keys = false;
     PackageID::clear_metadata_keys();
 }

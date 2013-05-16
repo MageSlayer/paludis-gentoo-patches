@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,7 +35,6 @@
 #include <paludis/util/set.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/sequence.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
@@ -48,6 +47,7 @@
 #include <paludis/util/set-impl.hh>
 
 #include <algorithm>
+#include <mutex>
 #include <map>
 #include <list>
 #include <set>
@@ -132,7 +132,7 @@ namespace paludis
         std::list<std::shared_ptr<Repository> > repositories;
         std::multimap<int, std::list<std::shared_ptr<Repository> >::iterator> repository_importances;
 
-        mutable Mutex sets_mutex;
+        mutable std::recursive_mutex sets_mutex;
         mutable bool loaded_sets;
         mutable std::shared_ptr<SetNameSet> set_names;
         mutable SetsStore sets;
@@ -236,7 +236,7 @@ EnvironmentImplementation::add_set(
         const std::function<std::shared_ptr<const SetSpecTree> ()> & func,
         const bool combine) const
 {
-    Lock lock(_imp->sets_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->sets_mutex);
     Context context("When adding set named '" + stringify(name) + ":");
 
     if (combine)
@@ -263,7 +263,7 @@ EnvironmentImplementation::add_set(
 std::shared_ptr<const SetNameSet>
 EnvironmentImplementation::set_names() const
 {
-    Lock lock(_imp->sets_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->sets_mutex);
     _need_sets();
 
     return _imp->set_names;
@@ -272,7 +272,7 @@ EnvironmentImplementation::set_names() const
 const std::shared_ptr<const SetSpecTree>
 EnvironmentImplementation::set(const SetName & s) const
 {
-    Lock lock(_imp->sets_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->sets_mutex);
     _need_sets();
 
     SetsStore::const_iterator i(_imp->sets.find(s));

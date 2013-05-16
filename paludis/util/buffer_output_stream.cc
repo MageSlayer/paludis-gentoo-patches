@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,10 +19,9 @@
 
 #include <paludis/util/buffer_output_stream.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/mutex.hh>
-#include <paludis/util/condition_variable.hh>
 #include <list>
 #include <string>
+#include <mutex>
 
 using namespace paludis;
 
@@ -31,7 +30,7 @@ namespace paludis
     template <>
     struct Imp<BufferOutputStreamBuf>
     {
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
 
         std::list<std::string> complete_strings;
         std::string active_string;
@@ -55,7 +54,7 @@ BufferOutputStreamBuf::~BufferOutputStreamBuf()
 BufferOutputStreamBuf::int_type
 BufferOutputStreamBuf::overflow(int_type c)
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
 
     if (c != traits_type::eof())
     {
@@ -73,7 +72,7 @@ BufferOutputStreamBuf::overflow(int_type c)
 std::streamsize
 BufferOutputStreamBuf::xsputn(const char * s, std::streamsize num)
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
 
     _imp->active_string.append(std::string(s, num));
     if (std::string::npos != _imp->active_string.find_first_of("\r\n", _imp->active_string.length() - num))
@@ -91,7 +90,7 @@ BufferOutputStreamBuf::unbuffer(std::ostream & stream)
     std::list<std::string> c;
 
     {
-        Lock lock(_imp->mutex);
+        std::unique_lock<std::mutex> lock(_imp->mutex);
         _imp->complete_strings.swap(c);
     }
 
@@ -105,7 +104,7 @@ BufferOutputStreamBuf::unbuffer(std::ostream & stream)
 bool
 BufferOutputStreamBuf::anything_to_unbuffer() const
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     return ! _imp->complete_strings.empty();
 }
 

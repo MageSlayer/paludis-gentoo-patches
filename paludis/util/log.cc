@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -17,13 +17,14 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#include <iostream>
-#include <exception>
 #include <paludis/util/log.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/exception.hh>
-#include <paludis/util/mutex.hh>
+#include <iostream>
+#include <exception>
+#include <mutex>
+
 #include "config.h"
 
 #ifdef __linux__
@@ -42,7 +43,7 @@ namespace paludis
     template<>
     struct Imp<Log>
     {
-        Mutex mutex;
+        std::mutex mutex;
         LogLevel log_level;
         std::ostream * stream;
         std::string program_name;
@@ -134,7 +135,7 @@ Log::~Log()
 void
 Log::set_log_level(const LogLevel l)
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     _imp->log_level = l;
 }
 
@@ -147,7 +148,7 @@ Log::log_level() const
 void
 Log::_message(const std::string & id, const LogLevel l, const LogContext c, const std::string & s)
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
 
     if (lc_context == c)
         _imp->message(id, l, c,
@@ -178,14 +179,14 @@ Log::message(const std::string & id, const LogLevel l, const LogContext c)
 void
 Log::set_log_stream(std::ostream * const s)
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     _imp->stream = s;
 }
 
 void
 Log::set_program_name(const std::string & s)
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     _imp->program_name = s;
 }
 

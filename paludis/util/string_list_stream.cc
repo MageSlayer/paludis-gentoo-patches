@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,10 +19,10 @@
 
 #include <paludis/util/string_list_stream.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/mutex.hh>
-#include <paludis/util/condition_variable.hh>
 #include <list>
 #include <string>
+#include <mutex>
+#include <condition_variable>
 
 using namespace paludis;
 
@@ -31,8 +31,8 @@ namespace paludis
     template <>
     struct Imp<StringListStreamBuf>
     {
-        Mutex mutex;
-        ConditionVariable condition;
+        std::mutex mutex;
+        std::condition_variable condition;
 
         std::string active_string;
         std::list<std::string> future_strings;
@@ -59,8 +59,8 @@ StringListStreamBuf::~StringListStreamBuf()
 StringListStreamBuf::int_type
 StringListStreamBuf::overflow(int_type c)
 {
-    Lock lock(_imp->mutex);
-    _imp->condition.signal();
+    std::unique_lock<std::mutex> lock(_imp->mutex);
+    _imp->condition.notify_all();
 
     if (c != traits_type::eof())
     {
@@ -76,8 +76,8 @@ StringListStreamBuf::overflow(int_type c)
 std::streamsize
 StringListStreamBuf::xsputn(const char * s, std::streamsize num)
 {
-    Lock lock(_imp->mutex);
-    _imp->condition.signal();
+    std::unique_lock<std::mutex> lock(_imp->mutex);
+    _imp->condition.notify_all();
 
     if ((_imp->future_strings.empty()) || (_imp->future_strings.back().length() + num > 1024))
         _imp->future_strings.push_back(std::string(s, num));
@@ -89,15 +89,15 @@ StringListStreamBuf::xsputn(const char * s, std::streamsize num)
 void
 StringListStreamBuf::nothing_more_to_write()
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     _imp->nothing_more_to_write = true;
-    _imp->condition.signal();
+    _imp->condition.notify_all();
 }
 
 StringListStreamBuf::int_type
 StringListStreamBuf::underflow()
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
 
     if (gptr() < egptr())
         return traits_type::to_int_type(*gptr());
@@ -107,7 +107,7 @@ StringListStreamBuf::underflow()
         if (_imp->nothing_more_to_write)
             return traits_type::eof();
 
-        _imp->condition.wait(_imp->mutex);
+        _imp->condition.wait(lock);
     }
 
     _imp->active_string = *_imp->future_strings.begin();

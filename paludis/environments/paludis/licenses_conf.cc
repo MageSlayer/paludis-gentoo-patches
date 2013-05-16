@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,16 +32,16 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/set.hh>
-#include <unordered_map>
 #include <list>
-#include <vector>
 #include <map>
+#include <mutex>
+#include <unordered_map>
+#include <vector>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
@@ -64,8 +64,8 @@ namespace paludis
         mutable SpecificMap qualified;
         mutable UnspecificMap unqualified;
         mutable NamedSetMap set;
-        mutable Mutex set_mutex;
-        mutable Mutex expanded_mutex;
+        mutable std::mutex set_mutex;
+        mutable std::mutex expanded_mutex;
         mutable bool expanded;
 
         Imp(const PaludisEnvironment * const e) :
@@ -168,7 +168,7 @@ bool
 LicensesConf::query(const std::string & t, const std::shared_ptr<const PackageID> & e) const
 {
     {
-        Lock lock(_imp->expanded_mutex);
+        std::unique_lock<std::mutex> lock(_imp->expanded_mutex);
         if (! _imp->expanded)
         {
             _imp->expanded = true;
@@ -224,7 +224,7 @@ LicensesConf::query(const std::string & t, const std::shared_ptr<const PackageID
 
     /* next: named sets */
     {
-        Lock lock(_imp->set_mutex);
+        std::unique_lock<std::mutex> lock(_imp->set_mutex);
         for (NamedSetMap::iterator i(_imp->set.begin()), i_end(_imp->set.end()) ;
                  i != i_end ; ++i)
         {

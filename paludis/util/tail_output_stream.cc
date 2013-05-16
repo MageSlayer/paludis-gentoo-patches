@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2010, 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,12 +18,12 @@
  */
 
 #include <paludis/util/tail_output_stream.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <functional>
 #include <algorithm>
 #include <list>
+#include <mutex>
 
 using namespace paludis;
 
@@ -36,7 +36,7 @@ namespace paludis
         const unsigned int size;
         std::list<std::string> tail;
 
-        Mutex mutex;
+        std::mutex mutex;
 
         Imp(const unsigned int nn) :
             n(1),
@@ -74,7 +74,7 @@ TailOutputStreamBuf::xsputn(const char * s, std::streamsize num)
 void
 TailOutputStreamBuf::_append(const std::string & s)
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     for (std::string::size_type p(0), p_end(s.length()) ; p != p_end ; ++p)
     {
         if ('\n' == s[p])
@@ -95,7 +95,7 @@ const std::shared_ptr<const Sequence<std::string> >
 TailOutputStreamBuf::tail(const bool clear)
 {
     std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     for (std::list<std::string>::const_iterator i(_imp->tail.begin()), i_end(_imp->tail.end()), i_last(previous(_imp->tail.end())) ;
             i != i_end ; ++i)
     {

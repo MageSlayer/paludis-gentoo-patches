@@ -28,7 +28,6 @@
 #include <paludis/util/realpath.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
@@ -45,6 +44,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <mutex>
 
 using namespace paludis;
 
@@ -109,7 +109,7 @@ namespace paludis
         FSPath root;
         std::set<std::string> check_libraries;
 
-        Mutex mutex;
+        std::mutex mutex;
 
         std::map<FSPath, ElfArchitecture, FSPathComparator> seen;
         Symlinks symlinks;
@@ -176,7 +176,7 @@ Imp<ElfLinkageChecker>::check_elf(const FSPath & file, std::istream & stream)
         ElfArchitecture arch(elf);
         elf.resolve_all_strings();
 
-        Lock l(mutex);
+        std::unique_lock<std::mutex> l(mutex);
 
         if (check_libraries.empty() && ET_DYN == elf.get_type())
             handle_library(file, arch);
@@ -242,7 +242,7 @@ ElfLinkageChecker::note_symlink(const FSPath & link, const FSPath & target)
 {
     if (_imp->check_libraries.empty())
     {
-        Lock l(_imp->mutex);
+        std::unique_lock<std::mutex> l(_imp->mutex);
 
         std::map<FSPath, ElfArchitecture, FSPathComparator>::const_iterator it(_imp->seen.find(target));
         if (_imp->seen.end() != it)

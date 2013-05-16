@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,7 +24,6 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/options.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/safe_ofstream.hh>
@@ -43,6 +42,7 @@
 #include <list>
 #include <vector>
 #include <algorithm>
+#include <mutex>
 
 using namespace paludis;
 
@@ -73,7 +73,7 @@ namespace
         public SetFileHandler
     {
         private:
-            mutable Mutex _mutex;
+            mutable std::mutex _mutex;
 
             const SetFileParams _p;
             std::list<std::string> _lines;
@@ -110,7 +110,7 @@ namespace
         public SetFileHandler
     {
         private:
-            mutable Mutex _mutex;
+            mutable std::mutex _mutex;
 
             const SetFileParams _p;
             std::list<std::string> _lines;
@@ -359,7 +359,7 @@ SimpleHandler::_create_contents() const
 std::shared_ptr<SetSpecTree>
 SimpleHandler::contents() const
 {
-    Lock l(_mutex);
+    std::unique_lock<std::mutex> l(_mutex);
 
     if (! _contents)
         _create_contents();
@@ -370,7 +370,7 @@ SimpleHandler::contents() const
 bool
 SimpleHandler::add(const std::string & p)
 {
-    Lock l(_mutex);
+    std::unique_lock<std::mutex> l(_mutex);
 
     bool result(false);
     if (_lines.end() == std::find(_lines.begin(), _lines.end(), p))
@@ -387,7 +387,7 @@ SimpleHandler::add(const std::string & p)
 bool
 SimpleHandler::remove(const std::string & p)
 {
-    Lock l(_mutex);
+    std::unique_lock<std::mutex> l(_mutex);
 
     Context context("When removing '" + stringify(p) + "' from simple set file '" + stringify(_p.file_name()) + "':");
 
@@ -410,7 +410,7 @@ SimpleHandler::remove(const std::string & p)
 void
 SimpleHandler::rewrite() const
 {
-    Lock l(_mutex);
+    std::unique_lock<std::mutex> l(_mutex);
 
     Context context("When rewriting simple set file '" + stringify(_p.file_name()) + "':");
 
@@ -454,7 +454,7 @@ PaludisConfHandler::_create_contents() const
 std::shared_ptr<SetSpecTree>
 PaludisConfHandler::contents() const
 {
-    Lock l(_mutex);
+    std::unique_lock<std::mutex> l(_mutex);
 
     if (! _contents)
         _create_contents();
@@ -465,7 +465,7 @@ PaludisConfHandler::contents() const
 bool
 PaludisConfHandler::add(const std::string & p)
 {
-    Lock l(_mutex);
+    std::unique_lock<std::mutex> l(_mutex);
 
     bool result(false);
     if (_lines.end() == std::find_if(_lines.begin(), _lines.end(), TokenOneIs(p)))
@@ -483,7 +483,7 @@ PaludisConfHandler::remove(const std::string & p)
 {
     Context context("When removing '" + stringify(p) + "' from paludis conf set file '" + stringify(_p.file_name()) + "':");
 
-    Lock l(_mutex);
+    std::unique_lock<std::mutex> l(_mutex);
     _contents.reset();
 
     bool result(false);
@@ -505,7 +505,7 @@ PaludisConfHandler::rewrite() const
 {
     Context context("When rewriting paludis conf set file '" + stringify(_p.file_name()) + "':");
 
-    Lock l(_mutex);
+    std::unique_lock<std::mutex> l(_mutex);
 
     try
     {

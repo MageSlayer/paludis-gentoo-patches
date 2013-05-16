@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2011 Ciaran McCreesh
+ * Copyright (c) 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,7 +31,6 @@
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/accept_visitor.hh>
 #include <paludis/util/thread_pool.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>
@@ -48,6 +47,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
+#include <mutex>
 #include <map>
 #include <unistd.h>
 
@@ -111,7 +111,7 @@ namespace
 
     struct DisplayCallback
     {
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         mutable std::map<std::string, int> metadata;
         mutable int steps;
         int total;
@@ -202,7 +202,7 @@ namespace
             if (! output)
                 return;
 
-            Lock lock(mutex);
+            std::unique_lock<std::mutex> lock(mutex);
             ++steps;
             update();
         }
@@ -212,7 +212,7 @@ namespace
             if (! output)
                 return;
 
-            Lock lock(mutex);
+            std::unique_lock<std::mutex> lock(mutex);
             ++metadata.insert(std::make_pair(stringify(e.repository()), 0)).first->second;
             update();
         }
@@ -230,14 +230,14 @@ namespace
         }
     };
 
-    void worker(Mutex & mutex, PackageIDSequence::ConstIterator & i, const PackageIDSequence::ConstIterator & i_end, bool & fail,
+    void worker(std::mutex & mutex, PackageIDSequence::ConstIterator & i, const PackageIDSequence::ConstIterator & i_end, bool & fail,
             DisplayCallback & display_callback)
     {
         while (true)
         {
             std::shared_ptr<const PackageID> id;
             {
-                Lock lock(mutex);
+                std::unique_lock<std::mutex> lock(mutex);
                 if (i != i_end)
                     id = *i++;
             }
@@ -257,7 +257,7 @@ namespace
                 }
                 catch (const Exception & e)
                 {
-                    Lock lock(mutex);
+                    std::unique_lock<std::mutex> lock(mutex);
                     std::cerr << "When processing '" << **i << "' got exception '" << e.message() << "' (" << e.what() << ")" << std::endl;
                     fail = true;
                     break;
@@ -300,7 +300,7 @@ GenerateMetadataCommand::run(
 
     const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(g)]);
     bool fail(false);
-    Mutex mutex;
+    std::mutex mutex;
 
     PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end());
     {

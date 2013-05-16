@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,6 +23,7 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/fs_stat.hh>
 #include <iostream>
+#include <mutex>
 #include <map>
 #include <unistd.h>
 
@@ -34,7 +35,7 @@ namespace paludis
     template <>
     struct Imp<DisplayCallback>
     {
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         mutable std::map<std::string, int> metadata, steps;
         mutable std::string stage;
         mutable unsigned width;
@@ -79,7 +80,7 @@ DisplayCallback::operator() (const ResolverRestart &) const
     if (! _imp->output)
         return;
 
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     ++_imp->steps.insert(std::make_pair("restarts", 0)).first->second;
     update();
 }
@@ -90,7 +91,7 @@ DisplayCallback::visit(const NotifierCallbackGeneratingMetadataEvent & e) const
     if (! _imp->output)
         return;
 
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     ++_imp->metadata.insert(std::make_pair(stringify(e.repository()), 0)).first->second;
     update();
 }
@@ -101,7 +102,7 @@ DisplayCallback::visit(const NotifierCallbackResolverStageEvent & e) const
     if (! _imp->output)
         return;
 
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     _imp->stage = e.stage() + ": ";
     update();
 }
@@ -112,7 +113,7 @@ DisplayCallback::visit(const NotifierCallbackResolverStepEvent &) const
     if (! _imp->output)
         return;
 
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     ++_imp->steps.insert(std::make_pair("steps", 0)).first->second;
     update();
 }
@@ -123,7 +124,7 @@ DisplayCallback::visit(const NotifierCallbackLinkageStepEvent & e) const
     if (! _imp->output)
         return;
 
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     if (e.location().stat().is_directory_or_symlink_to_directory())
         ++_imp->steps.insert(std::make_pair("directories", 0)).first->second;
     else

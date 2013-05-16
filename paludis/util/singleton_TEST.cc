@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2010, 2011, 2012 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2010, 2011, 2012, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,7 +19,6 @@
 
 #include <paludis/util/singleton.hh>
 #include <paludis/util/singleton-impl.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/thread_pool.hh>
 
 #include <functional>
@@ -99,19 +98,19 @@ namespace
         private:
             MyThreadedClass()
             {
-                Lock l(mutex);
+                std::unique_lock<std::mutex> lock(mutex);
                 ++instances;
             }
 
         public:
             std::string s;
 
-            static Mutex mutex;
+            static std::mutex mutex;
             static int instances;
     };
 
     int MyThreadedClass::instances = 0;
-    Mutex MyThreadedClass::mutex;
+    std::mutex MyThreadedClass::mutex;
 
     static void thread_func(void * * const p) throw ()
     {

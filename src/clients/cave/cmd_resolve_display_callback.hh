@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,9 +20,8 @@
 #ifndef PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_RESOLVE_DISPLAY_CALLBACK_HH
 #define PALUDIS_GUARD_SRC_CLIENTS_CAVE_CMD_RESOLVE_DISPLAY_CALLBACK_HH 1
 
-#include <paludis/util/mutex.hh>
-#include <paludis/util/pimp.hh>
 #include <paludis/notifier_callback-fwd.hh>
+#include <paludis/util/pimp.hh>
 #include <string>
 
 namespace paludis

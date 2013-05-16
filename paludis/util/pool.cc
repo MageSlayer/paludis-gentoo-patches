@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2011 Ciaran McCreesh
+ * Copyright (c) 2011, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,7 +19,6 @@
 
 #include <paludis/util/pool-impl.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/mutex.hh>
 #include <list>
 #include <memory>
 
@@ -113,10 +112,10 @@ PoolKeysComparator::operator() (const PoolKeys & a, const PoolKeys & b) const
 int
 PoolKeyTypeCodes::next()
 {
-    static Mutex mutex;
+    static std::mutex mutex;
     static int result(0);
 
-    Lock lock(mutex);
+    std::unique_lock<std::mutex> lock(mutex);
     return ++result;
 }
 

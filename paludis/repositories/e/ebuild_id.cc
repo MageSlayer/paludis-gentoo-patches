@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -54,7 +54,6 @@
 #include <paludis/util/fs_error.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/make_named_values.hh>
@@ -135,7 +134,7 @@ namespace paludis
     template <>
     struct Imp<EbuildID>
     {
-        mutable Mutex mutex;
+        mutable std::recursive_mutex mutex;
 
         const QualifiedPackageName name;
         const VersionSpec version;
@@ -230,7 +229,7 @@ EbuildID::~EbuildID()
 void
 EbuildID::need_non_xml_keys_added() const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
 
     if (_imp->has_non_xml_keys)
         return;
@@ -499,7 +498,7 @@ EbuildID::presource_eapi() const
 void
 EbuildID::need_xml_keys_added() const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
 
     if (_imp->has_xml_keys)
         return;
@@ -530,7 +529,7 @@ EbuildID::need_xml_keys_added() const
 void
 EbuildID::need_keys_added() const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
 
     need_non_xml_keys_added();
     need_xml_keys_added();
@@ -619,7 +618,7 @@ namespace
 void
 EbuildID::need_masks_added() const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
 
     if (_imp->has_masks)
         return;
@@ -996,7 +995,7 @@ EbuildID::extra_hash_value() const
 void
 EbuildID::set_eapi(const std::string & s) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->eapi = EAPIData::get_instance()->eapi_from_string(s);
 }
 
@@ -1009,7 +1008,7 @@ EbuildID::guessed_eapi_name() const
 void
 EbuildID::load_captured_stderr(const std::string & r, const std::string & h, const MetadataKeyType t, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->captured_stderr_key = std::make_shared<LiteralMetadataValueKey<std::string> >(r, h, t, v);
     add_metadata_key(_imp->captured_stderr_key);
 }
@@ -1017,7 +1016,7 @@ EbuildID::load_captured_stderr(const std::string & r, const std::string & h, con
 void
 EbuildID::load_captured_stdout(const std::string & r, const std::string & h, const MetadataKeyType t, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->captured_stdout_key = std::make_shared<LiteralMetadataValueKey<std::string> >(r, h, t, v);
     add_metadata_key(_imp->captured_stdout_key);
 }
@@ -1025,7 +1024,7 @@ EbuildID::load_captured_stdout(const std::string & r, const std::string & h, con
 void
 EbuildID::load_short_description(const std::string & r, const std::string & h, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->short_description = std::make_shared<LiteralMetadataValueKey<std::string> >(r, h, mkt_significant, v);
     add_metadata_key(_imp->short_description);
 }
@@ -1033,7 +1032,7 @@ EbuildID::load_short_description(const std::string & r, const std::string & h, c
 void
 EbuildID::load_long_description(const std::string & r, const std::string & h, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->long_description = std::make_shared<LiteralMetadataValueKey<std::string> >(r, h, mkt_normal, v);
     add_metadata_key(_imp->long_description);
 }
@@ -1043,7 +1042,7 @@ EbuildID::load_dependencies(const std::string & r, const std::string & h, const 
 {
     if (! strip_leading(v, " \t\r\n").empty())
     {
-        Lock l(_imp->mutex);
+        std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
         _imp->dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
                     EbuildIDData::get_instance()->raw_dependencies_labels, mkt_dependencies);
         add_metadata_key(_imp->dependencies);
@@ -1056,7 +1055,7 @@ EbuildID::load_build_depend(const std::string & r, const std::string & h, const 
 {
     if (! strip_leading(v, " \t\r\n").empty())
     {
-        Lock l(_imp->mutex);
+        std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
         _imp->build_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
                     EbuildIDData::get_instance()->build_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies);
         add_metadata_key(_imp->build_dependencies);
@@ -1069,7 +1068,7 @@ EbuildID::load_run_depend(const std::string & r, const std::string & h, const st
 {
     if (! strip_leading(v, " \t\r\n").empty())
     {
-        Lock l(_imp->mutex);
+        std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
         _imp->run_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
                     EbuildIDData::get_instance()->run_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies);
         add_metadata_key(_imp->run_dependencies);
@@ -1082,7 +1081,7 @@ EbuildID::load_post_depend(const std::string & r, const std::string & h, const s
 {
     if (! strip_leading(v, " \t\r\n").empty())
     {
-        Lock l(_imp->mutex);
+        std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
         _imp->post_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
                     EbuildIDData::get_instance()->post_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies);
         add_metadata_key(_imp->post_dependencies);
@@ -1092,7 +1091,7 @@ EbuildID::load_post_depend(const std::string & r, const std::string & h, const s
 void
 EbuildID::load_src_uri(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->src_uri = std::make_shared<EFetchableURIKey>(_imp->environment, shared_from_this(), m, v, mkt_dependencies);
     add_metadata_key(_imp->src_uri);
 }
@@ -1100,7 +1099,7 @@ EbuildID::load_src_uri(const std::shared_ptr<const EAPIMetadataVariable> & m, co
 void
 EbuildID::load_homepage(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->homepage = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_significant, is_installed());
     add_metadata_key(_imp->homepage);
 }
@@ -1108,7 +1107,7 @@ EbuildID::load_homepage(const std::shared_ptr<const EAPIMetadataVariable> & m, c
 void
 EbuildID::load_license(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->license = std::make_shared<ELicenseKey>(_imp->environment, m, eapi(), v, mkt_internal, is_installed());
     add_metadata_key(_imp->license);
 }
@@ -1118,7 +1117,7 @@ EbuildID::load_restrict(const std::shared_ptr<const EAPIMetadataVariable> & m, c
 {
     if (! strip_leading(v, " \t\r\n").empty())
     {
-        Lock l(_imp->mutex);
+        std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
         _imp->restrictions = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal, is_installed());
         add_metadata_key(_imp->restrictions);
     }
@@ -1129,7 +1128,7 @@ EbuildID::load_properties(const std::shared_ptr<const EAPIMetadataVariable> & m,
 {
     if (! strip_leading(v, " \t\r\n").empty())
     {
-        Lock l(_imp->mutex);
+        std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
         _imp->properties = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal, is_installed());
         add_metadata_key(_imp->properties);
     }
@@ -1138,7 +1137,7 @@ EbuildID::load_properties(const std::shared_ptr<const EAPIMetadataVariable> & m,
 void
 EbuildID::load_iuse(const std::shared_ptr<const EAPIMetadataVariable> & k, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->raw_iuse = EStringSetKeyStore::get_instance()->fetch(k, v, mkt_internal);
     add_metadata_key(_imp->raw_iuse);
 }
@@ -1146,7 +1145,7 @@ EbuildID::load_iuse(const std::shared_ptr<const EAPIMetadataVariable> & k, const
 void
 EbuildID::load_myoptions(const std::shared_ptr<const EAPIMetadataVariable> & h, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->raw_myoptions = std::make_shared<EMyOptionsKey>(_imp->environment, h, eapi(), v, mkt_internal, is_installed());
     add_metadata_key(_imp->raw_myoptions);
 }
@@ -1156,7 +1155,7 @@ EbuildID::load_required_use(const std::shared_ptr<const EAPIMetadataVariable> & 
 {
     if (! strip_leading(v, " \t\r\n").empty())
     {
-        Lock l(_imp->mutex);
+        std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
         _imp->required_use = std::make_shared<ERequiredUseKey>(_imp->environment, k, eapi(), v, mkt_internal, is_installed());
         add_metadata_key(_imp->required_use);
     }
@@ -1165,7 +1164,7 @@ EbuildID::load_required_use(const std::shared_ptr<const EAPIMetadataVariable> & 
 void
 EbuildID::load_use(const std::shared_ptr<const EAPIMetadataVariable> & r, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->raw_use = EStringSetKeyStore::get_instance()->fetch(r, v, mkt_internal);
     add_metadata_key(_imp->raw_use);
 }
@@ -1173,7 +1172,7 @@ EbuildID::load_use(const std::shared_ptr<const EAPIMetadataVariable> & r, const 
 void
 EbuildID::load_keywords(const std::shared_ptr<const EAPIMetadataVariable> & h, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->keywords = EKeywordsKeyStore::get_instance()->fetch(h, v, mkt_internal);
     add_metadata_key(_imp->keywords);
 }
@@ -1181,7 +1180,7 @@ EbuildID::load_keywords(const std::shared_ptr<const EAPIMetadataVariable> & h, c
 void
 EbuildID::load_inherited(const std::shared_ptr<const EAPIMetadataVariable> & r, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->inherited = EStringSetKeyStore::get_instance()->fetch(r, v, mkt_internal);
     add_metadata_key(_imp->inherited);
 }
@@ -1192,7 +1191,7 @@ EbuildID::load_defined_phases(const std::shared_ptr<const EAPIMetadataVariable> 
     if (strip_leading(v, " \t\r\n").empty())
         throw InternalError(PALUDIS_HERE, "v should not be empty");
 
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->defined_phases = EStringSetKeyStore::get_instance()->fetch(h, v, mkt_internal);
     add_metadata_key(_imp->defined_phases);
 }
@@ -1200,7 +1199,7 @@ EbuildID::load_defined_phases(const std::shared_ptr<const EAPIMetadataVariable> 
 void
 EbuildID::load_upstream_changelog(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->upstream_changelog = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_normal, is_installed());
     add_metadata_key(_imp->upstream_changelog);
 }
@@ -1208,7 +1207,7 @@ EbuildID::load_upstream_changelog(const std::shared_ptr<const EAPIMetadataVariab
 void
 EbuildID::load_upstream_documentation(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->upstream_documentation = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_normal, is_installed());
     add_metadata_key(_imp->upstream_documentation);
 }
@@ -1216,7 +1215,7 @@ EbuildID::load_upstream_documentation(const std::shared_ptr<const EAPIMetadataVa
 void
 EbuildID::load_upstream_release_notes(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->upstream_release_notes = std::make_shared<ESimpleURIKey>(_imp->environment, m, eapi(), v, mkt_normal, is_installed());
     add_metadata_key(_imp->upstream_release_notes);
 }
@@ -1224,7 +1223,7 @@ EbuildID::load_upstream_release_notes(const std::shared_ptr<const EAPIMetadataVa
 void
 EbuildID::load_bugs_to(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->bugs_to = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_normal, is_installed());
     add_metadata_key(_imp->bugs_to);
 }
@@ -1232,7 +1231,7 @@ EbuildID::load_bugs_to(const std::shared_ptr<const EAPIMetadataVariable> & m, co
 void
 EbuildID::load_remote_ids(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->remote_ids = std::make_shared<EPlainTextSpecKey>(_imp->environment, m, eapi(), v, mkt_internal, is_installed());
     add_metadata_key(_imp->remote_ids);
 }
@@ -1240,7 +1239,7 @@ EbuildID::load_remote_ids(const std::shared_ptr<const EAPIMetadataVariable> & m,
 void
 EbuildID::load_slot(const std::shared_ptr<const EAPIMetadataVariable> & m, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->slot = ESlotKeyStore::get_instance()->fetch(*eapi(), m, v, mkt_internal);
     add_metadata_key(_imp->slot);
 }
@@ -1248,7 +1247,7 @@ EbuildID::load_slot(const std::shared_ptr<const EAPIMetadataVariable> & m, const
 void
 EbuildID::load_generated_from(const std::shared_ptr<const EAPIMetadataVariable> & h, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->generated_from = EStringSetKeyStore::get_instance()->fetch(h, v, mkt_normal);
     add_metadata_key(_imp->generated_from);
 }
@@ -1256,7 +1255,7 @@ EbuildID::load_generated_from(const std::shared_ptr<const EAPIMetadataVariable> 
 void
 EbuildID::load_generated_time(const std::string & r, const std::string & h, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->generated_time = std::make_shared<LiteralMetadataTimeKey>(r, h, mkt_normal, Timestamp(destringify<std::time_t>(v), 0));
     add_metadata_key(_imp->generated_time);
 }
@@ -1264,7 +1263,7 @@ EbuildID::load_generated_time(const std::string & r, const std::string & h, cons
 void
 EbuildID::load_generated_using(const std::string & r, const std::string & h, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->generated_using = std::make_shared<LiteralMetadataValueKey<std::string> >(r, h, mkt_normal, v);
     add_metadata_key(_imp->generated_using);
 }
@@ -1272,7 +1271,7 @@ EbuildID::load_generated_using(const std::string & r, const std::string & h, con
 void
 EbuildID::load_scm_revision(const std::string & r, const std::string & h, const std::string & v) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
     _imp->scm_revision = std::make_shared<LiteralMetadataValueKey<std::string> >(r, h, mkt_normal, v);
     add_metadata_key(_imp->scm_revision);
 }
@@ -1785,7 +1784,7 @@ EbuildID::is_installed() const
 void
 EbuildID::set_scm_revision(const std::string & s) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
 
     if ((! eapi()->supported()) ||
             eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name().empty() ||

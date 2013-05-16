@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011, 2012 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2012, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -44,7 +44,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/executor.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/timestamp.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/process.hh>
@@ -88,6 +87,7 @@
 #include <cstdlib>
 #include <algorithm>
 #include <unordered_map>
+#include <mutex>
 
 using namespace paludis;
 using namespace cave;
@@ -146,11 +146,11 @@ namespace
     };
 
     std::string lock_pipe_command(
-            Mutex & mutex,
+            std::mutex & mutex,
             ProcessPipeCommandFunction f,
             const std::string & s)
     {
-        Lock lock(mutex);
+        std::unique_lock<std::mutex> lock(mutex);
         return f(s);
     }
 
@@ -387,11 +387,11 @@ namespace
     }
 
     void set_output_manager(
-            Mutex & mutex,
+            std::recursive_mutex & mutex,
             JobActiveState & active_state,
             const std::shared_ptr<OutputManager> & o)
     {
-        Lock lock(mutex);
+        std::unique_lock<std::recursive_mutex> lock(mutex);
         active_state.set_output_manager(o);
     }
 
@@ -427,9 +427,9 @@ namespace
             const int n_fetch_jobs,
             const PackageDepSpec & id_spec,
             const int x, const int y, const int f, const int s, bool normal_only, const bool was_target,
-            Mutex & job_mutex,
+            std::recursive_mutex & job_mutex,
             JobActiveState & active_state,
-            Mutex & executor_mutex)
+            std::mutex & executor_mutex)
     {
         Context context("When fetching for '" + stringify(id_spec) + "':");
 
@@ -490,9 +490,9 @@ namespace
             const int x, const int y,
             const int f, const int s,
             const bool was_target,
-            Mutex & job_mutex,
+            std::recursive_mutex & job_mutex,
             JobActiveState & active_state,
-            Mutex & executor_mutex)
+            std::mutex & executor_mutex)
     {
         Context context("When " + destination_string + " for '" + stringify(id_spec) + "':");
 
@@ -553,9 +553,9 @@ namespace
             const int x, const int y,
             const int f, const int s,
             const bool was_target,
-            Mutex & job_mutex,
+            std::recursive_mutex & job_mutex,
             JobActiveState & active_state,
-            Mutex & executor_mutex)
+            std::mutex & executor_mutex)
     {
         Context context("When removing '" + stringify(id_spec) + "':");
 
@@ -780,7 +780,7 @@ namespace
 
     struct ExecuteCounts
     {
-        Mutex mutex;
+        std::mutex mutex;
         int x_fetches, y_fetches, f_fetches, s_fetches, x_installs, y_installs, f_installs, s_installs;
 
         ExecuteCounts() :
@@ -797,19 +797,19 @@ namespace
 
         void visit(const FetchJob &)
         {
-            Lock lock(mutex);
+            std::unique_lock<std::mutex> lock(mutex);
             ++y_fetches;
         }
 
         void visit(const InstallJob &)
         {
-            Lock lock(mutex);
+            std::unique_lock<std::mutex> lock(mutex);
             ++y_installs;
         }
 
         void visit(const UninstallJob &)
         {
-            Lock lock(mutex);
+            std::unique_lock<std::mutex> lock(mutex);
             ++y_installs;
         }
     };
@@ -834,8 +834,8 @@ namespace
         const ExecuteResolutionCommandLine & cmdline;
         const int n_fetch_jobs;
         ExecuteCounts & counts;
-        Mutex & job_mutex;
-        Mutex & executor_mutex;
+        std::recursive_mutex & job_mutex;
+        std::mutex & executor_mutex;
         const ExecuteOneVisitorPart part;
         int retcode;
 
@@ -844,8 +844,8 @@ namespace
                 const ExecuteResolutionCommandLine & c,
                 const int n,
                 ExecuteCounts & k,
-                Mutex & m,
-                Mutex & x,
+                std::recursive_mutex & m,
+                std::mutex & x,
                 ExecuteOneVisitorPart p,
                 int r) :
             env(e),
@@ -901,7 +901,7 @@ namespace
                     {
                         const std::shared_ptr<JobActiveState> active_state(std::make_shared<JobActiveState>());
                         {
-                            Lock lock(job_mutex);
+                            std::unique_lock<std::recursive_mutex> lock(job_mutex);
                             install_item.set_state(active_state);
                         }
 
@@ -909,7 +909,7 @@ namespace
                                     counts.f_installs, counts.s_installs, false, install_item.was_target(),
                                     job_mutex, *active_state, executor_mutex))
                         {
-                            Lock lock(job_mutex);
+                            std::unique_lock<std::recursive_mutex> lock(job_mutex);
                             install_item.set_state(active_state->failed());
                             ++counts.f_installs;
                             return 1;
@@ -920,13 +920,13 @@ namespace
                                     counts.x_installs, counts.y_installs, counts.f_installs, counts.s_installs,
                                     install_item.was_target(), job_mutex, *active_state, executor_mutex))
                         {
-                            Lock lock(job_mutex);
+                            std::unique_lock<std::recursive_mutex> lock(job_mutex);
                             install_item.set_state(active_state->failed());
                             ++counts.f_installs;
                             return 1;
                         }
 
-                        Lock lock(job_mutex);
+                        std::unique_lock<std::recursive_mutex> lock(job_mutex);
                         install_item.set_state(active_state->succeeded());
                     }
                     break;
@@ -956,7 +956,7 @@ namespace
                     {
                         const std::shared_ptr<JobActiveState> active_state(std::make_shared<JobActiveState>());
                         {
-                            Lock lock(job_mutex);
+                            std::unique_lock<std::recursive_mutex> lock(job_mutex);
                             uninstall_item.set_state(active_state);
                         }
 
@@ -967,13 +967,13 @@ namespace
                                         counts.f_installs, counts.s_installs, uninstall_item.was_target(),
                                         job_mutex, *active_state, executor_mutex))
                             {
-                                Lock lock(job_mutex);
+                                std::unique_lock<std::recursive_mutex> lock(job_mutex);
                                 uninstall_item.set_state(active_state->failed());
                                 ++counts.f_installs;
                                 return 1;
                             }
 
-                        Lock lock(job_mutex);
+                        std::unique_lock<std::recursive_mutex> lock(job_mutex);
                         uninstall_item.set_state(active_state->succeeded());
                     }
                     break;
@@ -1002,20 +1002,20 @@ namespace
                     {
                         const std::shared_ptr<JobActiveState> active_state(std::make_shared<JobActiveState>());
                         {
-                            Lock lock(job_mutex);
+                            std::unique_lock<std::recursive_mutex> lock(job_mutex);
                             fetch_item.set_state(active_state);
                         }
 
                         if (! do_fetch(env, cmdline, n_fetch_jobs, fetch_item.origin_id_spec(), counts.x_fetches, counts.y_fetches,
                                     counts.f_fetches, counts.s_fetches, true, fetch_item.was_target(), job_mutex, *active_state, executor_mutex))
                         {
-                            Lock lock(job_mutex);
+                            std::unique_lock<std::recursive_mutex> lock(job_mutex);
                             fetch_item.set_state(active_state->failed());
                             ++counts.f_fetches;
                             return 1;
                         }
 
-                        Lock lock(job_mutex);
+                        std::unique_lock<std::recursive_mutex> lock(job_mutex);
                         fetch_item.set_state(active_state->succeeded());
                     }
                     break;
@@ -1257,7 +1257,7 @@ namespace
         const std::shared_ptr<ExecuteJob> job;
         const std::shared_ptr<JobLists> lists;
         JobRequirementIf require_if;
-        Mutex & global_retcode_mutex;
+        std::mutex & global_retcode_mutex;
         int & global_retcode;
         int local_retcode;
         ExecuteCounts & counts;
@@ -1265,7 +1265,7 @@ namespace
 
         Timestamp last_flushed, last_output;
 
-        Mutex job_mutex;
+        std::recursive_mutex job_mutex;
 
         bool want, already_done;
 
@@ -1277,7 +1277,7 @@ namespace
                 const std::shared_ptr<ExecuteJob> & j,
                 const std::shared_ptr<JobLists> & l,
                 JobRequirementIf r,
-                Mutex & m,
+                std::mutex & m,
                 int & rc,
                 ExecuteCounts & k,
                 std::string & h) :
@@ -1364,7 +1364,7 @@ namespace
 
             int current_global_retcode;
             {
-                Lock lock(global_retcode_mutex);
+                std::unique_lock<std::mutex> lock(global_retcode_mutex);
                 current_global_retcode = global_retcode;
             }
 
@@ -1406,7 +1406,7 @@ namespace
             }
             else if (! already_done)
             {
-                Lock lock(job_mutex);
+                std::unique_lock<std::recursive_mutex> lock(job_mutex);
                 job->set_state(std::make_shared<JobSkippedState>());
             }
         }
@@ -1416,7 +1416,7 @@ namespace
             if (n_fetch_jobs == 0)
                 return;
 
-            Lock lock(job_mutex);
+            std::unique_lock<std::recursive_mutex> lock(job_mutex);
             const std::shared_ptr<OutputManager> output_manager(
                     job->state()->accept_returning<std::shared_ptr<OutputManager> >(GetOutputManager()));
 
@@ -1463,7 +1463,7 @@ namespace
 
         void flush_threaded()
         {
-            Lock lock(job_mutex);
+            std::unique_lock<std::recursive_mutex> lock(job_mutex);
             const std::shared_ptr<OutputManager> output_manager(
                     job->state()->accept_returning<std::shared_ptr<OutputManager> >(GetOutputManager()));
 
@@ -1485,7 +1485,7 @@ namespace
                 ExecuteOneVisitor execute(env, cmdline, n_fetch_jobs, counts, job_mutex, executor.exclusivity_mutex(), x1_post, local_retcode);
                 local_retcode |= job->accept_returning<int>(execute);
 
-                Lock lock(job_mutex);
+                std::unique_lock<std::recursive_mutex> lock(job_mutex);
                 const std::shared_ptr<OutputManager> output_manager(
                         job->state()->accept_returning<std::shared_ptr<OutputManager> >(GetOutputManager()));
 
@@ -1500,7 +1500,7 @@ namespace
             }
 
             {
-                Lock lock(global_retcode_mutex);
+                std::unique_lock<std::mutex> lock(global_retcode_mutex);
                 global_retcode |= local_retcode;
             }
 
@@ -1516,7 +1516,7 @@ namespace
             const int n_fetch_jobs)
     {
         int retcode(0);
-        Mutex retcode_mutex;
+        std::mutex retcode_mutex;
         ExecuteCounts counts;
 
         for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),

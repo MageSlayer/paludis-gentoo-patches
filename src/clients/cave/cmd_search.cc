@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -45,7 +45,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
 #include <paludis/util/stringify.hh>
@@ -53,6 +52,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
+#include <mutex>
 #include <set>
 #include <map>
 #include <unistd.h>
@@ -134,7 +134,7 @@ namespace
 
     struct DisplayCallback
     {
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         mutable std::map<std::string, int> metadata;
         mutable int steps;
         mutable std::string stage;
@@ -221,7 +221,7 @@ namespace
             if (! output)
                 return;
 
-            Lock lock(mutex);
+            std::unique_lock<std::mutex> lock(mutex);
             ++steps;
             stage = s.stage;
             update();
@@ -232,7 +232,7 @@ namespace
             if (! output)
                 return;
 
-            Lock lock(mutex);
+            std::unique_lock<std::mutex> lock(mutex);
             ++metadata.insert(std::make_pair(stringify(e.repository()), 0)).first->second;
             update();
         }

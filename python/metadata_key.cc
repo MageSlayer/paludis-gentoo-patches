@@ -182,7 +182,7 @@ struct MetadataPackageIDKeyWrapper :
     virtual const std::shared_ptr<const PackageID> parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("parse_value"))
             return f();
@@ -192,7 +192,7 @@ struct MetadataPackageIDKeyWrapper :
 
     virtual const std::string raw_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("raw_name"))
             return f();
@@ -202,7 +202,7 @@ struct MetadataPackageIDKeyWrapper :
 
     virtual const std::string human_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("human_name"))
             return f();
@@ -212,7 +212,7 @@ struct MetadataPackageIDKeyWrapper :
 
     virtual MetadataKeyType type() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("type"))
             return f();
@@ -235,7 +235,7 @@ struct MetadataStringKeyWrapper :
     virtual const std::string parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("parse_value"))
             return f();
@@ -245,7 +245,7 @@ struct MetadataStringKeyWrapper :
 
     virtual const std::string raw_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("raw_name"))
             return f();
@@ -255,7 +255,7 @@ struct MetadataStringKeyWrapper :
 
     virtual const std::string human_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("human_name"))
             return f();
@@ -265,7 +265,7 @@ struct MetadataStringKeyWrapper :
 
     virtual MetadataKeyType type() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("type"))
             return f();
@@ -281,7 +281,7 @@ struct MetadataSlotNameKeyWrapper :
     virtual const Slot parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("parse_value"))
             return f();
@@ -291,7 +291,7 @@ struct MetadataSlotNameKeyWrapper :
 
     virtual const std::string raw_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("raw_name"))
             return f();
@@ -301,7 +301,7 @@ struct MetadataSlotNameKeyWrapper :
 
     virtual const std::string human_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("human_name"))
             return f();
@@ -311,7 +311,7 @@ struct MetadataSlotNameKeyWrapper :
 
     virtual MetadataKeyType type() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("type"))
             return f();
@@ -336,7 +336,7 @@ struct MetadataSectionKeyWrapper :
 
     virtual void need_keys_added() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("need_keys_added"))
             f();
@@ -346,7 +346,7 @@ struct MetadataSectionKeyWrapper :
 
     virtual const std::shared_ptr<const MetadataValueKey<std::string> > title_key() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("title_key"))
             return f();
@@ -356,7 +356,7 @@ struct MetadataSectionKeyWrapper :
 
     virtual const std::string raw_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("raw_name"))
             return f();
@@ -366,7 +366,7 @@ struct MetadataSectionKeyWrapper :
 
     virtual const std::string human_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("human_name"))
             return f();
@@ -376,7 +376,7 @@ struct MetadataSectionKeyWrapper :
 
     virtual MetadataKeyType type() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("type"))
             return f();
@@ -392,7 +392,7 @@ struct MetadataTimeKeyWrapper :
     virtual Timestamp parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("parse_value"))
             return Timestamp(f(), 0);
@@ -402,7 +402,7 @@ struct MetadataTimeKeyWrapper :
 
     virtual const std::string raw_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("raw_name"))
             return f();
@@ -412,7 +412,7 @@ struct MetadataTimeKeyWrapper :
 
     virtual const std::string human_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("human_name"))
             return f();
@@ -422,7 +422,7 @@ struct MetadataTimeKeyWrapper :
 
     virtual MetadataKeyType type() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("type"))
             return f();
@@ -438,7 +438,7 @@ struct MetadataChoicesKeyWrapper :
     virtual const std::shared_ptr<const Choices> parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("parse_value"))
             return f();
@@ -448,7 +448,7 @@ struct MetadataChoicesKeyWrapper :
 
     virtual const std::string raw_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("raw_name"))
             return f();
@@ -458,7 +458,7 @@ struct MetadataChoicesKeyWrapper :
 
     virtual const std::string human_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("human_name"))
             return f();
@@ -468,7 +468,7 @@ struct MetadataChoicesKeyWrapper :
 
     virtual MetadataKeyType type() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("type"))
             return f();
@@ -484,7 +484,7 @@ struct MetadataFSPathKeyWrapper :
     virtual const FSPath parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("parse_value"))
             return f();
@@ -494,7 +494,7 @@ struct MetadataFSPathKeyWrapper :
 
     virtual const std::string raw_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("raw_name"))
             return f();
@@ -504,7 +504,7 @@ struct MetadataFSPathKeyWrapper :
 
     virtual const std::string human_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("human_name"))
             return f();
@@ -514,7 +514,7 @@ struct MetadataFSPathKeyWrapper :
 
     virtual MetadataKeyType type() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("type"))
             return f();
@@ -531,7 +531,7 @@ struct MetadataCollectionKeyWrapper :
     virtual const std::shared_ptr<const C_> parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = this->get_override("parse_value"))
             return f();
@@ -541,7 +541,7 @@ struct MetadataCollectionKeyWrapper :
 
     virtual const std::string raw_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = this->get_override("raw_name"))
             return f();
@@ -551,7 +551,7 @@ struct MetadataCollectionKeyWrapper :
 
     virtual const std::string human_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = this->get_override("human_name"))
             return f();
@@ -561,7 +561,7 @@ struct MetadataCollectionKeyWrapper :
 
     virtual MetadataKeyType type() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = this->get_override("type"))
             return f();
@@ -585,7 +585,7 @@ struct MetadataSpecTreeKeyWrapper :
     virtual const std::shared_ptr<const C_> parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = this->get_override("parse_value"))
             return f();
@@ -595,7 +595,7 @@ struct MetadataSpecTreeKeyWrapper :
 
     virtual const std::string raw_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = this->get_override("raw_name"))
             return f();
@@ -605,7 +605,7 @@ struct MetadataSpecTreeKeyWrapper :
 
     virtual const std::string human_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = this->get_override("human_name"))
             return f();
@@ -615,7 +615,7 @@ struct MetadataSpecTreeKeyWrapper :
 
     virtual MetadataKeyType type() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = this->get_override("type"))
             return f();
@@ -639,7 +639,7 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
     virtual const std::shared_ptr<const FetchableURISpecTree> parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = this->get_override("parse_value"))
             return f();
@@ -650,7 +650,7 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
     virtual const std::shared_ptr<const URILabel> initial_label() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = this->get_override("initial_label"))
             return f();
@@ -660,7 +660,7 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
 
     virtual const std::string raw_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("raw_name"))
             return f();
@@ -670,7 +670,7 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
 
     virtual const std::string human_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("human_name"))
             return f();
@@ -680,7 +680,7 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
 
     virtual MetadataKeyType type() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("type"))
             return f();
@@ -704,7 +704,7 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
     virtual const std::shared_ptr<const DependencySpecTree> parse_value() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = this->get_override("parse_value"))
             return f();
@@ -715,7 +715,7 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
     virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
         PALUDIS_ATTRIBUTE((warn_unused_result))
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = this->get_override("initial_labels"))
             return f();
@@ -725,7 +725,7 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
 
     virtual const std::string raw_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("raw_name"))
             return f();
@@ -735,7 +735,7 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
 
     virtual const std::string human_name() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("human_name"))
             return f();
@@ -745,7 +745,7 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
 
     virtual MetadataKeyType type() const
     {
-        Lock l(get_mutex());
+        std::unique_lock<std::recursive_mutex> l(get_mutex());
 
         if (bp::override f = get_override("type"))
             return f();

@@ -20,15 +20,16 @@
 #ifndef PALUDIS_GUARD_PYTHON_MUTEX_HH
 #define PALUDIS_GUARD_PYTHON_MUTEX_HH 1
 
-#include <paludis/util/mutex.hh>
+#include <paludis/util/attributes.hh>
+#include <mutex>
 
 namespace paludis
 {
     namespace python
     {
         //global mutex for thread safety.
-        Mutex & get_mutex() PALUDIS_VISIBLE;
-    } // namespace paludis::python
-} // namespace paludis
+        std::recursive_mutex & get_mutex() PALUDIS_VISIBLE;
+    }
+}
 
 #endif

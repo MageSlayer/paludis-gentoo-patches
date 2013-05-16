@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -127,7 +127,7 @@ InstalledUnpackagedRepository::package_ids(const QualifiedPackageName & q, const
     for (IndirectIterator<NDBAMEntrySequence::ConstIterator> e(entries->begin()), e_end(entries->end()) ;
             e != e_end ; ++e)
     {
-        Lock l(*(*e).mutex());
+        std::unique_lock<std::mutex> l(*(*e).mutex());
         if (! (*e).package_id())
             (*e).package_id() = std::make_shared<InstalledUnpackagedID>(_imp->params.environment(), (*e).name(), (*e).version(),
                         (*e).slot(), name(), (*e).fs_location(), (*e).magic(), installed_root_key()->parse_value(), &_imp->ndbam);

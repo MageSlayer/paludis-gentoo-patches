@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -19,7 +19,6 @@
 
 #include <paludis/environments/paludis/world.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/make_named_values.hh>
@@ -29,6 +28,7 @@
 #include <paludis/user_dep_spec.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
 #include <functional>
+#include <mutex>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
@@ -40,7 +40,7 @@ namespace paludis
     {
         const Environment * const env;
         const std::shared_ptr<const FSPath> maybe_world_file;
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
 
         Imp(const Environment * const e, const std::shared_ptr<const FSPath> & m) :
             env(e),
@@ -97,7 +97,7 @@ World::_add_string_to_world(const std::string & n) const
         return false;
     }
 
-    Lock l(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
 
     Context context("When adding '" + n + "' to world file '" + stringify(*_imp->maybe_world_file) + "':");
 
@@ -141,7 +141,7 @@ World::_remove_string_from_world(const std::string & n) const
         return result;
     }
 
-    Lock l(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
 
     Context context("When removing '" + n + "' from world file '" + stringify(*_imp->maybe_world_file) + "':");
 

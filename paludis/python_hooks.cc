@@ -10,11 +10,11 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/env_var_names.hh>
 
+#include <mutex>
 #include <set>
 
 using namespace paludis;
@@ -32,7 +32,7 @@ namespace
         public HookFile
     {
         private:
-            static Mutex _mutex;
+            static std::mutex _mutex;
 
             static bp::dict _local_namespace_base;
             static bp::dict _output_wrapper_namespace;
@@ -78,7 +78,7 @@ namespace
             }
     };
 
-    Mutex PyHookFile::_mutex;
+    std::mutex PyHookFile::_mutex;
     bp::dict PyHookFile::_output_wrapper_namespace;
     bp::dict PyHookFile::_local_namespace_base;
     bp::object PyHookFile::_format_exception;
@@ -90,7 +90,7 @@ PyHookFile::PyHookFile(const FSPath & f, const bool r, const Environment * const
     _run_prefixed(r),
     _loaded(false)
 {
-    Lock l(_mutex);
+    std::unique_lock<std::mutex> l(_mutex);
 
     static bool initialized(false);
 
@@ -158,7 +158,7 @@ PyHookFile::run(const Hook & hook, const std::shared_ptr<OutputManager> &) const
     if (! _loaded)
         return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
 
-    Lock l(_mutex);
+    std::unique_lock<std::mutex> l(_mutex);
 
     bp::object _run;
 
@@ -243,7 +243,7 @@ PyHookFile::add_dependencies(const Hook & hook, DirectedGraph<std::string, int> 
     if (! _loaded)
         return;
 
-    Lock l(_mutex);
+    std::unique_lock<std::mutex> l(_mutex);
 
     Prefix p(this, _run_prefixed ? strip_trailing_string(file_name().basename(), ".py") + "> " : "");
 

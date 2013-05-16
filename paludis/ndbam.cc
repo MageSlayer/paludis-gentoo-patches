@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -61,20 +61,20 @@ namespace
 {
     struct CategoryContents
     {
-        Mutex mutex;
+        std::mutex mutex;
         std::shared_ptr<QualifiedPackageNameSet> package_names;
         PackageContentsMap package_contents_map;
     };
 
     struct PackageContents
     {
-        Mutex mutex;
+        std::mutex mutex;
         std::shared_ptr<NDBAMEntrySequence> entries;
     };
 
     struct CategoryNamesContainingPackageEntry
     {
-        Mutex mutex;
+        std::mutex mutex;
         std::shared_ptr<CategoryNamePartSet> category_names_containing_package;
     };
 }
@@ -88,11 +88,11 @@ namespace paludis
         const FSPath location;
         const VersionSpecOptions version_options;
 
-        mutable Mutex category_names_mutex;
+        mutable std::mutex category_names_mutex;
         mutable std::shared_ptr<CategoryNamePartSet> category_names;
         mutable CategoryContentsMap category_contents_map;
 
-        mutable Mutex category_names_containing_package_mutex;
+        mutable std::mutex category_names_containing_package_mutex;
         mutable CategoryNamesContainingPackage category_names_containing_package;
 
         Imp(const FSPath & l, const VersionSpecOptions & o) :
@@ -145,7 +145,7 @@ NDBAM::~NDBAM()
 std::shared_ptr<const CategoryNamePartSet>
 NDBAM::category_names()
 {
-    Lock l(_imp->category_names_mutex);
+    std::unique_lock<std::mutex> l(_imp->category_names_mutex);
     if (! _imp->category_names)
     {
         Context context("When loading category names for NDBAM at '" + stringify(_imp->location) + "':");
@@ -181,13 +181,13 @@ NDBAM::package_names(const CategoryNamePart & c)
     if (! has_category_named(c))
         return std::make_shared<QualifiedPackageNameSet>();
 
-    Lock l(_imp->category_names_mutex);
+    std::unique_lock<std::mutex> l(_imp->category_names_mutex);
     CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(c));
     if (_imp->category_contents_map.end() == cc_i || ! cc_i->second)
         throw InternalError(PALUDIS_HERE, "has_category_named(" + stringify(c) + ") but got category_contents_map end or zero pointer");
     CategoryContents & cc(*cc_i->second);
 
-    l.acquire_then_release_old(cc.mutex);
+    l = std::move(std::unique_lock<std::mutex>(cc.mutex));
 
     if (! cc.package_names)
     {
@@ -220,7 +220,7 @@ NDBAM::package_names(const CategoryNamePart & c)
 bool
 NDBAM::has_category_named(const CategoryNamePart & c)
 {
-    Lock l(_imp->category_names_mutex);
+    std::unique_lock<std::mutex> l(_imp->category_names_mutex);
     CategoryContentsMap::const_iterator it(_imp->category_contents_map.find(c));
     if (it != _imp->category_contents_map.end())
         return bool(it->second);
@@ -244,13 +244,13 @@ NDBAM::has_package_named(const QualifiedPackageName & q)
     if (! has_category_named(q.category()))
         return false;
 
-    Lock l(_imp->category_names_mutex);
+    std::unique_lock<std::mutex> l(_imp->category_names_mutex);
     CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(q.category()));
     if (_imp->category_contents_map.end() == cc_i || ! cc_i->second)
         throw InternalError(PALUDIS_HERE, "has_category_named(" + stringify(q.category()) + ") but got category_contents_map end or zero pointer");
 
     CategoryContents & cc(*cc_i->second);
-    l.acquire_then_release_old(cc.mutex);
+    l = std::move(std::unique_lock<std::mutex>(cc.mutex));
 
     PackageContentsMap::const_iterator it(cc.package_contents_map.find(q));
     if (it != cc.package_contents_map.end())
@@ -287,18 +287,18 @@ NDBAM::entries(const QualifiedPackageName & q)
     if (! has_package_named(q))
         return std::make_shared<NDBAMEntrySequence>();
 
-    Lock l(_imp->category_names_mutex);
+    std::unique_lock<std::mutex> l(_imp->category_names_mutex);
     CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(q.category()));
     if (_imp->category_contents_map.end() == cc_i || ! cc_i->second)
         throw InternalError(PALUDIS_HERE, "has_package_named(" + stringify(q) + ") but got category_contents_map end or zero pointer");
     CategoryContents & cc(*cc_i->second);
-    l.acquire_then_release_old(cc.mutex);
+    l = std::move(std::unique_lock<std::mutex>(cc.mutex));
 
     PackageContentsMap::iterator pc_i(cc.package_contents_map.find(q));
     if (cc.package_contents_map.end() == pc_i || ! pc_i->second)
         throw InternalError(PALUDIS_HERE, "has_package_named(" + stringify(q) + ") but got package_contents_map end or zero pointer");
     PackageContents & pc(*pc_i->second);
-    l.acquire_then_release_old(pc.mutex);
+    l = std::move(std::unique_lock<std::mutex>(pc.mutex));
 
     if (! pc.entries)
     {
@@ -329,7 +329,7 @@ NDBAM::entries(const QualifiedPackageName & q)
                 pc.entries->push_back(std::make_shared<NDBAMEntry>(NDBAMEntry(make_named_values<NDBAMEntry>(
                                         n::fs_location() = d->realpath(),
                                         n::magic() = m,
-                                        n::mutex() = std::make_shared<Mutex>(),
+                                        n::mutex() = std::make_shared<std::mutex>(),
                                         n::name() = q,
                                         n::package_id() = std::shared_ptr<PackageID>(),
                                         n::slot() = s,
@@ -357,18 +357,18 @@ NDBAM::entries(const QualifiedPackageName & q)
 void
 NDBAM::add_entry(const QualifiedPackageName & q, const FSPath & d)
 {
-    Lock l(_imp->category_names_mutex);
+    std::unique_lock<std::mutex> l(_imp->category_names_mutex);
     CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(q.category()));
     if (_imp->category_contents_map.end() == cc_i || ! cc_i->second)
         return;
     CategoryContents & cc(*cc_i->second);
-    l.acquire_then_release_old(cc.mutex);
+    l = std::move(std::unique_lock<std::mutex>(cc.mutex));
 
     PackageContentsMap::iterator pc_i(cc.package_contents_map.find(q));
     if (cc.package_contents_map.end() == pc_i || ! pc_i->second)
         return;
     PackageContents & pc(*pc_i->second);
-    l.acquire_then_release_old(pc.mutex);
+    l = std::move(std::unique_lock<std::mutex>(pc.mutex));
 
     if (pc.entries)
     {
@@ -381,7 +381,7 @@ NDBAM::add_entry(const QualifiedPackageName & q, const FSPath & d)
         pc.entries->push_back(std::make_shared<NDBAMEntry>(NDBAMEntry(make_named_values<NDBAMEntry>(
                                 n::fs_location() = d.realpath(),
                                 n::magic() = m,
-                                n::mutex() = std::make_shared<Mutex>(),
+                                n::mutex() = std::make_shared<std::mutex>(),
                                 n::name() = q,
                                 n::package_id() = std::shared_ptr<PackageID>(),
                                 n::slot() = s,
@@ -411,18 +411,18 @@ namespace
 void
 NDBAM::remove_entry(const QualifiedPackageName & q, const FSPath & d)
 {
-    Lock l(_imp->category_names_mutex);
+    std::unique_lock<std::mutex> l(_imp->category_names_mutex);
     CategoryContentsMap::iterator cc_i(_imp->category_contents_map.find(q.category()));
     if (_imp->category_contents_map.end() == cc_i || ! cc_i->second)
         return;
     CategoryContents & cc(*cc_i->second);
-    l.acquire_then_release_old(cc.mutex);
+    l = std::move(std::unique_lock<std::mutex>(cc.mutex));
 
     PackageContentsMap::iterator pc_i(cc.package_contents_map.find(q));
     if (cc.package_contents_map.end() == pc_i || ! pc_i->second)
         return;
     PackageContents & pc(*pc_i->second);
-    l.acquire_then_release_old(pc.mutex);
+    l = std::move(std::unique_lock<std::mutex>(pc.mutex));
 
     if (pc.entries)
     {
@@ -601,13 +601,13 @@ NDBAM::parse_contents(const PackageID & id,
 std::shared_ptr<const CategoryNamePartSet>
 NDBAM::category_names_containing_package(const PackageNamePart & p) const
 {
-    Lock l(_imp->category_names_containing_package_mutex);
+    std::unique_lock<std::mutex> l(_imp->category_names_containing_package_mutex);
     CategoryNamesContainingPackage::iterator cncp_i(_imp->category_names_containing_package.find(p));
     if (_imp->category_names_containing_package.end() == cncp_i)
         cncp_i = _imp->category_names_containing_package.insert(std::make_pair(p, std::make_shared<CategoryNamesContainingPackageEntry>())).first;
     CategoryNamesContainingPackageEntry & cncp(*cncp_i->second);
 
-    l.acquire_then_release_old(cncp.mutex);
+    l = std::move(std::unique_lock<std::mutex>(cncp.mutex));
     if (! cncp.category_names_containing_package)
     {
         Context c("When finding category names containing package '" + stringify(p) +

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,6 @@
 #include <paludis/repositories/e/e_repository.hh>
 
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/options.hh>
@@ -48,6 +47,7 @@
 #include <map>
 #include <algorithm>
 #include <functional>
+#include <mutex>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -59,7 +59,7 @@ namespace paludis
     {
         const std::shared_ptr<const FSPathSequence> locations;
 
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         mutable std::shared_ptr<Set<std::string> > value;
 
         Imp(const std::shared_ptr<const FSPathSequence> & l) :
@@ -75,7 +75,7 @@ namespace paludis
         const std::shared_ptr<const FSPathSequence> locations;
         const ERepository * const e_repository;
 
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         mutable bool added;
 
         Imp(const Environment * const e, const std::shared_ptr<const FSPathSequence> & l,
@@ -101,7 +101,7 @@ InfoVarsMetadataKey::~InfoVarsMetadataKey()
 const std::shared_ptr<const Set<std::string> >
 InfoVarsMetadataKey::parse_value() const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
 
     if (_imp->value)
         return _imp->value;
@@ -156,7 +156,7 @@ InfoPkgsMetadataKey::~InfoPkgsMetadataKey()
 void
 InfoPkgsMetadataKey::need_keys_added() const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     if (_imp->added)
         return;
 

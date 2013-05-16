@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -35,7 +35,6 @@
 #include <paludis/slot.hh>
 
 #include <paludis/util/stringify.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/set.hh>
@@ -635,7 +634,7 @@ namespace paludis
     template <>
     struct Imp<FakePackageID>
     {
-        mutable Mutex mutex;
+        mutable std::recursive_mutex mutex;
 
         const Environment * const env;
         const RepositoryName repository_name;
@@ -882,7 +881,7 @@ FakePackageID::arbitrary_less_than_comparison(const PackageID & other) const
 void
 FakePackageID::need_keys_added() const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
 
     if (! _imp->build_dependencies)
     {
@@ -1007,7 +1006,7 @@ namespace
 void
 FakePackageID::need_masks_added() const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
 
     if (_imp->has_masks)
         return;

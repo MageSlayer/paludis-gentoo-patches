@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -30,7 +30,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
@@ -79,7 +78,7 @@ namespace paludis
         const ERepository * const repository;
         const FSPath tree_root;
 
-        mutable Mutex big_nasty_mutex;
+        mutable std::recursive_mutex big_nasty_mutex;
 
         mutable bool has_category_names;
         mutable CategoryMap category_names;
@@ -190,7 +189,7 @@ ExheresLayout::categories_file() const
 void
 ExheresLayout::need_category_names() const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     if (_imp->has_category_names)
         return;
@@ -240,7 +239,7 @@ ExheresLayout::need_category_names() const
 void
 ExheresLayout::need_package_ids(const QualifiedPackageName & n) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     using namespace std::placeholders;
 
@@ -290,7 +289,7 @@ ExheresLayout::need_package_ids(const QualifiedPackageName & n) const
 bool
 ExheresLayout::has_category_named(const CategoryNamePart & c) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     Context context("When checking for category '" + stringify(c) + "' in '" + stringify(_imp->repository->name()) + "':");
 
@@ -301,7 +300,7 @@ ExheresLayout::has_category_named(const CategoryNamePart & c) const
 bool
 ExheresLayout::has_package_named(const QualifiedPackageName & q) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     Context context("When checking for package '" + stringify(q) + "' in '" + stringify(_imp->repository->name()) + ":");
 
@@ -337,7 +336,7 @@ ExheresLayout::has_package_named(const QualifiedPackageName & q) const
 void
 ExheresLayout::need_category_names_collection() const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     if (_imp->category_names_collection)
         return;
@@ -353,7 +352,7 @@ ExheresLayout::need_category_names_collection() const
 std::shared_ptr<const CategoryNamePartSet>
 ExheresLayout::category_names() const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     Context context("When fetching category names in " + stringify(stringify(_imp->repository->name())) + ":");
 
@@ -364,7 +363,7 @@ ExheresLayout::category_names() const
 std::shared_ptr<const QualifiedPackageNameSet>
 ExheresLayout::package_names(const CategoryNamePart & c) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     using namespace std::placeholders;
 
@@ -414,7 +413,7 @@ ExheresLayout::package_names(const CategoryNamePart & c) const
 std::shared_ptr<const PackageIDSequence>
 ExheresLayout::package_ids(const QualifiedPackageName & n) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     Context context("When fetching versions of '" + stringify(n) + "' in " + stringify(_imp->repository->name()) + ":");
 

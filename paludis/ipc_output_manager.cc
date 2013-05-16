@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011, 2012 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2012, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -32,7 +32,6 @@
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/pipe.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/options.hh>
 #include <paludis/standard_output_manager.hh>
 #include <paludis/create_output_manager_info.hh>
@@ -43,6 +42,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <thread>
+#include <mutex>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -215,7 +215,7 @@ namespace paludis
         const Environment * const env;
         const std::function<void (const std::shared_ptr<OutputManager> &)> on_create;
 
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         std::shared_ptr<OutputManager> output_manager;
 
         Pipe stdout_pipe, stderr_pipe, finished_pipe;
@@ -296,7 +296,7 @@ IPCInputManager::_pipe_command_handler(const std::string & s)
             << "Got create command, waiting for lock";
 
         {
-            Lock lock(_imp->mutex);
+            std::unique_lock<std::mutex> lock(_imp->mutex);
 
             Log::get_instance()->message("ipc_input_manager.pipe_command.got_lock", ll_debug, lc_context)
                 << "Got create command, got lock";
@@ -443,7 +443,7 @@ IPCInputManager::_copy_thread()
 const std::shared_ptr<OutputManager>
 IPCInputManager::underlying_output_manager_if_constructed() const
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     return _imp->output_manager;
 }
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,13 +25,13 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_path.hh>
 #include <paludis/util/sequence-fwd.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/named_value.hh>
 #include <paludis/name.hh>
 #include <paludis/version_spec.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/contents-fwd.hh>
 #include <functional>
+#include <mutex>
 
 namespace paludis
 {
@@ -50,7 +50,7 @@ namespace paludis
     {
         NamedValue<n::fs_location, FSPath> fs_location;
         NamedValue<n::magic, std::string> magic;
-        NamedValue<n::mutex, std::shared_ptr<Mutex> > mutex;
+        NamedValue<n::mutex, std::shared_ptr<std::mutex> > mutex;
         NamedValue<n::name, QualifiedPackageName> name;
         NamedValue<n::package_id, std::shared_ptr<PackageID> > package_id;
         NamedValue<n::slot, SlotName> slot;

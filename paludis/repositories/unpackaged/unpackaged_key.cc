@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -20,7 +20,6 @@
 #include <paludis/repositories/unpackaged/unpackaged_key.hh>
 #include <paludis/repositories/unpackaged/unpackaged_id.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/choice.hh>
@@ -28,6 +27,7 @@
 #include <paludis/comma_separated_dep_parser.hh>
 #include <paludis/comma_separated_dep_pretty_printer.hh>
 #include <memory>
+#include <mutex>
 
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
@@ -118,7 +118,7 @@ namespace paludis
         const Environment * const env;
         const UnpackagedID * const id;
 
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
         mutable std::shared_ptr<Choices> value;
 
         const std::string raw_name;
@@ -150,7 +150,7 @@ UnpackagedChoicesKey::~UnpackagedChoicesKey()
 const std::shared_ptr<const Choices>
 UnpackagedChoicesKey::parse_value() const
 {
-    Lock lock(_imp->mutex);
+    std::unique_lock<std::mutex> lock(_imp->mutex);
     if (! _imp->value)
     {
         _imp->value = std::make_shared<Choices>();

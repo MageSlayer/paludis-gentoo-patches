@@ -25,7 +25,6 @@
 
 #include <paludis/util/realpath.hh>
 #include <paludis/util/log.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/sequence-impl.hh>
@@ -54,6 +53,7 @@
 #include <map>
 #include <set>
 #include <vector>
+#include <mutex>
 
 using namespace paludis;
 
@@ -73,7 +73,7 @@ namespace paludis
         std::vector<std::shared_ptr<LinkageChecker> > checkers;
         std::set<FSPath, FSPathComparator> extra_lib_dirs;
 
-        Mutex mutex;
+        std::mutex mutex;
 
         bool has_files;
         Files files;
@@ -237,7 +237,7 @@ Imp<BrokenLinkageFinder>::walk_directory(const FSPath & directory)
     Log::get_instance()->message("broken_linkage_finder.entering", ll_debug, lc_context)
         << "Entering directory '" << directory << "'";
     {
-        Lock l(mutex);
+        std::unique_lock<std::mutex> l(mutex);
         extra_lib_dirs.erase(without_root);
     }
 
@@ -341,7 +341,7 @@ Imp<BrokenLinkageFinder>::gather_package(const std::shared_ptr<const PackageID> 
         const ContentsFileEntry * file(visitor_cast<const ContentsFileEntry>(**it));
         if (0 != file)
         {
-            Lock l(mutex);
+            std::unique_lock<std::mutex> l(mutex);
             files.insert(std::make_pair(file->location_key()->parse_value(), pkg));
         }
     }

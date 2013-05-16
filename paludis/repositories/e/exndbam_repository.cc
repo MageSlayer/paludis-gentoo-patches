@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -54,6 +54,7 @@
 #include <paludis/slot.hh>
 
 #include <functional>
+#include <mutex>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -212,7 +213,7 @@ ExndbamRepository::package_ids(const QualifiedPackageName & q,
     for (IndirectIterator<NDBAMEntrySequence::ConstIterator> e(entries->begin()), e_end(entries->end()) ;
             e != e_end ; ++e)
     {
-        Lock l(*(*e).mutex());
+        std::unique_lock<std::mutex> l(*(*e).mutex());
         if (! (*e).package_id())
             (*e).package_id() = std::make_shared<ExndbamID>((*e).name(), (*e).version(), _imp->params.environment(),
                         name(), (*e).fs_location(), &_imp->ndbam);

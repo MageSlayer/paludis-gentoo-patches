@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -57,7 +57,6 @@
 #include <paludis/slot.hh>
 
 #include <paludis/util/accept_visitor.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/set.hh>
@@ -92,6 +91,7 @@
 #include <list>
 #include <map>
 #include <iostream>
+#include <mutex>
 #include <cstring>
 #include <cerrno>
 #include <ctime>
@@ -110,7 +110,7 @@ namespace paludis
     {
         VDBRepositoryParams params;
 
-        const std::shared_ptr<Mutex> big_nasty_mutex;
+        const std::shared_ptr<std::recursive_mutex> big_nasty_mutex;
 
         mutable CategoryMap categories;
         mutable bool has_category_names;
@@ -118,7 +118,7 @@ namespace paludis
 
         std::shared_ptr<RepositoryNameCache> names_cache;
 
-        Imp(const VDBRepository * const, const VDBRepositoryParams &, std::shared_ptr<Mutex> = std::make_shared<Mutex>());
+        Imp(const VDBRepository * const, const VDBRepositoryParams &, std::shared_ptr<std::recursive_mutex> = std::make_shared<std::recursive_mutex>());
         ~Imp();
 
         std::shared_ptr<const MetadataValueKey<FSPath> > location_key;
@@ -130,7 +130,7 @@ namespace paludis
     };
 
     Imp<VDBRepository>::Imp(const VDBRepository * const r,
-            const VDBRepositoryParams & p, std::shared_ptr<Mutex> m) :
+            const VDBRepositoryParams & p, std::shared_ptr<std::recursive_mutex> m) :
         params(p),
         big_nasty_mutex(m),
         has_category_names(false),
@@ -192,7 +192,7 @@ VDBRepository::_add_metadata_keys() const
 bool
 VDBRepository::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const
 {
-    Lock l(*_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(*_imp->big_nasty_mutex);
 
     Context context("When checking for category '" + stringify(c) +
             "' in " + stringify(name()) + ":");
@@ -204,7 +204,7 @@ VDBRepository::has_category_named(const CategoryNamePart & c, const RepositoryCo
 bool
 VDBRepository::has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const
 {
-    Lock l(*_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(*_imp->big_nasty_mutex);
 
     Context context("When checking for package '" + stringify(q) +
             "' in " + stringify(name()) + ":");
@@ -229,7 +229,7 @@ VDBRepository::is_unimportant() const
 std::shared_ptr<const CategoryNamePartSet>
 VDBRepository::category_names(const RepositoryContentMayExcludes &) const
 {
-    Lock l(*_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(*_imp->big_nasty_mutex);
 
     Context context("When fetching category names in " + stringify(name()) + ":");
 
@@ -246,7 +246,7 @@ VDBRepository::category_names(const RepositoryContentMayExcludes &) const
 std::shared_ptr<const QualifiedPackageNameSet>
 VDBRepository::package_names(const CategoryNamePart & c, const RepositoryContentMayExcludes & x) const
 {
-    Lock l(*_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(*_imp->big_nasty_mutex);
 
     Context context("When fetching package names in category '" + stringify(c)
             + "' in " + stringify(name()) + ":");
@@ -265,7 +265,7 @@ VDBRepository::package_names(const CategoryNamePart & c, const RepositoryContent
 std::shared_ptr<const PackageIDSequence>
 VDBRepository::package_ids(const QualifiedPackageName & n, const RepositoryContentMayExcludes & x) const
 {
-    Lock l(*_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(*_imp->big_nasty_mutex);
 
     Context context("When fetching versions of '" + stringify(n) + "' in "
             + stringify(name()) + ":");
@@ -567,7 +567,7 @@ VDBRepository::perform_uninstall(
 void
 VDBRepository::invalidate()
 {
-    Lock l(*_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(*_imp->big_nasty_mutex);
     _imp.reset(new Imp<VDBRepository>(this, _imp->params, _imp->big_nasty_mutex));
     _add_metadata_keys();
 }
@@ -575,7 +575,7 @@ VDBRepository::invalidate()
 void
 VDBRepository::regenerate_cache() const
 {
-    Lock l(*_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(*_imp->big_nasty_mutex);
 
     _imp->names_cache->regenerate_cache();
 }
@@ -583,7 +583,7 @@ VDBRepository::regenerate_cache() const
 std::shared_ptr<const CategoryNamePartSet>
 VDBRepository::category_names_containing_package(const PackageNamePart & p, const RepositoryContentMayExcludes & x) const
 {
-    Lock l(*_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(*_imp->big_nasty_mutex);
 
     if (! _imp->names_cache->usable())
         return Repository::category_names_containing_package(p, x);
@@ -803,7 +803,7 @@ VDBRepository::merge(const MergeParams & m)
 void
 VDBRepository::need_category_names() const
 {
-    Lock l(*_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(*_imp->big_nasty_mutex);
 
     if (_imp->has_category_names)
         return;
@@ -832,7 +832,7 @@ VDBRepository::need_category_names() const
 void
 VDBRepository::need_package_ids(const CategoryNamePart & c) const
 {
-    Lock l(*_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(*_imp->big_nasty_mutex);
 
     if (_imp->categories[c])
         return;
@@ -874,7 +874,7 @@ VDBRepository::need_package_ids(const CategoryNamePart & c) const
 const std::shared_ptr<const ERepositoryID>
 VDBRepository::make_id(const QualifiedPackageName & q, const VersionSpec & v, const FSPath & f) const
 {
-    Lock l(*_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(*_imp->big_nasty_mutex);
 
     Context context("When creating ID for '" + stringify(q) + "-" + stringify(v) + "' from '" + stringify(f) + "':");
 
@@ -885,7 +885,7 @@ VDBRepository::make_id(const QualifiedPackageName & q, const VersionSpec & v, co
 const std::shared_ptr<const ERepositoryID>
 VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const VersionSpec & v) const
 {
-    Lock l(*_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(*_imp->big_nasty_mutex);
 
     if (! has_package_named(q, { }))
         return std::shared_ptr<const ERepositoryID>();

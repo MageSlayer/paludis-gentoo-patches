@@ -23,9 +23,9 @@ namespace paludis
 {
     namespace python
     {
-        Mutex & get_mutex()
+        std::recursive_mutex & get_mutex()
         {
-            static Mutex mutex;
+            static std::recursive_mutex mutex;
             return mutex;
         }
     } // namespace paludis::python

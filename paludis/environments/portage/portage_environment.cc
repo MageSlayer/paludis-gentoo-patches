@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -53,7 +53,6 @@
 #include <paludis/package_id.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/set_file.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/literal_metadata_key.hh>
 #include <paludis/repository_factory.hh>
 #include <paludis/choice.hh>
@@ -65,6 +64,7 @@
 #include <map>
 #include <vector>
 #include <list>
+#include <mutex>
 
 #include <unistd.h>
 #include <sys/types.h>
@@ -108,12 +108,12 @@ namespace paludis
         std::set<std::string> ignore_breaks_portage;
         bool ignore_all_breaks_portage;
 
-        mutable Mutex reduced_mutex;
+        mutable std::mutex reduced_mutex;
         bool userpriv_enabled;
         mutable std::shared_ptr<uid_t> reduced_uid;
         mutable std::shared_ptr<gid_t> reduced_gid;
 
-        mutable Mutex hook_mutex;
+        mutable std::mutex hook_mutex;
         mutable bool done_hooks;
         mutable std::shared_ptr<Hooker> hooker;
         mutable std::list<FSPath> hook_dirs;
@@ -121,7 +121,7 @@ namespace paludis
         int overlay_importance;
 
         const FSPath world_file;
-        mutable Mutex world_mutex;
+        mutable std::mutex world_mutex;
 
         std::shared_ptr<LiteralMetadataValueKey<std::string> > format_key;
         std::shared_ptr<LiteralMetadataValueKey<FSPath> > config_location_key;
@@ -704,7 +704,7 @@ PortageEnvironment::perform_hook(
 {
     using namespace std::placeholders;
 
-    Lock l(_imp->hook_mutex);
+    std::unique_lock<std::mutex> l(_imp->hook_mutex);
     if (! _imp->hooker)
     {
         _imp->need_hook_dirs();
@@ -719,7 +719,7 @@ PortageEnvironment::perform_hook(
 std::shared_ptr<const FSPathSequence>
 PortageEnvironment::hook_dirs() const
 {
-    Lock l(_imp->hook_mutex);
+    std::unique_lock<std::mutex> l(_imp->hook_mutex);
     _imp->need_hook_dirs();
     std::shared_ptr<FSPathSequence> result(std::make_shared<FSPathSequence>());
     std::copy(_imp->hook_dirs.begin(), _imp->hook_dirs.end(), result->back_inserter());
@@ -860,7 +860,7 @@ PortageEnvironment::reduced_gid() const
     gid_t g(getgid());
     if (0 == g && _imp->userpriv_enabled)
     {
-        Lock lock(_imp->reduced_mutex);
+        std::unique_lock<std::mutex> lock(_imp->reduced_mutex);
 
         if (! _imp->reduced_gid)
         {
@@ -887,7 +887,7 @@ PortageEnvironment::reduced_uid() const
     uid_t u(getuid());
     if (0 == u && _imp->userpriv_enabled)
     {
-        Lock lock(_imp->reduced_mutex);
+        std::unique_lock<std::mutex> lock(_imp->reduced_mutex);
 
         if (! _imp->reduced_uid)
         {
@@ -940,7 +940,7 @@ PortageEnvironment::remove_from_world(const SetName & s) const
 bool
 PortageEnvironment::_add_string_to_world(const std::string & s) const
 {
-    Lock l(_imp->world_mutex);
+    std::unique_lock<std::mutex> l(_imp->world_mutex);
 
     Context context("When adding '" + s + "' to world file '" + stringify(_imp->world_file) + "':");
 
@@ -976,7 +976,7 @@ PortageEnvironment::_add_string_to_world(const std::string & s) const
 bool
 PortageEnvironment::_remove_string_from_world(const std::string & s) const
 {
-    Lock l(_imp->world_mutex);
+    std::unique_lock<std::mutex> l(_imp->world_mutex);
 
     Context context("When removing '" + s + "' from world file '" + stringify(_imp->world_file) + "':");
     bool result(false);
@@ -1073,7 +1073,7 @@ namespace
 void
 PortageEnvironment::populate_sets() const
 {
-    Lock l(_imp->world_mutex);
+    std::unique_lock<std::mutex> l(_imp->world_mutex);
     add_set(SetName("world::environment"), SetName("world"), std::bind(&make_world_set, this, _imp->world_file), true);
 }
 

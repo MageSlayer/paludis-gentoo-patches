@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,14 +34,14 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/make_null_shared_ptr.hh>
-#include <vector>
-#include <list>
-#include <set>
 #include <algorithm>
 #include <functional>
+#include <list>
+#include <mutex>
+#include <set>
+#include <vector>
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
@@ -57,7 +57,7 @@ namespace paludis
         const bool allow_reasons;
         std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::set<std::string> > > masks;
         mutable Sets sets;
-        mutable Mutex set_mutex;
+        mutable std::mutex set_mutex;
 
         Imp(const PaludisEnvironment * const e, const bool a) :
             env(e),
@@ -136,7 +136,7 @@ PackageMaskConf::query(const std::shared_ptr<const PackageID> & e, const std::st
         }
 
     {
-        Lock lock(_imp->set_mutex);
+        std::unique_lock<std::mutex> lock(_imp->set_mutex);
 
         for (Sets::iterator it(_imp->sets.begin()),
                  it_end(_imp->sets.end()); it_end != it; ++it)

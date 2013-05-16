@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,7 +40,6 @@
 #include <paludis/util/system.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/make_named_values.hh>
@@ -65,6 +64,7 @@
 #include <list>
 #include <map>
 #include <vector>
+#include <mutex>
 
 #include <ctype.h>
 #include <sys/types.h>
@@ -72,12 +72,6 @@
 #include <pwd.h>
 
 #include "config.h"
-
-/** \file
- * Imp of paludis_config.hh classes.
- *
- * \ingroup grppaludisconfig
- */
 
 using namespace paludis;
 using namespace paludis::paludis_environment;
@@ -175,7 +169,7 @@ namespace paludis
         std::string root;
         std::string system_root;
         std::string config_dir;
-        mutable Mutex distribution_mutex;
+        mutable std::mutex distribution_mutex;
         mutable std::string distribution;
         std::shared_ptr<FSPathSequence> bashrc_files;
 
@@ -194,11 +188,11 @@ namespace paludis
         std::shared_ptr<SuggestionsConf> suggestions_conf;
         mutable std::shared_ptr<World> world;
 
-        mutable Mutex reduced_mutex;
+        mutable std::mutex reduced_mutex;
         mutable std::shared_ptr<uid_t> reduced_uid;
         mutable std::shared_ptr<gid_t> reduced_gid;
 
-        mutable Mutex general_conf_mutex;
+        mutable std::mutex general_conf_mutex;
         mutable bool has_general_conf;
         mutable bool accept_all_breaks_portage;
         mutable Set<std::string> accept_breaks_portage;
@@ -234,7 +228,7 @@ namespace paludis
     void
     Imp<PaludisConfig>::need_general_conf() const
     {
-        Lock lock(general_conf_mutex);
+        std::unique_lock<std::mutex> lock(general_conf_mutex);
 
         if (has_general_conf)
             return;
@@ -1002,7 +996,7 @@ PaludisConfig::config_dir() const
 uid_t
 PaludisConfig::reduced_uid() const
 {
-    Lock lock(_imp->reduced_mutex);
+    std::unique_lock<std::mutex> lock(_imp->reduced_mutex);
 
     if (! _imp->reduced_uid)
     {
@@ -1033,7 +1027,7 @@ PaludisConfig::reduced_uid() const
 gid_t
 PaludisConfig::reduced_gid() const
 {
-    Lock lock(_imp->reduced_mutex);
+    std::unique_lock<std::mutex> lock(_imp->reduced_mutex);
 
     if (! _imp->reduced_gid)
     {
@@ -1142,7 +1136,7 @@ PaludisConfig::world() const
 std::string
 PaludisConfig::distribution() const
 {
-    Lock lock(_imp->distribution_mutex);
+    std::unique_lock<std::mutex> lock(_imp->distribution_mutex);
 
     if (! _imp->distribution.empty())
         return _imp->distribution;

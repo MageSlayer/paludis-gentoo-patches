@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -22,7 +22,6 @@
 #include <paludis/repositories/e/eapi.hh>
 
 #include <paludis/util/log.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/singleton-impl.hh>
 
@@ -99,7 +98,7 @@ namespace
     struct DepLabelsStore :
         Singleton<DepLabelsStore>
     {
-        Mutex mutex;
+        std::mutex mutex;
         std::map<DepLabelsIndex, std::shared_ptr<DependenciesLabel> > store;
 
         std::shared_ptr<DependenciesLabel> make(const std::string & class_name, const std::string & text)
@@ -137,7 +136,7 @@ namespace
 
         std::shared_ptr<DependenciesLabel> get(const std::string & eapi_name, const std::string & class_name, const std::string & text)
         {
-            Lock lock(mutex);
+            std::unique_lock<std::mutex> lock(mutex);
             DepLabelsIndex x{eapi_name, class_name, text};
 
             auto i(store.find(x));
@@ -149,7 +148,7 @@ namespace
         std::shared_ptr<DependenciesLabel> get_test(const std::string & eapi_name, const std::string & class_name,
                 const ChoiceNameWithPrefix & choice_name, const std::string & text)
         {
-            Lock lock(mutex);
+            std::unique_lock<std::mutex> lock(mutex);
             DepLabelsIndex x{eapi_name, class_name, stringify(choice_name) + "/" + text};
 
             auto i(store.find(x));

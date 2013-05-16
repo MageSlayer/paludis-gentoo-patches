@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,7 +23,6 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/pimp-impl.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
 #include <paludis/util/hashes.hh>
@@ -35,6 +34,7 @@
 #include <unordered_map>
 #include <memory>
 #include <set>
+#include <mutex>
 #include <cstring>
 #include <cerrno>
 
@@ -47,7 +47,7 @@ namespace paludis
     template<>
     struct Imp<RepositoryNameCache>
     {
-        mutable Mutex mutex;
+        mutable std::mutex mutex;
 
         mutable bool usable;
         mutable FSPath location;
@@ -192,7 +192,7 @@ RepositoryNameCache::~RepositoryNameCache()
 std::shared_ptr<const CategoryNamePartSet>
 RepositoryNameCache::category_names_containing_package(const PackageNamePart & p) const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::mutex> l(_imp->mutex);
 
     if (! usable())
         return std::shared_ptr<const CategoryNamePartSet>();
@@ -211,7 +211,7 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
 void
 RepositoryNameCache::regenerate_cache() const
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::mutex> l(_imp->mutex);
 
     if (_imp->location == FSPath("/var/empty"))
         return;
@@ -277,7 +277,7 @@ RepositoryNameCache::regenerate_cache() const
 void
 RepositoryNameCache::add(const QualifiedPackageName & q)
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::mutex> l(_imp->mutex);
 
     if (! usable())
         return;
@@ -296,7 +296,7 @@ RepositoryNameCache::add(const QualifiedPackageName & q)
 void
 RepositoryNameCache::remove(const QualifiedPackageName & q)
 {
-    Lock l(_imp->mutex);
+    std::unique_lock<std::mutex> l(_imp->mutex);
 
     if (! usable())
         return;

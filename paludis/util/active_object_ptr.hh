@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,8 +21,8 @@
 #define PALUDIS_GUARD_PALUDIS_UTIL_ACTIVE_OBJECT_PTR_HH 1
 
 #include <paludis/util/active_object_ptr-fwd.hh>
-#include <paludis/util/mutex.hh>
 #include <memory>
+#include <mutex>
 
 namespace paludis
 {
@@ -31,18 +31,18 @@ namespace paludis
     {
         private:
             T_ _ptr;
-            std::shared_ptr<Mutex> _mutex;
+            std::shared_ptr<std::mutex> _mutex;
 
             class Deref
             {
                 private:
                     const ActiveObjectPtr * _ptr;
-                    std::shared_ptr<Lock> _lock;
+                    std::unique_lock<std::mutex> _lock;
 
                 public:
                     Deref(const ActiveObjectPtr * p) :
                         _ptr(p),
-                        _lock(std::make_shared<Lock>(*p->_mutex))
+                        _lock(*p->_mutex)
                     {
                     }
 
@@ -57,7 +57,7 @@ namespace paludis
         public:
             ActiveObjectPtr(const T_ & t) :
                 _ptr(t),
-                _mutex(std::make_shared<Mutex>())
+                _mutex(std::make_shared<std::mutex>())
             {
             }
 

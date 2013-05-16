@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  * Copyright (c) 2006 Danny van Dyk
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -33,7 +33,6 @@
 #include <paludis/util/strip.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/mutex.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/hashes.hh>
@@ -79,7 +78,7 @@ namespace paludis
         const ERepository * const repository;
         const FSPath tree_root;
 
-        mutable Mutex big_nasty_mutex;
+        mutable std::recursive_mutex big_nasty_mutex;
 
         mutable bool has_category_names;
         mutable CategoryMap category_names;
@@ -188,7 +187,7 @@ TraditionalLayout::categories_file() const
 void
 TraditionalLayout::need_category_names() const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     if (_imp->has_category_names)
         return;
@@ -259,7 +258,7 @@ TraditionalLayout::need_category_names() const
 void
 TraditionalLayout::need_package_ids(const QualifiedPackageName & n) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     using namespace std::placeholders;
 
@@ -309,7 +308,7 @@ TraditionalLayout::need_package_ids(const QualifiedPackageName & n) const
 bool
 TraditionalLayout::has_category_named(const CategoryNamePart & c) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     Context context("When checking for category '" + stringify(c) + "' in '" + stringify(_imp->repository->name()) + "':");
 
@@ -320,7 +319,7 @@ TraditionalLayout::has_category_named(const CategoryNamePart & c) const
 bool
 TraditionalLayout::has_package_named(const QualifiedPackageName & q) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     Context context("When checking for package '" + stringify(q) + "' in '" + stringify(_imp->repository->name()) + ":");
 
@@ -355,7 +354,7 @@ TraditionalLayout::has_package_named(const QualifiedPackageName & q) const
 void
 TraditionalLayout::need_category_names_collection() const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     if (_imp->category_names_collection)
         return;
@@ -371,7 +370,7 @@ TraditionalLayout::need_category_names_collection() const
 std::shared_ptr<const CategoryNamePartSet>
 TraditionalLayout::category_names() const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     Context context("When fetching category names in " + stringify(stringify(_imp->repository->name())) + ":");
 
@@ -382,7 +381,7 @@ TraditionalLayout::category_names() const
 std::shared_ptr<const QualifiedPackageNameSet>
 TraditionalLayout::package_names(const CategoryNamePart & c) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     using namespace std::placeholders;
 
@@ -431,7 +430,7 @@ TraditionalLayout::package_names(const CategoryNamePart & c) const
 std::shared_ptr<const PackageIDSequence>
 TraditionalLayout::package_ids(const QualifiedPackageName & n) const
 {
-    Lock l(_imp->big_nasty_mutex);
+    std::unique_lock<std::recursive_mutex> lock(_imp->big_nasty_mutex);
 
     Context context("When fetching versions of '" + stringify(n) + "' in " + stringify(_imp->repository->name()) + ":");
 

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -154,7 +154,7 @@ namespace
     {
         private:
             mutable std::shared_ptr<const std::string> _v;
-            mutable Mutex _mutex;
+            mutable std::mutex _mutex;
             const FSPath _f;
 
             const std::string _raw_name;
@@ -172,7 +172,7 @@ namespace
 
             const std::string parse_value() const
             {
-                Lock l(_mutex);
+                std::unique_lock<std::mutex> l(_mutex);
                 if (_v)
                     return *_v;
 
@@ -204,7 +204,7 @@ namespace
     {
         private:
             mutable std::shared_ptr<Set<std::string> > _v;
-            mutable Mutex _mutex;
+            mutable std::mutex _mutex;
             FSPathSequence _f;
 
             const std::string _raw_name;
@@ -226,7 +226,7 @@ namespace
 
             const std::shared_ptr<const Set<std::string> > parse_value() const
             {
-                Lock l(_mutex);
+                std::unique_lock<std::mutex> l(_mutex);
                 if (_v)
                     return _v;
 
@@ -271,7 +271,7 @@ namespace
         private:
             const Environment * const _env;
             mutable std::shared_ptr<const DependencySpecTree> _v;
-            mutable Mutex _mutex;
+            mutable std::mutex _mutex;
             const FSPath _f;
             const std::shared_ptr<const DependenciesLabelSequence> _labels;
 
@@ -294,7 +294,7 @@ namespace
 
             const std::shared_ptr<const DependencySpecTree> parse_value() const
             {
-                Lock l(_mutex);
+                std::unique_lock<std::mutex> l(_mutex);
                 if (_v)
                     return _v;
 
