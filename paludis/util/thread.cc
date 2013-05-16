@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010, 2012 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -68,17 +68,5 @@ Thread::~Thread()
 
     if (! _exception.empty())
         throw InternalError(PALUDIS_HERE, "Exception '" + _exception + "' uncaught in child thread");
-}
-
-void
-Thread::idle_adapter(const std::function<void () throw ()> & f)
-{
-#ifdef __linux__
-    if (-1 == setpriority(PRIO_PROCESS, syscall(SYS_gettid), std::max(19, getpriority(PRIO_PROCESS, 0) + 10)))
-        Log::get_instance()->message("util.thread.setpriority", ll_warning, lc_context) << "Failed to setpriority: " << strerror(errno);
-#else
-#  warning "Don't know how to set thread priorities on your platform"
-#endif
-    f();
 }
 
