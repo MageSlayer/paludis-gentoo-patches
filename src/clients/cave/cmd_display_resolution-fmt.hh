@@ -67,7 +67,7 @@ const auto fs_description = make_format_string_fetcher("display-resolution/descr
     << "    \"" << param<'s'>() << "\"" << "\\n";
 
 const auto fs_choices_need_changes = make_format_string_fetcher("display-resolution/choices_need_changes", 1)
-    << "    " << c::bold_red() << "Need changes for: " << c::normal() << param<'c'>()
+    << "    " << c::bold_red() << "You need to change: " << c::normal() << param<'c'>()
     << param_if<'u'>() << " " << c::bold_normal() << "No changes needed: " << param<'u'>() << c::normal()
     << param_endif<'u'>() << "\\n";
 

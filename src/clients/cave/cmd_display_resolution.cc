@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011, 2012 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2012, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -673,19 +673,29 @@ namespace
                     s_prefix.first.append(" ");
 
                 std::string t;
+
+                if (! changed_state.is_indeterminate())
+                {
+                    if ((*i)->enabled())
+                        t = t + printer.prettify_choice_value_enabled(*i);
+                    else
+                        t = t + printer.prettify_choice_value_disabled(*i);
+                    t = t + " -> ";
+                }
+
                 if ((changed_state.is_indeterminate() && (*i)->enabled()) || (changed_state.is_true()))
                 {
                     if ((*i)->locked())
-                        t = printer.prettify_choice_value_forced(*i);
+                        t = t + printer.prettify_choice_value_forced(*i);
                     else
-                        t = printer.prettify_choice_value_enabled(*i);
+                        t = t + printer.prettify_choice_value_enabled(*i);
                 }
                 else
                 {
                     if ((*i)->locked())
-                        t = printer.prettify_choice_value_masked(*i);
+                        t = t + printer.prettify_choice_value_masked(*i);
                     else
-                        t = printer.prettify_choice_value_disabled(*i);
+                        t = t + printer.prettify_choice_value_disabled(*i);
                 }
 
                 if (changed)
@@ -843,7 +853,7 @@ namespace
 
         std::string visit(const ChangedChoicesConfirmation &) const
         {
-            return "being reconfigured";
+            return "user configuration changes";
         }
     };
 
