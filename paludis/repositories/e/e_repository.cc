@@ -963,52 +963,18 @@ ERepository::is_unimportant() const
     return false;
 }
 
-namespace
-{
-    struct SupportsActionQuery
-    {
-        bool visit(const SupportsActionTest<InstallAction> &) const
-        {
-            return true;
-        }
-
-        bool visit(const SupportsActionTest<ConfigAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendAction> &) const
-        {
-            return true;
-        }
-
-        bool visit(const SupportsActionTest<FetchAction> &) const
-        {
-            return true;
-        }
-
-        bool visit(const SupportsActionTest<PretendFetchAction> &) const
-        {
-            return true;
-        }
-
-        bool visit(const SupportsActionTest<UninstallAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<InfoAction> &) const
-        {
-            return true;
-        }
-    };
-}
-
 bool
 ERepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
-    SupportsActionQuery q;
-    return a.accept_returning<bool>(q);
+    return a.make_accept_returning(
+        [&] (const SupportsActionTest<InstallAction> &)      { return true; },
+        [&] (const SupportsActionTest<ConfigAction> &)       { return false; },
+        [&] (const SupportsActionTest<PretendAction> &)      { return true; },
+        [&] (const SupportsActionTest<FetchAction> &)        { return true; },
+        [&] (const SupportsActionTest<PretendFetchAction> &) { return true; },
+        [&] (const SupportsActionTest<UninstallAction> &)    { return false; },
+        [&] (const SupportsActionTest<InfoAction> &)         { return true; }
+        );
 }
 
 bool

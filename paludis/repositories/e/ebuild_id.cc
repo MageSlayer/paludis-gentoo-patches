@@ -1274,52 +1274,18 @@ EbuildID::load_scm_revision(const std::string & r, const std::string & h, const 
     add_metadata_key(_imp->scm_revision);
 }
 
-namespace
-{
-    struct SupportsActionQuery
-    {
-        bool visit(const SupportsActionTest<FetchAction> &) const
-        {
-            return true;
-        }
-
-        bool visit(const SupportsActionTest<PretendFetchAction> &) const
-        {
-            return true;
-        }
-
-        bool visit(const SupportsActionTest<InstallAction> &) const
-        {
-            return true;
-        }
-
-        bool visit(const SupportsActionTest<ConfigAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendAction> &) const
-        {
-            return true;
-        }
-
-        bool visit(const SupportsActionTest<InfoAction> &) const
-        {
-            return true;
-        }
-
-        bool visit(const SupportsActionTest<UninstallAction> &) const
-        {
-            return false;
-        }
-    };
-}
-
 bool
 EbuildID::supports_action(const SupportsActionTestBase & b) const
 {
-    SupportsActionQuery q;
-    return b.accept_returning<bool>(q) && eapi()->supported();
+    return b.make_accept_returning(
+            [&] (const SupportsActionTest<FetchAction> &)        { return true; },
+            [&] (const SupportsActionTest<PretendFetchAction> &) { return true; },
+            [&] (const SupportsActionTest<InstallAction> &)      { return true; },
+            [&] (const SupportsActionTest<ConfigAction> &)       { return false; },
+            [&] (const SupportsActionTest<PretendAction> &)      { return true; },
+            [&] (const SupportsActionTest<InfoAction> &)         { return true; },
+            [&] (const SupportsActionTest<UninstallAction> &)    { return false; }
+            ) && eapi()->supported();
 }
 
 namespace

@@ -905,52 +905,18 @@ EInstalledRepositoryID::extra_hash_value() const
     return 0;
 }
 
-namespace
-{
-    struct SupportsActionQuery
-    {
-        bool visit(const SupportsActionTest<InstallAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<ConfigAction> &) const
-        {
-            return true;
-        }
-
-        bool visit(const SupportsActionTest<FetchAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendFetchAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<InfoAction> &) const
-        {
-            return true;
-        }
-
-        bool visit(const SupportsActionTest<UninstallAction> &) const
-        {
-            return true;
-        }
-    };
-}
-
 bool
 EInstalledRepositoryID::supports_action(const SupportsActionTestBase & b) const
 {
-    SupportsActionQuery q;
-    return b.accept_returning<bool>(q);
+    return b.make_accept_returning(
+        [&] (const SupportsActionTest<InstallAction> &)      { return false; },
+        [&] (const SupportsActionTest<ConfigAction> &)       { return true; },
+        [&] (const SupportsActionTest<FetchAction> &)        { return false; },
+        [&] (const SupportsActionTest<PretendFetchAction> &) { return false; },
+        [&] (const SupportsActionTest<PretendAction> &)      { return false; },
+        [&] (const SupportsActionTest<InfoAction> &)         { return true; },
+        [&] (const SupportsActionTest<UninstallAction> &)    { return true; }
+        );
 }
 
 namespace

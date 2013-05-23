@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -31,43 +31,6 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-namespace
-{
-    struct FindAnyFetchesFinder
-    {
-        const Environment * const env;
-        const std::shared_ptr<const PackageID> package_id;
-        bool result;
-
-        FindAnyFetchesFinder(const Environment * const e, const std::shared_ptr<const PackageID> & id) :
-            env(e),
-            package_id(id),
-            result(true)
-        {
-        }
-
-        void visit(const FetchableURISpecTree::NodeType<AllDepSpec>::Type & node)
-        {
-            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
-        }
-
-        void visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node)
-        {
-            if (node.spec()->condition_met(env, package_id))
-                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
-        }
-
-        void visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type &)
-        {
-            result = false;
-        }
-
-        void visit(const FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type &)
-        {
-        }
-    };
-}
-
 bool
 paludis::erepository::can_skip_phase(
         const Environment * const env,
@@ -92,9 +55,25 @@ paludis::erepository::can_skip_phase(
         {
             if (id->fetches_key())
             {
-                FindAnyFetchesFinder f(env, id);
-                id->fetches_key()->parse_value()->top()->accept(f);
-                if (! f.result)
+                bool result = true;
+                id->fetches_key()->parse_value()->top()->make_accept(
+                        [&] (const FetchableURISpecTree::NodeType<AllDepSpec>::Type & node, const Revisit<void, FetchableURISpecTree::BasicNode> & revisit) {
+                            std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), revisit);
+                        },
+
+                        [&] (const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node, const Revisit<void, FetchableURISpecTree::BasicNode> & revisit) {
+                            if (node.spec()->condition_met(env, id))
+                                std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), revisit);
+                        },
+
+                        [&] (const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type &) {
+                            result = false;
+                        },
+
+                        [&] (const FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type &) {
+                        }
+                        );
+                if (! result)
                     return false;
             }
         }

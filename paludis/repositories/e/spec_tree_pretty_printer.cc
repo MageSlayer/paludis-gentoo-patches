@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -78,84 +78,25 @@ paludis::erepository::operator<< (std::ostream & s, const SpecTreePrettyPrinter 
 
 namespace
 {
-    struct IsLabelVisitor
-    {
-        bool result;
-
-        IsLabelVisitor() :
-            result(false)
-        {
-        }
-
-        void visit(const GenericSpecTree::NodeType<PlainTextDepSpec>::Type &)
-        {
-        }
-
-        void visit(const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type &)
-        {
-        }
-
-        void visit(const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type &)
-        {
-        }
-
-        void visit(const GenericSpecTree::NodeType<LicenseDepSpec>::Type &)
-        {
-        }
-
-        void visit(const GenericSpecTree::NodeType<PackageDepSpec>::Type &)
-        {
-        }
-
-        void visit(const GenericSpecTree::NodeType<BlockDepSpec>::Type &)
-        {
-        }
-
-        void visit(const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type &)
-        {
-            result = true;
-        }
-
-        void visit(const GenericSpecTree::NodeType<URILabelsDepSpec>::Type &)
-        {
-            result = true;
-        }
-
-        void visit(const GenericSpecTree::NodeType<DependenciesLabelsDepSpec>::Type &)
-        {
-            result = true;
-        }
-
-        void visit(const GenericSpecTree::NodeType<NamedSetDepSpec>::Type &)
-        {
-        }
-
-        void visit(const GenericSpecTree::NodeType<AllDepSpec>::Type &)
-        {
-        }
-
-        void visit(const GenericSpecTree::NodeType<ExactlyOneDepSpec>::Type &)
-        {
-        }
-
-        void visit(const GenericSpecTree::NodeType<AtMostOneDepSpec>::Type &)
-        {
-        }
-
-        void visit(const GenericSpecTree::NodeType<AnyDepSpec>::Type &)
-        {
-        }
-
-        void visit(const GenericSpecTree::NodeType<ConditionalDepSpec>::Type &)
-        {
-        }
-    };
-
     bool is_label(const GenericSpecTree::BasicNode & i)
     {
-        IsLabelVisitor v;
-        i.accept(v);
-        return v.result;
+        return i.make_accept_returning(
+            [&] (const GenericSpecTree::NodeType<PlainTextDepSpec>::Type &)          { return false; },
+            [&] (const GenericSpecTree::NodeType<SimpleURIDepSpec>::Type &)          { return false; },
+            [&] (const GenericSpecTree::NodeType<FetchableURIDepSpec>::Type &)       { return false; },
+            [&] (const GenericSpecTree::NodeType<LicenseDepSpec>::Type &)            { return false; },
+            [&] (const GenericSpecTree::NodeType<PackageDepSpec>::Type &)            { return false; },
+            [&] (const GenericSpecTree::NodeType<BlockDepSpec>::Type &)              { return false; },
+            [&] (const GenericSpecTree::NodeType<PlainTextLabelDepSpec>::Type &)     { return true; },
+            [&] (const GenericSpecTree::NodeType<URILabelsDepSpec>::Type &)          { return true; },
+            [&] (const GenericSpecTree::NodeType<DependenciesLabelsDepSpec>::Type &) { return true; },
+            [&] (const GenericSpecTree::NodeType<NamedSetDepSpec>::Type &)           { return false; },
+            [&] (const GenericSpecTree::NodeType<AllDepSpec>::Type &)                { return false; },
+            [&] (const GenericSpecTree::NodeType<ExactlyOneDepSpec>::Type &)         { return false; },
+            [&] (const GenericSpecTree::NodeType<AtMostOneDepSpec>::Type &)          { return false; },
+            [&] (const GenericSpecTree::NodeType<AnyDepSpec>::Type &)                { return false; },
+            [&] (const GenericSpecTree::NodeType<ConditionalDepSpec>::Type &)        { return false; }
+            );
     }
 }
 

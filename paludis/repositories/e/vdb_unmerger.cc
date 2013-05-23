@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -159,33 +159,14 @@ VDBUnmerger::make_tidy(const FSPath & f) const
 
 namespace
 {
-    struct GetET
-    {
-        EntryType visit(const ContentsFileEntry &) const
-        {
-            return et_file;
-        }
-
-        EntryType visit(const ContentsDirEntry &) const
-        {
-            return et_dir;
-        }
-
-        EntryType visit(const ContentsSymEntry &) const
-        {
-            return et_sym;
-        }
-
-        EntryType visit(const ContentsOtherEntry &) const
-        {
-            return et_misc;
-        }
-    };
-
     EntryType get_et(const ContentsEntry & e)
     {
-        GetET v;
-        return e.accept_returning<EntryType>(v);
+        return e.make_accept_returning(
+            [&] (const ContentsFileEntry &)  { return et_file; },
+            [&] (const ContentsDirEntry &)   { return et_dir; },
+            [&] (const ContentsSymEntry &)   { return et_sym; },
+            [&] (const ContentsOtherEntry &) { return et_misc; }
+            );
     }
 }
 
