@@ -23,6 +23,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/visitor-fwd.hh>
 #include <paludis/util/no_type.hh>
+#include <functional>
 
 namespace paludis
 {
@@ -217,6 +218,9 @@ namespace paludis
     {
         return BaseMadeVisitor<CallResultType<Case_>, Case_, Cases_...>{ firstcase, cases... };
     }
+
+    template <typename Result_, typename Base_>
+    using Revisit = std::function<Result_ (const Base_ &)>;
 
     template <>
     class DeclareAbstractVisitMethods<TypeListTail>
