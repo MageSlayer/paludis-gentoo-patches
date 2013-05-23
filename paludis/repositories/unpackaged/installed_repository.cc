@@ -167,52 +167,18 @@ InstalledUnpackagedRepository::has_category_named(const CategoryNamePart & c, co
     return _imp->ndbam.has_category_named(c);
 }
 
-namespace
-{
-    struct SomeIDsMightSupportVisitor
-    {
-        bool visit(const SupportsActionTest<UninstallAction> &) const
-        {
-            return true;
-        }
-
-        bool visit(const SupportsActionTest<ConfigAction> &) const
-        {
-           return false;
-        }
-
-        bool visit(const SupportsActionTest<InfoAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<FetchAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendFetchAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<InstallAction> &) const
-        {
-            return false;
-        }
-    };
-}
-
 bool
 InstalledUnpackagedRepository::some_ids_might_support_action(const SupportsActionTestBase & test) const
 {
-    SomeIDsMightSupportVisitor v;
-    return test.accept_returning<bool>(v);
+    return test.make_accept_returning(
+            [&] (const SupportsActionTest<UninstallAction> &)    { return true; },
+            [&] (const SupportsActionTest<ConfigAction> &)       { return false; },
+            [&] (const SupportsActionTest<InfoAction> &)         { return false; },
+            [&] (const SupportsActionTest<PretendAction> &)      { return false; },
+            [&] (const SupportsActionTest<FetchAction> &)        { return false; },
+            [&] (const SupportsActionTest<PretendFetchAction> &) { return false; },
+            [&] (const SupportsActionTest<InstallAction> &)      { return false; }
+            );
 }
 
 bool

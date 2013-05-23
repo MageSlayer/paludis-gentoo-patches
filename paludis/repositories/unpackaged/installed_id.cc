@@ -618,106 +618,54 @@ InstalledUnpackagedID::behaviours_key() const
     return _imp->behaviours_key;
 }
 
-namespace
-{
-    struct SupportVisitor
-    {
-        bool visit(const SupportsActionTest<UninstallAction> &) const
-        {
-            return true;
-        }
-
-        bool visit(const SupportsActionTest<ConfigAction> &) const
-        {
-           return false;
-        }
-
-        bool visit(const SupportsActionTest<InfoAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<FetchAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<InstallAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendFetchAction> &) const
-        {
-            return false;
-        }
-    };
-
-    struct PerformAction
-    {
-        const InstalledUnpackagedID * const id;
-
-        PerformAction(const InstalledUnpackagedID * const i) :
-            id(i)
-        {
-        }
-
-        void visit(InstallAction & a) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw ActionFailedError("Unsupported action: " + a.simple_name());
-        }
-
-        void visit(FetchAction & a) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw ActionFailedError("Unsupported action: " + a.simple_name());
-        }
-
-        void visit(ConfigAction & a) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw ActionFailedError("Unsupported action: " + a.simple_name());
-        }
-
-        void visit(PretendAction & a) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw ActionFailedError("Unsupported action: " + a.simple_name());
-        }
-
-        void visit(PretendFetchAction & a) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw ActionFailedError("Unsupported action: " + a.simple_name());
-        }
-
-        void visit(InfoAction & a) PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw ActionFailedError("Unsupported action: " + a.simple_name());
-        }
-
-        void visit(UninstallAction & a)
-        {
-            std::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
-            id->uninstall(false, a.options.if_for_install_id(), output_manager);
-            output_manager->succeeded();
-        }
-    };
-}
-
 bool
 InstalledUnpackagedID::supports_action(const SupportsActionTestBase & test) const
 {
-    SupportVisitor v;
-    return test.accept_returning<bool>(v);
+    return test.make_accept_returning(
+            [&] (const SupportsActionTest<UninstallAction> &)    { return true; },
+            [&] (const SupportsActionTest<ConfigAction> &)       { return false; },
+            [&] (const SupportsActionTest<InfoAction> &)         { return false; },
+            [&] (const SupportsActionTest<PretendAction> &)      { return false; },
+            [&] (const SupportsActionTest<FetchAction> &)        { return false; },
+            [&] (const SupportsActionTest<InstallAction> &)      { return false; },
+            [&] (const SupportsActionTest<PretendFetchAction> &) { return false; }
+            );
 }
 
 void
 InstalledUnpackagedID::perform_action(Action & action) const
 {
-    PerformAction v(this);
-    action.accept(v);
+    action.make_accept(
+            [&] (const InstallAction & a) {
+                throw ActionFailedError("Unsupported action: " + a.simple_name());
+            },
+
+            [&] (const FetchAction & a) {
+                throw ActionFailedError("Unsupported action: " + a.simple_name());
+            },
+
+            [&] (const ConfigAction & a) {
+                throw ActionFailedError("Unsupported action: " + a.simple_name());
+            },
+
+            [&] (const PretendAction & a) {
+                throw ActionFailedError("Unsupported action: " + a.simple_name());
+            },
+
+            [&] (const PretendFetchAction & a) {
+                throw ActionFailedError("Unsupported action: " + a.simple_name());
+            },
+
+            [&] (const InfoAction & a) {
+                throw ActionFailedError("Unsupported action: " + a.simple_name());
+            },
+
+            [&] (const UninstallAction & a) {
+                std::shared_ptr<OutputManager> output_manager(a.options.make_output_manager()(a));
+                uninstall(false, a.options.if_for_install_id(), output_manager);
+                output_manager->succeeded();
+            }
+            );
 }
 
 std::shared_ptr<const Set<std::string> >
