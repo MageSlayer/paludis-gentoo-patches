@@ -182,6 +182,15 @@ namespace paludis
         }
     };
 
+    template <typename Case_, typename V_>
+    struct CallThisCase<void, Case_, V_, true>
+    {
+        static void call(const Case_ & thiscase, const FirstCallArgumentType<Case_> & v, const V_ & revisitor)
+        {
+            thiscase(v, accept_visitor(revisitor));
+        }
+    };
+
     template <typename Revisitor_, typename Result_, typename Case_, typename... Rest_>
     struct MadeVisitor<Revisitor_, Result_, Case_, Rest_...> :
         MadeVisitor<Revisitor_, Result_, Rest_...>
@@ -389,6 +398,12 @@ namespace paludis
             auto make_accept_returning(const Case_ & firstcase, const Cases_ & ... cases) const -> CallResultType<Case_>
             {
                 return this->accept_returning<CallResultType<Case_> >(make_visitor(firstcase, cases...));
+            }
+
+            template <typename... Cases_>
+            void make_accept(const Cases_ & ... cases) const
+            {
+                this->accept(make_visitor(cases...));
             }
     };
 
