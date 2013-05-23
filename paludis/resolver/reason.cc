@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -495,56 +495,28 @@ namespace
     {
         return stringify(r.resolvent());
     }
-
-    struct ReasonStringifier
-    {
-        std::string visit(const TargetReason &) const
-        {
-            return "target";
-        }
-
-        std::string visit(const DependencyReason & r) const
-        {
-            return "dependency from " + stringify(*r.from_id());
-        }
-
-        std::string visit(const DependentReason & r) const
-        {
-            return "dependent upon " + stringify(*r.dependent_upon().package_id());
-        }
-
-        std::string visit(const WasUsedByReason & r) const
-        {
-            return "was used by " + join(r.ids_and_resolvents_being_removed()->begin(), r.ids_and_resolvents_being_removed()->end(),
-                    ", ", stringify_change_by_resolvent);
-        }
-
-        std::string visit(const PresetReason &) const
-        {
-            return "preset";
-        }
-
-        std::string visit(const SetReason & r) const
-        {
-            return "set " + stringify(r.set_name()) + " due to " + r.reason_for_set()->accept_returning<std::string>(*this);
-        }
-
-        std::string visit(const LikeOtherDestinationTypeReason & r) const
-        {
-            return "to be like " + stringify(r.other_resolvent()) + " due to " + r.reason_for_other()->accept_returning<std::string>(*this);
-        }
-
-        std::string visit(const ViaBinaryReason & r) const
-        {
-            return "via binary for " + stringify(r.other_resolvent());
-        }
-    };
 }
 
 std::ostream &
 paludis::operator<< (std::ostream & s, const Reason & d)
 {
-    s << d.accept_returning<std::string>(ReasonStringifier());
+    s << d.make_accept_returning(
+            [&] (const TargetReason &)       { return std::string{ "target" }; },
+            [&] (const DependencyReason & r) { return "dependency from " + stringify(*r.from_id()); },
+            [&] (const DependentReason & r)  { return "dependent upon " + stringify(*r.dependent_upon().package_id()); },
+            [&] (const ViaBinaryReason & r)  { return "via binary for " + stringify(r.other_resolvent()); },
+            [&] (const PresetReason &)       { return "preset"; },
+            [&] (const WasUsedByReason & r) {
+                return "was used by " + join(r.ids_and_resolvents_being_removed()->begin(), r.ids_and_resolvents_being_removed()->end(),
+                        ", ", stringify_change_by_resolvent);
+            },
+            [&] (const SetReason & r, const Revisit<std::string, Reason> & revisit) {
+                return "set " + stringify(r.set_name()) + " due to " + revisit(*r.reason_for_set());
+            },
+            [&] (const LikeOtherDestinationTypeReason & r, const Revisit<std::string, Reason> & revisit) {
+                return "to be like " + stringify(r.other_resolvent()) + " due to " + revisit(*r.reason_for_other());
+            }
+            );
     return s;
 }
 

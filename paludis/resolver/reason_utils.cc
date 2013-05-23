@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,106 +23,41 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-namespace
-{
-    struct IsTargetVisitor
-    {
-        bool visit(const DependencyReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const DependentReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const WasUsedByReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const PresetReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const ViaBinaryReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const TargetReason &) const
-        {
-            return true;
-        }
-
-        bool visit(const LikeOtherDestinationTypeReason & r) const
-        {
-            return r.reason_for_other()->accept_returning<bool>(*this);
-        }
-
-        bool visit(const SetReason & r) const
-        {
-            return r.reason_for_set()->accept_returning<bool>(*this);
-        }
-    };
-
-    struct FromIDVisitor
-    {
-        std::shared_ptr<const PackageID> visit(const DependencyReason & r) const
-        {
-            return r.from_id();
-        }
-
-        std::shared_ptr<const PackageID> visit(const DependentReason &) const
-        {
-            return nullptr;
-        }
-
-        std::shared_ptr<const PackageID> visit(const WasUsedByReason &) const
-        {
-            return nullptr;
-        }
-
-        std::shared_ptr<const PackageID> visit(const PresetReason &) const
-        {
-            return nullptr;
-        }
-
-        std::shared_ptr<const PackageID> visit(const ViaBinaryReason &) const
-        {
-            return nullptr;
-        }
-
-        std::shared_ptr<const PackageID> visit(const TargetReason &) const
-        {
-            return nullptr;
-        }
-
-        std::shared_ptr<const PackageID> visit(const LikeOtherDestinationTypeReason & r) const
-        {
-            return r.reason_for_other()->accept_returning<std::shared_ptr<const PackageID> >(*this);
-        }
-
-        std::shared_ptr<const PackageID> visit(const SetReason & r) const
-        {
-            return r.reason_for_set()->accept_returning<std::shared_ptr<const PackageID> >(*this);
-        }
-    };
-}
-
 bool
 paludis::resolver::is_target(const std::shared_ptr<const Reason> & reason)
 {
-    IsTargetVisitor v;
-    return reason->accept_returning<bool>(v);
+    return reason->make_accept_returning(
+            [&] (const DependencyReason &) { return false; },
+            [&] (const DependentReason &)  { return false; },
+            [&] (const WasUsedByReason &)  { return false; },
+            [&] (const PresetReason &)     { return false; },
+            [&] (const ViaBinaryReason &)  { return false; },
+            [&] (const TargetReason &)     { return true; },
+            [&] (const LikeOtherDestinationTypeReason & r, const Revisit<bool, Reason> & revisit) {
+                return revisit(*r.reason_for_other());
+            },
+            [&] (const SetReason & r, const Revisit<bool, Reason> & revisit) {
+                return revisit(*r.reason_for_set());
+            }
+    );
 }
 
 const std::shared_ptr<const PackageID>
 paludis::resolver::maybe_from_package_id_from_reason(const std::shared_ptr<const Reason> & reason)
 {
-    FromIDVisitor v;
-    return reason->accept_returning<std::shared_ptr<const PackageID> >(v);
+    return reason->make_accept_returning(
+            [&] (const DependencyReason & r) { return r.from_id(); },
+            [&] (const DependentReason &) { return nullptr; },
+            [&] (const WasUsedByReason &) { return nullptr; },
+            [&] (const PresetReason &) { return nullptr; },
+            [&] (const ViaBinaryReason &) { return nullptr; },
+            [&] (const TargetReason &) { return nullptr; },
+            [&] (const LikeOtherDestinationTypeReason & r, const Revisit<std::shared_ptr<const PackageID>, Reason> & revisit) {
+                return revisit(*r.reason_for_other());
+            },
+            [&] (const SetReason & r, const Revisit<std::shared_ptr<const PackageID>, Reason> & revisit) {
+                return revisit(*r.reason_for_set());
+            }
+            );
 }
 
