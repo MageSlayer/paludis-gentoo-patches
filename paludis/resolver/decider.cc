@@ -52,7 +52,6 @@
 #include <paludis/util/tribool.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/visitor_cast.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/repository.hh>

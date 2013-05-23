@@ -46,7 +46,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/iterator_funcs.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/stringify.hh>
 
 #include <cstdlib>

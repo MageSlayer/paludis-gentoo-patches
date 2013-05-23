@@ -34,7 +34,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/string_list_stream.hh>
 
 #include <paludis/user_dep_spec.hh>

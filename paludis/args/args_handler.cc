@@ -23,7 +23,6 @@
 #include <paludis/args/bad_argument.hh>
 #include <paludis/util/system.hh>
 #include <paludis/util/join.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/iterator_funcs.hh>
 
 #include <paludis/util/pimp-impl.hh>

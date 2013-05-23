@@ -33,7 +33,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/make_shared_copy.hh>
 #include <paludis/util/return_literal_function.hh>
 

@@ -64,7 +64,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/destringify.hh>
 #include <paludis/util/singleton-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/join.hh>
 #include <paludis/util/upper_lower.hh>

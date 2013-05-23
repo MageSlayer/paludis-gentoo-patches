@@ -18,7 +18,6 @@
  */
 
 #include <paludis/repositories/gemcutter/gemcutter_uri_key.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/spec_tree.hh>

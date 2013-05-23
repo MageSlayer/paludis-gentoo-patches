@@ -27,7 +27,6 @@
 #include <paludis/args/do_help.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/util/visitor_cast.hh>

@@ -29,7 +29,6 @@
 #include <paludis/util/save.hh>
 #include <paludis/util/member_iterator-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <algorithm>
 #include <list>
 #include <ruby.h>

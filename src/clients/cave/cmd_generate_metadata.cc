@@ -28,7 +28,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/visitor_cast.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/thread_pool.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/generator.hh>

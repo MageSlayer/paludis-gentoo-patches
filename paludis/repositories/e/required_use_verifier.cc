@@ -20,7 +20,6 @@
 #include <paludis/repositories/e/required_use_verifier.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/save.hh>
 #include <paludis/util/log.hh>
 #include <paludis/action.hh>

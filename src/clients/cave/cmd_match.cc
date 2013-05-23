@@ -31,7 +31,6 @@
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/iterator_funcs.hh>
 #include <paludis/util/singleton-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/log.hh>
 #include <paludis/generator.hh>
 #include <paludis/filtered_generator.hh>

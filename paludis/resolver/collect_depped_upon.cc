@@ -22,7 +22,6 @@
 
 #include <paludis/util/visitor_cast.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/set-impl.hh>

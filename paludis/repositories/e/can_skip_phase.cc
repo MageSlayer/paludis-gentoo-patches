@@ -22,7 +22,6 @@
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/dep_spec.hh>
 #include <paludis/spec_tree.hh>

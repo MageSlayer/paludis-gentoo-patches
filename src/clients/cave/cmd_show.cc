@@ -43,7 +43,6 @@
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/pretty_print.hh>
 #include <paludis/util/timestamp.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/join.hh>
 #include <paludis/action.hh>

@@ -35,7 +35,6 @@
 #include <paludis/repository.hh>
 #include <paludis/selection.hh>
 #include <paludis/user_dep_spec.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/fs_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/map.hh>

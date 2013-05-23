@@ -20,7 +20,6 @@
 #include <paludis/resolver/labels_classifier.hh>
 #include <paludis/resolver/sanitised_dependencies.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/pool-impl.hh>

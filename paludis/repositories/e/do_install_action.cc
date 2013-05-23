@@ -32,7 +32,6 @@
 #include <paludis/repositories/e/permitted_directories.hh>
 
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/strip.hh>
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/make_named_values.hh>

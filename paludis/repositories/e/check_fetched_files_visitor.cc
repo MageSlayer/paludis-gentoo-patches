@@ -42,7 +42,6 @@
 #include <paludis/util/map.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/safe_ifstream.hh>
 #include <paludis/output_manager.hh>
 #include <algorithm>

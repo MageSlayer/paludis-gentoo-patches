@@ -20,7 +20,6 @@
 #include <paludis/repositories/e/spec_tree_pretty_printer.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/save.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/pretty_printer.hh>

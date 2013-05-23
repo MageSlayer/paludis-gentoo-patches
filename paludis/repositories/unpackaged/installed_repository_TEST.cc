@@ -38,7 +38,6 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/make_named_values.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
 #include <paludis/util/fs_stat.hh>
 

@@ -38,7 +38,6 @@
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 
 #include <type_traits>
 #include <list>

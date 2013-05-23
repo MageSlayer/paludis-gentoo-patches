@@ -56,7 +56,6 @@
 #include <paludis/unformatted_pretty_printer.hh>
 #include <paludis/slot.hh>
 
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/is_file_with_extension.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/set.hh>

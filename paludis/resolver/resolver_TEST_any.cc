@@ -34,7 +34,6 @@
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map-impl.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/tribool.hh>
 #include <paludis/util/make_shared_copy.hh>
 

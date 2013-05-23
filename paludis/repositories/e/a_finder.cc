@@ -19,7 +19,6 @@
 
 #include <paludis/repositories/e/a_finder.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <algorithm>
 
 using namespace paludis;

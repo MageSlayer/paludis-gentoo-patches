@@ -28,7 +28,6 @@
 #include <paludis/util/log.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/choice.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/dep_spec_annotations.hh>

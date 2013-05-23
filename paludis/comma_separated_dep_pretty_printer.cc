@@ -21,7 +21,6 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/pretty_printer.hh>
 #include <algorithm>

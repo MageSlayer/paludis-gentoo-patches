@@ -46,7 +46,6 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/return_literal_function.hh>
 #include <paludis/util/indirect_iterator-impl.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/singleton-impl.hh>
 #include <paludis/util/join.hh>
 

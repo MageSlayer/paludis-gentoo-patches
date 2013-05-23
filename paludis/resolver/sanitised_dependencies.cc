@@ -33,7 +33,6 @@
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/map.hh>
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/slot_requirement.hh>
 #include <paludis/metadata_key.hh>

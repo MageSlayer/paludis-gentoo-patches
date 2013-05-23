@@ -61,7 +61,6 @@
 #include <paludis/repository_name_cache.hh>
 #include <paludis/syncer.hh>
 
-#include <paludis/util/accept_visitor.hh>
 #include <paludis/util/active_object_ptr.hh>
 #include <paludis/util/cookie.hh>
 #include <paludis/util/config_file.hh>
