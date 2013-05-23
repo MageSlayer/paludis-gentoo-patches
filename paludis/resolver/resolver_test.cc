@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -425,49 +425,22 @@ ResolverTestCase::DecisionChecks::check_unable_msg(const QualifiedPackageName & 
     return check_generic_msg("unable " + stringify(q), r);
 }
 
-namespace
-{
-    struct DecisionStringifier
-    {
-        std::string visit(const NothingNoChangeDecision &) const
-        {
-            return "NothingNoChangeDecision";
-        }
-
-        std::string visit(const UnableToMakeDecision & d) const
-        {
-            return "UnableToMakeDecision(" + stringify(d.resolvent()) + ")";
-        }
-
-        std::string visit(const ChangesToMakeDecision & d) const
-        {
-            return "ChangesToMakeDecision(" + stringify(*d.origin_id()) + ")";
-        }
-
-        std::string visit(const ExistingNoChangeDecision &) const
-        {
-            return "ExistingNoChangeDecision";
-        }
-
-        std::string visit(const BreakDecision &) const
-        {
-            return "BreakDecision";
-        }
-
-        std::string visit(const RemoveDecision & d) const
-        {
-            return "RemoveDecision(" + join(indirect_iterator(d.ids()->begin()), indirect_iterator(d.ids()->end()), ", ") + ")";
-        }
-    };
-}
-
 std::string
 ResolverTestCase::DecisionChecks::check_generic_msg(const std::string & q, const std::shared_ptr<const Decision> & r)
 {
     if (! r)
         return "Expected " + stringify(q) + " but got finished";
     else
-        return "Expected " + stringify(q) + " but got " + r->accept_returning<std::string>(DecisionStringifier());
+        return "Expected " + stringify(q) + " but got " + r->make_accept_returning(
+                [&] (const NothingNoChangeDecision &)  { return std::string{ "NothingNoChangeDecision" }; },
+                [&] (const UnableToMakeDecision & d)   { return "UnableToMakeDecision(" + stringify(d.resolvent()) + ")"; },
+                [&] (const ChangesToMakeDecision & d)  { return "ChangesToMakeDecision(" + stringify(*d.origin_id()) + ")"; },
+                [&] (const ExistingNoChangeDecision &) { return "ExistingNoChangeDecision"; },
+                [&] (const BreakDecision &)            { return "BreakDecision"; },
+                [&] (const RemoveDecision & d) {
+                    return "RemoveDecision(" + join(indirect_iterator(d.ids()->begin()), indirect_iterator(d.ids()->end()), ", ") + ")";
+                }
+                );
 }
 
 const std::shared_ptr<FakePackageID>
