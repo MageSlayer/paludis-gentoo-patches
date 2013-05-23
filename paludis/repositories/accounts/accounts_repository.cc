@@ -335,48 +335,21 @@ namespace
         {
         }
 
-        bool visit(const SupportsActionTest<InstallAction> &) const
-        {
-            return ! installed;
-        }
-
-        bool visit(const SupportsActionTest<FetchAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendFetchAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<ConfigAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<InfoAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<UninstallAction> &) const
-        {
-            return false;
-        }
     };
 }
 
 bool
 AccountsRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
-    SupportsActionQuery q(bool(_imp->params_if_installed));
-    return a.accept_returning<bool>(q);
+    return a.make_accept_returning(
+        [&] (const SupportsActionTest<InstallAction> &)      { return ! _imp->params_if_installed; },
+        [&] (const SupportsActionTest<FetchAction> &)        { return false; },
+        [&] (const SupportsActionTest<PretendFetchAction> &) { return false; },
+        [&] (const SupportsActionTest<ConfigAction> &)       { return false; },
+        [&] (const SupportsActionTest<PretendAction> &)      { return false; },
+        [&] (const SupportsActionTest<InfoAction> &)         { return false; },
+        [&] (const SupportsActionTest<UninstallAction> &)    { return false; }
+        );
 }
 
 bool
