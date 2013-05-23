@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -249,52 +249,18 @@ UnavailableRepository::package_ids(const QualifiedPackageName & p, const Reposit
     return _imp->store->package_ids(p);
 }
 
-namespace
-{
-    struct SupportsActionQuery
-    {
-        bool visit(const SupportsActionTest<InstallAction> &) const
-        {
-            return true;
-        }
-
-        bool visit(const SupportsActionTest<FetchAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendFetchAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<ConfigAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<PretendAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<InfoAction> &) const
-        {
-            return false;
-        }
-
-        bool visit(const SupportsActionTest<UninstallAction> &) const
-        {
-            return false;
-        }
-    };
-}
-
 bool
 UnavailableRepository::some_ids_might_support_action(const SupportsActionTestBase & a) const
 {
-    SupportsActionQuery q;
-    return a.accept_returning<bool>(q);
+    return a.make_accept_returning(
+            [&] (const SupportsActionTest<InstallAction> &)      { return true; },
+            [&] (const SupportsActionTest<FetchAction> &)        { return false; },
+            [&] (const SupportsActionTest<PretendFetchAction> &) { return false; },
+            [&] (const SupportsActionTest<ConfigAction> &)       { return false; },
+            [&] (const SupportsActionTest<PretendAction> &)      { return false; },
+            [&] (const SupportsActionTest<InfoAction> &)         { return false; },
+            [&] (const SupportsActionTest<UninstallAction> &)    { return false; }
+            );
 }
 
 bool
