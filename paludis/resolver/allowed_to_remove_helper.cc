@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -58,60 +58,29 @@ AllowedToRemoveHelper::add_allowed_to_remove_spec(const PackageDepSpec & spec)
     _imp->allowed_to_remove_specs.insert(spec);
 }
 
-namespace
-{
-    struct AllowedToRemoveVisitor
-    {
-        bool visit(const DependentReason &) const
-        {
-            return true;
-        }
-
-        bool visit(const TargetReason &) const
-        {
-            return true;
-        }
-
-        bool visit(const DependencyReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const WasUsedByReason &) const
-        {
-            return true;
-        }
-
-        bool visit(const ViaBinaryReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const SetReason & r) const
-        {
-            return r.reason_for_set()->accept_returning<bool>(*this);
-        }
-
-        bool visit(const LikeOtherDestinationTypeReason & r) const
-        {
-            return r.reason_for_other()->accept_returning<bool>(*this);
-        }
-
-        bool visit(const PresetReason &) const
-        {
-            return false;
-        }
-    };
-}
-
 bool
 AllowedToRemoveHelper::operator() (
         const std::shared_ptr<const Resolution> & resolution,
         const std::shared_ptr<const PackageID> & id) const
 {
+    auto v = make_visitor(
+            [&] (const DependentReason &)  { return true; },
+            [&] (const TargetReason &)     { return true; },
+            [&] (const DependencyReason &) { return false; },
+            [&] (const WasUsedByReason &)  { return true; },
+            [&] (const ViaBinaryReason &)  { return false; },
+            [&] (const PresetReason &)     { return false; },
+            [&] (const SetReason & r, const Revisit<bool, Reason> & revisit) {
+                return revisit(*r.reason_for_set());
+            },
+            [&] (const LikeOtherDestinationTypeReason & r, const Revisit<bool, Reason> & revisit) {
+                return revisit(*r.reason_for_other());
+            }
+            );
+
     for (auto c(resolution->constraints()->begin()), c_end(resolution->constraints()->end()) ;
             c != c_end ; ++c)
-        if ((*c)->reason()->accept_returning<bool>(AllowedToRemoveVisitor()))
+        if ((*c)->reason()->accept_returning<bool>(v))
             return true;
 
     return _imp->allowed_to_remove_specs.match_any(_imp->env, id, { });
@@ -121,3 +90,4 @@ namespace paludis
 {
     template class Pimp<AllowedToRemoveHelper>;
 }
+

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -86,72 +86,53 @@ ConfirmHelper::set_allowed_to_break_system(const bool b)
     _imp->allowed_to_break_system = b;
 }
 
-namespace
-{
-    struct ConfirmVisitor
-    {
-        const Environment * const env;
-        const PackageDepSpecCollection & permit_downgrade_specs;
-        const PackageDepSpecCollection & permit_old_version_specs;
-        const PackageDepSpecCollection & allowed_to_break_specs;
-        const bool allowed_to_break_system;
-        const std::shared_ptr<const PackageID> id;
-
-        bool visit(const DowngradeConfirmation &) const
-        {
-            if (id)
-                if (permit_downgrade_specs.match_any(env, id, { }))
-                    return true;
-
-            return false;
-        }
-
-        bool visit(const NotBestConfirmation &) const
-        {
-            if (id)
-                if (permit_old_version_specs.match_any(env, id, { }))
-                    return true;
-
-            return false;
-        }
-
-        bool visit(const BreakConfirmation &) const
-        {
-            if (id)
-                if (allowed_to_break_specs.match_any(env, id, { }))
-                    return true;
-
-            return false;
-        }
-
-        bool visit(const RemoveSystemPackageConfirmation &) const
-        {
-            return allowed_to_break_system;
-        }
-
-        bool visit(const MaskedConfirmation &) const
-        {
-            return false;
-        }
-
-        bool visit(const ChangedChoicesConfirmation &) const
-        {
-            return false;
-        }
-    };
-}
-
 bool
 ConfirmHelper::operator() (
         const std::shared_ptr<const Resolution> & resolution,
         const std::shared_ptr<const RequiredConfirmation> & confirmation) const
 {
     auto id(get_decided_id_or_null(resolution->decision()));
-    return confirmation->accept_returning<bool>(ConfirmVisitor{_imp->env, _imp->permit_downgrade_specs,
-            _imp->permit_old_version_specs, _imp->allowed_to_break_specs, _imp->allowed_to_break_system, id});
+    return confirmation->make_accept_returning(
+            [&] (const DowngradeConfirmation &) {
+                if (id)
+                    if (_imp->permit_downgrade_specs.match_any(_imp->env, id, { }))
+                        return true;
+
+                return false;
+            },
+
+            [&] (const NotBestConfirmation &) {
+                if (id)
+                    if (_imp->permit_old_version_specs.match_any(_imp->env, id, { }))
+                        return true;
+
+                return false;
+            },
+
+            [&] (const BreakConfirmation &) {
+                if (id)
+                    if (_imp->allowed_to_break_specs.match_any(_imp->env, id, { }))
+                        return true;
+
+                return false;
+            },
+
+            [&] (const RemoveSystemPackageConfirmation &) {
+                return _imp->allowed_to_break_system;
+            },
+
+            [&] (const MaskedConfirmation &) {
+                return false;
+            },
+
+            [&] (const ChangedChoicesConfirmation &) {
+                return false;
+            }
+        );
 }
 
 namespace paludis
 {
     template class Pimp<ConfirmHelper>;
 }
+

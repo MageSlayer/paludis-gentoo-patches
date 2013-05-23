@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -23,45 +23,16 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-namespace
-{
-    struct IDVisitor
-    {
-        std::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & decision) const
-        {
-            return decision.origin_id();
-        }
-
-        std::shared_ptr<const PackageID> visit(const BreakDecision & decision) const
-        {
-            return decision.existing_id();
-        }
-
-        std::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & decision) const
-        {
-            return decision.existing_id();
-        }
-
-        std::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
-        {
-            return nullptr;
-        }
-
-        std::shared_ptr<const PackageID> visit(const RemoveDecision &) const
-        {
-            return nullptr;
-        }
-
-        std::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
-        {
-            return nullptr;
-        }
-    };
-}
-
 const std::shared_ptr<const PackageID>
-paludis::resolver::get_decided_id_or_null(const std::shared_ptr<const Decision> & decision)
+paludis::resolver::get_decided_id_or_null(const std::shared_ptr<const Decision> & d)
 {
-    return decision->accept_returning<std::shared_ptr<const PackageID> >(IDVisitor());
+    return d->make_accept_returning(
+            [&] (const ChangesToMakeDecision & decision)    { return decision.origin_id(); },
+            [&] (const BreakDecision & decision)            { return decision.existing_id(); },
+            [&] (const ExistingNoChangeDecision & decision) { return decision.existing_id(); },
+            [&] (const NothingNoChangeDecision &)           { return nullptr; },
+            [&] (const RemoveDecision &)                    { return nullptr; },
+            [&] (const UnableToMakeDecision &)              { return nullptr; }
+        );
 }
 

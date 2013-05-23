@@ -66,60 +66,25 @@ GetDestinationTypesForErrorHelper::set_target_destination_type(const Destination
     _imp->target_destination_type = d;
 }
 
-namespace
-{
-    struct DestinationTypesFinder
-    {
-        const DestinationType target_destination_type;
-
-        DestinationTypes visit(const TargetReason &) const
-        {
-            return { target_destination_type };
-        }
-
-        DestinationTypes visit(const DependentReason &) const
-        {
-            return { dt_install_to_slash };
-        }
-
-        DestinationTypes visit(const ViaBinaryReason &) const
-        {
-            return { };
-        }
-
-        DestinationTypes visit(const WasUsedByReason &) const
-        {
-            return { dt_install_to_slash };
-        }
-
-        DestinationTypes visit(const DependencyReason &) const
-        {
-            return { dt_install_to_slash };
-        }
-
-        DestinationTypes visit(const PresetReason &) const
-        {
-            return { };
-        }
-
-        DestinationTypes visit(const LikeOtherDestinationTypeReason & r) const
-        {
-            return r.reason_for_other()->accept_returning<DestinationTypes>(*this);
-        }
-
-        DestinationTypes visit(const SetReason & r) const
-        {
-            return r.reason_for_set()->accept_returning<DestinationTypes>(*this);
-        }
-    };
-}
-
 DestinationTypes
 GetDestinationTypesForErrorHelper::operator() (
         const PackageDepSpec &,
         const std::shared_ptr<const Reason> & reason) const
 {
-    return reason->accept_returning<DestinationTypes>(DestinationTypesFinder{_imp->target_destination_type});
+    return reason->make_accept_returning(
+            [&] (const TargetReason &)     { return DestinationTypes{ _imp->target_destination_type }; },
+            [&] (const DependentReason &)  { return DestinationTypes{ dt_install_to_slash }; },
+            [&] (const ViaBinaryReason &)  { return DestinationTypes{ }; },
+            [&] (const WasUsedByReason &)  { return DestinationTypes{ dt_install_to_slash }; },
+            [&] (const DependencyReason &) { return DestinationTypes{ dt_install_to_slash }; },
+            [&] (const PresetReason &)     { return DestinationTypes{ }; },
+            [&] (const LikeOtherDestinationTypeReason & r, const Revisit<DestinationTypes, Reason> & revisit) {
+                return revisit(*r.reason_for_other());
+            },
+            [&] (const SetReason & r, const Revisit<DestinationTypes, Reason> & revisit) {
+                return revisit(*r.reason_for_set());
+            }
+        );
 }
 
 namespace paludis

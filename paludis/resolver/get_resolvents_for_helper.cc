@@ -160,112 +160,6 @@ GetResolventsForHelper::set_target_slots(const bool best, const bool installed, 
 
 namespace
 {
-    struct DestinationTypesFinder
-    {
-        const Environment * const env;
-        const DestinationType target_destination_type;
-        const bool want_target_dependencies;
-        const bool want_target_runtime_dependencies;
-        const bool want_dependencies_on_slash;
-        const bool want_runtime_dependencies_on_slash;
-        const std::shared_ptr<const PackageID> package_id;
-
-        DestinationTypes visit(const TargetReason &) const
-        {
-            return { target_destination_type };
-        }
-
-        DestinationTypes visit(const DependentReason &) const
-        {
-            return { dt_install_to_slash };
-        }
-
-        DestinationTypes visit(const ViaBinaryReason &) const
-        {
-            return { };
-        }
-
-        DestinationTypes visit(const WasUsedByReason &) const
-        {
-            return { dt_install_to_slash };
-        }
-
-        DestinationTypes visit(const DependencyReason & dep) const
-        {
-            DestinationTypes extras, slash;
-
-            switch (target_destination_type)
-            {
-                case dt_create_binary:
-                    {
-                        bool binary_if_possible(false);
-                        if (want_target_dependencies)
-                            binary_if_possible = true;
-                        else if (want_target_runtime_dependencies)
-                        {
-                            /* this will track run deps of build deps, which isn't
-                             * really right... */
-                            if (is_run_or_post_dep(env, package_id, dep.sanitised_dependency()))
-                                binary_if_possible = true;
-                        }
-
-                        if (binary_if_possible && can_make_binary_for(package_id))
-                            extras += dt_create_binary;
-                    }
-                    break;
-
-                case dt_install_to_chroot:
-                    {
-                        bool chroot_if_possible(false);
-                        if (want_target_dependencies)
-                            chroot_if_possible = true;
-                        else if (want_target_runtime_dependencies)
-                        {
-                            if (is_run_or_post_dep(env, package_id, dep.sanitised_dependency()))
-                                chroot_if_possible = true;
-                        }
-
-                        if (chroot_if_possible && can_chroot(package_id))
-                            extras += dt_install_to_chroot;
-                    }
-                    break;
-
-                case dt_install_to_slash:
-                    break;
-
-                case last_dt:
-                    throw InternalError(PALUDIS_HERE, "unhandled dt");
-            }
-
-            if (want_runtime_dependencies_on_slash ^ want_dependencies_on_slash)
-            {
-                if (want_dependencies_on_slash && ! is_run_or_post_dep(env, package_id, dep.sanitised_dependency()))
-                    slash += dt_install_to_slash;
-                if (want_runtime_dependencies_on_slash && is_run_or_post_dep(env, package_id, dep.sanitised_dependency()))
-                    slash += dt_install_to_slash;
-            }
-            else if (want_runtime_dependencies_on_slash || want_dependencies_on_slash)
-                slash += dt_install_to_slash;
-
-            return extras | slash;
-        }
-
-        DestinationTypes visit(const PresetReason &) const
-        {
-            return { };
-        }
-
-        DestinationTypes visit(const LikeOtherDestinationTypeReason & r) const
-        {
-            return r.reason_for_other()->accept_returning<DestinationTypes>(*this);
-        }
-
-        DestinationTypes visit(const SetReason & r) const
-        {
-            return r.reason_for_set()->accept_returning<DestinationTypes>(*this);
-        }
-    };
-
     DestinationTypes get_destination_types_for_fn(
             const Environment * const env,
             const PackageDepSpec &,
@@ -277,9 +171,77 @@ namespace
             const std::shared_ptr<const PackageID> & package_id,
             const std::shared_ptr<const Reason> & reason)
     {
-        DestinationTypesFinder f{env, target_destination_type, want_target_dependencies, want_target_runtime_dependencies,
-            want_dependencies_on_slash, want_runtime_dependencies_on_slash, package_id};
-        return reason->accept_returning<DestinationTypes>(f);
+        return reason->make_accept_returning(
+                [&] (const TargetReason &)    { return DestinationTypes{ target_destination_type }; },
+                [&] (const DependentReason &) { return DestinationTypes{ dt_install_to_slash }; },
+                [&] (const ViaBinaryReason &) { return DestinationTypes{ }; },
+                [&] (const WasUsedByReason &) { return DestinationTypes{ dt_install_to_slash }; },
+                [&] (const PresetReason &)    { return DestinationTypes{ }; },
+                [&] (const LikeOtherDestinationTypeReason & r, const Revisit<DestinationTypes, Reason> & revisit) {
+                    return revisit(*r.reason_for_other());
+                },
+                [&] (const SetReason & r, const Revisit<DestinationTypes, Reason> & revisit) {
+                    return revisit(*r.reason_for_set());
+                },
+                [&] (const DependencyReason & dep) {
+                    DestinationTypes extras, slash;
+
+                    switch (target_destination_type)
+                    {
+                        case dt_create_binary:
+                            {
+                                bool binary_if_possible(false);
+                                if (want_target_dependencies)
+                                    binary_if_possible = true;
+                                else if (want_target_runtime_dependencies)
+                                {
+                                    /* this will track run deps of build deps, which isn't
+                                     * really right... */
+                                    if (is_run_or_post_dep(env, package_id, dep.sanitised_dependency()))
+                                        binary_if_possible = true;
+                                }
+
+                                if (binary_if_possible && can_make_binary_for(package_id))
+                                    extras += dt_create_binary;
+                            }
+                            break;
+
+                        case dt_install_to_chroot:
+                            {
+                                bool chroot_if_possible(false);
+                                if (want_target_dependencies)
+                                    chroot_if_possible = true;
+                                else if (want_target_runtime_dependencies)
+                                {
+                                    if (is_run_or_post_dep(env, package_id, dep.sanitised_dependency()))
+                                        chroot_if_possible = true;
+                                }
+
+                                if (chroot_if_possible && can_chroot(package_id))
+                                    extras += dt_install_to_chroot;
+                            }
+                            break;
+
+                        case dt_install_to_slash:
+                            break;
+
+                        case last_dt:
+                            throw InternalError(PALUDIS_HERE, "unhandled dt");
+                    }
+
+                    if (want_runtime_dependencies_on_slash ^ want_dependencies_on_slash)
+                    {
+                        if (want_dependencies_on_slash && ! is_run_or_post_dep(env, package_id, dep.sanitised_dependency()))
+                            slash += dt_install_to_slash;
+                        if (want_runtime_dependencies_on_slash && is_run_or_post_dep(env, package_id, dep.sanitised_dependency()))
+                            slash += dt_install_to_slash;
+                    }
+                    else if (want_runtime_dependencies_on_slash || want_dependencies_on_slash)
+                        slash += dt_install_to_slash;
+
+                    return extras | slash;
+                }
+            );
     }
 
     bool can_use_cache(const PackageDepSpec & spec)
