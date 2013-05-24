@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -34,50 +34,22 @@ using namespace paludis;
 
 namespace
 {
-    struct GetFlagsVisitor
+    std::shared_ptr<Set<std::string> > get_flags(const Action & action)
     {
-        std::shared_ptr<Set<std::string> > visit(const InstallAction &) const
-        {
-            return std::make_shared<Set<std::string>>();
-        }
-
-        std::shared_ptr<Set<std::string> > visit(const UninstallAction &) const
-        {
-            return std::make_shared<Set<std::string>>();
-        }
-
-        std::shared_ptr<Set<std::string> > visit(const PretendAction &) const
-        {
-            return std::make_shared<Set<std::string>>();
-        }
-
-        std::shared_ptr<Set<std::string> > visit(const FetchAction & a) const
-        {
-            std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
-            if (a.options.ignore_unfetched())
-                result->insert(FetchAction::ignore_unfetched_flag_name());
-            return result;
-        }
-
-        std::shared_ptr<Set<std::string> > visit(const PretendFetchAction &) const
-        {
-            return std::make_shared<Set<std::string>>();
-        }
-
-        std::shared_ptr<Set<std::string> > visit(const ConfigAction &) const
-        {
-            return std::make_shared<Set<std::string>>();
-        }
-
-        std::shared_ptr<Set<std::string> > visit(const InfoAction &) const
-        {
-            return std::make_shared<Set<std::string>>();
-        }
-    };
-
-    std::shared_ptr<Set<std::string> > get_flags(const Action & a)
-    {
-        return a.accept_returning<std::shared_ptr<Set<std::string> > >(GetFlagsVisitor());
+        return action.make_accept_returning(
+                [&] (const InstallAction &)      { return std::make_shared<Set<std::string>>(); },
+                [&] (const UninstallAction &)    { return std::make_shared<Set<std::string>>(); },
+                [&] (const PretendAction &)      { return std::make_shared<Set<std::string>>(); },
+                [&] (const PretendFetchAction &) { return std::make_shared<Set<std::string>>(); },
+                [&] (const ConfigAction &)       { return std::make_shared<Set<std::string>>(); },
+                [&] (const InfoAction &)         { return std::make_shared<Set<std::string>>(); },
+                [&] (const FetchAction & a) {
+                    std::shared_ptr<Set<std::string> > result(std::make_shared<Set<std::string>>());
+                    if (a.options.ignore_unfetched())
+                        result->insert(FetchAction::ignore_unfetched_flag_name());
+                    return result;
+                }
+                );
     }
 }
 
