@@ -20,6 +20,7 @@
 #include <paludis/repositories/e/eapi.hh>
 
 #include <paludis/name.hh>
+#include <paludis/choice.hh>
 #include <paludis/dep_spec.hh>
 
 #include <paludis/util/attributes.hh>
@@ -377,6 +378,8 @@ namespace
                         n::iuse_flag_parse_options() = iuse_flag_parse_options,
                         n::merger_options() = merger_options,
                         n::package_dep_spec_parse_options() = package_dep_spec_parse_options,
+                        n::parts_prefix() =
+                            std::make_shared<ChoicePrefixName>(check_get(k, "parts_prefix")),
                         n::permitted_directories() = check_get(k, "permitted_directories"),
                         n::pipe_commands() = make_pipe_commands(k),
                         n::profile_options() = make_profile_options(k),

@@ -303,13 +303,15 @@ EChoicesKey::populate_myoptions() const
 {
     Context local_context("When using raw_myoptions_key to populate choices:");
 
+    const auto & eapi = _imp->id->eapi()->supported();
+
     std::shared_ptr<Choice> options(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                     n::consider_added_or_changed() = true,
                     n::contains_every_value() = false,
                     n::hidden() = false,
-                    n::human_name() = _imp->id->eapi()->supported()->ebuild_environment_variables()->env_use(),
+                    n::human_name() = eapi->ebuild_environment_variables()->env_use(),
                     n::prefix() = ChoicePrefixName(""),
-                    n::raw_name() = _imp->id->eapi()->supported()->ebuild_environment_variables()->env_use(),
+                    n::raw_name() = eapi->ebuild_environment_variables()->env_use(),
                     n::show_with_no_prefix() = true
                 )));
     _imp->value->add(options);
@@ -350,6 +352,32 @@ EChoicesKey::populate_myoptions() const
                     exp->add(make_myoption(_imp->id, exp, v->first, v->second.description, indeterminate, co_explicit, v->second.presumed));
                 myoptions.prefixes.erase(p);
             }
+        }
+    }
+
+    if (auto parts_prefix = eapi->parts_prefix())
+    {
+        const ChoicePrefixName prefix(parts_prefix->value());
+
+        auto parts = std::make_shared<Choice>(make_named_values<ChoiceParams>(
+                    n::consider_added_or_changed() = true,
+                    n::contains_every_value() = true,
+                    n::hidden() = false,
+                    n::human_name() = parts_prefix->value(),
+                    n::prefix() = prefix,
+                    n::raw_name() = parts_prefix->value(),
+                    n::show_with_no_prefix() = false
+                    ));
+        _imp->value->add(parts);
+
+        const auto pi = myoptions.prefixes.find(prefix);
+        if (pi != myoptions.prefixes.end())
+        {
+            for (const auto & part : pi->second)
+                parts->add(make_myoption(_imp->id, parts, part.first,
+                                         part.second.description, indeterminate,
+                                         co_explicit, part.second.presumed));
+            myoptions.prefixes.erase(pi);
         }
     }
 

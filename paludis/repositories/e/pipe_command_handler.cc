@@ -570,8 +570,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         else if (tokens[0] == "PARTITION")
         {
             bool exclude(false);
-            std::shared_ptr<const EAPI> eapi =
-                EAPIData::get_instance()->eapi_from_string(tokens[1]);
+            auto eapi = EAPIData::get_instance()->eapi_from_string(tokens[1]);
             if (! eapi->supported())
                 return "EPARTITION EAPI " + tokens[1] + " unsupported";
 
@@ -601,13 +600,37 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                         << "parts not supported by destination repository";
                     return "EPARTITION EXPART not supported by destination repository";
                 }
-                else
+
+                if (! package_id->choices_key())
+                    return "EPARTITION ID " + stringify(*package_id) + " has no choices";
+
+                if (! exclude)
                 {
-                    maybe_partitioning->mark(contents,
-                                             exclude ? PartName("")
-                                                     : PartName(partition_id));
+                    bool specified(false);
+
+                    auto prefix = package_id->eapi()->supported()->parts_prefix();
+                    auto choices = package_id->choices_key()->parse_value();
+
+                    auto parts = choices->find(ChoicePrefixName(prefix->value()));
+                    if (parts == choices->end())
+                        return "EPARTITION ID " + stringify(*package_id) + " has no partitions";
+
+                    for (const auto & part : **parts)
+                        if ((specified = part->unprefixed_name().value() == partition_id))
+                            break;
+
+                    if (! specified)
+                    {
+                        Log::get_instance()->message("e.pipe_commands.partitioning.invalid_package",
+                                                     ll_warning, lc_context)
+                            << "'" << partition_id << "' is not specified by the package as a partition identifier";
+                        return "EPARTITION ID " + stringify(*package_id) + " has no partition named '" + partition_id + "'";
+                    }
                 }
 
+                maybe_partitioning->mark(contents,
+                                         exclude ? PartName("")
+                                                 : PartName(partition_id));
                 return "O0;";
             }
             catch (const Exception & e)

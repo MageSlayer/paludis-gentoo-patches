@@ -44,6 +44,8 @@ namespace
 {
     const auto exndbam_repository_TEST_dir =
         FSPath::cwd() / "exndbam_repository_TEST_dir";
+    const auto exndbam_repository_TEST_root =
+        exndbam_repository_TEST_dir / "root";
 
     void do_uninstall(const std::shared_ptr<const PackageID> & id, const UninstallActionOptions & u)
     {
@@ -111,6 +113,31 @@ namespace
                                                             std::bind(from_keys,
                                                                       keys, _1));
     }
+
+    std::shared_ptr<Repository>
+    make_exheres_0_repository(Environment & env, const FSPath & root,
+                              const std::string & name)
+    {
+        using namespace std::placeholders;
+
+        auto keys = std::make_shared<Map<std::string, std::string>>();
+
+        keys->insert("eapi_when_unknown", "exheres-0");
+        keys->insert("eapi_when_unspecified", "exheres-0");
+        keys->insert("format", "e");
+        keys->insert("layout", "exheres");
+        keys->insert("location", stringify(root / name));
+        keys->insert("names_cache", "/var/empty");
+        keys->insert("profile_eapi", "exheres-0");
+        keys->insert("profiles", stringify(root / name / "profiles" / "profile"));
+        keys->insert("root", stringify(root / "root"));
+
+        keys->insert("builddir", stringify(root / "build"));
+        keys->insert("distdir", stringify(root / "distdir"));
+
+        return ERepository::repository_factory_create(&env, std::bind(from_keys,
+                                                                      keys, _1));
+    }
 }
 
 TEST(ExndbamRepository, RepoName)
@@ -122,7 +149,7 @@ TEST(ExndbamRepository, RepoName)
 
 TEST(ExndbamRepository, PhaseOrdering)
 {
-    TestEnvironment env(exndbam_repository_TEST_dir / "root");
+    TestEnvironment env(exndbam_repository_TEST_root);
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
     keys->insert("names_cache", "/var/empty");
@@ -211,5 +238,27 @@ TEST(ExndbamRepository, PhaseOrdering)
                         QualifiedPackageName("cat/pkg")) & generator::InRepository(RepositoryName("installed")))]);
         EXPECT_EQ("cat/pkg-0::installed cat/pkg-2::installed", join(indirect_iterator(ids2->begin()), indirect_iterator(ids2->end()), " "));
     }
+}
+
+TEST(ExndbamRepository, UnlistedPartsFails)
+{
+    const auto partitioned(QualifiedPackageName("category/partitioned"));
+
+    TestEnvironment env(exndbam_repository_TEST_root);
+
+    auto parts(make_exheres_0_repository(env, exndbam_repository_TEST_dir,
+                                         "parts"));
+    auto installed(make_exndbam_repository(env, exndbam_repository_TEST_dir,
+                                           "installed"));
+    env.add_repository(0, installed);
+    env.add_repository(1, parts);
+
+    EXPECT_TRUE(installed->package_ids(partitioned, { })->empty());
+    EXPECT_TRUE(!parts->package_ids(partitioned, { })->empty());
+
+    ASSERT_THROW(install(env, installed, "=category/partitioned-0::parts", ""),
+                 paludis::ActionFailedError);
+
+    EXPECT_TRUE(installed->package_ids(partitioned, { })->empty());
 }
 
