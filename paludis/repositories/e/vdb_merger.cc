@@ -100,7 +100,8 @@ VDBMerger::VDBMerger(const VDBMergerParams & p) :
                 n::options() = p.options(),
                 n::parts() = nullptr,
                 n::permit_destination() = p.permit_destination(),
-                n::root() = p.root()
+                n::root() = p.root(),
+                n::should_merge() = nullptr
             )),
     _imp(p)
 {

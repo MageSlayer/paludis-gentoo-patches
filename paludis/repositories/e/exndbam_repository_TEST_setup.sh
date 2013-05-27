@@ -86,3 +86,22 @@ src_install() {
 }
 EOF
 
+cat <<- EOF > parts/packages/category/partitioned/partitioned-1.exheres-0
+PLATFORMS="test"
+MYOPTIONS="parts: binaries libraries"
+
+SLOT="0"
+
+src_unpack() {
+    edo mkdir -p "\${WORK}"
+}
+
+src_install() {
+    edo mkdir -p "\${IMAGE}"/usr/{bin,lib,share/man/man1}
+    edo touch "\${IMAGE}"/usr/{bin/binary,lib/library.{so,a},share/man/man1/expart.1}
+
+    expart binaries /usr/bin
+    expart libraries /usr/lib
+}
+EOF
+

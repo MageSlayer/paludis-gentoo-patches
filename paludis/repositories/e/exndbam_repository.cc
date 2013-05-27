@@ -49,7 +49,9 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
 #include <paludis/action.hh>
+#include <paludis/choice.hh>
 #include <paludis/literal_metadata_key.hh>
+#include <paludis/partitioning.hh>
 #include <paludis/slot.hh>
 
 #include <functional>
@@ -330,6 +332,27 @@ namespace
     {
         return s->end() != s->find(f);
     }
+
+    bool
+    should_merge(const std::shared_ptr<Partitioning> & partitioning,
+                 const std::shared_ptr<const Choice> & parts,
+                 const FSPath & path)
+    {
+        if (! partitioning)
+            return true;
+
+        const auto classification(partitioning->classify(path).value());
+
+        // NOTE(compnerd) the empty name signifies the core partition
+        if (classification.empty())
+            return true;
+
+        for (const auto & part : *parts)
+            if (part->unprefixed_name().value() == classification)
+                return part->enabled();
+
+        throw InternalError(PALUDIS_HERE, classification + " choice not found");
+    }
 }
 
 void
@@ -429,8 +452,19 @@ ExndbamRepository::merge(const MergeParams & m)
         }
     }
 
-    auto eapi(std::static_pointer_cast<const ERepositoryID>(m.package_id())->eapi()->supported());
+    auto package(std::static_pointer_cast<const ERepositoryID>(m.package_id()));
+    auto eapi(package->eapi()->supported());
     auto fix_mtimes(eapi->ebuild_options()->fix_mtimes());
+
+    std::function<bool(const FSPath &)> should_merge_callback;
+    if (auto prefix = eapi->parts_prefix())
+    {
+        const auto choices(package->choices_key()->parse_value());
+        const auto parts(choices->find(ChoicePrefixName(prefix->value())));
+
+        should_merge_callback =
+            std::bind(should_merge, m.parts(), *parts, std::placeholders::_1);
+    }
 
     NDBAMMerger merger(
             make_named_values<NDBAMMergerParams>(
@@ -449,7 +483,8 @@ ExndbamRepository::merge(const MergeParams & m)
                 n::package_id() = m.package_id(),
                 n::parts() = m.parts(),
                 n::permit_destination() = m.permit_destination(),
-                n::root() = installed_root_key()->parse_value()
+                n::root() = installed_root_key()->parse_value(),
+                n::should_merge() = should_merge_callback
             ));
 
     (m.used_this_for_config_protect())(config_protect);

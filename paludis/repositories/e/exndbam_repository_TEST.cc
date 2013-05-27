@@ -27,16 +27,21 @@
 #include <paludis/util/join.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence.hh>
+#include <paludis/util/fs_iterator.hh>
 #include <paludis/util/fs_path.hh>
+#include <paludis/util/fs_stat.hh>
 
 #include <paludis/standard_output_manager.hh>
 #include <paludis/action.hh>
+#include <paludis/choice.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/generator.hh>
 #include <paludis/selection.hh>
 #include <paludis/user_dep_spec.hh>
 
 #include <gtest/gtest.h>
+
+#include <algorithm>
 
 using namespace paludis;
 
@@ -95,6 +100,26 @@ namespace
                             &env, { })), nullptr, { }))]->begin())->perform_action(install_action);
     }
 
+    void
+    uninstall(const Environment & env, const std::string & package)
+    {
+        UninstallAction action(make_named_values<UninstallActionOptions>(
+                    n::config_protect() = "",
+                    n::if_for_install_id() = nullptr,
+                    n::ignore_for_unmerge() = [](const FSPath &) { return false; },
+                    n::is_overwrite() = false,
+                    n::make_output_manager() = &make_standard_output_manager,
+                    n::override_contents() = nullptr,
+                    n::want_phase() = &want_all_phases
+                    ));
+
+        auto spec(parse_user_package_dep_spec(package, &env, { }));
+        auto matches(generator::Matches(spec, nullptr, { }));
+        auto id(*env[selection::RequireExactlyOne(matches)]->begin());
+
+        id->perform_action(action);
+    }
+
     std::shared_ptr<Repository>
     make_exndbam_repository(Environment & env, const FSPath & root,
                             const std::string & name)
@@ -137,6 +162,39 @@ namespace
 
         return ERepository::repository_factory_create(&env, std::bind(from_keys,
                                                                       keys, _1));
+    }
+
+    bool
+    recursive_image_matches(const FSPath & root, const FSPath & directory,
+                            std::vector<FSPath> & contents)
+    {
+        for (FSIterator dentry(directory, { fsio_include_dotfiles }), invalid;
+                dentry != invalid; ++dentry)
+        {
+            const FSStat fstat(*dentry);
+            const auto entry(dentry->strip_leading(root));
+
+            auto expected = std::find(std::begin(contents), std::end(contents),
+                                      entry);
+
+            if (expected == std::end(contents))
+                return false;
+
+            contents.erase(expected);
+
+            if (fstat.is_directory())
+                if (! recursive_image_matches(root, *dentry, contents))
+                    return false;
+        }
+
+        return true;
+    }
+
+    bool
+    image_matches(const FSPath & root, const std::vector<FSPath> & contents)
+    {
+        std::vector<FSPath> unseen(contents);
+        return recursive_image_matches(root, root, unseen) && !unseen.size();
     }
 }
 
@@ -260,5 +318,74 @@ TEST(ExndbamRepository, UnlistedPartsFails)
                  paludis::ActionFailedError);
 
     EXPECT_TRUE(installed->package_ids(partitioned, { })->empty());
+}
+
+TEST(ExndbamRepository, SelectivePartsCoreOnly)
+{
+    const auto partitioned(QualifiedPackageName("category/partitioned"));
+
+    TestEnvironment env(exndbam_repository_TEST_root);
+
+    auto parts(make_exheres_0_repository(env, exndbam_repository_TEST_dir,
+                                         "parts"));
+    auto installed(make_exndbam_repository(env, exndbam_repository_TEST_dir,
+                                           "installed"));
+    env.add_repository(0, installed);
+    env.add_repository(1, parts);
+
+    EXPECT_TRUE(installed->package_ids(partitioned, { })->empty());
+    EXPECT_TRUE(!parts->package_ids(partitioned, { })->empty());
+
+    install(env, installed, "=category/partitioned-1::parts", "");
+    installed->invalidate();
+
+    EXPECT_TRUE(!installed->package_ids(partitioned, { })->empty());
+    EXPECT_TRUE(image_matches(exndbam_repository_TEST_root, {
+                FSPath("/etc"),
+                FSPath("/usr"),
+                FSPath("/usr/share"),
+                FSPath("/usr/share/man"),
+                FSPath("/usr/share/man/man1"),
+                FSPath("/usr/share/man/man1/expart.1")
+                }));
+
+    uninstall(env, "=category/partitioned-1::installed");
+}
+
+TEST(ExndbamRepository, SelectivePartsCoreAndSelectedParts)
+{
+    const auto partitioned(QualifiedPackageName("category/partitioned"));
+
+    TestEnvironment env(exndbam_repository_TEST_root);
+    env.set_want_choice_enabled(ChoicePrefixName("parts"),
+            UnprefixedChoiceName("binaries"),
+            Tribool("true"));
+
+    auto parts(make_exheres_0_repository(env, exndbam_repository_TEST_dir,
+                                         "parts"));
+    auto installed(make_exndbam_repository(env, exndbam_repository_TEST_dir,
+                                           "installed"));
+    env.add_repository(0, installed);
+    env.add_repository(1, parts);
+
+    EXPECT_TRUE(installed->package_ids(partitioned, { })->empty());
+    EXPECT_TRUE(!parts->package_ids(partitioned, { })->empty());
+
+    install(env, installed, "=category/partitioned-1::parts", "");
+    installed->invalidate();
+
+    EXPECT_TRUE(!installed->package_ids(partitioned, { })->empty());
+    EXPECT_TRUE(image_matches(exndbam_repository_TEST_root, {
+                FSPath("/etc"),
+                FSPath("/usr"),
+                FSPath("/usr/bin"),
+                FSPath("/usr/bin/binary"),
+                FSPath("/usr/share"),
+                FSPath("/usr/share/man"),
+                FSPath("/usr/share/man/man1"),
+                FSPath("/usr/share/man/man1/expart.1")
+                }));
+
+    uninstall(env, "=category/partitioned-1::installed");
 }
 

@@ -86,7 +86,8 @@ NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
                 n::options() = p.options(),
                 n::parts() = p.parts(),
                 n::permit_destination() = p.permit_destination(),
-                n::root() = p.root()
+                n::root() = p.root(),
+                n::should_merge() = p.should_merge()
                 )),
     _imp(p)
 {
@@ -326,12 +327,12 @@ NDBAMMerger::check()
 }
 
 void
-NDBAMMerger::on_enter_dir(bool is_check, const FSPath)
+NDBAMMerger::on_enter_dir(bool is_check, const FSPath src)
 {
-    if (! is_check)
-        return;
+    if (is_check)
+        _imp->params.output_manager()->stdout_stream() << "." << std::flush;
 
-    _imp->params.output_manager()->stdout_stream() << "." << std::flush;
+    FSMerger::on_enter_dir(is_check, src);
 }
 
 void

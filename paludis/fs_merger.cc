@@ -35,6 +35,7 @@
 #include <paludis/selinux/security_context.hh>
 #include <paludis/environment.hh>
 #include <paludis/hook.hh>
+#include <paludis/partitioning.hh>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -69,10 +70,30 @@ namespace paludis
     {
         MergedMap merged_ids;
         FSMergerParams params;
+        std::set<FSPath, FSPathComparator> elided_paths;
 
         Imp(const FSMergerParams & p) :
             params(p)
         {
+        }
+
+        bool is_elided_directory(const FSPath & dir) const
+        {
+            for (FSIterator dentry(dir, { fsio_include_dotfiles }), invalid;
+                    dentry != invalid; ++dentry)
+            {
+                const auto path = dentry->strip_leading(params.image());
+                const auto part = params.parts()->classify(path);
+
+                if (path.stat().is_directory())
+                    if (! is_elided_directory(*dentry))
+                        return false;
+
+                if (params.should_merge()(path))
+                    return false;
+            }
+
+            return true;
         }
     };
 }
@@ -216,7 +237,7 @@ FSMerger::on_dir_over_dir(bool is_check, const FSPath & src, const FSPath & dst)
     if (is_check)
         return;
 
-    track_install_dir(src, dst, FSMergerStatusFlags() + msi_used_existing);
+    track_install_dir(src, dst, { msi_used_existing });
 }
 
 void
@@ -242,7 +263,7 @@ FSMerger::on_dir_over_sym(bool is_check, const FSPath & src, const FSPath & dst)
                     "' to be a directory but found a symlink to a directory");
 
         if (! is_check)
-            track_install_dir(src, dst, FSMergerStatusFlags() + msi_used_existing);
+            track_install_dir(src, dst, { msi_used_existing });
     }
     else
         on_error(is_check, "Expected '" + stringify(dst / src.basename()) +
@@ -310,13 +331,17 @@ FSMerger::install_file(const FSPath & src, const FSPath & dst_dir, const std::st
 {
     Context context("When installing file '" + stringify(src) + "' to '" + stringify(dst_dir) + "' with protection '"
             + stringify(dst_name) + "':");
-    FSMergerStatusFlags result;
 
-    FSStat src_stat(src);
-
-    FSPath dst(dst_dir / (stringify(dst_name) + "|paludis-midmerge"));
     FSPath dst_real(dst_dir / dst_name);
+
+    if (_imp->params.should_merge() &&
+            ! _imp->params.should_merge()(dst_real.strip_leading(_imp->params.root().realpath())))
+        return { msi_unselected_part };
+
+    FSMergerStatusFlags result;
+    FSStat src_stat(src);
     FSStat dst_real_stat(dst_real);
+    FSPath dst(dst_dir / (stringify(dst_name) + "|paludis-midmerge"));
 
     if (dst_real_stat.is_regular_file())
         dst_real.chmod(0);
@@ -528,8 +553,19 @@ FSMerger::install_dir(const FSPath & src, const FSPath & dst_dir)
 {
     Context context("When installing dir '" + stringify(src) + "' to '" + stringify(dst_dir) + "':");
 
+    const FSPath dst(dst_dir / src.basename());
     FSMergerStatusFlags result;
     FSStat src_stat(src);
+
+    if (! _imp->elided_paths.empty())
+    {
+        const auto path = dst.strip_leading(_imp->params.root());
+        if (_imp->elided_paths.find(path) != _imp->elided_paths.end())
+        {
+            set_skipped_dir(true);
+            return { msi_unselected_part };
+        }
+    }
 
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_install_dir_pre")
@@ -543,7 +579,6 @@ FSMerger::install_dir(const FSPath & src, const FSPath & dst_dir)
     if (0 != (mode & (S_ISVTX | S_ISUID | S_ISGID)))
         result += msi_setid_bits;
 
-    FSPath dst(dst_dir / src.basename());
     std::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst), mode));
     FSCreateCon createcon(secctx);
     if (0 != paludis::setfilecon(src, secctx))
@@ -553,7 +588,10 @@ FSMerger::install_dir(const FSPath & src, const FSPath & dst_dir)
     if (is_selinux_enabled())
         relabel_dir_recursive(src, dst);
 
-    if ((! _imp->params.options()[mo_nondestructive]) &&
+    const bool partitioned = _imp->params.parts() &&
+        _imp->params.parts()->is_partitioned(dst.strip_leading(_imp->params.root()));
+
+    if (! partitioned && ! _imp->params.options()[mo_nondestructive] &&
             0 == std::rename(stringify(src).c_str(), stringify(dst).c_str()))
     {
         result += msi_rename;
@@ -562,8 +600,9 @@ FSMerger::install_dir(const FSPath & src, const FSPath & dst_dir)
     }
     else
     {
-        Log::get_instance()->message("merger.dir.rename_failed", ll_debug, lc_context) <<
-            "rename failed. Falling back to recursive copy.";
+        if (! partitioned && ! _imp->params.options()[mo_nondestructive])
+            Log::get_instance()->message("merger.dir.rename_failed", ll_debug, lc_context)
+                << "rename failed. Falling back to recursive copy.";
 
         dst.mkdir(mode, { fspmkdo_ok_if_exists });
         FDHolder dst_fd(::open(stringify(dst).c_str(), O_RDONLY));
@@ -604,9 +643,13 @@ FSMerger::install_sym(const FSPath & src, const FSPath & dst_dir)
 {
     Context context("When installing sym '" + stringify(src) + "' to '" + stringify(dst_dir) + "':");
 
-    FSMergerStatusFlags result;
-
     FSPath dst(dst_dir / src.basename());
+
+    if (_imp->params.should_merge() &&
+            ! _imp->params.should_merge()(dst.strip_leading(_imp->params.root().realpath())))
+        return { msi_unselected_part };
+
+    FSMergerStatusFlags result;
     FSStat src_stat(src);
 
     if (0 != _imp->params.environment()->perform_hook(extend_hook(
@@ -851,6 +894,10 @@ FSMerger::try_to_copy_xattrs(const FSPath &, int, FSMergerStatusFlags &)
 void
 FSMerger::track_install_file(const FSPath & src, const FSPath & dst_dir, const std::string & dst_name, const FSMergerStatusFlags & flags)
 {
+    if (flags[msi_unselected_part])
+        return display_merge(et_file, dst_dir / src.basename(), flags,
+                             src.basename() == dst_name ? "" : dst_name);
+
     _imp->params.merged_entries()->insert(dst_dir / dst_name);
     record_install_file(src, dst_dir, dst_name, flags);
 }
@@ -858,6 +905,9 @@ FSMerger::track_install_file(const FSPath & src, const FSPath & dst_dir, const s
 void
 FSMerger::track_install_dir(const FSPath & src, const FSPath & dst_dir, const FSMergerStatusFlags & flags)
 {
+    if (flags[msi_unselected_part])
+        return display_merge(et_dir, dst_dir / src.basename(), flags);
+
     _imp->params.merged_entries()->insert(dst_dir / src.basename());
     record_install_dir(src, dst_dir, flags);
 }
@@ -872,6 +922,9 @@ FSMerger::track_install_under_dir(const FSPath & dst, const FSMergerStatusFlags 
 void
 FSMerger::track_install_sym(const FSPath & src, const FSPath & dst_dir, const FSMergerStatusFlags & flags)
 {
+    if (flags[msi_unselected_part])
+        return display_merge(et_sym, dst_dir / src.basename(), flags);
+
     _imp->params.merged_entries()->insert(dst_dir / src.basename());
     record_install_sym(src, dst_dir, flags);
 }
@@ -952,6 +1005,18 @@ FSMerger::on_dir_main(bool is_check, const FSPath & src, const FSPath & dst)
 }
 
 void
+FSMerger::on_enter_dir(bool is_check, const FSPath src)
+{
+    if (is_check || ! _imp->params.parts() || ! _imp->params.should_merge())
+        return;
+
+    for (FSIterator dentry(src, { fsio_want_directories }), invalid;
+            dentry != invalid; ++dentry)
+        if (_imp->is_elided_directory(*dentry))
+            _imp->elided_paths.insert(dentry->strip_leading(_imp->params.image()));
+}
+
+void
 FSMerger::on_sym_main(bool is_check, const FSPath & src, const FSPath & dst)
 {
     EntryType m(entry_type(dst / src.basename()));
@@ -1023,6 +1088,10 @@ FSMerger::make_arrows(const FSMergerStatusFlags & flags) const
 
             case msi_used_existing:
                 result[0] = '=';
+                continue;
+
+            case msi_unselected_part:
+                result[0] = '%';
                 continue;
 
             case msi_parent_rename:

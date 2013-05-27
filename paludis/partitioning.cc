@@ -62,3 +62,13 @@ Partitioning::classify(const FSPath & path) const
     return PartName("");
 }
 
+bool
+Partitioning::is_partitioned(const FSPath & path) const
+{
+    for (auto part = _imp->parts.rbegin(), end = _imp->parts.rend();
+            part != end; ++part)
+        if (part->first.starts_with(path) && ! part->second.value().empty())
+            return true;
+    return false;
+}
+

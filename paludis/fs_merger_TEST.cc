@@ -176,7 +176,8 @@ namespace
                         n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                         n::parts() = nullptr,
                         n::permit_destination() = std::bind(return_literal_function(true)),
-                        n::root() = root_dir.realpath()
+                        n::root() = root_dir.realpath(),
+                        n::should_merge() = nullptr
                         ))
         {
         }
@@ -200,7 +201,8 @@ namespace
                     n::options() = o,
                     n::parts() = nullptr,
                     n::permit_destination() = std::bind(return_literal_function(true)),
-                    n::root() = root_dir.realpath()
+                    n::root() = root_dir.realpath(),
+                    n::should_merge() = nullptr
                     ))
         {
         }

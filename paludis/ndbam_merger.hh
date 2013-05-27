@@ -47,6 +47,7 @@ namespace paludis
         typedef Name<struct name_parts> parts;
         typedef Name<struct name_permit_destination> permit_destination;
         typedef Name<struct name_root> root;
+        typedef Name<struct name_should_merge> should_merge;
     }
 
     struct NDBAMMergerParams
@@ -67,6 +68,7 @@ namespace paludis
         NamedValue<n::parts, std::shared_ptr<const Partitioning> > parts;
         NamedValue<n::permit_destination, PermitDestinationFn> permit_destination;
         NamedValue<n::root, FSPath> root;
+        NamedValue<n::should_merge, std::function<bool(const FSPath &)>> should_merge;
     };
 
     /**

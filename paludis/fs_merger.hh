@@ -62,6 +62,7 @@ namespace paludis
         typedef Name<struct name_parts> parts;
         typedef Name<struct name_permit_destination> permit_destination;
         typedef Name<struct name_root> root;
+        typedef Name<struct name_should_merge> should_merge;
     }
 
     /**
@@ -108,12 +109,16 @@ namespace paludis
         NamedValue<n::no_chown, bool> no_chown;
         NamedValue<n::options, MergerOptions> options;
 
+        ///\since 1.1.0
         NamedValue<n::parts, std::shared_ptr<const Partitioning> > parts;
 
         ///\since 0.66
         NamedValue<n::permit_destination, PermitDestinationFn> permit_destination;
 
         NamedValue<n::root, FSPath> root;
+
+        ///\since 1.99.0
+        NamedValue<n::should_merge, std::function<bool(const FSPath &)>> should_merge;
     };
 
     /**
@@ -186,6 +191,8 @@ namespace paludis
             virtual FSMergerStatusFlags install_file(const FSPath &, const FSPath &, const std::string &) PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual void unlink_file(FSPath);
             virtual void record_install_file(const FSPath &, const FSPath &, const std::string &, const FSMergerStatusFlags &) = 0;
+
+            virtual void on_enter_dir(bool is_check, const FSPath);
 
             virtual void on_dir_main(bool is_check, const FSPath & src, const FSPath & dst);
             virtual void on_dir_over_nothing(bool is_check, const FSPath &, const FSPath &);

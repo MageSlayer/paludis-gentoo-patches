@@ -13,6 +13,7 @@ make_enum_FSMergerStatusFlag()
     key msi_setid_bits              "The source file had set*id bits"
     key msi_xattr                   "The source file had xattr bits"
     key msi_as_hardlink             "We detected a hardlink and merged it as such"
+    key msi_unselected_part         "The content belongs to an unselected part"
 
     doxygen_comment << "END"
         /**

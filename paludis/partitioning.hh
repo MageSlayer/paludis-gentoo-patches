@@ -77,6 +77,17 @@ namespace paludis
              * \since 1.1.0
              */
             PartName classify(const FSPath &) const;
+
+            /**
+             * Check if a path is partitioned.
+             *
+             * \arg [in] path   the path to check
+             *
+             * \return %true if the path contains a partioned image
+             *
+             * \since 1.99.0
+             */
+            bool is_partitioned(const FSPath &) const;
     };
 }
 
