@@ -291,42 +291,16 @@ namespace
         }
     };
 
-    struct IDForDecisionOrNullVisitor
+    const std::shared_ptr<const PackageID> id_for_decision_or_null(const Decision & decision)
     {
-        const std::shared_ptr<const PackageID> visit(const ExistingNoChangeDecision & d) const
-        {
-            return d.existing_id();
-        }
-
-        const std::shared_ptr<const PackageID> visit(const BreakDecision & d) const
-        {
-            return d.existing_id();
-        }
-
-        const std::shared_ptr<const PackageID> visit(const ChangesToMakeDecision & d) const
-        {
-            return d.origin_id();
-        }
-
-        const std::shared_ptr<const PackageID> visit(const UnableToMakeDecision &) const
-        {
-            return nullptr;
-        }
-
-        const std::shared_ptr<const PackageID> visit(const RemoveDecision &) const
-        {
-            return nullptr;
-        }
-
-        const std::shared_ptr<const PackageID> visit(const NothingNoChangeDecision &) const
-        {
-            return nullptr;
-        }
-    };
-
-    const std::shared_ptr<const PackageID> id_for_decision_or_null(const Decision & d)
-    {
-        return d.accept_returning<std::shared_ptr<const PackageID> >(IDForDecisionOrNullVisitor());
+        return decision.make_accept_returning(
+                [&] (const ExistingNoChangeDecision & d) { return d.existing_id(); },
+                [&] (const BreakDecision & d)            { return d.existing_id(); },
+                [&] (const ChangesToMakeDecision & d)    { return d.origin_id(); },
+                [&] (const UnableToMakeDecision &)       { return nullptr; },
+                [&] (const RemoveDecision &)             { return nullptr; },
+                [&] (const NothingNoChangeDecision &)    { return nullptr; }
+                );
     }
 
     bool decision_matches_spec(
@@ -426,73 +400,64 @@ namespace
         }
     }
 
-    struct DisplayExplanationDecisionVisitor
-    {
-        void visit(const ExistingNoChangeDecision & d) const
-        {
-            cout << fuc(fs_explanation_decision_heading());
-            if (d.taken())
-                cout << fuc(fs_explanation_decision_existing_taken(), fv<'i'>(stringify(*d.existing_id())));
-            else
-                cout << fuc(fs_explanation_decision_existing_untaken(), fv<'i'>(stringify(*d.existing_id())));
-        }
-
-        void visit(const RemoveDecision & d) const
-        {
-            cout << fuc(fs_explanation_decision_heading());
-            if (d.taken())
-                cout << fuc(fs_explanation_decision_remove_taken());
-            else
-                cout << fuc(fs_explanation_decision_remove_untaken());
-
-            for (PackageIDSequence::ConstIterator i(d.ids()->begin()), i_end(d.ids()->end()) ;
-                    i != i_end ; ++i)
-                cout << fuc(fs_explanation_decision_remove_id(), fv<'i'>(stringify(**i)));
-        }
-
-        void visit(const NothingNoChangeDecision &) const
-        {
-            cout << fuc(fs_explanation_decision_heading());
-            cout << fuc(fs_explanation_decision_nothing());
-        }
-
-        void visit(const ChangesToMakeDecision & d) const
-        {
-            if (d.taken())
-                cout << fuc(fs_explanation_decision_heading());
-            else
-                cout << fuc(fs_explanation_decision_untaken_heading());
-
-            cout << fuc(fs_explanation_decision_change_origin(), fv<'i'>(stringify(*d.origin_id())));
-            if (d.if_via_new_binary_in())
-                cout << fuc(fs_explanation_decision_change_via(), fv<'r'>(stringify(*d.if_via_new_binary_in())));
-            cout << fuc(fs_explanation_decision_change_destination(), fv<'r'>(stringify(d.destination()->repository())));
-
-            for (PackageIDSequence::ConstIterator i(d.destination()->replacing()->begin()), i_end(d.destination()->replacing()->end()) ;
-                    i != i_end ; ++i)
-                cout << fuc(fs_explanation_decision_change_replacing(), fv<'i'>(stringify(**i)));
-        }
-
-        void visit(const UnableToMakeDecision & d) const
-        {
-            if (d.taken())
-                cout << fuc(fs_explanation_decision_unable_taken());
-            else
-                cout << fuc(fs_explanation_decision_unable_untaken());
-        }
-
-        void visit(const BreakDecision & d) const
-        {
-            if (d.taken())
-                cout << fuc(fs_explanation_decision_break_taken(), fv<'i'>(stringify(*d.existing_id())));
-            else
-                cout << fuc(fs_explanation_decision_break_untaken(), fv<'i'>(stringify(*d.existing_id())));
-        }
-    };
-
     void display_explanation_decision(const Decision & decision)
     {
-        decision.accept(DisplayExplanationDecisionVisitor());
+        decision.make_accept(
+                [&] (const ExistingNoChangeDecision & d) {
+                    cout << fuc(fs_explanation_decision_heading());
+                    if (d.taken())
+                        cout << fuc(fs_explanation_decision_existing_taken(), fv<'i'>(stringify(*d.existing_id())));
+                    else
+                        cout << fuc(fs_explanation_decision_existing_untaken(), fv<'i'>(stringify(*d.existing_id())));
+                },
+
+                [&] (const RemoveDecision & d) {
+                    cout << fuc(fs_explanation_decision_heading());
+                    if (d.taken())
+                        cout << fuc(fs_explanation_decision_remove_taken());
+                    else
+                        cout << fuc(fs_explanation_decision_remove_untaken());
+
+                    for (PackageIDSequence::ConstIterator i(d.ids()->begin()), i_end(d.ids()->end()) ;
+                            i != i_end ; ++i)
+                        cout << fuc(fs_explanation_decision_remove_id(), fv<'i'>(stringify(**i)));
+                },
+
+                [&] (const NothingNoChangeDecision &) {
+                    cout << fuc(fs_explanation_decision_heading());
+                    cout << fuc(fs_explanation_decision_nothing());
+                },
+
+                [&] (const ChangesToMakeDecision & d) {
+                    if (d.taken())
+                        cout << fuc(fs_explanation_decision_heading());
+                    else
+                        cout << fuc(fs_explanation_decision_untaken_heading());
+
+                    cout << fuc(fs_explanation_decision_change_origin(), fv<'i'>(stringify(*d.origin_id())));
+                    if (d.if_via_new_binary_in())
+                        cout << fuc(fs_explanation_decision_change_via(), fv<'r'>(stringify(*d.if_via_new_binary_in())));
+                    cout << fuc(fs_explanation_decision_change_destination(), fv<'r'>(stringify(d.destination()->repository())));
+
+                    for (PackageIDSequence::ConstIterator i(d.destination()->replacing()->begin()), i_end(d.destination()->replacing()->end()) ;
+                            i != i_end ; ++i)
+                        cout << fuc(fs_explanation_decision_change_replacing(), fv<'i'>(stringify(**i)));
+                },
+
+                [&] (const UnableToMakeDecision & d) {
+                    if (d.taken())
+                        cout << fuc(fs_explanation_decision_unable_taken());
+                    else
+                        cout << fuc(fs_explanation_decision_unable_untaken());
+                },
+
+                [&] (const BreakDecision & d) {
+                    if (d.taken())
+                        cout << fuc(fs_explanation_decision_break_taken(), fv<'i'>(stringify(*d.existing_id())));
+                    else
+                        cout << fuc(fs_explanation_decision_break_untaken(), fv<'i'>(stringify(*d.existing_id())));
+                }
+                );
     }
 
     void display_explanations(
@@ -823,42 +788,16 @@ namespace
         cout << fuc(fs_reasons_end());
     }
 
-    struct DisplayConfirmationVisitor
-    {
-        std::string visit(const DowngradeConfirmation &) const
-        {
-            return "--permit-downgrade";
-        }
-
-        std::string visit(const NotBestConfirmation &) const
-        {
-            return "--permit-old-version";
-        }
-
-        std::string visit(const BreakConfirmation &) const
-        {
-            return "--uninstalls-may-break or --remove-if-dependent";
-        }
-
-        std::string visit(const RemoveSystemPackageConfirmation &) const
-        {
-            return "--uninstalls-may-break system";
-        }
-
-        std::string visit(const MaskedConfirmation &) const
-        {
-            return "being unmasked";
-        }
-
-        std::string visit(const ChangedChoicesConfirmation &) const
-        {
-            return "user configuration changes";
-        }
-    };
-
     std::string stringify_confirmation(const RequiredConfirmation & c)
     {
-        return c.accept_returning<std::string>(DisplayConfirmationVisitor());
+        return c.make_accept_returning(
+                [&] (const DowngradeConfirmation &)           { return "--permit-downgrade"; },
+                [&] (const NotBestConfirmation &)             { return "--permit-old-version"; },
+                [&] (const BreakConfirmation &)               { return "--uninstalls-may-break or --remove-if-dependent"; },
+                [&] (const RemoveSystemPackageConfirmation &) { return "--uninstalls-may-break system"; },
+                [&] (const MaskedConfirmation &)              { return "being unmasked"; },
+                [&] (const ChangedChoicesConfirmation &)      { return "user configuration changes"; }
+            );
     }
 
     void display_confirmations(
@@ -901,51 +840,7 @@ namespace
         cout << fuc(fs_take(), fv<'g'>(find_suggestion_groups(resolution, decision)));
     }
 
-    struct IsPurgeVisitor
-    {
-        bool visit(const TargetReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const SetReason & r) const
-        {
-            return r.reason_for_set()->accept_returning<bool>(*this);
-        }
-
-        bool visit(const LikeOtherDestinationTypeReason & r) const
-        {
-            return r.reason_for_other()->accept_returning<bool>(*this);
-        }
-
-        bool visit(const PresetReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const DependencyReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const ViaBinaryReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const DependentReason &) const
-        {
-            return false;
-        }
-
-        bool visit(const WasUsedByReason &) const
-        {
-            return true;
-        }
-    };
-
-    void display_untaken_remove(
-            const RemoveDecision &)
+    void display_untaken_remove(const RemoveDecision &)
     {
         cout << fuc(fs_take_purge());
     }

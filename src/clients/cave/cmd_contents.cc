@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -77,41 +77,34 @@ namespace
         }
     };
 
-    struct StringifyContentsEntry
+    std::string stringify_contents_entry(const std::shared_ptr<const ContentsEntry> & entry)
     {
-        std::string visit(const ContentsFileEntry & e) const
-        {
-            return fuc(fs_file(),
-                       fv<'p'>(e.part_key()
-                                ? stringify(e.part_key()->parse_value())
-                                : ""),
-                       fv<'s'>(stringify(e.location_key()->parse_value())));
-        }
+        return entry->make_accept_returning(
+            [&] (const ContentsFileEntry & e) {
+                return fuc(fs_file(),
+                           fv<'p'>(e.part_key()
+                                    ? stringify(e.part_key()->parse_value())
+                                    : ""),
+                           fv<'s'>(stringify(e.location_key()->parse_value())));
+            },
 
-        std::string visit(const ContentsDirEntry & e) const
-        {
-            return fuc(fs_dir(), fv<'s'>(stringify(e.location_key()->parse_value())));
-        }
+            [&] (const ContentsDirEntry & e) {
+                return fuc(fs_dir(), fv<'s'>(stringify(e.location_key()->parse_value())));
+            },
 
-        std::string visit(const ContentsSymEntry & e) const
-        {
-            return fuc(fs_sym(),
-                       fv<'p'>(e.part_key()
-                                ? stringify(e.part_key()->parse_value())
-                                : ""),
-                       fv<'s'>(stringify(e.location_key()->parse_value())),
-                       fv<'t'>(stringify(e.target_key()->parse_value())));
-        }
+            [&] (const ContentsSymEntry & e) {
+                return fuc(fs_sym(),
+                           fv<'p'>(e.part_key()
+                                    ? stringify(e.part_key()->parse_value())
+                                    : ""),
+                           fv<'s'>(stringify(e.location_key()->parse_value())),
+                           fv<'t'>(stringify(e.target_key()->parse_value())));
+            },
 
-        std::string visit(const ContentsOtherEntry & e) const
-        {
-            return fuc(fs_other(), fv<'s'>(stringify(e.location_key()->parse_value())));
-        }
-    };
-
-    std::string stringify_contents_entry(const std::shared_ptr<const ContentsEntry> & e)
-    {
-        return e->accept_returning<std::string>(StringifyContentsEntry());
+            [&] (const ContentsOtherEntry & e) {
+                return fuc(fs_other(), fv<'s'>(stringify(e.location_key()->parse_value())));
+            }
+            );
     }
 }
 

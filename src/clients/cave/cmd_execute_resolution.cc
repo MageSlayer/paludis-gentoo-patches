@@ -1028,35 +1028,6 @@ namespace
         }
     };
 
-    struct ContinueAfterState
-    {
-        bool visit(const JobPendingState &) const
-        {
-            /* it's still pending because it's a circular dep that we ended up ignoring */
-            return true;
-        }
-
-        bool visit(const JobActiveState &) const PALUDIS_ATTRIBUTE((noreturn))
-        {
-            throw InternalError(PALUDIS_HERE, "still active? how did that happen?");
-        }
-
-        bool visit(const JobSucceededState &) const
-        {
-            return true;
-        }
-
-        bool visit(const JobFailedState &) const
-        {
-            return false;
-        }
-
-        bool visit(const JobSkippedState &) const
-        {
-            return false;
-        }
-    };
-
     struct ExistingStateVisitor
     {
         bool done;
@@ -1163,33 +1134,6 @@ namespace
         cout << fuc(fs_already_action(), fv<'x'>(make_x_of_y(v.x, v.y, v.f, v.s)), fv<'s'>(state), fv<'t'>(v.text));
     }
 
-    struct MakeJobID
-    {
-        const std::shared_ptr<Environment> env;
-
-        MakeJobID(const std::shared_ptr<Environment> & e) :
-            env(e)
-        {
-        }
-
-        std::string visit(const UninstallJob & j) const
-        {
-            return "uninstalling " + join(j.ids_to_remove_specs()->begin(), j.ids_to_remove_specs()->end(), ", ",
-                    std::bind(stringify_id_or_spec, env, std::placeholders::_1));
-        }
-
-        std::string visit(const InstallJob & j) const
-        {
-            return "installing " + stringify_id_or_spec(env, j.origin_id_spec()) + " to ::" + stringify(j.destination_repository_name())
-                + maybe_replacing(env, ensequence(j.origin_id_spec()), j.replacing_specs());
-        }
-
-        std::string visit(const FetchJob & j) const
-        {
-            return "fetch " + stringify_id_or_spec(env, j.origin_id_spec());
-        }
-    };
-
     struct GetOutputManager
     {
         const std::shared_ptr<OutputManager> visit(const JobActiveState & s) const
@@ -1215,34 +1159,6 @@ namespace
         const std::shared_ptr<OutputManager> visit(const JobPendingState &) const
         {
             return nullptr;
-        }
-    };
-
-    struct CanStartState
-    {
-        bool visit(const JobSkippedState &) const
-        {
-            return true;
-        }
-
-        bool visit(const JobPendingState &) const
-        {
-            return false;
-        }
-
-        bool visit(const JobActiveState &) const
-        {
-            return false;
-        }
-
-        bool visit(const JobSucceededState &) const
-        {
-            return true;
-        }
-
-        bool visit(const JobFailedState &) const
-        {
-            return true;
         }
     };
 
@@ -1309,7 +1225,21 @@ namespace
 
         std::string unique_id() const
         {
-            return job->accept_returning<std::string>(MakeJobID(env));
+            return job->make_accept_returning(
+                [&] (const UninstallJob & j) {
+                    return "uninstalling " + join(j.ids_to_remove_specs()->begin(), j.ids_to_remove_specs()->end(), ", ",
+                            std::bind(stringify_id_or_spec, env, std::placeholders::_1));
+                },
+
+                [&] (const InstallJob & j) {
+                    return "installing " + stringify_id_or_spec(env, j.origin_id_spec()) + " to ::" + stringify(j.destination_repository_name())
+                        + maybe_replacing(env, ensequence(j.origin_id_spec()), j.replacing_specs());
+                },
+
+                [&] (const FetchJob & j) {
+                    return "fetch " + stringify_id_or_spec(env, j.origin_id_spec());
+                }
+                );
         }
 
         bool can_run() const
@@ -1321,7 +1251,13 @@ namespace
                     continue;
 
                 const std::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(r->job_number()));
-                if (! req->state()->accept_returning<bool>(CanStartState()))
+                if (! req->state()->make_accept_returning(
+                            [&] (const JobSkippedState &)   { return true; },
+                            [&] (const JobPendingState &)   { return false; },
+                            [&] (const JobActiveState &)    { return false; },
+                            [&] (const JobSucceededState &) { return true; },
+                            [&] (const JobFailedState &)    { return true; }
+                            ))
                     return false;
             }
 
@@ -1380,7 +1316,28 @@ namespace
                             continue;
 
                         const std::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(r->job_number()));
-                        want = want && req->state()->accept_returning<bool>(ContinueAfterState());
+                        want = want && req->state()->make_accept_returning(
+                                [&] (const JobPendingState &) {
+                                    /* it's still pending because it's a circular dep that we ended up ignoring */
+                                    return true;
+                                },
+
+                                [&] (const JobActiveState &) -> bool {
+                                    throw InternalError(PALUDIS_HERE, "still active? how did that happen?");
+                                },
+
+                                [&] (const JobSucceededState &) {
+                                    return true;
+                                },
+
+                                [&] (const JobFailedState &) {
+                                    return false;
+                                },
+
+                                [&] (const JobSkippedState &) {
+                                    return false;
+                                }
+                                );
                     }
                 }
             }
