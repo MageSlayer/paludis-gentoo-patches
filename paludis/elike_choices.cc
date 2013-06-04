@@ -89,7 +89,7 @@ namespace
                         permitted_work->insert("tidyup", "Tidy up work directory after a successful build");
                         continue;
                     case ewcvp_preserve:
-                        permitted_work->insert("preserve", "Perserve the working directory");
+                        permitted_work->insert("preserve", "Preserve the working directory");
                         continue;
                     case ewcvp_remove:
                         permitted_work->insert("remove", "Always remove the working directory");
