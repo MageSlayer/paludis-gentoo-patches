@@ -673,7 +673,7 @@ _cave_cmd_print-unmanaged-files()
 {
   _arguments -s : \
     '(--help -h --root -r )'{--help,-h}'[Display help messsage]' \
-    '( --help -h )*'{--root,-r}'[Search under the specified root]:root:_directories' && return 0
+    '*'{--root,-r}'[Search under the specified root]:root:_directories' && return 0
 }
 
 (( ${+functions[_cave_cmd_print-unused-distfiles]} )) ||
