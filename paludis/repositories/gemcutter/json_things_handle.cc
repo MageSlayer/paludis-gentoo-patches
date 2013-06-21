@@ -35,8 +35,8 @@ using namespace paludis;
 using namespace paludis::gemcutter_repository;
 
 JSONThingsHandle::JSONThingsHandle() :
-    handle(0),
-    parse_all_gems_function(0)
+    handle(nullptr),
+    parse_all_gems_function(nullptr)
 {
     handle = ::dlopen(("libpaludisgemcutterrepositoryjsonthings_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);
     if (! handle)

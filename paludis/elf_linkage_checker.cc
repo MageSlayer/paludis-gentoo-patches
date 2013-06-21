@@ -186,13 +186,13 @@ Imp<ElfLinkageChecker>::check_elf(const FSPath & file, std::istream & stream)
         {
             const DynamicSection<ElfType_> * dyn_sec(visitor_cast<const DynamicSection<ElfType_> >(*sec_it));
 
-            if (0 != dyn_sec)
+            if (nullptr != dyn_sec)
                 for (typename DynamicSection<ElfType_>::EntryIterator ent_it(dyn_sec->entry_begin()),
                          ent_it_end(dyn_sec->entry_end()); ent_it_end != ent_it; ++ent_it)
                 {
                     const DynamicEntryString<ElfType_> * ent_str(visitor_cast<const DynamicEntryString<ElfType_> >(*ent_it));
 
-                    if (0 != ent_str && "NEEDED" == ent_str->tag_name())
+                    if (nullptr != ent_str && "NEEDED" == ent_str->tag_name())
                     {
                         const std::string & req((*ent_str)());
                         if (check_libraries.empty() || check_libraries.end() != check_libraries.find(req))

@@ -49,7 +49,7 @@ namespace paludis
 StringListStreamBuf::StringListStreamBuf() :
     _imp()
 {
-    setg(0, 0, 0);
+    setg(nullptr, nullptr, nullptr);
 }
 
 StringListStreamBuf::~StringListStreamBuf()

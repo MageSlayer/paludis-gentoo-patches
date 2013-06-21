@@ -73,8 +73,8 @@ namespace
         MatchFunction match_function;
 
         ExtrasHandle() :
-            handle(0),
-            match_function(0)
+            handle(nullptr),
+            match_function(nullptr)
         {
             handle = ::dlopen(("libcavematchextras_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);
             if (! handle)
@@ -123,9 +123,9 @@ namespace
     bool match_text(const std::string & text, const std::string & pattern, bool case_sensitive)
     {
         if (case_sensitive)
-            return 0 != strstr(text.c_str(), pattern.c_str());
+            return nullptr != strstr(text.c_str(), pattern.c_str());
         else
-            return 0 != strcasestr(text.c_str(), pattern.c_str());
+            return nullptr != strcasestr(text.c_str(), pattern.c_str());
     }
 
     bool match_exact(const std::string & text, const std::string & pattern, bool case_sensitive)

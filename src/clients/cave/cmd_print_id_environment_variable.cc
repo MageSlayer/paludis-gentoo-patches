@@ -99,7 +99,7 @@ namespace
     {
         auto repo(env->fetch_repository(id->repository_name()));
 
-        if (0 != repo->environment_variable_interface())
+        if (nullptr != repo->environment_variable_interface())
         {
             std::shared_ptr<Map<char, std::string> > m(std::make_shared<Map<char, std::string>>());
             m->insert('n', n);

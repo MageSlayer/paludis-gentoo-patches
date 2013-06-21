@@ -249,7 +249,7 @@ namespace
             m->insert("green", "\033[1;32m");
             m->insert("blue", "\033[1;34m");
             m->insert("normal", "\033[0;0m");
-            m->insert("time", stringify(time(0)));
+            m->insert("time", stringify(time(nullptr)));
             m->insert("pid", stringify(getpid()));
 
             const std::shared_ptr<const PaludisDistribution> dist(

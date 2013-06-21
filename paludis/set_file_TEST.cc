@@ -66,7 +66,7 @@ TEST(SetFile, Simple)
     TestEnvironment env;
 
     SetFile f(make_named_values<SetFileParams>(
-                n::environment() = static_cast<Environment *>(0),
+                n::environment() = static_cast<Environment *>(nullptr),
                 n::file_name() = FSPath("set_file_TEST_dir/simple1"),
                 n::parser() = std::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
                 n::set_operator_mode() = sfsmo_natural,
@@ -122,7 +122,7 @@ TEST(SetFile, PaludisConf)
     TestEnvironment env;
 
     SetFile f(make_named_values<SetFileParams>(
-                n::environment() = static_cast<Environment *>(0),
+                n::environment() = static_cast<Environment *>(nullptr),
                 n::file_name() = FSPath("set_file_TEST_dir/paludisconf1"),
                 n::parser() = std::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
                 n::set_operator_mode() = sfsmo_natural,
@@ -181,7 +181,7 @@ TEST(SetFile, Overrides)
     TestEnvironment env;
 
     SetFile f(make_named_values<SetFileParams>(
-                n::environment() = static_cast<Environment *>(0),
+                n::environment() = static_cast<Environment *>(nullptr),
                 n::file_name() = FSPath("set_file_TEST_dir/override"),
                 n::parser() = std::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
                 n::set_operator_mode() = sfsmo_natural,
@@ -195,7 +195,7 @@ TEST(SetFile, Overrides)
     }
 
     SetFile fstar(make_named_values<SetFileParams>(
-                n::environment() = static_cast<Environment *>(0),
+                n::environment() = static_cast<Environment *>(nullptr),
                 n::file_name() = FSPath("set_file_TEST_dir/override"),
                 n::parser() = std::bind(&parse_user_package_dep_spec, _1, &env, UserPackageDepSpecOptions(), filter::All()),
                 n::set_operator_mode() = sfsmo_star,

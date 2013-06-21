@@ -55,12 +55,12 @@ namespace paludis
         CleanupPtr cleanup;
 
         Imp() :
-            paludis_handle(0),
-            handle(0),
-            create_glsa_from_xml_file(0),
-            create_metadata_xml_from_xml_file(0),
-            init(0),
-            cleanup(0)
+            paludis_handle(nullptr),
+            handle(nullptr),
+            create_glsa_from_xml_file(nullptr),
+            create_metadata_xml_from_xml_file(nullptr),
+            init(nullptr),
+            cleanup(nullptr)
         {
 #if ENABLE_XML
             if (! getenv_with_default(env_vars::no_xml, "").empty())
@@ -134,7 +134,7 @@ XMLThingsHandle::XMLThingsHandle() :
 
 XMLThingsHandle::~XMLThingsHandle()
 {
-    if (0 != _imp->cleanup)
+    if (nullptr != _imp->cleanup)
         _imp->cleanup();
 
     // don't dlclose, gcc does something dumb on cleanup

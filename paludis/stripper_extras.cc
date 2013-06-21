@@ -40,7 +40,7 @@ paludis_stripper_extras_init()
     if (! extras->magic)
         throw StripperError("magic_open returned null");
 
-    if (-1 == magic_load(extras->magic, NULL))
+    if (-1 == magic_load(extras->magic, nullptr))
         throw StripperError("magic_load returned error");
 
     return extras;

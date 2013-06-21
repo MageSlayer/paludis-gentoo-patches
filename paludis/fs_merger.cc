@@ -803,7 +803,7 @@ FSMerger::try_to_copy_xattrs(const FSPath & src, int dst_fd, FSMergerStatusFlags
 {
     FDHolder src_fd(::open(stringify(src).c_str(), O_RDONLY));
 
-    ssize_t list_sz(flistxattr(src_fd, 0, 0));
+    ssize_t list_sz(flistxattr(src_fd, nullptr, 0));
     if (-1 == list_sz)
     {
         if (ENOTSUP != errno)
@@ -833,7 +833,7 @@ FSMerger::try_to_copy_xattrs(const FSPath & src, int dst_fd, FSMergerStatusFlags
         std::string key(list_holder.get() + offset);
         do
         {
-            ssize_t value_sz(fgetxattr(src_fd, key.c_str(), 0, 0));
+            ssize_t value_sz(fgetxattr(src_fd, key.c_str(), nullptr, 0));
             if (-1 == value_sz)
             {
                 Log::get_instance()->message("merger.xattrs.failure", ll_warning, lc_context) <<

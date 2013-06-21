@@ -192,7 +192,7 @@ PaludisLikeOptionsConf::add_file(const FSPath & f)
         if (tokens.size() < 2)
             continue;
 
-        ValuesGroups * values_groups(0);
+        ValuesGroups * values_groups(nullptr);
         try
         {
             std::shared_ptr<PackageDepSpec> d(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
@@ -243,7 +243,7 @@ PaludisLikeOptionsConf::add_file(const FSPath & f)
         if (! values_groups)
             throw InternalError(PALUDIS_HERE, "huh?");
 
-        ValuesGroup * values_group(0);
+        ValuesGroup * values_group(nullptr);
 
         for (std::vector<std::string>::iterator t(next(tokens.begin())), t_end(tokens.end()) ;
                 t != t_end ; ++t)

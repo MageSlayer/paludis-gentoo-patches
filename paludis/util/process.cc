@@ -117,7 +117,7 @@ ProcessCommand::exec()
             s.append(" ");
         s.append(_imp->args_string);
 
-        execl("/bin/sh", "sh", "-c", s.c_str(), static_cast<char *>(0));
+        execl("/bin/sh", "sh", "-c", s.c_str(), static_cast<char *>(nullptr));
 
         throw ProcessError("execl failed");
     }
@@ -130,7 +130,7 @@ ProcessCommand::exec()
          * call _exit() shortly afterwards */
 
         char ** argv(new char * [_imp->args.size() + 1]);
-        argv[_imp->args.size()] = 0;
+        argv[_imp->args.size()] = nullptr;
         for (auto v_begin(_imp->args.begin()), v(v_begin), v_end(_imp->args.end()) ;
                 v != v_end ; ++v)
         {
@@ -198,10 +198,10 @@ namespace paludis
 
         RunningProcessThread() :
             ctl_pipe(true),
-            capture_stdout(0),
-            capture_stderr(0),
-            capture_output_to_fd(0),
-            send_input_to_fd(0),
+            capture_stdout(nullptr),
+            capture_stderr(nullptr),
+            capture_output_to_fd(nullptr),
+            send_input_to_fd(nullptr),
             as_main_process(false)
         {
         }
@@ -272,7 +272,7 @@ RunningProcessThread::thread_func()
             max_fd = std::max(max_fd, pipe_command_handler_command_pipe->read_fd());
         }
 
-        int retval(::pselect(max_fd + 1, &read_fds, &write_fds, 0, 0, 0));
+        int retval(::pselect(max_fd + 1, &read_fds, &write_fds, nullptr, nullptr, nullptr));
         if (-1 == retval)
             throw ProcessError("pselect() failed");
 
@@ -355,7 +355,7 @@ RunningProcessThread::thread_func()
                 if (0 != ::close(send_input_to_fd_pipe->write_fd()))
                     throw ProcessError("close() send_input_to_fd_pipe write_fd failed");
                 send_input_to_fd_pipe->clear_write_fd();
-                send_input_to_fd = 0;
+                send_input_to_fd = nullptr;
                 want_to_finish = true;
             }
 
@@ -528,17 +528,17 @@ namespace paludis
             command(std::move(c)),
             need_thread(false),
             use_ptys(false),
-            capture_stdout(0),
-            capture_stderr(0),
-            capture_output_to_fd_stream(0),
+            capture_stdout(nullptr),
+            capture_stderr(nullptr),
+            capture_output_to_fd_stream(nullptr),
             capture_output_to_fd_fd(-1),
-            send_input_to_fd_stream(0),
+            send_input_to_fd_stream(nullptr),
             send_input_to_fd_fd(-1),
             set_stdin_fd(-1),
             clearenv(false),
             setuid(getuid()),
             setgid(getgid()),
-            echo_command_to(0),
+            echo_command_to(nullptr),
             extra_newlines_if_any_output_exists(false),
             as_main_process(false)
         {
@@ -639,7 +639,7 @@ Process::run()
     sigemptyset(&intandterm);
     sigaddset(&intandterm, SIGINT);
     sigaddset(&intandterm, SIGTERM);
-    if (0 != pthread_sigmask(SIG_BLOCK, &intandterm, 0))
+    if (0 != pthread_sigmask(SIG_BLOCK, &intandterm, nullptr))
         throw ProcessError("pthread_sigmask failed");
 
     pid_t child(fork());
@@ -661,15 +661,15 @@ Process::run()
             sigemptyset(&act.sa_mask);
             act.sa_handler = SIG_DFL;
             act.sa_flags = 0;
-            sigaction(SIGINT,  &act, 0);
-            sigaction(SIGTERM, &act, 0);
-            if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, 0))
+            sigaction(SIGINT,  &act, nullptr);
+            sigaction(SIGTERM, &act, nullptr);
+            if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, nullptr))
                 throw ProcessError("pthread_sigmask failed");
 
             if (_imp->clearenv)
             {
                 std::map<std::string, std::string> setenvs;
-                for (const char * const * it(environ) ; 0 != *it ; ++it)
+                for (const char * const * it(environ) ; nullptr != *it ; ++it)
                 {
                     std::string var(*it);
                     if (std::string::npos != var.find('=') &&
@@ -768,8 +768,8 @@ Process::run()
 
                 std::unique_ptr<char []> buf(new char[buflen]);
                 struct passwd pw;
-                struct passwd * pw_result(0);
-                if (0 != getpwuid_r(_imp->setuid, &pw, buf.get(), buflen, &pw_result) || 0 == pw_result)
+                struct passwd * pw_result(nullptr);
+                if (0 != getpwuid_r(_imp->setuid, &pw, buf.get(), buflen, &pw_result) || nullptr == pw_result)
                     throw ProcessError("getpwuid_r() failed");
 
                 if (0 != ::initgroups(pw_result->pw_name, getgid()))
@@ -797,7 +797,7 @@ Process::run()
             sigemptyset(&act.sa_mask);
             act.sa_handler = SIG_IGN;
             act.sa_flags = 0;
-            sigaction(SIGCLD, &act, 0);
+            sigaction(SIGCLD, &act, nullptr);
 
             pid_t p(fork());
             if (-1 == p)
@@ -807,7 +807,7 @@ Process::run()
         }
 
         /* Restore SIGINT and SIGTERM handling */
-        if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, 0))
+        if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, nullptr))
             throw ProcessError("pthread_sigmask failed");
 
         if (thread)

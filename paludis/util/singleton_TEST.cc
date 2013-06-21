@@ -121,7 +121,7 @@ namespace
 TEST(Singleton, Works)
 {
     ASSERT_EQ(0, MyClass::instances);
-    ASSERT_TRUE(0 != MyClass::get_instance());
+    ASSERT_TRUE(nullptr != MyClass::get_instance());
     ASSERT_EQ(1, MyClass::instances);
     ASSERT_TRUE(MyClass::get_instance() == MyClass::get_instance());
     ASSERT_TRUE(MyClass::get_instance()->s.empty());
@@ -134,23 +134,23 @@ TEST(Singleton, Threaded)
     using namespace std::placeholders;
     const int c = 100;
 
-    std::vector<void *> a(c, static_cast<void *>(0));
+    std::vector<void *> a(c, static_cast<void *>(nullptr));
     ASSERT_EQ(0, MyThreadedClass::instances);
-    ASSERT_TRUE(c == std::count(a.begin(), a.end(), static_cast<void *>(0)));
+    ASSERT_TRUE(c == std::count(a.begin(), a.end(), static_cast<void *>(nullptr)));
     {
         ThreadPool p;
         for (int x(0) ; x < c ; ++x)
             p.create_thread(std::bind(&thread_func, &a[x]));
     }
     ASSERT_EQ(1, MyThreadedClass::instances);
-    ASSERT_TRUE(0 == std::count(a.begin(), a.end(), static_cast<void *>(0)));
+    ASSERT_TRUE(0 == std::count(a.begin(), a.end(), static_cast<void *>(nullptr)));
     ASSERT_TRUE(c == std::count(a.begin(), a.end(), MyThreadedClass::get_instance()));
 }
 
 TEST(Singleton, Delete)
 {
     ASSERT_EQ(0, MyClassTwo::instances);
-    ASSERT_TRUE(0 != MyClassTwo::get_instance());
+    ASSERT_TRUE(nullptr != MyClassTwo::get_instance());
     ASSERT_EQ(1, MyClassTwo::instances);
     ASSERT_TRUE(MyClassTwo::get_instance() == MyClassTwo::get_instance());
     ASSERT_TRUE(MyClassTwo::get_instance()->s.empty());
@@ -158,7 +158,7 @@ TEST(Singleton, Delete)
     ASSERT_EQ("foo", MyClassTwo::get_instance()->s);
     MyClassTwo::destroy_instance();
     ASSERT_EQ(MyClassTwo::instances, 0);
-    ASSERT_TRUE(0 != MyClassTwo::get_instance());
+    ASSERT_TRUE(nullptr != MyClassTwo::get_instance());
     ASSERT_EQ(1, MyClassTwo::instances);
     ASSERT_TRUE(MyClassTwo::get_instance()->s.empty());
 }

@@ -1290,7 +1290,7 @@ namespace
                 else if (initial_state.done)
                 {
                     want = false;
-                    already_done_action(env, "succeeded", job, counts, 0, 0);
+                    already_done_action(env, "succeeded", job, counts, nullptr, nullptr);
                 }
             }
 

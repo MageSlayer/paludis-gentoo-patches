@@ -955,7 +955,7 @@ namespace
                     const std::shared_ptr<const PackageID> & spec_id,
                     ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result))
             {
-                if (requirement_met(env, maybe_changes_to_owner, id, spec_id, 0).first)
+                if (requirement_met(env, maybe_changes_to_owner, id, spec_id, nullptr).first)
                     return indeterminate;
                 else
                     return false;

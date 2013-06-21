@@ -38,14 +38,14 @@ using namespace paludis;
 using namespace cave;
 
 SearchExtrasHandle::SearchExtrasHandle() :
-    handle(0),
-    create_db_function(0),
-    open_db_function(0),
-    cleanup_db_function(0),
-    starting_adds_function(0),
-    add_candidate_function(0),
-    done_adds_function(0),
-    find_candidates_function(0)
+    handle(nullptr),
+    create_db_function(nullptr),
+    open_db_function(nullptr),
+    cleanup_db_function(nullptr),
+    starting_adds_function(nullptr),
+    add_candidate_function(nullptr),
+    done_adds_function(nullptr),
+    find_candidates_function(nullptr)
 {
 #ifndef ENABLE_SEARCH_INDEX
     throw NotAvailableError("cave was built without support for search indexes");

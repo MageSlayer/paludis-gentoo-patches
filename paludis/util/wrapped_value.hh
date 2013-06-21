@@ -49,7 +49,7 @@ namespace paludis
         public:
             explicit WrappedValue(
                     const typename WrappedValueTraits<Tag_>::UnderlyingType &,
-                    const typename WrappedValueDevoid<typename WrappedValueTraits<Tag_>::ValidationParamsType>::Type & = static_cast<NoType<0u> *>(0)
+                    const typename WrappedValueDevoid<typename WrappedValueTraits<Tag_>::ValidationParamsType>::Type & = static_cast<NoType<0u> *>(nullptr)
                     );
 
             WrappedValue & operator= (const WrappedValue &);

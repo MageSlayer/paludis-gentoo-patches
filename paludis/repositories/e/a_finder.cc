@@ -28,7 +28,7 @@ AFinder::AFinder(const Environment * const e, const std::shared_ptr<const Packag
     env(e),
     id(i)
 {
-    _labels.push_back(0);
+    _labels.push_back(nullptr);
 }
 
 void

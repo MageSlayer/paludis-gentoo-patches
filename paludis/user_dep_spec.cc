@@ -940,7 +940,7 @@ namespace
 
         const MetadataKey * const visit(const UserMask &) const
         {
-            return 0;
+            return nullptr;
         }
 
         const MetadataKey * const visit(const UnacceptedMask & m) const
@@ -949,17 +949,17 @@ namespace
             if (k != id->end_metadata())
                 return &**k;
             else
-                return 0;
+                return nullptr;
         }
 
         const MetadataKey * const visit(const RepositoryMask &) const
         {
-            return 0;
+            return nullptr;
         }
 
         const MetadataKey * const visit(const UnsupportedMask &) const
         {
-            return 0;
+            return nullptr;
         }
     };
 
@@ -999,8 +999,8 @@ UserKeyRequirement::requirement_met(
 {
     Context context("When working out whether '" + stringify(*id) + "' matches " + as_raw_string() + ":");
 
-    const MetadataKey * key(0);
-    const Mask * mask(0);
+    const MetadataKey * key(nullptr);
+    const Mask * mask(nullptr);
 
     auto repo(env->fetch_repository(id->repository_name()));
     if (0 == _imp->key.compare(0, 3, "::$"))

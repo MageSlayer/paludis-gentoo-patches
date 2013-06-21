@@ -67,10 +67,10 @@ namespace
         CleanupPtr cleanup;
 
         StripperHandle() :
-            handle(0),
-            init(0),
-            lookup(0),
-            cleanup(0)
+            handle(nullptr),
+            init(nullptr),
+            lookup(nullptr),
+            cleanup(nullptr)
         {
 #ifndef ENABLE_STRIPPER
             Log::get_instance()->message("strip.unsupported", ll_warning, lc_context)
@@ -103,7 +103,7 @@ namespace
 
                 if (handle)
                     ::dlclose(handle);
-                handle = 0;
+                handle = nullptr;
             }
 #endif
         }
@@ -127,7 +127,7 @@ namespace paludis
 
         Imp(const StripperOptions & o) :
             options(o),
-            stripper_extras(0)
+            stripper_extras(nullptr)
         {
             try
             {
@@ -138,7 +138,7 @@ namespace paludis
             {
                 Log::get_instance()->message("strip.broken", ll_warning, lc_context)
                     << "Got error '" << e.message() << "' (" << e.what() << ") when attempting to strip";
-                stripper_extras = 0;
+                stripper_extras = nullptr;
             }
         }
 

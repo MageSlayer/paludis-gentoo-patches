@@ -142,7 +142,7 @@ InstalledAccountsID::need_keys_added() const
 
                 struct group grp;
                 struct group * grp_result;
-                if (0 == getgrgid_r(pwd.pw_gid, &grp, &grp_buf[0], grp_buf_sz, &grp_result) && 0 != grp_result)
+                if (0 == getgrgid_r(pwd.pw_gid, &grp, &grp_buf[0], grp_buf_sz, &grp_result) && nullptr != grp_result)
                 {
                     /* really we should only do this if the group in question is managed by accounts. users
                      * might have accounts installed by hand with a group that's unmanaged. */

@@ -60,7 +60,7 @@ namespace paludis
 
                 void push_back(
                         const std::shared_ptr<const Decision_> &,
-                        const Notes_ & = static_cast<NoType<0u> *>(0));
+                        const Notes_ & = static_cast<NoType<0u> *>(nullptr));
 
                 typedef DecisionsConstIteratorTag<Decision_, Notes_> ConstIteratorTag;
                 typedef WrappedForwardIterator<ConstIteratorTag,

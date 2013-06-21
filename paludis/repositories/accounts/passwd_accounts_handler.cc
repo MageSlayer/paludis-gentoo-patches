@@ -68,7 +68,7 @@ PasswdAccountsHandler::merge_user(const MergeParams & params)
 
         username = k->parse_value();
 
-        if (0 != getpwnam(username.c_str()))
+        if (nullptr != getpwnam(username.c_str()))
             throw ActionFailedError("User '" + username + "' already exists");
     } while (false);
 
@@ -225,7 +225,7 @@ PasswdAccountsHandler::merge_group(const MergeParams & params)
 
         groupname = k->parse_value();
 
-        if (0 != getgrnam(groupname.c_str()))
+        if (nullptr != getgrnam(groupname.c_str()))
             throw ActionFailedError("Group '" + groupname + "' already exists");
     } while (false);
 

@@ -84,7 +84,7 @@ namespace
 
     Glob::Glob(const std::string & pattern, int flags)
     {
-        int ret(glob(pattern.c_str(), flags, 0, &g));
+        int ret(glob(pattern.c_str(), flags, nullptr, &g));
         switch (ret)
         {
             case 0:

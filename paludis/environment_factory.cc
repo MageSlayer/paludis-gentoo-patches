@@ -77,10 +77,10 @@ EnvironmentFactory::EnvironmentFactory() :
 {
     using namespace environment_groups;
 
-    register_environment(static_cast<const TypeOrNoType<ENVIRONMENT_GROUP_IF_dummy>::Type *>(0), this);
-    register_environment(static_cast<const TypeOrNoType<ENVIRONMENT_GROUP_IF_paludis>::Type *>(0), this);
-    register_environment(static_cast<const TypeOrNoType<ENVIRONMENT_GROUP_IF_portage>::Type *>(0), this);
-    register_environment(static_cast<const TypeOrNoType<ENVIRONMENT_GROUP_IF_test>::Type *>(0), this);
+    register_environment(static_cast<const TypeOrNoType<ENVIRONMENT_GROUP_IF_dummy>::Type *>(nullptr), this);
+    register_environment(static_cast<const TypeOrNoType<ENVIRONMENT_GROUP_IF_paludis>::Type *>(nullptr), this);
+    register_environment(static_cast<const TypeOrNoType<ENVIRONMENT_GROUP_IF_portage>::Type *>(nullptr), this);
+    register_environment(static_cast<const TypeOrNoType<ENVIRONMENT_GROUP_IF_test>::Type *>(nullptr), this);
 }
 
 EnvironmentFactory::~EnvironmentFactory()

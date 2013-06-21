@@ -36,7 +36,7 @@ cave_search_extras_create_db(const std::string & file)
 {
     auto data(cave_search_extras_open_db(file));
 
-    if (SQLITE_OK != sqlite3_exec(data->db, "drop table if exists candidates", 0, 0, 0))
+    if (SQLITE_OK != sqlite3_exec(data->db, "drop table if exists candidates", nullptr, nullptr, nullptr))
         throw InternalError(PALUDIS_HERE, "sqlite3_exec drop candidates failed");
 
     if (SQLITE_OK != sqlite3_exec(data->db, "create table candidates ( "
@@ -47,13 +47,13 @@ cave_search_extras_create_db(const std::string & file)
                 "name text not null, "
                 "short_desc text not null, "
                 "long_desc text not null"
-                ")", 0, 0, 0))
+                ")", nullptr, nullptr, nullptr))
         throw InternalError(PALUDIS_HERE, "sqlite3_exec create candidates failed");
 
     if (SQLITE_OK != sqlite3_prepare_v2(data->db, "insert into candidates "
                 "( spec, is_visible, is_best, is_best_visible, name, short_desc, long_desc ) "
                 "values ( ?1, ?2, ?3, ?4, ?5, ?6, ?7 )",
-                -1, &data->add_candidate, 0))
+                -1, &data->add_candidate, nullptr))
         throw InternalError(PALUDIS_HERE, "sqlite3_prepare_v2 insert into candidates failed");
 
     return data;
@@ -66,7 +66,7 @@ cave_search_extras_open_db(const std::string & file)
     if (SQLITE_OK != sqlite3_open(file.c_str(), &data->db))
         throw InternalError(PALUDIS_HERE, "sqlite3_open failed");
 
-    data->add_candidate = 0;
+    data->add_candidate = nullptr;
 
     return data;
 }
@@ -123,7 +123,7 @@ extern "C"
 void
 cave_search_extras_starting_adds(CaveSearchExtrasDB * const data)
 {
-    if (SQLITE_OK != sqlite3_exec(data->db, "begin", 0, 0, 0))
+    if (SQLITE_OK != sqlite3_exec(data->db, "begin", nullptr, nullptr, nullptr))
         throw InternalError(PALUDIS_HERE, "sqlite3_exec begin failed");
 }
 
@@ -131,7 +131,7 @@ extern "C"
 void
 cave_search_extras_done_adds(CaveSearchExtrasDB * const data)
 {
-    if (SQLITE_OK != sqlite3_exec(data->db, "commit", 0, 0, 0))
+    if (SQLITE_OK != sqlite3_exec(data->db, "commit", nullptr, nullptr, nullptr))
         throw InternalError(PALUDIS_HERE, "sqlite3_exec commit failed");
 }
 
@@ -176,7 +176,7 @@ cave_search_extras_find_candidates(CaveSearchExtrasDB * const data,
     }
 
     int code;
-    if (SQLITE_OK != ((code = sqlite3_prepare_v2(data->db, ("select spec from candidates where " + s + " = 1" + h).c_str(), -1, &find_candidates, 0))))
+    if (SQLITE_OK != ((code = sqlite3_prepare_v2(data->db, ("select spec from candidates where " + s + " = 1" + h).c_str(), -1, &find_candidates, nullptr))))
         throw InternalError(PALUDIS_HERE, "sqlite3_prepare_v2 select from candidates failed:" + stringify(code));
 
     if (! p1.empty())

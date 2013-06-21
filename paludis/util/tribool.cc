@@ -62,7 +62,7 @@ Tribool::is_indeterminate() const
 NoType<0u> *
 paludis::indeterminate(const NoType<0u> * const)
 {
-    return 0;
+    return nullptr;
 }
 
 std::ostream &

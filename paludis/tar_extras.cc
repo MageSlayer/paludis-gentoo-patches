@@ -57,7 +57,7 @@ paludis_tar_extras_init(const std::string & f, const std::string & compress)
 
     extras->linkresolver = archive_entry_linkresolver_new();
 
-    if (extras->linkresolver == NULL)
+    if (extras->linkresolver == nullptr)
         throw MergerError("archive_entry_linkresolver_new failed");
 
     archive_entry_linkresolver_set_strategy(extras->linkresolver, archive_format(extras->archive));
@@ -81,7 +81,7 @@ paludis_tar_extras_add_file(PaludisTarExtras * const extras, const std::string &
     int fd(open(from.c_str(), O_RDONLY));
 
     archive_entry_copy_pathname(entry, path.c_str());
-    if (ARCHIVE_OK != archive_read_disk_entry_from_file(disk_archive, entry, fd, 0))
+    if (ARCHIVE_OK != archive_read_disk_entry_from_file(disk_archive, entry, fd, nullptr))
         throw MergerError("archive_read_disk_entry_from_file failed");
 
     archive_entry_linkify(extras->linkresolver, &entry, &sparse);

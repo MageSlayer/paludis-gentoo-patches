@@ -25,7 +25,7 @@ extern char ** environ;
 int
 main()
 {
-    for (char ** it = environ; 0 != *it; ++it)
+    for (char ** it = environ; nullptr != *it; ++it)
     {
         std::string str(*it);
         std::cout << "export " << str.substr(0, str.find('=')) << std::endl;

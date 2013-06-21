@@ -113,7 +113,7 @@ ExndbamRepository::ExndbamRepository(const RepositoryName & n, const ExndbamRepo
             make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = this,
                 n::environment_variable_interface() = this,
-                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0)
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(nullptr)
             )),
     _imp(p)
 {

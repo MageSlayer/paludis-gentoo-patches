@@ -405,7 +405,7 @@ IPCInputManager::_copy_thread()
         FD_SET(_imp->finished_pipe.read_fd(), &read_fds);
         max_fd = std::max(max_fd, _imp->finished_pipe.read_fd());
 
-        int retval(pselect(max_fd + 1, &read_fds, 0, 0, 0, 0));
+        int retval(pselect(max_fd + 1, &read_fds, nullptr, nullptr, nullptr, nullptr));
         if (-1 == retval)
             throw InternalError(PALUDIS_HERE, "pselect failed: " + stringify(strerror(errno)));
 

@@ -64,7 +64,7 @@ namespace
                 return & c.files.insert(std::make_pair(e, std::make_pair(f.realpath(), f.stat()))).first->second;
         }
 
-        return 0;
+        return nullptr;
     }
 }
 

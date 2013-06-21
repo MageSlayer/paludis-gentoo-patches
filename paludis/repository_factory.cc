@@ -115,15 +115,15 @@ RepositoryFactory::RepositoryFactory() :
 {
     using namespace repository_groups;
 
-    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_accounts>::Type *>(0), this);
-    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_dummy>::Type *>(0), this);
-    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_e>::Type *>(0), this);
-    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_fake>::Type *>(0), this);
-    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_gemcutter>::Type *>(0), this);
-    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_repository>::Type *>(0), this);
-    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_unavailable>::Type *>(0), this);
-    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_unwritten>::Type *>(0), this);
-    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_unpackaged>::Type *>(0), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_accounts>::Type *>(nullptr), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_dummy>::Type *>(nullptr), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_e>::Type *>(nullptr), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_fake>::Type *>(nullptr), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_gemcutter>::Type *>(nullptr), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_repository>::Type *>(nullptr), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_unavailable>::Type *>(nullptr), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_unwritten>::Type *>(nullptr), this);
+    register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_unpackaged>::Type *>(nullptr), this);
 }
 
 RepositoryFactory::~RepositoryFactory()

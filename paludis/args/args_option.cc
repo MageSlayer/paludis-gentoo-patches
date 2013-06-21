@@ -134,7 +134,7 @@ StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
         const bool neg) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
     _can_be_negated(neg),
-    _validator(0)
+    _validator(nullptr)
 {
 }
 
@@ -201,7 +201,7 @@ StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & our_long_nam
         const StringSetArgOptions & opts) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
     _imp(),
-    _validator(0)
+    _validator(nullptr)
 {
     std::copy(opts._imp->options.begin(), opts._imp->options.end(),
             std::back_inserter(_imp->allowed_args));
