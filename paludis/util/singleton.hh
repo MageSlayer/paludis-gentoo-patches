@@ -51,8 +51,6 @@ namespace paludis
 
             static void _delete(OurType_ * const p);
 
-            class DeleteOnDestruction;
-
         public:
             ///\name Basic operations
             ///\{
