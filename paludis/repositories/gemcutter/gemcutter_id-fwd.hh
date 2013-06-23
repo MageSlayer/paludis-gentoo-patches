@@ -25,7 +25,7 @@ namespace paludis
     namespace gemcutter_repository
     {
         class GemcutterID;
-        class GemcutterIDParams;
+        struct GemcutterIDParams;
     }
 }
 

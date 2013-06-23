@@ -28,9 +28,9 @@ namespace paludis
     {
         class JSONError;
 
-        class GemJSONInfo;
-        class GemJSONDependency;
-        class GemJSONDependencies;
+        struct GemJSONInfo;
+        struct GemJSONDependency;
+        struct GemJSONDependencies;
 
         typedef std::function<void (const GemJSONInfo &)> ParsedOneGemCallback;
     }

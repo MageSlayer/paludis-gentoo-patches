@@ -24,7 +24,7 @@ namespace paludis
 {
     namespace gemcutter_repository
     {
-        struct JSONThingsHandle;
+        class JSONThingsHandle;
     }
 }
 
