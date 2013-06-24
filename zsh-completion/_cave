@@ -596,8 +596,8 @@ _cave_cmd_print-packages()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '*'{--repository,-r}'[Show only names in the specified repository]' \
-    '*'{--category,-c}'[Show only names in the specified category]'
+    '*'{--repository,-r}'[Show only names in the specified repository]:repository name:_cave_repositories' \
+    '*'{--category,-c}'[Show only names in the specified category]:category name:_cave_categories'
 }
 
 (( ${+functions[_cave_cmd_print-repositories]} )) ||
@@ -605,7 +605,7 @@ _cave_cmd_print-repositories()
 {
   _arguments -s : \
     '(--help -h)'{--help,-h}'[Display help messsage]' \
-    '--format[Show only repositories of a specific format]:repository format: '
+    '--format[Show only repositories of a specific format]:repository format:_cave_repository_formats'
 }
 
 (( ${+functions[_cave_cmd_print-repository-formats]} )) ||
@@ -900,6 +900,13 @@ _cave_algorithms() {
   _describe -t algorithm 'algorithm' _cave_algorithms
 }
 
+(( ${+functions[_cave_categories]} )) ||
+_cave_categories() {
+  local -a _cave_categories
+  _cave_categories=( $(cave print-categories) )
+  _describe -t category 'category' _cave_categories
+}
+
 (( ${+functions[_cave_packages]} )) ||
 _cave_packages() {
   :
@@ -910,6 +917,13 @@ _cave_protocols() {
   local -a _cave_protocols
   _cave_protocols=( $(cave print-sync-protocols) )
   _describe -t protocol 'protocol' _cave_protocols
+}
+
+(( ${+functions[_cave_repository_formats]} )) ||
+_cave_repository_formats () {
+  local -a _cave_repository_formats
+  _cave_repository_formats=( $(cave print-repository-formats) )
+  _describe -t format 'print-repository-format' _cave_repository_formats
 }
 
 (( ${+functions[_cave_repositories]} )) ||
