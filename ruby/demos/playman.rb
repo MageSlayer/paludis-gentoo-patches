@@ -32,7 +32,7 @@ Log.instance.log_level = LogLevel::Warning
 Log.instance.program_name = $0
 
 version = "0.1.6"
-$laymanglobal_url = URI.parse('http://www.gentoo.org/proj/en/overlays/repositories.xml')
+$laymanglobal_url = URI.parse('http://api.gentoo.org/overlays/repositories.xml')
 $proxy_url = URI.parse(ENV['http_proxy']) if ENV['http_proxy']
 
 opts = GetoptLong.new(
