@@ -31,6 +31,7 @@ libexecprog_SCRIPTS = \
 	emake \
 	fowners \
 	fperms \
+	keepdir \
 	newbin \
 	newconfd \
 	newdoc \

@@ -191,7 +191,31 @@ TEST(ERepository, InstallEAPI0)
 
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                        PackageDepSpec(parse_user_package_dep_spec("cat/keepdir-die",
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/keepdir-fail-1",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/keepdir-fail-2",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/keepdir-die-1",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        ASSERT_THROW(id->perform_action(action), ActionFailedError);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/keepdir-die-2",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         ASSERT_THROW(id->perform_action(action), ActionFailedError);

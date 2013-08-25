@@ -388,9 +388,25 @@ PLATFORMS="test"
 WORK="${WORKBASE}"
 
 src_install() {
-    dodir /usr/share
-    touch "${IMAGE}"/usr/share/monkey
+    nonfatal dodir /usr/share || return
+    touch "${IMAGE}"/usr/share/monkey || return
     keepdir /usr/share/monkey
+}
+END
+cat <<'END' > packages/cat/keepdir-fail/keepdir-fail-2.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+src_install() {
+    nonfatal dosym no/where /usr/share/.keep_${CATEGORY}_${PN}-${SLOT%/*} || return
+    keepdir /usr/share
 }
 END
 mkdir -p "packages/cat/nonfatal-keepdir"

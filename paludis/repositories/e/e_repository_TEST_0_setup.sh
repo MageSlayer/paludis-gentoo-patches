@@ -154,6 +154,36 @@ src_install() {
     einstall
 }
 END
+mkdir -p "cat/keepdir-fail"
+cat <<"END" > cat/keepdir-fail/keepdir-fail-1.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_install() {
+    dodir /usr/share || die
+    touch "${D}"/usr/share/monkey || die
+    keepdir /usr/share/monkey
+}
+END
+cat <<"END" > cat/keepdir-fail/keepdir-fail-2.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_install() {
+    dosym no/where /usr/share/.keep_${CATEGORY}_${PN}-${SLOT%/*} || die
+    keepdir /usr/share
+}
+END
 mkdir -p "cat/keepdir-die"
 cat <<"END" > cat/keepdir-die/keepdir-die-1.ebuild || exit 1
 DESCRIPTION="The Description"
@@ -165,9 +195,23 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 
 src_install() {
-    dodir /usr/share
-    touch "${D}"/usr/share/monkey
-    keepdir /usr/share/monkey
+    dodir /usr/share || return
+    touch "${D}"/usr/share/monkey || return
+    keepdir /usr/share/monkey || die
+}
+END
+cat <<"END" > cat/keepdir-die/keepdir-die-2.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+src_install() {
+    dosym no/where /usr/share/.keep_${CATEGORY}_${PN}-${SLOT%/*} || return
+    keepdir /usr/share || die
 }
 END
 mkdir -p "cat/dobin-fail"

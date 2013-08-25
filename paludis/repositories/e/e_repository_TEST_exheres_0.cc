@@ -302,7 +302,15 @@ TEST(ERepository, InstallExheres0)
 
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                        PackageDepSpec(parse_user_package_dep_spec("cat/keepdir-fail",
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/keepdir-fail-1",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/keepdir-fail-2",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_THROW(id->perform_action(action), ActionFailedError);
