@@ -26,8 +26,10 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/named_value-fwd.hh>
 #include <boost/python.hpp>
+#include <boost/version.hpp>
 #include <memory>
 
+#if BOOST_VERSION < 105300
 namespace paludis
 {
     // Make Boost.Python work with std::shared_ptr<>
@@ -44,6 +46,7 @@ namespace paludis
         return const_cast<T_*>(p.get());
     }
 }
+#endif
 
 namespace boost
 {
