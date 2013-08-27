@@ -30,7 +30,8 @@ namespace bp = boost::python;
 
 void expose_choices()
 {
-    bp::class_<Choices, std::shared_ptr<const Choices>, boost::noncopyable> choices(
+    register_shared_ptrs_to_python<Choices>(rsp_const);
+    bp::class_<Choices, std::shared_ptr<Choices>, boost::noncopyable> choices(
             "Choices",
             "A collection of configurable values for a PackageID",
             bp::init<>("__init__()")
@@ -50,7 +51,8 @@ void expose_choices()
                 )
         ;
 
-    bp::class_<Choice, std::shared_ptr<const Choice>, boost::noncopyable> choice(
+    register_shared_ptrs_to_python<Choice>(rsp_const);
+    bp::class_<Choice, std::shared_ptr<Choice>, boost::noncopyable> choice(
             "Choice",
             "An individual choice in a Choices collection.",
             bp::no_init
@@ -90,7 +92,8 @@ void expose_choices()
                 )
         ;
 
-    bp::class_<ChoiceValue, std::shared_ptr<const ChoiceValue>, boost::noncopyable> choice_value(
+    register_shared_ptrs_to_python<ChoiceValue>(rsp_const);
+    bp::class_<ChoiceValue, std::shared_ptr<ChoiceValue>, boost::noncopyable> choice_value(
             "ChoiceValue",
             "An individual value in a ChoiceValue",
             bp::no_init

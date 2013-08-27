@@ -1219,12 +1219,13 @@ void expose_dep_spec()
             "Create a PackageDepSpec from user input."
            );
 
+    register_shared_ptrs_to_python<PythonPackageDepSpec>(rsp_const);
     bp::implicitly_convertible<PythonPackageDepSpec, PackageDepSpec>();
     bp::implicitly_convertible<PythonPackageDepSpec, std::shared_ptr<PackageDepSpec> >();
     bp::implicitly_convertible<std::shared_ptr<PackageDepSpec>, std::shared_ptr<const PackageDepSpec> >();
     RegisterDepSpecToPython<PackageDepSpec, PythonPackageDepSpec>();
 
-    bp::class_<PythonPackageDepSpec, std::shared_ptr<const PythonPackageDepSpec>, bp::bases<PythonStringDepSpec> >
+    bp::class_<PythonPackageDepSpec, std::shared_ptr<PythonPackageDepSpec>, bp::bases<PythonStringDepSpec> >
         (
          "PackageDepSpec",
          "A PackageDepSpec represents a package name (for example, 'app-editors/vim'),"
