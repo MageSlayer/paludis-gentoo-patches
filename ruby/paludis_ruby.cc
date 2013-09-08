@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -387,7 +387,7 @@ paludis::ruby::value_to_match_package_options(VALUE v)
         if (SYM2ID(entry) == rb_intern("ignore_additional_requirements"))
             o += mpo_ignore_additional_requirements;
         else
-            rb_raise(rb_eArgError, "Unknown MatchPackageOptions option '%s'", rb_obj_as_string(entry));
+            rb_raise(rb_eArgError, "Unknown MatchPackageOptions option '%s'", RSTRING_PTR(rb_obj_as_string(entry)));
     }
     return o;
 }

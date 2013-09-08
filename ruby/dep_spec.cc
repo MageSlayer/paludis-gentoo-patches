@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  * Copyright (c) 2006, 2007, 2008 Richard Brown
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -970,7 +970,7 @@ namespace
                 else if (SYM2ID(entry) == rb_intern("no_disambiguation"))
                     o += updso_no_disambiguation;
                 else
-                    rb_raise(rb_eArgError, "Unknown parse_user_package_dep_spec option '%s'", rb_obj_as_string(entry));
+                    rb_raise(rb_eArgError, "Unknown parse_user_package_dep_spec option '%s'", RSTRING_PTR(rb_obj_as_string(entry)));
             }
 
             Filter f(
