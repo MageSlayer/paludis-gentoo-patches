@@ -795,6 +795,7 @@ namespace
                 [&] (const NotBestConfirmation &)             { return "--permit-old-version"; },
                 [&] (const BreakConfirmation &)               { return "--uninstalls-may-break or --remove-if-dependent"; },
                 [&] (const RemoveSystemPackageConfirmation &) { return "--uninstalls-may-break system"; },
+                [&] (const UninstallConfirmation &)           { return "--permit-uninstall (check this very carefully!)"; },
                 [&] (const MaskedConfirmation &)              { return "being unmasked"; },
                 [&] (const ChangedChoicesConfirmation &)      { return "user configuration changes"; }
             );

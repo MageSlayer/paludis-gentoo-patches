@@ -740,6 +740,11 @@ namespace
         {
             return true;
         }
+
+        bool visit(const UninstallConfirmation &) const
+        {
+            return true;
+        }
     };
 }
 

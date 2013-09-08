@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,7 +33,7 @@ namespace paludis
         class PALUDIS_VISIBLE RequiredConfirmation :
             public virtual DeclareAbstractAcceptMethods<RequiredConfirmation, MakeTypeList<
                 DowngradeConfirmation, NotBestConfirmation, BreakConfirmation, RemoveSystemPackageConfirmation,
-                MaskedConfirmation, ChangedChoicesConfirmation>::Type>
+                MaskedConfirmation, ChangedChoicesConfirmation, UninstallConfirmation>::Type>
         {
             public:
                 virtual void serialise(Serialiser &) const = 0;
@@ -103,6 +103,17 @@ namespace paludis
         {
             public:
                 static const std::shared_ptr<ChangedChoicesConfirmation> deserialise(
+                        Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual void serialise(Serialiser &) const;
+        };
+
+        class PALUDIS_VISIBLE UninstallConfirmation :
+            public RequiredConfirmation,
+            public ImplementAcceptMethods<RequiredConfirmation, UninstallConfirmation>
+        {
+            public:
+                static const std::shared_ptr<UninstallConfirmation> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 virtual void serialise(Serialiser &) const;

@@ -127,6 +127,10 @@ ConfirmHelper::operator() (
 
             [&] (const ChangedChoicesConfirmation &) {
                 return false;
+            },
+
+            [&] (const UninstallConfirmation &) {
+                return false;
             }
         );
 }

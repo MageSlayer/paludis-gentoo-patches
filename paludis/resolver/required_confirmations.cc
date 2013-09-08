@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,6 +40,8 @@ RequiredConfirmation::deserialise(Deserialisation & d)
         return MaskedConfirmation::deserialise(d);
     else if (d.class_name() == "ChangedChoicesConfirmation")
         return ChangedChoicesConfirmation::deserialise(d);
+    else if (d.class_name() == "UninstallConfirmation")
+        return UninstallConfirmation::deserialise(d);
 
     throw InternalError(PALUDIS_HERE,
                         "unknown class '" + stringify(d.class_name()) + "'");
@@ -135,8 +137,24 @@ ChangedChoicesConfirmation::serialise(Serialiser & s) const
             ;
 }
 
+const std::shared_ptr<UninstallConfirmation>
+UninstallConfirmation::deserialise(Deserialisation & d)
+{
+    Deserialisator v(d, "UninstallConfirmation");
+    return std::make_shared<UninstallConfirmation>();
+}
+
+void
+UninstallConfirmation::serialise(Serialiser & s) const
+{
+    SerialiserObjectWriter writer =
+        s.object("UninstallConfirmation")
+            ;
+}
+
 namespace paludis
 {
     template class Sequence<std::shared_ptr<const RequiredConfirmation> >;
     template class WrappedForwardIterator<RequiredConfirmations::ConstIteratorTag, const std::shared_ptr<const RequiredConfirmation> >;
 }
+
