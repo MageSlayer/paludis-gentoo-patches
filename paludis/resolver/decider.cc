@@ -1545,12 +1545,21 @@ Decider::_try_to_find_decision_for(
         /* we can't stick with our existing id, if there is one, and we can't
          * fix it by installing things. this might be an error, or we might be
          * able to remove things. */
-        if (try_removes_if_allowed && resolution->constraints()->nothing_is_fine_too() && _installed_but_allowed_to_remove(resolution))
+        if (try_removes_if_allowed && resolution->constraints()->nothing_is_fine_too() && _installed_but_allowed_to_remove(resolution, false))
             return std::make_shared<RemoveDecision>(
                         resolution->resolvent(),
                         _installed_ids(resolution),
                         ! resolution->constraints()->all_untaken()
                         );
+        else if (try_removes_if_allowed && resolution->constraints()->nothing_is_fine_too() && _installed_but_allowed_to_remove(resolution, true)) {
+            auto result = std::make_shared<RemoveDecision>(
+                        resolution->resolvent(),
+                        _installed_ids(resolution),
+                        ! resolution->constraints()->all_untaken()
+                        );
+            result->add_required_confirmation(std::make_shared<UninstallConfirmation>());
+            return result;
+        }
         else if (also_try_option_changes && ! try_option_changes_this_time)
             return _try_to_find_decision_for(resolution, true, true, also_try_masked, try_masked_this_time, try_removes_if_allowed);
         else if (also_try_masked && ! try_masked_this_time)
@@ -1642,7 +1651,8 @@ Decider::_find_existing_id_for(const std::shared_ptr<const Resolution> & resolut
 }
 
 bool
-Decider::_installed_but_allowed_to_remove(const std::shared_ptr<const Resolution> & resolution) const
+Decider::_installed_but_allowed_to_remove(const std::shared_ptr<const Resolution> & resolution,
+        const bool with_confirmation) const
 {
     const std::shared_ptr<const PackageIDSequence> ids(_installed_ids(resolution));
     if (ids->empty())
@@ -1650,15 +1660,56 @@ Decider::_installed_but_allowed_to_remove(const std::shared_ptr<const Resolution
 
     return ids->end() == std::find_if(ids->begin(), ids->end(),
             std::bind(std::logical_not<bool>(), std::bind(&Decider::_allowed_to_remove,
-                    this, resolution, std::placeholders::_1)));
+                    this, resolution, std::placeholders::_1, with_confirmation)));
 }
 
 bool
 Decider::_allowed_to_remove(
         const std::shared_ptr<const Resolution> & resolution,
-        const std::shared_ptr<const PackageID> & id) const
+        const std::shared_ptr<const PackageID> & id,
+        const bool with_confirmation) const
 {
-    return id->supports_action(SupportsActionTest<UninstallAction>()) && _imp->fns.allowed_to_remove_fn()(resolution, id);
+    if (! id->supports_action(SupportsActionTest<UninstallAction>()))
+        return false;
+
+    if (with_confirmation) {
+        bool all = true, any = false;
+        for (auto & c : *resolution->constraints()) {
+            any = true;
+            if (! c->reason()->make_accept_returning(
+                        [&] (const TargetReason &)                   { return false; },
+                        [&] (const DependencyReason & r)             {
+                            auto spec = r.sanitised_dependency().spec().if_block();
+                            if (spec) {
+                                auto annotations = spec->maybe_annotations();
+                                if (annotations) {
+                                    for (auto & a : *annotations) {
+                                        switch (a.role()) {
+                                            case dsar_blocker_uninstall_blocked_before: return true;
+                                            case dsar_blocker_uninstall_blocked_after:  return true;
+                                            default:                                    break;
+                                        }
+                                    }
+                                }
+                            }
+                            return false;
+                        },
+                        [&] (const DependentReason &)                { return false; },
+                        [&] (const WasUsedByReason &)                { return false; },
+                        [&] (const PresetReason &)                   { return false; },
+                        [&] (const SetReason &)                      { return false; },
+                        [&] (const LikeOtherDestinationTypeReason &) { return false; },
+                        [&] (const ViaBinaryReason &)                { return false; }
+                        )) {
+                all = false;
+                break;
+            }
+        }
+
+        return any && all;
+    }
+    else
+        return _imp->fns.allowed_to_remove_fn()(resolution, id);
 }
 
 const std::shared_ptr<const PackageIDSequence>

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -513,6 +513,31 @@ TEST_F(ResolverBlockersTestCase, UninstallBlockedAfter)
             n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
                 .finished()),
             n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::untaken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished())
+            );
+}
+
+TEST_F(ResolverBlockersTestCase, UninstallBlockedAfterImplicit)
+{
+    data->install("uninstall-blocked-after", "dep", "1");
+
+    std::shared_ptr<const Resolved> resolved(data->get_resolved("uninstall-blocked-after/target"));
+
+    this->check_resolved(resolved,
+            n::taken_change_or_remove_decisions() = make_shared_copy(DecisionChecks()
+                .change(QualifiedPackageName("uninstall-blocked-after/target"))
+                .remove(QualifiedPackageName("uninstall-blocked-after/dep"))
+                .finished()),
+            n::taken_unable_to_make_decisions() = make_shared_copy(DecisionChecks()
+                .finished()),
+            n::taken_unconfirmed_decisions() = make_shared_copy(DecisionChecks()
+                .remove(QualifiedPackageName("uninstall-blocked-after/dep"))
                 .finished()),
             n::taken_unorderable_decisions() = make_shared_copy(DecisionChecks()
                 .finished()),
