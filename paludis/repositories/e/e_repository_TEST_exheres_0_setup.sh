@@ -1205,6 +1205,56 @@ src_install() {
 EOT
 }
 END
+mkdir -p "packages/cat/exvolatile"
+cat <<'END' > packages/cat/exvolatile/exvolatile-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+src_install() {
+    insinto /var
+    hereins first <<EOT
+EOT
+    hereins second <<EOT
+EOT
+    hereins third <<EOT
+EOT
+    hereins fourth <<EOT
+EOT
+    dosym first /var/symfirst
+    dosym second /var/symsecond
+    dosym third /var/symthird
+    dosym fourth /var/symfourth
+}
+
+pkg_setup() {
+    exvolatile /var/first /var/second /var/symfirst /var/symsecond
+}
+
+pkg_postinst() {
+    echo a monkey stole my broccoli > ${ROOT}/var/second
+    echo there is a weasel in my stew > ${ROOT}/var/fourth
+    ln -sf /dev/null ${ROOT}/var/symsecond
+    ln -sf /dev/null ${ROOT}/var/symfourth
+}
+
+pkg_postrm() {
+    [[ -f ${ROOT}/var/first ]] && die "first should be removed"
+    [[ -f ${ROOT}/var/second ]] && die "second should be removed"
+    [[ -f ${ROOT}/var/third ]] && die "third should be removed"
+    [[ -f ${ROOT}/var/fourth ]] || die "fourth shouldn't be removed"
+    [[ -L ${ROOT}/var/symfirst ]] && die "symfirst should be removed"
+    [[ -L ${ROOT}/var/symsecond ]] && die "symsecond should be removed"
+    [[ -L ${ROOT}/var/symthird ]] && die "symthird should be removed"
+    [[ -L ${ROOT}/var/symfourth ]] || die "symfourth shouldn't be removed"
+}
+END
 
 cd ..
 

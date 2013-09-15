@@ -218,6 +218,7 @@ paludis::erepository::do_install_action(
     auto parts(std::make_shared<Partitioning>());
     auto choices(id->choices_key()->parse_value());
     auto work_choice(choices->find_by_name_with_prefix(ELikeWorkChoiceValue::canonical_name_with_prefix()));
+    auto volatile_files(std::make_shared<FSPathSet>());
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_install());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -279,7 +280,7 @@ paludis::erepository::do_install_action(
                         n::check() = phase->option("check_merge"),
                         n::environment_file() = package_builddir / "temp" / "loadsaveenv",
                         n::image_dir() = package_builddir / "image",
-                        n::is_volatile() = [] (const FSPath &) { return false; },
+                        n::is_volatile() = [&] (const FSPath & f) { return volatile_files->end() != volatile_files->find(f); },
                         n::merged_entries() = merged_entries,
                         n::options() = id->eapi()->supported()->merger_options() | extra_merger_options,
                         n::output_manager() = output_manager,
@@ -390,7 +391,8 @@ paludis::erepository::do_install_action(
                         "/",
                     n::sandbox() = phase->option("sandbox"),
                     n::sydbox() = phase->option("sydbox"),
-                    n::userpriv() = phase->option("userpriv") && userpriv_ok
+                    n::userpriv() = phase->option("userpriv") && userpriv_ok,
+                    n::volatile_files() = volatile_files
                     ));
 
             EbuildInstallCommandParams install_params(
@@ -453,7 +455,8 @@ paludis::erepository::do_install_action(
                                     "/",
                                     n::sandbox() = tidyup_phase->option("sandbox"),
                                     n::sydbox() = tidyup_phase->option("sydbox"),
-                                    n::userpriv() = tidyup_phase->option("userpriv") && userpriv_ok
+                                    n::userpriv() = tidyup_phase->option("userpriv") && userpriv_ok,
+                                    n::volatile_files() = volatile_files
                                         ));
 
                         EbuildInstallCommandParams tidyup_install_params(

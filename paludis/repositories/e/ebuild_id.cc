@@ -322,7 +322,8 @@ EbuildID::need_non_xml_keys_added() const
                     n::root() = "/",
                     n::sandbox() = phases.begin_phases()->option("sandbox"),
                     n::sydbox() = phases.begin_phases()->option("sydbox"),
-                    n::userpriv() = phases.begin_phases()->option("userpriv")
+                    n::userpriv() = phases.begin_phases()->option("userpriv"),
+                    n::volatile_files() = nullptr
                     ));
 
             if (! cmd())

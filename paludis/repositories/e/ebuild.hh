@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -104,6 +104,7 @@ namespace paludis
         typedef Name<struct name_use_expand> use_expand;
         typedef Name<struct name_use_expand_hidden> use_expand_hidden;
         typedef Name<struct name_userpriv> userpriv;
+        typedef Name<struct name_volatile_files> volatile_files;
     }
 
     namespace erepository
@@ -140,6 +141,7 @@ namespace paludis
             NamedValue<n::sandbox, bool> sandbox;
             NamedValue<n::sydbox, bool> sydbox;
             NamedValue<n::userpriv, bool> userpriv;
+            NamedValue<n::volatile_files, std::shared_ptr<FSPathSet> > volatile_files;
         };
 
         /**

@@ -679,7 +679,8 @@ ExndbamRepository::perform_uninstall(
                         n::root() = stringify(_imp->params.root()),
                         n::sandbox() = phase->option("sandbox"),
                         n::sydbox() = phase->option("sydbox"),
-                        n::userpriv() = phase->option("userpriv")
+                        n::userpriv() = phase->option("userpriv"),
+                        n::volatile_files() = nullptr
                     ));
 
             EbuildUninstallCommandParams uninstall_params(

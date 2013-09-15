@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2012, 2013 Ciaran McCreesh
  * Copyright (c) 2009 Ingmar Vanhassel
  * Copyright (c) 2013 Saleem Abdulrasool <compnerd@compnerd.org>
  *
@@ -183,6 +183,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
         const std::shared_ptr<const ERepositoryID> & package_id,
         const std::shared_ptr<PermittedDirectories> & maybe_permitted_directories,
         const std::shared_ptr<Partitioning> & maybe_partitioning,
+        const std::shared_ptr<FSPathSet> & maybe_volatiles,
         bool in_metadata_generation,
         const std::string & s, const std::shared_ptr<OutputManager> & maybe_output_manager)
 {
@@ -637,6 +638,43 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
             {
                 return "Egot error '" + e.message() + "' (" + e.what() + ") "
                        "when trying to create partition";
+            }
+        }
+        else if (tokens[0] == "VOLATILE")
+        {
+            auto eapi = EAPIData::get_instance()->eapi_from_string(tokens[1]);
+            if (! eapi->supported())
+                return "EPARTITION EAPI " + tokens[1] + " unsupported";
+
+            if (tokens.size() != 3)
+            {
+                Log::get_instance()->message("e.pipe_commands.volatile.bad", ll_warning, lc_context)
+                    << "Got bad VOLATILE pipe command";
+                return "Ebad VOLATILE command";
+            }
+
+            try
+            {
+                if (! maybe_volatiles)
+                {
+                    Log::get_instance()->message("e.pipe_commands.partitioning.unsupported", ll_warning, lc_context)
+                        << "volatile files not supported here";
+                    return "EVOLATILE not supported here";
+                }
+
+                if (0 != tokens[2].compare(0, 1, "/", 0, 1)) {
+                    Log::get_instance()->message("e.pipe_commands.partitioning.bad", ll_warning, lc_context)
+                        << "Badly formatted volatile path '" + tokens[2] + "'";
+                    return "EVOLATILE path '" + tokens[2] + "' is not an absolute path";
+                }
+                maybe_volatiles->insert(FSPath(tokens[2]));
+
+                return "O0;";
+            }
+            catch (const Exception & e)
+            {
+                return "Egot error '" + e.message() + "' (" + e.what() + ") "
+                       "when trying to create volatile";
             }
         }
         else if (tokens[0] == "REWRITE_VAR")

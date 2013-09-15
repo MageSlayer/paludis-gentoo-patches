@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_REPOSITORIES_E_PIPE_COMMAND_HANDLER_HH 1
 
 #include <paludis/repositories/e/permitted_directories-fwd.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
 #include <paludis/output_manager-fwd.hh>
@@ -38,6 +39,7 @@ namespace paludis
                 const std::shared_ptr<const ERepositoryID> &,
                 const std::shared_ptr<PermittedDirectories> &,
                 const std::shared_ptr<Partitioning> &,
+                const std::shared_ptr<FSPathSet> &,
                 bool in_metadata_generation,
                 const std::string & s,
                 const std::shared_ptr<OutputManager> & maybe_output_manager);

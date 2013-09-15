@@ -1720,7 +1720,8 @@ ERepository::get_environment_variable(
             n::root() = "/",
             n::sandbox() = phases.begin_phases()->option("sandbox"),
             n::sydbox() = phases.begin_phases()->option("sydbox"),
-            n::userpriv() = phases.begin_phases()->option("userpriv") && userpriv_ok
+            n::userpriv() = phases.begin_phases()->option("userpriv") && userpriv_ok,
+            n::volatile_files() = nullptr
             ),
 
             var);

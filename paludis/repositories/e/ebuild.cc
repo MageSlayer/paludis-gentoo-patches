@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -151,6 +151,7 @@ EbuildCommand::operator() ()
                                            params.package_id(),
                                            params.permitted_directories(),
                                            params.parts(),
+                                           params.volatile_files(),
                                            in_metadata_generation(), _1,
                                            params.maybe_output_manager()));
 
@@ -1066,6 +1067,7 @@ WriteVDBEntryCommand::operator() ()
                                         params.environment(),
                                         params.package_id(),
                                         nullptr,
+                                        nullptr,
                                         nullptr, false, _1,
                                         params.maybe_output_manager()));
 
@@ -1330,7 +1332,9 @@ WriteBinaryEbuildCommand::operator() ()
                                         params.environment(),
                                         params.package_id(),
                                         nullptr,
-                                        nullptr, false, _1,
+                                        nullptr,
+                                        nullptr,
+                                        false, _1,
                                         params.maybe_output_manager()));
 
     if (! params.package_id()->eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name().empty())

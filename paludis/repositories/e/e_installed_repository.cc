@@ -237,7 +237,8 @@ EInstalledRepository::perform_config(
                     n::root() = stringify(_imp->params.root()),
                     n::sandbox() = phase->option("sandbox"),
                     n::sydbox() = phase->option("sydbox"),
-                    n::userpriv() = phase->option("userpriv")
+                    n::userpriv() = phase->option("userpriv"),
+                    n::volatile_files() = nullptr
                 ),
 
                 make_named_values<EbuildConfigCommandParams>(
@@ -346,7 +347,8 @@ EInstalledRepository::perform_info(
                     n::root() = stringify(_imp->params.root()),
                     n::sandbox() = phase->option("sandbox"),
                     n::sydbox() = phase->option("sydbox"),
-                    n::userpriv() = phase->option("userpriv")
+                    n::userpriv() = phase->option("userpriv"),
+                    n::volatile_files() = nullptr
                 ),
 
                 make_named_values<EbuildInfoCommandParams>(

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -130,7 +130,8 @@ paludis::erepository::do_pretend_action(
                                 "/",
                             n::sandbox() = phase->option("sandbox"),
                             n::sydbox() = phase->option("sydbox"),
-                            n::userpriv() = phase->option("userpriv") && userpriv_ok
+                            n::userpriv() = phase->option("userpriv") && userpriv_ok,
+                            n::volatile_files() = nullptr
                             ));
 
                 EbuildBadOptionsCommand bad_options_cmd(command_params,
@@ -197,7 +198,8 @@ paludis::erepository::do_pretend_action(
                                 "/",
                             n::sandbox() = phase->option("sandbox"),
                             n::sydbox() = phase->option("sydbox"),
-                            n::userpriv() = phase->option("userpriv") && userpriv_ok
+                            n::userpriv() = phase->option("userpriv") && userpriv_ok,
+                            n::volatile_files() = nullptr
                             ));
 
                 EbuildBadOptionsCommand bad_options_cmd(command_params,
@@ -262,7 +264,8 @@ paludis::erepository::do_pretend_action(
                     "/",
                 n::sandbox() = phase->option("sandbox"),
                 n::sydbox() = phase->option("sydbox"),
-                n::userpriv() = phase->option("userpriv") && userpriv_ok
+                n::userpriv() = phase->option("userpriv") && userpriv_ok,
+                n::volatile_files() = nullptr
                 ));
 
         EbuildPretendCommand pretend_cmd(command_params,

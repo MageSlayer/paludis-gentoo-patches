@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -633,6 +633,16 @@ TEST(ERepository, ReallyInstallExheres0)
                 n::want_phase() = &want_all_phases
             ));
 
+    UninstallAction uninstall_action(make_named_values<UninstallActionOptions>(
+                n::config_protect() = "",
+                n::if_for_install_id() = nullptr,
+                n::ignore_for_unmerge() = [] (const FSPath &) { return false; },
+                n::is_overwrite() = false,
+                n::make_output_manager() = &make_standard_output_manager,
+                n::override_contents() = nullptr,
+                n::want_phase() = &want_all_phases
+            ));
+
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/exdirectory-phase-1",
@@ -655,6 +665,21 @@ TEST(ERepository, ReallyInstallExheres0)
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/exvolatile-1",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+
+        i_repo->invalidate();
+        const std::shared_ptr<const PackageID> uninstall_id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/exvolatile-1::installed",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(uninstall_id));
+        uninstall_id->perform_action(uninstall_action);
     }
 }
 

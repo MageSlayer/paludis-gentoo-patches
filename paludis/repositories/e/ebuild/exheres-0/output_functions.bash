@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2006, 2007, 2008, 2010, 2011 Ciaran McCreesh
+# Copyright (c) 2006, 2007, 2008, 2010, 2011, 2013 Ciaran McCreesh
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -52,5 +52,16 @@ exdirectory()
 expart()
 {
     paludis_pipe_command PARTITION "$EAPI" "$@" >/dev/null
+}
+
+exvolatile()
+{
+    [[ "${!PALUDIS_EBUILD_PHASE_VAR}" == "setup" ]] || \
+        die "exvolatile must be called in pkg_setup"
+
+    local x
+    for x in "$@"; do
+        paludis_pipe_command VOLATILE "$EAPI" "$x" >/dev/null
+    done
 }
 

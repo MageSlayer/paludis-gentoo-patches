@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -112,7 +112,8 @@ paludis::erepository::do_info_action(
                 n::root() = stringify(env->preferred_root_key()->parse_value()),
                 n::sandbox() = phase->option("sandbox"),
                 n::sydbox() = phase->option("sydbox"),
-                n::userpriv() = phase->option("userpriv") && userpriv_ok
+                n::userpriv() = phase->option("userpriv") && userpriv_ok,
+                n::volatile_files() = nullptr
                 ));
 
         EbuildInfoCommandParams info_params(
