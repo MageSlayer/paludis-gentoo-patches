@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  * Copyright (c) 2007 Piotr Jaroszyński
  *
  * This file is part of the Paludis package manager. Paludis is free software;
@@ -201,6 +201,20 @@ namespace
 
         return *c;
     }
+
+    template <typename T_, typename V_>
+    bool has_key_with_value(const MetadataKeyHolder & h, const std::string & r, const V_ & v)
+    {
+        MetadataKeyHolder::MetadataConstIterator m(h.find_metadata(r));
+        if (m == h.end_metadata())
+            return false;
+
+        const T_ * const c(visitor_cast<const T_>(**m));
+        if (! c)
+            throw InternalError(PALUDIS_HERE, "Key '" + r + "' is of wrong type");
+
+        return c->parse_value() == v;
+    }
 }
 
 bool
@@ -214,6 +228,8 @@ NDBAMUnmerger::check_file(const std::shared_ptr<const ContentsEntry> & e) const
         display("--- [gone ] " + stringify(f));
     else if (! root_f_stat.is_regular_file())
         display("--- [!type] " + stringify(f));
+    else if (has_key_with_value<MetadataValueKey<bool> >(*e, "volatile", true) && ! config_protected(root_f))
+        return true;
     else if (root_f_stat.mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").parse_value().seconds())
         display("--- [!time] " + stringify(f));
     else
@@ -246,6 +262,8 @@ NDBAMUnmerger::check_sym(const std::shared_ptr<const ContentsEntry> & e) const
         display("--- [gone ] " + stringify(f));
     else if (! root_f_stat.is_symlink())
         display("--- [!type] " + stringify(f));
+    else if (has_key_with_value<MetadataValueKey<bool> >(*e, "volatile", true))
+        return true;
     else if (root_f_stat.mtim().seconds() != require_key<MetadataTimeKey>(*e, "mtime").parse_value().seconds())
         display("--- [!time] " + stringify(f));
     else if (root_f.readlink() != require_key<MetadataValueKey<std::string> >(*e, "target").parse_value())
