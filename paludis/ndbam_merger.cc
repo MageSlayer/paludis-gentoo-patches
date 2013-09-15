@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -189,6 +189,8 @@ NDBAMMerger::record_install_file(const FSPath & src, const FSPath & dst_dir, con
     *_imp->contents_file << " mtime=" << timestamp;
     if (!part.empty())
         *_imp->contents_file << " part=" << part;
+    if (_imp->params.is_volatile()(FSPath(tidy)))
+        *_imp->contents_file << " volatile=true";
     *_imp->contents_file << std::endl;
 }
 

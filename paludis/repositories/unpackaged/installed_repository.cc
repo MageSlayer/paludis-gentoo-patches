@@ -341,6 +341,7 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
                         _imp->params.environment(), rewrite_ids_over_to_root, _1),
                 n::image() = m.image_dir(),
                 n::install_under() = install_under,
+                n::is_volatile() = [] (const FSPath &) { return false; },
                 n::merged_entries() = std::make_shared<FSPathSet>(),
                 n::options() = m.options(),
                 n::output_manager() = m.output_manager(),

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -40,6 +40,7 @@ namespace paludis
         typedef Name<struct name_get_new_ids_or_minus_one> get_new_ids_or_minus_one;
         typedef Name<struct name_image> image;
         typedef Name<struct name_install_under> install_under;
+        typedef Name<struct name_is_volatile> is_volatile;
         typedef Name<struct name_merged_entries> merged_entries;
         typedef Name<struct name_options> options;
         typedef Name<struct name_output_manager> output_manager;
@@ -61,6 +62,7 @@ namespace paludis
         NamedValue<n::get_new_ids_or_minus_one, std::function<std::pair<uid_t, gid_t> (const FSPath &)> > get_new_ids_or_minus_one;
         NamedValue<n::image, FSPath> image;
         NamedValue<n::install_under, FSPath> install_under;
+        NamedValue<n::is_volatile, std::function<bool (const FSPath &)> > is_volatile;
         NamedValue<n::merged_entries, std::shared_ptr<FSPathSet> > merged_entries;
         NamedValue<n::options, MergerOptions> options;
         NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
