@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -224,6 +224,7 @@ UnavailableRepositoryID::perform_action(Action & action) const
                 n::check() = true,
                 n::environment_file() = FSPath("/dev/null"),
                 n::image_dir() = FSPath("/dev/null"),
+                n::is_volatile() = [] (const FSPath &) { return false; },
                 n::merged_entries() = std::make_shared<FSPathSet>(),
                 n::options() = MergerOptions(),
                 n::output_manager() = output_manager,

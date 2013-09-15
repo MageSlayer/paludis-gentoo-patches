@@ -474,6 +474,7 @@ AccountsID::perform_action(Action & action) const
                 n::check() = true,
                 n::environment_file() = FSPath("/dev/null"),
                 n::image_dir() = fs_location_key()->parse_value(),
+                n::is_volatile() = [] (const FSPath &) { return false; },
                 n::merged_entries() = std::make_shared<FSPathSet>(),
                 n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                 n::output_manager() = output_manager,

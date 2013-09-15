@@ -477,7 +477,7 @@ ExndbamRepository::merge(const MergeParams & m)
                 n::get_new_ids_or_minus_one() = std::bind(&get_new_ids_or_minus_one, _imp->params.environment(), std::placeholders::_1),
                 n::image() = m.image_dir(),
                 n::install_under() = FSPath("/"),
-                n::is_volatile() = [] (const FSPath &) { return false; },
+                n::is_volatile() = m.is_volatile(),
                 n::merged_entries() = m.merged_entries(),
                 n::options() = m.options(),
                 n::output_manager() = m.output_manager(),

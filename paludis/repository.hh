@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -66,6 +66,7 @@ namespace paludis
         typedef Name<struct name_environment_file> environment_file;
         typedef Name<struct name_environment_variable_interface> environment_variable_interface;
         typedef Name<struct name_image_dir> image_dir;
+        typedef Name<struct name_is_volatile> is_volatile;
         typedef Name<struct name_manifest_interface> manifest_interface;
         typedef Name<struct name_merged_entries> merged_entries;
         typedef Name<struct name_options> options;
@@ -124,6 +125,12 @@ namespace paludis
 
         NamedValue<n::environment_file, FSPath> environment_file;
         NamedValue<n::image_dir, FSPath> image_dir;
+
+        /**
+         * Whether or not a file is volatile.
+         * \since 2.0.0
+         */
+        NamedValue<n::is_volatile, std::function<bool (const FSPath &)> > is_volatile;
 
         /**
          * We record things we merged here.

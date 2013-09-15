@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -279,6 +279,7 @@ paludis::erepository::do_install_action(
                         n::check() = phase->option("check_merge"),
                         n::environment_file() = package_builddir / "temp" / "loadsaveenv",
                         n::image_dir() = package_builddir / "image",
+                        n::is_volatile() = [] (const FSPath &) { return false; },
                         n::merged_entries() = merged_entries,
                         n::options() = id->eapi()->supported()->merger_options() | extra_merger_options,
                         n::output_manager() = output_manager,
