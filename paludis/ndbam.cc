@@ -548,6 +548,10 @@ NDBAM::parse_contents(const PackageID & id,
             if (tokens.count("part"))
                 part = tokens.find("part")->second;
 
+            bool isvolatile = false;
+            if (tokens.count("volatile"))
+                isvolatile = destringify<bool>(tokens.find("volatile")->second);
+
             if (! tokens.count("mtime"))
             {
                 Log::get_instance()->message("ndbam.contents.no_key.mtime", ll_warning, lc_context) <<
@@ -559,6 +563,8 @@ NDBAM::parse_contents(const PackageID & id,
             std::shared_ptr<ContentsFileEntry> entry(std::make_shared<ContentsFileEntry>(FSPath(path), part));
             entry->add_metadata_key(std::make_shared<LiteralMetadataValueKey<std::string>>("md5", "md5", mkt_normal, md5));
             entry->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal, Timestamp(mtime, 0)));
+            if (isvolatile)
+                entry->add_metadata_key(std::make_shared<LiteralMetadataValueKey<bool> >("volatile", "volatile", mkt_normal, isvolatile));
             on_file(entry);
         }
         else if ("dir" == type)
