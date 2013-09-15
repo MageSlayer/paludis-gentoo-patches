@@ -225,7 +225,10 @@ NDBAMMerger::record_install_sym(const FSPath & src, const FSPath & dst_dir, cons
 
     *_imp->contents_file << "type=sym path=" << escape(tidy);
     *_imp->contents_file << " target=" << escape(target);
-    *_imp->contents_file << " mtime=" << timestamp.seconds() << std::endl;
+    *_imp->contents_file << " mtime=" << timestamp.seconds();
+    if (_imp->params.is_volatile()(FSPath(tidy)))
+        *_imp->contents_file << " volatile=true";
+    *_imp->contents_file << std::endl;
 }
 
 void

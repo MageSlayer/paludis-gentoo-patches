@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -152,6 +152,18 @@ namespace
             return true;
         }
 
+        bool is_volatile(const ContentsEntry & e)
+        {
+            ContentsEntry::MetadataConstIterator k(e.find_metadata("volatile"));
+            if (e.end_metadata() != k)
+            {
+                const MetadataValueKey<bool> * kk(visitor_cast<const MetadataValueKey<bool> >(**k));
+                if (kk)
+                    return kk->parse_value();
+            }
+            return false;
+        }
+
         void visit(const ContentsFileEntry & e)
         {
             FSPath f(e.location_key()->parse_value());
@@ -160,7 +172,7 @@ namespace
                 message(f, "Does not exist");
             else if (! f_stat.is_regular_file())
                 message(f, "Not a regular file");
-            else
+            else if (! is_volatile(e))
                 check_mtime(e, f, f_stat) && check_md5(e, f);
         }
 

@@ -594,8 +594,14 @@ NDBAM::parse_contents(const PackageID & id,
             if (tokens.count("part"))
                 part = tokens.find("part")->second;
 
+            bool isvolatile = false;
+            if (tokens.count("volatile"))
+                isvolatile = destringify<bool>(tokens.find("volatile")->second);
+
             std::shared_ptr<ContentsSymEntry> entry(std::make_shared<ContentsSymEntry>(FSPath(path), target, part));
             entry->add_metadata_key(std::make_shared<LiteralMetadataTimeKey>("mtime", "mtime", mkt_normal, Timestamp(mtime, 0)));
+            if (isvolatile)
+                entry->add_metadata_key(std::make_shared<LiteralMetadataValueKey<bool> >("volatile", "volatile", mkt_normal, isvolatile));
             on_sym(entry);
         }
         else
