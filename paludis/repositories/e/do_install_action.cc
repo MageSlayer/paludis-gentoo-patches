@@ -296,6 +296,16 @@ paludis::erepository::do_install_action(
                                 &used_this_for_config_protect, std::ref(used_config_protect), std::placeholders::_1),
                         n::want_phase() = install_action.options.want_phase()
                         ));
+
+            if (volatile_files && phase->option("check_merge")) {
+                for (auto & v : *volatile_files) {
+                    if (! (package_builddir / "image" / v).stat().is_regular_file_or_symlink_to_regular_file())
+                        throw ActionFailedError("Can't install '" + stringify(*id)
+                                + "' to destination '" + stringify(install_action.options.destination()->name())
+                                + "' because '" + stringify(v) + "' was marked using exvolatile, but it is not a regular "
+                                "file or a symlink to a regular file");
+                }
+            }
         }
         else if (phase->option("strip"))
         {
