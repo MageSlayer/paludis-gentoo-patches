@@ -299,11 +299,18 @@ paludis::erepository::do_install_action(
 
             if (volatile_files && phase->option("check_merge")) {
                 for (auto & v : *volatile_files) {
-                    if (! (package_builddir / "image" / v).stat().is_regular_file_or_symlink_to_regular_file())
+                    auto vabs = (package_builddir / "image" / v);
+                    auto vstat = vabs.stat();
+                    if (! vstat.is_regular_file_or_symlink_to_regular_file())
                         throw ActionFailedError("Can't install '" + stringify(*id)
                                 + "' to destination '" + stringify(install_action.options.destination()->name())
                                 + "' because '" + stringify(v) + "' was marked using exvolatile, but it is not a regular "
                                 "file or a symlink to a regular file");
+                    if (vstat.is_symlink() && 0 == vabs.readlink().compare(0, 1, "/", 0, 1))
+                        throw ActionFailedError("Can't install '" + stringify(*id)
+                                + "' to destination '" + stringify(install_action.options.destination()->name())
+                                + "' because '" + stringify(v) + "' was marked using exvolatile, but volatile symlinks"
+                                "must not be absolute");
                 }
             }
         }
