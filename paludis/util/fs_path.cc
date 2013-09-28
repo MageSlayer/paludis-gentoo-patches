@@ -232,12 +232,12 @@ FSPath::realpath() const
 #else
     char r[PATH_MAX + 1];
     std::memset(r, 0, PATH_MAX + 1);
-    if (! exists())
+    if (! stat().exists())
         throw FSError("Could not resolve path '" + _imp->path + "'");
     if (! ::realpath(_imp->path.c_str(), r))
         throw FSError("Could not resolve path '" + _imp->path + "'");
     FSPath result(r);
-    if (! result.exists())
+    if (! result.stat().exists())
         throw FSError("Could not resolve path '" + _imp->path + "'");
     return result;
 #endif
@@ -258,12 +258,12 @@ FSPath::realpath_if_exists() const
 #else
     char r[PATH_MAX + 1];
     std::memset(r, 0, PATH_MAX + 1);
-    if (! exists())
+    if (! stat().exists())
         return *this;
     if (! ::realpath(_imp->path.c_str(), r))
         return *this;
     FSPath result(r);
-    if (! result.exists())
+    if (! result.stat().exists())
         return *this;
     return result;
 #endif
