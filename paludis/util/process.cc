@@ -791,13 +791,13 @@ Process::run()
     {
         if (_imp->as_main_process)
         {
-            /* Ignore CLD. POSIX may or may not say that if we do this, our child will
+            /* Ignore CHLD. POSIX may or may not say that if we do this, our child will
              * not become a zombie. */
             struct sigaction act;
             sigemptyset(&act.sa_mask);
             act.sa_handler = SIG_IGN;
             act.sa_flags = 0;
-            sigaction(SIGCLD, &act, nullptr);
+            sigaction(SIGCHLD, &act, nullptr);
 
             pid_t p(fork());
             if (-1 == p)
