@@ -61,6 +61,7 @@ command_MANS = \
 	cave-print-repositories.1 \
 	cave-print-repository-formats.1 \
 	cave-print-repository-metadata.1 \
+	cave-print-resolution-required-confirmations.1 \
 	cave-print-set.1 \
 	cave-print-sets.1 \
 	cave-print-spec.1 \
@@ -194,6 +195,7 @@ libcave_a_SOURCES = \
 	cmd_print_repositories.cc cmd_print_repositories.hh \
 	cmd_print_repository_formats.cc cmd_print_repository_formats.hh \
 	cmd_print_repository_metadata.cc cmd_print_repository_metadata.hh \
+	cmd_print_resolution_required_confirmations.cc cmd_print_resolution_required_confirmations.hh \
 	cmd_print_set.cc cmd_print_set.hh \
 	cmd_print_sets.cc cmd_print_sets.hh \
 	cmd_print_spec.cc cmd_print_spec.hh \

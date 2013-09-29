@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -76,6 +76,7 @@
 #include "cmd_print_repositories.hh"
 #include "cmd_print_repository_formats.hh"
 #include "cmd_print_repository_metadata.hh"
+#include "cmd_print_resolution_required_confirmations.hh"
 #include "cmd_print_set.hh"
 #include "cmd_print_sets.hh"
 #include "cmd_print_spec.hh"
@@ -200,6 +201,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("print-repositories", std::bind(&make_command<PrintRepositoriesCommand>)));
     _imp->handlers.insert(std::make_pair("print-repository-formats", std::bind(&make_command<PrintRepositoryFormatsCommand>)));
     _imp->handlers.insert(std::make_pair("print-repository-metadata", std::bind(&make_command<PrintRepositoryMetadataCommand>)));
+    _imp->handlers.insert(std::make_pair("print-resolution-required-confirmations", std::bind(&make_command<PrintResolutionRequiredConfirmationsCommand>)));
     _imp->handlers.insert(std::make_pair("print-set", std::bind(&make_command<PrintSetCommand>)));
     _imp->handlers.insert(std::make_pair("print-sets", std::bind(&make_command<PrintSetsCommand>)));
     _imp->handlers.insert(std::make_pair("print-spec", std::bind(&make_command<PrintSpecCommand>)));

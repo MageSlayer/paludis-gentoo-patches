@@ -65,6 +65,7 @@ CAVE_COMMANDS_HTML = \
 	cave-print-repositories.html \
 	cave-print-repository-formats.html \
 	cave-print-repository-metadata.html \
+	cave-print-resolution-required-confirmations.html \
 	cave-print-set.html \
 	cave-print-sets.html \
 	cave-print-spec.html \
