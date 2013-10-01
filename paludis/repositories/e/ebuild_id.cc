@@ -146,7 +146,7 @@ namespace paludis
         mutable bool has_non_xml_keys;
         mutable bool has_xml_keys;
         mutable bool has_masks;
-        mutable bool is_stable;
+        mutable bool has_stable, is_stable;
 
         const std::shared_ptr<const LiteralMetadataValueKey<FSPath> > fs_location;
 
@@ -201,6 +201,7 @@ namespace paludis
             has_non_xml_keys(false),
             has_xml_keys(false),
             has_masks(false),
+            has_stable(false),
             is_stable(false),
             fs_location(make_fs_location(guessed_eapi, f))
         {
@@ -644,23 +645,15 @@ EbuildID::need_masks_added() const
                         DistributionData::get_instance()->distribution_from_string(
                             _imp->environment->distribution())->concept_keyword(), keywords_key()->raw_name()));
         }
-        else
+        else if (keywords->end() == std::find_if(keywords->begin(), keywords->end(), &is_stable_keyword))
         {
-            auto unstable_keywords(std::make_shared<KeywordNameSet>());
-            std::transform(keywords->begin(), keywords->end(), unstable_keywords->inserter(), &make_unstable_keyword);
-            if (! _imp->environment->accept_keywords(unstable_keywords, shared_from_this()))
-                _imp->is_stable = true;
-
-            if (keywords->end() == std::find_if(keywords->begin(), keywords->end(), &is_stable_keyword))
-            {
-                add_overridden_mask(std::make_shared<OverriddenMask>(
-                                make_named_values<OverriddenMask>(
-                                    n::mask() = create_e_unaccepted_mask('~',
-                                                DistributionData::get_instance()->distribution_from_string(
-                                                    _imp->environment->distribution())->concept_keyword() + " (unstable accepted)", keywords_key()->raw_name()),
-                                    n::override_reason() = mro_accepted_unstable
-                                    )));
-            }
+            add_overridden_mask(std::make_shared<OverriddenMask>(
+                            make_named_values<OverriddenMask>(
+                                n::mask() = create_e_unaccepted_mask('~',
+                                            DistributionData::get_instance()->distribution_from_string(
+                                                _imp->environment->distribution())->concept_keyword() + " (unstable accepted)", keywords_key()->raw_name()),
+                                n::override_reason() = mro_accepted_unstable
+                                )));
         }
     }
 
@@ -1736,7 +1729,24 @@ EbuildID::might_be_binary() const
 bool
 EbuildID::is_stable() const
 {
-    need_masks_added();
+    std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
+
+    if (! _imp->has_stable)
+    {
+        _imp->has_stable = true;
+        if (keywords_key())
+        {
+            auto keywords(keywords_key()->parse_value());
+            if (_imp->environment->accept_keywords(keywords, shared_from_this()))
+            {
+                auto unstable_keywords(std::make_shared<KeywordNameSet>());
+                std::transform(keywords->begin(), keywords->end(), unstable_keywords->inserter(), &make_unstable_keyword);
+                if (! _imp->environment->accept_keywords(unstable_keywords, shared_from_this()))
+                    _imp->is_stable = true;
+            }
+        }
+    }
+
     return _imp->is_stable;
 }
 
