@@ -113,7 +113,7 @@ $(command_MANS_txts) : man-cave
 	xmlto man $<
 
 .xml.html-man-fragment : $(man_MANS_xmls)
-	xmlto html $< -o $@-dir
+	xmlto -o $@-dir html $<
 	sed \
 	    -e '1s,^.*\(<div class="refnamediv">\),\1,' \
 	    -e '$$s,</body>.*,,' -e '$$s,</div><div class="navfooter"><hr></div>,,' \
