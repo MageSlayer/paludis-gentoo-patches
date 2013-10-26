@@ -41,12 +41,12 @@
 #include <paludis/metadata_key.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/slot.hh>
-#include <sys/sysinfo.h>
 #include <cstdlib>
 #include <iostream>
 #include <algorithm>
 #include <mutex>
 #include <map>
+#include <thread>
 #include <unistd.h>
 
 #include "command_command_line.hh"
@@ -307,8 +307,8 @@ GenerateMetadataCommand::run(
         ScopedNotifierCallback display_callback_holder(env.get(), NotifierCallbackFunction(std::cref(callback)));
         ThreadPool pool;
 
-        int n_procs(get_nprocs());
-        if (n_procs < 1)
+        unsigned n_procs(std::thread::hardware_concurrency());
+        if (n_procs == 0)
             n_procs = 1;
 
         for (int n(0), n_end(n_procs) ; n != n_end ; ++n)
