@@ -1018,13 +1018,14 @@ AC_SUBST([DOXYGEN_TAG_FILES])
 dnl }}}
 
 dnl {{{ asciidoc & xmlto
-AC_MSG_CHECKING([whether to use pre-built documentation])
-AC_ARG_ENABLE([prebuilt-documentation],
-			  AS_HELP_STRING([--enable-prebuilt-documentation], [Use prebuilt documentation]),
-			  [USE_PREBUILT_DOCUMENTATION=$enableval
-			   AC_MSG_RESULT([$enableval])],
-			   USE_PREBUILT_DOCUMENTATION=no
-			   AC_MSG_RESULT([no]))
+AC_MSG_CHECKING([whether we are cross-compiling])
+if test "x$target" != "x" && test "x$host" != "x$target" ; then
+	AC_MSG_RESULT([yes, host $host target $target])
+	USE_PREBUILT_DOCUMENTATION=yes
+else
+	AC_MSG_RESULT([no])
+	USE_PREBUILT_DOCUMENTATION=no
+fi
 
 AM_CONDITIONAL([USE_PREBUILT_DOCUMENTATION], test "x$USE_PREBUILT_DOCUMENTATION" = "xyes")
 
@@ -1038,9 +1039,15 @@ if test x$USE_PREBUILT_DOCUMENTATION = xno ; then
 	if test "x$HAVE_XMLTO" = xno ; then
 		AC_MSG_ERROR([xmlto not found])
 	fi
+	HAVE_HTMLTIDY=yes
+	AC_CHECK_PROG(HAVE_HTMLTIDY_WORKS, [tidy], [yes], [no])
+	if test "x$HAVE_HTMLTIDY_WORKS" = xno ; then
+		AC_MSG_ERROR([--enable-htmltidy was specified but 'tidy' does not work])
+	fi
 else
 	HAVE_ASCIIDOC=no
 	HAVE_XMLTO=no
+	HAVE_HTMLTIDY=no
 fi
 
 AC_SUBST([HAVE_ASCIIDOC])
@@ -1048,25 +1055,10 @@ AM_CONDITIONAL([HAVE_ASCIIDOC], test "x$HAVE_ASCIIDOC" = "xyes")
 
 AC_SUBST([HAVE_XMLTO])
 AM_CONDITIONAL([HAVE_XMLTO], test "x$HAVE_XMLTO" = "xyes")
-dnl }}}
 
-dnl {{{
-AC_MSG_CHECKING([whether to use htmltidy to verify documentation])
-AC_ARG_ENABLE([htmltidy],
-			  AS_HELP_STRING([--enable-htmltidy], [Check generated documentation with htmltidy]),
-			  [HAVE_HTMLTIDY=$enableval
-			   AC_MSG_RESULT([$enableval])],
-			  [HAVE_HTMLTIDY=no
-			   AC_MSG_RESULT([no])])
 AC_SUBST([HAVE_HTMLTIDY])
 AM_CONDITIONAL([HAVE_HTMLTIDY], test "x$HAVE_HTMLTIDY" = "xyes")
-
-if test "x$HAVE_HTMLTIDY" = "xyes" ; then
-	AC_CHECK_PROG(HAVE_HTMLTIDY_WORKS, [tidy], [yes], [no])
-	if test "x$HAVE_HTMLTIDY_WORKS" = xno ; then
-		AC_MSG_ERROR([--enable-htmltidy was specified but 'tidy' does not work])
-	fi
-fi
+dnl }}}
 
 dnl {{{ check for whether to build xml stuff
 AC_MSG_CHECKING([whether to build xml things for metadata.xml and GLSA support])
