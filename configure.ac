@@ -1042,7 +1042,7 @@ if test x$USE_PREBUILT_DOCUMENTATION = xno ; then
 	HAVE_HTMLTIDY=yes
 	AC_CHECK_PROG(HAVE_HTMLTIDY_WORKS, [tidy], [yes], [no])
 	if test "x$HAVE_HTMLTIDY_WORKS" = xno ; then
-		AC_MSG_ERROR([--enable-htmltidy was specified but 'tidy' does not work])
+		AC_MSG_ERROR(['tidy' does not work])
 	fi
 else
 	HAVE_ASCIIDOC=no
