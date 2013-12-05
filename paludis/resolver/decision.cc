@@ -645,6 +645,7 @@ void
 BreakDecision::serialise(Serialiser & s) const
 {
     s.object("BreakDecision")
+        .member(SerialiserFlags<>(), "resolvent", resolvent())
         .member(SerialiserFlags<serialise::might_be_null>(), "existing_id", existing_id())
         .member(SerialiserFlags<>(), "taken", taken())
         .member(SerialiserFlags<serialise::might_be_null, serialise::container>(), "required_confirmations_if_any", required_confirmations_if_any())
