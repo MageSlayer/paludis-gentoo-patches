@@ -125,7 +125,7 @@ namespace paludis
                     const pid_t,
                     std::unique_ptr<RunningProcessThread> &&);
 
-            ~RunningProcessHandle() PALUDIS_NOEXCEPT(false);
+            ~RunningProcessHandle() noexcept(false);
             RunningProcessHandle(RunningProcessHandle &&);
 
             RunningProcessHandle(const RunningProcessHandle &) = delete;

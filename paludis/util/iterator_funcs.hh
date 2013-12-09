@@ -25,34 +25,7 @@
 
 namespace paludis
 {
-#ifdef PALUDIS_HAVE_STD_NEXT
     using std::next;
-#else
-    /**
-     * Return a new iterator pointing to the item after i.
-     *
-     * \ingroup g_iterator
-     */
-    template <typename T_>
-    T_ next(const T_ & i)
-    {
-        T_ result(i);
-        return ++result;
-    }
-
-     /**
-     * Return a new iterator advanced by a distance of n.
-     *
-     * \ingroup g_iterator
-     */
-    template <typename T_>
-    T_ next(const T_ & i, const int & n)
-    {
-        T_ result(i);
-        std::advance(result, n);
-        return result;
-    }
-#endif
 
     /**
      * Return a new iterator pointing to the item before i.

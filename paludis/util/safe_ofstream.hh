@@ -118,7 +118,7 @@ namespace paludis
 
             SafeOFStream(const int fd, const bool buffer);
             SafeOFStream(const FSPath &, const int open_flags, const bool buffer);
-            ~SafeOFStream() PALUDIS_NOEXCEPT(false);
+            ~SafeOFStream() noexcept(false);
 
             ///\}
     };
