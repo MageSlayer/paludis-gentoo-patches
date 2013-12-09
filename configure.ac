@@ -927,6 +927,7 @@ dnl }}}
 
 CXXFLAGS="$save_CXXFLAGS"
 
+dnl {{{ visibility support
 AC_MSG_CHECKING([whether to enable visibility])
 AC_ARG_ENABLE([visibility],
 			  AS_HELP_STRING([--enable-visibility], [Enable visibility (g++-4.1)]),
@@ -949,7 +950,9 @@ else
 fi
 AC_SUBST([PALUDIS_ENABLE_VISIBILITY])
 AC_SUBST([PALUDIS_CXXFLAGS_VISIBILITY])
+dnl }}}
 
+dnl {{{ disabling strict aliasing for boost bindings
 AC_MSG_CHECKING([how to disable strict aliasing when using dodgy Boost libraries])
 old_PALUDIS_CXXFLAGS=$PALUDIS_CXXFLAGS
 PALUDIS_CXXFLAGS=
@@ -958,7 +961,9 @@ AC_MSG_RESULT([$PALUDIS_CXXFLAGS])
 PALUDIS_CXXFLAGS_NO_STRICT_ALIASING=$PALUDIS_CXXFLAGS
 PALUDIS_CXXFLAGS=$old_PALUDIS_CXXFLAGS
 AC_SUBST([PALUDIS_CXXFLAGS_NO_STRICT_ALIASING])
+dnl }}}
 
+dnl {{{ compiler flags
 AC_MSG_CHECKING([for debugging flags to move from CXXFLAGS to PALUDIS_CXXFLAGS])
 cxxflags_g=
 cxxflags_rest=
@@ -976,7 +981,9 @@ AC_MSG_RESULT([$CXXFLAGS])
 PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} ${cxxflags_g}"
 AC_MSG_CHECKING([for new PALUDIS_CXXFLAGS])
 AC_MSG_RESULT([$PALUDIS_CXXFLAGS])
+dnl }}}
 
+dnl {{{ python binding support
 AC_MSG_CHECKING([whether we can turn off debugging to avoid pythons eating all your rams])
 old_PALUDIS_CXXFLAGS=$PALUDIS_CXXFLAGS
 PALUDIS_CXXFLAGS=
@@ -985,7 +992,6 @@ AC_MSG_RESULT([$PALUDIS_CXXFLAGS])
 PALUDIS_CXXFLAGS_NO_DEBUGGING=$PALUDIS_CXXFLAGS
 PALUDIS_CXXFLAGS=$old_PALUDIS_CXXFLAGS
 AC_SUBST([PALUDIS_CXXFLAGS_NO_DEBUGGING])
-
 dnl }}}
 
 dnl {{{ doxygen
@@ -1634,7 +1640,7 @@ if echo $clients | tr ' ' '\n' | grep '^cave$' >/dev/null ; then
 fi
 dnl }}}
 
-dnl {{{
+dnl {{{ pbin support
 
 AC_MSG_CHECKING([whether to build pbins])
 AC_ARG_ENABLE([pbins],
