@@ -43,10 +43,20 @@ namespace paludis
                             boost::python::init<const typename WrappedValueTraits<Tag_>::UnderlyingType &>(("__init__("+init_arg+")").c_str())
                             )
                 {
-                    this->def(boost::python::self_ns::str(boost::python::self));
-                    this->def("__cmp__",
-                              &paludis::python::py_cmp<WrappedValue<Tag_> >);
-                    boost::python::implicitly_convertible<typename WrappedValueTraits<Tag_>::UnderlyingType,
+                    namespace bp = boost::python;
+                    this->def(bp::self_ns::str(bp::self))
+#if PY_MAJOR_VERSION < 3
+                      .def("__cmp__", &paludis::python::py_cmp<WrappedValue<Tag_> >)
+# else
+                      .def(bp::self == bp::self)
+                      .def(bp::self != bp::self)
+                      .def(bp::self <  bp::self)
+                      .def(bp::self <= bp::self)
+                      .def(bp::self >  bp::self)
+                      .def(bp::self >= bp::self)
+# endif
+                      ;
+                    bp::implicitly_convertible<typename WrappedValueTraits<Tag_>::UnderlyingType,
                             WrappedValue<Tag_> >();
                 }
         };

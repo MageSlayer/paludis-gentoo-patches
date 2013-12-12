@@ -79,8 +79,8 @@ class TestCase_1_DepSpecs(unittest.TestCase):
         vrc = self.pds.version_requirements
 
         self.assertEquals(len(list(vrc)), 1)
-        self.assertEquals(iter(vrc).next().version_spec, VersionSpec("1"))
-        self.assertEquals(iter(vrc).next().version_operator.value, VersionOperator(">=").value)
+        self.assertEquals(next(iter(vrc)).version_spec, VersionSpec("1"))
+        self.assertEquals(next(iter(vrc)).version_operator.value, VersionOperator(">=").value)
 
     def test_08_version_requirements_mode(self):
         self.get_depspecs()
@@ -88,7 +88,7 @@ class TestCase_1_DepSpecs(unittest.TestCase):
 
 ###    def test_09_additional_requirements(self):
 ###        spec = parse_user_package_dep_spec("foo/monkey[foo]", UserPackageDepSpecOptions())
-###        ur = iter(spec.additional_requirements).next()
+###        ur = next(iter(spec.additional_requirements))
 ###        self.assert_(isinstance(ur, EnabledUseRequirement))
 
     def test_11_name(self):

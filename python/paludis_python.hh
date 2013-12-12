@@ -92,7 +92,15 @@ namespace paludis
                 doc += "\n\t" + e_name_up;
             }
             PyTypeObject * pto = reinterpret_cast<PyTypeObject *>(enum_.ptr());
-            PyDict_SetItemString(pto->tp_dict, "__doc__", PyString_FromString(doc.c_str()));
+            PyDict_SetItemString(
+                pto->tp_dict
+              , "__doc__"
+#if PY_MAJOR_VERSION < 3
+              , PyString_FromString(doc.c_str())
+#else
+              , PyUnicode_FromString(doc.c_str())
+#endif
+              );
         }
 
         // Compare
@@ -128,7 +136,11 @@ namespace paludis
             static PyObject *
             convert(const T_ & x)
             {
+#if PY_MAJOR_VERSION < 3
                 return PyString_FromString(stringify<T_>(x).c_str());
+#else
+                return PyUnicode_FromString(stringify<T_>(x).c_str());
+#endif
             }
         };
 

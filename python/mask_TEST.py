@@ -36,8 +36,8 @@ class TestCase_01_Masks(unittest.TestCase):
     def test_01_user_mask(self):
         q = Selection.RequireExactlyOne(Generator.Matches(
             parse_user_package_dep_spec("=masked/user-1.0", self.e, []), []))
-        pid = iter(self.e[q]).next()
-        m = iter(pid.masks).next()
+        pid = next(iter(self.e[q]))
+        m = next(iter(pid.masks))
 
         self.assert_(isinstance(m, Mask))
         self.assert_(isinstance(m, UserMask))
@@ -48,8 +48,8 @@ class TestCase_01_Masks(unittest.TestCase):
     def test_02_unaccepted_mask(self):
         q = Selection.RequireExactlyOne(Generator.Matches(
             parse_user_package_dep_spec("=masked/unaccepted-1.0", self.e, []), []))
-        pid = iter(self.e[q]).next()
-        m = iter(pid.masks).next()
+        pid = next(iter(self.e[q]))
+        m = next(iter(pid.masks))
 
         self.assert_(isinstance(m, Mask))
         self.assert_(isinstance(m, UnacceptedMask))
@@ -61,8 +61,8 @@ class TestCase_01_Masks(unittest.TestCase):
     def test_03_repository_mask(self):
         q = Selection.RequireExactlyOne(Generator.Matches(
             parse_user_package_dep_spec("=masked/repo-1.0", self.e, []), []))
-        pid = iter(self.e[q]).next()
-        m = iter(pid.masks).next()
+        pid = next(iter(self.e[q]))
+        m = next(iter(pid.masks))
 
         self.assert_(isinstance(m, Mask))
         self.assert_(isinstance(m, RepositoryMask))
@@ -76,8 +76,8 @@ class TestCase_01_Masks(unittest.TestCase):
     def test_04_unsupported_mask(self):
         q = Selection.RequireExactlyOne(Generator.Matches(
             parse_user_package_dep_spec("=masked/unsupported-1.0", self.e, []), []))
-        pid = iter(self.e[q]).next()
-        m = iter(pid.masks).next()
+        pid = next(iter(self.e[q]))
+        m = next(iter(pid.masks))
 
         self.assert_(isinstance(m, Mask))
         self.assert_(isinstance(m, UnsupportedMask))

@@ -95,7 +95,16 @@ void expose_version_spec()
                 "Revision part only (or \"r0\")."
             )
 
+#if PY_MAJOR_VERSION < 3
         .def("__cmp__", &VersionSpec::compare)
+#else
+        .def(bp::self == bp::self)
+        .def(bp::self != bp::self)
+        .def(bp::self <  bp::self)
+        .def(bp::self <= bp::self)
+        .def(bp::self >  bp::self)
+        .def(bp::self >= bp::self)
+#endif
 
         .def(bp::self_ns::str(bp::self))
         ;

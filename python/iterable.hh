@@ -63,8 +63,7 @@ namespace paludis
         {
             static void add(Set<To_> & c, PyObject * ptr)
             {
-                const char * str = PyString_AsString(ptr);
-                c.insert(To_(std::string(str)));
+                c.insert(To_(boost::python::extract<std::string>(ptr)));
             }
         };
 
@@ -73,8 +72,7 @@ namespace paludis
         {
             static void add(Sequence<To_> & c, PyObject * ptr)
             {
-                const char * str = PyString_AsString(ptr);
-                c.push_back(To_(std::string(str)));
+                c.push_back(To_(boost::python::extract<std::string>(ptr)));
             }
         };
 
@@ -130,7 +128,14 @@ namespace paludis
                         V_ * ptr = boost::python::extract<V_ *>(o);
                         s->push_back(*ptr);
                     }
-                    else if (IsConvertible<std::string, V_>::value && PyString_Check(o.ptr()))
+                    else if (
+                        IsConvertible<std::string, V_>::value
+#if PY_MAJOR_VERSION < 3
+                     && PyString_Check(o.ptr())
+#else
+                     && PyUnicode_Check(o.ptr())
+#endif
+                      )
                     {
                         ConditionalAdd<V_, std::string, Sequence<V_>,
                             IsConvertible<std::string, V_>::value>::add(*s, o.ptr());
@@ -200,7 +205,14 @@ namespace paludis
                         V_ * ptr = boost::python::extract<V_ *>(o);
                         s->insert(*ptr);
                     }
-                    else if (IsConvertible<std::string, V_>::value && PyString_Check(o.ptr()))
+                    else if (
+                        IsConvertible<std::string, V_>::value
+#if PY_MAJOR_VERSION < 3
+                     && PyString_Check(o.ptr())
+#else
+                     && PyUnicode_Check(o.ptr())
+#endif
+                      )
                     {
                         ConditionalAdd<V_, std::string, Set<V_>,
                                 IsConvertible<std::string, V_>::value>::add(*s, o.ptr());

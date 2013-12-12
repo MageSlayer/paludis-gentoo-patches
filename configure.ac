@@ -1051,8 +1051,8 @@ if test "x$enable_python" = "xyes" ; then
 	 AC_MSG_ERROR([Your gcc is too old for Python support]))
 
 	AC_MSG_CHECKING(for headers required to compile python extensions)
-	py_prefix=`$PYTHON -c "import sys; print sys.prefix"`
-	py_exec_prefix=`$PYTHON -c "import sys; print sys.exec_prefix"`
+	py_prefix=`$PYTHON -c "import sys; print(sys.prefix)"`
+	py_exec_prefix=`$PYTHON -c "import sys; print(sys.exec_prefix)"`
 	PYTHON_INCLUDE_DIR="${py_prefix}/include/python${PYTHON_VERSION}"
 	if test "$py_prefix" != "$py_exec_prefix"; then
 		PYTHON_INCLUDE_DIR="$PYTHON_INCLUDE_DIR -I${py_exec_prefix}/include/python${PYTHON_VERSION}"

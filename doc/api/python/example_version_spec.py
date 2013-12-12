@@ -10,13 +10,12 @@ versions = [paludis.VersionSpec(v) for v in "1.0 1.1 1.2 1.2-r1 2.0 2.0-try1 2.0
 
 # For each version...
 for v in versions:
-    print str(v) + ":"
+    print(str(v) + ":")
 
     # Show the output of various members.
-    print "    Remove revision:             %s" % v.remove_revision()
-    print "    Revision only:               %s" % v.revision_only()
-    print "    Bump:                        %s" % v.bump()
-    print "    Is SCM?                      %s" % v.is_scm
-    print "    Has -try?                    %s" % v.has_try_part
-    print "    Has -scm?                    %s" % v.has_scm_part
-    print
+    print("    Remove revision:             %s" % v.remove_revision())
+    print("    Revision only:               %s" % v.revision_only())
+    print("    Bump:                        %s" % v.bump())
+    print("    Is SCM?                      %s" % v.is_scm)
+    print("    Has -try?                    %s" % v.has_try_part)
+    print("    Has -scm?                    %s" % v.has_scm_part)

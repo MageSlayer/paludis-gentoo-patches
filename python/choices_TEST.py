@@ -34,7 +34,7 @@ Log.instance.log_level = LogLevel.WARNING
 class TestCase_01_Choices(unittest.TestCase):
     def setUp(self):
         self.e = EnvironmentFactory.instance.create("")
-        self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
+        self.pid = next(iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])))
         self.choices = self.pid.find_metadata("PALUDIS_CHOICES").parse_value()
 
     def test_01_choices(self):
@@ -50,7 +50,7 @@ class TestCase_01_Choices(unittest.TestCase):
         self.assert_(not self.choices.has_matching_contains_every_value_prefix("foo"))
 
     def test_04_iter(self):
-        self.assert_(isinstance(iter(self.choices).next(), Choice))
+        self.assert_(isinstance(next(iter(self.choices)), Choice))
         found = False
         for f in self.choices:
             if f.raw_name == "USE":
@@ -60,7 +60,7 @@ class TestCase_01_Choices(unittest.TestCase):
 class TestCase_02_Choice(unittest.TestCase):
     def setUp(self):
         self.e = EnvironmentFactory.instance.create("")
-        self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
+        self.pid = next(iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])))
         self.choices = self.pid.find_metadata("PALUDIS_CHOICES").parse_value()
         self.use = None
         self.linguas = None
@@ -91,7 +91,7 @@ class TestCase_02_Choice(unittest.TestCase):
         self.assertEquals(self.linguas.consider_added_or_changed, True)
 
     def test_03_use_iter(self):
-        self.assert_(isinstance(iter(self.use).next(), ChoiceValue))
+        self.assert_(isinstance(next(iter(self.use)), ChoiceValue))
         found = False
         for f in self.use:
             if f.name_with_prefix == "testflag":
@@ -99,7 +99,7 @@ class TestCase_02_Choice(unittest.TestCase):
         self.assert_(found)
 
     def test_04_linguas_iter(self):
-        self.assert_(isinstance(iter(self.linguas).next(), ChoiceValue))
+        self.assert_(isinstance(next(iter(self.linguas)), ChoiceValue))
         found = False
         for f in self.linguas:
             if f.name_with_prefix == "linguas_en":
@@ -109,7 +109,7 @@ class TestCase_02_Choice(unittest.TestCase):
 class TestCase_03_ChoiceValue(unittest.TestCase):
     def setUp(self):
         self.e = EnvironmentFactory.instance.create("")
-        self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
+        self.pid = next(iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])))
         self.choices = self.pid.find_metadata("PALUDIS_CHOICES").parse_value()
         self.use_testflag = self.choices.find_by_name_with_prefix("testflag")
         self.linguas_en = self.choices.find_by_name_with_prefix("linguas_en")

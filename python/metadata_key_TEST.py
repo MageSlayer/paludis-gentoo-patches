@@ -35,8 +35,8 @@ Log.instance.log_level = LogLevel.WARNING
 class TestCase_01_MetadataKeys(unittest.TestCase):
     def setUp(self):
         self.e = EnvironmentFactory.instance.create("")
-        self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
-        self.ipid = iter(self.e.fetch_repository("installed").package_ids("cat-one/pkg-one", [])).next()
+        self.pid = next(iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])))
+        self.ipid = next(iter(self.e.fetch_repository("installed").package_ids("cat-one/pkg-one", [])))
 
     def test_02_installed_time(self):
         self.assertEquals(self.pid.find_metadata("INSTALLED_TIME"), None)
@@ -70,7 +70,7 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
 
             def parse_value(self):
                 e = EnvironmentFactory.instance.create("")
-                pid = iter(e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
+                pid = next(iter(e.fetch_repository("testrepo").package_ids("foo/bar", [])))
                 return pid
 
             def raw_name(self):

@@ -33,9 +33,9 @@ Log.instance.log_level = LogLevel.WARNING
 class TestCase_01_PackageID(unittest.TestCase):
     def setUp(self):
         self.e = EnvironmentFactory.instance.create("")
-        self.pid = iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])).next()
-        self.ipid = iter(self.e.fetch_repository("installed").package_ids("cat-one/pkg-one", [])).next()
-        self.mpid = iter(self.e.fetch_repository("testrepo").package_ids("cat/masked", [])).next()
+        self.pid = next(iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])))
+        self.ipid = next(iter(self.e.fetch_repository("installed").package_ids("cat-one/pkg-one", [])))
+        self.mpid = next(iter(self.e.fetch_repository("testrepo").package_ids("cat/masked", [])))
 
     def test_01_get(self):
         pass
@@ -102,7 +102,7 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assert_(self.mpid.masked)
 
     def test_13_masks(self):
-        mask = iter(self.mpid.masks).next()
+        mask = next(iter(self.mpid.masks))
         self.assert_(isinstance(mask, UnacceptedMask))
 
     def test_18_build_dependencies_key(self):
@@ -139,7 +139,7 @@ class TestCase_01_PackageID(unittest.TestCase):
 
     def test_28_from_repositories_key(self):
         self.assertEquals(self.pid.from_repositories_key(), None)
-        self.assertEquals(iter(self.ipid.from_repositories_key().parse_value()).next(), "origin_test")
+        self.assertEquals(next(iter(self.ipid.from_repositories_key().parse_value())), "origin_test")
 
     def test_30_fs_location_key(self):
         self.assert_(isinstance(self.ipid.fs_location_key(), MetadataFSPathKey))

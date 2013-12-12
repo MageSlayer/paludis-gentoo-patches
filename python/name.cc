@@ -188,7 +188,16 @@ void expose_name()
                 "[ro] PackageNamePart"
                 )
 
+#if PY_MAJOR_VERSION < 3
         .def("__cmp__", &py_cmp<QualifiedPackageName>)
+# else
+        .def(bp::self == bp::self)
+        .def(bp::self != bp::self)
+        .def(bp::self <  bp::self)
+        .def(bp::self <= bp::self)
+        .def(bp::self >  bp::self)
+        .def(bp::self >= bp::self)
+# endif
 
         .def(bp::self_ns::str(bp::self))
         ;
