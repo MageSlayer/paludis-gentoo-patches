@@ -344,7 +344,7 @@ void expose_action()
         (
          "ConfigAction",
          "A ConfigAction is used via PackageID::perform_action to execute\n"
-         "post-install configuration (for example, via 'paludis --config')\n"
+         "post-install configuration (for example, via :command:`cave perform config`)\n"
          "on a PackageID.",
          bp::init<ConfigActionOptions>("__init__(ConfigActionOptions)")
         );
@@ -356,7 +356,7 @@ void expose_action()
         (
          "InfoAction",
          "An InfoAction is used via PackageID::perform_action to execute\n"
-         "additional information (for example, via 'paludis --info')\n"
+         "additional information (for example, via :command:`cave info`)\n"
          "on a PackageID.",
          bp::init<InfoActionOptions>("__init__(InfoActionOptions)")
         );

@@ -1169,18 +1169,9 @@ fi
 AC_MSG_RESULT($enable_python_doc)
 
 if test "x$enable_python_doc" = "xyes" ; then
-	AC_MSG_CHECKING([for epydoc])
-	if epydoc --version >/dev/null 2>/dev/null ; then
-		AC_MSG_RESULT([yes])
-	else
-		AC_MSG_ERROR([epydoc (http://epydoc.sourceforge.net/) is needed to build Python documentation])
-	fi
-
-	AC_MSG_CHECKING([for pygments])
-	if pygmentize -V >/dev/null 2>/dev/null ; then
-		AC_MSG_RESULT([yes])
-	else
-		AC_MSG_ERROR([pygments (http://pygments.org/) is needed to build Python documentation])
+	AC_CHECK_PROGS(SPHINX_BUILD, [sphinx-build], [no])
+	if test "x$SPHINX_BUILD" = "xno" ; then
+		AC_MSG_ERROR([sphinx-build (http://sphinx-doc.com/) is needed to build Python documentation])
 	fi
 fi
 AM_CONDITIONAL([ENABLE_PYTHON_DOC], test "x$enable_python_doc" = "xyes")
@@ -1551,6 +1542,7 @@ AC_CONFIG_FILES([
 	doc/api/cplusplus/doxygen.conf
 	doc/api/cplusplus/Makefile
 	doc/api/cplusplus/examples/Makefile
+	doc/api/python/conf.py
 	doc/api/python/Makefile
 	doc/api/ruby/Makefile
 	doc/clients/Makefile

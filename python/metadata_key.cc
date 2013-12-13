@@ -916,8 +916,8 @@ void expose_metadata_key()
 
          "- A raw name. This is in a repository-defined format designed to closely\n"
          "  represent the internal name. For example, ebuilds and VDB IDs use\n"
-         "  raw names like 'DESCRIPTION' and 'KEYWORDS', whereas CRAN uses names\n"
-         "  like 'Title' and 'BundleDescription'. The raw name is unique in a\n"
+         "  raw names like ``DESCRIPTION`` and ``KEYWORDS``, whereas CRAN uses names\n"
+         "  like ``Title`` and ``BundleDescription``. The raw name is unique in a\n"
          "  PackageID.\n\n"
 
          "- A human name. This is the name that should be used when outputting\n"
@@ -1057,7 +1057,7 @@ void expose_metadata_key()
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataTimeKey",
-         "A MetadataTimeKey is a MetadataKey that has a int(time_t) as its value.\n\n"
+         "A MetadataTimeKey is a MetadataKey that has a ``int(time_t)`` as its value.\n\n"
 
          "This class can be subclassed in Python.",
          bp::init<>(
@@ -1080,7 +1080,7 @@ void expose_metadata_key()
             bp::bases<MetadataKey>, boost::noncopyable>
         (
          "MetadataFSPathKey",
-         "A MetadataFSPathKey is a MetadataKey that has an string(FSPath) as its value.\n\n"
+         "A MetadataFSPathKey is a MetadataKey that has an ``string(FSPath)`` as its value.\n\n"
 
          "This class can be subclassed in Python.",
          bp::init<>(

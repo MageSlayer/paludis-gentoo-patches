@@ -104,7 +104,7 @@ void expose_name()
     class_wrapped_value<SlotName>
         (
          "SlotName",
-         "Holds a string that is a valid name for a SLOT."
+         "Holds a string that is a valid name for a ``SLOT``."
         );
 
     /**
@@ -123,7 +123,7 @@ void expose_name()
     class_wrapped_value<KeywordName>
         (
          "KeywordName",
-         "Holds a string that is a valid name for a KEYWORD."
+         "Holds a string that is a valid name for a ``KEYWORD``."
         );
 
     /**

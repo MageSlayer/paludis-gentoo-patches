@@ -53,9 +53,9 @@ void expose_version_spec()
     bp::class_<VersionSpec>
         (
          "VersionSpec",
-         "A VersionSpec represents a version number (for example, 1.2.3b-r1).\n\n"
+         "A VersionSpec represents a version number (for example, ``1.2.3b-r1``).\n\n"
 
-         "See U{example_version_spec<###EX###example_version_spec.html>}",
+         "See :doc:`example_version_spec`",
          bp::no_init
         )
         .def("__init__",
@@ -66,8 +66,8 @@ void expose_version_spec()
         .def("bump", &VersionSpec::bump,
                 "bump() -> VersionSpec\n"
                 "This is used by the ~> operator. It returns a VersionSpec where the next to last number "
-                "is one greater (e.g. 5.3.1 => 5.4).\n"
-                "Any non number parts are stripped (e.g. 1.2.3_alpha4-r5 => 1.3)."
+                "is one greater (e.g. ``5.3.1`` => ``5.4``).\n"
+                "Any non number parts are stripped (e.g. ``1.2.3_alpha4-r5`` => ``1.3``)."
             )
 
         .add_property("is_scm", &VersionSpec::is_scm,
@@ -77,12 +77,12 @@ void expose_version_spec()
 
         .add_property("has_scm_part", &VersionSpec::has_scm_part,
                 "[ro] bool\n"
-                "Do we have an -scm part?"
+                "Do we have an ``-scm`` part?"
                 )
 
         .add_property("has_try_part", &VersionSpec::has_try_part,
                 "[ro] bool\n"
-                "Do we have a -try part?"
+                "Do we have a ``-try`` part?"
                 )
 
         .def("remove_revision", &VersionSpec::remove_revision,

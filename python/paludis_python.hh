@@ -89,7 +89,7 @@ namespace paludis
             {
                 std::string e_name_up(toupper(stringify(e)));
                 enum_.value(e_name_up.c_str(), e);
-                doc += "\n\t" + e_name_up;
+                doc += "\n\t* ``" + e_name_up + "``";
             }
             PyTypeObject * pto = reinterpret_cast<PyTypeObject *>(enum_.ptr());
             PyDict_SetItemString(

@@ -107,7 +107,7 @@ void expose_slot_requirement()
         (
          "SlotRequirement",
          "A SlotRequirement represents a PackageDepSpec's slot requirement, "
-         "such as :3 , :* , := or :=3 .",
+         "such as ``:3``, ``:*``, ``:=`` or ``:=3``.",
          bp::no_init
         )
 
@@ -123,7 +123,7 @@ void expose_slot_requirement()
         (
          "SlotExactPartialRequirement",
          "A SlotExactPartialRequirement is a SlotRequirement for exact slot requirements, "
-         "such as :3 or :=3 .",
+         "such as ``:3`` or ``:=3``.",
          bp::no_init
         )
 
@@ -142,7 +142,7 @@ void expose_slot_requirement()
         (
          "SlotExactFullRequirement",
          "A SlotExactFullRequirement is a SlotRequirement for exact slot requirements, "
-         "such as :3/3 or :=3/3 .",
+         "such as ``:3/3`` or ``:=3/3``.",
          bp::no_init
         )
         ;
@@ -155,7 +155,7 @@ void expose_slot_requirement()
     bp::class_<SlotAnyAtAllLockedRequirement, std::shared_ptr<SlotAnyAtAllLockedRequirement>, bp::bases<SlotRequirement>, boost::noncopyable>
         (
          "SlotAnyAtAllLockedRequirement",
-         "A SlotAnyAtAllLockedRequirement is a SlotRequirement for := slot requirements.",
+         "A SlotAnyAtAllLockedRequirement is a SlotRequirement for ``:=`` slot requirements.",
          bp::no_init
         )
         ;
@@ -168,7 +168,7 @@ void expose_slot_requirement()
     bp::class_<SlotAnyPartialLockedRequirement, std::shared_ptr<SlotAnyPartialLockedRequirement>, bp::bases<SlotRequirement>, boost::noncopyable>
         (
          "SlotAnyPartialLockedRequirement",
-         "A SlotAnyPartialLockedRequirement is a SlotRequirement for :3= slot requirements.",
+         "A SlotAnyPartialLockedRequirement is a SlotRequirement for ``:3=`` slot requirements.",
          bp::no_init
         )
         ;
@@ -181,7 +181,7 @@ void expose_slot_requirement()
     bp::class_<SlotAnyUnlockedRequirement, std::shared_ptr<SlotAnyUnlockedRequirement>, bp::bases<SlotRequirement>, boost::noncopyable>
         (
          "SlotAnyUnlockedRequirement",
-         "A SlotAnyUnlockedRequirement is a SlotRequirement for :* slot requirements.",
+         "A SlotAnyUnlockedRequirement is a SlotRequirement for ``:*`` slot requirements.",
          bp::no_init
         )
         ;
@@ -195,9 +195,9 @@ void expose_slot_requirement()
         (
          "SlotUnknownRewrittenRequirement",
          "A SlotUnknownRewrittenRequirement is a SlotRequirement for the "
-         "maybe_original_requirement_if_written() method of :3/3.1= slot "
+         "maybe_original_requirement_if_written() method of ``:3/3.1= slot`` "
          "requirements that do not indicate whether they were originally "
-         "of := or :3= type.",
+         "of ``:=`` or ``:3=`` type.",
          bp::no_init
         )
         ;

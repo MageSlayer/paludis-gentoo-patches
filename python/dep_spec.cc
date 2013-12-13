@@ -1076,7 +1076,7 @@ void expose_dep_spec()
 
     ExceptionRegister::get_instance()->add_exception<GotASetNotAPackageDepSpec>
         ("GotASetNotAPackageDepSpec", "BaseException",
-         "Thrown by parse_user_package_dep_spec if options includes THROW_IF_SET"
+         "Thrown by parse_user_package_dep_spec if options includes ``THROW_IF_SET``"
          " and we're given a set.");
 
     /**
@@ -1229,7 +1229,7 @@ void expose_dep_spec()
         (
          "PackageDepSpec",
          "A PackageDepSpec represents a package name (for example, 'app-editors/vim'),"
-         " possibly with associated version and SLOT restrictions.",
+         " possibly with associated version and ``SLOT`` restrictions.",
          bp::no_init
         )
 
@@ -1291,7 +1291,7 @@ void expose_dep_spec()
     bp::class_<PythonPlainTextDepSpec, bp::bases<PythonStringDepSpec> >
         (
          "PlainTextDepSpec",
-         "A PlainTextDepSpec represents a plain text entry (for example, a RESTRICT keyword).",
+         "A PlainTextDepSpec represents a plain text entry (for example, a ``RESTRICT`` keyword).",
          bp::init<const std::string &>("__init__(string)")
         )
         .def("__str__", &PythonPlainTextDepSpec::text)
@@ -1390,7 +1390,7 @@ void expose_dep_spec()
         (
          "BlockDepSpec",
          "A BlockDepSpec represents a block on a package name (for example, 'app-editors/vim'), \n"
-         "possibly with associated version and SLOT restrictions.",
+         "possibly with associated version and ``SLOT`` restrictions.",
          bp::init<std::string, std::shared_ptr<const PythonPackageDepSpec> >("__init__(string, PackageDepSpec)")
         )
         .add_property("blocking", &PythonBlockDepSpec::blocking,

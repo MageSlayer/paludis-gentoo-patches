@@ -8,21 +8,25 @@ examples = \
 	example_command_line.py \
 	example_version_spec.py
 
-EXTRA_DIST = epydoc.css \
-	     python_syntax.css \
-	     $(examples)
+rst_docs = \
+	example_about.rst \
+	example_command_line.rst \
+	example_version_spec.rst \
+	index.rst \
+	paludis.rst
 
-dist_noinst_SCRIPTS = create_python_examples.py
+EXTRA_DIST = conf.py \
+	     $(rst_docs) \
+	     $(examples)
 
 if ENABLE_PYTHON_DOC
 
-all-local : epydoc
+all-local : sphinx
 
-epydoc : python
+sphinx : python
 
-python : $(top_builddir)/python/paludis.so epydoc.css python_syntax.css create_python_examples.py $(examples)
-	rm -fr python
-	mkdir python
+python : $(top_builddir)/python/paludis.so $(examples) $(rst_docs)
+	mkdir -p $(builddir)/python && \
 	env \
 	    LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
 		    $(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs/ \
@@ -31,11 +35,7 @@ python : $(top_builddir)/python/paludis.so epydoc.css python_syntax.css create_p
 		    `:`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/python/.libs/ \
 		    `:`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/repositories/e/.libs/`" \
 	    PYTHONPATH="$(top_builddir)/python/:$(top_builddir)/python/.libs/" \
-	    epydoc --name Paludis -o python --url http://paludis.exherbo.org --no-frames --css $(srcdir)/epydoc.css \
-	        $(top_builddir)/python/paludis.so
-	$(PYTHON) $(srcdir)/create_python_examples.py $(srcdir) $(examples)
-	find python/ -type f | xargs sed -i -e 's@http://###EX###@@'
-	cp $(srcdir)/python_syntax.css python/
+	    $(SPHINX_BUILD) -c $(builddir) -b html -d $(builddir)/doctrees $(srcdir) $(builddir)/python
 
 
 install-data-local :
@@ -44,7 +44,7 @@ install-data-local :
 
 else
 
-epydoc :
+sphinx :
 	@echo "You don't have python-doc turned on!"
 	exit 1
 
