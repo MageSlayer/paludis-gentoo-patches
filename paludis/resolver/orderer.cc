@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -36,6 +36,7 @@
 #include <paludis/resolver/change_by_resolvent.hh>
 #include <paludis/resolver/labels_classifier.hh>
 #include <paludis/resolver/collect_depped_upon.hh>
+#include <paludis/resolver/reason_utils.hh>
 
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/exception.hh>
@@ -861,7 +862,7 @@ namespace
 
         for (auto c((*resolution)->constraints()->begin()), c_end((*resolution)->constraints()->end()) ;
                 c != c_end ; ++c)
-            if (visitor_cast<const TargetReason>(*(*c)->reason()))
+            if (is_target((*c)->reason()))
                 return true;
 
         return false;
