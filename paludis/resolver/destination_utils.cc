@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -112,6 +112,31 @@ paludis::resolver::destination_filtered_generator(
 
         case dt_create_binary:
             return g & BinaryDestinationGenerator();
+
+        case last_dt:
+            break;
+    }
+
+    throw InternalError(PALUDIS_HERE, "unhandled dt");
+}
+
+Filter
+paludis::resolver::make_destination_type_filter(
+        const DestinationType t)
+{
+    switch (t)
+    {
+        case dt_install_to_slash:
+            return filter::All();
+
+        case dt_install_to_chroot:
+            return filter::All();
+
+        case dt_create_binary:
+            return filter::ByFunction([] (const std::shared_ptr<const PackageID> & id) {
+                    return ! can_make_binary_for(id);
+                    },
+                    "can be made into a binary");
 
         case last_dt:
             break;

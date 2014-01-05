@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011, 2013 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2013, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -41,6 +41,7 @@
 #include <paludis/resolver/make_uninstall_blocker.hh>
 #include <paludis/resolver/has_behaviour-fwd.hh>
 #include <paludis/resolver/get_sameness.hh>
+#include <paludis/resolver/destination_utils.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/make_named_values.hh>
@@ -1439,7 +1440,7 @@ Decider::_get_error_resolvents_for(
                         ),
                     *t);
 
-            auto ids(_find_installable_id_candidates_for(*spec.package_ptr(), filter::All(), true, true));
+            auto ids(_find_installable_id_candidates_for(*spec.package_ptr(), filter::All(), filter::All(), true, true));
             if (! ids->empty())
                 resolvent.slot() = make_named_values<SlotNameOrNull>(
                         n::name_or_null() = (*ids->rbegin())->slot_key() ?
@@ -1619,7 +1620,10 @@ Decider::_cannot_decide_for(
         unsuitable_candidates->push_back(_make_unsuitable_candidate(resolution, existing_id, true));
 
     const std::shared_ptr<const PackageIDSequence> installable_ids(_find_installable_id_candidates_for(
-                resolution->resolvent().package(), make_slot_filter(resolution->resolvent()), true, false));
+                resolution->resolvent().package(),
+                make_slot_filter(resolution->resolvent()),
+                make_destination_type_filter(resolution->resolvent().destination_type()),
+                true, false));
     for (PackageIDSequence::ConstIterator i(installable_ids->begin()), i_end(installable_ids->end()) ;
             i != i_end ; ++i)
         unsuitable_candidates->push_back(_make_unsuitable_candidate(resolution, *i, false));
@@ -1727,6 +1731,7 @@ const std::shared_ptr<const PackageIDSequence>
 Decider::_find_installable_id_candidates_for(
         const QualifiedPackageName & package,
         const Filter & slot_filter,
+        const Filter & destination_type_filter,
         const bool include_errors,
         const bool include_unmaskable) const
 {
@@ -1736,6 +1741,7 @@ Decider::_find_installable_id_candidates_for(
             (*_imp->env)[selection::AllVersionsSorted(
                 _imp->fns.make_origin_filtered_generator_fn()(generator::Package(package)) |
                 slot_filter |
+                destination_type_filter |
                 filter::SupportsAction<InstallAction>() |
                 (include_errors ? filter::All() : include_unmaskable ? _imp->fns.make_unmaskable_filter_fn()(package) : filter::NotMasked())
                 )]);
@@ -1747,7 +1753,10 @@ Decider::_find_installable_id_for(const std::shared_ptr<const Resolution> & reso
         const bool include_unmaskable) const
 {
     return _find_id_for_from(resolution, _find_installable_id_candidates_for(
-                resolution->resolvent().package(), make_slot_filter(resolution->resolvent()), false, include_unmaskable),
+                resolution->resolvent().package(),
+                make_slot_filter(resolution->resolvent()),
+                make_destination_type_filter(resolution->resolvent().destination_type()),
+                false, include_unmaskable),
             include_option_changes, false);
 }
 

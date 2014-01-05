@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010 Ciaran McCreesh
+ * Copyright (c) 2010, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,6 +25,7 @@
 #include <paludis/package_id-fwd.hh>
 #include <paludis/generator-fwd.hh>
 #include <paludis/filtered_generator-fwd.hh>
+#include <paludis/filter-fwd.hh>
 #include <paludis/environment-fwd.hh>
 
 namespace paludis
@@ -39,6 +40,9 @@ namespace paludis
                 const Environment * const,
                 const DestinationType,
                 const Generator &) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+
+        Filter make_destination_type_filter(
+                const DestinationType) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
     }
 }
 
