@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -473,6 +473,40 @@ namespace
             return "packages matching " + stringify(spec) + suffix;
         }
     };
+
+    struct ByFunctionHandler :
+        AllFilterHandlerBase
+    {
+        const std::function<bool (const std::shared_ptr<const PackageID> &)> func;
+        const std::string desc;
+
+        ByFunctionHandler(const std::function<bool (const std::shared_ptr<const PackageID> &)> & f, const std::string & s) :
+            func(f),
+            desc(s)
+        {
+        }
+
+        virtual std::shared_ptr<const PackageIDSet> ids(
+                const Environment * const,
+                const std::shared_ptr<const PackageIDSet> & id) const
+        {
+            std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
+
+            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
+                    i != i_end ; ++i)
+            {
+                if (! func(*i))
+                    result->insert(*i);
+            }
+
+            return result;
+        }
+
+        virtual std::string as_string() const
+        {
+            return desc;
+        }
+    };
 }
 
 filter::All::All() :
@@ -533,6 +567,13 @@ filter::NoSlot::NoSlot() :
 
 filter::Matches::Matches(const PackageDepSpec & spec, const std::shared_ptr<const PackageID> & f, const MatchPackageOptions & o) :
     Filter(std::make_shared<MatchesHandler>(spec, f, o))
+{
+}
+
+filter::ByFunction::ByFunction(
+        const std::function<bool (const std::shared_ptr<const PackageID> &)> & f,
+        const std::string & s) :
+    Filter(std::make_shared<ByFunctionHandler>(f, s))
 {
 }
 

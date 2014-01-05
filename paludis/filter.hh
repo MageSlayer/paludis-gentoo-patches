@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2008, 2009, 2010, 2011, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -282,7 +282,6 @@ namespace paludis
          *
          * \ingroup g_selections
          */
-
         class PALUDIS_VISIBLE Matches :
             public Filter
         {
@@ -297,6 +296,21 @@ namespace paludis
                         const PackageDepSpec &,
                         const std::shared_ptr<const PackageID> & from_id,
                         const MatchPackageOptions &);
+        };
+
+        /**
+         * A Filter which rejects PackageIDs using a function.
+         *
+         * \ingroup g_selections
+         * \since 2.0
+         */
+        class PALUDIS_VISIBLE ByFunction :
+            public Filter
+        {
+            public:
+                ByFunction(
+                        const std::function<bool (const std::shared_ptr<const PackageID> &)> &,
+                        const std::string &);
         };
     }
 
