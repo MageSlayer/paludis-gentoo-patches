@@ -107,6 +107,8 @@ tags
 /doc/clients/cave-perform.html
 /doc/clients/cave-print-best-version.html
 /doc/clients/cave-print-categories.html
+/doc/clients/cave-print-checksum.html
+/doc/clients/cave-print-checksum-algorithms.html
 /doc/clients/cave-print-commands.html
 /doc/clients/cave-print-dependent-ids.html
 /doc/clients/cave-print-environment-metadata.html
@@ -128,6 +130,7 @@ tags
 /doc/clients/cave-print-sets.html
 /doc/clients/cave-print-spec.html
 /doc/clients/cave-print-sync-protocols.html
+/doc/clients/cave-print-unmanaged-files.html
 /doc/clients/cave-print-unused-distfiles.html
 /doc/clients/cave-purge.html
 /doc/clients/cave-report.html

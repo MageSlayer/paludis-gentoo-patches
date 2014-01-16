@@ -49,6 +49,8 @@ CAVE_COMMANDS_HTML = \
 	cave-perform.html \
 	cave-print-best-version.html \
 	cave-print-categories.html \
+	cave-print-checksum.html \
+	cave-print-checksum-algorithms.html \
 	cave-print-commands.html \
 	cave-print-dependent-ids.html \
 	cave-print-environment-metadata.html \
@@ -70,6 +72,7 @@ CAVE_COMMANDS_HTML = \
 	cave-print-sets.html \
 	cave-print-spec.html \
 	cave-print-sync-protocols.html \
+	cave-print-unmanaged-files.html \
 	cave-print-unused-distfiles.html \
 	cave-purge.html \
 	cave-report.html \
