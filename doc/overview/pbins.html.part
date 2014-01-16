@@ -38,7 +38,7 @@ in binaries only being used when necessary or explicitly requested.</p>
 
 <h2>Notes on <code>libarchive</code></h2>
 
-<p>We use <a href="http://code.google.com/p/libarchive/">libarchive</a> to create binary packages, and require version
+<p>We use <a href="http://www.libarchive.org/">libarchive</a> to create binary packages, and require version
 3.0.4 or greater.</p>
 
 <h2>Creating Binary Repositories</h2>
