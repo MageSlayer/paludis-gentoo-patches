@@ -46,6 +46,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/select.h>
+#include <sys/ioctl.h>
 
 using namespace paludis;
 
@@ -561,6 +562,9 @@ Process::run()
     if (_imp->echo_command_to)
         _imp->command.echo_command_to(*_imp->echo_command_to);
 
+    bool set_tty_size_envvars(false);
+    unsigned short columns(80), lines(24);
+
     std::unique_ptr<RunningProcessThread> thread;
     if (_imp->need_thread)
     {
@@ -589,11 +593,39 @@ Process::run()
 
         thread->extra_newlines_if_any_output_exists = _imp->extra_newlines_if_any_output_exists;
 
+        if ((_imp->capture_stdout || _imp->capture_stderr) && _imp->use_ptys)
+        {
+            int tty(::open("/dev/tty", O_RDONLY | O_CLOEXEC));
+            if (-1 == tty)
+                Log::get_instance()->message("util.system.gwinsz.open_failed", ll_debug, lc_context)
+                    << "open(/dev/tty) failed: " + std::string(std::strerror(errno));
+            else
+            {
+                struct winsize ws;
+                if (-1 == ::ioctl(tty, TIOCGWINSZ, &ws))
+                    Log::get_instance()->message("util.system.gwinsz.ioctl_failed", ll_warning, lc_context)
+                        << "ioctl(TIOCGWINSZ) failed: " + std::string(std::strerror(errno));
+                else if (0 == ws.ws_col || 0 == ws.ws_row)
+                    Log::get_instance()->message("util.system.gwinsz.dodgy", ll_warning, lc_context)
+                        << "Got zero for terminal columns and/or lines (" << ws.ws_col << "x" << ws.ws_row << "), ignoring";
+                else
+                {
+                    columns = ws.ws_col;
+                    lines = ws.ws_row;
+                }
+                if (-1 == ::close(tty))
+                    throw InternalError(PALUDIS_HERE, "close(/dev/tty) failed: " + std::string(std::strerror(errno)));
+            }
+            Log::get_instance()->message("util.system.gwinsz", ll_debug, lc_context)
+                << "Terminal size is " << columns << "x" << lines;
+            set_tty_size_envvars = true;
+        }
+
         if (_imp->capture_stdout)
         {
             thread->capture_stdout = _imp->capture_stdout;
             if (_imp->use_ptys)
-                thread->capture_stdout_pipe.reset(new Pty(true));
+                thread->capture_stdout_pipe.reset(new Pty(true, columns, lines));
             else
                 thread->capture_stdout_pipe.reset(new Pipe(true));
         }
@@ -602,7 +634,7 @@ Process::run()
         {
             thread->capture_stderr = _imp->capture_stderr;
             if (_imp->use_ptys)
-                thread->capture_stderr_pipe.reset(new Pty(true));
+                thread->capture_stderr_pipe.reset(new Pty(true, columns, lines));
             else
                 thread->capture_stderr_pipe.reset(new Pipe(true));
         }
@@ -747,6 +779,12 @@ Process::run()
             {
                 if (-1 == ::dup2(_imp->set_stdin_fd, STDIN_FILENO))
                     throw ProcessError("dup2() failed");
+            }
+
+            if (set_tty_size_envvars)
+            {
+                ::setenv("COLUMNS", stringify(columns).c_str(), 1);
+                ::setenv("LINES", stringify(lines).c_str(), 1);
             }
 
             for (auto m(_imp->setenvs.begin()), m_end(_imp->setenvs.end()) ;

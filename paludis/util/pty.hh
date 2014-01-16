@@ -65,7 +65,7 @@ namespace paludis
         public Channel
     {
         private:
-            void _init(const bool);
+            void _init(const bool, const unsigned short columns, const unsigned short lines);
 
         public:
             ///\name Basic operations
@@ -73,6 +73,7 @@ namespace paludis
 
             Pty();
             explicit Pty(const bool close_exec);
+            explicit Pty(const bool close_exec, const unsigned short columns, const unsigned short lines);
 
             virtual ~Pty();
 

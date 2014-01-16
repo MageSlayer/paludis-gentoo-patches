@@ -26,6 +26,7 @@
 #include <errno.h>
 #include <cstring>
 #include <unistd.h>
+#include <sys/ioctl.h>
 #include "config.h"
 
 #ifdef HAVE_PTSNAME_R
@@ -41,16 +42,16 @@ PtyError::PtyError(const std::string & our_message) throw () :
 
 Pty::Pty()
 {
-    _init(false);
+    _init(false, 0, 0);
 }
 
-Pty::Pty(const bool close_exec)
+Pty::Pty(const bool close_exec, const unsigned short columns, const unsigned short lines)
 {
-    _init(close_exec);
+    _init(close_exec, columns, lines);
 }
 
 void
-Pty::_init(const bool close_exec)
+Pty::_init(const bool close_exec, const unsigned short columns, const unsigned short lines)
 {
     Context context("When creating pty FDs:");
 
@@ -100,6 +101,20 @@ Pty::_init(const bool close_exec)
 
     Log::get_instance()->message("util.pty.fds", ll_debug, lc_context) << "Pty FDs are '" << read_fd() << "', '"
         << write_fd() << "'";
+
+    if (0 != columns && 0 != lines)
+    {
+        struct winsize ws;
+        ws.ws_row = lines;
+        ws.ws_col = columns;
+        ws.ws_xpixel = ws.ws_ypixel = 0;
+        if (-1 == ioctl(_fds[1], TIOCSWINSZ, &ws))
+            Log::get_instance()->message("util.pty.swinsz.failed", ll_warning, lc_context)
+                << "ioctl(TIOCSWINSZ, { .ws_row = " << lines << ", .ws_col = " << columns << " }) failed: " + std::string(std::strerror(errno));
+        else
+            Log::get_instance()->message("util.pty.swinsz", ll_debug, lc_context)
+                << "Set Pty size to " << columns << "x" << lines;
+    }
 }
 
 Pty::~Pty()
