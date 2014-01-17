@@ -89,8 +89,6 @@ man_MANS_txts = $(man_MANS:.1=.txt)
 man_MANS_xmls = $(man_MANS_txts:.txt=.xml)
 man_MANS_html_man_fragments = $(man_MANS_txts:.txt=.html-man-fragment)
 
-command_MANS_txts = $(command_MANS:.1=.txt)
-command_MANS_xmls = $(command_MANS_txts:.txt=.xml)
 command_MANS_html_man_fragments = $(command_MANS_txts:.txt=.html-man-fragment)
 
 SUFFIXES = .1 .txt .xml .html-man-fragment
@@ -100,7 +98,7 @@ else
 
 noinst_PROGRAMS = man-cave
 
-$(command_MANS_txts) : man-cave
+$(man_MANS_txts) : man-cave
 	if ! env \
 	    CAVE_FORMATS_CONF="/dev/null" \
 	    CAVE_COMMANDS_PATH="" \
@@ -239,7 +237,6 @@ TESTS = \
 	continue_on_failure_TEST
 
 EXTRA_DIST = \
-	cave.txt \
 	$(man_MANS) \
 	$(man_MANS_html_man_fragments) \
 	$(TESTS) \
@@ -250,8 +247,8 @@ noinst_DATA = $(man_MANS_html_man_fragments)
 
 DISTCLEANFILES = \
 	$(man_MANS) \
-	$(command_MANS_txts) \
 	$(man_MANS_html_man_fragments) \
+	$(man_MANS_txts) \
 	$(man_MANS_xmls)
 
 lib_LTLIBRARIES =

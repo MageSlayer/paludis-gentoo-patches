@@ -488,7 +488,6 @@ tags
 /pkg-config/paludis.pc
 /src/clients/cave/cave
 /src/clients/cave/*.txt
-!/src/clients/cave/cave.txt
 /src/clients/cave/*.xml
 /src/clients/cave/*.html-man-fragment
 /stamp-h1
