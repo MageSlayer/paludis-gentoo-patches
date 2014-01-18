@@ -36,6 +36,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <thread>
+#include <mutex>
 
 #include <errno.h>
 #include <unistd.h>
@@ -606,8 +607,13 @@ Process::run()
                     Log::get_instance()->message("util.system.gwinsz.ioctl_failed", ll_warning, lc_context)
                         << "ioctl(TIOCGWINSZ) failed: " + std::string(std::strerror(errno));
                 else if (0 == ws.ws_col || 0 == ws.ws_row)
-                    Log::get_instance()->message("util.system.gwinsz.dodgy", ll_warning, lc_context)
-                        << "Got zero for terminal columns and/or lines (" << ws.ws_col << "x" << ws.ws_row << "), ignoring";
+                {
+                    static std::once_flag once;
+                    std::call_once(once, [&] () {
+                            Log::get_instance()->message("util.system.gwinsz.dodgy", ll_warning, lc_context)
+                                << "Got zero for terminal columns and/or lines (" << ws.ws_col << "x" << ws.ws_row << "), ignoring";
+                        });
+                }
                 else
                 {
                     columns = ws.ws_col;
