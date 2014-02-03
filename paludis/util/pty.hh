@@ -64,9 +64,6 @@ namespace paludis
     class PALUDIS_VISIBLE Pty :
         public Channel
     {
-        private:
-            void _init(const bool, const unsigned short columns, const unsigned short lines);
-
         public:
             ///\name Basic operations
             ///\{

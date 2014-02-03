@@ -40,18 +40,11 @@ PtyError::PtyError(const std::string & our_message) throw () :
 {
 }
 
-Pty::Pty()
+Pty::Pty() : Pty(false, 0, 0)
 {
-    _init(false, 0, 0);
 }
 
 Pty::Pty(const bool close_exec, const unsigned short columns, const unsigned short lines)
-{
-    _init(close_exec, columns, lines);
-}
-
-void
-Pty::_init(const bool close_exec, const unsigned short columns, const unsigned short lines)
 {
     Context context("When creating pty FDs:");
 
