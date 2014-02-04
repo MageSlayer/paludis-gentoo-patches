@@ -1171,7 +1171,7 @@ AC_MSG_RESULT($enable_python_doc)
 if test "x$enable_python_doc" = "xyes" ; then
 	AC_CHECK_PROGS(SPHINX_BUILD, [sphinx-build], [no])
 	if test "x$SPHINX_BUILD" = "xno" ; then
-		AC_MSG_ERROR([sphinx-build (http://sphinx-doc.com/) is needed to build Python documentation])
+		AC_MSG_ERROR([sphinx-build (http://sphinx-doc.org/) is needed to build Python documentation])
 	fi
 fi
 AM_CONDITIONAL([ENABLE_PYTHON_DOC], test "x$enable_python_doc" = "xyes")
