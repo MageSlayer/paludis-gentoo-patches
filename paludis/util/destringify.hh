@@ -151,19 +151,13 @@ namespace paludis
      *
      * \ingroup g_strings
      */
-    template <typename Type_, typename Exception_>
+    template <typename Type_, typename Exception_ = DestringifyError>
     Type_ destringify(const std::string & s)
     {
         if (s == "")
             throw Exception_("");
 
         return destringify_internals::Destringifier<Type_, Exception_>::do_destringify(s);
-    }
-
-    template <typename Type_>
-    Type_ destringify(const std::string & s)
-    {
-        return destringify<Type_, DestringifyError>(s);
     }
 }
 
