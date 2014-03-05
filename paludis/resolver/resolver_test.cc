@@ -96,6 +96,7 @@ ResolverTestData::ResolverTestData(const std::string & t, const std::string & e,
     make_unmaskable_filter_helper(&env),
     order_early_helper(&env),
     prefer_or_avoid_helper(&env),
+    promote_binaries_helper(&env),
     remove_hidden_helper(&env),
     remove_if_dependent_helper(&env),
     get_resolvents_for_helper(&env, std::cref(remove_hidden_helper))
@@ -186,6 +187,7 @@ ResolverTestData::get_resolver_functions()
             n::make_unmaskable_filter_fn() = std::cref(make_unmaskable_filter_helper),
             n::order_early_fn() = std::cref(order_early_helper),
             n::prefer_or_avoid_fn() = std::cref(prefer_or_avoid_helper),
+            n::promote_binaries_fn() = std::cref(promote_binaries_helper),
             n::remove_hidden_fn() = std::cref(remove_hidden_helper),
             n::remove_if_dependent_fn() = std::cref(remove_if_dependent_helper)
             );

@@ -91,6 +91,7 @@
 #include <paludis/resolver/remove_hidden_helper.hh>
 #include <paludis/resolver/remove_if_dependent_helper.hh>
 #include <paludis/resolver/prefer_or_avoid_helper.hh>
+#include <paludis/resolver/promote_binaries_helper.hh>
 
 #include <paludis/user_dep_spec.hh>
 #include <paludis/notifier_callback.hh>
@@ -1084,6 +1085,8 @@ paludis::cave::resolve_common(
         throw args::DoHelp("Don't understand argument '" + resolution_options.a_recommendations.argument() + "' to '--"
                 + resolution_options.a_recommendations.long_name() + "'");
 
+    PromoteBinariesHelper promote_binaries_helper(env.get());
+
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
                 n::allowed_to_remove_fn() = std::cref(allowed_to_remove_helper),
@@ -1107,6 +1110,7 @@ paludis::cave::resolve_common(
                 n::make_unmaskable_filter_fn() = std::cref(make_unmaskable_filter_helper),
                 n::order_early_fn() = std::cref(order_early_helper),
                 n::prefer_or_avoid_fn() = std::cref(prefer_or_avoid_helper),
+                n::promote_binaries_fn() = std::cref(promote_binaries_helper),
                 n::remove_hidden_fn() = std::cref(remove_hidden_helper),
                 n::remove_if_dependent_fn() = std::cref(remove_if_dependent_helper)
                 ));

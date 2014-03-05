@@ -1738,7 +1738,7 @@ Decider::_find_installable_id_candidates_for(
     Context context("When finding installable ID candidates for '" + stringify(package) + "':");
 
     return _imp->fns.remove_hidden_fn()(
-            (*_imp->env)[selection::AllVersionsSorted(
+            (*_imp->env)[_imp->fns.promote_binaries_fn()(
                 _imp->fns.make_origin_filtered_generator_fn()(generator::Package(package)) |
                 slot_filter |
                 destination_type_filter |

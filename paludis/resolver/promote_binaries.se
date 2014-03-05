@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et ft=sh :
+
+make_enum_PromoteBinaries()
+{
+    prefix pb
+    namespace paludis::resolver
+
+    # must be kept in strictness order
+    key pb_never               "Never"
+    key pb_if_same             "If it is the same"
+
+    want_destringify
+}

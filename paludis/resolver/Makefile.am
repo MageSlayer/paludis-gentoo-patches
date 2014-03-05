@@ -7,6 +7,7 @@ DISTCLEANFILES = \
 	destination_types-se.hh destination_types-se.cc \
 	job_requirements-se.hh job_requirements-se.cc \
 	nag-se.hh nag-se.cc \
+	promote_binaries-se.hh promote_binaries-se.cc \
 	resolver_functions-se.hh resolver_functions-se.cc \ \
 	use_existing-se.hh use_existing-se.cc
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
@@ -17,6 +18,7 @@ EXTRA_DIST = \
 	destination_types-se.hh destination_types-se.cc destination_types.se \
 	job_requirements-se.hh job_requirements-se.cc job_requirements.se \
 	nag-se.hh nag-se.cc nag.se \
+	promote_binaries-se.hh promote_binaries-se.cc promote_binaries.se \
 	resolver_functions-se.hh resolver_functions-se.cc resolver_functions.se \
 	use_existing-se.hh use_existing-se.cc use_existing.se \
 	$(check_SCRIPTS)
@@ -27,6 +29,7 @@ BUILT_SOURCES = \
 	destination_types-se.hh destination_types-se.cc \
 	nag-se.hh nag-se.cc \
 	job_requirements-se.hh job_requirements-se.cc \
+	promote_binaries-se.hh promote_binaries-se.cc \
 	resolver_functions-se.hh resolver_functions-se.cc \
 	use_existing-se.hh use_existing-se.cc
 
@@ -84,6 +87,8 @@ noinst_HEADERS = \
 	package_id_comparator_with_promotion.hh package_id_comparator_with_promotion-fwd.hh \
 	package_or_block_dep_spec.hh package_or_block_dep_spec-fwd.hh \
 	prefer_or_avoid_helper.hh prefer_or_avoid_helper-fwd.hh \
+	promote_binaries.hh promote_binaries-fwd.hh promote_binaries-se.hh \
+	promote_binaries_helper.hh \
 	reason.hh reason-fwd.hh \
 	reason_utils.hh reason_utils-fwd.hh \
 	remove_hidden_helper.hh remove_hidden_helper-fwd.hh \
@@ -159,6 +164,8 @@ libpaludisresolver_a_SOURCES = \
 	package_id_comparator_with_promotion.cc \
 	package_or_block_dep_spec.cc \
 	prefer_or_avoid_helper.cc \
+	promote_binaries.cc \
+	promote_binaries_helper.cc \
 	reason.cc \
 	reason_utils.cc \
 	remove_hidden_helper.cc \
@@ -433,4 +440,10 @@ decision-se.hh : decision.se $(top_srcdir)/misc/make_se.bash
 
 decision-se.cc : decision.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/decision.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+promote_binaries-se.hh : promote_binaries.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/promote_binaries.se > $@ ; then rm -f $@ ; exit 1 ; fi
+
+promote_binaries-se.cc : promote_binaries.se $(top_srcdir)/misc/make_se.bash
+	if ! $(top_srcdir)/misc/make_se.bash --source $(srcdir)/promote_binaries.se > $@ ; then rm -f $@ ; exit 1 ; fi
 

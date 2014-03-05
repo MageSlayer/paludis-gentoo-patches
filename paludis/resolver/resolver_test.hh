@@ -59,6 +59,7 @@
 #include <paludis/resolver/remove_hidden_helper.hh>
 #include <paludis/resolver/remove_if_dependent_helper.hh>
 #include <paludis/resolver/prefer_or_avoid_helper.hh>
+#include <paludis/resolver/promote_binaries_helper.hh>
 
 #include <paludis/repositories/fake/fake_installed_repository.hh>
 #include <paludis/repositories/fake/fake_package_id.hh>
@@ -114,6 +115,7 @@ namespace paludis
                 MakeUnmaskableFilterHelper make_unmaskable_filter_helper;
                 OrderEarlyHelper order_early_helper;
                 PreferOrAvoidHelper prefer_or_avoid_helper;
+                PromoteBinariesHelper promote_binaries_helper;
                 RemoveHiddenHelper remove_hidden_helper;
                 RemoveIfDependentHelper remove_if_dependent_helper;
                 GetResolventsForHelper get_resolvents_for_helper;

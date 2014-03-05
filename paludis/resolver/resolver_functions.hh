@@ -43,6 +43,7 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/generator-fwd.hh>
 #include <paludis/filtered_generator-fwd.hh>
+#include <paludis/selection-fwd.hh>
 
 #include <functional>
 
@@ -74,6 +75,7 @@ namespace paludis
         typedef Name<struct name_prefer_or_avoid_fn> prefer_or_avoid_fn;
         typedef Name<struct name_remove_hidden_fn> remove_hidden_fn;
         typedef Name<struct name_remove_if_dependent_fn> remove_if_dependent_fn;
+        typedef Name<struct name_promote_binaries_fn> promote_binaries_fn;
     }
 
     namespace resolver
@@ -194,6 +196,11 @@ namespace paludis
                 const std::shared_ptr<const PackageID> &
                 )> RemoveIfDependentFunction;
 
+
+        typedef std::function<Selection (
+                const FilteredGenerator &
+                )> PromoteBinariesFunction;
+
         struct ResolverFunctions
         {
             NamedValue<n::allow_choice_changes_fn, AllowChoiceChangesFunction> allow_choice_changes_fn;
@@ -221,6 +228,7 @@ namespace paludis
                 MakeUnmaskableFilterFunction> make_unmaskable_filter_fn;
             NamedValue<n::order_early_fn, OrderEarlyFunction> order_early_fn;
             NamedValue<n::prefer_or_avoid_fn, PreferOrAvoidFunction> prefer_or_avoid_fn;
+            NamedValue<n::promote_binaries_fn, PromoteBinariesFunction> promote_binaries_fn;
             NamedValue<n::remove_hidden_fn, RemoveHiddenFunction> remove_hidden_fn;
             NamedValue<n::remove_if_dependent_fn, RemoveIfDependentFunction> remove_if_dependent_fn;
         };
