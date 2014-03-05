@@ -85,6 +85,14 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
     a_no_restarts_for(&g_resolution_options, "no-restarts-for", '\0',
             "Do not restart if the problematic package has the specified package name. May be specified "
             "multiple times. Use '*/*' to avoid all restarts."),
+    a_promote_binaries(&g_resolution_options, "promote-binaries", '\0',
+            "Select when to promote packages from binary repositories",
+            args::EnumArg::EnumArgOptions
+            ("never",                 'n', "Never")
+            ("if-same",               's', "If it has the same version and exactly matching use flags"),
+
+            "never"
+            ),
 
     g_dependent_options(this, "Dependent Options", "Dependent options. A package is dependent if it "
             "requires (or looks like it might require) a package which is being removed. By default, "

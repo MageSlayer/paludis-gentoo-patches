@@ -1086,6 +1086,13 @@ paludis::cave::resolve_common(
                 + resolution_options.a_recommendations.long_name() + "'");
 
     PromoteBinariesHelper promote_binaries_helper(env.get());
+    if (resolution_options.a_promote_binaries.argument() == "never")
+        promote_binaries_helper.set_promote_binaries(pb_never);
+    else if (resolution_options.a_promote_binaries.argument() == "if-same")
+        promote_binaries_helper.set_promote_binaries(pb_if_same);
+    else
+        throw args::DoHelp("Don't understand argument '" + resolution_options.a_promote_binaries.argument() + "' to '--"
+                + resolution_options.a_promote_binaries.long_name() + "'");
 
     ResolverFunctions resolver_functions(make_named_values<ResolverFunctions>(
                 n::allow_choice_changes_fn() = std::cref(allow_choice_changes_helper),
