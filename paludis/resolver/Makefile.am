@@ -81,6 +81,7 @@ noinst_HEADERS = \
 	order_early_helper.hh order_early_helper-fwd.hh \
 	orderer.hh orderer-fwd.hh \
 	orderer_notes.hh orderer_notes-fwd.hh \
+	package_id_comparator_with_promotion.hh package_id_comparator_with_promotion-fwd.hh \
 	package_or_block_dep_spec.hh package_or_block_dep_spec-fwd.hh \
 	prefer_or_avoid_helper.hh prefer_or_avoid_helper-fwd.hh \
 	reason.hh reason-fwd.hh \
@@ -96,6 +97,7 @@ noinst_HEADERS = \
 	resolver_functions.hh resolver_functions-fwd.hh \
 	same_slot.hh same_slot-fwd.hh \
 	sanitised_dependencies.hh sanitised_dependencies-fwd.hh \
+	selection_with_promotion.hh selection_with_promotion-fwd.hh \
 	slot_name_or_null.hh slot_name_or_null-fwd.hh \
 	strongly_connected_component.hh strongly_connected_component-fwd.hh \
 	suggest_restart.hh suggest_restart-fwd.hh \
@@ -154,6 +156,7 @@ libpaludisresolver_a_SOURCES = \
 	order_early_helper.cc \
 	orderer.cc \
 	orderer_notes.cc \
+	package_id_comparator_with_promotion.cc \
 	package_or_block_dep_spec.cc \
 	prefer_or_avoid_helper.cc \
 	reason.cc \
@@ -169,6 +172,7 @@ libpaludisresolver_a_SOURCES = \
 	resolver_functions.cc \
 	same_slot.cc \
 	sanitised_dependencies.cc \
+	selection_with_promotion.cc \
 	slot_name_or_null.cc \
 	strongly_connected_component.cc \
 	suggest_restart.cc \

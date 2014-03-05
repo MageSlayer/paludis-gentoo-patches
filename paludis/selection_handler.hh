@@ -30,7 +30,7 @@
 
 namespace paludis
 {
-    class SelectionHandler
+    class PALUDIS_VISIBLE SelectionHandler
     {
         protected:
             const FilteredGenerator _fg;
