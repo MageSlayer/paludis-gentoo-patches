@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -50,7 +50,7 @@ namespace paludis
                 void add_prefer_matching(const std::shared_ptr<const PackageIDSequence> &);
                 void add_avoid_matching(const std::shared_ptr<const PackageIDSequence> &);
 
-                Tribool operator() (const PackageDepSpec &) const;
+                Tribool operator() (const PackageDepSpec &, const std::shared_ptr<const PackageID> &) const;
         };
     }
 

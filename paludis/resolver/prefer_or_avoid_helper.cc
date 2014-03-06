@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -81,7 +81,7 @@ PreferOrAvoidHelper::add_avoid_matching(const std::shared_ptr<const PackageIDSeq
 }
 
 Tribool
-PreferOrAvoidHelper::operator() (const PackageDepSpec & s) const
+PreferOrAvoidHelper::operator() (const PackageDepSpec & s, const std::shared_ptr<const PackageID> & id) const
 {
     if (s.package_ptr())
     {
@@ -97,7 +97,7 @@ PreferOrAvoidHelper::operator() (const PackageDepSpec & s) const
     {
         bool all(true);
         for (auto q((*p)->begin()), q_end((*p)->end()) ; q != q_end ; ++q)
-            if (! match_package(*_imp->env, s, *q, nullptr, { }))
+            if (! match_package(*_imp->env, s, *q, id, { }))
             {
                 all = false;
                 break;
@@ -111,7 +111,7 @@ PreferOrAvoidHelper::operator() (const PackageDepSpec & s) const
             p != p_end ; ++p)
     {
         for (auto q((*p)->begin()), q_end((*p)->end()) ; q != q_end ; ++q)
-            if (match_package(*_imp->env, s, *q, nullptr, { }))
+            if (match_package(*_imp->env, s, *q, id, { }))
                 return false;
     }
 

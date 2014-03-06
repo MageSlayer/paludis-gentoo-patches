@@ -1235,7 +1235,7 @@ Decider::find_any_score(
     /* explicit preferences come first */
     if (spec.package_ptr())
     {
-        Tribool prefer_or_avoid(_imp->fns.prefer_or_avoid_fn()(spec));
+        Tribool prefer_or_avoid(_imp->fns.prefer_or_avoid_fn()(spec, our_id));
         if (prefer_or_avoid.is_true())
             return std::make_pair(is_block ? acs_avoid : acs_prefer, operator_bias);
         else if (prefer_or_avoid.is_false())
