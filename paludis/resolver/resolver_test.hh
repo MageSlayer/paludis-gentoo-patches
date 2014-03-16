@@ -137,7 +137,7 @@ namespace paludis
             {
                 std::shared_ptr<Repository> bin_repo;
 
-                ResolverWithBinaryTestData(const std::string & group, const std::string & eapi, const std::string & layout);
+                ResolverWithBinaryTestData(const std::string & group, const std::string & eapi, const std::string & layout, bool unimportant = false);
             };
 
             struct ResolverTestCase :
