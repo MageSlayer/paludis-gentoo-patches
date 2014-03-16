@@ -201,7 +201,8 @@ TESTS = \
 	resolver_TEST_uninstalls \
 	resolver_TEST_fetches \
 	resolver_TEST_purges \
-	resolver_TEST_binaries
+	resolver_TEST_binaries \
+	resolver_TEST_promote_binaries
 
 check_PROGRAMS = $(TESTS)
 
@@ -217,7 +218,8 @@ check_SCRIPTS = \
 	resolver_TEST_uninstalls_setup.sh resolver_TEST_uninstalls_cleanup.sh \
 	resolver_TEST_fetches_setup.sh resolver_TEST_fetches_cleanup.sh \
 	resolver_TEST_purges_setup.sh resolver_TEST_purges_cleanup.sh \
-	resolver_TEST_binaries_setup.sh resolver_TEST_binaries_cleanup.sh
+	resolver_TEST_binaries_setup.sh resolver_TEST_binaries_cleanup.sh \
+	resolver_TEST_promote_binaries_setup.sh resolver_TEST_promote_binaries_cleanup.sh
 
 check_LIBRARIES = libpaludisresolvertest.a
 
@@ -392,6 +394,20 @@ resolver_TEST_binaries_LDADD = \
 resolver_TEST_binaries_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
 
 resolver_TEST_binaries_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
+
+resolver_TEST_promote_binaries_SOURCES = resolver_TEST_promote_binaries.cc
+
+resolver_TEST_promote_binaries_LDADD = \
+	libpaludisresolvertest.a \
+	$(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	libpaludisresolver.a \
+	$(DYNAMIC_LD_LIBS)
+
+resolver_TEST_promote_binaries_CXXFLAGS = $(AM_CXXFLAGS) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
+
+resolver_TEST_promote_binaries_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
 use_existing-se.hh : use_existing.se $(top_srcdir)/misc/make_se.bash
 	if ! $(top_srcdir)/misc/make_se.bash --header $(srcdir)/use_existing.se > $@ ; then rm -f $@ ; exit 1 ; fi

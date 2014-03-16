@@ -368,6 +368,7 @@ tags
 /paludis/resolver/resolver_TEST_cycles
 /paludis/resolver/resolver_TEST_errors
 /paludis/resolver/resolver_TEST_fetches
+/paludis/resolver/resolver_TEST_promote_binaries
 /paludis/resolver/resolver_TEST_purges
 /paludis/resolver/resolver_TEST_serialisation
 /paludis/resolver/resolver_TEST_simple
