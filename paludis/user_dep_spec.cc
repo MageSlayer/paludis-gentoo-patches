@@ -33,6 +33,7 @@
 #include <paludis/repository.hh>
 #include <paludis/mask.hh>
 #include <paludis/slot.hh>
+#include <paludis/match_package.hh>
 
 #include <paludis/util/options.hh>
 #include <paludis/util/log.hh>
@@ -132,7 +133,7 @@ namespace
     }
 
     bool user_remove_trailing_square_bracket_if_exists(std::string & s, PartiallyMadePackageDepSpec & result,
-            bool & had_bracket_version_requirements)
+            bool & had_bracket_version_requirements, const Environment * const env)
     {
         std::string::size_type use_group_p;
         if (std::string::npos == ((use_group_p = s.rfind('['))))
@@ -221,8 +222,24 @@ namespace
 
             case '.':
                 {
-                    std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(std::make_shared<UserKeyRequirement>(flag.substr(1)));
-                    result.additional_requirement(req);
+                    std::string exclude(".!exclude=");
+                    if (0 == flag.compare(0, exclude.size(), exclude))
+                    {
+                        flag.erase(0, exclude.size());
+
+                        Context cc("When parsing exclude requirement '" + flag + "':");
+                        if (!env) throw PackageDepSpecError("Environment is null");
+
+                        std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(std::make_shared<ExcludeRequirement>(
+                            parse_user_package_dep_spec(flag, env, { updso_allow_wildcards })
+                            ));
+                        result.additional_requirement(req);
+                    }
+                    else
+                    {
+                        std::shared_ptr<const AdditionalPackageDepSpecRequirement> req(std::make_shared<UserKeyRequirement>(flag.substr(1)));
+                        result.additional_requirement(req);
+                    }
                 }
                 break;
 
@@ -362,7 +379,7 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
             n::remove_trailing_repo_if_exists() = std::bind(&user_remove_trailing_repo_if_exists, _1, _2),
             n::remove_trailing_slot_if_exists() = std::bind(&user_remove_trailing_slot_if_exists, _1, _2),
             n::remove_trailing_square_bracket_if_exists() = std::bind(&user_remove_trailing_square_bracket_if_exists,
-                    _1, _2, std::ref(had_bracket_version_requirements))
+                    _1, _2, std::ref(had_bracket_version_requirements), env)
             ));
 }
 
@@ -390,7 +407,7 @@ paludis::envless_parse_package_dep_spec_for_tests(const std::string & ss)
             n::remove_trailing_repo_if_exists() = std::bind(&user_remove_trailing_repo_if_exists, _1, _2),
             n::remove_trailing_slot_if_exists() = std::bind(&user_remove_trailing_slot_if_exists, _1, _2),
             n::remove_trailing_square_bracket_if_exists() = std::bind(&user_remove_trailing_square_bracket_if_exists,
-                    _1, _2, std::ref(had_bracket_version_requirements))
+                    _1, _2, std::ref(had_bracket_version_requirements), nullptr)
             ));
 }
 
@@ -1143,6 +1160,51 @@ UserKeyRequirement::as_raw_string() const
 
 Tribool
 UserKeyRequirement::accumulate_changes_to_make_met(
+        const Environment * const,
+        const ChangedChoices * const,
+        const std::shared_ptr<const PackageID> &,
+        const std::shared_ptr<const PackageID> &,
+        ChangedChoices &) const
+{
+    return false;
+}
+
+ExcludeRequirement::ExcludeRequirement(const PackageDepSpec & s) :
+    _s(s)
+{
+}
+
+ExcludeRequirement::~ExcludeRequirement()
+{
+}
+
+const std::pair<bool, std::string>
+ExcludeRequirement::requirement_met(
+        const Environment * const env,
+        const ChangedChoices * const,
+        const std::shared_ptr<const PackageID> & id,
+        const std::shared_ptr<const PackageID> & from_id,
+        const ChangedChoices * const) const
+{
+    Context context("When working out whether '" + stringify(*id) + "' matches " + as_raw_string() + ":");
+
+    return std::make_pair(!match_package(*env, _s, id, from_id, { }), as_human_string(from_id));
+}
+
+const std::string
+ExcludeRequirement::as_human_string(const std::shared_ptr<const PackageID> &) const
+{
+    return "Exclude packages matching " + stringify(_s);
+}
+
+const std::string
+ExcludeRequirement::as_raw_string() const
+{
+    return "[.!exclude=" + stringify(_s) + "]";
+}
+
+Tribool
+ExcludeRequirement::accumulate_changes_to_make_met(
         const Environment * const,
         const ChangedChoices * const,
         const std::shared_ptr<const PackageID> &,

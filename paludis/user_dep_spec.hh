@@ -127,6 +127,45 @@ namespace paludis
     };
 
     extern template class Pimp<UserKeyRequirement>;
+
+    /**
+     * An exclude requirement for a PackageDepSpec.
+     *
+     * \ingroup g_dep_spec
+     */
+    class PALUDIS_VISIBLE ExcludeRequirement :
+        public AdditionalPackageDepSpecRequirement
+    {
+        private:
+            PackageDepSpec _s;
+
+        public:
+            ///\name Basic operations
+            ///\{
+
+            ExcludeRequirement(const PackageDepSpec &);
+            ~ExcludeRequirement();
+
+            ///\}
+
+            virtual const std::pair<bool, std::string> requirement_met(
+                    const Environment * const, const ChangedChoices *,
+                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> &,
+                    const ChangedChoices * const) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual Tribool accumulate_changes_to_make_met(
+                    const Environment * const,
+                    const ChangedChoices * const,
+                    const std::shared_ptr<const PackageID> &,
+                    const std::shared_ptr<const PackageID> &,
+                    ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+    };
 }
 
 #endif

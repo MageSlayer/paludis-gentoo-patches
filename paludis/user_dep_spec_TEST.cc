@@ -507,3 +507,79 @@ TEST_F(UserDepSpecTest, Keys)
     EXPECT_TRUE(match_package(env, x, pkg1, nullptr, { }));
 }
 
+TEST_F(UserDepSpecTest, Exclude)
+{
+    TestEnvironment env;
+    std::shared_ptr<FakeRepository> repo1(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo1"))));
+    env.add_repository(1, repo1);
+
+    std::shared_ptr<FakeRepository> repo2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                    n::environment() = &env,
+                    n::name() = RepositoryName("repo2"))));
+    env.add_repository(1, repo2);
+
+    std::shared_ptr<FakePackageID> cat1_pkg1_repo1(repo1->add_version("cat1", "pkg1", "1"));
+    std::shared_ptr<FakePackageID> cat1_pkg2_repo1(repo1->add_version("cat1", "pkg2", "1"));
+    std::shared_ptr<FakePackageID> cat2_pkg1_repo1(repo1->add_version("cat2", "pkg1", "1"));
+    std::shared_ptr<FakePackageID> cat2_pkg2_repo1(repo1->add_version("cat2", "pkg2", "1"));
+
+    std::shared_ptr<FakePackageID> cat1_pkg1_repo2(repo2->add_version("cat1", "pkg1", "2"));
+    std::shared_ptr<FakePackageID> cat1_pkg2_repo2(repo2->add_version("cat1", "pkg2", "2"));
+    std::shared_ptr<FakePackageID> cat2_pkg1_repo2(repo2->add_version("cat2", "pkg1", "2"));
+    std::shared_ptr<FakePackageID> cat2_pkg2_repo2(repo2->add_version("cat2", "pkg2", "2"));
+
+    {
+        PackageDepSpec spec(parse_user_package_dep_spec("cat1/*[.!exclude=*/pkg1]", &env, { updso_allow_wildcards }));
+        EXPECT_TRUE(! match_package(env, spec, cat1_pkg1_repo1, nullptr, { }));
+        EXPECT_TRUE(match_package(env, spec, cat1_pkg2_repo1, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat2_pkg1_repo1, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat2_pkg2_repo1, nullptr, { }));
+
+        EXPECT_TRUE(! match_package(env, spec, cat1_pkg1_repo2, nullptr, { }));
+        EXPECT_TRUE(match_package(env, spec, cat1_pkg2_repo2, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat2_pkg1_repo2, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat2_pkg2_repo2, nullptr, { }));
+    }
+
+    {
+        PackageDepSpec spec(parse_user_package_dep_spec("*/*[.!exclude=*/pkg1][.!exclude=*/*::repo1]", &env, { updso_allow_wildcards }));
+        EXPECT_TRUE(! match_package(env, spec, cat1_pkg1_repo1, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat1_pkg2_repo1, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat2_pkg1_repo1, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat2_pkg2_repo1, nullptr, { }));
+
+        EXPECT_TRUE(! match_package(env, spec, cat1_pkg1_repo2, nullptr, { }));
+        EXPECT_TRUE(match_package(env, spec, cat1_pkg2_repo2, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat2_pkg1_repo2, nullptr, { }));
+        EXPECT_TRUE(match_package(env, spec, cat2_pkg2_repo2, nullptr, { }));
+    }
+
+    {
+        PackageDepSpec spec(parse_user_package_dep_spec("cat1/*[.!exclude=>*/pkg1-1]", &env, { updso_allow_wildcards }));
+        EXPECT_TRUE(match_package(env, spec, cat1_pkg1_repo1, nullptr, { }));
+        EXPECT_TRUE(match_package(env, spec, cat1_pkg2_repo1, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat2_pkg1_repo1, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat2_pkg2_repo1, nullptr, { }));
+
+        EXPECT_TRUE(! match_package(env, spec, cat1_pkg1_repo2, nullptr, { }));
+        EXPECT_TRUE(match_package(env, spec, cat1_pkg2_repo2, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat2_pkg1_repo2, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat2_pkg2_repo2, nullptr, { }));
+    }
+
+    {
+        PackageDepSpec spec(parse_user_package_dep_spec("*/*[.!exclude=*/*]", &env, { updso_allow_wildcards }));
+        EXPECT_TRUE(! match_package(env, spec, cat1_pkg1_repo1, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat1_pkg2_repo1, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat2_pkg1_repo1, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat2_pkg2_repo1, nullptr, { }));
+
+        EXPECT_TRUE(! match_package(env, spec, cat1_pkg1_repo2, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat1_pkg2_repo2, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat2_pkg1_repo2, nullptr, { }));
+        EXPECT_TRUE(! match_package(env, spec, cat2_pkg2_repo2, nullptr, { }));
+    }
+}
+

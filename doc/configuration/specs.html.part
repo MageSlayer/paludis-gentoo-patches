@@ -50,6 +50,11 @@ the following order:</p>
     for numeric values a greater-than comparison is used; it does not match for other types of values. If <code>!=</code>
     is used for simple values, a not-equal comparison is used. As above, the key may be a raw name or a dollar-prefixed
     role name, and may be prefixed with <code>::</code> for checking repository metadata.</li>
+
+    <li><code>[.!exclude=spec]</code>: Exclude packages matching <code>spec</code>. The main restriction on <code>spec</code>
+    is that it may not include the <code>[]</code> brackets. Following are some of the examples of valid exclude
+    requirements: <code>[.!exclude=cat/pkg]</code> or <code>[.!exclude=virtual/*]</code> or <code>[.!exclude=*/*::repo]</code> or
+    <code>[.!exclude=>=cat/pkg-5::repo]</code> or <code>[.!exclude=>=cat/pkg-1][.!exclude=&lt;cat/pkg-2]</code>.
 </ul>
 
 <p>Repository requirements are in the form <code>to</code>, <code>from-&gt;</code> or <code>::from-&gt;to</code>. The
