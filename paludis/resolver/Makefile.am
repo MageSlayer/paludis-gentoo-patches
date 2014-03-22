@@ -10,7 +10,9 @@ DISTCLEANFILES = \
 	promote_binaries-se.hh promote_binaries-se.cc \
 	resolver_functions-se.hh resolver_functions-se.cc \ \
 	use_existing-se.hh use_existing-se.cc
+
 AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
+
 EXTRA_DIST = \
 	any_child_score-se.hh any_child_score-se.cc any_child_score.se \
 	change_type-se.hh change_type-se.cc change_type.se \
@@ -22,6 +24,7 @@ EXTRA_DIST = \
 	resolver_functions-se.hh resolver_functions-se.cc resolver_functions.se \
 	use_existing-se.hh use_existing-se.cc use_existing.se \
 	$(check_SCRIPTS)
+
 BUILT_SOURCES = \
 	any_child_score-se.hh any_child_score-se.cc \
 	change_type-se.hh change_type-se.cc \
@@ -202,7 +205,11 @@ TESTS = \
 	resolver_TEST_fetches \
 	resolver_TEST_purges \
 	resolver_TEST_binaries \
-	resolver_TEST_promote_binaries
+	$(if_pbin_TESTS)
+
+if ENABLE_PBINS
+if_pbin_TESTS = resolver_TEST_promote_binaries
+endif
 
 check_PROGRAMS = $(TESTS)
 
