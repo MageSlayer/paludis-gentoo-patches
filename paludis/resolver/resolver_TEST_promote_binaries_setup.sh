@@ -12,7 +12,7 @@ mkdir -p binrepo/{profiles/profile,metadata,packages}
 
 cd binrepo
 echo "binrepo" > profiles/repo_name
-: > metadata/categories.conf
+:> metadata/categories.conf
 cd ..
 
 mkdir -p repo/{profiles/profile,metadata,packages}

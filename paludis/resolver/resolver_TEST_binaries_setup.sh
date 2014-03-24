@@ -12,7 +12,7 @@ mkdir -p binrepo/{profiles/profile,metadata}
 
 cd binrepo
 echo "binrepo" > profiles/repo_name
-: > metadata/categories.conf
+:> metadata/categories.conf
 
 cd ..
 
@@ -20,7 +20,7 @@ mkdir -p repo/{profiles/profile,metadata}
 
 cd repo
 echo "repo" > profiles/repo_name
-: > metadata/categories.conf
+:> metadata/categories.conf
 
 # self-build-binary
 echo 'self-build-binary' >> metadata/categories.conf

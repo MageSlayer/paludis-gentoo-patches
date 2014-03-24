@@ -12,7 +12,7 @@ mkdir -p repo/{profiles/profile,metadata}
 
 cd repo
 echo "repo" > profiles/repo_name
-: > metadata/categories.conf
+:> metadata/categories.conf
 
 # purges
 echo 'purges' >> metadata/categories.conf

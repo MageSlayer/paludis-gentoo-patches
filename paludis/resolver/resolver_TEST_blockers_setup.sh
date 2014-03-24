@@ -12,9 +12,9 @@ mkdir -p repo/{profiles/profile,metadata}
 
 cd repo
 echo "repo" > profiles/repo_name
-: > metadata/categories.conf
+:> metadata/categories.conf
 
-: > profiles/categories
+:> profiles/categories
 cat <<'END' > profiles/profile/make.defaults
 ARCH=test
 END
