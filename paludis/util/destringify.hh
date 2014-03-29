@@ -121,15 +121,7 @@ namespace paludis
                 else if (s == "false")
                     return false;
                 else
-                {
-                    std::istringstream ss(s);
-                    int i;
-                    ss >> i;
-                    if (ss.eof() && ! ss.bad())
-                        return i > 0;
-                    else
-                        throw Exception_(s);
-                }
+                    return Destringifier<int, Exception_>::do_destringify(s) > 0;
             }
         };
 
