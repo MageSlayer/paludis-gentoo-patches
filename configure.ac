@@ -5,6 +5,8 @@ AC_PREREQ([2.65])
 AC_INIT
 AC_CONFIG_SRCDIR([paludis/paludis.hh])
 AC_CONFIG_AUX_DIR(config)
+AC_CANONICAL_BUILD
+AC_CANONICAL_HOST
 
 VERSION_MAJOR=1
 VERSION_MINOR=99
@@ -754,8 +756,8 @@ dnl }}}
 
 dnl {{{ asciidoc & xmlto
 AC_MSG_CHECKING([whether we are cross-compiling])
-if test "x$target" != "x" && test "x$host" != "x$target" ; then
-	AC_MSG_RESULT([yes, host $host target $target])
+if test "x$host" != "x$build" ; then
+	AC_MSG_RESULT([yes, build $build, host $host])
 	USE_PREBUILT_DOCUMENTATION=yes
 else
 	AC_MSG_RESULT([no])
