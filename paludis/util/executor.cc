@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011, 2012, 2013 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2012, 2013, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -26,6 +26,7 @@
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include <iostream>
 
 using namespace paludis;
 
@@ -74,11 +75,20 @@ Executor::~Executor()
 void
 Executor::_one(const std::shared_ptr<Executive> executive)
 {
-    executive->execute_threaded();
+    try
+    {
+        executive->execute_threaded();
 
-    std::unique_lock<std::mutex> lock(_imp->mutex);
-    _imp->ready_for_post.push_back(executive);
-    _imp->condition.notify_all();
+        std::unique_lock<std::mutex> lock(_imp->mutex);
+        _imp->ready_for_post.push_back(executive);
+        _imp->condition.notify_all();
+    }
+    catch (const std::exception & e)
+    {
+        std::cerr << "Things are about go to horribly wrong. Got an exception inside executor: "
+            << e.what() << std::endl;
+        throw;
+    }
 }
 
 

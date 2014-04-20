@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011, 2012, 2013 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2012, 2013, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -231,9 +231,18 @@ namespace
 
     void serialise_resolved(StringListStream & ser_stream, const Resolved & resolved)
     {
-        Serialiser ser(ser_stream);
-        resolved.serialise(ser);
-        ser_stream.nothing_more_to_write();
+        try
+        {
+            Serialiser ser(ser_stream);
+            resolved.serialise(ser);
+            ser_stream.nothing_more_to_write();
+        }
+        catch (const std::exception & e)
+        {
+            std::cerr << "Things are about go to horribly wrong. Got an exception whilst serialising: "
+                << e.what() << std::endl;
+            throw;
+        }
     }
 
     int display_resolution(
