@@ -261,52 +261,62 @@ namespace
                     std::ref(ser_stream),
                     std::cref(*resolved)));
 
-        std::shared_ptr<Sequence<std::string> > args(std::make_shared<Sequence<std::string>>());
-
-        for (args::ArgsSection::GroupsConstIterator g(display_options.begin()), g_end(display_options.end()) ;
-                g != g_end ; ++g)
-        {
-            for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
-                    o != o_end ; ++o)
-                if ((*o)->specified())
-                {
-                    const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
-                    std::copy(f->begin(), f->end(), args->back_inserter());
-                }
-        }
-
-        for (Sequence<std::pair<std::string, std::string> >::ConstIterator p(targets->begin()), p_end(targets->end()) ;
-                p != p_end ; ++p)
-            args->push_back(p->first);
-
         int result;
-        if (program_options.a_display_resolution_program.specified())
+
+        try
         {
-            std::string command(program_options.a_display_resolution_program.argument());
+            std::shared_ptr<Sequence<std::string> > args(std::make_shared<Sequence<std::string>>());
 
-            if (keys_if_import)
-                for (Map<std::string, std::string>::ConstIterator k(keys_if_import->begin()),
-                        k_end(keys_if_import->end()) ;
-                        k != k_end ; ++k)
-                {
-                    args->push_back("--unpackaged-repository-params");
-                    args->push_back(k->first + "=" + k->second);
-                }
+            for (args::ArgsSection::GroupsConstIterator g(display_options.begin()), g_end(display_options.end()) ;
+                    g != g_end ; ++g)
+            {
+                for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
+                        o != o_end ; ++o)
+                    if ((*o)->specified())
+                    {
+                        const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                        std::copy(f->begin(), f->end(), args->back_inserter());
+                    }
+            }
 
-            for (Sequence<std::string>::ConstIterator a(args->begin()), a_end(args->end()) ;
-                    a != a_end ; ++a)
-                command = command + " " + args::escape(*a);
+            for (Sequence<std::pair<std::string, std::string> >::ConstIterator p(targets->begin()), p_end(targets->end()) ;
+                    p != p_end ; ++p)
+                args->push_back(p->first);
 
-            Process process((ProcessCommand(command)));
-            process
-                .send_input_to_fd(ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
+            if (program_options.a_display_resolution_program.specified())
+            {
+                std::string command(program_options.a_display_resolution_program.argument());
 
-            result = process.run().wait();
+                if (keys_if_import)
+                    for (Map<std::string, std::string>::ConstIterator k(keys_if_import->begin()),
+                            k_end(keys_if_import->end()) ;
+                            k != k_end ; ++k)
+                    {
+                        args->push_back("--unpackaged-repository-params");
+                        args->push_back(k->first + "=" + k->second);
+                    }
+
+                for (Sequence<std::string>::ConstIterator a(args->begin()), a_end(args->end()) ;
+                        a != a_end ; ++a)
+                    command = command + " " + args::escape(*a);
+
+                Process process((ProcessCommand(command)));
+                process
+                    .send_input_to_fd(ser_stream, -1, "PALUDIS_SERIALISED_RESOLUTION_FD");
+
+                result = process.run().wait();
+            }
+            else
+                result = DisplayResolutionCommand().run(env, args, resolved);
+
+            ser_thread.join();
         }
-        else
-            result = DisplayResolutionCommand().run(env, args, resolved);
+        catch (...)
+        {
+            ser_thread.join();
+            throw;
+        }
 
-        ser_thread.join();
         return result;
     }
 
