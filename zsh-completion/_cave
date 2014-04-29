@@ -178,7 +178,7 @@ _cave_cmd_execute-resolution()
     '--removed-if-dependent-names[If nothing is left with the specified name, also remove it from world]' \
     '(--preserve-world -1 --no-preserve-world +1)'{--preserve-world,-1,--no-preserve-world,+1}'[Do not modify the world set]' \
     '(--continue-on-failure -C)'{--continue-on-failure,-C}'[Whether to continue after an error occurs]:When:((never n if-satisfied s if-independent i always a))' \
-    '--resume-file[Write resume information to the specified file]' \
+    '--resume-file[Write resume information to the specified file]:file:_files' \
     '(--fetch -f --no-fetch +f)'{--fetch,-f,--no-fetch,+f}'[Skip any jobs that are not fetch jobs]' \
     '(--fetch-jobs -J)'{--fetch-jobs,-J}'[The number of parallel fetch jobs to launch]' \
     '*--skip-phase[Skip the named phases]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
@@ -743,7 +743,7 @@ _cave_resolve_arguments=(
     '(--dump-restarts --no-dump-restarts)'{--dump-restarts,--no-dump-restarts}'[Dump restarts]' \
     '(--preserve-world -1 --no-preserve-world +1)'{--preserve-world,-1,--no-preserve-world,+1}'[Do not modify the world set]' \
     '(--continue-on-failure -C)'{--continue-on-failure,-C}'[Whether to continue after an error occurs]:When:((never n if-satisfied s if-independent i always a))' \
-    '--resume-file[Write resume information to the specified file]' \
+    '--resume-file[Write resume information to the specified file]:file:_files' \
     '(--fetch -f --no-fetch +f)'{--fetch,-f,--no-fetch,+f}'[Skip any jobs that are not fetch jobs]' \
     '(--fetch-jobs -J)'{--fetch-jobs,-J}'[The number of parallel fetch jobs to launch]' \
     '*--skip-phase[Skip the named phases]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
@@ -790,7 +790,7 @@ _cave_cmd_resume()
     '(--retry-skipped -R --no-retry-skipped +R)'{--retry-skipped,-R,--no-retry-skipped,+R}'[Retry any job that has already been skipped]' \
     '(--skip-failed -s --no-skip-failed +s)'{--skip-failed,-s,--no-skip-failed,+s}'[Skip any job that has already failed]' \
     '(--continue-on-failure -C)'{--continue-on-failure,-C}'[Whether to continue after an error occurs]:When:((never n if-satisfied s if-independent i always a))' \
-    '--resume-file[Write resume information to the specified file]' \
+    '--resume-file[Write resume information to the specified file]:file:_files' \
     '(--fetch -f --no-fetch +f)'{--fetch,-f,--no-fetch,+f}'[Skip any jobs that are not fetch jobs]' \
     '(--fetch-jobs -J)'{--fetch-jobs,-J}'[The number of parallel fetch jobs to launch]' \
     '*--skip-phase[Skip the named phases]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
