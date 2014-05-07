@@ -422,25 +422,10 @@ AC_PREPROC_IFELSE([AC_LANG_SOURCE([
 	],
 	[AC_MSG_RESULT([no])])
 
-AC_MSG_CHECKING([whether we want -std=gnu++0x])
-AC_PREPROC_IFELSE([AC_LANG_SOURCE([
-#ifndef __GNUC__
-#  error not gcc
-#endif
-
-#if __GNUC__ != 4
-#  error not gcc 4
-#endif
-
-#if __GNUC_MINOR__ != 4 && __GNUC_MINOR__ != 5 && __GNUC_MINOR__ != 6 && __GNUC_MINOR__ != 7 && __GNUC_MINOR__ != 8
-#  error not gcc 4.4 to 4.8
-#endif
-])],
-	[AC_MSG_RESULT([yes])
-	PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -std=gnu++0x"
-	PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -std=gnu++0x"
-	],
-	[AC_MSG_RESULT([no])])
+CHECK_CXXFLAG([-std=c++11])
+if test x"$cxxflag_success" = x"no" ; then
+	CHECK_CXXFLAG([-std=c++0x])
+fi
 
 AC_MSG_CHECKING([whether we need -fno-deduce-init-list])
 AC_PREPROC_IFELSE([AC_LANG_SOURCE([
@@ -477,7 +462,7 @@ extern template struct S<int>;
 template struct S<int>;
 ])],
 	[AC_MSG_RESULT([yes])
-	 AC_MSG_CHECKING([whether c++0x 'extern template' works as we expect])
+	 AC_MSG_CHECKING([whether c++11 'extern template' works as we expect])
 	 AC_COMPILE_IFELSE([AC_LANG_SOURCE([
 template <typename T_> struct B
 {
