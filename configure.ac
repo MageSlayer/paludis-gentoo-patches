@@ -359,6 +359,11 @@ if test "x${cxx_compiler_icc}" = "xyes" ; then
 	CHECK_CXXFLAG([-wd1418])
 	CHECK_CXXFLAG([-wd1419])
 elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
+	CHECK_CXXFLAG([-fno-deduce-init-list])
+	if test x"$cxxflag_success" = x"yes" ; then
+		PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -fno-deduce-init-list"
+	fi
+
 	CHECK_CXXFLAG([-Wall])
 	CHECK_CXXFLAG([-Wextra])
 	if ! test "x$cxxflag_success" = "xyes" ; then
@@ -398,56 +403,16 @@ elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 		PALUDIS_CXXFLAGS_NO_WWRITE_STRINGS=-Wno-write-strings
 	fi
 	CHECK_CXXFLAG([-Wno-ignored-qualifiers])
+	CHECK_CXXFLAG([-Wno-non-virtual-dtor])
 else
 	CHECK_CXXFLAG([-Wall])
 fi
 AC_MSG_RESULT([${cxxflags_message}])
 
-AC_MSG_CHECKING([whether we want -Wno-non-virtual-dtor to work around compiler silliness])
-AC_PREPROC_IFELSE([AC_LANG_SOURCE([
-#ifndef __GNUC__
-#  error not gcc
-#endif
-
-#if __GNUC__ != 4
-#  error not gcc 4
-#endif
-
-#if __GNUC_MINOR__ != 1
-#  error not gcc 4.1
-#endif
-])],
-	[AC_MSG_RESULT([yes])
-	PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -Wno-non-virtual-dtor"
-	],
-	[AC_MSG_RESULT([no])])
-
 CHECK_CXXFLAG([-std=c++11])
 if test x"$cxxflag_success" = x"no" ; then
 	CHECK_CXXFLAG([-std=c++0x])
 fi
-
-AC_MSG_CHECKING([whether we need -fno-deduce-init-list])
-AC_PREPROC_IFELSE([AC_LANG_SOURCE([
-#ifndef __GNUC__
-#  error not gcc
-#endif
-
-#if __GNUC__ != 4
-#  error not gcc 4
-#endif
-
-#if __GNUC_MINOR__ == 4
-#elif __GNUC_MINOR__ == 5 && __GNUC_PATCHLEVEL__ == 0
-#else
-#   error not 4.4 or 4.5.0
-#endif
-])],
-	[AC_MSG_RESULT([yes])
-	PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -fno-deduce-init-list"
-	PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -fno-deduce-init-list"
-	],
-	[AC_MSG_RESULT([no])])
 
 PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 
