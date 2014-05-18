@@ -53,6 +53,13 @@
 #include <paludis/environment.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/package_id.hh>
+#include <paludis/metadata_key.hh>
+#include <paludis/slot.hh>
+#include <paludis/slot_requirement.hh>
+#include <paludis/selection.hh>
+#include <paludis/generator.hh>
+#include <paludis/filter.hh>
+#include <paludis/filtered_generator.hh>
 
 #include <unordered_set>
 #include <unordered_map>
@@ -229,12 +236,46 @@ namespace
         }
     };
 
+    struct SlotIsLocked
+    {
+        bool visit(const SlotExactPartialRequirement &) const
+        {
+            return false;
+        }
+
+        bool visit(const SlotExactFullRequirement &) const
+        {
+            return false;
+        }
+
+        bool visit(const SlotAnyAtAllLockedRequirement &) const
+        {
+            return true;
+        }
+
+        bool visit(const SlotAnyPartialLockedRequirement &) const
+        {
+            return true;
+        }
+
+        bool visit(const SlotAnyUnlockedRequirement &) const
+        {
+            return false;
+        }
+
+        bool visit(const SlotUnknownRewrittenRequirement &) const
+        {
+            return false;
+        }
+    };
+
     struct EdgesFromReasonVisitor
     {
         const Environment * const env;
         const std::shared_ptr<NAG> nag;
         const ResolventsSet & ignore_dependencies_from_resolvents;
         const Resolvent resolvent;
+        const std::shared_ptr<const Decision> decision;
         const std::function<NAGIndexRole (const Resolvent &)> role_for_fetching;
 
         EdgesFromReasonVisitor(
@@ -242,11 +283,13 @@ namespace
                 const std::shared_ptr<NAG> & n,
                 const ResolventsSet & i,
                 const Resolvent & v,
-            const std::function<NAGIndexRole (const Resolvent &)> & f) :
+                const std::shared_ptr<const Decision> & d,
+                const std::function<NAGIndexRole (const Resolvent &)> & f) :
             env(e),
             nag(n),
             ignore_dependencies_from_resolvents(i),
             resolvent(v),
+            decision(d),
             role_for_fetching(f)
         {
         }
@@ -328,11 +371,33 @@ namespace
                         override_run_all_met = true;
                     }
 
+                    bool build_all_met(! classifier->includes_buildish);
+                    if (! build_all_met && r.already_met().is_true())
+                    {
+                        build_all_met = true;
+                        std::shared_ptr<const PackageDepSpec> if_package(r.sanitised_dependency().spec().if_package());
+                        if (if_package && if_package->slot_requirement_ptr() &&
+                                if_package->slot_requirement_ptr()->accept_returning<bool>(SlotIsLocked{}))
+                        {
+                            const ChangesToMakeDecision *d(visitor_cast<const ChangesToMakeDecision>(*decision));
+                            if (d && d->origin_id()->slot_key())
+                            {
+                                std::shared_ptr<const PackageIDSequence> matches((*env)[selection::BestVersionOnly(
+                                            generator::Matches(*if_package, r.from_id(), { }) |
+                                                filter::InstalledAtRoot(env->system_root_key()->parse_value()))]);
+                                if (! matches->empty() && (*matches->last())->slot_key() &&
+                                            (*matches->last())->slot_key()->parse_value().match_values() !=
+                                                d->origin_id()->slot_key()->parse_value().match_values())
+                                    build_all_met = false;
+                            }
+                        }
+                    }
+
                     nag->add_edge(from, to,
                             make_named_values<NAGEdgeProperties>(
                                 n::always() = false,
                                 n::build() = classifier->includes_buildish,
-                                n::build_all_met() = r.already_met().is_true() || ! classifier->includes_buildish,
+                                n::build_all_met() = build_all_met,
                                 n::run() = classifier->includes_non_post_runish,
                                 n::run_all_met() = override_run_all_met || r.already_met().is_true() || ! classifier->includes_non_post_runish
                                 ));
@@ -502,7 +567,7 @@ Orderer::resolve()
         _add_binary_cleverness(*r);
 
         EdgesFromReasonVisitor edges_from_reason_visitor(_imp->env, _imp->resolved->nag(), ignore_dependencies_from_resolvents, (*r)->resolvent(),
-                std::bind(&Orderer::_role_for_fetching, this, std::placeholders::_1));
+                (*r)->decision(), std::bind(&Orderer::_role_for_fetching, this, std::placeholders::_1));
         for (Constraints::ConstIterator c((*r)->constraints()->begin()),
                 c_end((*r)->constraints()->end()) ;
                 c != c_end ; ++c)

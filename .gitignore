@@ -372,6 +372,7 @@ tags
 /paludis/resolver/resolver_TEST_purges
 /paludis/resolver/resolver_TEST_serialisation
 /paludis/resolver/resolver_TEST_simple
+/paludis/resolver/resolver_TEST_subslots
 /paludis/resolver/resolver_TEST_suggestions
 /paludis/resolver/resolver_TEST_uninstalls
 /paludis/selection_TEST
