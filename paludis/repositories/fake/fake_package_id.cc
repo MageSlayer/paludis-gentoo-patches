@@ -870,6 +870,15 @@ FakePackageID::set_slot(const SlotName & s)
                 n::raw_value() = stringify(s)));
 }
 
+void
+FakePackageID::set_slot(const SlotName & s, const SlotName & t)
+{
+    _imp->slot->change_value(make_named_values<Slot>(
+                n::match_values() = std::make_pair(s, t),
+                n::parallel_value() = s,
+                n::raw_value() = stringify(s) + "/" + stringify(t)));
+}
+
 bool
 FakePackageID::arbitrary_less_than_comparison(const PackageID & other) const
 {

@@ -273,6 +273,7 @@ namespace paludis
             const std::shared_ptr<Set<std::string> > behaviours_set();
 
             void set_slot(const SlotName &);
+            void set_slot(const SlotName &, const SlotName &);
 
             ///\}
 

@@ -53,6 +53,7 @@ namespace
         PackageDepSpec p(parse_elike_package_dep_spec(s, ELikePackageDepSpecOptions() + epdso_allow_slot_deps
                     + epdso_allow_slot_star_deps + epdso_allow_slot_equal_deps + epdso_allow_repository_deps
                     + epdso_allow_use_deps + epdso_allow_ranged_deps + epdso_allow_tilde_greater_deps
+                    + epdso_allow_slot_equal_deps_portage + epdso_allow_subslot_deps
                     + epdso_strict_parsing,
                     user_version_spec_options()));
         (*h.begin())->append(std::make_shared<PackageDepSpec>(p));
@@ -68,6 +69,7 @@ namespace
                                 ELikePackageDepSpecOptions() + epdso_allow_slot_deps
                                 + epdso_allow_slot_star_deps + epdso_allow_slot_equal_deps + epdso_allow_repository_deps
                                 + epdso_allow_use_deps + epdso_allow_ranged_deps + epdso_allow_tilde_greater_deps
+                                + epdso_allow_slot_equal_deps_portage + epdso_allow_subslot_deps
                                 + epdso_strict_parsing,
                                 user_version_spec_options())));
         }
