@@ -250,6 +250,23 @@ ReportCommand::run(
             }
         }
 
+        auto superiors((*env)[selection::BestVersionOnly((
+                              generator::Matches(make_package_dep_spec({ })
+                                  .package((*i)->name())
+                                  .version_requirement(make_named_values<VersionRequirement>(
+                                      n::version_operator() = vo_greater,
+                                      n::version_spec() = (*i)->version())),
+                                  nullptr, { })) |
+                              filter::SameSlot(*i) |
+                              filter::NotMasked() |
+                              filter::SupportsAction<InstallAction>())]);
+
+        if (! superiors->empty())
+        {
+            need_heading(done_heading, *i);
+            cout << fuc(fs_package_not_best(), fv<'s'>(stringify(**superiors->begin())));
+        }
+
         if (done_heading)
             errors = true;
     }

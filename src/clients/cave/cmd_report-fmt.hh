@@ -18,3 +18,6 @@ const auto fs_package_insecure = make_format_string_fetcher("report/insecure", 1
 const auto fs_package_unused = make_format_string_fetcher("report/unused", 1)
     << "    Not used by any package in world\\n";
 
+const auto fs_package_not_best = make_format_string_fetcher("report/not_best", 1)
+    << "    Has better version available: " << param<'s'>() << "\\n";
+
