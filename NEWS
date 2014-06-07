@@ -4,6 +4,17 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+2.0.0:
+    * General C++11ification.
+
+1.4.2:
+    * Bug fixes.
+
+1.4.1:
+    * Compatibility with newer Boost.
+
+    * Minor bug fixes and UI tweaks.
+
 1.4.0:
     * Tweaked 'cave resolve' output to add blank lines.
 
