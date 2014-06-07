@@ -314,15 +314,7 @@ PALUDIS_CXXFLAGS_NO_WMISSING_NORETURN=
 PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=
 PALUDIS_CXXFLAGS_NO_STRICT_ALIASING=
 PALUDIS_CXXFLAGS_VISIBILITY=
-AC_MSG_CHECKING([whether our compiler is iccy])
-AC_PREPROC_IFELSE([AC_LANG_SOURCE([
-#ifndef __ICC
-#error nope
-#endif
-])],
-	[cxx_compiler_icc=yes],
-	[cxx_compiler_icc=no])
-AC_MSG_RESULT([${cxx_compiler_icc}])
+
 AC_DEFUN([CHECK_CXXFLAG], [
 	save_CXXFLAGS=$CXXFLAGS
 	CXXFLAGS="$CXXFLAGS $PALUDIS_CXXFLAGS $1 -Werror"
@@ -344,26 +336,8 @@ int main(int, char **)
 		cxxflags_message="${cxxflags_message} $1"
 	fi
 	])
-AC_MSG_CHECKING([for appropriate compiler flags])
-if test "x${cxx_compiler_icc}" = "xyes" ; then
-	CHECK_CXXFLAG([-Wall])
-	CHECK_CXXFLAG([-wd279])
-	CHECK_CXXFLAG([-wd304])
-	CHECK_CXXFLAG([-wd383])
-	CHECK_CXXFLAG([-wd444])
-	CHECK_CXXFLAG([-wd488])
-	CHECK_CXXFLAG([-wd525])
-	CHECK_CXXFLAG([-wd810])
-	CHECK_CXXFLAG([-wd981])
-	CHECK_CXXFLAG([-wd1125])
-	CHECK_CXXFLAG([-wd1418])
-	CHECK_CXXFLAG([-wd1419])
-elif test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
-	CHECK_CXXFLAG([-fno-deduce-init-list])
-	if test x"$cxxflag_success" = x"yes" ; then
-		PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -fno-deduce-init-list"
-	fi
 
+if test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wall])
 	CHECK_CXXFLAG([-Wextra])
 	if ! test "x$cxxflag_success" = "xyes" ; then
@@ -416,55 +390,6 @@ fi
 
 PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC=$PALUDIS_CXXFLAGS
 
-AC_MSG_CHECKING([for 'extern template' support])
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-template <typename T_> class S
-{
-	private:
-		S & operator= (const S &);
-};
-extern template struct S<int>;
-template struct S<int>;
-])],
-	[AC_MSG_RESULT([yes])
-	 AC_MSG_CHECKING([whether c++11 'extern template' works as we expect])
-	 AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-template <typename T_> struct B
-{
-	T_ f();
-};
-extern template class B<int>;
-void f()
-{
-	B<int> t;
-	t.f();
-}
-	 ])],
-		[AC_MSG_RESULT([yes])],
-		[AC_MSG_RESULT([no, your compiler is weird])
-		 AC_MSG_ERROR([your compiler supports 'extern template' in a very broken manner])
-		])
-	],
-	[AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([your compiler does not support 'extern template'])
-	])
-
-AC_MSG_CHECKING([whether -pedantic works if we use extern template])
-if test "x${cxx_compiler_icc}" = "xyes" ; then
-	AC_MSG_RESULT([no, icc does not do pedantic])
-else
-	save_CXXFLAGS=$CXXFLAGS
-	CXXFLAGS="$CXXFLAGS -pedantic"
-	AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-template <typename T_> struct S { };
-extern template struct S<int>;
-	])],
-	[AC_MSG_RESULT([yes])
-	 CHECK_CXXFLAG([-pedantic])],
-    [AC_MSG_RESULT([no])])
-	CXXFLAGS=$save_CXXFLAGS
-fi
-
 AC_SUBST([PALUDIS_CXXFLAGS])
 AC_SUBST([PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST])
@@ -477,91 +402,6 @@ AC_SUBST([PALUDIS_CXXFLAGS_NO_WMISSING_NORETURN])
 
 save_CXXFLAGS="$CXXFLAGS"
 CXXFLAGS="$CXXFLAGS $PALUDIS_CXXFLAGS"
-dnl }}}
-
-dnl {{{ check for partial specialisation of template classes
-AC_MSG_CHECKING([for compiler support for partial specialisation of template classes])
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-template <typename T_>
-struct S
-{
-    static const int s = 0;
-};
-
-template <typename T_>
-struct S<const T_>
-{
-};
-
-template <typename T_>
-struct S<const T_ &>
-{
-    static const int t = 0;
-};
-
-int main(int, char **)
-{
-    return S<int &>::s + S<const int &>::t;
-}
-])],
-	[AC_MSG_RESULT([yes])],
-	[
-	 AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your C++ compiler does not compile C++ code])
-	])
-dnl }}}
-
-dnl {{{ check for basic_string and string::find_last_not_of
-AC_MSG_CHECKING([for a sufficiently standard std::basic_string<>])
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-#include <string>
-int main(int, char **)
-{
-	std::string s("test");
-	std::basic_string<int> t;
-	return std::string::npos != s.find_last_not_of("abcde") ? 0 : 1;
-}
-])],
-	[AC_MSG_RESULT([yes])],
-	[
-	 AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([I need a less broken std::basic_string<> implementation])
-	])
-dnl }}}
-
-dnl {{{ check for limits
-AC_MSG_CHECKING([for a usable std::numeric_limits])
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-#include <limits>
-int main(int, char **)
-{
-	return std::numeric_limits<unsigned>::digits >> 3;
-}
-])],
-	[AC_MSG_RESULT([yes])],
-	[
-	 AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your std::numeric_limits is unusable])
-	])
-dnl }}}
-
-dnl {{{ check for broken std::set<>::const_reverse_iterator
-AC_MSG_CHECKING([for a usable std::set<>::const_reverse_iterator])
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-#include <set>
-int main(int, char **)
-{
-	std::set<int> s;
-	s.insert(1);
-	std::set<int>::const_reverse_iterator i;
-	return *i;
-}
-])],
-	[AC_MSG_RESULT([yes])],
-	[
-	 AC_MSG_RESULT([no])
-	 AC_MSG_ERROR([Your std::set<>::const_reverse_iterator is h0rked])
-	])
 dnl }}}
 
 dnl {{{ check for -O3 / extern template breakage
