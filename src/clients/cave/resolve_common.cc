@@ -995,6 +995,10 @@ paludis::cave::resolve_common(
             i_end(resolution_options.a_favour.end_args()) ;
             i != i_end ; ++i)
         prefer_or_avoid_helper.add_prefer_name(disambiguate_if_necessary(env.get(), *i));
+    for (args::StringSetArg::ConstIterator i(resolution_options.a_avoid.begin_args()),
+            i_end(resolution_options.a_avoid.end_args()) ;
+            i != i_end ; ++i)
+        prefer_or_avoid_helper.add_avoid_name(disambiguate_if_necessary(env.get(), *i));
     for (args::StringSetArg::ConstIterator i(resolution_options.a_favour_matching.begin_args()),
             i_end(resolution_options.a_favour_matching.end_args()) ;
             i != i_end ; ++i)
