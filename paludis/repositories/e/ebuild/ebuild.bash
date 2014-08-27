@@ -54,17 +54,12 @@ ebuild_sanitise_envvars()
     # See ticket:374.
     export PATH="/usr/bin:/usr/sbin:/bin:/sbin${PATH:+:${PATH}}"
 
-    # Automake likes to scatter our utilities over two directories.
-    if [[ -n "${PALUDIS_EBUILD_DIR_FALLBACK}" ]] ; then
-        export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils:${PATH}"
-        for p in ${PALUDIS_UTILITY_PATH_SUFFIXES} ; do
-            export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils/${p}:${PATH}"
-        done
-    fi
-
     export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
+    # Automake likes to scatter our utilities over two directories.
+    [[ -n "${PALUDIS_EBUILD_DIR_FALLBACK}" ]] && export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils:${PATH}"
     for p in ${PALUDIS_UTILITY_PATH_SUFFIXES} ; do
         export PATH="${PALUDIS_EBUILD_DIR}/utils/${p}:${PATH}"
+        [[ -n "${PALUDIS_EBUILD_DIR_FALLBACK}" ]] && export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils/${p}:${PATH}"
     done
 
     unset GZIP BZIP BZIP2 CDPATH GREP_OPTIONS GREP_COLOR GLOBIGNORE
