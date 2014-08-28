@@ -1406,6 +1406,9 @@ void expose_dep_spec()
         ;
 }
 
-template class WrappedForwardIterator<PythonCompositeDepSpec::ConstIteratorTag,
-         const std::shared_ptr<const PythonDepSpec> >;
+namespace paludis
+{
+    template class WrappedForwardIterator<PythonCompositeDepSpec::ConstIteratorTag,
+             const std::shared_ptr<const PythonDepSpec> >;
+}
 

@@ -933,8 +933,7 @@ Decider::_made_wrong_decision(
                     adapted_resolution, _imp->fns.allow_choice_changes_fn()(resolution), false, true, false, true));
         if (decision)
         {
-            resolution->decision()->accept(WrongDecisionVisitor(std::bind(
-                            &Decider::_suggest_restart_with, this, resolution, constraint, decision)));
+            resolution->decision()->accept(WrongDecisionVisitor([&] () { _suggest_restart_with(resolution, constraint, decision); }));
             resolution->decision() = decision;
         }
         else

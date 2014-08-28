@@ -29,7 +29,10 @@ using namespace paludis;
 using namespace paludis::python;
 namespace bp = boost::python;
 
-template class Singleton<ExceptionRegister>;
+namespace paludis
+{
+    template class Singleton<ExceptionRegister>;
+}
 
 RegisteredExceptionBase::~RegisteredExceptionBase()
 {

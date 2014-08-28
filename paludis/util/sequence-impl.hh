@@ -159,7 +159,7 @@ template <typename C_>
 void
 paludis::Sequence<T_>::sort(const C_ & c)
 {
-    _imp->list.sort<const C_ &>(c);
+    _imp->list.template sort<const C_ &>(c);
 }
 
 #endif

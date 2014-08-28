@@ -35,7 +35,10 @@
 using namespace paludis;
 using namespace paludis::ruby;
 
-template class Singleton<RegisterRubyClass>;
+namespace paludis
+{
+    template class Singleton<RegisterRubyClass>;
+}
 
 namespace paludis
 {

@@ -135,7 +135,7 @@ namespace paludis
     };
 
     template <typename T_>
-    using CallResultType = typename ExtractResultType<decltype(&T_::operator())>::Type;
+    using CallResultType = typename std::remove_const<typename ExtractResultType<decltype(&T_::operator())>::Type>::type;
 
     template <typename Revisitor_, typename Result_, typename... Cases_>
     struct MadeVisitor;

@@ -144,19 +144,22 @@ namespace paludis
         }
     };
 
-    bool operator== (const EChoiceValueParams & a, const EChoiceValueParams & b)
+    namespace erepository
     {
-        return true
-            && (a.choice_name_with_prefix() == b.choice_name_with_prefix())
-            && (a.choice_prefix_name() == b.choice_prefix_name())
-            && (a.description() == b.description())
-            && (a.enabled() == b.enabled())
-            && (a.enabled_by_default() == b.enabled_by_default())
-            && (a.origin() == b.origin())
-            && (a.locked() == b.locked())
-            && (a.presumed() == b.presumed())
-            && (a.unprefixed_choice_name() == b.unprefixed_choice_name())
-            ;
+        bool operator== (const EChoiceValueParams & a, const EChoiceValueParams & b)
+        {
+            return true
+                && (a.choice_name_with_prefix() == b.choice_name_with_prefix())
+                && (a.choice_prefix_name() == b.choice_prefix_name())
+                && (a.description() == b.description())
+                && (a.enabled() == b.enabled())
+                && (a.enabled_by_default() == b.enabled_by_default())
+                && (a.origin() == b.origin())
+                && (a.locked() == b.locked())
+                && (a.presumed() == b.presumed())
+                && (a.unprefixed_choice_name() == b.unprefixed_choice_name())
+                ;
+        }
     }
 }
 
