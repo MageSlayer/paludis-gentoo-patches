@@ -56,6 +56,11 @@ namespace
     {
         return f.get(s);
     }
+
+    std::string concatenate(const KeyValueConfigFile &, const std::string &, const std::string & prev, const std::string & value)
+    {
+        return prev + value;
+    }
 }
 
 TEST(LineConfigFile, Works)
@@ -236,6 +241,20 @@ TEST(KeyValueConfigFile, Defaults)
 
     EXPECT_EQ("oink", ff.get("x"));
     EXPECT_EQ("cow", ff.get("y"));
+}
+
+TEST(KeyValueConfigFile, DefaultsAndTransformations)
+{
+    auto predef(std::make_shared<Map<std::string, std::string>>());
+    predef->insert("magic", "xyzzy");
+
+    std::stringstream d_s;
+    d_s << "magic=plugh" << std::endl;
+    KeyValueConfigFile ff(d_s, { },
+            std::bind(&predefined, predef, std::placeholders::_1, std::placeholders::_2),
+            &concatenate);
+
+    EXPECT_EQ("xyzzyplugh", ff.get("magic"));
 }
 
 TEST(KeyValueConfigFile, Source)

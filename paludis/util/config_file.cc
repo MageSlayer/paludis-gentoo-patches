@@ -810,7 +810,10 @@ KeyValueConfigFile::KeyValueConfigFile(
             want = false;
 
         if (want)
-            _imp->values[key] = transformation_function()(*this, key, get(key), value);
+        {
+            std::string new_value(transformation_function()(*this, key, get(key), value));
+            _imp->values[key] = new_value;
+        }
     }
 
     _imp->active_key_prefix = "";
