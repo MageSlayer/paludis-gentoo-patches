@@ -63,11 +63,10 @@ the code now does.</p>
 
 <h2 id="compilers">Known compiler issues</h2>
 
-<p>The primary supported compiler for building Paludis is GCC, version 4.4 or later. Older versions of GCC will not
-work, since we make use of various C++0x features.</p>
+<p>The primary supported compiler for building Paludis is GCC, version 4.7 or later. Older versions of GCC will not
+work, since we make use of various C++11 features.</p>
 
-<p>At the time of writing, ICC does not appear to provide sufficient C++0x support, and LLVM's clang rejects the
-<code>type_traits</code> header supplied by <code>libstdc++</code>.</p>
+<p>At the time of writing, ICC does not appear to provide sufficient C++11 support.</p>
 
 <h2 id="verb">What term should I use to mean "to install a package using Paludis"?</h2>
 
