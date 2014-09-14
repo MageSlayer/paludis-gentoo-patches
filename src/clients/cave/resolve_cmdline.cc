@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -295,6 +295,8 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "all"),
     a_one_binary_per_slot(&g_destination_options, "one-binary-per-slot", '\0', "When building a binary package, "
             "remove other versions in the same repository and slot (as would be done for non-binary packages).", true),
+    a_chroot_path(&g_destination_options, "chroot-path", '\0', "When making a chroot, only consider destination "
+            "repositories whose root is this value."),
 
 //    g_query_options(this, "Query Options", "Query the user interactively when making decisions. "
 //            "If only --query is specified, prompt for everything. Otherwise, prompt only for the specified decisions."),

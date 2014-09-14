@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -25,6 +25,7 @@
 #include <paludis/resolver/decision-fwd.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/attributes.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <memory>
@@ -41,6 +42,8 @@ namespace paludis
             public:
                 explicit FindRepositoryForHelper(const Environment * const);
                 ~FindRepositoryForHelper();
+
+                void set_chroot_path(const FSPath &);
 
                 const std::shared_ptr<const Repository> operator() (
                         const std::shared_ptr<const Resolution> &,

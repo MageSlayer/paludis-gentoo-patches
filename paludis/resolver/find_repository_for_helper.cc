@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2010, 2011, 2013 Ciaran McCreesh
+ * Copyright (c) 2010, 2011, 2013, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -33,6 +33,8 @@
 #include <paludis/environment.hh>
 #include <paludis/repository.hh>
 
+#include <memory>
+
 using namespace paludis;
 using namespace paludis::resolver;
 
@@ -42,6 +44,7 @@ namespace paludis
     struct Imp<FindRepositoryForHelper>
     {
         const Environment * const env;
+        std::unique_ptr<const FSPath> chroot_path;
 
         Imp(const Environment * const e) :
             env(e)
@@ -83,8 +86,14 @@ FindRepositoryForHelper::operator() (
                 break;
 
             case dt_install_to_chroot:
-                if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->parse_value() == _imp->env->system_root_key()->parse_value()))
-                    continue;
+                if (_imp->chroot_path) {
+                    if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->parse_value() != *_imp->chroot_path))
+                        continue;
+                }
+                else {
+                    if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->parse_value() == _imp->env->system_root_key()->parse_value()))
+                        continue;
+                }
                 break;
 
             case dt_create_binary:
@@ -125,7 +134,14 @@ FindRepositoryForHelper::operator() (
     return result;
 }
 
+void
+FindRepositoryForHelper::set_chroot_path(const FSPath & p)
+{
+    _imp->chroot_path.reset(new FSPath(p));
+}
+
 namespace paludis
 {
     template class Pimp<FindRepositoryForHelper>;
 }
+

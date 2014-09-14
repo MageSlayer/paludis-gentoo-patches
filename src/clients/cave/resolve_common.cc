@@ -831,6 +831,8 @@ paludis::cave::resolve_common(
     find_replacing_helper.set_one_binary_per_slot(resolution_options.a_one_binary_per_slot.specified());
 
     FindRepositoryForHelper find_repository_for_helper(env.get());
+    if (resolution_options.a_chroot_path.specified())
+        find_repository_for_helper.set_chroot_path(FSPath(resolution_options.a_chroot_path.argument()));
 
     GetConstraintsForDependentHelper get_constraints_for_dependent_helper(env.get());
     for (args::StringSetArg::ConstIterator i(resolution_options.a_less_restrictive_remove_blockers.begin_args()),
