@@ -11,5 +11,8 @@ for <code>installed_unpackaged</code> format repositories:</p>
 <dl>
     <dt><code>location</code></dt>
     <dd>The location of the repository. Mandatory.</dd>
+
+    <dt><code>name</code></dt>
+    <dd>Override the name of the repository.</dd>
 </dl>
 

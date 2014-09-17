@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -435,7 +435,11 @@ InstalledUnpackagedRepository::repository_factory_create(
     if (root.empty())
         throw unpackaged_repositories::RepositoryConfigurationError("Key 'root' not specified or empty");
 
-    return std::make_shared<InstalledUnpackagedRepository>(RepositoryName("installed-unpackaged"),
+    std::string name_str(f("name"));
+    if (name_str.empty())
+        name_str = "installed-unpackaged";
+
+    return std::make_shared<InstalledUnpackagedRepository>(RepositoryName(name_str),
                 make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                     n::environment() = env,
                     n::location() = location,
