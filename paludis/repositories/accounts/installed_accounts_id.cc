@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2009, 2010, 2011, 2013 Ciaran McCreesh
+ * Copyright (c) 2009, 2010, 2011, 2013, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -315,12 +315,6 @@ const std::shared_ptr<const MetadataValueKey<Slot> >
 InstalledAccountsID::slot_key() const
 {
     return nullptr;
-}
-
-std::shared_ptr<const Set<std::string> >
-InstalledAccountsID::breaks_portage() const
-{
-    return std::make_shared<Set<std::string> >();
 }
 
 bool

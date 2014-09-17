@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -50,7 +50,6 @@ namespace paludis
         typedef Name<struct name_bracket_merged_variables> bracket_merged_variables;
         typedef Name<struct name_bracket_merged_variables_annotatable> bracket_merged_variables_annotatable;
         typedef Name<struct name_bracket_merged_variables_annotation> bracket_merged_variables_annotation;
-        typedef Name<struct name_breaks_portage> breaks_portage;
         typedef Name<struct name_bugs_to> bugs_to;
         typedef Name<struct name_build_depend> build_depend;
         typedef Name<struct name_can_be_pbin> can_be_pbin;
@@ -301,7 +300,6 @@ namespace paludis
         {
             NamedValue<n::allow_tokens_in_mask_files, bool> allow_tokens_in_mask_files;
             NamedValue<n::annotations, std::shared_ptr<const EAPIAnnotations> > annotations;
-            NamedValue<n::breaks_portage, bool> breaks_portage;
             NamedValue<n::can_be_pbin, bool> can_be_pbin;
             NamedValue<n::choices_options, std::shared_ptr<const EAPIChoicesOptions> > choices_options;
             NamedValue<n::dependency_labels, std::shared_ptr<const EAPILabels> > dependency_labels;

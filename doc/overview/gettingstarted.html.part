@@ -42,12 +42,6 @@ All Paludis clients that use configuration can also be told explicitly to use Po
 <code>--environment portage</code> (or <code>--environment portage:/other/root</code> to use configuration files in
 another filesystem root).</p>
 
-<p>By default, will be unable to use packages that use EAPIs that Portage does not support. The packages in the Paludis
-overlay fall into this category.  You may override this by setting the <code>PALUDIS_IGNORE_BREAKS_PORTAGE</code>
-in <code>make.conf</code>; the allowed values are the same as for the <code>accept_breaks_portage</code>
-key in Paludis's <a href="../configuration/general.html"><code>general.conf</code></a>,
-except that the default is an empty string.</p>
-
 <p>Next, proceed to <a href="#testing">Testing a configuration</a>.</p>
 
 <h2 id="automatic">Automatically migrating</h2>

@@ -15,19 +15,6 @@ file, and may optionally be in bash format.</p>
     <dd>If set, Paludis will use this username rather than <code>paludisbuild</code> when a reduced privilege user is
     required.</dd>
 
-    <dt><code>accept_breaks_portage</code></dt>
-    <dd>Possibly-empty list of characteristics that can cause a package to be incompatible
-    with Portage, but that should <em>not</em> cause the package to be masked, or
-    <code>*</code> (the default) to ignore Portage compatibility entirely.  Currently
-    available characteristics are:
-    <dl><dt><code>eapi</code></dt><dd>ebuilds with an EAPI that is not supported by Portage</dd>
-    <dt><code>version</code></dt><dd>ebuilds that use Paludis-specific features of the package version syntax</dd>
-    <dt><code>format</code></dt><dd>packages other than ebuilds</dd></dl>
-    Note that this does <em>not</em> disable cache options that would cause interoperability problems.</dd>
-
-    <dt><code>portage_compatible</code></dt>
-    <dd>If set to a non-empty string, deprecated equivalent of <code>accept_breaks_portage =</code>.</dd>
-
     <dt><code>distribution</code></dt>
     <dd>If set, overrides the distribution used when distribution-specific defaults are used.</dd>
 </dl>

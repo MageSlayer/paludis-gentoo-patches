@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2010, 2011, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,17 +24,6 @@
 
 using namespace paludis;
 using namespace paludis::erepository;
-
-std::shared_ptr<const Set<std::string> >
-ERepositoryID::breaks_portage() const
-{
-    std::shared_ptr<Set<std::string> > why(std::make_shared<Set<std::string>>());
-    if (version().has_try_part() || version().has_scm_part() || version().has_local_revision())
-        why->insert("version");
-    if ((! eapi()->supported()) || eapi()->supported()->breaks_portage())
-        why->insert("eapi");
-    return why;
-}
 
 CannotChangeSCMRevision::CannotChangeSCMRevision(const std::string & id_s, const std::string & revision) throw () :
     Exception("Cannot change SCM revision for '" + id_s + "' to '" + revision + "'")

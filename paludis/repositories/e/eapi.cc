@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -364,7 +364,6 @@ namespace
         return std::make_shared<SupportedEAPI>(make_named_values<SupportedEAPI>(
                         n::allow_tokens_in_mask_files() = destringify_key<bool>(k, "allow_tokens_in_mask_files"),
                         n::annotations() = make_annotations(k),
-                        n::breaks_portage() = destringify_key<bool>(k, "breaks_portage"),
                         n::can_be_pbin() = destringify_key<bool>(k, "can_be_pbin"),
                         n::choices_options() = make_choices_options(k),
                         n::dependency_labels() = std::make_shared<const EAPILabels>(check_get(k, "dependency_labels")),

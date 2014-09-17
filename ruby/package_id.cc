@@ -2,7 +2,7 @@
 
 /*
  * Copyright (c) 2007, 2008 Richard Brown
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -311,37 +311,6 @@ namespace
     }
 
     /*
-     * call-seq:
-     *     breaks_portage -> [:reason, :reason, ...]
-     *
-     *  Do we break Portage, and if so, why?
-     *
-     *  This method may be used by Environment implementations to apply a "we don't want packages that break Portage" mask.
-     */
-    VALUE
-    package_id_breaks_portage(VALUE self)
-    {
-        VALUE result(rb_ary_new());
-        std::shared_ptr<const PackageID> * self_ptr;
-        Data_Get_Struct(self, std::shared_ptr<const PackageID>, self_ptr);
-        try
-        {
-            std::shared_ptr<const Set<std::string> > breakages((*self_ptr)->breaks_portage());
-            if (breakages)
-                for (Set<std::string>::ConstIterator it(breakages->begin()),
-                         it_end(breakages->end()); it_end != it; ++it)
-                    rb_ary_push(result, ID2SYM(rb_intern(it->c_str())));
-            return result;
-        }
-        catch (const std::exception & e)
-        {
-            exception_to_ruby_exception(e);
-        }
-
-        return Qnil;
-    }
-
-    /*
      * Document-method: contents
      *
      * call-seq:
@@ -546,7 +515,6 @@ namespace
         rb_define_method(c_package_id, "masks", RUBY_FUNC_CAST(&package_id_masks), 0);
         rb_define_method(c_package_id, "overridden_masks", RUBY_FUNC_CAST(&package_id_overridden_masks), 0);
         rb_define_method(c_package_id, "masked?", RUBY_FUNC_CAST((&PackageIDBool<&PackageID::masked>::fetch)), 0);
-        rb_define_method(c_package_id, "breaks_portage", RUBY_FUNC_CAST(&package_id_breaks_portage), 0);
 
         rb_define_method(c_package_id, "keywords_key", RUBY_FUNC_CAST((&KeyValue<MetadataCollectionKey<KeywordNameSet>,&PackageID::keywords_key>::fetch)), 0);
         rb_define_method(c_package_id, "dependencies_key", RUBY_FUNC_CAST((

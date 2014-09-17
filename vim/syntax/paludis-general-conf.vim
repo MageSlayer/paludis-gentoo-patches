@@ -1,7 +1,7 @@
 " Vim syntax file
 " Language:     Paludis general.conf files
 " Author:       Ciaran McCreesh
-" Copyright:    Copyright (c) 2007, 2008, 2010 Ciaran McCreesh
+" Copyright:    Copyright (c) 2007, 2008, 2010, 2014 Ciaran McCreesh
 " Licence:      You may redistribute this under the same terms as Vim itself
 "
 " Syntax highlighting for Paludis general.conf files.
@@ -39,7 +39,7 @@ syn region PaludisGeneralConfString contained start=/"/ end=/"/
             \ skipwhite
 
 syn keyword PaludisGeneralConfKnownKey contained
-            \ reduced_username portage_compatible distribution world
+            \ reduced_username distribution world
 
 syn match PaludisGeneralConfVariable contained /\$\({[^{}]\+}\|\(ENV{\)\@!=[a-zA-Z0-9_]\+\)/ skipwhite
 

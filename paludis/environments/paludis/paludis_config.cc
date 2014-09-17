@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011, 2013, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -194,8 +194,6 @@ namespace paludis
 
         mutable std::mutex general_conf_mutex;
         mutable bool has_general_conf;
-        mutable bool accept_all_breaks_portage;
-        mutable Set<std::string> accept_breaks_portage;
         mutable std::string reduced_username;
 
         std::shared_ptr<Map<std::string, std::string> > commandline_environment;
@@ -219,7 +217,6 @@ namespace paludis
         output_conf(std::make_shared<OutputConf>(e)),
         suggestions_conf(std::make_shared<SuggestionsConf>(e)),
         has_general_conf(false),
-        accept_all_breaks_portage(false),
         reduced_username(getenv_with_default(env_vars::reduced_username, "paludisbuild")),
         commandline_environment(std::make_shared<Map<std::string, std::string>>())
     {
@@ -240,7 +237,6 @@ namespace paludis
 
         commandline_environment->insert("root", root);
         commandline_environment->insert("ROOT", root);
-        commandline_environment->insert("accept_breaks_portage", "*");
 
         const KeyValueConfigFile::DefaultFunction def_predefined =
             std::bind(
@@ -343,18 +339,6 @@ namespace paludis
 
         if (! kv->get("reduced_username").empty())
             reduced_username = kv->get("reduced_username");
-
-        std::list<std::string> breakages;
-        tokenise_whitespace(kv->get("accept_breaks_portage"), std::back_inserter(breakages));
-        for (std::list<std::string>::const_iterator it(breakages.begin()),
-                 it_end(breakages.end()); it_end != it; ++it)
-            if ("*" == *it)
-            {
-                accept_all_breaks_portage = true;
-                break;
-            }
-            else
-                accept_breaks_portage.insert(*it);
 
         distribution = kv->get("distribution");
 
@@ -1060,22 +1044,6 @@ PaludisConfig::reduced_username() const
         << "Reduced username is '" << _imp->reduced_username << "'";
 
     return _imp->reduced_username;
-}
-
-bool
-PaludisConfig::accept_all_breaks_portage() const
-{
-    _imp->need_general_conf();
-
-    return _imp->accept_all_breaks_portage;
-}
-
-const Set<std::string> &
-PaludisConfig::accept_breaks_portage() const
-{
-    _imp->need_general_conf();
-
-    return _imp->accept_breaks_portage;
 }
 
 std::shared_ptr<const KeywordsConf>

@@ -119,9 +119,6 @@ int main(int argc, char * argv[])
 
             /* And various misc methods. Clients don't usually use these
              * directly. */
-            std::shared_ptr<const Set<std::string> > breaks_portage((*i)->breaks_portage());
-            cout << left << setw(30) << "    breaks_portage:" << " " << join(breaks_portage->begin(),
-                    breaks_portage->end(), ", ") << endl;
             cout << left << setw(30) << "    extra_hash_value:" << " " << "0x" << hex << (*i)->extra_hash_value() << endl;
 
             cout << endl;

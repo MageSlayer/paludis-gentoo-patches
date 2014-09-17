@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2006, 2007, 2008, 2009, 2010, 2011, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -155,16 +155,6 @@ namespace paludis
                  * The system root.
                  */
                 std::string system_root() const;
-
-                /**
-                 * Whether it's ok to unmask things that break Portage, regardless of the reason.
-                 */
-                bool accept_all_breaks_portage() const;
-
-                /**
-                 * Specific reasons why a package might break Portage that it's ok to ignore.
-                 */
-                const Set<std::string> & accept_breaks_portage() const;
 
                 ///\name Userpriv
                 ///\{

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
+ * Copyright (c) 2005, 2006, 2007, 2008, 2009, 2010, 2011, 2013, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -380,26 +380,6 @@ namespace
                 return _overridden ? "user (overridden)" : "user";
             }
     };
-}
-
-const std::shared_ptr<const Mask>
-PaludisEnvironment::mask_for_breakage(const std::shared_ptr<const PackageID> & id) const
-{
-    if (! _imp->config->accept_all_breaks_portage())
-    {
-        std::shared_ptr<const Set<std::string> > breakages(id->breaks_portage());
-        if (breakages)
-        {
-            std::list<std::string> bad_breakages;
-            std::set_difference(breakages->begin(), breakages->end(),
-                     _imp->config->accept_breaks_portage().begin(), _imp->config->accept_breaks_portage().end(),
-                     std::back_inserter(bad_breakages));
-            if (! bad_breakages.empty())
-                return std::make_shared<BreaksPortageMask>(join(breakages->begin(), breakages->end(), " "));
-        }
-    }
-
-    return std::shared_ptr<const Mask>();
 }
 
 const std::shared_ptr<const Mask>

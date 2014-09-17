@@ -84,17 +84,6 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "accept_keywords");
         }
 
-        virtual const std::shared_ptr<const Mask> mask_for_breakage(const std::shared_ptr<const PackageID> & p) const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
-        {
-            std::unique_lock<std::recursive_mutex> l(get_mutex());
-
-            if (bp::override f = get_override("mask_for_breakage"))
-                return f(p);
-            else
-                throw PythonMethodNotImplemented("EnvironmentImplementation", "mask_for_breakage");
-        }
-
         virtual const std::shared_ptr<const Mask> mask_for_user(const std::shared_ptr<const PackageID> & p, const bool b) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
@@ -555,12 +544,6 @@ void expose_environment()
                 "accept_keywords(KeywordsNameIterable, PackageID)\n"
                 "Do we accept any of the specified keywords for a particular package?\n\n"
                 "If the collection includes \"*\", should return true."
-            )
-
-        .def("mask_for_breakage", bp::pure_virtual(&EnvImp::mask_for_breakage),
-                "mask_for_breakage(PackageID) -> Mask\n"
-                "Do we have a 'breaks' mask for a particular package?\n\n"
-                "Returns None if no."
             )
 
         .def("mask_for_user", bp::pure_virtual(&EnvImp::mask_for_user),

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -104,9 +104,6 @@ namespace paludis
         PackageMask package_mask;
         PackageUnmask package_unmask;
 
-        std::set<std::string> ignore_breaks_portage;
-        bool ignore_all_breaks_portage;
-
         mutable std::mutex reduced_mutex;
         bool userpriv_enabled;
         mutable std::shared_ptr<uid_t> reduced_uid;
@@ -130,7 +127,6 @@ namespace paludis
 
         Imp(const std::string & s) :
             conf_dir(FSPath(s.empty() ? "/" : s) / SYSCONFDIR),
-            ignore_all_breaks_portage(false),
             done_hooks(false),
             overlay_importance(10),
             world_file(s + "/var/lib/portage/world"),
@@ -364,18 +360,6 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
                 _imp->mirrors.insert(std::make_pair(tokens.at(0), *t));
         }
     }
-
-    std::list<std::string> ignore_breaks_portage;
-    tokenise_whitespace(_imp->vars->get("PALUDIS_IGNORE_BREAKS_PORTAGE"), std::back_inserter(ignore_breaks_portage));
-    for (std::list<std::string>::const_iterator it(ignore_breaks_portage.begin()),
-             it_end(ignore_breaks_portage.end()); it_end != it; ++it)
-        if ("*" == *it)
-        {
-            _imp->ignore_all_breaks_portage = true;
-            break;
-        }
-        else
-            _imp->ignore_breaks_portage.insert(*it);
 
     add_metadata_key(_imp->format_key);
     add_metadata_key(_imp->config_location_key);
@@ -808,26 +792,6 @@ namespace
                 return _overridden ? "user (overridden)" : "user";
             }
     };
-}
-
-const std::shared_ptr<const Mask>
-PortageEnvironment::mask_for_breakage(const std::shared_ptr<const PackageID> & id) const
-{
-    if (! _imp->ignore_all_breaks_portage)
-    {
-        std::shared_ptr<const Set<std::string> > breakages(id->breaks_portage());
-        if (breakages)
-        {
-            std::set<std::string> bad_breakages;
-            std::set_difference(breakages->begin(), breakages->end(),
-                    _imp->ignore_breaks_portage.begin(), _imp->ignore_breaks_portage.end(),
-                    std::inserter(bad_breakages, bad_breakages.end()));
-            if (! bad_breakages.empty())
-                return std::make_shared<BreaksPortageMask>(join(breakages->begin(), breakages->end(), " "));
-        }
-    }
-
-    return std::shared_ptr<const Mask>();
 }
 
 const std::shared_ptr<const Mask>

@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -339,14 +339,6 @@ namespace paludis
              * Do we have any effective masks? Equivalent to begin_masks() != end_masks().
              */
             bool masked() const PALUDIS_ATTRIBUTE((warn_unused_result));
-
-            /**
-             * Do we break Portage, and if so, why?
-             *
-             * This method may be used by Environment implementations to apply a "we don't
-             * want packages that break Portage" mask.
-             */
-            virtual std::shared_ptr<const Set<std::string> > breaks_portage() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             ///\}
 

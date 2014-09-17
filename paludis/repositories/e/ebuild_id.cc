@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -713,11 +713,6 @@ EbuildID::need_masks_added() const
                 add_mask(user_mask);
         }
     }
-
-    /* break portage */
-    std::shared_ptr<const Mask> breaks_mask(_imp->environment->mask_for_breakage(shared_from_this()));
-    if (breaks_mask)
-        add_mask(breaks_mask);
 }
 
 const std::string

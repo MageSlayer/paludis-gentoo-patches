@@ -170,10 +170,6 @@ module Paludis
             assert !pid_installed.masked?
         end
 
-        def test_breaks_portage
-            assert pid_testrepo.breaks_portage.empty?
-        end
-
         def test_masks
             masks = pid_testrepo.masks
             assert_equal 1, masks.length

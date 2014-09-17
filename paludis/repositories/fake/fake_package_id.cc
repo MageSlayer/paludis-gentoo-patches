@@ -1,7 +1,7 @@
 /* vim: set sw=4 sts=4 et foldmethod=syntax : */
 
 /*
- * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013 Ciaran McCreesh
+ * Copyright (c) 2007, 2008, 2009, 2010, 2011, 2013, 2014 Ciaran McCreesh
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -1051,10 +1051,6 @@ FakePackageID::need_masks_added() const
                                 )));
     }
 
-    std::shared_ptr<const Mask> breaks_mask(_imp->env->mask_for_breakage(shared_from_this()));
-    if (breaks_mask)
-        add_mask(breaks_mask);
-
     if (_imp->unsupported_mask)
         add_mask(_imp->unsupported_mask);
 }
@@ -1129,12 +1125,6 @@ FakePackageID::perform_action(Action & a) const
 {
     PerformAction b{_imp->env, this};
     a.accept(b);
-}
-
-std::shared_ptr<const Set<std::string> >
-FakePackageID::breaks_portage() const
-{
-    return std::shared_ptr<const Set<std::string> >();
 }
 
 const std::shared_ptr<const MetadataValueKey<FSPath> >
