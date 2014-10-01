@@ -4,6 +4,15 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+2.2.0:
+    * Bug fixes.
+
+    * Compilation fixes for Clang.
+
+    * Added 'cave resolve --chroot-path'.
+
+    * Removed the "breaks Portage" feature.
+
 2.0.0:
     * General C++11ification.
 
