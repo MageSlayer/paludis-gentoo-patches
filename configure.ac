@@ -717,11 +717,24 @@ AC_ARG_ENABLE([ruby],
 AC_MSG_RESULT($enable_ruby)
 
 if test "x$enable_ruby" = "xyes" ; then
-	PKG_CHECK_MODULES(RUBY, [ruby-2.2], [
-		RUBY=`pkg-config --variable=ruby ruby-2.2`
-		RUBY_SITEARCHDIR=`pkg-config --variable=sitearchdir ruby-2.2`
+	AC_ARG_WITH([ruby-version],
+		AS_HELP_STRING([--with-ruby-version=2.2], [Specify Ruby version]),
+		RUBY_VERSION="$withval",
+		RUBY_VERSION="2.2")
+
+	case "$RUBY_VERSION" in
+		1.9|2.0|2.1|2.2)
+			;;
+		*)
+			AC_MSG_ERROR([Invalid ruby version specified])
+			;;
+	esac
+
+	PKG_CHECK_MODULES(RUBY, [ruby-$RUBY_VERSION], [
+		RUBY=`pkg-config --variable=ruby ruby-$RUBY_VERSION`
+		RUBY_SITEARCHDIR=`pkg-config --variable=sitearchdir ruby-$RUBY_VERSION`
 	], [
-		AC_MSG_ERROR([Ruby is required for --enable-ruby])
+		AC_MSG_ERROR([Ruby $RUBY_VERSION is required for --enable-ruby])
 	])
 
 	AC_ARG_WITH([ruby-install-dir],
