@@ -47,7 +47,7 @@ econf()
 
         local extra_options_help=""
         for i in ${PALUDIS_ECONF_EXTRA_OPTIONS_HELP_DEPENDENT}; do
-            "${ECONF_SOURCE}/configure" --help 2>/dev/null | grep -q "${i%%::*}" \
+            "${ECONF_SOURCE}/configure" --help 2>/dev/null | grep -q -e "${i%%::*}" \
                 && extra_options_help+=" ${i#*::}"
         done
 

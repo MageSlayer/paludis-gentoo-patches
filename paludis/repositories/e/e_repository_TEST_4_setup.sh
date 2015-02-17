@@ -913,7 +913,7 @@ src_unpack() {
 #!/bin/sh
 
 if echo "$@" | grep -q 'help' ; then
-    echo disable-dependency-tracking
+    echo --disable-dependency-tracking
     exit 0
 fi
 

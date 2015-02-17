@@ -96,7 +96,7 @@ src_unpack() {
 #!/bin/sh
 
 if echo "$@" | grep -q 'help' ; then
-    echo disable-silent-rules
+    echo --disable-silent-rules
     exit 0
 fi
 
