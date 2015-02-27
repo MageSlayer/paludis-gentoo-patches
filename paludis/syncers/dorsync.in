@@ -89,7 +89,7 @@ REMOTE="${REMOTE#file://}"
 REMOTE="${REMOTE#rsync+ssh://}"
 
 ${RSYNC_WRAPPER} rsync --recursive --links --safe-links --perms --times \
-    --compress --force --whole-file --delete --delete-delay --stats --timeout=180 \
+    --new-compress --force --whole-file --delete --delete-delay --stats --timeout=180 \
     ${PALUDIS_SYNC_FILTER_FILE:+--filter "merge ${PALUDIS_SYNC_FILTER_FILE}"} \
     --exclude=/.cache --progress "${RSYNC_OPTIONS[@]}" "${REMOTE%/}/" "${LOCAL}/"
 
