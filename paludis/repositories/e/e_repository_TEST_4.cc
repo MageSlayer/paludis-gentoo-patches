@@ -301,7 +301,6 @@ TEST(ERepository, EAPI4MergeType)
                     n::replacing() = std::make_shared<PackageIDSequence>(),
                     n::want_phase() = &want_all_phases
                     ));
-        ::setenv("EXPECTED_MERGE_TYPE", "source", 1);
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-4::test-repo",
@@ -371,7 +370,6 @@ TEST(ERepository, EAPI4MergeTypeBin)
                     n::replacing() = std::make_shared<PackageIDSequence>(),
                     n::want_phase() = &want_all_phases
                     ));
-        ::setenv("EXPECTED_MERGE_TYPE", "buildonly", 1);
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-bin-4::test-repo",
@@ -389,7 +387,6 @@ TEST(ERepository, EAPI4MergeTypeBin)
                     n::replacing() = std::make_shared<PackageIDSequence>(),
                     n::want_phase() = &want_all_phases
                     ));
-        ::setenv("EXPECTED_MERGE_TYPE", "binary", 1);
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/merge-type-bin-4::binrepo",

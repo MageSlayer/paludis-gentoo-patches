@@ -956,6 +956,8 @@ KEYWORDS="test"
 
 S="${WORKDIR}"
 
+EXPECTED_MERGE_TYPE=source
+
 pkg_setup() {
     if [[ ${EXPECTED_MERGE_TYPE} != ${MERGE_TYPE} ]] ; then
         die ${EXPECTED_MERGE_TYPE} is not ${MERGE_TYPE}
@@ -975,10 +977,13 @@ KEYWORDS="test"
 
 S="${WORKDIR}"
 
+EXPECTED_MERGE_TYPE=buildonly
+
 pkg_setup() {
     if [[ ${EXPECTED_MERGE_TYPE} != ${MERGE_TYPE} ]] ; then
         die ${EXPECTED_MERGE_TYPE} is not ${MERGE_TYPE}
     fi
+    EXPECTED_MERGE_TYPE=binary
 }
 END
 mkdir -p "cat/required-use-all-good" || exit 1

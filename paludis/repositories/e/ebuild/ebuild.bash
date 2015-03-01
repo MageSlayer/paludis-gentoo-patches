@@ -304,7 +304,7 @@ ebuild_scrub_environment()
             echo "\${!${PALUDIS_CLIENT_UPPER}_CMDLINE_*} ${PALUDIS_CLIENT_UPPER}_OPTIONS" )
 
         unset -v CATEGORY PN PV P PNV PVR PF PNVR
-        unset -v ebuild EBUILD
+        unset -v ebuild EBUILD MERGE_TYPE
         unset -v $(
             for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
                 echo E_${v}
