@@ -39,6 +39,7 @@ namespace
     static VALUE c_info_action_options;
     static VALUE c_info_action;
 
+    static VALUE c_config_action_options;
     static VALUE c_config_action;
 
     static VALUE c_install_action_options;
@@ -81,6 +82,38 @@ namespace
         {
             return Data_Wrap_Struct(c_info_action_options, 0,
                                     &Common<InfoActionOptions>::free, value);
+        }
+        catch (const std::exception & e)
+        {
+            delete value;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    const ConfigActionOptions
+    value_to_config_action_options(VALUE v)
+    {
+        if (rb_obj_is_kind_of(v, c_config_action_options))
+        {
+            ConfigActionOptions *instance;
+            Data_Get_Struct(v, ConfigActionOptions, instance);
+            return *instance;
+        }
+        else
+        {
+            rb_raise(rb_eTypeError, "Can't convert %s into ConfigActionOptions",
+                     rb_obj_classname(v));
+        }
+    }
+
+    VALUE
+    config_action_options_to_value(const ConfigActionOptions &options)
+    {
+        ConfigActionOptions *value = new ConfigActionOptions(options);
+        try
+        {
+            return Data_Wrap_Struct(c_config_action_options, 0,
+                                    &Common<ConfigActionOptions>::free, value);
         }
         catch (const std::exception & e)
         {
@@ -359,6 +392,31 @@ namespace
 
     /*
      * call-seq:
+     *      ConfigAction.new -> ConfigAction
+     */
+    VALUE
+    config_action_new(VALUE self, VALUE opts)
+    {
+        const ConfigActionOptions options = value_to_config_action_options(opts);
+        std::shared_ptr<Action> *action = new std::shared_ptr<Action>(std::make_shared<ConfigAction>(options));
+        VALUE object = Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action>>::free, action); rb_obj_call_init(object, 1, &self);
+        return object;
+    }
+
+    /*
+     * call-seq:
+     *     options -> ConfigActionOptions
+     */
+    VALUE
+    config_action_options(VALUE self)
+    {
+        std::shared_ptr<Action> *instance;
+        Data_Get_Struct(self, std::shared_ptr<Action>, instance);
+        return config_action_options_to_value(std::static_pointer_cast<ConfigAction>(*instance)->options);
+    }
+
+    /*
+     * call-seq:
      *     InfoActionOptions.new() -> InfoActionOptions
      *     InfoActionOptions.new(Hash) -> InfoActionOptions
      *
@@ -388,6 +446,47 @@ namespace
                 new InfoActionOptions(make_named_values<InfoActionOptions>(
                     n::make_output_manager() = &make_standard_output_manager));
             VALUE object = Data_Wrap_Struct(self, 0, &Common<InfoActionOptions>::free, options);
+            rb_obj_call_init(object, argc, argv);
+            return object;
+        }
+        catch (const std::exception & e)
+        {
+            delete options;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
+     *     ConfigActionOptions.new() -> ConfigActionOptions
+     *     ConfigActionOptions.new(Hash) -> ConfigActionOptions
+     *
+     * ConfigActionOptions.new can either be called with all parameters in
+     * order, or with one hash parameter, where the hash keys are symbols with
+     * the names above.
+     */
+    VALUE
+    config_action_options_new(int argc, VALUE *argv, VALUE self)
+    {
+        ConfigActionOptions *options = nullptr;
+        try
+        {
+            if (argc == 1 && rb_obj_is_kind_of(argv[0], rb_cHash))
+            {
+                // TODO(compnerd) raise an error if hashtable is not empty
+            }
+            else if (argc == 0)
+            {
+            }
+            else
+            {
+                rb_raise(rb_eArgError, "ConfigActionOptions expects zero or one arguments, but got %d", argc);
+            }
+
+            options =
+                new ConfigActionOptions(make_named_values<ConfigActionOptions>(
+                    n::make_output_manager() = &make_standard_output_manager));
+            VALUE object = Data_Wrap_Struct(self, 0, &Common<ConfigActionOptions>::free, options);
             rb_obj_call_init(object, argc, argv);
             return object;
         }
@@ -561,31 +660,6 @@ namespace
             T_ * p;
             Data_Get_Struct(self, T_, p);
             return rb_str_new2((p->*f_)().c_str());
-        }
-    };
-
-    /*
-     * Document-method ConfigAction.new
-     *
-     * call-seq:
-     *     ConfigAction.new -> ConfigAction
-     *
-     * Create new ConfigAction
-     */
-    template <typename A_, typename O_>
-    struct EasyActionNew
-    {
-        static VALUE
-        easy_action_new(VALUE self)
-        {
-            O_ options(make_named_values<O_>(
-                        n::make_output_manager() = &make_standard_output_manager
-                        ));
-
-            std::shared_ptr<Action> * a(new std::shared_ptr<Action>(std::make_shared<A_>(options)));
-            VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action> >::free, a));
-            rb_obj_call_init(tdata, 1, &self);
-            return tdata;
         }
     };
 
@@ -982,14 +1056,23 @@ namespace
         rb_define_method(c_info_action, "options", RUBY_FUNC_CAST(&info_action_options), 0);
 
         /*
+         * Document-class: Paludis::ConfigActionOptions
+         *
+         * Options for Paludis::ConfigAction
+         */
+        c_config_action_options = rb_define_class_under(paludis_module(), "ConfigActionOptions", rb_cObject);
+        rb_define_singleton_method(c_config_action_options, "new", RUBY_FUNC_CAST(&config_action_options_new), -1);
+        rb_define_method(c_config_action_options, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+
+        /*
          * Document-class: Paludis::ConfigAction
          *
          * An action for fetching.
          */
         c_config_action = rb_define_class_under(paludis_module(), "ConfigAction", c_action);
-        rb_define_singleton_method(c_config_action, "new",
-                RUBY_FUNC_CAST((&EasyActionNew<ConfigAction, ConfigActionOptions>::easy_action_new)), 0);
+        rb_define_singleton_method(c_config_action, "new", RUBY_FUNC_CAST(&config_action_new), -1);
         rb_define_method(c_config_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+        rb_define_method(c_config_action, "options", RUBY_FUNC_CAST(&config_action_options), 0);
 
         /*
          * Document-class: Paludis::InstallActionOptions
