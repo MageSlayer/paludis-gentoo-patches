@@ -175,21 +175,6 @@ namespace
         }
     }
 
-    const FetchActionFailure
-    value_to_fetch_action_failure(VALUE v)
-    {
-        if (rb_obj_is_kind_of(v, c_fetch_action_failure))
-        {
-            FetchActionFailure * v_ptr;
-            Data_Get_Struct(v, FetchActionFailure, v_ptr);
-            return *v_ptr;
-        }
-        else
-        {
-            rb_raise(rb_eTypeError, "Can't convert %s into FetchActionFailure", rb_obj_classname(v));
-        }
-    }
-
     VALUE
     empty_init(int, VALUE *, VALUE self)
     {
