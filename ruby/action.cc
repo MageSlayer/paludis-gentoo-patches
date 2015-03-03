@@ -32,6 +32,7 @@ namespace
     static VALUE c_supports_action_test;
 
     static VALUE c_action;
+
     static VALUE c_fetch_action;
     static VALUE c_fetch_action_options;
     static VALUE c_fetch_action_failure;
@@ -53,193 +54,215 @@ namespace
 
     static VALUE c_pretend_fetch_action;
 
+    template <typename OptionClass>
+    struct BoxedOptionsTraits;
+
+    template <typename ActionClass>
+    struct BoxedActionTraits;
+
+    template <>
+    struct BoxedOptionsTraits<InfoActionOptions>
+    {
+        using ActionClass = InfoAction;
+        static constexpr const char *OptionClassName = "InfoActionOptions";
+        static VALUE BoxedType() { return c_info_action_options; }
+    };
+
+    template <>
+    struct BoxedActionTraits<InfoAction>
+    {
+        using OptionsClass = InfoActionOptions;
+        static constexpr const char *ActionClassName = "InfoAction";
+        static VALUE BoxedType() { return c_info_action; }
+    };
+
+    template <>
+    struct BoxedOptionsTraits<ConfigActionOptions>
+    {
+        using ActionClass = ConfigAction;
+        static constexpr const char *OptionClassName = "ConfigActionOptions";
+        static VALUE BoxedType() { return c_config_action_options; }
+    };
+
+    template <>
+    struct BoxedActionTraits<ConfigAction>
+    {
+        using OptionsClass = ConfigActionOptions;
+        static constexpr const char *ActionClassName = "ConfigAction";
+        static VALUE BoxedType() { return c_config_action; }
+    };
+
+    template <>
+    struct BoxedOptionsTraits<FetchActionOptions>
+    {
+        using ActionClass = FetchAction;
+        static constexpr const char *OptionClassName = "FetchActionOptions";
+        static VALUE BoxedType() { return c_fetch_action_options; }
+    };
+
+    template <>
+    struct BoxedActionTraits<FetchAction>
+    {
+        using OptionsClass = FetchActionOptions;
+        static constexpr const char *ActionClassName = "FetchAction";
+        static VALUE BoxedType() { return c_fetch_action; }
+    };
+
+    template <>
+    struct BoxedOptionsTraits<InstallActionOptions>
+    {
+        using ActionClass = InstallAction;
+        static constexpr const char *OptionClassName = "InstallActionOptions";
+        static VALUE BoxedType() { return c_install_action_options; }
+    };
+
+    template <>
+    struct BoxedActionTraits<InstallAction>
+    {
+        using OptionsClass = InstallActionOptions;
+        static constexpr const char *ActionClassName = "InstallAction";
+        static VALUE BoxedType() { return c_install_action; }
+    };
+
+    template <>
+    struct BoxedOptionsTraits<PretendActionOptions>
+    {
+        using ActionClass = PretendAction;
+        static constexpr const char *OptionClassName = "PretendActionOptions";
+        static VALUE BoxedType() { return c_pretend_action_options; }
+    };
+
+    template <>
+    struct BoxedActionTraits<PretendAction>
+    {
+        using OptionsClass = PretendActionOptions;
+        static constexpr const char *ActionClassName = "PretendAction";
+        static VALUE BoxedTYpe() { return c_pretend_action; }
+    };
+
+    template <>
+    struct BoxedOptionsTraits<UninstallActionOptions>
+    {
+        using ActionClass = UninstallAction;
+        static constexpr const char *OptionClassName = "UninstallActionOptions";
+        static VALUE BoxedType() { return c_uninstall_action_options; }
+    };
+
+    template <>
+    struct BoxedActionTraits<UninstallAction>
+    {
+        using OptionsClass = UninstallActionOptions;
+        static constexpr const char *OptionClassName = "UninstallAction";
+        static VALUE BoxedTYpe() { return c_uninstall_action; }
+    };
+
+    /*
+     * Document-method: destination
+     *
+     * call-seq:
+     *     destination -> Repository
+     *
+     * Our destination
+     */
+    /*
+     * Document-method: destination
+     *
+     * call-seq:
+     *     destination -> Repository
+     *
+     * Our destination
+     */
+    template <typename OptionClass, typename Traits = BoxedOptionsTraits<OptionClass>>
+    struct BoxedOptions
+    {
+        static VALUE box(const OptionClass &options)
+        {
+            OptionClass *value = new OptionClass(options);
+            try
+            {
+                return Data_Wrap_Struct(Traits::BoxedType(), 0, &Common<OptionClass>::free, value);
+            }
+            catch (const std::exception & e)
+            {
+                delete value;
+                exception_to_ruby_exception(e);
+            }
+        }
+
+        static const OptionClass unbox(VALUE value)
+        {
+            if (rb_obj_is_kind_of(value, Traits::BoxedType()))
+            {
+                OptionClass *instance;
+                Data_Get_Struct(value, OptionClass, instance);
+                return *instance;
+            }
+            else
+            {
+                rb_raise(rb_eTypeError, "Can't convert %s into %s",
+                         rb_obj_classname(value), Traits::OptionClassName);
+            }
+        }
+
+        static VALUE destination(VALUE self)
+        {
+            OptionClass *instance;
+            Data_Get_Struct(self, OptionClass, instance);
+            return repository_to_value(instance->destination());
+        }
+    };
+
+    /*
+     * call-seq:
+     *     options -> FetchActionOptions
+     *
+     * Our FetchActionOptions.
+     */
+    /*
+     * call-seq:
+     *     options -> InstallActionOptions
+     *
+     * Our InstallActionOptions.
+     */
+    /*
+     * call-seq:
+     *     options -> PretendActionOptions
+     *
+     * Our PretendActionOptions.
+     */
+    /*
+     * call-seq:
+     *     options -> UninstallActionOptions
+     *
+     * Our UninstallActionOptions.
+     */
+    /*
+     * call-seq:
+     *     options -> InfoActionOptions
+     *
+     * Our InfoActionOptions.
+     */
+    /*
+     * call-seq:
+     *     options -> ConfigActionOptions
+     *
+     * Our ConfigActionOptions.
+     */
+    template <typename ActionClass, typename Traits = BoxedActionTraits<ActionClass>>
+    struct BoxedAction
+    {
+        static VALUE options(VALUE self)
+        {
+            std::shared_ptr<Action> *instance;
+            Data_Get_Struct(self, std::shared_ptr<Action>, instance);
+            return BoxedOptions<typename Traits::OptionsClass>::box(
+                std::static_pointer_cast<ActionClass>(*instance)->options);
+        }
+    };
+
     WantPhase want_all_phases(const std::string &)
     {
         return wp_yes;
-    }
-
-    const InfoActionOptions
-    value_to_info_action_options(VALUE v)
-    {
-        if (rb_obj_is_kind_of(v, c_info_action_options))
-        {
-            InfoActionOptions *instance;
-            Data_Get_Struct(v, InfoActionOptions, instance);
-            return *instance;
-        }
-        else
-        {
-            rb_raise(rb_eTypeError, "Can't convert %s into InfoActionOptions",
-                     rb_obj_classname(v));
-        }
-    }
-
-    VALUE
-    info_action_options_to_value(const InfoActionOptions &options)
-    {
-        InfoActionOptions *value = new InfoActionOptions(options);
-        try
-        {
-            return Data_Wrap_Struct(c_info_action_options, 0,
-                                    &Common<InfoActionOptions>::free, value);
-        }
-        catch (const std::exception & e)
-        {
-            delete value;
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    const ConfigActionOptions
-    value_to_config_action_options(VALUE v)
-    {
-        if (rb_obj_is_kind_of(v, c_config_action_options))
-        {
-            ConfigActionOptions *instance;
-            Data_Get_Struct(v, ConfigActionOptions, instance);
-            return *instance;
-        }
-        else
-        {
-            rb_raise(rb_eTypeError, "Can't convert %s into ConfigActionOptions",
-                     rb_obj_classname(v));
-        }
-    }
-
-    VALUE
-    config_action_options_to_value(const ConfigActionOptions &options)
-    {
-        ConfigActionOptions *value = new ConfigActionOptions(options);
-        try
-        {
-            return Data_Wrap_Struct(c_config_action_options, 0,
-                                    &Common<ConfigActionOptions>::free, value);
-        }
-        catch (const std::exception & e)
-        {
-            delete value;
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    const FetchActionOptions
-    value_to_fetch_action_options(VALUE v)
-    {
-        if (rb_obj_is_kind_of(v, c_fetch_action_options))
-        {
-            FetchActionOptions * v_ptr;
-            Data_Get_Struct(v, FetchActionOptions, v_ptr);
-            return *v_ptr;
-        }
-        else
-        {
-            rb_raise(rb_eTypeError, "Can't convert %s into FetchActionOptions", rb_obj_classname(v));
-        }
-    }
-
-    VALUE
-    fetch_action_options_to_value(const FetchActionOptions & m)
-    {
-        FetchActionOptions * m_ptr(new FetchActionOptions(m));
-        try
-        {
-            return Data_Wrap_Struct(c_fetch_action_options, 0, &Common<FetchActionOptions>::free, m_ptr);
-        }
-        catch (const std::exception & e)
-        {
-            delete m_ptr;
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    const InstallActionOptions
-    value_to_install_action_options(VALUE v)
-    {
-        if (rb_obj_is_kind_of(v, c_install_action_options))
-        {
-            InstallActionOptions * v_ptr;
-            Data_Get_Struct(v, InstallActionOptions, v_ptr);
-            return *v_ptr;
-        }
-        else
-        {
-            rb_raise(rb_eTypeError, "Can't convert %s into InstallActionOptions", rb_obj_classname(v));
-        }
-    }
-
-    const PretendActionOptions
-    value_to_pretend_action_options(VALUE v)
-    {
-        if (rb_obj_is_kind_of(v, c_pretend_action_options))
-        {
-            PretendActionOptions * v_ptr;
-            Data_Get_Struct(v, PretendActionOptions, v_ptr);
-            return *v_ptr;
-        }
-        else
-        {
-            rb_raise(rb_eTypeError, "Can't convert %s into PretendActionOptions", rb_obj_classname(v));
-        }
-    }
-
-    VALUE
-    install_action_options_to_value(const InstallActionOptions & m)
-    {
-        InstallActionOptions * m_ptr(new InstallActionOptions(m));
-        try
-        {
-            return Data_Wrap_Struct(c_install_action_options, 0, &Common<InstallActionOptions>::free, m_ptr);
-        }
-        catch (const std::exception & e)
-        {
-            delete m_ptr;
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    VALUE
-    pretend_action_options_to_value(const PretendActionOptions & m)
-    {
-        PretendActionOptions * m_ptr(new PretendActionOptions(m));
-        try
-        {
-            return Data_Wrap_Struct(c_pretend_action_options, 0, &Common<PretendActionOptions>::free, m_ptr);
-        }
-        catch (const std::exception & e)
-        {
-            delete m_ptr;
-            exception_to_ruby_exception(e);
-        }
-    }
-
-    const UninstallActionOptions
-    value_to_uninstall_action_options(VALUE v)
-    {
-        if (rb_obj_is_kind_of(v, c_uninstall_action_options))
-        {
-            UninstallActionOptions * v_ptr;
-            Data_Get_Struct(v, UninstallActionOptions, v_ptr);
-            return *v_ptr;
-        }
-        else
-        {
-            rb_raise(rb_eTypeError, "Can't convert %s into UninstallActionOptions", rb_obj_classname(v));
-        }
-    }
-
-    VALUE
-    uninstall_action_options_to_value(const UninstallActionOptions & m)
-    {
-        UninstallActionOptions * m_ptr(new UninstallActionOptions(m));
-        try
-        {
-            return Data_Wrap_Struct(c_install_action_options, 0, &Common<InstallActionOptions>::free, m_ptr);
-        }
-        catch (const std::exception & e)
-        {
-            delete m_ptr;
-            exception_to_ruby_exception(e);
-        }
     }
 
     VALUE
@@ -369,25 +392,11 @@ namespace
     VALUE
     info_action_new(VALUE self, VALUE opts)
     {
-        const InfoActionOptions options = value_to_info_action_options(opts);
+        auto options = BoxedOptions<InfoActionOptions>::unbox(opts);
         std::shared_ptr<Action> *action = new std::shared_ptr<Action>(std::make_shared<InfoAction>(options));
         VALUE object = Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action>>::free, action);
         rb_obj_call_init(object, 1, &self);
         return object;
-    }
-
-    /*
-     * call-seq:
-     *     options -> InfoActionOptions
-     *
-     * Our InfoActionOptions.
-     */
-    VALUE
-    info_action_options(VALUE self)
-    {
-        std::shared_ptr<Action> *instance;
-        Data_Get_Struct(self, std::shared_ptr<Action>, instance);
-        return info_action_options_to_value(std::static_pointer_cast<InfoAction>(*instance)->options);
     }
 
     /*
@@ -397,22 +406,10 @@ namespace
     VALUE
     config_action_new(VALUE self, VALUE opts)
     {
-        const ConfigActionOptions options = value_to_config_action_options(opts);
+        auto options = BoxedOptions<ConfigActionOptions>::unbox(opts);
         std::shared_ptr<Action> *action = new std::shared_ptr<Action>(std::make_shared<ConfigAction>(options));
         VALUE object = Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action>>::free, action); rb_obj_call_init(object, 1, &self);
         return object;
-    }
-
-    /*
-     * call-seq:
-     *     options -> ConfigActionOptions
-     */
-    VALUE
-    config_action_options(VALUE self)
-    {
-        std::shared_ptr<Action> *instance;
-        Data_Get_Struct(self, std::shared_ptr<Action>, instance);
-        return config_action_options_to_value(std::static_pointer_cast<ConfigAction>(*instance)->options);
     }
 
     /*
@@ -504,26 +501,12 @@ namespace
     VALUE
     fetch_action_new(VALUE self, VALUE opts)
     {
-        const FetchActionOptions opts_ptr(value_to_fetch_action_options(opts));
+        auto options = BoxedOptions<FetchActionOptions>::unbox(opts);
         std::shared_ptr<Action> * a(
-                new std::shared_ptr<Action>(std::make_shared<FetchAction>(opts_ptr)));
+                new std::shared_ptr<Action>(std::make_shared<FetchAction>(options)));
         VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action> >::free, a));
         rb_obj_call_init(tdata, 1, &self);
         return tdata;
-    }
-
-    /*
-     * call-seq:
-     *     options -> FetchActionOptions
-     *
-     * Our FetchActionOptions.
-     */
-    VALUE
-    fetch_action_options(VALUE self)
-    {
-        std::shared_ptr<Action> * p;
-        Data_Get_Struct(self, std::shared_ptr<Action>, p);
-        return fetch_action_options_to_value(std::static_pointer_cast<FetchAction>(*p)->options);
     }
 
     /*
@@ -757,38 +740,6 @@ namespace
     }
 
     /*
-     * Document-method: destination
-     *
-     * call-seq:
-     *     destination -> Repository
-     *
-     * Our destination
-     */
-    VALUE
-    install_action_options_destination(VALUE self)
-    {
-        InstallActionOptions * p;
-        Data_Get_Struct(self, InstallActionOptions, p);
-        return repository_to_value((*p).destination());
-    }
-
-    /*
-     * Document-method: destination
-     *
-     * call-seq:
-     *     destination -> Repository
-     *
-     * Our destination
-     */
-    VALUE
-    pretend_action_options_destination(VALUE self)
-    {
-        PretendActionOptions * p;
-        Data_Get_Struct(self, PretendActionOptions, p);
-        return repository_to_value((*p).destination());
-    }
-
-    /*
      * call-seq:
      *     InstallAction.new(install_action_options) -> InstallAction
      *
@@ -797,9 +748,9 @@ namespace
     VALUE
     install_action_new(VALUE self, VALUE opts)
     {
-        const InstallActionOptions opts_ptr(value_to_install_action_options(opts));
+        auto options = BoxedOptions<InstallActionOptions>::unbox(opts);
         std::shared_ptr<Action> * a(
-                new std::shared_ptr<Action>(std::make_shared<InstallAction>(opts_ptr)));
+                new std::shared_ptr<Action>(std::make_shared<InstallAction>(options)));
         VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action> >::free, a));
         rb_obj_call_init(tdata, 1, &self);
         return tdata;
@@ -814,40 +765,12 @@ namespace
     VALUE
     pretend_action_new(VALUE self, VALUE opts)
     {
-        const PretendActionOptions opts_ptr(value_to_pretend_action_options(opts));
+        auto options = BoxedOptions<PretendActionOptions>::unbox(opts);
         std::shared_ptr<Action> * a(
-                new std::shared_ptr<Action>(std::make_shared<PretendAction>(opts_ptr)));
+                new std::shared_ptr<Action>(std::make_shared<PretendAction>(options)));
         VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action> >::free, a));
         rb_obj_call_init(tdata, 1, &self);
         return tdata;
-    }
-
-    /*
-     * call-seq:
-     *     options -> InstallActionOptions
-     *
-     * Our InstallActionOptions.
-     */
-    VALUE
-    install_action_options(VALUE self)
-    {
-        std::shared_ptr<Action> * p;
-        Data_Get_Struct(self, std::shared_ptr<Action>, p);
-        return install_action_options_to_value(std::static_pointer_cast<InstallAction>(*p)->options);
-    }
-
-    /*
-     * call-seq:
-     *     options -> PretendActionOptions
-     *
-     * Our PretendActionOptions.
-     */
-    VALUE
-    pretend_action_options(VALUE self)
-    {
-        std::shared_ptr<Action> * p;
-        Data_Get_Struct(self, std::shared_ptr<Action>, p);
-        return pretend_action_options_to_value(std::static_pointer_cast<PretendAction>(*p)->options);
     }
 
     bool ignore_nothing(const FSPath &)
@@ -906,25 +829,11 @@ namespace
     VALUE
     uninstall_action_new(VALUE self, VALUE opts)
     {
-        const UninstallActionOptions opts_ptr(value_to_uninstall_action_options(opts));
-        std::shared_ptr<Action> * a(new std::shared_ptr<Action>(std::make_shared<UninstallAction>(opts_ptr)));
+        auto options = BoxedOptions<UninstallActionOptions>::unbox(opts);
+        std::shared_ptr<Action> * a(new std::shared_ptr<Action>(std::make_shared<UninstallAction>(options)));
         VALUE tdata(Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action> >::free, a));
         rb_obj_call_init(tdata, 1, &self);
         return tdata;
-    }
-
-    /*
-     * call-seq:
-     *     options -> UninstallActionOptions
-     *
-     * Our UninstallActionOptions.
-     */
-    VALUE
-    uninstall_action_options(VALUE self)
-    {
-        std::shared_ptr<Action> * p;
-        Data_Get_Struct(self, std::shared_ptr<Action>, p);
-        return uninstall_action_options_to_value(std::static_pointer_cast<UninstallAction>(*p)->options);
     }
 
     /*
@@ -998,7 +907,7 @@ namespace
         c_fetch_action = rb_define_class_under(paludis_module(), "FetchAction", c_action);
         rb_define_singleton_method(c_fetch_action, "new", RUBY_FUNC_CAST(&fetch_action_new), 1);
         rb_define_method(c_fetch_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-        rb_define_method(c_fetch_action, "options", RUBY_FUNC_CAST(&fetch_action_options), 0);
+        rb_define_method(c_fetch_action, "options", RUBY_FUNC_CAST(&BoxedAction<FetchAction>::options), 0);
 
         /*
          * Document-class: Paludis::FetchActionOptions
@@ -1053,7 +962,7 @@ namespace
         c_info_action = rb_define_class_under(paludis_module(), "InfoAction", c_action);
         rb_define_singleton_method(c_info_action, "new", RUBY_FUNC_CAST(&info_action_new), 1);
         rb_define_method(c_info_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-        rb_define_method(c_info_action, "options", RUBY_FUNC_CAST(&info_action_options), 0);
+        rb_define_method(c_info_action, "options", RUBY_FUNC_CAST(&BoxedAction<InfoAction>::options), 0);
 
         /*
          * Document-class: Paludis::ConfigActionOptions
@@ -1072,7 +981,7 @@ namespace
         c_config_action = rb_define_class_under(paludis_module(), "ConfigAction", c_action);
         rb_define_singleton_method(c_config_action, "new", RUBY_FUNC_CAST(&config_action_new), -1);
         rb_define_method(c_config_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-        rb_define_method(c_config_action, "options", RUBY_FUNC_CAST(&config_action_options), 0);
+        rb_define_method(c_config_action, "options", RUBY_FUNC_CAST(&BoxedAction<ConfigAction>::options), 0);
 
         /*
          * Document-class: Paludis::InstallActionOptions
@@ -1082,7 +991,7 @@ namespace
         c_install_action_options = rb_define_class_under(paludis_module(), "InstallActionOptions", rb_cObject);
         rb_define_singleton_method(c_install_action_options, "new", RUBY_FUNC_CAST(&install_action_options_new), -1);
         rb_define_method(c_install_action_options, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-        rb_define_method(c_install_action_options, "destination", RUBY_FUNC_CAST(&install_action_options_destination), 0);
+        rb_define_method(c_install_action_options, "destination", RUBY_FUNC_CAST(&BoxedOptions<InstallActionOptions>::destination), 0);
 
         /*
          * Document-class: Paludis::InstallAction
@@ -1092,7 +1001,7 @@ namespace
         c_install_action = rb_define_class_under(paludis_module(), "InstallAction", c_action);
         rb_define_singleton_method(c_install_action, "new", RUBY_FUNC_CAST(&install_action_new), 1);
         rb_define_method(c_install_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-        rb_define_method(c_install_action, "options", RUBY_FUNC_CAST(&install_action_options), 0);
+        rb_define_method(c_install_action, "options", RUBY_FUNC_CAST(&BoxedAction<InstallAction>::options), 0);
 
         /*
          * Document-class: Paludis::UninstallActionOptions
@@ -1112,7 +1021,7 @@ namespace
         c_uninstall_action = rb_define_class_under(paludis_module(), "UninstallAction", c_action);
         rb_define_singleton_method(c_uninstall_action, "new", RUBY_FUNC_CAST(&uninstall_action_new), 1);
         rb_define_method(c_uninstall_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-        rb_define_method(c_uninstall_action, "options", RUBY_FUNC_CAST(&uninstall_action_options), 0);
+        rb_define_method(c_uninstall_action, "options", RUBY_FUNC_CAST(&BoxedAction<UninstallAction>::options), 0);
 
         /*
          * Document-class: Paludis::PretendActionOptions
@@ -1122,7 +1031,7 @@ namespace
         c_pretend_action_options = rb_define_class_under(paludis_module(), "PretendActionOptions", rb_cObject);
         rb_define_singleton_method(c_pretend_action_options, "new", RUBY_FUNC_CAST(&pretend_action_options_new), -1);
         rb_define_method(c_pretend_action_options, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
-        rb_define_method(c_pretend_action_options, "destination", RUBY_FUNC_CAST(&pretend_action_options_destination), 0);
+        rb_define_method(c_pretend_action_options, "destination", RUBY_FUNC_CAST(&BoxedOptions<PretendActionOptions>::destination), 0);
 
         /*
          * Document-class: Paludis::PretendAction
@@ -1134,7 +1043,7 @@ namespace
         rb_define_method(c_pretend_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
         rb_define_method(c_pretend_action, "failed?", RUBY_FUNC_CAST(&pretend_action_failed), 0);
         rb_define_method(c_pretend_action, "set_failed", RUBY_FUNC_CAST(&pretend_action_set_failed), 0);
-        rb_define_method(c_pretend_action, "options", RUBY_FUNC_CAST(&pretend_action_options), 0);
+        rb_define_method(c_pretend_action, "options", RUBY_FUNC_CAST(&BoxedAction<PretendAction>::options), 0);
 
         c_pretend_fetch_action = rb_define_class_under(paludis_module(), "PretendFetchAction", c_action);
         rb_funcall(c_pretend_fetch_action, rb_intern("private_class_method"), 1, rb_str_new2("new"));
