@@ -36,7 +36,9 @@ namespace
     static VALUE c_fetch_action_options;
     static VALUE c_fetch_action_failure;
 
+    static VALUE c_info_action_options;
     static VALUE c_info_action;
+
     static VALUE c_config_action;
 
     static VALUE c_install_action_options;
@@ -53,6 +55,38 @@ namespace
     WantPhase want_all_phases(const std::string &)
     {
         return wp_yes;
+    }
+
+    const InfoActionOptions
+    value_to_info_action_options(VALUE v)
+    {
+        if (rb_obj_is_kind_of(v, c_info_action_options))
+        {
+            InfoActionOptions *instance;
+            Data_Get_Struct(v, InfoActionOptions, instance);
+            return *instance;
+        }
+        else
+        {
+            rb_raise(rb_eTypeError, "Can't convert %s into InfoActionOptions",
+                     rb_obj_classname(v));
+        }
+    }
+
+    VALUE
+    info_action_options_to_value(const InfoActionOptions &options)
+    {
+        InfoActionOptions *value = new InfoActionOptions(options);
+        try
+        {
+            return Data_Wrap_Struct(c_info_action_options, 0,
+                                    &Common<InfoActionOptions>::free, value);
+        }
+        catch (const std::exception & e)
+        {
+            delete value;
+            exception_to_ruby_exception(e);
+        }
     }
 
     const FetchActionOptions
@@ -297,6 +331,75 @@ namespace
 
     /*
      * call-seq:
+     *      InfoAction.new -> InfoAction
+     */
+    VALUE
+    info_action_new(VALUE self, VALUE opts)
+    {
+        const InfoActionOptions options = value_to_info_action_options(opts);
+        std::shared_ptr<Action> *action = new std::shared_ptr<Action>(std::make_shared<InfoAction>(options));
+        VALUE object = Data_Wrap_Struct(self, 0, &Common<std::shared_ptr<Action>>::free, action);
+        rb_obj_call_init(object, 1, &self);
+        return object;
+    }
+
+    /*
+     * call-seq:
+     *     options -> InfoActionOptions
+     *
+     * Our InfoActionOptions.
+     */
+    VALUE
+    info_action_options(VALUE self)
+    {
+        std::shared_ptr<Action> *instance;
+        Data_Get_Struct(self, std::shared_ptr<Action>, instance);
+        return info_action_options_to_value(std::static_pointer_cast<InfoAction>(*instance)->options);
+    }
+
+    /*
+     * call-seq:
+     *     InfoActionOptions.new() -> InfoActionOptions
+     *     InfoActionOptions.new(Hash) -> InfoActionOptions
+     *
+     * InfoActionOptions.new can either be called with all parameters in order,
+     * or with one hash parameter, where the hash keys are symbols with the
+     * names above.
+     */
+    VALUE
+    info_action_options_new(int argc, VALUE *argv, VALUE self)
+    {
+        InfoActionOptions *options = nullptr;
+        try
+        {
+            if (argc == 1 && rb_obj_is_kind_of(argv[0], rb_cHash))
+            {
+                // TODO(compnerd) raise an error if hashtable is not empty
+            }
+            else if (argc == 0)
+            {
+            }
+            else
+            {
+                rb_raise(rb_eArgError, "InfoActionOptions expects zero or one arguments, but got %d", argc);
+            }
+
+            options =
+                new InfoActionOptions(make_named_values<InfoActionOptions>(
+                    n::make_output_manager() = &make_standard_output_manager));
+            VALUE object = Data_Wrap_Struct(self, 0, &Common<InfoActionOptions>::free, options);
+            rb_obj_call_init(object, argc, argv);
+            return object;
+        }
+        catch (const std::exception & e)
+        {
+            delete options;
+            exception_to_ruby_exception(e);
+        }
+    }
+
+    /*
+     * call-seq:
      *     FetchAction.new -> FetchAction
      */
     VALUE
@@ -461,14 +564,6 @@ namespace
         }
     };
 
-    /*
-     * Document-method InfoAction.new
-     *
-     * call-seq:
-     *     InfoAction.new -> InfoAction
-     *
-     * Create new InfoAction
-     */
     /*
      * Document-method ConfigAction.new
      *
@@ -868,14 +963,23 @@ namespace
                         &FetchActionFailure::failed_integrity_checks>::fetch)), 0);
 
         /*
+         * Document-class: Paludis::InfoActionOptions
+         *
+         * Options for Paludis::InfoAction
+         */
+        c_info_action_options = rb_define_class_under(paludis_module(), "InfoActionOptions", rb_cObject);
+        rb_define_singleton_method(c_info_action_options, "new", RUBY_FUNC_CAST(&info_action_options_new), -1);
+        rb_define_method(c_info_action_options, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+
+        /*
          * Document-class: Paludis::InfoAction
          *
          * An action for fetching.
          */
         c_info_action = rb_define_class_under(paludis_module(), "InfoAction", c_action);
-        rb_define_singleton_method(c_info_action, "new",
-                RUBY_FUNC_CAST((&EasyActionNew<InfoAction, InfoActionOptions>::easy_action_new)), 0);
+        rb_define_singleton_method(c_info_action, "new", RUBY_FUNC_CAST(&info_action_new), 1);
         rb_define_method(c_info_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+        rb_define_method(c_info_action, "options", RUBY_FUNC_CAST(&info_action_options), 0);
 
         /*
          * Document-class: Paludis::ConfigAction
