@@ -50,7 +50,8 @@ TEST(KernelVersion, Works)
 {
     EXPECT_TRUE(! kernel_version().empty());
 #ifdef __linux__
-    EXPECT_TRUE('2' == kernel_version().at(0) || '3' == kernel_version().at(0));
+    char c = kernel_version().at(0);
+    EXPECT_TRUE(c >= '2' && c <= '4');
     EXPECT_TRUE('.' == kernel_version().at(1));
 #elif defined(__FreeBSD__)
     EXPECT_TRUE(isdigit(kernel_version().at(0)));
