@@ -83,11 +83,6 @@ namespace
         return wp_yes;
     }
 
-    bool ignore_nothing(const FSPath &)
-    {
-        return false;
-    }
-
     struct ContentsGatherer
     {
         std::string _str;

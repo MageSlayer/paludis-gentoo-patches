@@ -56,13 +56,6 @@ namespace
         Whirlpool s(ss);
         return s.hexsum();
     }
-
-    std::string whirlpool_dehex(const std::string & data)
-    {
-        std::stringstream ss(dehex(data));
-        Whirlpool s(ss);
-        return s.hexsum();
-    }
 }
 
 TEST(Whirlpool, t0)

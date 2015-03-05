@@ -26,16 +26,6 @@ using namespace paludis;
 
 namespace
 {
-    int * make_ten()
-    {
-        return new int(10);
-    }
-
-    std::shared_ptr<int> make_ten_shared()
-    {
-        return std::make_shared<int>(10);
-    }
-
     std::string * make_monkey()
     {
         return new std::string("monkey");

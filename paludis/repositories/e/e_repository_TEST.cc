@@ -65,12 +65,6 @@ using namespace paludis;
 
 namespace
 {
-    void cannot_uninstall(const std::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
-    {
-        if (id)
-            throw InternalError(PALUDIS_HERE, "cannot uninstall");
-    }
-
     std::shared_ptr<OutputManager> make_standard_output_manager(const Action &)
     {
         return std::make_shared<StandardOutputManager>();

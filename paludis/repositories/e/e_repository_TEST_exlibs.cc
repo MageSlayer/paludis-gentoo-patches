@@ -81,10 +81,6 @@ namespace
             return mm->second;
     }
 
-    void dummy_used_this_for_config_protect(const std::string &)
-    {
-    }
-
     WantPhase want_all_phases(const std::string &)
     {
         return wp_yes;
