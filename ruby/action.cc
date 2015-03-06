@@ -137,7 +137,7 @@ namespace
     {
         using OptionsClass = PretendActionOptions;
         static constexpr const char *ActionClassName = "PretendAction";
-        static VALUE BoxedTYpe() { return c_pretend_action; }
+        static VALUE BoxedType() { return c_pretend_action; }
     };
 
     template <>
@@ -153,7 +153,7 @@ namespace
     {
         using OptionsClass = UninstallActionOptions;
         static constexpr const char *OptionClassName = "UninstallAction";
-        static VALUE BoxedTYpe() { return c_uninstall_action; }
+        static VALUE BoxedType() { return c_uninstall_action; }
     };
 
     /*
