@@ -385,6 +385,12 @@ InstalledUnpackagedRepository::want_pre_post_phases() const
     return true;
 }
 
+std::string
+InstalledUnpackagedRepository::split_debug_location() const
+{
+    return _imp->params.split_debug_location();
+}
+
 void
 InstalledUnpackagedRepository::invalidate()
 {
@@ -446,6 +452,10 @@ InstalledUnpackagedRepository::repository_factory_create(
     if (name_str.empty())
         name_str = "installed-unpackaged";
 
+    std::string split_debug_location(f("split_debug_location"));
+    if (split_debug_location.empty())
+        split_debug_location = "/usr/lib/debug";
+
     std::string tool_prefix(f("tool_prefix"));
     if (tool_prefix.empty())
         tool_prefix = "(none)";
@@ -455,6 +465,7 @@ InstalledUnpackagedRepository::repository_factory_create(
                     n::environment() = env,
                     n::location() = location,
                     n::root() = root,
+                    n::split_debug_location() = split_debug_location,
                     n::tool_prefix() = tool_prefix
                 ));
 }

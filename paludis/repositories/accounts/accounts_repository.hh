@@ -161,6 +161,8 @@ namespace paludis
                     override PALUDIS_ATTRIBUTE((warn_unused_result));
                 bool want_pre_post_phases() const
                     override PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::string split_debug_location() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
                 void merge(const MergeParams &) override;
 
                 ///\}

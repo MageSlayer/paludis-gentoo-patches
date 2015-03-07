@@ -30,6 +30,7 @@ namespace paludis
         typedef Name<struct name_builddir> builddir;
         typedef Name<struct name_environment> environment;
         typedef Name<struct name_root> root;
+        typedef Name<struct name_split_debug_location> split_debug_location;
     }
 
     namespace erepository
@@ -39,6 +40,7 @@ namespace paludis
             NamedValue<n::builddir, FSPath> builddir;
             NamedValue<n::environment, Environment *> environment;
             NamedValue<n::root, FSPath> root;
+            NamedValue<n::split_debug_location, std::string> split_debug_location;
         };
 
         class EInstalledRepository :
@@ -72,6 +74,9 @@ namespace paludis
                     override PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 bool want_pre_post_phases() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                std::string split_debug_location() const
                     override PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 /* Repository */

@@ -321,18 +321,15 @@ paludis::erepository::do_install_action(
         {
             if ((! id->eapi()->supported()->is_pbin()) && (! strip_restrict))
             {
-                std::string libdir("lib");
                 FSPath root(destination->installed_root_key()
                                 ? stringify(destination->installed_root_key()->parse_value())
                                 : "/");
-                if ((root / "usr" / "lib").stat().is_symlink())
-                {
-                    libdir = (root / "usr" / "lib").readlink();
-                    if (std::string::npos != libdir.find_first_of("./"))
-                        libdir = "lib";
-                }
 
-                Log::get_instance()->message("e.ebuild.libdir", ll_debug, lc_context) << "Using '" << libdir << "' for libdir";
+                std::string split_debug_location =
+                    destination->destination_interface()->split_debug_location();
+                auto split_debug_dir = FSPath(root / split_debug_location)
+                                           .realpath_if_exists()
+                                           .strip_leading(root);
 
                 std::shared_ptr<const ChoiceValue> symbols_choice(choices->find_by_name_with_prefix(
                             ELikeSymbolsChoiceValue::canonical_name_with_prefix()));
@@ -346,7 +343,7 @@ paludis::erepository::do_install_action(
                 EStripper stripper(make_named_values<EStripperOptions>(
                             n::compress_splits() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_compress(
                                 symbols_choice->parameter()),
-                            n::debug_dir() = package_builddir / "image" / "usr" / libdir / "debug",
+                            n::debug_dir() = package_builddir / "image" / split_debug_dir,
                             n::dwarf_compression() = dwarf_compression && dwarf_compression->enabled(),
                             n::image_dir() = package_builddir / "image",
                             n::output_manager() = output_manager,

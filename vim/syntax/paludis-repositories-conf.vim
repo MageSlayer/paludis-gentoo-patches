@@ -73,6 +73,7 @@ syn keyword PaludisRepositoriesConfKnownKey contained
             \ root
             \ securitydir
             \ setsdir
+            \ split_debug_location
             \ sync
             \ sync
             \ sync_options

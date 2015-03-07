@@ -156,7 +156,8 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             make_named_values<EInstalledRepositoryParams>(
                 n::builddir() = p.builddir(),
                 n::environment() = p.environment(),
-                n::root() = p.root()
+                n::root() = p.root(),
+                n::split_debug_location() = "/usr/lib/debug"
                 ),
             p.name(),
             make_named_values<RepositoryCapabilities>(

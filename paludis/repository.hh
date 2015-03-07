@@ -548,6 +548,8 @@ namespace paludis
              */
             virtual void merge(const MergeParams &) = 0;
 
+            virtual std::string split_debug_location() const = 0;
+
             ///\}
 
             virtual ~RepositoryDestinationInterface();

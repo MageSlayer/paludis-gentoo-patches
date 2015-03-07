@@ -106,6 +106,7 @@ TEST(InstalledRepository, Content)
                     n::environment() = &env,
                     n::location() = FSPath("installed_repository_TEST_dir/repo1"),
                     n::root() = FSPath("installed_repository_TEST_dir/root"),
+                    n::split_debug_location() = "/usr/lib/debug",
                     n::tool_prefix() = ""
                 )));
     env.add_repository(1, repo);
@@ -125,6 +126,7 @@ TEST(InstalledRepository, Metadata)
                     n::environment() = &env,
                     n::location() = FSPath("installed_repository_TEST_dir/repo1"),
                     n::root() = FSPath("installed_repository_TEST_dir/root"),
+                    n::split_debug_location() = "/usr/lib/debug",
                     n::tool_prefix() = ""
                 )));
     env.add_repository(1, repo);
@@ -173,6 +175,7 @@ TEST(InstalledRepository, Masks)
                     n::environment() = &env,
                     n::location() = FSPath("installed_repository_TEST_dir/repo1"),
                     n::root() = FSPath("installed_repository_TEST_dir/root"),
+                    n::split_debug_location() = "/usr/lib/debug",
                     n::tool_prefix() = ""
                 )));
     env.add_repository(1, repo);
@@ -199,6 +202,7 @@ TEST(InstalledRepository, Actions)
                     n::environment() = &env,
                     n::location() = FSPath("installed_repository_TEST_dir/repo1"),
                     n::root() = FSPath("installed_repository_TEST_dir/root"),
+                    n::split_debug_location() = "/usr/lib/debug",
                     n::tool_prefix() = ""
                 )));
     env.add_repository(1, repo);
@@ -230,6 +234,7 @@ TEST(InstalledRepository, UninstallLast)
                     n::environment() = &env,
                     n::location() = FSPath("installed_repository_TEST_dir/repo2"),
                     n::root() = FSPath("installed_repository_TEST_dir/root2"),
+                    n::split_debug_location() = "/usr/lib/debug",
                     n::tool_prefix() = ""
                 )));
     env.add_repository(1, repo);
@@ -280,6 +285,7 @@ TEST(InstalledRepository, UninstallNotLast)
                     n::environment() = &env,
                     n::location() = FSPath("installed_repository_TEST_dir/repo3"),
                     n::root() = FSPath("installed_repository_TEST_dir/root3"),
+                    n::split_debug_location() = "/usr/lib/debug",
                     n::tool_prefix() = ""
                 )));
     env.add_repository(1, repo);
@@ -326,6 +332,7 @@ TEST(InstalledRepository, MultipleOps)
                         n::environment() = &env,
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
                         n::root() = FSPath("installed_repository_TEST_dir/root4"),
+                        n::split_debug_location() = "/usr/lib/debug",
                         n::tool_prefix() = ""
                     )));
         env.add_repository(1, repo);
@@ -344,6 +351,7 @@ TEST(InstalledRepository, MultipleOps)
                         n::environment() = &env,
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
                         n::root() = FSPath("installed_repository_TEST_dir/root4"),
+                        n::split_debug_location() = "/usr/lib/debug",
                         n::tool_prefix() = ""
                     )));
         env.add_repository(0, repo);
@@ -403,6 +411,7 @@ TEST(InstalledRepository, MultipleOps)
                         n::environment() = &env,
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
                         n::root() = FSPath("installed_repository_TEST_dir/root4"),
+                        n::split_debug_location() = "/usr/lib/debug",
                         n::tool_prefix() = ""
                     )));
         env.add_repository(0, repo);
@@ -464,6 +473,7 @@ TEST(InstalledRepository, MultipleOps)
                         n::environment() = &env,
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
                         n::root() = FSPath("installed_repository_TEST_dir/root4"),
+                        n::split_debug_location() = "/usr/lib/debug",
                         n::tool_prefix() = ""
                     )));
         env.add_repository(0, repo);
@@ -525,6 +535,7 @@ TEST(InstalledRepository, MultipleOps)
                         n::environment() = &env,
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
                         n::root() = FSPath("installed_repository_TEST_dir/root4"),
+                        n::split_debug_location() = "/usr/lib/debug",
                         n::tool_prefix() = ""
                     )));
         env.add_repository(0, repo);
@@ -572,6 +583,7 @@ TEST(InstalledRepository, MultipleOps)
                         n::environment() = &env,
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
                         n::root() = FSPath("installed_repository_TEST_dir/root4"),
+                        n::split_debug_location() = "/usr/lib/debug",
                         n::tool_prefix() = ""
                     )));
         env.add_repository(0, repo);

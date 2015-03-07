@@ -69,6 +69,7 @@ namespace paludis
         typedef Name<struct name_profiles_explicitly_set> profiles_explicitly_set;
         typedef Name<struct name_securitydir> securitydir;
         typedef Name<struct name_setsdir> setsdir;
+        typedef Name<struct name_split_debug_location> split_debug_location;
         typedef Name<struct name_sync> sync;
         typedef Name<struct name_sync_options> sync_options;
         typedef Name<struct name_thin_manifests> thin_manifests;
@@ -112,6 +113,7 @@ namespace paludis
             NamedValue<n::profiles_explicitly_set, bool> profiles_explicitly_set;
             NamedValue<n::securitydir, FSPath> securitydir;
             NamedValue<n::setsdir, FSPath> setsdir;
+            NamedValue<n::split_debug_location, std::string> split_debug_location;
             NamedValue<n::sync, std::shared_ptr<Map<std::string, std::string> > > sync;
             NamedValue<n::sync_options, std::shared_ptr<Map<std::string, std::string> > > sync_options;
             NamedValue<n::thin_manifests, bool> thin_manifests;

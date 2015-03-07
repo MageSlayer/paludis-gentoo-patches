@@ -116,6 +116,12 @@ EInstalledRepository::want_pre_post_phases() const
     return true;
 }
 
+std::string
+EInstalledRepository::split_debug_location() const
+{
+    return _imp->params.split_debug_location();
+}
+
 HookResult
 EInstalledRepository::perform_hook(const Hook & hook, const std::shared_ptr<OutputManager> &)
 {

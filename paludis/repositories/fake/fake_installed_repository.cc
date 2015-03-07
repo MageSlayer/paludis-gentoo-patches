@@ -82,6 +82,12 @@ FakeInstalledRepository::want_pre_post_phases() const
     return true;
 }
 
+std::string
+FakeInstalledRepository::split_debug_location() const
+{
+    return "/usr/lib/debug";
+}
+
 void
 FakeInstalledRepository::merge(const MergeParams &)
 {

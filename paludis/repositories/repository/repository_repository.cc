@@ -312,6 +312,12 @@ RepositoryRepository::want_pre_post_phases() const
     return true;
 }
 
+std::string
+RepositoryRepository::split_debug_location() const
+{
+    return std::string();
+}
+
 namespace
 {
     std::string get_string_key(const std::shared_ptr<const MetadataKeyHolder> & id, const std::string & k)

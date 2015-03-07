@@ -272,6 +272,7 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<FSPath> > licence_groups_location_key;
         std::shared_ptr<Map<std::string, std::string> > sync_hosts;
         std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key;
+        std::shared_ptr<const MetadataValueKey<std::string>> split_debug_location_key;
         std::shared_ptr<const MetadataValueKey<std::string>> tool_prefix_key;
         std::shared_ptr<const MetadataValueKey<std::string>> cross_compile_host_key;
         std::list<std::shared_ptr<const MetadataKey> > about_keys;
@@ -377,6 +378,8 @@ namespace paludis
         licence_groups_location_key(layout->licence_groups_location_key()),
         sync_hosts(std::make_shared<Map<std::string, std::string> >()),
         sync_host_key(std::make_shared<LiteralMetadataStringStringMapKey>("sync_host", "sync_host", mkt_internal, sync_hosts)),
+        split_debug_location_key(std::make_shared<LiteralMetadataValueKey<std::string>>("split_debug_location",
+                    "split_debug_location", mkt_internal, params.split_debug_location())),
         tool_prefix_key(std::make_shared<LiteralMetadataValueKey<std::string>>("tool_prefix",
                     "tool_prefix", mkt_normal, params.tool_prefix())),
         cross_compile_host_key(std::make_shared<LiteralMetadataValueKey<std::string>>("cross_compile_host",
@@ -591,6 +594,7 @@ ERepository::_add_metadata_keys() const
     if (_imp->licence_groups_location_key)
         add_metadata_key(_imp->licence_groups_location_key);
     add_metadata_key(_imp->sync_host_key);
+    add_metadata_key(_imp->split_debug_location_key);
     add_metadata_key(_imp->tool_prefix_key);
     add_metadata_key(_imp->cross_compile_host_key);
 
@@ -918,6 +922,12 @@ bool
 ERepository::want_pre_post_phases() const
 {
     return false;
+}
+
+std::string
+ERepository::split_debug_location() const
+{
+    return _imp->split_debug_location_key->parse_value();
 }
 
 HookResult
@@ -1507,6 +1517,7 @@ ERepository::repository_factory_create(
                 n::profiles_explicitly_set() = profiles_explicitly_set,
                 n::securitydir() = FSPath(securitydir).realpath_if_exists(),
                 n::setsdir() = FSPath(setsdir).realpath_if_exists(),
+                n::split_debug_location() = split_debug_location,
                 n::sync() = sync,
                 n::sync_options() = sync_options,
                 n::thin_manifests() = thin_manifests,

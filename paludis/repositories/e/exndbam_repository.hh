@@ -37,6 +37,7 @@ namespace paludis
         typedef Name<struct name_environment> environment;
         typedef Name<struct name_location> location;
         typedef Name<struct name_root> root;
+        typedef Name<struct name_split_debug_location> split_debug_location;
         typedef Name<struct name_tool_prefix> tool_prefix;
     }
 
@@ -52,6 +53,7 @@ namespace paludis
             NamedValue<n::environment, Environment *> environment;
             NamedValue<n::location, FSPath> location;
             NamedValue<n::root, FSPath> root;
+            NamedValue<n::split_debug_location, std::string> split_debug_location;
             NamedValue<n::tool_prefix, std::string> tool_prefix;
         };
     }

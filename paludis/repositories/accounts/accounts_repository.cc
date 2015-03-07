@@ -385,6 +385,12 @@ AccountsRepository::want_pre_post_phases() const
     return true;
 }
 
+std::string
+AccountsRepository::split_debug_location() const
+{
+    return std::string();
+}
+
 void
 AccountsRepository::merge(const MergeParams & m)
 {

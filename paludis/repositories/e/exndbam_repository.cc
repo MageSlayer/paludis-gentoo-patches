@@ -118,7 +118,8 @@ ExndbamRepository::ExndbamRepository(const RepositoryName & n, const ExndbamRepo
             make_named_values<EInstalledRepositoryParams>(
                 n::builddir() = p.builddir(),
                 n::environment() = p.environment(),
-                n::root() = p.root()
+                n::root() = p.root(),
+                n::split_debug_location() = p.split_debug_location()
                 ),
             n,
             make_named_values<RepositoryCapabilities>(
@@ -180,6 +181,10 @@ ExndbamRepository::repository_factory_create(
     if (cross_compile_host.empty())
         cross_compile_host = native_compile_target();
 
+    std::string split_debug_location(f("split_debug_location"));
+    if (split_debug_location.empty())
+        split_debug_location = "/usr/lib/debug";
+
     std::string tool_prefix(f("tool_prefix"));
     if (tool_prefix.empty())
         tool_prefix = "(none)";
@@ -193,6 +198,7 @@ ExndbamRepository::repository_factory_create(
                 n::environment() = env,
                 n::location() = location,
                 n::root() = root,
+                n::split_debug_location() = split_debug_location,
                 n::tool_prefix() = tool_prefix
                 )
             );
