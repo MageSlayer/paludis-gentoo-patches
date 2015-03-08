@@ -733,8 +733,8 @@ if test "x$enable_ruby" = "xyes" ; then
 	esac
 
 	PKG_CHECK_MODULES(RUBY, [ruby-$RUBY_VERSION], [
-		RUBY=`pkg-config --variable=ruby ruby-$RUBY_VERSION`
-		RUBY_SITEARCHDIR=`pkg-config --variable=sitearchdir ruby-$RUBY_VERSION`
+		RUBY=`${PKG_CONFIG} --variable=ruby ruby-$RUBY_VERSION`
+		RUBY_SITEARCHDIR=`${PKG_CONFIG} --variable=sitearchdir ruby-$RUBY_VERSION`
 	], [
 		AC_MSG_ERROR([Ruby $RUBY_VERSION is required for --enable-ruby])
 	])
