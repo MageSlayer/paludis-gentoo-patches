@@ -8,6 +8,7 @@ libexecprog_SCRIPTS = \
 	dohard \
 	dohtml \
 	dolib \
+	dosbin \
 	dosed \
 	donewins \
 	emake \
@@ -19,6 +20,7 @@ libexecprog_SCRIPTS = \
 	hereinitd \
 	hereins \
 	heresbin \
+	newsbin \
 	nonfatal \
 	prepall \
 	prepallstrip \

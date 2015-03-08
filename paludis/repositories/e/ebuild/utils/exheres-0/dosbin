@@ -1,7 +1,11 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2008 Bo Ørsted Andresen
+# Copyright (c) 2006 Stephen Bennett
+#
+# Based in part upon dosbin from Portage, which is Copyright 1995-2005
+# Gentoo Foundation and distributed under the terms of the GNU General
+# Public License v2.
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
@@ -24,18 +28,26 @@ if [[ ${FILESYSTEM_LAYOUT} == cross ]]; then
     die_because_banned_in_eapi_exheres-0
 fi
 
-if [[ ! -d ${!PALUDIS_TEMP_DIR_VAR} ]]; then
-    paludis_die_or_error "\${${PALUDIS_TEMP_DIR_VAR}} not valid; aborting"
+if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
+    paludis_die_or_error "\${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting"
 fi
 
-if [[ ${#} -ne 1 ]]; then
-    paludis_die_or_error "exactly one argument needed."
+if [[ ${#} -lt 1 ]]; then
+    paludis_die_or_error "at least one argument needed"
 fi
 
-if [[ -t 0 ]]; then
-    paludis_die_or_error "requires stdin input"
+if [[ ! -d "${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/sbin" ]]; then
+    install -d "${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/sbin" || paludis_die_or_error "could not create ${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/sbin"
 fi
 
-rm -rf "${!PALUDIS_TEMP_DIR_VAR}/${1}"
-cat > "${!PALUDIS_TEMP_DIR_VAR}/${1}"
-dosbin "${!PALUDIS_TEMP_DIR_VAR}/${1}"
+ret=0
+for x in "$@"; do
+    if [[ -n ${PALUDIS_NO_CHOWN} ]]; then
+        install -m0755 "${x}" "${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/sbin" || ret=2
+    else
+        install -m0755 -o root -g 0 "${x}" "${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/sbin" || ret=2
+    fi
+done
+
+[[ 0 != "${ret}" ]] && paludis_die_or_error "dosbin returned error ${ret}"
+exit ${ret}
