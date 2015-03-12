@@ -73,18 +73,6 @@ module Paludis
         end
     end
 
-    class TestCase_SupportsInstallActionTest < Test::Unit::TestCase
-        def test_create
-            assert_kind_of SupportsActionTest, SupportsActionTest.new(InstallAction)
-        end
-    end
-
-    class TestCase_SupportsInstallActionTest < Test::Unit::TestCase
-        def test_create
-            assert_kind_of SupportsActionTest, SupportsActionTest.new(InstallAction)
-        end
-    end
-
     class TestCase_FetchActionOptions < Test::Unit::TestCase
         def test_create
             assert_kind_of FetchActionOptions, FetchActionOptions.new(false, false, false)
