@@ -166,12 +166,12 @@ module Paludis
 
     class TestCase_InfoAction < Test::Unit::TestCase
         def test_create
-            assert_kind_of InfoAction, InfoAction.new
-            assert_kind_of Action, InfoAction.new
+            assert_kind_of InfoAction, InfoAction.new(InfoActionOptions.new)
+            assert_kind_of Action, InfoAction.new(InfoActionOptions.new)
         end
 
         def test_bad_create
-            assert_raise ArgumentError do
+            assert_raise TypeError do
                 InfoAction.new('')
             end
         end
@@ -179,12 +179,12 @@ module Paludis
 
     class TestCase_ConfigAction < Test::Unit::TestCase
         def test_create
-            assert_kind_of ConfigAction, ConfigAction.new
-            assert_kind_of Action, ConfigAction.new
+            assert_kind_of ConfigAction, ConfigAction.new(ConfigActionOptions.new)
+            assert_kind_of Action, ConfigAction.new(ConfigActionOptions.new)
         end
 
         def test_bad_create
-            assert_raise ArgumentError do
+            assert_raise TypeError do
                 ConfigAction.new('')
             end
         end

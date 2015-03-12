@@ -387,7 +387,7 @@ namespace
 
     /*
      * call-seq:
-     *      InfoAction.new -> InfoAction
+     *      InfoAction.new(info_action_options) -> InfoAction
      */
     VALUE
     info_action_new(VALUE self, VALUE opts)
@@ -401,7 +401,7 @@ namespace
 
     /*
      * call-seq:
-     *      ConfigAction.new -> ConfigAction
+     *      ConfigAction.new(config_action_options) -> ConfigAction
      */
     VALUE
     config_action_new(VALUE self, VALUE opts)
@@ -496,7 +496,7 @@ namespace
 
     /*
      * call-seq:
-     *     FetchAction.new -> FetchAction
+     *     FetchAction.new(fetch_action_options) -> FetchAction
      */
     VALUE
     fetch_action_new(VALUE self, VALUE opts)
@@ -979,7 +979,7 @@ namespace
          * An action for fetching.
          */
         c_config_action = rb_define_class_under(paludis_module(), "ConfigAction", c_action);
-        rb_define_singleton_method(c_config_action, "new", RUBY_FUNC_CAST(&config_action_new), -1);
+        rb_define_singleton_method(c_config_action, "new", RUBY_FUNC_CAST(&config_action_new), 1);
         rb_define_method(c_config_action, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
         rb_define_method(c_config_action, "options", RUBY_FUNC_CAST(&BoxedAction<ConfigAction>::options), 0);
 
