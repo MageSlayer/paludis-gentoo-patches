@@ -127,6 +127,10 @@ econf()
             econf_args+=( "${i}" )
         done
 
+        if [[ ${FILESYSTEM_LAYOUT} == cross ]] ; then
+            local bindir=bin
+        fi
+
         local j default_args=()
         for i in \
             --prefix=/usr \
@@ -142,7 +146,9 @@ econf()
             --disable-dependency-tracking \
             --disable-silent-rules \
             --enable-fast-install \
-            --libdir=${ECONF_PREFIX}/${LIBDIR:-lib}; do
+            --libdir=${ECONF_PREFIX}/${LIBDIR:-lib} \
+            --bindir=${ECONF_PREFIX}/${bindir:-bin} \
+            --sbindir=${ECONF_PREFIX}/${bindir:-sbin}; do
             j=${i%%=*}
             has ${j#--} ${hates} || default_args+=( "${i}" )
         done
@@ -173,6 +179,10 @@ einstall()
         cmd="${cmd} sysconfdir=${IMAGE}/etc"
         cmd="${cmd} localstatedir=${IMAGE}/var/lib"
         cmd="${cmd} libdir=${IMAGE}/usr/${LIBDIR:-lib}"
+        if [[ ${FILESYSTEM_LAYOUT} == cross ]] ; then
+            cmd="${cmd} bindir=${IMAGE}/usr/$(exhost --target)/bin"
+            cmd="${cmd} sbindir=${IMAGE}/usr/$(exhost --target)/bin"
+        fi
         cmd="${cmd} ${@} install"
         echo "${cmd}" 1>&2
         ${cmd} || paludis_die_unless_nonfatal "einstall failed" || return 247
