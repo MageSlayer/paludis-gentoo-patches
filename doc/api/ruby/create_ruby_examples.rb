@@ -24,7 +24,7 @@ ARGV.each do |example_file|
         output.write "<h1>#{example_file}</h1>"
 
         #Grab examples description
-        html.scan(/=begin description(.*?)=end/m) {|desc| output.puts "<p>#{desc}</p>"}
+        html.scan(/=begin description(.*?)=end/m) {|desc| output.puts "<p>#{desc[0]}</p>"}
 
         #enclose each line of an =begin block in a comment span
         html.gsub!(/=begin description.*?=end/m) do |match|
