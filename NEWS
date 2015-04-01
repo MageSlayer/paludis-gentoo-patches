@@ -4,6 +4,11 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+2.4.0:
+    * Bug fixes.
+
+    * We now use Ruby 2.2, unless --with-ruby-version is specified.
+
 2.2.0:
     * Bug fixes.
 
