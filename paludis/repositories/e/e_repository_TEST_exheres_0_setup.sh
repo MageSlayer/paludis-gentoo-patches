@@ -880,7 +880,7 @@ WORK="${WORKBASE}"
 
 src_unpack() {
     mkdir ${WORK}
-    echo "#!/bin/bash" > ${WORK}/configure
+    echo "#!/usr/bin/env bash" > ${WORK}/configure
     chmod +x ${WORK}/configure
 }
 
