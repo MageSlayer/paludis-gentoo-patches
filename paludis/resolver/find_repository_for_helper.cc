@@ -81,7 +81,8 @@ FindRepositoryForHelper::operator() (
         switch (resolution->resolvent().destination_type())
         {
             case dt_install_to_slash:
-                if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->parse_value() != _imp->env->system_root_key()->parse_value()))
+                if ((! (*r)->installed_root_key()) ||
+                    ((*r)->installed_root_key()->parse_value() != _imp->env->system_root_key()->parse_value()))
                     continue;
                 break;
 
