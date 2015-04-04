@@ -219,6 +219,7 @@ paludis::erepository::do_install_action(
     auto choices(id->choices_key()->parse_value());
     auto work_choice(choices->find_by_name_with_prefix(ELikeWorkChoiceValue::canonical_name_with_prefix()));
     auto volatile_files(std::make_shared<FSPathSet>());
+    auto destination = install_action.options.destination();
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_install());
     for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
@@ -264,9 +265,9 @@ paludis::erepository::do_install_action(
 
         if (phase->option("merge") || phase->option("check_merge"))
         {
-            if (! (*install_action.options.destination()).destination_interface())
+            if (! destination->destination_interface())
                 throw ActionFailedError("Can't install '" + stringify(*id)
-                        + "' to destination '" + stringify(install_action.options.destination()->name())
+                        + "' to destination '" + stringify(destination->name())
                         + "' because destination does not provide destination_interface");
 
             MergerOptions extra_merger_options;
@@ -274,7 +275,7 @@ paludis::erepository::do_install_action(
                 extra_merger_options += mo_nondestructive;
 
             Timestamp build_start_time(FSPath(package_builddir / "temp" / "build_start_time").stat().mtim());
-            (*install_action.options.destination()).destination_interface()->merge(
+            destination->destination_interface()->merge(
                     make_named_values<MergeParams>(
                         n::build_start_time() = build_start_time,
                         n::check() = phase->option("check_merge"),
@@ -303,12 +304,12 @@ paludis::erepository::do_install_action(
                     auto vstat = vabs.stat();
                     if (! vstat.is_regular_file_or_symlink_to_regular_file())
                         throw ActionFailedError("Can't install '" + stringify(*id)
-                                + "' to destination '" + stringify(install_action.options.destination()->name())
+                                + "' to destination '" + stringify(destination->name())
                                 + "' because '" + stringify(v) + "' was marked using exvolatile, but it is not a regular "
                                 "file or a symlink to a regular file");
                     if (vstat.is_symlink() && 0 == vabs.readlink().compare(0, 1, "/", 0, 1))
                         throw ActionFailedError("Can't install '" + stringify(*id)
-                                + "' to destination '" + stringify(install_action.options.destination()->name())
+                                + "' to destination '" + stringify(destination->name())
                                 + "' because '" + stringify(v) + "' was marked using exvolatile, but volatile symlinks"
                                 "must not be absolute");
                 }
@@ -319,8 +320,9 @@ paludis::erepository::do_install_action(
             if ((! id->eapi()->supported()->is_pbin()) && (! strip_restrict))
             {
                 std::string libdir("lib");
-                FSPath root(install_action.options.destination()->installed_root_key() ?
-                        stringify(install_action.options.destination()->installed_root_key()->parse_value()) : "/");
+                FSPath root(destination->installed_root_key()
+                                ? stringify(destination->installed_root_key()->parse_value())
+                                : "/");
                 if ((root / "usr" / "lib").stat().is_symlink())
                 {
                     libdir = (root / "usr" / "lib").readlink();
@@ -350,8 +352,8 @@ paludis::erepository::do_install_action(
             }
         }
         else if ((! phase->option("prepost")) ||
-                ((*install_action.options.destination()).destination_interface() &&
-                 (*install_action.options.destination()).destination_interface()->want_pre_post_phases()))
+                (destination->destination_interface() &&
+                 destination->destination_interface()->want_pre_post_phases()))
         {
             if (phase->option("optional_tests"))
             {
@@ -403,9 +405,9 @@ paludis::erepository::do_install_action(
                     n::portdir() =
                         (params.master_repositories() && ! params.master_repositories()->empty()) ?
                         (*params.master_repositories()->begin())->params().location() : params.location(),
-                    n::root() = install_action.options.destination()->installed_root_key() ?
-                        stringify(install_action.options.destination()->installed_root_key()->parse_value()) :
-                        "/",
+                    n::root() = destination->installed_root_key()
+                                    ? stringify(destination->installed_root_key()->parse_value())
+                                    : "/",
                     n::sandbox() = phase->option("sandbox"),
                     n::sydbox() = phase->option("sydbox"),
                     n::userpriv() = phase->option("userpriv") && userpriv_ok,
@@ -419,7 +421,7 @@ paludis::erepository::do_install_action(
                             n::accept_license() = accept_license,
                             n::config_protect() = repo->environment_updated_profile_variable("CONFIG_PROTECT"),
                             n::config_protect_mask() = repo->environment_updated_profile_variable("CONFIG_PROTECT_MASK"),
-                            n::destination() = install_action.options.destination(),
+                            n::destination() = destination,
                             n::expand_vars() = expand_vars,
                             n::is_from_pbin() = id->eapi()->supported()->is_pbin(),
                             n::loadsaveenv_dir() = package_builddir / "temp",
@@ -467,9 +469,9 @@ paludis::erepository::do_install_action(
                                         (params.master_repositories() && ! params.master_repositories()->empty())
                                             ? (*params.master_repositories()->begin())->params().location()
                                             : params.location(),
-                                    n::root() = install_action.options.destination()->installed_root_key() ?
-                                    stringify(install_action.options.destination()->installed_root_key()->parse_value()) :
-                                    "/",
+                                    n::root() = destination->installed_root_key()
+                                                    ?  stringify(destination->installed_root_key()->parse_value())
+                                                    : "/",
                                     n::sandbox() = tidyup_phase->option("sandbox"),
                                     n::sydbox() = tidyup_phase->option("sydbox"),
                                     n::userpriv() = tidyup_phase->option("userpriv") && userpriv_ok,
@@ -483,7 +485,7 @@ paludis::erepository::do_install_action(
                                     n::accept_license() = accept_license,
                                     n::config_protect() = repo->environment_updated_profile_variable("CONFIG_PROTECT"),
                                     n::config_protect_mask() = repo->environment_updated_profile_variable("CONFIG_PROTECT_MASK"),
-                                    n::destination() = install_action.options.destination(),
+                                    n::destination() = destination,
                                     n::expand_vars() = expand_vars,
                                     n::is_from_pbin() = id->eapi()->supported()->is_pbin(),
                                     n::loadsaveenv_dir() = package_builddir / "temp",
@@ -507,7 +509,7 @@ paludis::erepository::do_install_action(
     }
 
     /* replacing for pbins is done during the merge */
-    if (install_action.options.destination()->installed_root_key())
+    if (destination->installed_root_key())
         for (PackageIDSequence::ConstIterator i(install_action.options.replacing()->begin()), i_end(install_action.options.replacing()->end()) ;
                 i != i_end ; ++i)
         {

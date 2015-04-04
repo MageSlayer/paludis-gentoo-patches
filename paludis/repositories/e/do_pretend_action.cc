@@ -105,6 +105,7 @@ paludis::erepository::do_pretend_action(
 
                 const auto params = repo->params();
                 const auto profile = repo->profile();
+                const auto destination = a.options.destination();
 
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                             n::builddir() = params.builddir(),
@@ -125,9 +126,9 @@ paludis::erepository::do_pretend_action(
                             n::portdir() =
                                 (params.master_repositories() && ! params.master_repositories()->empty()) ?
                                 (*params.master_repositories()->begin())->params().location() : params.location(),
-                            n::root() = a.options.destination()->installed_root_key() ?
-                                stringify(a.options.destination()->installed_root_key()->parse_value()) :
-                                "/",
+                            n::root() = destination->installed_root_key()
+                                            ? stringify(destination->installed_root_key()->parse_value())
+                                            : "/",
                             n::sandbox() = phase->option("sandbox"),
                             n::sydbox() = phase->option("sydbox"),
                             n::userpriv() = phase->option("userpriv") && userpriv_ok,
@@ -172,6 +173,7 @@ paludis::erepository::do_pretend_action(
 
                 const auto params = repo->params();
                 const auto profile = repo->profile();
+                const auto destination = a.options.destination();
 
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                             n::builddir() = params.builddir(),
@@ -193,9 +195,9 @@ paludis::erepository::do_pretend_action(
                                 (params.master_repositories() && ! params.master_repositories()->empty())
                                     ? (*params.master_repositories()->begin())->params().location()
                                     : params.location(),
-                            n::root() = a.options.destination()->installed_root_key() ?
-                                stringify(a.options.destination()->installed_root_key()->parse_value()) :
-                                "/",
+                            n::root() = destination->installed_root_key()
+                                            ? stringify(destination->installed_root_key()->parse_value())
+                                            : "/",
                             n::sandbox() = phase->option("sandbox"),
                             n::sydbox() = phase->option("sydbox"),
                             n::userpriv() = phase->option("userpriv") && userpriv_ok,
@@ -238,6 +240,7 @@ paludis::erepository::do_pretend_action(
 
         const auto params = repo->params();
         const auto profile = repo->profile();
+        const auto destination = a.options.destination();
 
         EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                 n::builddir() = params.builddir(),
@@ -259,9 +262,9 @@ paludis::erepository::do_pretend_action(
                     (params.master_repositories() && ! params.master_repositories()->empty())
                         ? (*params.master_repositories()->begin())->params().location()
                         : params.location(),
-                n::root() = a.options.destination()->installed_root_key() ?
-                    stringify(a.options.destination()->installed_root_key()->parse_value()) :
-                    "/",
+                n::root() = destination->installed_root_key()
+                                ? stringify(destination->installed_root_key()->parse_value())
+                                : "/",
                 n::sandbox() = phase->option("sandbox"),
                 n::sydbox() = phase->option("sydbox"),
                 n::userpriv() = phase->option("userpriv") && userpriv_ok,
@@ -270,7 +273,7 @@ paludis::erepository::do_pretend_action(
 
         EbuildPretendCommand pretend_cmd(command_params,
                 make_named_values<EbuildPretendCommandParams>(
-                    n::destination() = a.options.destination(),
+                    n::destination() = destination,
                     n::expand_vars() = expand_vars,
                     n::is_from_pbin() = id->eapi()->supported()->is_pbin(),
                     n::profiles() = params.profiles(),

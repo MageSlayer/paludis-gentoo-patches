@@ -344,16 +344,19 @@ UnpackagedID::perform_action(Action & action) const
     if (! install_action)
         throw ActionFailedError("Unsupported action: " + action.simple_name());
 
-    if (! (*install_action->options.destination()).destination_interface())
+    const auto destination = install_action->options.destination();
+
+    if (! destination->destination_interface())
         throw ActionFailedError("Can't install '" + stringify(*this)
-                + "' to destination '" + stringify(install_action->options.destination()->name())
+                + "' to destination '" + stringify(destination->name())
                 + "' because destination does not provide destination_interface");
 
     std::shared_ptr<OutputManager> output_manager(install_action->options.make_output_manager()(*install_action));
 
     std::string libdir("lib");
-    FSPath root(install_action->options.destination()->installed_root_key() ?
-            stringify(install_action->options.destination()->installed_root_key()->parse_value()) : "/");
+    FSPath root(destination->installed_root_key()
+                    ? stringify(destination->installed_root_key()->parse_value())
+                    : "/");
     if ((root / "usr" / "lib").stat().is_symlink())
     {
         libdir = (root / "usr" / "lib").readlink();
@@ -428,7 +431,7 @@ UnpackagedID::perform_action(Action & action) const
         case wp_yes:
             {
                 merge_params.check() = true;
-                (*install_action->options.destination()).destination_interface()->merge(merge_params);
+                destination->destination_interface()->merge(merge_params);
             }
             break;
 
@@ -447,7 +450,7 @@ UnpackagedID::perform_action(Action & action) const
         case wp_yes:
             {
                 merge_params.check() = false;
-                (*install_action->options.destination()).destination_interface()->merge(merge_params);
+                destination->destination_interface()->merge(merge_params);
             }
             break;
 
