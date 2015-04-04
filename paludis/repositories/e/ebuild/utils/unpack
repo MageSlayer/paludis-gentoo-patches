@@ -78,8 +78,10 @@ unpack_lha() {
 }
 
 unpack_a() {
-    echo ar x "${1}" 1>&2
-    ar x "${1}" 1>&2
+    local ar=ar
+    [[ ${FILESYSTEM_LAYOUT} == cross ]] && ar=${AR:-ar}
+    echo "${ar}" x "${1}" 1>&2
+    "${ar}" x "${1}" 1>&2
 }
 
 unpack_tar.lzma() {

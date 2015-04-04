@@ -60,6 +60,12 @@ exheres_internal_test()
         ebuild_section "Skipping src_test (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting src_test"
+
+        if ! exhost --is-native -q ; then
+            echo "cross compiled host, skipping test"
+            return
+        fi
+
         src_test
         ebuild_section "Done src_test"
     fi

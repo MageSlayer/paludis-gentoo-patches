@@ -40,7 +40,7 @@ TEST(BrokenLinkageConfiguration, Works)
     BrokenLinkageConfiguration config(FSPath::cwd() / "broken_linkage_configuration_TEST_dir");
 
     ASSERT_EQ("/42 /alib /barbin /barlib/foo /bazbin /bin /blib /fhqwhgads1 /fhqwhgads2 /foobin /foolib/bar "
-            "/hwdp foobar /lib32 /lib64 /quuxlib /qwerty1 /qwerty2 /sbin /uiop1 /uiop2 /usr/bin /usr/lib* /usr/sbin",
+            "/hwdp foobar /lib32 /lib64 /quuxlib /qwerty1 /qwerty2 /sbin /uiop1 /uiop2 /usr/*/bin /usr/*/lib /usr/bin /usr/lib* /usr/sbin",
             join(config.begin_search_dirs(), config.end_search_dirs(), " "));
 
     ASSERT_EQ("/42 /barlib/foo /fhqwhgads1 /fhqwhgads2 /foolib/bar /lib /qwerty1 /qwerty2 /uiop1 /uiop2 /usr/lib hwdp foobar",

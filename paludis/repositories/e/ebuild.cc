@@ -330,6 +330,13 @@ EbuildCommand::operator() ()
 
     process.setenv("PALUDIS_TRACE", get_trace(package_id) ? "yes" : "");
 
+    if (! params.cross_compile_host().empty())
+        process.setenv("PALUDIS_CROSS_COMPILE_HOST",
+                       params.cross_compile_host());
+    if (! params.tool_prefix().empty())
+        process.setenv("PALUDIS_CROSS_COMPILE_TOOL_PREFIX",
+                       params.tool_prefix());
+
     if (options->want_portage_emulation_vars())
         add_portage_vars(process);
 

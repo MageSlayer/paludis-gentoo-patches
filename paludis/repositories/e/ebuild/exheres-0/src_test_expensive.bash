@@ -45,6 +45,12 @@ exheres_internal_test_expensive()
         ebuild_section "Skipping src_test_expensive (SKIP_FUNCTIONS)"
     else
         ebuild_section "Starting src_test_expensive"
+
+        if ! exhost --is-native -q ; then
+            echo "cross compiled host, skipping tests"
+            return
+        fi
+
         src_test_expensive
         ebuild_section "Done src_test_expensive"
     fi

@@ -20,17 +20,6 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-umask 022
-export DESTTREE="/usr"
-export INSDESTTREE=""
-export EXEDESTTREE=""
-export DOCDESTTREE=""
-export INSOPTIONS="-m0644"
-export EXEOPTIONS="-m0755"
-export LIBOPTIONS="-m0644"
-export DIROPTIONS="-m0755"
-export MOPREFIX="${PN}"
-
 into()
 {
     if [[ "${1}" == "/" ]] ; then

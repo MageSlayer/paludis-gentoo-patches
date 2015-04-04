@@ -343,9 +343,11 @@ Imp<BrokenLinkageConfiguration>::add_defaults()
     };
     static const char * default_search_dirs[] = {
         "/bin", "/sbin", "/usr/bin", "/usr/sbin", "/lib*", "/usr/lib*",
+        "/usr/*/bin", "/usr/*/lib",
     };
     static const char * default_search_dirs_mask[] = {
         "/lib*/modules",
+        "/usr/*/lib/modules", "/usr/host/*",
     };
     static const char * default_ld_so_conf[] = {
         "/lib", "/usr/lib",
