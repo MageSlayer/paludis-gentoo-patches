@@ -186,6 +186,12 @@ UnpackagedRepository::need_keys_added() const
 {
 }
 
+const std::shared_ptr<const MetadataValueKey<std::string>>
+UnpackagedRepository::cross_compile_host_key() const
+{
+    return nullptr;
+}
+
 const std::shared_ptr<const MetadataValueKey<std::string> >
 UnpackagedRepository::format_key() const
 {
@@ -305,6 +311,12 @@ UnpackagedRepository::sync(
 
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 UnpackagedRepository::sync_host_key() const
+{
+    return nullptr;
+}
+
+const std::shared_ptr<const MetadataValueKey<std::string>>
+UnpackagedRepository::tool_prefix_key() const
 {
     return nullptr;
 }

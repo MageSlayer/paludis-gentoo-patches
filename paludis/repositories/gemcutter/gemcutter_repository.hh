@@ -69,10 +69,12 @@ namespace paludis
 
                 const bool is_unimportant() const override;
 
+                const std::shared_ptr<const MetadataValueKey<std::string>> cross_compile_host_key() const override;
                 const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const override;
                 const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const override;
                 const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const override;
                 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const override;
+                const std::shared_ptr<const MetadataValueKey<std::string>> tool_prefix_key() const override;
 
                 bool has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const override;
                 bool has_package_named(const QualifiedPackageName & q, const RepositoryContentMayExcludes &) const override;

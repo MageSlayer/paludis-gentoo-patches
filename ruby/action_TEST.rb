@@ -75,9 +75,15 @@ module Paludis
 
     class TestCase_FetchActionOptions < Test::Unit::TestCase
         def test_create
-            assert_kind_of FetchActionOptions, FetchActionOptions.new(false, false, false)
+            assert_kind_of FetchActionOptions, FetchActionOptions.new("", false, false, false, "")
             assert_kind_of FetchActionOptions, FetchActionOptions.new(
-                {:safe_resume => false, :fetch_unneeded => false, :exclude_unmirrorable => false})
+                {
+                    :cross_compile_host => "",
+                    :safe_resume => false,
+                    :fetch_unneeded => false,
+                    :exclude_unmirrorable => false,
+                    :tool_prefix => ""
+                })
         end
     end
 
@@ -135,11 +141,16 @@ module Paludis
 
     class TestCase_FetchAction < Test::Unit::TestCase
         def test_create
-            assert_kind_of FetchAction, FetchAction.new(FetchActionOptions.new(false, false, false))
-            assert_kind_of Action, FetchAction.new(FetchActionOptions.new(false, false, false))
+            assert_kind_of FetchAction, FetchAction.new(FetchActionOptions.new("", false, false, false, ""))
+            assert_kind_of Action, FetchAction.new(FetchActionOptions.new("", false, false, false, ""))
 
-            assert_kind_of FetchAction, FetchAction.new(FetchActionOptions.new(
-                {:safe_resume => false, :fetch_unneeded => false, :exclude_unmirrorable => false}))
+            assert_kind_of FetchAction, FetchAction.new(FetchActionOptions.new({
+                :cross_compile_host => "",
+                :safe_resume => false,
+                :fetch_unneeded => false,
+                :exclude_unmirrorable => false,
+                :tool_prefix => ""
+            }))
         end
 
         def test_bad_create
@@ -153,11 +164,17 @@ module Paludis
         end
 
         def test_options
-            a = FetchAction.new(FetchActionOptions.new(false, true, false))
+            a = FetchAction.new(FetchActionOptions.new("", false, true, false, ""))
             assert_kind_of FetchActionOptions, a.options
             assert a.options.safe_resume?
 
-            a = FetchAction.new(FetchActionOptions.new({:safe_resume => false, :fetch_unneeded => true, :exclude_unmirrorable => false}))
+            a = FetchAction.new(FetchActionOptions.new({
+                :cross_compile_host => "",
+                :safe_resume => false,
+                :fetch_unneeded => true,
+                :exclude_unmirrorable => false,
+                :tool_prefix => ""
+            }))
             assert_kind_of FetchActionOptions, a.options
             assert !a.options.safe_resume?
             assert !a.options.exclude_unmirrorable?
@@ -166,8 +183,8 @@ module Paludis
 
     class TestCase_InfoAction < Test::Unit::TestCase
         def test_create
-            assert_kind_of InfoAction, InfoAction.new(InfoActionOptions.new)
-            assert_kind_of Action, InfoAction.new(InfoActionOptions.new)
+            assert_kind_of InfoAction, InfoAction.new(InfoActionOptions.new("", ""))
+            assert_kind_of Action, InfoAction.new(InfoActionOptions.new({:cross_compile_host => "", :tool_prefix => ""}))
         end
 
         def test_bad_create

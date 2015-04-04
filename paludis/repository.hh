@@ -282,6 +282,8 @@ namespace paludis
             ///\name Specific metadata keys
             ///\{
 
+            virtual const std::shared_ptr<const MetadataValueKey<std::string>> cross_compile_host_key() const = 0;
+
             /**
              * The format_key, if non-zero, holds our repository's format. Repository
              * implementations should not return zero here, but clients should still
@@ -316,6 +318,8 @@ namespace paludis
              * \since 0.55 is a Map<std::string, std::string>.
              */
             virtual const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const = 0;
+
+            virtual const std::shared_ptr<const MetadataValueKey<std::string>> tool_prefix_key() const = 0;
 
             ///\}
 

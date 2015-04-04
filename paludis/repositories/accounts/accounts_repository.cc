@@ -237,6 +237,12 @@ AccountsRepository::repository_factory_installed_dependencies(
     return std::make_shared<RepositoryNameSet>();
 }
 
+const std::shared_ptr<const MetadataValueKey<std::string>>
+AccountsRepository::cross_compile_host_key() const
+{
+    return nullptr;
+}
+
 const std::shared_ptr<const MetadataValueKey<std::string> >
 AccountsRepository::format_key() const
 {
@@ -257,6 +263,12 @@ AccountsRepository::installed_root_key() const
 
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 AccountsRepository::sync_host_key() const
+{
+    return nullptr;
+}
+
+const std::shared_ptr<const MetadataValueKey<std::string>>
+AccountsRepository::tool_prefix_key() const
 {
     return nullptr;
 }

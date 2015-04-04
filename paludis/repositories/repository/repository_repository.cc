@@ -124,6 +124,12 @@ RepositoryRepository::need_keys_added() const
 {
 }
 
+const std::shared_ptr<const MetadataValueKey<std::string>>
+RepositoryRepository::cross_compile_host_key() const
+{
+    return nullptr;
+}
+
 const std::shared_ptr<const MetadataValueKey<std::string> >
 RepositoryRepository::format_key() const
 {
@@ -282,6 +288,12 @@ RepositoryRepository::perform_hook(const Hook &, const std::shared_ptr<OutputMan
 
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 RepositoryRepository::sync_host_key() const
+{
+    return nullptr;
+}
+
+const std::shared_ptr<const MetadataValueKey<std::string>>
+RepositoryRepository::tool_prefix_key() const
 {
     return nullptr;
 }

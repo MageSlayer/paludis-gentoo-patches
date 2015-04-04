@@ -115,6 +115,12 @@ GemcutterRepository::need_keys_added() const
 {
 }
 
+const std::shared_ptr<const MetadataValueKey<std::string>>
+GemcutterRepository::cross_compile_host_key() const
+{
+    return nullptr;
+}
+
 const std::shared_ptr<const MetadataValueKey<std::string> >
 GemcutterRepository::format_key() const
 {
@@ -263,6 +269,12 @@ GemcutterRepository::perform_hook(const Hook &, const std::shared_ptr<OutputMana
 
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 GemcutterRepository::sync_host_key() const
+{
+    return nullptr;
+}
+
+const std::shared_ptr<const MetadataValueKey<std::string>>
+GemcutterRepository::tool_prefix_key() const
 {
     return nullptr;
 }

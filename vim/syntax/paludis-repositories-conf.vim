@@ -51,6 +51,7 @@ syn keyword PaludisRepositoriesConfKnownKey contained
             \ cache
             \ config_filename
             \ config_template
+            \ cross_compile_host
             \ distdir
             \ eapi_when_unknown
             \ eapi_when_unspecified
@@ -76,6 +77,7 @@ syn keyword PaludisRepositoriesConfKnownKey contained
             \ sync
             \ sync_options
             \ thin_manifests
+            \ tool_prefix
             \ use_manifest
             \ write_cache
             \ yaml_uri

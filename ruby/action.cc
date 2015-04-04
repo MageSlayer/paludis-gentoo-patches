@@ -322,7 +322,7 @@ namespace
 
     /*
      * call-seq:
-     *     FetchActionOptions.new(exclude_unmirrorable, fetch_unneeded, safe_resume) -> FetchActionOptions
+     *     FetchActionOptions.new(cross_compile_host, exclude_unmirrorable, fetch_unneeded, safe_resume, tool_prefix) -> FetchActionOptions
      *     FetchActionOptions.new(Hash) -> FetchActionOptions
      *
      * FetchActionOptions.new can either be called with all parameters in order, or with one hash
@@ -334,29 +334,42 @@ namespace
         FetchActionOptions * ptr(0);
         try
         {
+            std::string v_cross_compile_host;
             bool v_exclude_unmirrorable;
             bool v_fetch_unneeded;
             bool v_safe_resume;
+            std::string v_tool_prefix;
 
             if (1 == argc && rb_obj_is_kind_of(argv[0], rb_cHash))
             {
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("cross_compile_host"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: cross_compile_host");
                 if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("fetch_unneeded"))))
                     rb_raise(rb_eArgError, "Missing Parameter: fetch_unneeded");
                 if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("safe_resume"))))
                     rb_raise(rb_eArgError, "Missing Parameter: safe_resume");
+                if (Qnil == rb_hash_aref(argv[0], ID2SYM(rb_intern("tool_prefix"))))
+                    rb_raise(rb_eArgError, "Missing Parameter: tool_prefix");
+
+                VALUE v1 = rb_hash_aref(argv[0], ID2SYM(rb_intern("cross_compile_host")));
+                v_cross_compile_host = StringValuePtr(v1);
                 v_fetch_unneeded = rb_hash_aref(argv[0], ID2SYM(rb_intern("fetch_unneeded"))) != Qfalse;
                 v_safe_resume = rb_hash_aref(argv[0], ID2SYM(rb_intern("safe_resume"))) != Qfalse;
                 v_exclude_unmirrorable = rb_hash_aref(argv[0], ID2SYM(rb_intern("exclude_unmirrorable"))) != Qfalse;
+                VALUE v2 = rb_hash_aref(argv[0], ID2SYM(rb_intern("tool_prefix")));
+                v_tool_prefix = StringValuePtr(v2);
             }
-            else if (3 == argc)
+            else if (5 == argc)
             {
-                v_exclude_unmirrorable    = argv[0] != Qfalse;
-                v_fetch_unneeded          = argv[0] != Qfalse;
-                v_safe_resume             = argv[1] != Qfalse;
+                v_cross_compile_host      = StringValuePtr(argv[0]);
+                v_exclude_unmirrorable    = argv[1] != Qfalse;
+                v_fetch_unneeded          = argv[1] != Qfalse;
+                v_safe_resume             = argv[2] != Qfalse;
+                v_tool_prefix             = StringValuePtr(argv[4]);
             }
             else
             {
-                rb_raise(rb_eArgError, "FetchActionOptions expects one or three arguments, but got %d",argc);
+                rb_raise(rb_eArgError, "FetchActionOptions expects one or five arguments, but got %d",argc);
             }
 
             FetchParts parts;
@@ -365,6 +378,7 @@ namespace
                 parts += fp_unneeded;
 
             ptr = new FetchActionOptions(make_named_values<FetchActionOptions>(
+                        n::cross_compile_host() = v_cross_compile_host,
                         n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),
                         n::exclude_unmirrorable() = v_exclude_unmirrorable,
                         n::fetch_parts() = parts,
@@ -372,6 +386,7 @@ namespace
                         n::ignore_unfetched() = false,
                         n::make_output_manager() = &make_standard_output_manager,
                         n::safe_resume() = v_safe_resume,
+                        n::tool_prefix() = v_tool_prefix,
                         n::want_phase() = &want_all_phases
                     ));
 
@@ -417,6 +432,7 @@ namespace
      * call-seq:
      *     InfoActionOptions.new() -> InfoActionOptions
      *     InfoActionOptions.new(Hash) -> InfoActionOptions
+     *     InfoActionOptions(cross_compile_host, tool_prefix) -> InfoActionOptiosn
      *
      * InfoActionOptions.new can either be called with all parameters in order,
      * or with one hash parameter, where the hash keys are symbols with the
@@ -428,21 +444,39 @@ namespace
         InfoActionOptions *options = nullptr;
         try
         {
+            std::string cross_compile_host;
+            std::string tool_prefix;
+
             if (argc == 1 && rb_obj_is_kind_of(argv[0], rb_cHash))
             {
-                // TODO(compnerd) raise an error if hashtable is not empty
+                VALUE cross_compile_host_value =
+                    rb_hash_aref(argv[0], ID2SYM(rb_intern("cross_compile_host")));
+                VALUE tool_prefix_value =
+                    rb_hash_aref(argv[0], ID2SYM(rb_intern("tool_prefix")));
+
+                if (cross_compile_host_value == Qnil)
+                    rb_raise(rb_eArgError, "Missing Parameter: cross_compile_host");
+                if (tool_prefix_value == Qnil)
+                    rb_raise(rb_eArgError, "Missing Parameter: tool_prefix");
+
+                cross_compile_host = StringValuePtr(cross_compile_host_value);
+                tool_prefix = StringValuePtr(tool_prefix_value);
             }
-            else if (argc == 0)
+            else if (argc == 2)
             {
+                cross_compile_host = StringValuePtr(argv[0]);
+                tool_prefix = StringValuePtr(argv[1]);
             }
             else
             {
-                rb_raise(rb_eArgError, "InfoActionOptions expects zero or one arguments, but got %d", argc);
+                rb_raise(rb_eArgError, "InfoActionOptions expects one or two arguments, but got %d", argc);
             }
 
             options =
                 new InfoActionOptions(make_named_values<InfoActionOptions>(
-                    n::make_output_manager() = &make_standard_output_manager));
+                    n::cross_compile_host() = cross_compile_host,
+                    n::make_output_manager() = &make_standard_output_manager,
+                    n::tool_prefix() = tool_prefix));
             VALUE object = Data_Wrap_Struct(self, 0, &Common<InfoActionOptions>::free, options);
             rb_obj_call_init(object, argc, argv);
             return object;
@@ -919,12 +953,18 @@ namespace
         c_fetch_action_options = rb_define_class_under(paludis_module(), "FetchActionOptions", rb_cObject);
         rb_define_singleton_method(c_fetch_action_options, "new", RUBY_FUNC_CAST(&fetch_action_options_new), -1);
         rb_define_method(c_fetch_action_options, "initialize", RUBY_FUNC_CAST(&empty_init), -1);
+        rb_define_method(c_fetch_action_options, "tool_prefix",
+                RUBY_FUNC_CAST((&NVFetch<FetchActionOptions, n::tool_prefix, std::string,
+                        &FetchActionOptions::tool_prefix>::fetch)), 0);
         rb_define_method(c_fetch_action_options, "safe_resume?",
                 RUBY_FUNC_CAST((&NVFetch<FetchActionOptions, n::safe_resume, bool,
                         &FetchActionOptions::safe_resume>::fetch)), 0);
         rb_define_method(c_fetch_action_options, "exclude_unmirrorable?",
                 RUBY_FUNC_CAST((&NVFetch<FetchActionOptions, n::exclude_unmirrorable, bool,
                         &FetchActionOptions::exclude_unmirrorable>::fetch)), 0);
+        rb_define_method(c_fetch_action_options, "cross_compile_host",
+                RUBY_FUNC_CAST((&NVFetch<FetchActionOptions, n::cross_compile_host, std::string,
+                        &FetchActionOptions::cross_compile_host>::fetch)), 0);
 
         /*
          * Document-class: Paludis::FetchActionFailure

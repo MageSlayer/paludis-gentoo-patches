@@ -53,6 +53,7 @@ namespace paludis
     namespace n
     {
         typedef Name<struct name_config_protect> config_protect;
+        typedef Name<struct name_cross_compile_host> cross_compile_host;
         typedef Name<struct name_destination> destination;
         typedef Name<struct name_errors> errors;
         typedef Name<struct name_exclude_unmirrorable> exclude_unmirrorable;
@@ -69,6 +70,7 @@ namespace paludis
         typedef Name<struct name_replacing> replacing;
         typedef Name<struct name_requires_manual_fetching> requires_manual_fetching;
         typedef Name<struct name_safe_resume> safe_resume;
+        typedef Name<struct name_tool_prefix> tool_prefix;
         typedef Name<struct name_target_file> target_file;
         typedef Name<struct name_want_phase> want_phase;
         typedef Name<struct name_ignore_not_in_manifest> ignore_not_in_manifest;
@@ -83,6 +85,8 @@ namespace paludis
      */
     struct FetchActionOptions
     {
+        NamedValue<n::cross_compile_host, std::string> cross_compile_host;
+
         /**
          * Any errors that occur will be added to this list. Must not be null.
          *
@@ -130,6 +134,8 @@ namespace paludis
                 const FetchAction &)> > make_output_manager;
 
         NamedValue<n::safe_resume, bool> safe_resume;
+
+        NamedValue<n::tool_prefix, std::string> tool_prefix;
 
         /**
          * \since 0.48
@@ -554,6 +560,8 @@ namespace paludis
      */
     struct InfoActionOptions
     {
+        NamedValue<n::cross_compile_host, std::string> cross_compile_host;
+
         /**
          * This is a function to avoid chicken / egg problems when using
          * Environment::create_output_manager.
@@ -562,6 +570,8 @@ namespace paludis
          */
         NamedValue<n::make_output_manager, std::function<std::shared_ptr<OutputManager> (
                 const InfoAction &)> > make_output_manager;
+
+        NamedValue<n::tool_prefix, std::string> tool_prefix;
     };
 
     /**

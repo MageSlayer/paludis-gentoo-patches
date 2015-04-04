@@ -83,6 +83,7 @@ int main(int argc, char * argv[])
                  * and whether unneeded (e.g. due to disabled USE flags) and
                  * unmirrorable source files should still be fetched. */
                 FetchAction fetch_action(make_named_values<FetchActionOptions>(
+                            n::cross_compile_host() = "",
                             n::errors() = failures,
                             n::exclude_unmirrorable() = false,
                             n::fetch_parts() = FetchParts() + fp_regulars + fp_extras,
@@ -90,6 +91,7 @@ int main(int argc, char * argv[])
                             n::ignore_unfetched() = false,
                             n::make_output_manager() = &make_standard_output_manager,
                             n::safe_resume() = true,
+                            n::tool_prefix() = "",
                             n::want_phase() = &want_all_phases
                             ));
                 try

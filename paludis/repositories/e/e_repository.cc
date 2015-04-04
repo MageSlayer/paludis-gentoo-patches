@@ -184,6 +184,11 @@ namespace
             result->add(p->parse_value());
         return result;
     }
+
+    std::string native_compile_target()
+    {
+        return "(native)";
+    }
 }
 
 namespace paludis
@@ -267,6 +272,8 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<FSPath> > licence_groups_location_key;
         std::shared_ptr<Map<std::string, std::string> > sync_hosts;
         std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key;
+        std::shared_ptr<const MetadataValueKey<std::string>> tool_prefix_key;
+        std::shared_ptr<const MetadataValueKey<std::string>> cross_compile_host_key;
         std::list<std::shared_ptr<const MetadataKey> > about_keys;
 
         std::shared_ptr<EclassMtimes> eclass_mtimes;
@@ -370,6 +377,10 @@ namespace paludis
         licence_groups_location_key(layout->licence_groups_location_key()),
         sync_hosts(std::make_shared<Map<std::string, std::string> >()),
         sync_host_key(std::make_shared<LiteralMetadataStringStringMapKey>("sync_host", "sync_host", mkt_internal, sync_hosts)),
+        tool_prefix_key(std::make_shared<LiteralMetadataValueKey<std::string>>("tool_prefix",
+                    "tool_prefix", mkt_normal, params.tool_prefix())),
+        cross_compile_host_key(std::make_shared<LiteralMetadataValueKey<std::string>>("cross_compile_host",
+                    "cross_compile_host", mkt_normal, params.cross_compile_host())),
         eclass_mtimes(std::make_shared<EclassMtimes>(r, params.eclassdirs())),
         master_mtime(0),
         licence_groups(DeferredConstructionPtr<std::shared_ptr<LicenceGroups> > (
@@ -580,6 +591,8 @@ ERepository::_add_metadata_keys() const
     if (_imp->licence_groups_location_key)
         add_metadata_key(_imp->licence_groups_location_key);
     add_metadata_key(_imp->sync_host_key);
+    add_metadata_key(_imp->tool_prefix_key);
+    add_metadata_key(_imp->cross_compile_host_key);
 
     std::for_each(_imp->about_keys.begin(), _imp->about_keys.end(), std::bind(
                 std::mem_fn(&ERepository::add_metadata_key), this, std::placeholders::_1));
@@ -1053,6 +1066,14 @@ ERepository::need_keys_added() const
 {
 }
 
+const std::shared_ptr<const MetadataValueKey<std::string>>
+ERepository::cross_compile_host_key() const
+{
+    if (_imp->cross_compile_host_key->parse_value() == native_compile_target())
+        return nullptr;
+    return _imp->cross_compile_host_key;
+}
+
 const std::shared_ptr<const MetadataValueKey<std::string> >
 ERepository::format_key() const
 {
@@ -1443,6 +1464,20 @@ ERepository::repository_factory_create(
             throw ERepositoryConfigurationError("binary_destination = true, but binary_keywords_filter is unset or empty");
     }
 
+    std::string cross_compile_host(f("cross_compile_host"));
+    // NOTE(compnerd) only permit cross-compilation to destinations which are
+    // exheres-0 destinations.  A binary destination is pbin-1+exheres-0, which
+    // is safe.  Any other destination type may not support cross compilation,
+    // so be cautious and default to "native".
+    if (cross_compile_host.empty() || ! binary_destination)
+        cross_compile_host = native_compile_target();
+
+    std::string split_debug_location(f("split_debug_location"));
+    if (split_debug_location.empty())
+        split_debug_location = "/usr/lib/debug";
+
+    std::string tool_prefix(f("tool_prefix"));
+
     return std::make_shared<ERepository>(make_named_values<ERepositoryParams>(
                 n::append_repository_name_to_write_cache() = append_repository_name_to_write_cache,
                 n::auto_profiles() = auto_profiles,
@@ -1452,6 +1487,7 @@ ERepository::repository_factory_create(
                 n::binary_uri_prefix() = binary_uri_prefix,
                 n::builddir() = FSPath(builddir).realpath_if_exists(),
                 n::cache() = cache,
+                n::cross_compile_host() = cross_compile_host,
                 n::distdir() = FSPath(distdir).realpath_if_exists(),
                 n::eapi_when_unknown() = eapi_when_unknown,
                 n::eapi_when_unspecified() = eapi_when_unspecified,
@@ -1474,6 +1510,7 @@ ERepository::repository_factory_create(
                 n::sync() = sync,
                 n::sync_options() = sync_options,
                 n::thin_manifests() = thin_manifests,
+                n::tool_prefix() = tool_prefix,
                 n::use_manifest() = use_manifest,
                 n::write_bin_uri_prefix() = "",
                 n::write_cache() = FSPath(write_cache).realpath_if_exists()
@@ -1610,6 +1647,12 @@ ERepository::sync_host_key() const
     return _imp->sync_host_key;
 }
 
+const std::shared_ptr<const MetadataValueKey<std::string>>
+ERepository::tool_prefix_key() const
+{
+    return _imp->tool_prefix_key;
+}
+
 const std::shared_ptr<const ERepositoryID>
 ERepository::make_id(const QualifiedPackageName & q, const FSPath & f) const
 {
@@ -1663,6 +1706,10 @@ ERepository::get_environment_variable(
             n::builddir() = _imp->params.builddir(),
             n::clearenv() = phases.begin()->option("clearenv"),
             n::commands() = join(phases.begin()->begin_commands(), phases.begin()->end_commands(), " "),
+            n::cross_compile_host() =
+                cross_compile_host_key()
+                    ? cross_compile_host_key()->parse_value()
+                    : "",
             n::distdir() = _imp->params.distdir(),
             n::ebuild_dir() = layout()->package_directory(id->name()),
             n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -1681,6 +1728,10 @@ ERepository::get_environment_variable(
             n::root() = "/",
             n::sandbox() = phases.begin()->option("sandbox"),
             n::sydbox() = phases.begin()->option("sydbox"),
+            n::tool_prefix() =
+                tool_prefix_key()
+                    ? tool_prefix_key()->parse_value()
+                    : "",
             n::userpriv() = phases.begin()->option("userpriv") && userpriv_ok,
             n::volatile_files() = nullptr
             ),

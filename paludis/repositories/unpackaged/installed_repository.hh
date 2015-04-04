@@ -32,6 +32,7 @@ namespace paludis
         typedef Name<struct name_environment> environment;
         typedef Name<struct name_location> location;
         typedef Name<struct name_root> root;
+        typedef Name<struct name_tool_prefix> tool_prefix;
     }
 
     namespace unpackaged_repositories
@@ -41,6 +42,7 @@ namespace paludis
             NamedValue<n::environment, Environment *> environment;
             NamedValue<n::location, FSPath> location;
             NamedValue<n::root, FSPath> root;
+            NamedValue<n::tool_prefix, std::string> tool_prefix;
         };
     }
 
@@ -107,10 +109,12 @@ namespace paludis
 
             /* Keys */
 
+            const std::shared_ptr<const MetadataValueKey<std::string>> cross_compile_host_key() const override;
             const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const override;
             const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const override;
             const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const override;
             const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const override;
+            const std::shared_ptr<const MetadataValueKey<std::string>> tool_prefix_key() const override;
 
             ///\name RepositoryFactory functions
             ///\{

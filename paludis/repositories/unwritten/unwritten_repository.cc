@@ -127,6 +127,12 @@ UnwrittenRepository::need_keys_added() const
 {
 }
 
+const std::shared_ptr<const MetadataValueKey<std::string>>
+UnwrittenRepository::cross_compile_host_key() const
+{
+    return nullptr;
+}
+
 const std::shared_ptr<const MetadataValueKey<std::string> >
 UnwrittenRepository::format_key() const
 {
@@ -371,6 +377,12 @@ const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> 
 UnwrittenRepository::sync_host_key() const
 {
     return _imp->sync_host_key;
+}
+
+const std::shared_ptr<const MetadataValueKey<std::string>>
+UnwrittenRepository::tool_prefix_key() const
+{
+    return nullptr;
 }
 
 const std::shared_ptr<const Set<std::string> >

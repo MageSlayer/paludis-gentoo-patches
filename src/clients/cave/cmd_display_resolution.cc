@@ -1073,6 +1073,8 @@ namespace
         OutputManagerFromEnvironment output_manager_holder(env.get(), id, oe_exclusive, { });
 
         FindDistfilesSize action(make_named_values<FetchActionOptions>(
+                    // TODO(compnerd) provide a cross-compile-host
+                    n::cross_compile_host() = "",
                     n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),
                     n::exclude_unmirrorable() = false,
                     n::fetch_parts() = FetchParts() + fp_regulars,
@@ -1080,6 +1082,8 @@ namespace
                     n::ignore_unfetched() = false,
                     n::make_output_manager() = std::ref(output_manager_holder),
                     n::safe_resume() = true,
+                    // TODO(compnerd) provide a tool-prefix
+                    n::tool_prefix() = "",
                     n::want_phase() = &want_all_phases
                     ),
                 totals);

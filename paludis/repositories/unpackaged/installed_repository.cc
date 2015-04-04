@@ -77,6 +77,7 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<FSPath> > location_key;
         std::shared_ptr<const MetadataValueKey<FSPath> > root_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
+        std::shared_ptr<const MetadataValueKey<std::string>> tool_prefix_key;
 
         Imp(const InstalledUnpackagedRepositoryParams & p) :
             params(p),
@@ -86,7 +87,9 @@ namespace paludis
             root_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("root", "root",
                         mkt_normal, params.root())),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
-                        "format", "format", mkt_significant, "installed_unpackaged"))
+                        "format", "format", mkt_significant, "installed_unpackaged")),
+            tool_prefix_key(std::make_shared<LiteralMetadataValueKey<std::string>>("tool_prefix",
+                        "tool_prefix", mkt_normal, params.tool_prefix()))
         {
         }
     };
@@ -113,6 +116,7 @@ InstalledUnpackagedRepository::_add_metadata_keys() const
     add_metadata_key(_imp->location_key);
     add_metadata_key(_imp->root_key);
     add_metadata_key(_imp->format_key);
+    add_metadata_key(_imp->tool_prefix_key);
 }
 
 std::shared_ptr<const PackageIDSequence>
@@ -399,6 +403,12 @@ InstalledUnpackagedRepository::need_keys_added() const
 {
 }
 
+const std::shared_ptr<const MetadataValueKey<std::string>>
+InstalledUnpackagedRepository::cross_compile_host_key() const
+{
+    return nullptr;
+}
+
 const std::shared_ptr<const MetadataValueKey<std::string> >
 InstalledUnpackagedRepository::format_key() const
 {
@@ -436,11 +446,16 @@ InstalledUnpackagedRepository::repository_factory_create(
     if (name_str.empty())
         name_str = "installed-unpackaged";
 
+    std::string tool_prefix(f("tool_prefix"));
+    if (tool_prefix.empty())
+        tool_prefix = "(none)";
+
     return std::make_shared<InstalledUnpackagedRepository>(RepositoryName(name_str),
                 make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                     n::environment() = env,
                     n::location() = location,
-                    n::root() = root
+                    n::root() = root,
+                    n::tool_prefix() = tool_prefix
                 ));
 }
 
@@ -485,6 +500,12 @@ const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> 
 InstalledUnpackagedRepository::sync_host_key() const
 {
     return nullptr;
+}
+
+const std::shared_ptr<const MetadataValueKey<std::string>>
+InstalledUnpackagedRepository::tool_prefix_key() const
+{
+    return _imp->tool_prefix_key;
 }
 
 const std::shared_ptr<const Set<std::string> >

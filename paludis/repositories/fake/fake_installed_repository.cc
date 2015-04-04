@@ -154,6 +154,12 @@ FakeInstalledRepository::is_unimportant() const
     return false;
 }
 
+const std::shared_ptr<const MetadataValueKey<std::string>>
+FakeInstalledRepository::cross_compile_host_key() const
+{
+    return nullptr;
+}
+
 const std::shared_ptr<const MetadataValueKey<std::string> >
 FakeInstalledRepository::format_key() const
 {
@@ -205,6 +211,12 @@ FakeInstalledRepository::repository_factory_dependencies(
 
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 FakeInstalledRepository::sync_host_key() const
+{
+    return nullptr;
+}
+
+const std::shared_ptr<const MetadataValueKey<std::string>>
+FakeInstalledRepository::tool_prefix_key() const
 {
     return nullptr;
 }

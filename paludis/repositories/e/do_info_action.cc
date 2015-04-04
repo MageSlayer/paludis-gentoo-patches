@@ -92,6 +92,7 @@ paludis::erepository::do_info_action(
                 n::builddir() = params.builddir(),
                 n::clearenv() = phase.option("clearenv"),
                 n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
+                n::cross_compile_host() = a.options.cross_compile_host(),
                 n::distdir() = params.distdir(),
                 n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                 n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -111,6 +112,7 @@ paludis::erepository::do_info_action(
                 n::root() = stringify(env->preferred_root_key()->parse_value()),
                 n::sandbox() = phase.option("sandbox"),
                 n::sydbox() = phase.option("sydbox"),
+                n::tool_prefix() = a.options.tool_prefix(),
                 n::userpriv() = phase.option("userpriv") && userpriv_ok,
                 n::volatile_files() = nullptr
                 ));

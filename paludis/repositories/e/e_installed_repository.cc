@@ -218,6 +218,10 @@ EInstalledRepository::perform_config(
                     n::builddir() = _imp->params.builddir(),
                     n::clearenv() = phase.option("clearenv"),
                     n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
+                    n::cross_compile_host() =
+                        cross_compile_host_key()
+                            ? cross_compile_host_key()->parse_value()
+                            : "",
                     n::distdir() = ver_dir,
                     n::ebuild_dir() = ver_dir,
                     n::ebuild_file() = ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
@@ -234,6 +238,10 @@ EInstalledRepository::perform_config(
                     n::root() = stringify(_imp->params.root()),
                     n::sandbox() = phase.option("sandbox"),
                     n::sydbox() = phase.option("sydbox"),
+                    n::tool_prefix() =
+                        tool_prefix_key()
+                            ? tool_prefix_key()->parse_value()
+                            : "",
                     n::userpriv() = phase.option("userpriv"),
                     n::volatile_files() = nullptr
                 ),
@@ -324,6 +332,10 @@ EInstalledRepository::perform_info(
                     n::builddir() = _imp->params.builddir(),
                     n::clearenv() = phase.option("clearenv"),
                     n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
+                    n::cross_compile_host() =
+                        cross_compile_host_key()
+                            ? cross_compile_host_key()->parse_value()
+                            : "",
                     n::distdir() = ver_dir,
                     n::ebuild_dir() = ver_dir,
                     n::ebuild_file() = ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
@@ -340,6 +352,10 @@ EInstalledRepository::perform_info(
                     n::root() = stringify(_imp->params.root()),
                     n::sandbox() = phase.option("sandbox"),
                     n::sydbox() = phase.option("sydbox"),
+                    n::tool_prefix() =
+                        tool_prefix_key()
+                            ? tool_prefix_key()->parse_value()
+                            : "",
                     n::userpriv() = phase.option("userpriv"),
                     n::volatile_files() = nullptr
                 ),

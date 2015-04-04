@@ -49,6 +49,7 @@ namespace paludis
         typedef Name<struct name_binary_uri_prefix> binary_uri_prefix;
         typedef Name<struct name_builddir> builddir;
         typedef Name<struct name_cache> cache;
+        typedef Name<struct name_cross_compile_host> cross_compile_host;
         typedef Name<struct name_distdir> distdir;
         typedef Name<struct name_eapi_when_unknown> eapi_when_unknown;
         typedef Name<struct name_eapi_when_unspecified> eapi_when_unspecified;
@@ -71,6 +72,7 @@ namespace paludis
         typedef Name<struct name_sync> sync;
         typedef Name<struct name_sync_options> sync_options;
         typedef Name<struct name_thin_manifests> thin_manifests;
+        typedef Name<struct name_tool_prefix> tool_prefix;
         typedef Name<struct name_use_manifest> use_manifest;
         typedef Name<struct name_write_bin_uri_prefix> write_bin_uri_prefix;
         typedef Name<struct name_write_cache> write_cache;
@@ -90,6 +92,7 @@ namespace paludis
             NamedValue<n::binary_uri_prefix, std::string> binary_uri_prefix;
             NamedValue<n::builddir, FSPath> builddir;
             NamedValue<n::cache, FSPath> cache;
+            NamedValue<n::cross_compile_host, std::string> cross_compile_host;
             NamedValue<n::distdir, FSPath> distdir;
             NamedValue<n::eapi_when_unknown, std::string> eapi_when_unknown;
             NamedValue<n::eapi_when_unspecified, std::string> eapi_when_unspecified;
@@ -112,6 +115,7 @@ namespace paludis
             NamedValue<n::sync, std::shared_ptr<Map<std::string, std::string> > > sync;
             NamedValue<n::sync_options, std::shared_ptr<Map<std::string, std::string> > > sync_options;
             NamedValue<n::thin_manifests, bool> thin_manifests;
+            NamedValue<n::tool_prefix, std::string> tool_prefix;
             NamedValue<n::use_manifest, erepository::UseManifest> use_manifest;
             NamedValue<n::write_bin_uri_prefix, std::string> write_bin_uri_prefix;
             NamedValue<n::write_cache, FSPath> write_cache;

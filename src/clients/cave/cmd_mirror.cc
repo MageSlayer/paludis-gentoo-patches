@@ -137,6 +137,8 @@ MirrorCommand::run(
         Context i_context("When fetching ID '" + stringify(*id) + "':");
 
         FetchAction a(make_named_values<FetchActionOptions>(
+                    // TODO(compnerd) provide a cross-compile-host
+                    n::cross_compile_host() = "",
                     n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),
                     n::exclude_unmirrorable() = true,
                     n::fetch_parts() = FetchParts() + fp_regulars + fp_unneeded,
@@ -144,6 +146,8 @@ MirrorCommand::run(
                     n::ignore_unfetched() = false,
                     n::make_output_manager() = &make_standard_output_manager,
                     n::safe_resume() = true,
+                    // TODO(compnerd) provide a tool-prefix
+                    n::tool_prefix() = "",
                     n::want_phase() = &want_all_phases
                     ));
 

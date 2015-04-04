@@ -108,10 +108,12 @@ namespace paludis
                 ///\name Specific metadata keys
                 ///\{
 
+                const std::shared_ptr<const MetadataValueKey<std::string>> cross_compile_host_key() const override;
                 const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const override;
                 const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const override;
                 const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const override;
                 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const override;
+                const std::shared_ptr<const MetadataValueKey<std::string>> tool_prefix_key() const override;
 
                 ///\}
 

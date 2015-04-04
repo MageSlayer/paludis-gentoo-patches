@@ -65,6 +65,7 @@ namespace paludis
         typedef Name<struct name_commands> commands;
         typedef Name<struct name_config_protect> config_protect;
         typedef Name<struct name_config_protect_mask> config_protect_mask;
+        typedef Name<struct name_cross_compile_host> cross_compile_host;
         typedef Name<struct name_destination> destination;
         typedef Name<struct name_destination_repository> destination_repository;
         typedef Name<struct name_distdir> distdir;
@@ -97,6 +98,7 @@ namespace paludis
         typedef Name<struct name_sandbox> sandbox;
         typedef Name<struct name_sydbox> sydbox;
         typedef Name<struct name_slot> slot;
+        typedef Name<struct name_tool_prefix> tool_prefix;
         typedef Name<struct name_unmerge_only> unmerge_only;
         typedef Name<struct name_unmet_requirements> unmet_requirements;
         typedef Name<struct name_use> use;
@@ -124,6 +126,7 @@ namespace paludis
             NamedValue<n::builddir, FSPath> builddir;
             NamedValue<n::clearenv, bool> clearenv;
             NamedValue<n::commands, std::string> commands;
+            NamedValue<n::cross_compile_host, std::string> cross_compile_host;
             NamedValue<n::distdir, FSPath> distdir;
             NamedValue<n::ebuild_dir, FSPath> ebuild_dir;
             NamedValue<n::ebuild_file, FSPath> ebuild_file;
@@ -140,6 +143,7 @@ namespace paludis
             NamedValue<n::root, std::string> root;
             NamedValue<n::sandbox, bool> sandbox;
             NamedValue<n::sydbox, bool> sydbox;
+            NamedValue<n::tool_prefix, std::string> tool_prefix;
             NamedValue<n::userpriv, bool> userpriv;
             NamedValue<n::volatile_files, std::shared_ptr<FSPathSet> > volatile_files;
         };
@@ -198,6 +202,7 @@ namespace paludis
             NamedValue<n::accept_license, std::string> accept_license;
             NamedValue<n::config_protect, std::string> config_protect;
             NamedValue<n::config_protect_mask, std::string> config_protect_mask;
+            NamedValue<n::cross_compile_host, std::string> cross_compile_host;
             NamedValue<n::destination, std::shared_ptr<Repository> > destination;
             NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
             NamedValue<n::is_from_pbin, bool> is_from_pbin;
@@ -206,6 +211,7 @@ namespace paludis
             NamedValue<n::profiles_with_parents, std::shared_ptr<const FSPathSequence> > profiles_with_parents;
             NamedValue<n::replacing_ids, std::shared_ptr<const PackageIDSequence> > replacing_ids;
             NamedValue<n::slot, std::string> slot;
+            NamedValue<n::tool_prefix, std::string> tool_prefix;
             NamedValue<n::use, std::string> use;
             NamedValue<n::use_expand, std::string> use_expand;
             NamedValue<n::use_expand_hidden, std::string> use_expand_hidden;

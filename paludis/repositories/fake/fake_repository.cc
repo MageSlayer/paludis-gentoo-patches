@@ -127,6 +127,12 @@ FakeRepository::is_unimportant() const
     return false;
 }
 
+const std::shared_ptr<const MetadataValueKey<std::string>>
+FakeRepository::cross_compile_host_key() const
+{
+    return nullptr;
+}
+
 const std::shared_ptr<const MetadataValueKey<std::string> >
 FakeRepository::format_key() const
 {
@@ -147,6 +153,12 @@ FakeRepository::installed_root_key() const
 
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >
 FakeRepository::sync_host_key() const
+{
+    return nullptr;
+}
+
+const std::shared_ptr<const MetadataValueKey<std::string>>
+FakeRepository::tool_prefix_key() const
 {
     return nullptr;
 }

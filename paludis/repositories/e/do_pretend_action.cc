@@ -111,6 +111,10 @@ paludis::erepository::do_pretend_action(
                             n::builddir() = params.builddir(),
                             n::clearenv() = phase.option("clearenv"),
                             n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
+                            n::cross_compile_host() =
+                                destination->cross_compile_host_key()
+                                    ? destination->cross_compile_host_key()->parse_value()
+                                    : "",
                             n::distdir() = params.distdir(),
                             n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                             n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -131,6 +135,10 @@ paludis::erepository::do_pretend_action(
                                             : "/",
                             n::sandbox() = phase.option("sandbox"),
                             n::sydbox() = phase.option("sydbox"),
+                            n::tool_prefix() =
+                                destination->tool_prefix_key()
+                                    ? destination->tool_prefix_key()->parse_value()
+                                    : "",
                             n::userpriv() = phase.option("userpriv") && userpriv_ok,
                             n::volatile_files() = nullptr
                             ));
@@ -178,6 +186,10 @@ paludis::erepository::do_pretend_action(
                             n::builddir() = params.builddir(),
                             n::clearenv() = phase.option("clearenv"),
                             n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
+                            n::cross_compile_host() =
+                                destination->cross_compile_host_key()
+                                    ? destination->cross_compile_host_key()->parse_value()
+                                    : "",
                             n::distdir() = params.distdir(),
                             n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                             n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -199,6 +211,10 @@ paludis::erepository::do_pretend_action(
                                             : "/",
                             n::sandbox() = phase.option("sandbox"),
                             n::sydbox() = phase.option("sydbox"),
+                            n::tool_prefix() =
+                                destination->tool_prefix_key()
+                                    ? destination->tool_prefix_key()->parse_value()
+                                    : "",
                             n::userpriv() = phase.option("userpriv") && userpriv_ok,
                             n::volatile_files() = nullptr
                             ));
@@ -244,6 +260,10 @@ paludis::erepository::do_pretend_action(
                 n::builddir() = params.builddir(),
                 n::clearenv() = phase.option("clearenv"),
                 n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
+                n::cross_compile_host() =
+                    destination->cross_compile_host_key()
+                        ? destination->cross_compile_host_key()->parse_value()
+                        : "",
                 n::distdir() = params.distdir(),
                 n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                 n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -265,6 +285,10 @@ paludis::erepository::do_pretend_action(
                                 : "/",
                 n::sandbox() = phase.option("sandbox"),
                 n::sydbox() = phase.option("sydbox"),
+                n::tool_prefix() =
+                    destination->tool_prefix_key()
+                        ? destination->tool_prefix_key()->parse_value()
+                        : "",
                 n::userpriv() = phase.option("userpriv") && userpriv_ok,
                 n::volatile_files() = nullptr
                 ));

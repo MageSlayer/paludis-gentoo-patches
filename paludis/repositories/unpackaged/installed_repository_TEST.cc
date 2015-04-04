@@ -105,7 +105,8 @@ TEST(InstalledRepository, Content)
                 make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                     n::environment() = &env,
                     n::location() = FSPath("installed_repository_TEST_dir/repo1"),
-                    n::root() = FSPath("installed_repository_TEST_dir/root")
+                    n::root() = FSPath("installed_repository_TEST_dir/root"),
+                    n::tool_prefix() = ""
                 )));
     env.add_repository(1, repo);
 
@@ -123,7 +124,8 @@ TEST(InstalledRepository, Metadata)
                 make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                     n::environment() = &env,
                     n::location() = FSPath("installed_repository_TEST_dir/repo1"),
-                    n::root() = FSPath("installed_repository_TEST_dir/root")
+                    n::root() = FSPath("installed_repository_TEST_dir/root"),
+                    n::tool_prefix() = ""
                 )));
     env.add_repository(1, repo);
 
@@ -170,7 +172,8 @@ TEST(InstalledRepository, Masks)
                 make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                     n::environment() = &env,
                     n::location() = FSPath("installed_repository_TEST_dir/repo1"),
-                    n::root() = FSPath("installed_repository_TEST_dir/root")
+                    n::root() = FSPath("installed_repository_TEST_dir/root"),
+                    n::tool_prefix() = ""
                 )));
     env.add_repository(1, repo);
 
@@ -195,7 +198,8 @@ TEST(InstalledRepository, Actions)
                 make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                     n::environment() = &env,
                     n::location() = FSPath("installed_repository_TEST_dir/repo1"),
-                    n::root() = FSPath("installed_repository_TEST_dir/root")
+                    n::root() = FSPath("installed_repository_TEST_dir/root"),
+                    n::tool_prefix() = ""
                 )));
     env.add_repository(1, repo);
 
@@ -225,7 +229,8 @@ TEST(InstalledRepository, UninstallLast)
                 make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                     n::environment() = &env,
                     n::location() = FSPath("installed_repository_TEST_dir/repo2"),
-                    n::root() = FSPath("installed_repository_TEST_dir/root2")
+                    n::root() = FSPath("installed_repository_TEST_dir/root2"),
+                    n::tool_prefix() = ""
                 )));
     env.add_repository(1, repo);
 
@@ -274,7 +279,8 @@ TEST(InstalledRepository, UninstallNotLast)
                 make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                     n::environment() = &env,
                     n::location() = FSPath("installed_repository_TEST_dir/repo3"),
-                    n::root() = FSPath("installed_repository_TEST_dir/root3")
+                    n::root() = FSPath("installed_repository_TEST_dir/root3"),
+                    n::tool_prefix() = ""
                 )));
     env.add_repository(1, repo);
 
@@ -319,7 +325,8 @@ TEST(InstalledRepository, MultipleOps)
                     make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                         n::environment() = &env,
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
-                        n::root() = FSPath("installed_repository_TEST_dir/root4")
+                        n::root() = FSPath("installed_repository_TEST_dir/root4"),
+                        n::tool_prefix() = ""
                     )));
         env.add_repository(1, repo);
 
@@ -336,7 +343,8 @@ TEST(InstalledRepository, MultipleOps)
                     make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                         n::environment() = &env,
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
-                        n::root() = FSPath("installed_repository_TEST_dir/root4")
+                        n::root() = FSPath("installed_repository_TEST_dir/root4"),
+                        n::tool_prefix() = ""
                     )));
         env.add_repository(0, repo);
 
@@ -394,7 +402,8 @@ TEST(InstalledRepository, MultipleOps)
                     make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                         n::environment() = &env,
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
-                        n::root() = FSPath("installed_repository_TEST_dir/root4")
+                        n::root() = FSPath("installed_repository_TEST_dir/root4"),
+                        n::tool_prefix() = ""
                     )));
         env.add_repository(0, repo);
 
@@ -454,7 +463,8 @@ TEST(InstalledRepository, MultipleOps)
                     make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                         n::environment() = &env,
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
-                        n::root() = FSPath("installed_repository_TEST_dir/root4")
+                        n::root() = FSPath("installed_repository_TEST_dir/root4"),
+                        n::tool_prefix() = ""
                     )));
         env.add_repository(0, repo);
 
@@ -514,7 +524,8 @@ TEST(InstalledRepository, MultipleOps)
                     make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                         n::environment() = &env,
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
-                        n::root() = FSPath("installed_repository_TEST_dir/root4")
+                        n::root() = FSPath("installed_repository_TEST_dir/root4"),
+                        n::tool_prefix() = ""
                     )));
         env.add_repository(0, repo);
 
@@ -560,7 +571,8 @@ TEST(InstalledRepository, MultipleOps)
                     make_named_values<unpackaged_repositories::InstalledUnpackagedRepositoryParams>(
                         n::environment() = &env,
                         n::location() = FSPath("installed_repository_TEST_dir/repo4"),
-                        n::root() = FSPath("installed_repository_TEST_dir/root4")
+                        n::root() = FSPath("installed_repository_TEST_dir/root4"),
+                        n::tool_prefix() = ""
                     )));
         env.add_repository(0, repo);
 

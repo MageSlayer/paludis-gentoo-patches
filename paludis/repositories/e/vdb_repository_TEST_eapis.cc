@@ -147,7 +147,9 @@ TEST_P(PhasesTest, Works)
             ));
 
     InfoActionOptions info_action_options(make_named_values<InfoActionOptions>(
-                n::make_output_manager() = &make_standard_output_manager
+                n::cross_compile_host() = "",
+                n::make_output_manager() = &make_standard_output_manager,
+                n::tool_prefix() = ""
                 ));
 
     ConfigActionOptions config_action_options(make_named_values<ConfigActionOptions>(
@@ -274,7 +276,9 @@ TEST_P(VarsTest, Works)
             ));
 
     InfoActionOptions info_action_options(make_named_values<InfoActionOptions>(
-                n::make_output_manager() = &make_standard_output_manager
+                n::cross_compile_host() = "",
+                n::make_output_manager() = &make_standard_output_manager,
+                n::tool_prefix() = ""
                 ));
 
     ConfigActionOptions config_action_options(make_named_values<ConfigActionOptions>(
