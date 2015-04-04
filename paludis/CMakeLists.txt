@@ -291,6 +291,9 @@ endforeach()
 
 if(ENABLE_GTEST)
   paludis_add_test(stripper GTEST)
+  target_compile_definitions(stripper_TEST
+                             PRIVATE
+                               -DPALUDIS_BUILD_STRIP_TOOL_PREFIX="${PALUDIS_BUILD_STRIP_TOOL_PREFIX}")
   add_executable(stripper_TEST_binary
                    "${CMAKE_CURRENT_SOURCE_DIR}/stripper_TEST_binary.cc")
   add_dependencies(stripper_TEST stripper_TEST_binary)

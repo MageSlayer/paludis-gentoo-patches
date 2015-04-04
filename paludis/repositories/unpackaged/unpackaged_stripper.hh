@@ -37,6 +37,7 @@ namespace paludis
         typedef Name<struct name_package_id> package_id;
         typedef Name<struct name_split> split;
         typedef Name<struct name_strip> strip;
+        typedef Name<struct name_tool_prefix> tool_prefix;
     }
 
     namespace unpackaged_repositories
@@ -51,6 +52,7 @@ namespace paludis
             NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
             NamedValue<n::split, bool> split;
             NamedValue<n::strip, bool> strip;
+            NamedValue<n::tool_prefix, std::string> tool_prefix;
         };
 
         class UnpackagedStripper :

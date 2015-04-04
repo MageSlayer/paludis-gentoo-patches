@@ -38,6 +38,7 @@ namespace paludis
         typedef Name<struct name_image_dir> image_dir;
         typedef Name<struct name_split> split;
         typedef Name<struct name_strip> strip;
+        typedef Name<struct name_tool_prefix> tool_prefix;
     }
 
     struct StripperOptions
@@ -48,6 +49,7 @@ namespace paludis
         NamedValue<n::image_dir, FSPath> image_dir;
         NamedValue<n::split, bool> split;
         NamedValue<n::strip, bool> strip;
+        NamedValue<n::tool_prefix, std::string> tool_prefix;
     };
 
     class PALUDIS_VISIBLE StripperError :

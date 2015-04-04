@@ -47,7 +47,8 @@ UnpackagedStripper::UnpackagedStripper(const UnpackagedStripperOptions & options
                 n::dwarf_compression() = options.dwarf_compression(),
                 n::image_dir() = options.image_dir(),
                 n::split() = options.split(),
-                n::strip() = options.strip()
+                n::strip() = options.strip(),
+                n::tool_prefix() = options.tool_prefix()
             )),
     _imp(options)
 {

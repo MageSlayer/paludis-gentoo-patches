@@ -242,12 +242,13 @@ Stripper::file_type(const FSPath & f)
 void
 Stripper::do_strip(const FSPath & f, const std::string & options)
 {
+    const std::string strip_tool(_imp->options.tool_prefix() + "strip");
     Context context("When stripping '" + stringify(f) + "':");
     on_strip(f);
 
-    Process strip_process(options.empty() ?
-            ProcessCommand({ "strip", stringify(f) }) :
-            ProcessCommand({ "strip", options, stringify(f) }));
+    Process strip_process(options.empty()
+                            ? ProcessCommand({ strip_tool, stringify(f) })
+                            : ProcessCommand({ strip_tool, options, stringify(f) }));
     if (0 != strip_process.run().wait())
         Log::get_instance()->message("strip.failure", ll_warning, lc_context) << "Couldn't strip '" << f << "'";
     _imp->stripped_ids.insert(f.stat().lowlevel_id());
@@ -256,6 +257,7 @@ Stripper::do_strip(const FSPath & f, const std::string & options)
 void
 Stripper::do_split(const FSPath & f, const FSPath & g)
 {
+    const std::string objcopy_tool(_imp->options.tool_prefix() + "objcopy");
     Context context("When splitting '" + stringify(f) + "' to '" + stringify(g) + "':");
     on_split(f, g);
 
@@ -268,12 +270,12 @@ Stripper::do_split(const FSPath & f, const FSPath & g)
         std::for_each(to_make.begin(), to_make.end(), std::bind(std::mem_fn(&FSPath::mkdir), _1, 0755, FSPathMkdirOptions() + fspmkdo_ok_if_exists));
     }
 
-    ProcessCommand objcopy_copy_process_args({ "objcopy", "--only-keep-debug", stringify(f), stringify(g) });
+    ProcessCommand objcopy_copy_process_args({ objcopy_tool, "--only-keep-debug", stringify(f), stringify(g) });
     if (_imp->options.compress_splits())
         objcopy_copy_process_args.append_args({ "--compress-debug-sections" });
     Process objcopy_copy_process(std::move(objcopy_copy_process_args));
 
-    Process objcopy_link_process(ProcessCommand({ "objcopy", "--add-gnu-debuglink=" + stringify(g), stringify(f) }));
+    Process objcopy_link_process(ProcessCommand({ objcopy_tool, "--add-gnu-debuglink=" + stringify(g), stringify(f) }));
 
     if (0 != objcopy_copy_process.run().wait())
         Log::get_instance()->message("strip.failure", ll_warning, lc_context) << "Couldn't copy debug information for '" << f << "'";

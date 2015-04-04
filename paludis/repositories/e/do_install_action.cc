@@ -338,6 +338,10 @@ paludis::erepository::do_install_action(
                             ELikeSymbolsChoiceValue::canonical_name_with_prefix()));
 
                 auto dwarf_compression(choices->find_by_name_with_prefix(ELikeDwarfCompressionChoiceValue::canonical_name_with_prefix()));
+                const auto tool_prefix =
+                    destination->tool_prefix_key()
+                        ? destination->tool_prefix_key()->parse_value()
+                        : "";
 
                 EStripper stripper(make_named_values<EStripperOptions>(
                             n::compress_splits() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_compress(
@@ -348,7 +352,8 @@ paludis::erepository::do_install_action(
                             n::output_manager() = output_manager,
                             n::package_id() = id,
                             n::split() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_split(symbols_choice->parameter()),
-                            n::strip() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_strip(symbols_choice->parameter())
+                            n::strip() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_strip(symbols_choice->parameter()),
+                            n::tool_prefix() = tool_prefix
                             ));
                 stripper.strip();
             }

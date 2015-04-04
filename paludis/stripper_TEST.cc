@@ -73,7 +73,8 @@ TEST(Stripper, Works)
                 n::dwarf_compression() = false,
                 n::image_dir() = FSPath("stripper_TEST_dir/image").realpath(),
                 n::split() = true,
-                n::strip() = true
+                n::strip() = true,
+                n::tool_prefix() = PALUDIS_BUILD_STRIP_TOOL_PREFIX
             ));
     s.strip();
 

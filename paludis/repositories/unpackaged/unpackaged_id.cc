@@ -375,6 +375,10 @@ UnpackagedID::perform_action(Action & action) const
     {
         case wp_yes:
             {
+                auto tool_prefix = destination->tool_prefix_key()
+                                       ? destination->tool_prefix_key()->parse_value()
+                                       : "";
+
                 UnpackagedStripper stripper(make_named_values<UnpackagedStripperOptions>(
                             n::compress_splits() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_compress(
                                 symbols_choice->parameter()),
@@ -384,7 +388,8 @@ UnpackagedID::perform_action(Action & action) const
                             n::output_manager() = output_manager,
                             n::package_id() = shared_from_this(),
                             n::split() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_split(symbols_choice->parameter()),
-                            n::strip() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_strip(symbols_choice->parameter())
+                            n::strip() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_strip(symbols_choice->parameter()),
+                            n::tool_prefix() = tool_prefix
                             ));
 
                 stripper.strip();
