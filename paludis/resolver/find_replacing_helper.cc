@@ -79,11 +79,17 @@ FindReplacingHelper::operator() (
 
     if (repo->installed_root_key())
     {
+        const auto & dest_root = repo->installed_root_key()->parse_value();
+
         for (auto r(_imp->env->begin_repositories()), r_end(_imp->env->end_repositories()) ;
                 r != r_end ; ++r)
-            if ((*r)->installed_root_key() &&
-                    (*r)->installed_root_key()->parse_value() == repo->installed_root_key()->parse_value())
-                repos.insert((*r)->name());
+        {
+            const auto repository = *r;
+
+            if (repository->installed_root_key() &&
+                    repository->installed_root_key()->parse_value() == dest_root)
+                repos.insert(repository->name());
+        }
     }
     else
         repos.insert(repo->name());
