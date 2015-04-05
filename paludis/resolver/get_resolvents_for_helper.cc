@@ -223,6 +223,12 @@ namespace
                             }
                             break;
 
+                        case dt_cross_compile:
+                            if (is_run_or_post_dep(env, package_id, dep.sanitised_dependency()))
+                                if (can_cross_compile(package_id))
+                                    return DestinationTypes{dt_cross_compile};
+                            return DestinationTypes{ };
+
                         case dt_install_to_slash:
                             break;
 
@@ -273,6 +279,9 @@ namespace
 
             case dt_create_binary:
             case dt_install_to_slash:
+                return filter::InstalledAtRoot(env->system_root_key()->parse_value());
+
+            case dt_cross_compile:
                 return filter::InstalledAtRoot(env->system_root_key()->parse_value());
 
             case last_dt:

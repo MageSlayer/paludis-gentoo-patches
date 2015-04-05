@@ -99,6 +99,7 @@ namespace paludis
 
             args::ArgsGroup g_destination_options;
             args::EnumArg a_make;
+            args::StringArg a_cross_host;
             args::EnumArg a_make_dependencies;
             args::StringSetArg a_via_binary;
             args::EnumArg a_dependencies_to_slash;

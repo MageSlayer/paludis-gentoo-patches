@@ -24,7 +24,11 @@
 #include <paludis/resolver/resolution.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/environment.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/package_dep_spec_collection.hh>
+#include <paludis/package_id.hh>
+#include <paludis/repository.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -36,6 +40,7 @@ namespace paludis
     {
         const Environment * const env;
         PackageDepSpecCollection remove_if_dependent_specs;
+        std::string cross_compile_host;
 
         Imp(const Environment * const e) : env(e), remove_if_dependent_specs(nullptr)
         {
@@ -56,9 +61,28 @@ RemoveIfDependentHelper::add_remove_if_dependent_spec(const PackageDepSpec & spe
     _imp->remove_if_dependent_specs.insert(spec);
 }
 
+void
+RemoveIfDependentHelper::set_cross_compile_host(const std::string & host)
+{
+    _imp->cross_compile_host = host;
+}
+
 bool
 RemoveIfDependentHelper::operator()(const std::shared_ptr<const PackageID> & id) const
 {
+    auto repository = _imp->env->fetch_repository(id->repository_name());
+    auto cross_compile_host_key = repository->cross_compile_host_key();
+    if (_imp->cross_compile_host.empty())
+    {
+        if (cross_compile_host_key)
+            return false;
+    }
+    else
+    {
+        if (! cross_compile_host_key || cross_compile_host_key->parse_value() != _imp->cross_compile_host)
+            return false;
+    }
+
     return _imp->remove_if_dependent_specs.match_any(_imp->env, id, { });
 }
 

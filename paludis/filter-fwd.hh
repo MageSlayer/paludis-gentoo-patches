@@ -46,6 +46,8 @@ namespace paludis
         class InstalledAtRoot;
         class InstalledAtSlash;
         class InstalledAtNotSlash;
+
+        class CrossCompileHost;
     }
 
     /**

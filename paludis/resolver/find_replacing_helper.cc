@@ -78,10 +78,21 @@ FindReplacingHelper::operator()(const std::shared_ptr<const PackageID> & id,
     if (repo->installed_root_key())
     {
         const auto & dest_root = repo->installed_root_key()->parse_value();
+        const auto & dest_host =
+            repo->cross_compile_host_key()
+                ? repo->cross_compile_host_key()->parse_value()
+                : "";
 
         for (const auto & repository : _imp->env->repositories())
-            if (repository->installed_root_key() && repository->installed_root_key()->parse_value() == dest_root)
+        {
+            const auto & repo_host =
+                repository->cross_compile_host_key()
+                    ? repository->cross_compile_host_key()->parse_value()
+                    : "";
+
+            if ((repository->installed_root_key() && repository->installed_root_key()->parse_value() == dest_root) && repo_host == dest_host)
                 repos.insert(repository->name());
+        }
     }
     else
         repos.insert(repo->name());

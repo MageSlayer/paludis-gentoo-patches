@@ -55,6 +55,8 @@ namespace paludis
 
                 void set_reinstall_scm_days(const int);
 
+                void set_cross_compile_host(const std::string &);
+
                 const std::shared_ptr<Constraints> operator()(const Resolvent &) const;
         };
     }

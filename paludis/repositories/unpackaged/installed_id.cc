@@ -76,6 +76,7 @@ namespace
             run_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
         {
             behaviours_value->insert("transient");
+            behaviours_value->insert("uncrossable");
 
             build_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build_dependencies"));
             run_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run_dependencies"));

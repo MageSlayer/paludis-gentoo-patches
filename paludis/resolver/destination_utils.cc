@@ -60,6 +60,16 @@ paludis::resolver::can_chroot(const std::shared_ptr<const PackageID> & id)
     return v->end() == v->find("unchrootable");
 }
 
+bool
+paludis::resolver::can_cross_compile(const std::shared_ptr<const PackageID> & id)
+{
+    if (! id->behaviours_key())
+        return true;
+
+    auto v(id->behaviours_key()->parse_value());
+    return v->end() == v->find("uncrossable");
+}
+
 namespace
 {
     struct BinaryDestinationGeneratorHandler :
@@ -93,6 +103,37 @@ namespace
         {
         }
     };
+
+    struct CrossCompiledGeneratorHandler :
+        AllGeneratorHandlerBase
+    {
+        std::shared_ptr<const RepositoryNameSet>
+        repositories(const Environment * const env,
+                     const RepositoryContentMayExcludes &) const override
+        {
+            auto result(std::make_shared<RepositoryNameSet>());
+
+            for (const auto & repository : env->repositories())
+                if (repository->cross_compile_host_key())
+                    result->insert(repository->name());
+
+            return result;
+        }
+
+        std::string as_string() const override
+        {
+            return "cross-compiled destination repositories";
+        }
+    };
+
+    struct CrossCompiledDestinationGenerator :
+        Generator
+    {
+        CrossCompiledDestinationGenerator()
+            : Generator(std::make_shared<CrossCompiledGeneratorHandler>())
+        {
+        }
+    };
 }
 
 FilteredGenerator
@@ -111,6 +152,9 @@ paludis::resolver::destination_filtered_generator(const Environment * const env,
         case dt_create_binary:
             return g & BinaryDestinationGenerator();
 
+        case dt_cross_compile:
+            return g & CrossCompiledDestinationGenerator();
+
         case last_dt:
             break;
     }
@@ -119,8 +163,7 @@ paludis::resolver::destination_filtered_generator(const Environment * const env,
 }
 
 Filter
-paludis::resolver::make_destination_type_filter(
-        const DestinationType t)
+paludis::resolver::make_destination_type_filter(const DestinationType t)
 {
     switch (t)
     {
@@ -135,6 +178,9 @@ paludis::resolver::make_destination_type_filter(
                     return ! can_make_binary_for(id);
                     },
                     "can be made into a binary");
+
+        case dt_cross_compile:
+            return filter::All();
 
         case last_dt:
             break;

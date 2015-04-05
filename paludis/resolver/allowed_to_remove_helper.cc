@@ -24,7 +24,11 @@
 #include <paludis/resolver/resolution.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/environment.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/package_dep_spec_collection.hh>
+#include <paludis/package_id.hh>
+#include <paludis/repository.hh>
 
 using namespace paludis;
 using namespace paludis::resolver;
@@ -36,6 +40,7 @@ namespace paludis
     {
         const Environment * const env;
         PackageDepSpecCollection allowed_to_remove_specs;
+        std::string cross_compile_host;
 
         Imp(const Environment * const e) : env(e), allowed_to_remove_specs(nullptr)
         {
@@ -56,10 +61,25 @@ AllowedToRemoveHelper::add_allowed_to_remove_spec(const PackageDepSpec & spec)
     _imp->allowed_to_remove_specs.insert(spec);
 }
 
+void
+AllowedToRemoveHelper::set_cross_compile_host(const std::string & host)
+{
+    _imp->cross_compile_host = host;
+}
+
 bool
 AllowedToRemoveHelper::operator()(const std::shared_ptr<const Resolution> & resolution,
                                   const std::shared_ptr<const PackageID> & id) const
 {
+    auto cross_compile_host_matches = [this, &id] {
+        auto repository = _imp->env->fetch_repository(id->repository_name());
+        auto cross_compile_host_key = repository->cross_compile_host_key();
+
+        if (_imp->cross_compile_host.empty())
+            return ! cross_compile_host_key;
+        return cross_compile_host_key && cross_compile_host_key->parse_value() == _imp->cross_compile_host;
+    };
+
     auto v = make_visitor([&](const DependentReason &) { return true; },
                           [&](const TargetReason &) { return true; },
                           [&](const DependencyReason &) { return false; },
@@ -71,7 +91,7 @@ AllowedToRemoveHelper::operator()(const std::shared_ptr<const Resolution> & reso
 
     for (const auto & constraint : *resolution->constraints())
         if (constraint->reason()->accept_returning<bool>(v))
-            return true;
+            return cross_compile_host_matches();
 
     return _imp->allowed_to_remove_specs.match_any(_imp->env, id, {});
 }

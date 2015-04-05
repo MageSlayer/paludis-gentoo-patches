@@ -661,6 +661,8 @@ namespace
             return dt_install_to_slash;
         else if (arg.argument() == "chroot")
             return dt_install_to_chroot;
+        else if (arg.argument() == "cross-compile")
+            return dt_cross_compile;
         else
             throw args::DoHelp("Don't understand argument '" + arg.argument() + "' to '--"
                     + arg.long_name() + "'");
@@ -769,6 +771,8 @@ paludis::cave::resolve_common(
     allow_choice_changes_helper.set_allow_choice_changes(! resolution_options.a_no_override_flags.specified());
 
     AllowedToRemoveHelper allowed_to_remove_helper(env.get());
+    if (resolution_options.a_cross_host.specified())
+        allowed_to_remove_helper.set_cross_compile_host(resolution_options.a_cross_host.argument());
     for (const auto & spec : resolution_options.a_permit_uninstall.args())
         allowed_to_remove_helper.add_allowed_to_remove_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
@@ -803,8 +807,12 @@ paludis::cave::resolve_common(
     FindRepositoryForHelper find_repository_for_helper(env.get());
     if (resolution_options.a_chroot_path.specified())
         find_repository_for_helper.set_chroot_path(FSPath(resolution_options.a_chroot_path.argument()));
+    if (resolution_options.a_cross_host.specified())
+        find_repository_for_helper.set_cross_compile_host(resolution_options.a_cross_host.argument());
 
     GetConstraintsForDependentHelper get_constraints_for_dependent_helper(env.get());
+    if (resolution_options.a_cross_host.specified())
+        get_constraints_for_dependent_helper.set_cross_compile_host(resolution_options.a_cross_host.argument());
     for (const auto & spec : resolution_options.a_less_restrictive_remove_blockers.args())
         get_constraints_for_dependent_helper.add_less_restrictive_remove_blockers_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
@@ -821,12 +829,12 @@ paludis::cave::resolve_common(
     get_destination_types_for_error_helper.set_target_destination_type(destination_type_from_arg(env.get(), resolution_options.a_make));
 
     GetInitialConstraintsForHelper get_initial_constraints_for_helper(env.get());
+    if (resolution_options.a_cross_host.specified())
+        get_initial_constraints_for_helper.set_cross_compile_host(resolution_options.a_cross_host.argument());
     for (const auto & spec : resolution_options.a_without.args())
         get_initial_constraints_for_helper.add_without_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
-
     for (const auto & spec : resolution_options.a_preset.args())
         get_initial_constraints_for_helper.add_preset_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()), nullptr);
-
     get_initial_constraints_for_helper.set_reinstall_scm_days(reinstall_scm_days(resolution_options));
 
     RemoveHiddenHelper remove_hidden_helper(env.get());
@@ -928,6 +936,8 @@ paludis::cave::resolve_common(
     get_use_existing_nothing_helper.set_use_existing_for_set_targets(use_existing_from_arg(resolution_options.a_keep_targets, true));
 
     MakeDestinationFilteredGeneratorHelper make_destination_filtered_generator_helper(env.get());
+    if (resolution_options.a_cross_host.specified())
+        make_destination_filtered_generator_helper.set_cross_compile_host(resolution_options.a_cross_host.argument());
 
     MakeOriginFilteredGeneratorHelper make_origin_filtered_generator_helper(env.get());
     make_origin_filtered_generator_helper.set_making_binaries(
@@ -961,6 +971,8 @@ paludis::cave::resolve_common(
                                                                                                            nullptr, {}))]);
 
     RemoveIfDependentHelper remove_if_dependent_helper(env.get());
+    if (resolution_options.a_cross_host.specified())
+        remove_if_dependent_helper.set_cross_compile_host(resolution_options.a_cross_host.argument());
     for (const auto & spec : resolution_options.a_remove_if_dependent.args())
         remove_if_dependent_helper.add_remove_if_dependent_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 

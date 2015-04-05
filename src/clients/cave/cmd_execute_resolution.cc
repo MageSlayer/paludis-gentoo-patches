@@ -859,6 +859,11 @@ namespace
                     action_string = "create binary in ::" + stringify(install_item.destination_repository_name());
                     break;
 
+                case dt_cross_compile:
+                    destination_string = "cross compiling";
+                    action_string = "cross compile";
+                    break;
+
                 case last_dt:
                     break;
             }

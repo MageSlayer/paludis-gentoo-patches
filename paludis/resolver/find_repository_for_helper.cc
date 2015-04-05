@@ -45,6 +45,7 @@ namespace paludis
     {
         const Environment * const env;
         std::unique_ptr<const FSPath> chroot_path;
+        std::string cross_compile_host;
 
         Imp(const Environment * const e) :
             env(e)
@@ -80,11 +81,15 @@ FindRepositoryForHelper::operator() (
         switch (resolution->resolvent().destination_type())
         {
             case dt_install_to_slash:
-                if ((!repository->installed_root_key()) || (repository->installed_root_key()->parse_value() != _imp->env->system_root_key()->parse_value()))
+                if (repository->cross_compile_host_key() || (!repository->installed_root_key()) ||
+                    (repository->installed_root_key()->parse_value() != _imp->env->system_root_key()->parse_value()))
                     continue;
                 break;
 
             case dt_install_to_chroot:
+                if (repository->cross_compile_host_key())
+                    continue;
+
                 if (_imp->chroot_path) {
                     if ((!repository->installed_root_key()) || (repository->installed_root_key()->parse_value() != *_imp->chroot_path))
                         continue;
@@ -98,6 +103,16 @@ FindRepositoryForHelper::operator() (
             case dt_create_binary:
                 if (repository->installed_root_key())
                     continue;
+                break;
+
+            case dt_cross_compile:
+                if (! repository->cross_compile_host_key())
+                    continue;
+
+                if (! _imp->cross_compile_host.empty())
+                    if (repository->cross_compile_host_key()->parse_value() != _imp->cross_compile_host)
+                        continue;
+
                 break;
 
             case last_dt:
@@ -133,6 +148,12 @@ void
 FindRepositoryForHelper::set_chroot_path(const FSPath & p)
 {
     _imp->chroot_path = std::make_unique<FSPath>(p);
+}
+
+void
+FindRepositoryForHelper::set_cross_compile_host(const std::string & target)
+{
+    _imp->cross_compile_host = target;
 }
 
 namespace paludis

@@ -32,12 +32,14 @@
 #include <paludis/package_id.hh>
 #include <paludis/name.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/environment.hh>
 #include <paludis/user_dep_spec.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/notifier_callback.hh>
 #include <paludis/version_operator.hh>
 #include <paludis/version_requirements.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/repository.hh>
 #include <paludis/slot.hh>
 
 #include <iostream>
@@ -199,6 +201,30 @@ FixLinkageCommand::run(const std::shared_ptr<Environment> & env,
     {
         cout << endl;
 
+        auto repository = env->fetch_repository(package->repository_name());
+        auto cross_compile_host = repository->cross_compile_host_key();
+
+        if (! (resolve_cmdline.resolution_options.a_cross_host.specified()
+                   ? (cross_compile_host && cross_compile_host->parse_value() == resolve_cmdline.resolution_options.a_cross_host.argument())
+                   : !cross_compile_host))
+        {
+            cout << endl;
+
+            if (cross_compile_host)
+                cout << "The following broken files are owned by a foreign cross-compiled target ("
+                     << stringify(package->name()) << " x " << stringify(cross_compile_host->parse_value()) << "):";
+            else
+                cout << "The following broken files are owned by the default target:";
+
+            cout << endl;
+
+            for (const auto & file : finder->broken_files(package))
+                cout << "    " << file << " (requires " << join(finder->begin_missing_requirements(package, file),
+                                                                finder->end_missing_requirements(package, file), " ") << ")"
+                     << endl;
+            continue;
+        }
+
         cout << "* " << *package << endl;
 
         std::set<FSPath, FSPathComparator> broken_files;
@@ -239,6 +265,8 @@ FixLinkageCommand::run(const std::shared_ptr<Environment> & env,
         }
     }
 
+    if (targets->empty())
+        return 0;
     return resolve_common(env, resolve_cmdline.resolution_options, resolve_cmdline.execution_options, resolve_cmdline.display_options, resolve_cmdline.graph_jobs_options,
                           resolve_cmdline.program_options, nullptr, targets, nullptr, false);
 }

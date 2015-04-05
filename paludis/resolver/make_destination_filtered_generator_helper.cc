@@ -42,6 +42,7 @@ namespace paludis
     struct Imp<MakeDestinationFilteredGeneratorHelper>
     {
         const Environment * const env;
+        std::string cross_compile_host;
 
         Imp(const Environment * const e) : env(e)
         {
@@ -56,11 +57,19 @@ MakeDestinationFilteredGeneratorHelper::MakeDestinationFilteredGeneratorHelper(c
 
 MakeDestinationFilteredGeneratorHelper::~MakeDestinationFilteredGeneratorHelper() = default;
 
+void
+MakeDestinationFilteredGeneratorHelper::set_cross_compile_host(const std::string & host)
+{
+    _imp->cross_compile_host = host;
+}
+
 FilteredGenerator
 MakeDestinationFilteredGeneratorHelper::operator()(const Generator & g,
                                                    const std::shared_ptr<const Resolution> & r) const
 {
-    return destination_filtered_generator(_imp->env, r->resolvent().destination_type(), g);
+    auto cross_compile_filter = _imp->cross_compile_host.empty() ? Filter(filter::All())
+                                                                 : filter::CrossCompileHost(_imp->cross_compile_host);
+    return destination_filtered_generator(_imp->env, r->resolvent().destination_type(), g) | cross_compile_filter;
 }
 
 namespace paludis

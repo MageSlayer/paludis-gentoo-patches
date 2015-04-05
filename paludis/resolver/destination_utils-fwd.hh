@@ -35,6 +35,8 @@ namespace paludis
         bool can_make_binary_for(const std::shared_ptr<const PackageID> & id) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
         bool is_already_binary(const std::shared_ptr<const PackageID> & id) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
         bool can_chroot(const std::shared_ptr<const PackageID> & id) PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
+        bool can_cross_compile(const std::shared_ptr<const PackageID> & id)
+            PALUDIS_ATTRIBUTE((warn_unused_result)) PALUDIS_VISIBLE;
 
         FilteredGenerator destination_filtered_generator(
                 const Environment * const,

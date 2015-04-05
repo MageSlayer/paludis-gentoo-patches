@@ -131,6 +131,11 @@ namespace
                     output_stream << "fillcolor=steelblue, ";
                     break;
 
+                case dt_cross_compile:
+                    output_stream << "shape=doublehexagon, ";
+                    output_stream << "fillcolor=deeppink, ";
+                    break;
+
                 case last_dt:
                     break;
             }

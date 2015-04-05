@@ -250,6 +250,41 @@ namespace
         }
     };
 
+    struct CrossCompileHostHandler :
+        AllFilterHandlerBase
+    {
+        const std::string & host;
+
+        CrossCompileHostHandler(const std::string & h) : host(h)
+        {
+        }
+
+        std::shared_ptr<const RepositoryNameSet>
+        repositories(const Environment * const env, const std::shared_ptr<const RepositoryNameSet> & repos) const override
+        {
+            auto result = std::make_shared<RepositoryNameSet>();
+
+            if (host.empty())
+                for (const auto & repository : *repos)
+                    if (auto cross_ompile_host_key = env->fetch_repository(repository)->cross_compile_host_key())
+                        continue;
+                    else
+                        result->insert(repository);
+            else
+                for (const auto & repository : *repos)
+                    if (auto cross_compile_host_key = env->fetch_repository(repository)->cross_compile_host_key())
+                        if (cross_compile_host_key->parse_value() == host)
+                            result->insert(repository);
+
+            return result;
+        }
+
+        std::string as_string() const override
+        {
+            return "cross compiled to " + host;
+        }
+    };
+
     struct AndFilterHandler :
         FilterHandler
     {
@@ -516,6 +551,11 @@ filter::InstalledAtSlash::InstalledAtSlash() :
 
 filter::InstalledAtNotSlash::InstalledAtNotSlash() :
     Filter(std::make_shared<InstalledAtFilterHandler>(FSPath("/"), false))
+{
+}
+
+filter::CrossCompileHost::CrossCompileHost(const std::string & host) :
+    Filter(std::make_shared<CrossCompileHostHandler>(host))
 {
 }
 

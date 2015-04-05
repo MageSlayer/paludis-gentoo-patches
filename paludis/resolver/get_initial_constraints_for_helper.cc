@@ -60,6 +60,7 @@ namespace paludis
 
         std::list<PackageDepSpec> without_specs;
         int reinstall_scm_days;
+        std::string cross_compile_host;
 
         InitialConstraints initial_constraints;
 
@@ -131,6 +132,12 @@ GetInitialConstraintsForHelper::set_reinstall_scm_days(const int d)
     _imp->reinstall_scm_days = d;
 }
 
+void
+GetInitialConstraintsForHelper::set_cross_compile_host(const std::string & host)
+{
+    _imp->cross_compile_host = host;
+}
+
 const std::shared_ptr<Constraints>
 GetInitialConstraintsForHelper::operator() (const Resolvent & resolvent) const
 {
@@ -185,13 +192,14 @@ namespace
     }
 
     bool installed_is_scm_older_than(const Environment * const env,
-                                     const Resolvent & r, const int n)
+                                     const Resolvent & r,
+                                     const std::string & host, const int n)
     {
         Context context("When working out whether '" + stringify(r) + "' has installed SCM packages:");
 
         const std::shared_ptr<const PackageIDSequence> ids =
             (*env)[selection::AllVersionsUnsorted(destination_filtered_generator(env, r.destination_type(), generator::Package(r.package())) |
-                                                  make_slot_filter(r))];
+                                                  make_slot_filter(r) | filter::CrossCompileHost(host))];
 
         for (const auto & package : *ids)
             if (is_scm_older_than(package, n))
@@ -216,7 +224,7 @@ GetInitialConstraintsForHelper::_make_initial_constraints_for(const Resolvent & 
     auto result(std::make_shared<Constraints>());
 
     if ((-1 != _imp->reinstall_scm_days) &&
-            installed_is_scm_older_than(_imp->env, resolvent, _imp->reinstall_scm_days) &&
+            installed_is_scm_older_than(_imp->env, resolvent, _imp->cross_compile_host, _imp->reinstall_scm_days) &&
             ! use_existing_from_withish(_imp->env, resolvent.package(), _imp->without_specs))
     {
         result->add(std::make_shared<Constraint>(make_named_values<Constraint>(

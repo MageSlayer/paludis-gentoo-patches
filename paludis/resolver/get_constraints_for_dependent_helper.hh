@@ -50,6 +50,8 @@ namespace paludis
 
                 void add_less_restrictive_remove_blockers_spec(const PackageDepSpec &);
 
+                void set_cross_compile_host(const std::string &);
+
                 const std::shared_ptr<ConstraintSequence> operator()(const std::shared_ptr<const Resolution> &,
                                                                      const std::shared_ptr<const PackageID> &,
                                                                      const std::shared_ptr<const DependentPackageIDSequence> &) const;

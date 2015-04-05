@@ -29,9 +29,12 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/environment.hh>
+#include <paludis/metadata_key.hh>
 #include <paludis/package_id.hh>
 #include <paludis/package_dep_spec_collection.hh>
 #include <paludis/partially_made_package_dep_spec.hh>
+#include <paludis/repository.hh>
 #include <paludis/elike_slot_requirement.hh>
 #include <paludis/metadata_key.hh>
 #include <paludis/slot.hh>
@@ -46,6 +49,7 @@ namespace paludis
     {
         const Environment * const env;
         PackageDepSpecCollection less_restrictive_remove_blockers_specs;
+        std::string cross_compile_host;
 
         Imp(const Environment * const e) : env(e), less_restrictive_remove_blockers_specs(nullptr)
         {
@@ -66,11 +70,30 @@ GetConstraintsForDependentHelper::add_less_restrictive_remove_blockers_spec(cons
     _imp->less_restrictive_remove_blockers_specs.insert(spec);
 }
 
+void
+GetConstraintsForDependentHelper::set_cross_compile_host(const std::string & host)
+{
+    _imp->cross_compile_host = host;
+}
+
 const std::shared_ptr<ConstraintSequence>
 GetConstraintsForDependentHelper::operator()(const std::shared_ptr<const Resolution> &,
                                              const std::shared_ptr<const PackageID> & id,
                                              const std::shared_ptr<const DependentPackageIDSequence> & dependent_upon_ids) const
 {
+    auto repository = _imp->env->fetch_repository(id->repository_name());
+    auto cross_compile_host_key = repository->cross_compile_host_key();
+    if (_imp->cross_compile_host.empty())
+    {
+        if (cross_compile_host_key)
+            return std::make_shared<ConstraintSequence>();
+    }
+    else
+    {
+        if (! cross_compile_host_key || cross_compile_host_key->parse_value() != _imp->cross_compile_host)
+            return std::make_shared<ConstraintSequence>();
+    }
+
     auto result(std::make_shared<ConstraintSequence>());
 
     std::shared_ptr<PackageDepSpec> spec;

@@ -133,7 +133,10 @@ UninstallCommand::run(
     for (const auto & param : cmdline.parameters())
     {
         PackageDepSpec spec(parse_spec_with_nice_error(param, env.get(), { updso_allow_wildcards }, filter::All()));
-        const auto ids((*env)[selection::AllVersionsSorted(generator::Matches(spec, nullptr, { }) | filter::SupportsAction<UninstallAction>())]);
+        const std::string & cross_host = cmdline.resolution_options->a_cross_host.specified() ? cmdline.resolution_options->a_cross_host.argument() : "";
+        const auto ids =
+            (*env)[selection::AllVersionsSorted(generator::Matches(spec, nullptr, {}) | filter::SupportsAction<UninstallAction>() | filter::CrossCompileHost(cross_host))];
+
         if (ids->empty())
             nothing_matching_error(env.get(), param, filter::SupportsAction<UninstallAction>());
         else if ((! cmdline.a_all_versions.specified()) && has_multiple_versions(ids))

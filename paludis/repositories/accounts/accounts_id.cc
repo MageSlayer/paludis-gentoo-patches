@@ -58,6 +58,7 @@ namespace
         {
             behaviours_value->insert("unbinaryable");
             behaviours_value->insert("unchrootable");
+            behaviours_value->insert("uncrossable");
         }
     };
 }

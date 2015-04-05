@@ -44,6 +44,8 @@ namespace paludis
 
                 void add_remove_if_dependent_spec(const PackageDepSpec &);
 
+                void set_cross_compile_host(const std::string &);
+
                 bool operator()(const std::shared_ptr<const PackageID> &) const;
         };
     }

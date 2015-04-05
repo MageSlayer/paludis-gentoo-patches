@@ -223,6 +223,13 @@ namespace paludis
                 InstalledAtNotSlash();
         };
 
+        class PALUDIS_VISIBLE CrossCompileHost :
+            public Filter
+        {
+            public:
+                CrossCompileHost(const std::string & host);
+        };
+
         /**
          * A Filter which accepts only PackageID instances that are accepted by
          * two different filters.

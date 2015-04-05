@@ -364,6 +364,10 @@ namespace
                 result << ", creating a binary";
                 break;
 
+            case dt_cross_compile:
+                result << ", cross compiling";
+                break;
+
             case last_dt:
                 break;
         }
@@ -1155,6 +1159,12 @@ namespace
                         c = c::green().colour_string();
                         if (maybe_totals)
                             ++maybe_totals->binary_installs_count;
+                        continue;
+
+                    case dt_cross_compile:
+                        c = c::pink().colour_string();
+                        if (maybe_totals)
+                            ++maybe_totals->installs_ct_count.insert(std::make_pair(decision.change_type(), 0)).first->second;
                         continue;
 
                     case last_dt:

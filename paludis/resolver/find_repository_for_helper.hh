@@ -45,6 +45,8 @@ namespace paludis
 
                 void set_chroot_path(const FSPath &);
 
+                void set_cross_compile_host(const std::string &);
+
                 const std::shared_ptr<const Repository> operator() (
                         const std::shared_ptr<const Resolution> &,
                         const ChangesToMakeDecision &) const;

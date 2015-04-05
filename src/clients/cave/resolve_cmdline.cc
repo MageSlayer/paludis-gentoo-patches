@@ -19,11 +19,13 @@
 
 #include "resolve_cmdline.hh"
 #include <paludis/args/do_help.hh>
+#include <paludis/distribution.hh>
 #include <paludis/repository.hh>
 #include <paludis/environment.hh>
 #include <paludis/util/map.hh>
 #include <paludis/util/log.hh>
 #include <paludis/repository_factory.hh>
+#include <iostream>
 #include <memory>
 
 using namespace paludis;
@@ -269,8 +271,10 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             ("auto",                  'a', "'install', or 'chroot' if the preferred root is not /")
             ("install",               'i', "Install targets to /")
             ("binaries",              'b', "Create binary packages for targets")
-            ("chroot",                'c', "Install targets to a chroot"),
+            ("chroot",                'c', "Install targets to a chroot")
+            ("cross-compile",         'x', "cross compile package (Exherbo only)"),
             "auto"),
+    a_cross_host(&g_destination_options, "cross-host", '4', "Specify which cross host to use"),
     a_make_dependencies(&g_destination_options, "make-dependencies", 'M', "Specify what to do with dependencies of "
             "targets. Only useful when '--make' is not set to 'install', since dependencies on / are considered "
             "specially.",
@@ -520,7 +524,13 @@ ResolveCommandLineResolutionOptions::apply_shortcuts()
 }
 
 void
-ResolveCommandLineResolutionOptions::verify(const std::shared_ptr<const Environment> &)
+ResolveCommandLineResolutionOptions::verify(const std::shared_ptr<const Environment> & env)
 {
+    if (a_make.specified() && a_make.argument() == "cross-compile" &&
+        !DistributionData::get_instance()->distribution_from_string(env->distribution())->supports_cross_compile())
+    {
+        std::cerr << env->distribution() << " does not support cross compilation" << std::endl;
+        ::exit(EXIT_FAILURE);
+    }
 }
 
