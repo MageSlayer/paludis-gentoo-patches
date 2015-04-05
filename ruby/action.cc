@@ -556,7 +556,7 @@ namespace
             }
             else
             {
-                rb_raise(rb_eArgError, "FetchActionOptions expects one or four arguments, but got %d",argc);
+                rb_raise(rb_eArgError, "FetchActionFailure expects one or four arguments, but got %d",argc);
             }
 
             ptr = new FetchActionFailure(make_named_values<FetchActionFailure>(
