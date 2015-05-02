@@ -360,7 +360,7 @@ TEST(Merger, FileNothing)
 
     ASSERT_TRUE((data->root_dir / "file").stat().is_regular_file());
     SafeIFStream f(data->root_dir / "file");
-    ASSERT_TRUE(f);
+    ASSERT_TRUE(bool(f));
     std::string fs(std::string((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>()));
     EXPECT_EQ("image contents\n", fs);
 }
@@ -370,7 +370,7 @@ TEST(Merger, FileFile)
     auto data(make_merger(et_file, et_file, 0));
     ASSERT_TRUE((data->root_dir / "file").stat().is_regular_file());
     SafeIFStream b(data->root_dir / "file");
-    ASSERT_TRUE(b);
+    ASSERT_TRUE(bool(b));
     std::string bs((std::istreambuf_iterator<char>(b)), std::istreambuf_iterator<char>());
     EXPECT_EQ("root contents\n", bs);
 
@@ -379,7 +379,7 @@ TEST(Merger, FileFile)
 
     ASSERT_TRUE((data->root_dir / "file").stat().is_regular_file());
     SafeIFStream f(data->root_dir / "file");
-    ASSERT_TRUE(f);
+    ASSERT_TRUE(bool(f));
     std::string fs((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
     EXPECT_EQ("image contents\n", fs);
 }
@@ -396,19 +396,19 @@ TEST(Merger, FileSym)
 
     ASSERT_TRUE((data->root_dir / "file1").stat().is_regular_file());
     SafeIFStream f(data->root_dir / "file1");
-    ASSERT_TRUE(f);
+    ASSERT_TRUE(bool(f));
     std::string fs((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
     EXPECT_EQ("image 1 contents\n", fs);
 
     ASSERT_TRUE((data->root_dir / "file2").stat().is_regular_file());
     SafeIFStream f2(data->root_dir / "file2");
-    ASSERT_TRUE(f2);
+    ASSERT_TRUE(bool(f2));
     std::string fs2((std::istreambuf_iterator<char>(f2)), std::istreambuf_iterator<char>());
     EXPECT_EQ("image 2 contents\n", fs2);
 
     ASSERT_TRUE((data->root_dir / "file3").stat().is_regular_file());
     SafeIFStream f3(data->root_dir / "file3");
-    ASSERT_TRUE(f3);
+    ASSERT_TRUE(bool(f3));
     std::string fs3((std::istreambuf_iterator<char>(f3)), std::istreambuf_iterator<char>());
     EXPECT_EQ("image 3 contents\n", fs3);
 }

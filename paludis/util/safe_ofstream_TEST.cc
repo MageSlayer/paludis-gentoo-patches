@@ -30,25 +30,25 @@ using namespace paludis;
 TEST(SafeOFStream, New)
 {
     SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "new", -1, false);
-    ASSERT_TRUE(s);
+    ASSERT_TRUE(bool(s));
     s << "foo";
-    ASSERT_TRUE(s);
+    ASSERT_TRUE(bool(s));
 }
 
 TEST(SafeOFStream, Existing)
 {
     SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing", -1, false);
-    ASSERT_TRUE(s);
+    ASSERT_TRUE(bool(s));
     s << "foo";
-    ASSERT_TRUE(s);
+    ASSERT_TRUE(bool(s));
 }
 
 TEST(SafeOFStream, ExistingSym)
 {
     SafeOFStream s(FSPath::cwd() / "safe_ofstream_TEST_dir" / "existing_sym", -1, false);
-    ASSERT_TRUE(s);
+    ASSERT_TRUE(bool(s));
     s << "foo";
-    ASSERT_TRUE(s);
+    ASSERT_TRUE(bool(s));
 }
 
 TEST(SafeOFStream, ExistingDir)
@@ -70,7 +70,7 @@ TEST(SafeOFStream, WriteFailure)
     try
     {
         SafeOFStream s(FSPath("/dev/full"), -1, false);
-        ASSERT_TRUE(s);
+        ASSERT_TRUE(bool(s));
         s << "foo";
         ASSERT_TRUE(! s);
     }

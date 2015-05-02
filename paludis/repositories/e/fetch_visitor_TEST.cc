@@ -84,7 +84,7 @@ TEST(FetchVisitor, Works)
 
     ASSERT_TRUE(FSPath("fetch_visitor_TEST_dir/out/input1").stat().is_regular_file());
     SafeIFStream f(FSPath("fetch_visitor_TEST_dir/out/input1"));
-    ASSERT_TRUE(f);
+    ASSERT_TRUE(bool(f));
     std::string s((std::istreambuf_iterator<char>(f)), std::istreambuf_iterator<char>());
     EXPECT_EQ("contents of one\n", s);
 }

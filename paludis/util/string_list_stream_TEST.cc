@@ -49,13 +49,13 @@ TEST(StringListStream, Works)
 
     std::string l;
 
-    ASSERT_TRUE(std::getline(s, l));
+    ASSERT_TRUE(bool(std::getline(s, l)));
     EXPECT_EQ("foo", l);
 
-    ASSERT_TRUE(std::getline(s, l));
+    ASSERT_TRUE(bool(std::getline(s, l)));
     EXPECT_EQ("bar", l);
 
-    ASSERT_TRUE(std::getline(s, l));
+    ASSERT_TRUE(bool(std::getline(s, l)));
     EXPECT_EQ("baz", l);
 
     ASSERT_TRUE(! std::getline(s, l));
@@ -69,7 +69,7 @@ TEST(StringListStream, Threads)
     std::string l;
     for (int n(0) ; n < 100 ; ++n)
     {
-        ASSERT_TRUE(std::getline(s, l));
+        ASSERT_TRUE(bool(std::getline(s, l)));
         EXPECT_EQ(stringify(n), l);
     }
 

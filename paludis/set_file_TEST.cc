@@ -91,7 +91,7 @@ TEST(SetFile, Simple)
 
     {
         SafeIFStream ff(FSPath("set_file_TEST_dir/simple1"));
-        ASSERT_TRUE(ff);
+        ASSERT_TRUE(bool(ff));
         std::string g((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>());
         EXPECT_EQ("# this is a comment\n\nfoo/bar\n>=bar/baz-1.23\n\n# the end\nmoo/oink\n", g);
     }
@@ -109,7 +109,7 @@ TEST(SetFile, Simple)
 
     {
         SafeIFStream ff(FSPath("set_file_TEST_dir/simple1"));
-        ASSERT_TRUE(ff);
+        ASSERT_TRUE(bool(ff));
         std::string g((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>());
         EXPECT_EQ("# this is a comment\n\nfoo/bar\n\n# the end\nmoo/oink\n", g);
     }
@@ -149,7 +149,7 @@ TEST(SetFile, PaludisConf)
 
     {
         SafeIFStream ff(FSPath("set_file_TEST_dir/paludisconf1"));
-        ASSERT_TRUE(ff);
+        ASSERT_TRUE(bool(ff));
         std::string g((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>());
         EXPECT_EQ("# this is a comment\n\n? foo/bar\n* >=bar/baz-1.23\n\n* set\n? settee\n\n# the end\n* moo/oink\n* couch\n", g);
     }
@@ -168,7 +168,7 @@ TEST(SetFile, PaludisConf)
 
     {
         SafeIFStream ff(FSPath("set_file_TEST_dir/paludisconf1"));
-        ASSERT_TRUE(ff);
+        ASSERT_TRUE(bool(ff));
         std::string g((std::istreambuf_iterator<char>(ff)), std::istreambuf_iterator<char>());
         EXPECT_EQ("# this is a comment\n\n? foo/bar\n\n? settee\n\n# the end\n* moo/oink\n* couch\n", g);
     }

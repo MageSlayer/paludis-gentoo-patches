@@ -30,10 +30,10 @@ using namespace paludis;
 TEST(SafeIFStream, Existing)
 {
     SafeIFStream s(FSPath::cwd() / "safe_ifstream_TEST_dir" / "existing");
-    ASSERT_TRUE(s);
+    ASSERT_TRUE(bool(s));
     std::string t;
     s >> t;
-    ASSERT_TRUE(s);
+    ASSERT_TRUE(bool(s));
     EXPECT_EQ("first", t);
     s >> t;
     EXPECT_EQ(std::string(1000, 'x'), t);
@@ -41,9 +41,9 @@ TEST(SafeIFStream, Existing)
     s.clear();
     s.seekg(0, std::ios::beg);
 
-    ASSERT_TRUE(s);
+    ASSERT_TRUE(bool(s));
     s >> t;
-    ASSERT_TRUE(s);
+    ASSERT_TRUE(bool(s));
     EXPECT_EQ("first", t);
     s >> t;
     EXPECT_EQ(std::string(1000, 'x'), t);
@@ -52,10 +52,10 @@ TEST(SafeIFStream, Existing)
 TEST(SafeIFStream, ExistingSym)
 {
     SafeIFStream s(FSPath::cwd() / "safe_ifstream_TEST_dir" / "existing");
-    ASSERT_TRUE(s);
+    ASSERT_TRUE(bool(s));
     std::string t;
     s >> t;
-    ASSERT_TRUE(s);
+    ASSERT_TRUE(bool(s));
     EXPECT_EQ("first", t);
     s >> t;
     EXPECT_EQ(std::string(1000, 'x'), t);

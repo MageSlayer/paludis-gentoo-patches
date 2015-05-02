@@ -129,7 +129,7 @@ TEST(Process, GrabStdoutLong)
     std::string s;
     for (int x(1) ; x <= 100000 ; ++x)
     {
-        ASSERT_TRUE(std::getline(stdout_stream, s));
+        ASSERT_TRUE(bool(std::getline(stdout_stream, s)));
         ASSERT_EQ(stringify(x), s);
     }
 
@@ -265,7 +265,7 @@ TEST(Process, CapturedPipeCommand)
     EXPECT_EQ(13, one_two_three_process.run().wait());
 
     std::string line;
-    ASSERT_TRUE(std::getline(stdout_stream, line));
+    ASSERT_TRUE(bool(std::getline(stdout_stream, line)));
     EXPECT_EQ("2", line);
     ASSERT_TRUE(! std::getline(stdout_stream, line));
 }
