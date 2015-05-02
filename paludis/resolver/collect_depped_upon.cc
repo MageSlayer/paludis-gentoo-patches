@@ -41,6 +41,7 @@
 #include <paludis/slot.hh>
 
 #include <algorithm>
+#include <initializer_list>
 #include <sstream>
 
 using namespace paludis;
@@ -239,10 +240,9 @@ paludis::resolver::dependent_upon(
     }
     else
     {
-        auto k { &PackageID::build_dependencies_key, &PackageID::run_dependencies_key, &PackageID::post_dependencies_key };
-        for (auto i(k.begin()), i_end(k.end()) ; i != i_end ; ++i)
+        for (auto& fn : { &PackageID::build_dependencies_key, &PackageID::run_dependencies_key, &PackageID::post_dependencies_key })
         {
-            auto key(((*id).*(*i))());
+            auto key(((*id).*fn)());
             if (key)
             {
                 c.labels_stack.push_front(key->initial_labels());
