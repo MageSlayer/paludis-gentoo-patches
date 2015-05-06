@@ -295,7 +295,7 @@ ResolveCommandLineResolutionOptions::ResolveCommandLineResolutionOptions(args::A
             "all"),
     a_one_binary_per_slot(&g_destination_options, "one-binary-per-slot", '\0', "When building a binary package, "
             "remove other versions in the same repository and slot (as would be done for non-binary packages).", true),
-    a_chroot_path(&g_destination_options, "chroot-path", '\0', "When making a chroot, only consider destination "
+    a_chroot_path(&g_destination_options, "chroot-path", '2', "When making a chroot, only consider destination "
             "repositories whose root is this value."),
 
 //    g_query_options(this, "Query Options", "Query the user interactively when making decisions. "

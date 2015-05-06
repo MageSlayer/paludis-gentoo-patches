@@ -126,6 +126,7 @@ __cave_resolve_options="-h --help
         -b --create-binaries
         -B --no-binaries-for
         -/ --install-to-root --no-install-to-root
+        -2 --chroot-path
         --dump --no-dump
         --dump-restarts --no-dump-restarts
         -1 --preserve-world --no-preserve-world
