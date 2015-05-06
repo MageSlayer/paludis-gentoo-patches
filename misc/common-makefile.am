@@ -48,6 +48,7 @@ LOG_COMPILER = \
 		CAVE_UNINSTALL_OPTIONS="" \
 		CAVE_UPDATE_WORLD_OPTIONS="" \
 		INQUISITIO_OPTIONS="" \
+		FILESYSTEM_LAYOUT="" \
 		LD_LIBRARY_PATH="`echo $$LD_LIBRARY_PATH: | sed -e 's,^:,,'`` \
 			$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/.libs/ \
 			`:`$(top_srcdir)/paludis/repositories/e/ebuild/utils/canonicalise $(top_builddir)/paludis/util/.libs/ \
