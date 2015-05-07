@@ -26,30 +26,6 @@ using namespace paludis;
 
 namespace
 {
-    unsigned char dehex_c(unsigned char c)
-    {
-        if (c >= '0' && c <= '9')
-            return c - '0';
-        else if (c >= 'a' && c <= 'f')
-            return c + 10 - 'a';
-        else
-            throw "meh!";
-    }
-
-    std::string dehex(const std::string & s)
-    {
-        std::string result;
-        std::string::size_type p(0);
-        while (p < s.length())
-        {
-            unsigned char c;
-            c = (dehex_c(s.at(p)) << 4) + dehex_c(s.at(p + 1));
-            result.append(1, c);
-            p += 2;
-        }
-        return result;
-    }
-
     std::string whirlpool(const std::string & data)
     {
         std::stringstream ss(data);
