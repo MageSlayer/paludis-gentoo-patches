@@ -50,7 +50,7 @@ namespace paludis
                 /**
                  * Constructor.
                  */
-                ArgsError(const std::string & message) throw ();
+                ArgsError(const std::string & message) noexcept;
         };
 
         /**
@@ -66,7 +66,7 @@ namespace paludis
                 /**
                  * Constructor
                  */
-                BadValue(const std::string& option, const std::string& value) throw();
+                BadValue(const std::string& option, const std::string& value) noexcept;
         };
 
         /**
@@ -83,7 +83,7 @@ namespace paludis
                 /**
                  * Constructor.
                  */
-                MissingValue(const std::string & arg) throw ();
+                MissingValue(const std::string & arg) noexcept;
         };
     }
 }

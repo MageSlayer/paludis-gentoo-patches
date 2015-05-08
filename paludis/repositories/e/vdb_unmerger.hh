@@ -74,7 +74,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            VDBUnmergerError(const std::string &) throw ();
+            VDBUnmergerError(const std::string &) noexcept;
 
             ///\}
     };

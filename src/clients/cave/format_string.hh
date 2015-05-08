@@ -34,7 +34,7 @@ namespace paludis
             public Exception
         {
             public:
-                FormatStringError(const std::string & f, const std::string & msg) throw ();
+                FormatStringError(const std::string & f, const std::string & msg) noexcept;
         };
 
         std::string format_string(

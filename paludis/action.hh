@@ -661,7 +661,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ActionFailedError(const std::string & msg) throw ();
+            ActionFailedError(const std::string & msg) noexcept;
 
             ///\}
     };
@@ -680,7 +680,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            ActionAbortedError(const std::string &) throw ();
+            ActionAbortedError(const std::string &) noexcept;
 
             ///\}
     };

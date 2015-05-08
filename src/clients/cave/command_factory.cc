@@ -247,7 +247,7 @@ CommandFactory::end() const
     return first_iterator(_imp->handlers.end());
 }
 
-UnknownCommand::UnknownCommand(const std::string & s) throw () :
+UnknownCommand::UnknownCommand(const std::string & s) noexcept :
     Exception("Unknown command '" + s + "'")
 {
 }

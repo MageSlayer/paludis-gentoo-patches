@@ -137,7 +137,7 @@ namespace paludis
         public Exception
     {
         public:
-            DuplicateSetError(const SetName & s) throw ();
+            DuplicateSetError(const SetName & s) noexcept;
     };
 }
 

@@ -112,7 +112,7 @@ namespace
     int MyThreadedClass::instances = 0;
     std::mutex MyThreadedClass::mutex;
 
-    static void thread_func(void * * const p) throw ()
+    static void thread_func(void * * const p) noexcept
     {
         *p = MyThreadedClass::get_instance();
     }

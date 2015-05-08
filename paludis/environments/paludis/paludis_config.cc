@@ -361,12 +361,12 @@ namespace paludis
     };
 }
 
-PaludisConfigError::PaludisConfigError(const std::string & msg) throw () :
+PaludisConfigError::PaludisConfigError(const std::string & msg) noexcept :
     ConfigurationError("Paludis configuration error: " + msg)
 {
 }
 
-PaludisConfigNoDirectoryError::PaludisConfigNoDirectoryError(const std::string & msg) throw () :
+PaludisConfigNoDirectoryError::PaludisConfigNoDirectoryError(const std::string & msg) noexcept :
     PaludisConfigError("Paludis configuration error: " + msg)
 {
 }

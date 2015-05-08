@@ -39,7 +39,7 @@ namespace paludis
                  * Constructor.
                  */
                 FakeDepParseError(const std::string & dep_string,
-                        const std::string & message) throw ();
+                        const std::string & message) noexcept;
         };
 
         /**

@@ -44,7 +44,7 @@
 
 using namespace paludis;
 
-DidNotGetExactlyOneError::DidNotGetExactlyOneError(const std::string & s, const std::shared_ptr<const PackageIDSet> & r) throw () :
+DidNotGetExactlyOneError::DidNotGetExactlyOneError(const std::string & s, const std::shared_ptr<const PackageIDSet> & r) noexcept :
     Exception("Did not get unique result for '" + stringify(s) + "' (got { " + join(indirect_iterator(r->begin()),
                     indirect_iterator(r->end()), ", ") + "})")
 {

@@ -22,7 +22,7 @@
 using namespace paludis;
 using namespace paludis::gemcutter_repository;
 
-JSONError::JSONError(const std::string & s) throw () :
+JSONError::JSONError(const std::string & s) noexcept :
     Exception(s)
 {
 }

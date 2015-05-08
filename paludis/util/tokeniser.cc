@@ -21,7 +21,7 @@
 
 using namespace paludis;
 
-TokeniserError::TokeniserError(const std::string & s, const std::string & msg) throw () :
+TokeniserError::TokeniserError(const std::string & s, const std::string & msg) noexcept :
     Exception("When tokenising '" + s + "': " + msg)
 {
 }

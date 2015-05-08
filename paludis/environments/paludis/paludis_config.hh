@@ -66,7 +66,7 @@ namespace paludis
                 /**
                  * Constructor.
                  */
-                PaludisConfigError(const std::string & msg) throw ();
+                PaludisConfigError(const std::string & msg) noexcept;
         };
 
         /**
@@ -84,7 +84,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                PaludisConfigNoDirectoryError(const std::string & msg) throw ();
+                PaludisConfigNoDirectoryError(const std::string & msg) noexcept;
 
                 ///\}
         };

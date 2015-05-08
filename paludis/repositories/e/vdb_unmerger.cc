@@ -288,7 +288,7 @@ VDBUnmerger::display(const std::string & message) const
     _imp->options.output_manager()->stdout_stream() << message << std::endl;
 }
 
-VDBUnmergerError::VDBUnmergerError(const std::string & s) throw () :
+VDBUnmergerError::VDBUnmergerError(const std::string & s) noexcept :
     UnmergerError(s)
 {
 }

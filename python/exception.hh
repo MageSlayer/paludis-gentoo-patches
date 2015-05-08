@@ -133,7 +133,7 @@ namespace paludis
             public Exception
         {
             public:
-                PythonError(const std::string & message) throw ();
+                PythonError(const std::string & message) noexcept;
         };
 
         class PALUDIS_VISIBLE PythonMethodNotImplemented :
@@ -141,7 +141,7 @@ namespace paludis
         {
             public:
                 PythonMethodNotImplemented(const std::string & class_name,
-                        const std::string & function_name) throw ();
+                        const std::string & function_name) noexcept;
         };
 
         class PALUDIS_VISIBLE PythonContainerConversionError :
@@ -149,7 +149,7 @@ namespace paludis
         {
             public:
                 PythonContainerConversionError(const std::string & class_name,
-                        const std::string & container_name, const std::string & o_type) throw ();
+                        const std::string & container_name, const std::string & o_type) noexcept;
         };
     }
 }

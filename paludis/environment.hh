@@ -74,11 +74,11 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            AmbiguousPackageNameError(const std::string & name, const std::shared_ptr<const Sequence<std::string> > &) throw ();
+            AmbiguousPackageNameError(const std::string & name, const std::shared_ptr<const Sequence<std::string> > &) noexcept;
 
             AmbiguousPackageNameError(const AmbiguousPackageNameError &);
 
-            virtual ~AmbiguousPackageNameError() throw ();
+            virtual ~AmbiguousPackageNameError() noexcept;
 
             ///\}
 
@@ -113,7 +113,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            DuplicateRepositoryError(const std::string & name) throw ();
+            DuplicateRepositoryError(const std::string & name) noexcept;
     };
 
     /**
@@ -132,9 +132,9 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            NoSuchPackageError(const std::string & name) throw ();
+            NoSuchPackageError(const std::string & name) noexcept;
 
-            virtual ~NoSuchPackageError() throw ()
+            virtual ~NoSuchPackageError() noexcept
             {
             }
 
@@ -166,9 +166,9 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            NoSuchRepositoryError(const RepositoryName &) throw ();
+            NoSuchRepositoryError(const RepositoryName &) noexcept;
 
-            ~NoSuchRepositoryError() throw ();
+            ~NoSuchRepositoryError() noexcept;
 
             ///\}
 

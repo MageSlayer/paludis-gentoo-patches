@@ -857,7 +857,7 @@ namespace
     }
 }
 
-ELikeUseRequirementError::ELikeUseRequirementError(const std::string & s, const std::string & m) throw () :
+ELikeUseRequirementError::ELikeUseRequirementError(const std::string & s, const std::string & m) noexcept :
     Exception("Error parsing use requirement '" + s + "': " + m)
 {
 }

@@ -83,7 +83,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            UnmergerError(const std::string & msg) throw ();
+            UnmergerError(const std::string & msg) noexcept;
 
             ///\}
     };

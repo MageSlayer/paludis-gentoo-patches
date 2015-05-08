@@ -135,7 +135,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            FSMergerError(const std::string & msg) throw ();
+            FSMergerError(const std::string & msg) noexcept;
 
             ///\}
     };

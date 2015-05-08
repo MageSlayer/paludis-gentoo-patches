@@ -69,7 +69,7 @@ namespace paludis
         public NameError
     {
         public:
-            ChoicePrefixNameError(const std::string &) throw ();
+            ChoicePrefixNameError(const std::string &) noexcept;
     };
 
     /**
@@ -83,7 +83,7 @@ namespace paludis
         public NameError
     {
         public:
-            ChoiceNameWithPrefixError(const std::string &) throw ();
+            ChoiceNameWithPrefixError(const std::string &) noexcept;
     };
 
     /**
@@ -97,7 +97,7 @@ namespace paludis
         public NameError
     {
         public:
-            UnprefixedChoiceNameError(const std::string &) throw ();
+            UnprefixedChoiceNameError(const std::string &) noexcept;
     };
 
     template <>

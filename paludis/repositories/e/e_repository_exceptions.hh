@@ -44,7 +44,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            ERepositoryConfigurationError(const std::string & msg) throw ();
+            ERepositoryConfigurationError(const std::string & msg) noexcept;
     };
 
     /**
@@ -59,7 +59,7 @@ namespace paludis
         public Exception
     {
         public:
-            MissingDistfileError(const std::string &) throw ();
+            MissingDistfileError(const std::string &) noexcept;
     };
 
 }

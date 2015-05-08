@@ -128,7 +128,7 @@ SafeIFStream::~SafeIFStream()
         ::close(buf.fd);
 }
 
-SafeIFStreamError::SafeIFStreamError(const std::string & s) throw () :
+SafeIFStreamError::SafeIFStreamError(const std::string & s) noexcept :
     Exception(s)
 {
 }

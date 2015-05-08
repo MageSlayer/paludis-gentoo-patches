@@ -33,7 +33,7 @@ namespace paludis
             public Exception
         {
             public:
-                GemcutterDependenciesError(const std::string &) throw ();
+                GemcutterDependenciesError(const std::string &) noexcept;
         };
 
         class GemcutterDependenciesKey :

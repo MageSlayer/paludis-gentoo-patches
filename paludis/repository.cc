@@ -45,23 +45,23 @@ using namespace paludis;
 
 #include <paludis/repository-se.cc>
 
-NoSuchSetError::NoSuchSetError(const std::string & our_name) throw () :
+NoSuchSetError::NoSuchSetError(const std::string & our_name) noexcept :
     Exception("Could not find '" + our_name + "'"),
     _name(our_name)
 {
 }
 
-NoSuchSetError::~NoSuchSetError() throw ()
+NoSuchSetError::~NoSuchSetError() noexcept
 {
 }
 
-RecursivelyDefinedSetError::RecursivelyDefinedSetError(const std::string & our_name) throw () :
+RecursivelyDefinedSetError::RecursivelyDefinedSetError(const std::string & our_name) noexcept :
     Exception("Set '" + our_name + "' is recursively defined"),
     _name(our_name)
 {
 }
 
-RecursivelyDefinedSetError::~RecursivelyDefinedSetError() throw ()
+RecursivelyDefinedSetError::~RecursivelyDefinedSetError() noexcept
 {
 }
 

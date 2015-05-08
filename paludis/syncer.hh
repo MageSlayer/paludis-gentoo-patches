@@ -161,12 +161,12 @@ namespace paludis
             /**
              * Constructor.
              */
-            SyncFailedError(const std::string & msg) throw ();
+            SyncFailedError(const std::string & msg) noexcept;
 
             /**
              * Constructor.
              */
-            SyncFailedError(const std::string & local, const std::string & remote) throw ();
+            SyncFailedError(const std::string & local, const std::string & remote) noexcept;
     };
 
     /**
@@ -181,7 +181,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            NoSuchSyncerError(const std::string & format) throw ();
+            NoSuchSyncerError(const std::string & format) noexcept;
     };
 }
 

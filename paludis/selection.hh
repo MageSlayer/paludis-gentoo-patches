@@ -54,7 +54,7 @@ namespace paludis
     {
         public:
             DidNotGetExactlyOneError(const std::string &,
-                    const std::shared_ptr<const PackageIDSet> &) throw ();
+                    const std::shared_ptr<const PackageIDSet> &) noexcept;
     };
 
     /**

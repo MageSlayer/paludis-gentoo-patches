@@ -22,12 +22,12 @@
 using namespace paludis;
 
 ERepositoryConfigurationError::ERepositoryConfigurationError(
-        const std::string & msg) throw () :
+        const std::string & msg) noexcept :
     ConfigurationError("E Repository configuration error: " + msg)
 {
 }
 
-MissingDistfileError::MissingDistfileError(const std::string & s) throw () :
+MissingDistfileError::MissingDistfileError(const std::string & s) noexcept :
     Exception(s)
 {
 }

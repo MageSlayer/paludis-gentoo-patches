@@ -83,7 +83,7 @@ namespace paludis
             public Exception
         {
             public:
-                JSONError(const std::string &) throw ();
+                JSONError(const std::string &) noexcept;
         };
     }
 }

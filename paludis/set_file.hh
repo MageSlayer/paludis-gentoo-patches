@@ -89,7 +89,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            SetFileError(const FSPath &, const std::string &) throw ();
+            SetFileError(const FSPath &, const std::string &) noexcept;
 
             ///\}
     };

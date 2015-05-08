@@ -702,7 +702,7 @@ class PALUDIS_VISIBLE NotAllowedInThisHeirarchy :
     public Exception
 {
     public:
-        NotAllowedInThisHeirarchy(const std::string & msg) throw () :
+        NotAllowedInThisHeirarchy(const std::string & msg) noexcept :
             Exception(msg)
     {
     }

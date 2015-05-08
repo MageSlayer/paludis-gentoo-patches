@@ -29,7 +29,7 @@ namespace paludis
         public Exception
     {
         public:
-            ELikeConditionalDepSpecParseError(const std::string &, const std::string &) throw ();
+            ELikeConditionalDepSpecParseError(const std::string &, const std::string &) noexcept;
     };
 }
 

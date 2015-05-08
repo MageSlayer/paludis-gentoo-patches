@@ -33,7 +33,7 @@ namespace paludis
             public Exception
         {
             public:
-                CannotChangeSCMRevision(const std::string & id_s, const std::string & revision) throw ();
+                CannotChangeSCMRevision(const std::string & id_s, const std::string & revision) noexcept;
         };
 
         class ERepositoryID :

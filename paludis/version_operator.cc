@@ -160,7 +160,7 @@ VersionOperator::as_version_spec_comparator() const
 
 }
 
-BadVersionOperatorError::BadVersionOperatorError(const std::string & msg) throw () :
+BadVersionOperatorError::BadVersionOperatorError(const std::string & msg) noexcept :
     Exception("Bad version operator '" + msg + "'")
 {
 }

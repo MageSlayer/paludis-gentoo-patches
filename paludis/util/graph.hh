@@ -52,7 +52,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            GraphError(const std::string & msg) throw ();
+            GraphError(const std::string & msg) noexcept;
 
             ///\}
     };
@@ -72,13 +72,13 @@ namespace paludis
             ///\{
 
             template <typename Node_>
-            NoSuchGraphNodeError(const Node_ & node) throw () :
+            NoSuchGraphNodeError(const Node_ & node) noexcept :
                 GraphError("Node '" + stringify(node) + "' does not exist")
             {
             }
 
             template <typename Node_>
-            NoSuchGraphNodeError(const std::shared_ptr<Node_> & node) throw () :
+            NoSuchGraphNodeError(const std::shared_ptr<Node_> & node) noexcept :
                 GraphError("Node '" + stringify(*node) + "' does not exist")
             {
             }
@@ -101,7 +101,7 @@ namespace paludis
             ///\{
 
             template <typename Node_>
-            NoSuchGraphEdgeError(const Node_ & e1, const Node_ & e2) throw () :
+            NoSuchGraphEdgeError(const Node_ & e1, const Node_ & e2) noexcept :
                 GraphError("Edge '" + stringify(e1) + "' -> '" + stringify(e2) + "' does not exist")
             {
             }
@@ -129,8 +129,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            NoGraphTopologicalOrderExistsError(const std::shared_ptr<const RemainingNodes> &) throw ();
-            ~NoGraphTopologicalOrderExistsError() throw ();
+            NoGraphTopologicalOrderExistsError(const std::shared_ptr<const RemainingNodes> &) noexcept;
+            ~NoGraphTopologicalOrderExistsError() noexcept;
 
             ///\}
 

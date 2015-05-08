@@ -156,7 +156,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            ExndbamRepositoryConfigurationError(const std::string & msg) throw ();
+            ExndbamRepositoryConfigurationError(const std::string & msg) noexcept;
     };
 }
 

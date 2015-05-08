@@ -43,7 +43,7 @@ namespace paludis
         public Exception
     {
         public:
-            ProcessError(const std::string &) throw ();
+            ProcessError(const std::string &) noexcept;
     };
 
     class PALUDIS_VISIBLE ProcessCommand

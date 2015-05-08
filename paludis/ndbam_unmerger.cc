@@ -305,7 +305,7 @@ NDBAMUnmerger::display(const std::string & message) const
     _imp->options.output_manager()->stdout_stream() << message << std::endl;
 }
 
-NDBAMUnmergerError::NDBAMUnmergerError(const std::string & s) throw () :
+NDBAMUnmergerError::NDBAMUnmergerError(const std::string & s) noexcept :
     UnmergerError(s)
 {
 }

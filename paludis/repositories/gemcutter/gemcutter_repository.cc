@@ -73,7 +73,7 @@ namespace paludis
     };
 }
 
-GemcutterRepositoryConfigurationError::GemcutterRepositoryConfigurationError(const std::string & s) throw () :
+GemcutterRepositoryConfigurationError::GemcutterRepositoryConfigurationError(const std::string & s) noexcept :
     ConfigurationError("GemcutterRepository configuration error: " + s)
 {
 }

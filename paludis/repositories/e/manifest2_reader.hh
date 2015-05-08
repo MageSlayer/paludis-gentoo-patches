@@ -63,7 +63,7 @@ namespace paludis
             public Exception
         {
             public:
-                Manifest2Error(const std::string & msg) throw ();
+                Manifest2Error(const std::string & msg) noexcept;
         };
 
         /**

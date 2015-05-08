@@ -49,7 +49,7 @@ namespace paludis
     };
 }
 
-ChoicePrefixNameError::ChoicePrefixNameError(const std::string & n) throw () :
+ChoicePrefixNameError::ChoicePrefixNameError(const std::string & n) noexcept :
     NameError(n, "choice prefix name")
 {
 }
@@ -85,7 +85,7 @@ WrappedValueTraits<ChoicePrefixNameTag>::validate(const std::string & s)
     return true;
 }
 
-ChoiceNameWithPrefixError::ChoiceNameWithPrefixError(const std::string & n) throw () :
+ChoiceNameWithPrefixError::ChoiceNameWithPrefixError(const std::string & n) noexcept :
     NameError(n, "choice name with prefix")
 {
 }
@@ -122,7 +122,7 @@ WrappedValueTraits<ChoiceNameWithPrefixTag>::validate(const std::string & s)
     return true;
 }
 
-UnprefixedChoiceNameError::UnprefixedChoiceNameError(const std::string & n) throw () :
+UnprefixedChoiceNameError::UnprefixedChoiceNameError(const std::string & n) noexcept :
     NameError(n, "unprefixed choice name")
 {
 }

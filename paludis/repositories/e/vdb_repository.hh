@@ -181,7 +181,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            VDBRepositoryConfigurationError(const std::string & msg) throw ();
+            VDBRepositoryConfigurationError(const std::string & msg) noexcept;
     };
 
     /**
@@ -196,7 +196,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            VDBRepositoryKeyReadError(const std::string & msg) throw ();
+            VDBRepositoryKeyReadError(const std::string & msg) noexcept;
     };
 }
 

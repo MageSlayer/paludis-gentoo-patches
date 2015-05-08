@@ -457,7 +457,7 @@ UserSlotExactPartialRequirement::maybe_original_requirement_if_rewritten() const
     return nullptr;
 }
 
-GotASetNotAPackageDepSpec::GotASetNotAPackageDepSpec(const std::string & s) throw () :
+GotASetNotAPackageDepSpec::GotASetNotAPackageDepSpec(const std::string & s) noexcept :
     Exception("'" + s + "' is a set, not a package")
 {
 }

@@ -54,7 +54,7 @@ namespace paludis
         public Exception
     {
         public:
-            StripperError(const std::string &) throw ();
+            StripperError(const std::string &) noexcept;
     };
 
     class PALUDIS_VISIBLE Stripper

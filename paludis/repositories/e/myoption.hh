@@ -34,7 +34,7 @@ namespace paludis
             public Exception
         {
             public:
-                MyOptionsError(const std::string & message) throw ();
+                MyOptionsError(const std::string & message) noexcept;
         };
 
         std::pair<UnprefixedChoiceName, bool> parse_myoption(const std::string &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));

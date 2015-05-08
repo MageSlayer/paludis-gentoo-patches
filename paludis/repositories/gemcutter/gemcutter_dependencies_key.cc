@@ -46,7 +46,7 @@
 using namespace paludis;
 using namespace paludis::gemcutter_repository;
 
-GemcutterDependenciesError::GemcutterDependenciesError(const std::string & s) throw () :
+GemcutterDependenciesError::GemcutterDependenciesError(const std::string & s) noexcept :
     Exception(s)
 {
 }

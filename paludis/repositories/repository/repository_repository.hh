@@ -42,7 +42,7 @@ namespace paludis
             public ConfigurationError
         {
             public:
-                RepositoryRepositoryConfigurationError(const std::string &) throw ();
+                RepositoryRepositoryConfigurationError(const std::string &) noexcept;
         };
 
         struct RepositoryRepositoryParams

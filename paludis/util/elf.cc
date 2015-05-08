@@ -220,7 +220,7 @@ InvalidElfFileError::InvalidElfFileError(const InvalidElfFileError & other) :
 {
 }
 
-InvalidElfFileError::InvalidElfFileError(const std::string & s) throw ():
+InvalidElfFileError::InvalidElfFileError(const std::string & s) noexcept:
     Exception(s)
 {
 }

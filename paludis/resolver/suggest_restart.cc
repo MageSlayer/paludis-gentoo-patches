@@ -58,7 +58,7 @@ SuggestRestart::SuggestRestart(const Resolvent & q,
         const std::shared_ptr<const Constraint> & pc,
         const std::shared_ptr<const Decision> & nd,
         const std::shared_ptr<const Constraint> & nc
-        ) throw () :
+        ) noexcept :
     Exception("Suggesting restart with " + stringify(nc->spec()) + " for " + stringify(q)),
     _imp(q, pd, pc, nd, nc)
 {
@@ -70,7 +70,7 @@ SuggestRestart::SuggestRestart(const SuggestRestart & o) :
 {
 }
 
-SuggestRestart::~SuggestRestart() throw ()
+SuggestRestart::~SuggestRestart() noexcept
 {
 }
 

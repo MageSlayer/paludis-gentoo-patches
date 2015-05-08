@@ -56,12 +56,12 @@ namespace paludis
     };
 }
 
-ConfigFileError::ConfigFileError(const std::string & filename, const std::string & m) throw () :
+ConfigFileError::ConfigFileError(const std::string & filename, const std::string & m) noexcept :
     ConfigurationError(filename.empty() ? m : "In file '" + filename + "': " + m)
 {
 }
 
-ConfigFileError::ConfigFileError(const std::string & m) throw () :
+ConfigFileError::ConfigFileError(const std::string & m) noexcept :
     ConfigurationError(m)
 {
 }

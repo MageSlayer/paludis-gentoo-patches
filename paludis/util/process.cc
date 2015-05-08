@@ -51,7 +51,7 @@
 
 using namespace paludis;
 
-ProcessError::ProcessError(const std::string & s) throw () :
+ProcessError::ProcessError(const std::string & s) noexcept :
     Exception(s)
 {
 }

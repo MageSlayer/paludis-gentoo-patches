@@ -61,7 +61,7 @@ namespace paludis
     };
 }
 
-Manifest2Error::Manifest2Error(const std::string & msg) throw () :
+Manifest2Error::Manifest2Error(const std::string & msg) noexcept :
     Exception("Manifest2 Error: " + msg)
 {
 }

@@ -34,7 +34,7 @@
 using namespace paludis;
 using namespace paludis::fakerepository;
 
-FakeDepParseError::FakeDepParseError(const std::string & s, const std::string & t) throw () :
+FakeDepParseError::FakeDepParseError(const std::string & s, const std::string & t) noexcept :
     Exception("Error parsing '" + s + "': " + t)
 {
 }

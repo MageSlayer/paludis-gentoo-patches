@@ -82,7 +82,7 @@ namespace paludis
     };
 }
 
-RepositoryRepositoryConfigurationError::RepositoryRepositoryConfigurationError(const std::string & s) throw () :
+RepositoryRepositoryConfigurationError::RepositoryRepositoryConfigurationError(const std::string & s) noexcept :
     ConfigurationError("RepositoryRepository configuration error: " + s)
 {
 }

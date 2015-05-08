@@ -25,7 +25,7 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-CannotChangeSCMRevision::CannotChangeSCMRevision(const std::string & id_s, const std::string & revision) throw () :
+CannotChangeSCMRevision::CannotChangeSCMRevision(const std::string & id_s, const std::string & revision) noexcept :
     Exception("Cannot change SCM revision for '" + id_s + "' to '" + revision + "'")
 {
 }

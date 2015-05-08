@@ -35,7 +35,7 @@
 
 using namespace paludis;
 
-PtyError::PtyError(const std::string & our_message) throw () :
+PtyError::PtyError(const std::string & our_message) noexcept :
     Exception(our_message)
 {
 }

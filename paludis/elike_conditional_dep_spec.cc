@@ -39,7 +39,7 @@
 
 using namespace paludis;
 
-ELikeConditionalDepSpecParseError::ELikeConditionalDepSpecParseError(const std::string & s, const std::string & m) throw () :
+ELikeConditionalDepSpecParseError::ELikeConditionalDepSpecParseError(const std::string & s, const std::string & m) noexcept :
     Exception("Error parsing conditional dep spec '" + s + "': " + m)
 {
 }

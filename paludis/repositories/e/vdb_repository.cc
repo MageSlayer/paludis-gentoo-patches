@@ -356,13 +356,13 @@ VDBRepository::repository_factory_dependencies(
 }
 
 VDBRepositoryConfigurationError::VDBRepositoryConfigurationError(
-        const std::string & msg) throw () :
+        const std::string & msg) noexcept :
     ConfigurationError("VDB repository configuration error: " + msg)
 {
 }
 
 VDBRepositoryKeyReadError::VDBRepositoryKeyReadError(
-        const std::string & msg) throw () :
+        const std::string & msg) noexcept :
     ConfigurationError("VDB repository key read error: " + msg)
 {
 }

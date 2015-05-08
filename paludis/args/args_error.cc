@@ -21,17 +21,17 @@
 
 using namespace paludis::args;
 
-ArgsError::ArgsError(const std::string & our_message) throw () :
+ArgsError::ArgsError(const std::string & our_message) noexcept :
     paludis::Exception("Error handling command line: " + our_message)
 {
 }
 
-BadValue::BadValue(const std::string& option, const std::string& value) throw () :
+BadValue::BadValue(const std::string& option, const std::string& value) noexcept :
     ArgsError("Invalid parameter '" + value + "' for argument '" + option + "'")
 {
 }
 
-MissingValue::MissingValue(const std::string & arg) throw() :
+MissingValue::MissingValue(const std::string & arg) noexcept :
     ArgsError("No parameter given for '" + arg + "'")
 {
 }

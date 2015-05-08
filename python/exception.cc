@@ -76,19 +76,19 @@ ExceptionRegister::get_py_exception(const std::string & name)
     }
 }
 
-PythonError::PythonError(const std::string & m) throw () :
+PythonError::PythonError(const std::string & m) noexcept :
     Exception(m)
 {
 }
 
 PythonMethodNotImplemented::PythonMethodNotImplemented(const std::string & class_name,
-        const std::string & method_name) throw () :
+        const std::string & method_name) noexcept :
     PythonError("Python subclasses of '" + class_name + "' have to implement '" + method_name + "' method")
 {
 }
 
 PythonContainerConversionError::PythonContainerConversionError(const std::string & class_name,
-        const std::string & container_name, const std::string & o_type) throw () :
+        const std::string & container_name, const std::string & o_type) noexcept :
     PythonError("Cannot add object of type '" + o_type + "' to a '"
             + class_name + "' " + container_name + " container.")
 {

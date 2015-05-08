@@ -36,7 +36,7 @@ namespace paludis
     {
         public:
             InvalidElfFileError(const InvalidElfFileError &);
-            InvalidElfFileError(const std::string &) throw ();
+            InvalidElfFileError(const std::string &) noexcept;
     };
 
     template <typename ElfType_>

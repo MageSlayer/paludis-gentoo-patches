@@ -29,7 +29,7 @@ namespace paludis
         public Exception
     {
         public:
-            ELikeUseRequirementError(const std::string &, const std::string &) throw ();
+            ELikeUseRequirementError(const std::string &, const std::string &) noexcept;
     };
 }
 

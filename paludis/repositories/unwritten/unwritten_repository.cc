@@ -85,7 +85,7 @@ namespace paludis
     };
 }
 
-UnwrittenRepositoryConfigurationError::UnwrittenRepositoryConfigurationError(const std::string & s) throw () :
+UnwrittenRepositoryConfigurationError::UnwrittenRepositoryConfigurationError(const std::string & s) noexcept :
     ConfigurationError("UnwrittenRepository configuration error: " + s)
 {
 }

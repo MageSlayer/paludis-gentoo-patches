@@ -36,7 +36,7 @@
 
 using namespace paludis;
 
-DistributionConfigurationError::DistributionConfigurationError(const std::string & s) throw () :
+DistributionConfigurationError::DistributionConfigurationError(const std::string & s) noexcept :
     ConfigurationError("Distribution configuration error: " + s)
 {
 }

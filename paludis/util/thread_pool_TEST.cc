@@ -28,7 +28,7 @@ using namespace paludis;
 
 namespace
 {
-    void make_one(int & b) throw ()
+    void make_one(int & b) noexcept
     {
         b = 1;
     }

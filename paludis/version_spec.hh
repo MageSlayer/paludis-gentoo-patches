@@ -56,8 +56,8 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            BadVersionSpecError(const std::string & name) throw ();
-            BadVersionSpecError(const std::string & name, const std::string & msg) throw ();
+            BadVersionSpecError(const std::string & name) noexcept;
+            BadVersionSpecError(const std::string & name, const std::string & msg) noexcept;
 
             ///\}
     };

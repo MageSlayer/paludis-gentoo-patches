@@ -22,7 +22,7 @@
 using namespace paludis;
 using namespace paludis::accounts_repository;
 
-AccountsRepositoryConfigurationError::AccountsRepositoryConfigurationError(const std::string & s) throw () :
+AccountsRepositoryConfigurationError::AccountsRepositoryConfigurationError(const std::string & s) noexcept :
     ConfigurationError("AccountsRepository configuration error: " + s)
 {
 }

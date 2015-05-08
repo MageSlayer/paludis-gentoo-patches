@@ -94,7 +94,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            DistributionConfigurationError(const std::string &) throw ();
+            DistributionConfigurationError(const std::string &) noexcept;
 
             ///\}
     };

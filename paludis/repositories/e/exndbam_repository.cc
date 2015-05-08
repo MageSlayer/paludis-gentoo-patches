@@ -267,7 +267,7 @@ ExndbamRepository::is_unimportant() const
 }
 
 ExndbamRepositoryConfigurationError::ExndbamRepositoryConfigurationError(
-        const std::string & msg) throw () :
+        const std::string & msg) noexcept :
     ConfigurationError("Exndbam repository configuration error: " + msg)
 {
 }

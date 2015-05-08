@@ -61,7 +61,7 @@ namespace paludis
             ///\{
 
             GLSAError(const std::string & message,
-                    const std::string & filename = "") throw ();
+                    const std::string & filename = "") noexcept;
 
             ///\}
     };

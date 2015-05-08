@@ -42,7 +42,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
 
-                PortageEnvironmentConfigurationError(const std::string &) throw ();
+                PortageEnvironmentConfigurationError(const std::string &) noexcept;
 
                 ///\}
         };

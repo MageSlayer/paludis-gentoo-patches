@@ -195,9 +195,9 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            NoSuchSetError(const std::string & name) throw ();
+            NoSuchSetError(const std::string & name) noexcept;
 
-            virtual ~NoSuchSetError() throw ();
+            virtual ~NoSuchSetError() noexcept;
 
             ///\}
 
@@ -224,9 +224,9 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            RecursivelyDefinedSetError(const std::string & name) throw ();
+            RecursivelyDefinedSetError(const std::string & name) noexcept;
 
-            virtual ~RecursivelyDefinedSetError() throw ();
+            virtual ~RecursivelyDefinedSetError() noexcept;
 
             ///\}
 

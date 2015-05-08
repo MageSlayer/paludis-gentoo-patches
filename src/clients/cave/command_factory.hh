@@ -36,7 +36,7 @@ namespace paludis
             public Exception
         {
             public:
-                UnknownCommand(const std::string &) throw ();
+                UnknownCommand(const std::string &) noexcept;
         };
 
         class PALUDIS_VISIBLE CommandFactory :

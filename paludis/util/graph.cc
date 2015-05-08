@@ -22,13 +22,13 @@
 
 using namespace paludis;
 
-GraphError::GraphError(const std::string & msg) throw () :
+GraphError::GraphError(const std::string & msg) noexcept :
     Exception(msg)
 {
 }
 
 NoGraphTopologicalOrderExistsError::NoGraphTopologicalOrderExistsError(
-        const std::shared_ptr<const RemainingNodes> & r) throw () :
+        const std::shared_ptr<const RemainingNodes> & r) noexcept :
     GraphError("No topological order exists"),
     _remaining_nodes(r)
 {
@@ -40,7 +40,7 @@ NoGraphTopologicalOrderExistsError::remaining_nodes() const
     return _remaining_nodes;
 }
 
-NoGraphTopologicalOrderExistsError::~NoGraphTopologicalOrderExistsError() throw ()
+NoGraphTopologicalOrderExistsError::~NoGraphTopologicalOrderExistsError() noexcept
 {
 }
 

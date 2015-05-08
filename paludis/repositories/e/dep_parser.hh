@@ -46,7 +46,7 @@ namespace paludis
                  * Constructor.
                  */
                 EDepParseError(const std::string & dep_string,
-                        const std::string & message) throw ();
+                        const std::string & message) noexcept;
         };
 
         /**

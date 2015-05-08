@@ -31,7 +31,7 @@
 
 using namespace paludis;
 
-CommandOutputManagerError::CommandOutputManagerError(const std::string & s) throw () :
+CommandOutputManagerError::CommandOutputManagerError(const std::string & s) noexcept :
     Exception(s)
 {
 }

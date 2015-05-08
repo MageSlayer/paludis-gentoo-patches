@@ -21,7 +21,7 @@
 
 using namespace paludis::args;
 
-BadArgument::BadArgument(const std::string & option) throw () :
+BadArgument::BadArgument(const std::string & option) noexcept :
     ArgsError("Bad argument '" + option + "'")
 {
 }

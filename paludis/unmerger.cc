@@ -52,7 +52,7 @@ namespace paludis
     };
 }
 
-UnmergerError::UnmergerError(const std::string & s) throw () :
+UnmergerError::UnmergerError(const std::string & s) noexcept :
     Exception(s)
 {
 }

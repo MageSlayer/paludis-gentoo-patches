@@ -21,7 +21,7 @@
 
 using namespace paludis;
 
-DestringifyError::DestringifyError(const std::string & str) throw () :
+DestringifyError::DestringifyError(const std::string & str) noexcept :
     Exception("Couldn't destringify '" + str + "'")
 {
 }

@@ -213,7 +213,7 @@ GLSA::create_from_xml_file(const std::string & filename)
     return erepository::XMLThingsHandle::get_instance()->create_glsa_from_xml_file()(filename);
 }
 
-GLSAError::GLSAError(const std::string & msg, const std::string & filename) throw () :
+GLSAError::GLSAError(const std::string & msg, const std::string & filename) noexcept :
     ConfigurationError("GLSA error: " + msg + (filename.empty() ? "" : " in file " + filename))
 {
 }

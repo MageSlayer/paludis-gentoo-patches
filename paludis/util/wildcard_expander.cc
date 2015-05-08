@@ -53,7 +53,7 @@ namespace paludis
     };
 }
 
-WildcardExpansionError::WildcardExpansionError(const std::string & the_message) throw () :
+WildcardExpansionError::WildcardExpansionError(const std::string & the_message) noexcept :
     FSError(the_message)
 {
 }

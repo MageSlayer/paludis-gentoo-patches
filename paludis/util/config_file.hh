@@ -66,14 +66,14 @@ namespace paludis
              *   the filename is not necessarily known.
              * \param message A description of the error.
              */
-            ConfigFileError(const std::string & filename, const std::string & message) throw ();
+            ConfigFileError(const std::string & filename, const std::string & message) noexcept;
 
             /**
              * Constructor, where the filename is not known.
              *
              * \param message A description of the error.
              */
-            ConfigFileError(const std::string & message) throw ();
+            ConfigFileError(const std::string & message) noexcept;
 
             ///\}
     };

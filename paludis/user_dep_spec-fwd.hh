@@ -58,7 +58,7 @@ namespace paludis
             ///\name Basic Operations
             ///\{
 
-            GotASetNotAPackageDepSpec(const std::string &) throw ();
+            GotASetNotAPackageDepSpec(const std::string &) noexcept;
 
             ///\}
     };

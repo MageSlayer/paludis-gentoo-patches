@@ -85,7 +85,7 @@ namespace paludis
     };
 }
 
-Exception::Exception(const std::string & m) throw () :
+Exception::Exception(const std::string & m) noexcept :
     _message(m),
     _context_data(new ContextData)
 {
@@ -98,13 +98,13 @@ Exception::Exception(const Exception & other) :
 {
 }
 
-Exception::~Exception() throw ()
+Exception::~Exception() noexcept
 {
     delete _context_data;
 }
 
 const std::string &
-Exception::message() const throw ()
+Exception::message() const noexcept
 {
     return _message;
 }
@@ -121,34 +121,34 @@ Exception::empty() const
     return _context_data->local_context.empty();
 }
 
-NotAvailableError::NotAvailableError(const std::string & msg) throw () :
+NotAvailableError::NotAvailableError(const std::string & msg) noexcept :
     Exception("Error: Not available: " + msg)
 {
 }
 
-InternalError::InternalError(const std::string & location, const std::string & our_message) throw () :
+InternalError::InternalError(const std::string & location, const std::string & our_message) noexcept :
     Exception("Eek! Internal error at " + location + ": " + our_message)
 {
     std::cerr << "Internal error at " << location << ": " << our_message << std::endl;
 }
 
-NameError::NameError(const std::string & name, const std::string & role) throw () :
+NameError::NameError(const std::string & name, const std::string & role) noexcept :
     Exception("Name '" + name + "' is not a valid " + role)
 {
 }
 
-NameError::NameError(const std::string & name, const std::string & role, const std::string & msg) throw () :
+NameError::NameError(const std::string & name, const std::string & role, const std::string & msg) noexcept :
     Exception("Name '" + name + "' is not a valid " + role + ": " + msg)
 {
 }
 
-ConfigurationError::ConfigurationError(const std::string & msg) throw () :
+ConfigurationError::ConfigurationError(const std::string & msg) noexcept :
     Exception(msg)
 {
 }
 
 const char *
-Exception::what() const throw ()
+Exception::what() const noexcept
 {
 #ifdef HAVE_CXA_DEMANGLE
     if (_what_str.empty())

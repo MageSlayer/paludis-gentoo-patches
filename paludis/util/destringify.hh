@@ -50,7 +50,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            DestringifyError(const std::string & str) throw ();
+            DestringifyError(const std::string & str) noexcept;
 
             ///\}
     };

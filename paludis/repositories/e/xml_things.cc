@@ -40,7 +40,7 @@ namespace
         public Exception
     {
         public:
-            XMLError(const std::string & w) throw () :
+            XMLError(const std::string & w) noexcept :
                 Exception("XML error: " + w)
             {
             }

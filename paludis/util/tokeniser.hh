@@ -226,7 +226,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            TokeniserError(const std::string & s, const std::string & msg) throw ();
+            TokeniserError(const std::string & s, const std::string & msg) noexcept;
 
             ///\}
     };

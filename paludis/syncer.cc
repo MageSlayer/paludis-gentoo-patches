@@ -38,17 +38,17 @@
 
 using namespace paludis;
 
-NoSuchSyncerError::NoSuchSyncerError(const std::string & format) throw () :
+NoSuchSyncerError::NoSuchSyncerError(const std::string & format) noexcept :
     SyncFailedError("No such syncer for format '" + format + "'")
 {
 }
 
-SyncFailedError::SyncFailedError(const std::string & local, const std::string & remote) throw () :
+SyncFailedError::SyncFailedError(const std::string & local, const std::string & remote) noexcept :
     Exception("sync of '" + local + "' from '" + remote + "' failed")
 {
 }
 
-SyncFailedError::SyncFailedError(const std::string & msg) throw () :
+SyncFailedError::SyncFailedError(const std::string & msg) noexcept :
     Exception(msg)
 {
 }

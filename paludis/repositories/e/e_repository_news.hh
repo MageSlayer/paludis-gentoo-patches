@@ -66,7 +66,7 @@ namespace paludis
         public Exception
     {
         public:
-            NewsError(const FSPath &, const std::string &) throw ();
+            NewsError(const FSPath &, const std::string &) noexcept;
     };
 
     /**

@@ -22,7 +22,7 @@
 using namespace paludis;
 using namespace paludis::unpackaged_repositories;
 
-RepositoryConfigurationError::RepositoryConfigurationError(const std::string & s) throw () :
+RepositoryConfigurationError::RepositoryConfigurationError(const std::string & s) noexcept :
     ConfigurationError(s)
 {
 }

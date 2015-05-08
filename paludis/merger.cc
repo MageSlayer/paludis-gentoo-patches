@@ -34,7 +34,7 @@
 
 using namespace paludis;
 
-MergerError::MergerError(const std::string & m) throw () :
+MergerError::MergerError(const std::string & m) noexcept :
     Exception(m)
 {
 }

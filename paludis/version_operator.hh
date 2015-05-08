@@ -135,7 +135,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            BadVersionOperatorError(const std::string & msg) throw ();
+            BadVersionOperatorError(const std::string & msg) noexcept;
     };
 }
 

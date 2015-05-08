@@ -50,24 +50,24 @@ namespace paludis
     };
 }
 
-DuplicateRepositoryError::DuplicateRepositoryError(const std::string & name) throw () :
+DuplicateRepositoryError::DuplicateRepositoryError(const std::string & name) noexcept :
     Exception("A repository named '" + name + "' already exists")
 {
 }
 
-NoSuchPackageError::NoSuchPackageError(const std::string & our_name) throw () :
+NoSuchPackageError::NoSuchPackageError(const std::string & our_name) noexcept :
     Exception("Could not find '" + our_name + "'"),
     _name(our_name)
 {
 }
 
-NoSuchRepositoryError::NoSuchRepositoryError(const RepositoryName & n) throw () :
+NoSuchRepositoryError::NoSuchRepositoryError(const RepositoryName & n) noexcept :
     Exception("Could not find repository '" + stringify(n) + "'"),
     _name(n)
 {
 }
 
-NoSuchRepositoryError::~NoSuchRepositoryError() throw ()
+NoSuchRepositoryError::~NoSuchRepositoryError() noexcept
 {
 }
 
@@ -84,7 +84,7 @@ struct AmbiguousPackageNameError::NameData
 };
 
 AmbiguousPackageNameError::AmbiguousPackageNameError(const std::string & our_name,
-        const std::shared_ptr<const Sequence<std::string> > & names) throw () :
+        const std::shared_ptr<const Sequence<std::string> > & names) noexcept :
     Exception("Ambiguous package name '" + our_name + "' (candidates are " + join(names->begin(), names->end(), ", ") + ")"),
     _name_data(new NameData)
 {
@@ -100,7 +100,7 @@ AmbiguousPackageNameError::AmbiguousPackageNameError(const AmbiguousPackageNameE
     _name_data->names = other._name_data->names;
 }
 
-AmbiguousPackageNameError::~AmbiguousPackageNameError() throw ()
+AmbiguousPackageNameError::~AmbiguousPackageNameError() noexcept
 {
     delete _name_data;
 }

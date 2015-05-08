@@ -222,12 +222,12 @@ SupportsActionTestBase::~SupportsActionTestBase()
 {
 }
 
-ActionFailedError::ActionFailedError(const std::string & msg) throw () :
+ActionFailedError::ActionFailedError(const std::string & msg) noexcept :
     Exception(msg)
 {
 }
 
-ActionAbortedError::ActionAbortedError(const std::string & msg) throw () :
+ActionAbortedError::ActionAbortedError(const std::string & msg) noexcept :
     Exception(msg)
 {
 }

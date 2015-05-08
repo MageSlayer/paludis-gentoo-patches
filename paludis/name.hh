@@ -57,7 +57,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            PackageNamePartError(const std::string & name) throw ();
+            PackageNamePartError(const std::string & name) noexcept;
     };
 
     template <>
@@ -86,7 +86,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            CategoryNamePartError(const std::string & name) throw ();
+            CategoryNamePartError(const std::string & name) noexcept;
     };
 
     template <>
@@ -153,7 +153,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            SlotNameError(const std::string & name) throw ();
+            SlotNameError(const std::string & name) noexcept;
     };
 
     template <>
@@ -179,7 +179,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            RepositoryNameError(const std::string & name) throw ();
+            RepositoryNameError(const std::string & name) noexcept;
     };
 
     template <>
@@ -205,7 +205,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            KeywordNameError(const std::string & name) throw ();
+            KeywordNameError(const std::string & name) noexcept;
     };
 
     template <>
@@ -231,7 +231,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            SetNameError(const std::string & name) throw ();
+            SetNameError(const std::string & name) noexcept;
     };
 
     template <>
@@ -256,7 +256,7 @@ namespace paludis
             /**
              * Constructor
              */
-            PartNameError(const std::string & name) throw ();
+            PartNameError(const std::string & name) noexcept;
     };
 
     template <>

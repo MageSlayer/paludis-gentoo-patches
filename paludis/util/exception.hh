@@ -86,7 +86,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            Exception(const std::string & message) throw ();
+            Exception(const std::string & message) noexcept;
 
             Exception(const Exception &);
 
@@ -96,14 +96,14 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            virtual ~Exception() throw () PALUDIS_ATTRIBUTE((nothrow));
+            virtual ~Exception() noexcept PALUDIS_ATTRIBUTE((nothrow));
 
             ///\}
 
             /**
              * Return our descriptive error message.
              */
-            const std::string & message() const throw () PALUDIS_ATTRIBUTE((nothrow));
+            const std::string & message() const noexcept PALUDIS_ATTRIBUTE((nothrow));
 
             /**
              * Make a backtrace.
@@ -118,7 +118,7 @@ namespace paludis
             /**
              * A better what, if possible.
              */
-            const char * what() const throw ();
+            const char * what() const noexcept;
     };
 
     /**
@@ -139,7 +139,7 @@ namespace paludis
              *
              * \param message A short message.
              */
-            InternalError(const std::string & location, const std::string & message) throw ();
+            InternalError(const std::string & location, const std::string & message) noexcept;
     };
 
     /**
@@ -157,7 +157,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            NotAvailableError(const std::string & message) throw ();
+            NotAvailableError(const std::string & message) noexcept;
     };
 
     /**
@@ -178,7 +178,7 @@ namespace paludis
              * \param name The invalid name encountered.
              * \param role The role for the name, for example "package name".
              */
-            NameError(const std::string & name, const std::string & role) throw ();
+            NameError(const std::string & name, const std::string & role) noexcept;
 
             /**
              * Constructor.
@@ -188,7 +188,7 @@ namespace paludis
              * \param msg  Any extra message.
              */
             NameError(const std::string & name, const std::string & role,
-                    const std::string & msg) throw ();
+                    const std::string & msg) noexcept;
     };
 
     /**
@@ -204,7 +204,7 @@ namespace paludis
             /**
              * Constructor.
              */
-            ConfigurationError(const std::string & msg) throw ();
+            ConfigurationError(const std::string & msg) noexcept;
     };
 
     /** \def PALUDIS_HERE

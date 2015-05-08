@@ -89,7 +89,7 @@ paludis::operator<< (std::ostream & s, const QualifiedPackageName & q)
     return s;
 }
 
-SlotNameError::SlotNameError(const std::string & name) throw () :
+SlotNameError::SlotNameError(const std::string & name) noexcept :
     NameError(name, "slot name")
 {
 }
@@ -114,7 +114,7 @@ WrappedValueTraits<SlotNameTag>::validate(const std::string & s)
     return true;
 }
 
-PackageNamePartError::PackageNamePartError(const std::string & name) throw () :
+PackageNamePartError::PackageNamePartError(const std::string & name) noexcept :
     NameError(name, "package name part")
 {
 }
@@ -169,7 +169,7 @@ WrappedValueTraits<CategoryNamePartTag>::validate(const std::string & s)
     return true;
 }
 
-CategoryNamePartError::CategoryNamePartError(const std::string & name) throw () :
+CategoryNamePartError::CategoryNamePartError(const std::string & name) noexcept :
     NameError(name, "category name part")
 {
 }
@@ -194,12 +194,12 @@ WrappedValueTraits<RepositoryNameTag>::validate(const std::string & s)
     return true;
 }
 
-RepositoryNameError::RepositoryNameError(const std::string & name) throw () :
+RepositoryNameError::RepositoryNameError(const std::string & name) noexcept :
     NameError(name, "repository")
 {
 }
 
-KeywordNameError::KeywordNameError(const std::string & name) throw () :
+KeywordNameError::KeywordNameError(const std::string & name) noexcept :
     NameError(name, "keyword name")
 {
 }
@@ -334,12 +334,12 @@ WrappedValueTraits<SetNameTag>::validate(const std::string & s)
     return true;
 }
 
-SetNameError::SetNameError(const std::string & name) throw () :
+SetNameError::SetNameError(const std::string & name) noexcept :
     NameError(name, "set")
 {
 }
 
-PartNameError::PartNameError(const std::string & name) throw () :
+PartNameError::PartNameError(const std::string & name) noexcept :
     NameError(name, "part")
 {
 }

@@ -31,46 +31,46 @@
 using namespace paludis;
 using namespace cave;
 
-NothingMatching::NothingMatching(const PackageDepSpec & spec) throw () :
+NothingMatching::NothingMatching(const PackageDepSpec & spec) noexcept :
     Exception("Found nothing suitable matching '" + stringify(spec) + "'")
 {
 }
 
-NothingMatching::NothingMatching(const std::string & name) throw () :
+NothingMatching::NothingMatching(const std::string & name) noexcept :
     Exception("Found nothing suitable matching '" + name + "'")
 {
 }
 
-NothingMatching::NothingMatching(const std::string & name, const std::string & extra_message) throw () :
+NothingMatching::NothingMatching(const std::string & name, const std::string & extra_message) noexcept :
     Exception("Found nothing suitable matching '" + name + "'" + extra_message)
 {
 }
 
-NothingMatchingWithSuggestions::NothingMatchingWithSuggestions(const std::string & name, const std::string & suggestions) throw () :
+NothingMatchingWithSuggestions::NothingMatchingWithSuggestions(const std::string & name, const std::string & suggestions) noexcept :
     NothingMatching(name, "; did you mean " + suggestions + "?")
 {
 }
 
-BeMoreSpecific::BeMoreSpecific(const PackageDepSpec & spec, const std::shared_ptr<const PackageIDSequence> & s) throw () :
+BeMoreSpecific::BeMoreSpecific(const PackageDepSpec & spec, const std::shared_ptr<const PackageIDSequence> & s) noexcept :
     Exception("Found multiple suitable IDs matching '" + stringify(spec) + "': { '" + join(indirect_iterator(s->begin()),
                 indirect_iterator(s->end()), "', '") + "' }")
 {
 }
 
 BeMoreSpecific::BeMoreSpecific(const PackageDepSpec & spec, const std::shared_ptr<const PackageIDSequence> & s,
-        const std::string & extra_message) throw () :
+        const std::string & extra_message) noexcept :
     Exception("Found multiple suitable IDs matching '" + stringify(spec) + "': { '" + join(indirect_iterator(s->begin()),
                 indirect_iterator(s->end()), "', '") + "' }. " + extra_message)
 {
 }
 
 BadIDForCommand::BadIDForCommand(const PackageDepSpec & spec, const std::shared_ptr<const PackageID> & s,
-        const std::string & r) throw () :
+        const std::string & r) noexcept :
     Exception("Spec '" + stringify(spec) + "' resolves to ID '" + stringify(*s) + "', which " + r)
 {
 }
 
-BadRepositoryForCommand::BadRepositoryForCommand(const RepositoryName & name, const std::string & r) throw () :
+BadRepositoryForCommand::BadRepositoryForCommand(const RepositoryName & name, const std::string & r) noexcept :
     Exception("Repository '" + stringify(name) + "' unsuitable: " + r)
 {
 }

@@ -91,7 +91,7 @@ namespace paludis
     };
 }
 
-UnavailableRepositoryConfigurationError::UnavailableRepositoryConfigurationError(const std::string & s) throw () :
+UnavailableRepositoryConfigurationError::UnavailableRepositoryConfigurationError(const std::string & s) noexcept :
     ConfigurationError("UnavailableRepository configuration error: " + s)
 {
 }

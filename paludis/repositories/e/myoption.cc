@@ -23,7 +23,7 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-MyOptionsError::MyOptionsError(const std::string & m) throw () :
+MyOptionsError::MyOptionsError(const std::string & m) noexcept :
     Exception(m)
 {
 }

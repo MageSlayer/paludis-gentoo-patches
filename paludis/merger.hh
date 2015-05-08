@@ -77,7 +77,7 @@ namespace paludis
         public Exception
     {
         public:
-            MergerError(const std::string &) throw ();
+            MergerError(const std::string &) noexcept;
     };
 
     class PALUDIS_VISIBLE Merger

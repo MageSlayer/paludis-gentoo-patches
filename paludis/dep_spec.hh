@@ -595,7 +595,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            PackageDepSpecError(const std::string & msg) throw ();
+            PackageDepSpecError(const std::string & msg) noexcept;
 
             ///\}
     };

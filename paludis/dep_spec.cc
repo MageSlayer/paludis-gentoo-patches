@@ -328,7 +328,7 @@ paludis::operator<< (std::ostream & s, const PlainTextLabelDepSpec & l)
     return s;
 }
 
-PackageDepSpecError::PackageDepSpecError(const std::string & msg) throw () :
+PackageDepSpecError::PackageDepSpecError(const std::string & msg) noexcept :
     Exception(msg)
 {
 }

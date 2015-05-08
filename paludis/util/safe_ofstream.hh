@@ -133,7 +133,7 @@ namespace paludis
         public Exception
     {
         public:
-            SafeOFStreamError(const std::string &) throw ();
+            SafeOFStreamError(const std::string &) noexcept;
     };
 
     extern template class Pimp<SafeOFStreamBuf>;

@@ -30,7 +30,7 @@ namespace paludis
             public ConfigurationError
         {
             public:
-                RepositoryConfigurationError(const std::string & msg) throw ();
+                RepositoryConfigurationError(const std::string & msg) noexcept;
         };
     }
 }

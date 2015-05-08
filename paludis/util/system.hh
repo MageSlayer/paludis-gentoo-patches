@@ -49,7 +49,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            GetenvError(const std::string & key) throw ();
+            GetenvError(const std::string & key) noexcept;
 
             ///\}
     };

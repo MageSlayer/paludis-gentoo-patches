@@ -47,7 +47,7 @@ using namespace paludis;
 
 typedef std::set<std::pair<dev_t, ino_t> > StrippedSet;
 
-StripperError::StripperError(const std::string & s) throw () :
+StripperError::StripperError(const std::string & s) noexcept :
     Exception(s)
 {
 }

@@ -23,7 +23,7 @@
 
 using namespace paludis;
 
-FSError::FSError(const std::string & our_message) throw () :
+FSError::FSError(const std::string & our_message) noexcept :
     Exception(our_message)
 {
 }

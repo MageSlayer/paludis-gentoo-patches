@@ -34,7 +34,7 @@ namespace paludis
         public FSError
     {
         public:
-            WildcardExpansionError(const std::string & message) throw ();
+            WildcardExpansionError(const std::string & message) noexcept;
     };
 
     class PALUDIS_VISIBLE WildcardExpander :

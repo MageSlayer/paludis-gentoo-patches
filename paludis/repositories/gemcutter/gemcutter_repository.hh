@@ -41,7 +41,7 @@ namespace paludis
             public ConfigurationError
         {
             public:
-                GemcutterRepositoryConfigurationError(const std::string &) throw ();
+                GemcutterRepositoryConfigurationError(const std::string &) noexcept;
         };
 
         struct GemcutterRepositoryParams

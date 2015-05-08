@@ -62,7 +62,7 @@ namespace paludis
         public UnmergerError
     {
         public:
-            NDBAMUnmergerError(const std::string &) throw ();
+            NDBAMUnmergerError(const std::string &) noexcept;
     };
 
     /**

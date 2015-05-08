@@ -35,7 +35,7 @@ namespace paludis
         public Exception
     {
         public:
-            CommandOutputManagerError(const std::string &) throw ();
+            CommandOutputManagerError(const std::string &) noexcept;
     };
 
     class PALUDIS_VISIBLE CommandOutputManager :

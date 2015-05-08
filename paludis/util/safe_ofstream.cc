@@ -149,7 +149,7 @@ SafeOFStream::~SafeOFStream() noexcept(false)
         throw SafeOFStreamError("Write to fd " + stringify(buf.fd) + " failed");
 }
 
-SafeOFStreamError::SafeOFStreamError(const std::string & s) throw () :
+SafeOFStreamError::SafeOFStreamError(const std::string & s) noexcept :
     Exception(s)
 {
 }

@@ -60,7 +60,7 @@ namespace
     static pid_t paludis_pid PALUDIS_ATTRIBUTE((used)) = get_paludis_pid();
 }
 
-GetenvError::GetenvError(const std::string & key) throw () :
+GetenvError::GetenvError(const std::string & key) noexcept :
     Exception("Environment variable '" + key + "' not set")
 {
 }

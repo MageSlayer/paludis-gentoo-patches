@@ -430,7 +430,7 @@ namespace paludis
     };
 }
 
-EAPIConfigurationError::EAPIConfigurationError(const std::string & s) throw () :
+EAPIConfigurationError::EAPIConfigurationError(const std::string & s) noexcept :
     ConfigurationError("EAPI configuration error: " + s)
 {
 }

@@ -29,7 +29,7 @@
 using namespace paludis;
 using namespace cave;
 
-FormatStringError::FormatStringError(const std::string & f, const std::string & m) throw () :
+FormatStringError::FormatStringError(const std::string & f, const std::string & m) noexcept :
     Exception("Bad format string '" + f + "': " + m)
 {
 }

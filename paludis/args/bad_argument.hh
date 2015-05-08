@@ -49,7 +49,7 @@ namespace paludis
                 /**
                  * Constructor.
                  */
-                BadArgument(const std::string & option) throw ();
+                BadArgument(const std::string & option) noexcept;
         };
     }
 }

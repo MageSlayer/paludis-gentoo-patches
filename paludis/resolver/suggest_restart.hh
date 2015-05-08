@@ -44,9 +44,9 @@ namespace paludis
                         const std::shared_ptr<const Decision> & previous_decision,
                         const std::shared_ptr<const Constraint> & problematic_constraint,
                         const std::shared_ptr<const Decision> & new_decision,
-                        const std::shared_ptr<const Constraint> & suggested_preset) throw ();
+                        const std::shared_ptr<const Constraint> & suggested_preset) noexcept;
                 SuggestRestart(const SuggestRestart &);
-                ~SuggestRestart() throw ();
+                ~SuggestRestart() noexcept;
 
                 const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::shared_ptr<const Decision> previous_decision() const PALUDIS_ATTRIBUTE((warn_unused_result));

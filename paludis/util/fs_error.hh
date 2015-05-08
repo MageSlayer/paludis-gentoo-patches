@@ -39,7 +39,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            FSError(const std::string & message) throw ();
+            FSError(const std::string & message) noexcept;
 
             ///\}
     };

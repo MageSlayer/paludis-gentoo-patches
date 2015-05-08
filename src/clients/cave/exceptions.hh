@@ -36,25 +36,25 @@ namespace paludis
             public Exception
         {
             public:
-                NothingMatching(const PackageDepSpec &) throw ();
-                NothingMatching(const std::string &) throw ();
-                NothingMatching(const std::string &, const std::string &) throw ();
+                NothingMatching(const PackageDepSpec &) noexcept;
+                NothingMatching(const std::string &) noexcept;
+                NothingMatching(const std::string &, const std::string &) noexcept;
         };
 
         class PALUDIS_VISIBLE NothingMatchingWithSuggestions :
             public NothingMatching
         {
             public:
-                NothingMatchingWithSuggestions(const std::string &, const std::string &) throw ();
+                NothingMatchingWithSuggestions(const std::string &, const std::string &) noexcept;
         };
 
         class PALUDIS_VISIBLE BeMoreSpecific :
             public Exception
         {
             public:
-                BeMoreSpecific(const PackageDepSpec &, const std::shared_ptr<const PackageIDSequence> &) throw ();
+                BeMoreSpecific(const PackageDepSpec &, const std::shared_ptr<const PackageIDSequence> &) noexcept;
                 BeMoreSpecific(const PackageDepSpec &, const std::shared_ptr<const PackageIDSequence> &,
-                        const std::string & extra_message) throw ();
+                        const std::string & extra_message) noexcept;
         };
 
         class PALUDIS_VISIBLE BadIDForCommand :
@@ -64,7 +64,7 @@ namespace paludis
                 BadIDForCommand(
                         const PackageDepSpec &,
                         const std::shared_ptr<const PackageID> &,
-                        const std::string & r) throw ();
+                        const std::string & r) noexcept;
         };
 
         class PALUDIS_VISIBLE BadRepositoryForCommand :
@@ -73,7 +73,7 @@ namespace paludis
             public:
                 BadRepositoryForCommand(
                         const RepositoryName &,
-                        const std::string & r) throw ();
+                        const std::string & r) noexcept;
         };
 
         void nothing_matching_error(

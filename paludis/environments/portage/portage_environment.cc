@@ -80,7 +80,7 @@ typedef std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::string> 
 typedef std::list<std::shared_ptr<const PackageDepSpec> > PackageMask;
 typedef std::list<std::shared_ptr<const PackageDepSpec> > PackageUnmask;
 
-PortageEnvironmentConfigurationError::PortageEnvironmentConfigurationError(const std::string & s) throw () :
+PortageEnvironmentConfigurationError::PortageEnvironmentConfigurationError(const std::string & s) noexcept :
     ConfigurationError(s)
 {
 }

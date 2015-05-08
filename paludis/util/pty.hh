@@ -50,7 +50,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            PtyError(const std::string & message) throw ();
+            PtyError(const std::string & message) noexcept;
 
             ///\}
     };

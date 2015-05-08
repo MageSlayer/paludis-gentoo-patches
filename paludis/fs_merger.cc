@@ -98,7 +98,7 @@ namespace paludis
     };
 }
 
-FSMergerError::FSMergerError(const std::string & s) throw () :
+FSMergerError::FSMergerError(const std::string & s) noexcept :
     MergerError(s)
 {
 }

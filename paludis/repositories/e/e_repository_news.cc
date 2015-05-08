@@ -390,7 +390,7 @@ NewsFile::end_display_if_profile() const
     return DisplayIfProfileConstIterator(_imp->display_if_profile.end());
 }
 
-NewsError::NewsError(const FSPath & f, const std::string & m) throw () :
+NewsError::NewsError(const FSPath & f, const std::string & m) noexcept :
     Exception("Error in news file '" + stringify(f) + "': " + m)
 {
 }

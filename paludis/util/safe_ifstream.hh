@@ -127,7 +127,7 @@ namespace paludis
         public Exception
     {
         public:
-            SafeIFStreamError(const std::string &) throw ();
+            SafeIFStreamError(const std::string &) noexcept;
     };
 }
 

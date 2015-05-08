@@ -653,7 +653,7 @@ EnvironmentImplementation::expand_licence(
     return result;
 }
 
-DuplicateSetError::DuplicateSetError(const SetName & s) throw () :
+DuplicateSetError::DuplicateSetError(const SetName & s) noexcept :
     Exception("A set named '" + stringify(s) + "' already exists")
 {
 }

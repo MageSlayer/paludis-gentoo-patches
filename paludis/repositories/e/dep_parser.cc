@@ -60,7 +60,7 @@ using namespace paludis::erepository;
 
 #include <paludis/repositories/e/dep_parser-se.cc>
 
-EDepParseError::EDepParseError(const std::string & s, const std::string & t) throw () :
+EDepParseError::EDepParseError(const std::string & s, const std::string & t) noexcept :
     Exception("Error parsing '" + s + "': " + t)
 {
 }

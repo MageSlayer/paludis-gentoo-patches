@@ -41,7 +41,7 @@ namespace paludis
             public ConfigurationError
         {
             public:
-                UnwrittenRepositoryConfigurationError(const std::string &) throw ();
+                UnwrittenRepositoryConfigurationError(const std::string &) noexcept;
         };
 
         struct UnwrittenRepositoryParams

@@ -47,7 +47,7 @@ using namespace paludis;
 
 #include <paludis/set_file-se.cc>
 
-SetFileError::SetFileError(const FSPath & f, const std::string & m) throw () :
+SetFileError::SetFileError(const FSPath & f, const std::string & m) noexcept :
     ConfigurationError("In set file '" + stringify(f) + "': " + m)
 {
 }

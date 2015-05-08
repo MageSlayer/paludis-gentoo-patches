@@ -256,7 +256,7 @@ namespace paludis
             public ConfigurationError
         {
             public:
-                EAPIConfigurationError(const std::string &) throw ();
+                EAPIConfigurationError(const std::string &) noexcept;
         };
 
         /**

@@ -38,12 +38,12 @@ using namespace paludis;
 
 #include <paludis/version_spec-se.cc>
 
-BadVersionSpecError::BadVersionSpecError(const std::string & name) throw () :
+BadVersionSpecError::BadVersionSpecError(const std::string & name) noexcept :
     NameError(name, "version spec")
 {
 }
 
-BadVersionSpecError::BadVersionSpecError(const std::string & name, const std::string & msg) throw () :
+BadVersionSpecError::BadVersionSpecError(const std::string & name, const std::string & msg) noexcept :
     NameError(name, "version spec", msg)
 {
 }
