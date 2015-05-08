@@ -45,7 +45,7 @@ Context::Context(const std::string & s)
     context->push_back(s);
 }
 
-Context::~Context()
+Context::~Context() noexcept(false)
 {
     if (! context)
         throw InternalError(PALUDIS_HERE, "no context");

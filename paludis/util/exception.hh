@@ -55,7 +55,7 @@ namespace paludis
 
             Context(const std::string &);
 
-            ~Context();
+            ~Context() noexcept(false);
 
             ///\}
 
