@@ -84,7 +84,7 @@ namespace paludis
              * Initially this will be true. After the first query the value may
              * change to false (the query will return a zero pointer too).
              */
-            bool usable() const PALUDIS_ATTRIBUTE((nothrow));
+            bool usable() const noexcept;
 
             /**
              * Implement cache regeneration.

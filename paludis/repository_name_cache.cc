@@ -313,7 +313,7 @@ RepositoryNameCache::remove(const QualifiedPackageName & q)
 }
 
 bool
-RepositoryNameCache::usable() const
+RepositoryNameCache::usable() const noexcept
 {
     return _imp->usable;
 }

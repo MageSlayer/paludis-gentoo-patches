@@ -96,14 +96,14 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            virtual ~Exception() PALUDIS_ATTRIBUTE((nothrow));
+            virtual ~Exception();
 
             ///\}
 
             /**
              * Return our descriptive error message.
              */
-            const std::string & message() const noexcept PALUDIS_ATTRIBUTE((nothrow));
+            const std::string & message() const noexcept;
 
             /**
              * Make a backtrace.

@@ -139,7 +139,7 @@ Repository::~Repository()
 }
 
 const RepositoryName
-Repository::name() const
+Repository::name() const noexcept
 {
     return _imp->name;
 }

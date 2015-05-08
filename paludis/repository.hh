@@ -275,8 +275,7 @@ namespace paludis
             /**
              * Return our name.
              */
-            const RepositoryName name() const PALUDIS_ATTRIBUTE((nothrow))
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            const RepositoryName name() const noexcept PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}
 
