@@ -51,7 +51,7 @@ NoSuchSetError::NoSuchSetError(const std::string & our_name) noexcept :
 {
 }
 
-NoSuchSetError::~NoSuchSetError() noexcept
+NoSuchSetError::~NoSuchSetError()
 {
 }
 
@@ -61,7 +61,7 @@ RecursivelyDefinedSetError::RecursivelyDefinedSetError(const std::string & our_n
 {
 }
 
-RecursivelyDefinedSetError::~RecursivelyDefinedSetError() noexcept
+RecursivelyDefinedSetError::~RecursivelyDefinedSetError()
 {
 }
 

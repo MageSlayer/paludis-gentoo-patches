@@ -98,7 +98,7 @@ Exception::Exception(const Exception & other) :
 {
 }
 
-Exception::~Exception() noexcept
+Exception::~Exception()
 {
     delete _context_data;
 }

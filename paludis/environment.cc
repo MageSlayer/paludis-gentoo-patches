@@ -67,7 +67,7 @@ NoSuchRepositoryError::NoSuchRepositoryError(const RepositoryName & n) noexcept 
 {
 }
 
-NoSuchRepositoryError::~NoSuchRepositoryError() noexcept
+NoSuchRepositoryError::~NoSuchRepositoryError()
 {
 }
 
@@ -100,7 +100,7 @@ AmbiguousPackageNameError::AmbiguousPackageNameError(const AmbiguousPackageNameE
     _name_data->names = other._name_data->names;
 }
 
-AmbiguousPackageNameError::~AmbiguousPackageNameError() noexcept
+AmbiguousPackageNameError::~AmbiguousPackageNameError()
 {
     delete _name_data;
 }

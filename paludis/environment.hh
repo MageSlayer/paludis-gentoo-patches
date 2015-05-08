@@ -78,7 +78,7 @@ namespace paludis
 
             AmbiguousPackageNameError(const AmbiguousPackageNameError &);
 
-            virtual ~AmbiguousPackageNameError() noexcept;
+            virtual ~AmbiguousPackageNameError();
 
             ///\}
 
@@ -134,7 +134,7 @@ namespace paludis
 
             NoSuchPackageError(const std::string & name) noexcept;
 
-            virtual ~NoSuchPackageError() noexcept
+            virtual ~NoSuchPackageError()
             {
             }
 
@@ -168,7 +168,7 @@ namespace paludis
 
             NoSuchRepositoryError(const RepositoryName &) noexcept;
 
-            ~NoSuchRepositoryError() noexcept;
+            ~NoSuchRepositoryError();
 
             ///\}
 

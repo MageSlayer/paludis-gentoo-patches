@@ -96,7 +96,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            virtual ~Exception() noexcept PALUDIS_ATTRIBUTE((nothrow));
+            virtual ~Exception() PALUDIS_ATTRIBUTE((nothrow));
 
             ///\}
 

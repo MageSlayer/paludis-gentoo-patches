@@ -70,7 +70,7 @@ SuggestRestart::SuggestRestart(const SuggestRestart & o) :
 {
 }
 
-SuggestRestart::~SuggestRestart() noexcept
+SuggestRestart::~SuggestRestart()
 {
 }
 

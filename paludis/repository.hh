@@ -197,7 +197,7 @@ namespace paludis
 
             NoSuchSetError(const std::string & name) noexcept;
 
-            virtual ~NoSuchSetError() noexcept;
+            virtual ~NoSuchSetError();
 
             ///\}
 
@@ -226,7 +226,7 @@ namespace paludis
 
             RecursivelyDefinedSetError(const std::string & name) noexcept;
 
-            virtual ~RecursivelyDefinedSetError() noexcept;
+            virtual ~RecursivelyDefinedSetError();
 
             ///\}
 
