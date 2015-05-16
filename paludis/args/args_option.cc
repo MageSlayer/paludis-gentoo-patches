@@ -238,7 +238,7 @@ StringSetArg::add_argument(const std::string & arg)
     if (! _imp->allowed_args.empty())
         if (_imp->allowed_args.end() == std::find_if(_imp->allowed_args.begin(),
                     _imp->allowed_args.end(), ArgIs(arg)))
-            throw (BadValue("--" + long_name(), arg));
+            throw BadValue("--" + long_name(), arg);
 
     if (_validator)
         (*_validator)(arg);
@@ -428,7 +428,7 @@ EnumArg::set_argument(const std::string & arg)
     /* if we're given the short arg, turn it magically into the long one */
     AllowedArgConstIterator i(std::find_if(_imp->allowed_args.begin(), _imp->allowed_args.end(), ArgIs(arg)));
     if (i == _imp->allowed_args.end())
-        throw (BadValue("--" + long_name(), arg));
+        throw BadValue("--" + long_name(), arg);
 
     _argument = i->long_name();
 }
