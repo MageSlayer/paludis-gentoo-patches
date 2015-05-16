@@ -124,8 +124,13 @@ paludis::cave::executables_common(
         throw BeMoreSpecific(spec, entries);
 
     const std::string path(getenv_or_error("PATH"));
+    std::set<std::string> raw_paths;
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(path, ":", "", std::inserter(raw_paths, raw_paths.begin()));
+
     std::set<std::string> paths;
-    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(path, ":", "", std::inserter(paths, paths.begin()));
+    for (const std::string& raw_path : raw_paths)
+        paths.insert(stringify(FSPath(raw_path).realpath_if_exists()));
+
     ExecutablesDisplayer ed(paths, displayer);
 
     for (auto i(best ? entries->last() : entries->begin()), i_end(entries->end()) ;
