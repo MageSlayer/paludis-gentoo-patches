@@ -194,7 +194,7 @@ fi
 
 [[ -d "${LOCAL}" ]] || mkdir -p "${LOCAL}"
 ${RSYNC_WRAPPER} rsync --recursive --links --safe-links --perms --times \
-    --new-compress --force --whole-file --delete --delete-after --stats --timeout=180 \
+    --force --whole-file --delete --delete-after --stats --timeout=180 \
     ${PALUDIS_SYNC_FILTER_FILE:+--filter "merge ${PALUDIS_SYNC_FILTER_FILE}"} \
     --exclude=/.cache --progress "${RSYNC_OPTIONS[@]}" "${UNPACKDIR}/" "${LOCAL}/"
 cleanup_and_exit ${?}
