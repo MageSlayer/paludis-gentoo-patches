@@ -13,6 +13,7 @@ mkdir -p build
 ln -s build symlinked_build
 
 mkdir -p distdir
+gzip -c <<<test >distdir/test.gz
 
 mkdir -p repo/{profiles/profile,metadata,eclass} || exit 1
 cd repo || exit 1
@@ -60,6 +61,86 @@ KEYWORDS="test"
 
 pkg_setup() {
     fail=( does/not/exist/* )
+}
+END
+
+mkdir -p "cat/unpack-bare" || exit 1
+cat << 'END' > cat/unpack-bare/unpack-bare-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="test.gz"
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    unpack test.gz
+    [[ $(< test) == test ]] || die
+}
+END
+
+mkdir -p "cat/unpack-dotslash" || exit 1
+cat << 'END' > cat/unpack-dotslash/unpack-dotslash-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    gzip -c <<<test2 >test2.gz
+    unpack ./test2.gz
+    [[ $(< test2) == test2 ]] || die
+}
+END
+
+mkdir -p "cat/unpack-absolute" || exit 1
+cat << 'END' > cat/unpack-absolute/unpack-absolute-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    gzip -c <<<test3 >test3.gz
+    unpack $(pwd)/test3.gz
+    [[ $(< test3) == test3 ]] || die
+}
+END
+
+mkdir -p "cat/unpack-relative" || exit 1
+cat << 'END' > cat/unpack-relative/unpack-relative-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    mkdir subdir
+    gzip -c <<<test4 >subdir/test4.gz
+    unpack subdir/test4.gz
+    [[ $(< test4) == test4 ]] || die
 }
 END
 

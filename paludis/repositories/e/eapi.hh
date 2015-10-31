@@ -207,6 +207,7 @@ namespace paludis
         typedef Name<struct name_supported> supported;
         typedef Name<struct name_system_implicit> system_implicit;
         typedef Name<struct name_tools_options> tools_options;
+        typedef Name<struct name_unpack_any_path> unpack_any_path;
         typedef Name<struct name_unpack_fix_permissions> unpack_fix_permissions;
         typedef Name<struct name_unpack_suffixes> unpack_suffixes;
         typedef Name<struct name_unpack_unrecognised_is_fatal> unpack_unrecognised_is_fatal;
@@ -490,6 +491,7 @@ namespace paludis
             NamedValue<n::econf_extra_options_help_dependent, std::string> econf_extra_options_help_dependent;
             NamedValue<n::failure_is_fatal, bool> failure_is_fatal;
             NamedValue<n::new_stdin, bool> new_stdin;
+            NamedValue<n::unpack_any_path, bool> unpack_any_path;
             NamedValue<n::unpack_fix_permissions, bool> unpack_fix_permissions;
             NamedValue<n::unpack_suffixes, std::string> unpack_suffixes;
             NamedValue<n::unpack_unrecognised_is_fatal, bool> unpack_unrecognised_is_fatal;

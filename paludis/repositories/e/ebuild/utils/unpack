@@ -169,7 +169,15 @@ done
 for x in "$@" ; do
     x=$(echo $x )
     echo ">>> Unpacking ${x} to ${UNPACKTODIR}"
-    [[ "${x:0:2}" == "./" ]] || x="${UNPACKFROMDIR}/${x}"
+    if [[ ${x} != */* ]]; then
+        x=${UNPACKFROMDIR}/${x}
+    elif [[ ${x:0:2} == ./* ]]; then
+        :
+    elif [[ -n ${PALUDIS_UNPACK_ANY_PATH} ]]; then
+        :
+    else
+        die "Invalid path given to unpack: ${x}"
+    fi
     mkdir -p ${UNPACKTODIR}
     cd ${UNPACKTODIR}
     unpack_one "${x}"
