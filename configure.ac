@@ -1335,6 +1335,7 @@ AC_CONFIG_FILES([
 	paludis/repositories/e/ebuild/3/Makefile
 	paludis/repositories/e/ebuild/4/Makefile
 	paludis/repositories/e/ebuild/5/Makefile
+	paludis/repositories/e/ebuild/6/Makefile
 	paludis/repositories/e/ebuild/Makefile
 	paludis/repositories/e/ebuild/exheres-0/Makefile
 	paludis/repositories/e/ebuild/paludis-1/Makefile

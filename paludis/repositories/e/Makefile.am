@@ -307,6 +307,18 @@ e_repository_TEST_5_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_
 
 e_repository_TEST_5_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
 
+e_repository_TEST_6_SOURCES = e_repository_TEST_6.cc
+
+e_repository_TEST_6_LDADD = \
+	$(top_builddir)/paludis/util/gtest_runner.o \
+	$(top_builddir)/paludis/util/libpaludisutil_@PALUDIS_PC_SLOT@.la \
+	$(top_builddir)/paludis/libpaludis_@PALUDIS_PC_SLOT@.la \
+	$(DYNAMIC_LD_LIBS)
+
+e_repository_TEST_6_CXXFLAGS = $(AM_CXXFLAGS) -I$(top_srcdir) @PALUDIS_CXXFLAGS_NO_DEBUGGING@ @GTESTDEPS_CXXFLAGS@
+
+e_repository_TEST_6_LDFLAGS = @GTESTDEPS_LDFLAGS@ @GTESTDEPS_LIBS@
+
 e_repository_TEST_phases_SOURCES = e_repository_TEST_phases.cc
 
 e_repository_TEST_phases_LDADD = \
@@ -547,6 +559,9 @@ EXTRA_DIST = \
 	e_repository_TEST_5.cc \
 	e_repository_TEST_5_setup.sh \
 	e_repository_TEST_5_cleanup.sh \
+	e_repository_TEST_6.cc \
+	e_repository_TEST_6_setup.sh \
+	e_repository_TEST_6_cleanup.sh \
 	e_repository_TEST_pbin.cc \
 	e_repository_TEST_pbin_setup.sh \
 	e_repository_TEST_pbin_cleanup.sh \
@@ -620,6 +635,7 @@ check_SCRIPTS = \
 	e_repository_TEST_3_setup.sh e_repository_TEST_3_cleanup.sh \
 	e_repository_TEST_4_setup.sh e_repository_TEST_4_cleanup.sh \
 	e_repository_TEST_5_setup.sh e_repository_TEST_5_cleanup.sh \
+	e_repository_TEST_6_setup.sh e_repository_TEST_6_cleanup.sh \
 	e_repository_TEST_pbin_setup.sh e_repository_TEST_pbin_cleanup.sh \
 	e_repository_TEST_phases_setup.sh e_repository_TEST_phases_cleanup.sh \
 	e_repository_TEST_exlibs_setup.sh e_repository_TEST_exlibs_cleanup.sh \
@@ -709,6 +725,7 @@ TESTS = \
 	e_repository_TEST_3 \
 	e_repository_TEST_4 \
 	e_repository_TEST_5 \
+	e_repository_TEST_6 \
 	e_repository_TEST_ever \
 	e_repository_TEST_exheres_0 \
 	e_repository_TEST_exlibs \
