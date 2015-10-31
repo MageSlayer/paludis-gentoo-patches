@@ -111,16 +111,20 @@ unpack_xz() {
 
 unpack_one()
 {
-    [[ -z ${1} ]] && die "Bad argument for unpack_one"
-    [[ -e ${1} ]] || die "${1} doesn't exist"
+    local file=${1} compare=${1}
+    [[ -n ${PALUDIS_UNPACK_CASE_INSENSITIVE} ]] &&
+        compare=$(tr '[:upper:]' '[:lower:]' <<<"${compare}")
+
+    [[ -z ${file} ]] && die "Bad argument for unpack_one"
+    [[ -e ${file} ]] || die "${file} doesn't exist"
 
     if [[ -n "${UNPACKONLY}" ]] ; then
-        case ${1} in
+        case ${compare} in
             *.tar.bz2|*.tbz2|*.tbz)
             ;;
 
             *)
-            die "Can't use --only with ${x}"
+            die "Can't use --only with ${file}"
             ;;
         esac
     fi
@@ -129,17 +133,19 @@ unpack_one()
     for group in ${PALUDIS_UNPACK_SUFFIXES}; do
         split=( $(IFS=,; echo ${group} ) )
         for suffix in ${split[@]}; do
-            if [[ ${1} == *.${suffix} ]]; then
-                unpack_${split[0]} "${1}" || die "Couldn't unpack ${1}"
+            [[ -n ${PALUDIS_UNPACK_CASE_INSENSITIVE} ]] &&
+                suffix=$(tr '[:upper:]' '[:lower:]' <<<"${suffix}")
+            if [[ ${compare} == *.${suffix} ]]; then
+                unpack_${split[0]} "${file}" || die "Couldn't unpack ${file}"
                 return
             fi
         done
     done
 
     if [[ -n "${PALUDIS_UNPACK_UNRECOGNISED_IS_FATAL}" ]] ; then
-        die "Don't know how to unpack ${x}"
+        die "Don't know how to unpack ${file}"
     else
-        echo "Skipping unpack for ${1}"
+        echo "Skipping unpack for ${file}"
     fi
 }
 

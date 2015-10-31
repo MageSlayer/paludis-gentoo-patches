@@ -245,6 +245,8 @@ EbuildCommand::operator() ()
                 params.package_id()->eapi()->supported()->tools_options()->unpack_fix_permissions() ? "yes" : "")
         .setenv("PALUDIS_UNPACK_ANY_PATH",
                 params.package_id()->eapi()->supported()->tools_options()->unpack_any_path() ? "yes" : "")
+        .setenv("PALUDIS_UNPACK_CASE_INSENSITIVE",
+                params.package_id()->eapi()->supported()->tools_options()->unpack_case_insensitive() ? "yes" : "")
         .setenv("PALUDIS_UNPACK_SUFFIXES",
                 params.package_id()->eapi()->supported()->tools_options()->unpack_suffixes())
         .setenv("PALUDIS_BEST_HAS_VERSION_HOST_ROOT",

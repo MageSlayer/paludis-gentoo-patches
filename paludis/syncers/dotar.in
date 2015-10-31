@@ -179,6 +179,7 @@ export PALUDIS_UNPACK_SUFFIXES="tar tar.gz,tgz,tar.Z tar.bz2,tbz2,tbz zip,ZIP,ja
 export PALUDIS_UNPACK_UNRECOGNISED_IS_FATAL=yes
 export PALUDIS_UNPACK_FIX_PERMISSIONS=
 export PALUDIS_UNPACK_ANY_PATH=yes
+export PALUDIS_UNPACK_CASE_INSENSITIVE=yes
 export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
 ( cd "${UNPACKDIR}" && unpack "${UNPACK_OPTIONS[@]}" "${TEMP}/${TARFILE}" ) || cleanup_and_exit $?
 

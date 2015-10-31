@@ -144,5 +144,28 @@ src_unpack() {
 }
 END
 
+mkdir -p "cat/unpack-case-insensitive" || exit 1
+cat << 'END' > cat/unpack-case-insensitive/unpack-case-insensitive-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo test5 >test5
+    tar czf test5.TAR.z test5 || die
+    rm test5
+    [[ -e test5 ]] && die
+    unpack ./test5.TAR.z
+    [[ $(< test5) == test5 ]] || die
+}
+END
+
 cd ..
 cd ..

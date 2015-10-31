@@ -455,6 +455,28 @@ src_unpack() {
 }
 END
 
+mkdir -p "cat/unpack-case-sensitive" || exit 1
+cat << 'END' > cat/unpack-case-sensitive/unpack-case-sensitive-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo test5 >test5
+    tar czf test5.TAR.z test5 || die
+    rm test5
+    unpack ./test5.TAR.z
+    [[ -e test5 ]] && die
+}
+END
+
 mkdir -p "cat/subslots" || exit 1
 cat << 'END' > cat/subslots/subslots-5.ebuild || exit 1
 EAPI="5"
