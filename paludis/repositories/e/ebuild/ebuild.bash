@@ -392,11 +392,16 @@ ebuild_load_ebuild()
         eval paludis_saved_${paludis_v}='${!paludis_v}'
     done
 
+    local paludis_shopts=$(shopt -p)
+    [[ -n ${PALUDIS_SHELL_OPTIONS_GLOBAL} ]] && shopt -s ${PALUDIS_SHELL_OPTIONS_GLOBAL}
+
     if [[ ! -f ${1} ]]; then
         [[ -r ${1} ]] || die "Ebuild '${1}' cannot be read"
         die "Ebuild '${1}' is not a file"
     fi
     source ${1} || die "Error sourcing ebuild '${1}'"
+
+    eval "${paludis_shopts}"
 
     # we may or may not use this later
     PALUDIS_EBUILD_RDEPEND_WAS_SET=

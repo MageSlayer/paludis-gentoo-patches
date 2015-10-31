@@ -360,6 +360,20 @@ pkg_pretend() {
 }
 END
 
+mkdir -p "cat/global-no-failglob" || exit 1
+cat << 'END' > cat/global-no-failglob/global-no-failglob-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+fail=( does/not/exist/* )
+END
+
 mkdir -p "cat/subslots" || exit 1
 cat << 'END' > cat/subslots/subslots-5.ebuild || exit 1
 EAPI="5"

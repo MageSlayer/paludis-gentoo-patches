@@ -280,6 +280,8 @@ EbuildCommand::operator() ()
         .setenv("PALUDIS_PIPE_COMMAND_DELIM", "\2")
         .setenv("PALUDIS_SHELL_OPTIONS",
                 params.package_id()->eapi()->supported()->ebuild_options()->shell_options())
+        .setenv("PALUDIS_SHELL_OPTIONS_GLOBAL",
+                params.package_id()->eapi()->supported()->ebuild_options()->shell_options_global())
         .setenv("SLOT", "")
         .setenv("PALUDIS_PROFILE_DIR", "")
         .setenv("PALUDIS_PROFILE_DIRS", "")

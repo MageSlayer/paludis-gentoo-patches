@@ -196,6 +196,7 @@ namespace paludis
         typedef Name<struct name_save_variables> save_variables;
         typedef Name<struct name_scm_revision> scm_revision;
         typedef Name<struct name_shell_options> shell_options;
+        typedef Name<struct name_shell_options_global> shell_options_global;
         typedef Name<struct name_short_description> short_description;
         typedef Name<struct name_slot> slot;
         typedef Name<struct name_source_merged_variables> source_merged_variables;
@@ -447,6 +448,7 @@ namespace paludis
             NamedValue<n::save_unmodifiable_variables, std::string> save_unmodifiable_variables;
             NamedValue<n::save_variables, std::string> save_variables;
             NamedValue<n::shell_options, std::string> shell_options;
+            NamedValue<n::shell_options_global, std::string> shell_options_global;
             NamedValue<n::source_merged_variables, std::string> source_merged_variables;
             NamedValue<n::support_eclasses, bool> support_eclasses;
             NamedValue<n::support_exlibs, bool> support_exlibs;

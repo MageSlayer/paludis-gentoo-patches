@@ -199,6 +199,7 @@ namespace
                         n::save_unmodifiable_variables() = check_get(k, "save_unmodifiable_variables"),
                         n::save_variables() = check_get(k, "save_variables"),
                         n::shell_options() = check_get(k, "shell_options"),
+                        n::shell_options_global() = check_get(k, "shell_options_global"),
                         n::source_merged_variables() = check_get(k, "source_merged_variables"),
                         n::support_eclasses() = destringify_key<bool>(k, "support_eclasses"),
                         n::support_exlibs() = destringify_key<bool>(k, "support_exlibs"),

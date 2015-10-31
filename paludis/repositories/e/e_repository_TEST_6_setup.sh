@@ -33,5 +33,35 @@ USE_EXPAND_VALUES_ARCH="cheese otherarch"
 IUSE_IMPLICIT="build"
 END
 
+mkdir -p "cat/global-failglob" || exit 1
+cat << 'END' > cat/global-failglob/global-failglob-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+fail=( does/not/exist/* )
+END
+
+mkdir -p "cat/nonglobal-no-failglob" || exit 1
+cat << 'END' > cat/nonglobal-no-failglob/nonglobal-no-failglob-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    fail=( does/not/exist/* )
+}
+END
+
 cd ..
 cd ..
