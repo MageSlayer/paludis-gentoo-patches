@@ -22,24 +22,39 @@
 
 shopt -s expand_aliases
 
+_paludis_pipestatus=
 alias die='diefunc "${FUNCNAME:-$0}" "$LINENO"'
-alias assert='_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_pipestatus//[ 0]/}" ]] || diefunc "${FUNCNAME:-$0}" "$LINENO" "$_pipestatus"'
+alias assert='_paludis_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_paludis_pipestatus//[ 0]/}" ]] || diefunc "${FUNCNAME:-$0}" "$LINENO"'
 # paludis_die_or_error is only for use in scripts
 alias paludis_die_or_error='paludis_die_or_error_func "$0" "$LINENO"'
 # paludis_die_unless_nonfatal and paludis_assert_unless_nonfatal are only for use in shell functions
 alias paludis_die_unless_nonfatal='paludis_die_unless_nonfatal_func "$FUNCNAME" "$LINENO"'
-alias paludis_assert_unless_nonfatal='_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_pipestatus//[ 0]/}" ]] || paludis_die_unless_nonfatal_func "$FUNCNAME" "$LINENO" "$_pipestatus"'
+alias paludis_assert_unless_nonfatal='_paludis_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_paludis_pipestatus//[ 0]/}" ]] || paludis_die_unless_nonfatal_func "$FUNCNAME" "$LINENO"'
 
 trap 'echo "die trap: exiting with error." 1>&2 ; exit 250' SIGUSR1
 
 diefunc()
 {
-    local func="$1" line="$2"
+    local func="$1" line="$2" nonfatal=
     shift 2
+
+    if [[ -n ${PALUDIS_DIE_SUPPORTS_DASH_N} && $1 == -n && -n ${PALUDIS_FAILURE_IS_NONFATAL} ]] ; then
+        shift
+        nonfatal=yes
+    fi
+
+    local message="$*"
+    [[ -n ${_paludis_pipestatus//[ 0]/} ]] && message="${_paludis_pipestatus} ${message}"
+
+    if [[ -n ${nonfatal} ]] ; then
+        echo "${func}: ${message}" >&2
+        return 247
+    fi
+
     echo 1>&2
     echo "!!! ERROR in ${CATEGORY:-?}/${!PALUDIS_NAME_VERSION_REVISION_VAR:-?}::${REPOSITORY:-?}:" 1>&2
     echo "!!! In ${func:-?} at line ${line:-?}" 1>&2
-    echo "!!! ${*:-(no message provided)}" 1>&2
+    echo "!!! ${message:-(no message provided)}" 1>&2
     echo 1>&2
 
     echo "!!! Call stack:" 1>&2

@@ -267,6 +267,8 @@ EbuildCommand::operator() ()
                 params.package_id()->eapi()->supported()->tools_options()->use_with_enable_empty_third_argument() ? "yes" : "")
         .setenv("PALUDIS_FAILURE_IS_FATAL",
                 params.package_id()->eapi()->supported()->tools_options()->failure_is_fatal() ? "yes" : "")
+        .setenv("PALUDIS_DIE_SUPPORTS_DASH_N",
+                params.package_id()->eapi()->supported()->tools_options()->die_supports_dash_n() ? "yes" : "")
         .setenv("PALUDIS_UNPACK_FROM_VAR",
                 params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_distdir())
         .setenv("PALUDIS_IMAGE_DIR_VAR",

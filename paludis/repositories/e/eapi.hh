@@ -61,6 +61,7 @@ namespace paludis
         typedef Name<struct name_description> description;
         typedef Name<struct name_description_choices> description_choices;
         typedef Name<struct name_description_use> description_use;
+        typedef Name<struct name_die_supports_dash_n> die_supports_dash_n;
         typedef Name<struct name_directory_if_exists_variables> directory_if_exists_variables;
         typedef Name<struct name_directory_variables> directory_variables;
         typedef Name<struct name_dodoc_r> dodoc_r;
@@ -483,6 +484,7 @@ namespace paludis
         struct EAPIToolsOptions
         {
             NamedValue<n::best_has_version_host_root, bool> best_has_version_host_root;
+            NamedValue<n::die_supports_dash_n, bool> die_supports_dash_n;
             NamedValue<n::dodoc_r, bool> dodoc_r;
             NamedValue<n::doins_symlink, bool> doins_symlink;
             NamedValue<n::doman_lang_filenames, bool> doman_lang_filenames;

@@ -327,5 +327,169 @@ EOF
 }
 END
 
+mkdir -p "cat/plain-die" || exit 1
+cat << 'END' > cat/plain-die/plain-die-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    test
+}
+
+test() {
+    die test
+}
+END
+
+mkdir -p "cat/plain-assert" || exit 1
+cat << 'END' > cat/plain-assert/plain-assert-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    test
+}
+
+test() {
+    true | false | true
+    assert test
+}
+END
+
+mkdir -p "cat/nonfatal-die" || exit 1
+cat << 'END' > cat/nonfatal-die/nonfatal-die-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    nonfatal test
+}
+
+test() {
+    die test
+}
+END
+
+mkdir -p "cat/nonfatal-assert" || exit 1
+cat << 'END' > cat/nonfatal-assert/nonfatal-assert-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    nonfatal test
+}
+
+test() {
+    true | false | true
+    assert test
+}
+END
+
+mkdir -p "cat/die-n" || exit 1
+cat << 'END' > cat/die-n/die-n-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    test
+}
+
+test() {
+    die -n test
+}
+END
+
+mkdir -p "cat/assert-n" || exit 1
+cat << 'END' > cat/assert-n/assert-n-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    test
+}
+
+test() {
+    true | false | true
+    assert -n test
+}
+END
+
+mkdir -p "cat/nonfatal-die-n" || exit 1
+cat << 'END' > cat/nonfatal-die-n/nonfatal-die-n-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    nonfatal test && die
+}
+
+test() {
+    die -n test
+}
+END
+
+mkdir -p "cat/nonfatal-assert-n" || exit 1
+cat << 'END' > cat/nonfatal-assert-n/nonfatal-assert-n-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    nonfatal test && die
+}
+
+test() {
+    true | false | true
+    assert -n test
+}
+END
+
 cd ..
 cd ..

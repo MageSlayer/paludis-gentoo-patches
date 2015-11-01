@@ -518,6 +518,47 @@ src_unpack() {
 }
 END
 
+mkdir -p "cat/nonfatal-die" || exit 1
+cat << 'END' > cat/nonfatal-die/nonfatal-die-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    nonfatal test
+}
+
+test() {
+    die -n test
+}
+END
+
+mkdir -p "cat/nonfatal-assert" || exit 1
+cat << 'END' > cat/nonfatal-assert/nonfatal-assert-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    nonfatal test
+}
+
+test() {
+    true | false | true
+    assert -n test
+}
+END
+
 mkdir -p "cat/subslots" || exit 1
 cat << 'END' > cat/subslots/subslots-5.ebuild || exit 1
 EAPI="5"
