@@ -491,5 +491,33 @@ test() {
 }
 END
 
+mkdir -p "cat/get_libdir" || exit 1
+cat << 'END' > cat/get_libdir/get_libdir-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_configure() {
+    [[ -n $(declare -F get_libdir) ]] || die
+
+    local vars="CONF_LIBDIR_OVERRIDE ABI DEFAULT_ABI ${!LIBDIR_*}"
+    local ${vars}
+    unset ${vars}
+
+    [[ $(get_libdir) == lib ]] || die
+    [[ $(ABI= LIBDIR_=libv get_libdir) == lib ]] || die
+    [[ $(ABI=vax get_libdir) == lib ]] || die
+    [[ $(ABI=vax LIBDIR_vax= get_libdir) == lib ]] || die
+    [[ $(ABI=vax LIBDIR_vax=libv get_libdir) == libv ]] || die
+}
+END
+
 cd ..
 cd ..
