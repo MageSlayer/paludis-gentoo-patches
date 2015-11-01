@@ -577,6 +577,28 @@ src_configure() {
 }
 END
 
+mkdir -p "cat/has-einstall" || exit 1
+cat << 'END' > cat/has-einstall/has-einstall-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo 'install: ; true' >Makefile
+}
+
+src_install() {
+    einstall
+}
+END
+
 mkdir -p "cat/subslots" || exit 1
 cat << 'END' > cat/subslots/subslots-5.ebuild || exit 1
 EAPI="5"

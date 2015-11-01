@@ -5,6 +5,7 @@ SUBDIRS = .
 libexecprog6dir = $(libexecdir)/paludis/6
 
 libexecprog6_SCRIPTS = \
+	build_functions.bash \
 	multilib_functions.bash \
 	output_functions.bash
 

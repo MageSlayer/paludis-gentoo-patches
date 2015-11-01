@@ -519,5 +519,27 @@ src_configure() {
 }
 END
 
+mkdir -p "cat/no-einstall" || exit 1
+cat << 'END' > cat/no-einstall/no-einstall-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo 'install: ; true' >Makefile
+}
+
+src_install() {
+    einstall
+}
+END
+
 cd ..
 cd ..
