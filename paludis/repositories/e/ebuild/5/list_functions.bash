@@ -25,11 +25,9 @@ ebuild_load_module --older list_functions
 
 useq()
 {
-    if [[ -n "${IUSE_EFFECTIVE:+x}" ]] ; then
-        local i=( $IUSE_EFFECTIVE )
-        if ! hasq ${1#!} "${i[@]#[+-]}" ; then
-            die "Flag '${1#!}' is not included in IUSE_EFFECTIVE=\"${IUSE_EFFECTIVE}\""
-        fi
+    local i=( $IUSE_EFFECTIVE )
+    if ! hasq ${1#!} "${i[@]#[+-]}" ; then
+        die "Flag '${1#!}' is not included in IUSE_EFFECTIVE=\"${IUSE_EFFECTIVE}\""
     fi
 
     if [[ "${1:0:1}" == "!" ]] ; then
