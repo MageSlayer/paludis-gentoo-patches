@@ -22,6 +22,8 @@
 
 econf()
 {
+    local i
+
     local phase
     has src_configure ${PALUDIS_EBUILD_FUNCTIONS} && phase=configure
     if [[ "${!PALUDIS_EBUILD_PHASE_VAR}" != "${phase:-compile}" ]]; then
@@ -45,10 +47,12 @@ econf()
         [[ -z "${CBUILD}" ]] || LOCAL_EXTRA_ECONF="--build=${CBUILD} ${LOCAL_EXTRA_ECONF}"
         [[ -z "${CTARGET}" ]] || LOCAL_EXTRA_ECONF="--target=${CTARGET} ${LOCAL_EXTRA_ECONF}"
 
-        local extra_options_help=""
-        for i in ${PALUDIS_ECONF_EXTRA_OPTIONS_HELP_DEPENDENT}; do
+        local -a extra_options extra_options_help
+        eval "extra_options=( ${PALUDIS_ECONF_EXTRA_OPTIONS} )"
+        eval "extra_options_help=( ${PALUDIS_ECONF_EXTRA_OPTIONS_HELP_DEPENDENT} )"
+        for i in "${extra_options_help[@]}"; do
             "${ECONF_SOURCE}/configure" --help 2>/dev/null | grep -q -e "${i%%::*}" \
-                && extra_options_help+=" ${i#*::}"
+                && extra_options+=( "${i#*::}" )
         done
 
         # If the ebuild passed in --prefix, use that to set --libdir. KDE at least needs this.
@@ -78,8 +82,7 @@ econf()
             --datadir=/usr/share \
             --sysconfdir=/etc \
             --localstatedir=/var/lib \
-            ${PALUDIS_ECONF_EXTRA_OPTIONS} \
-            ${extra_options_help} \
+            "${extra_options[@]}" \
             ${libcmd} "$@" ${LOCAL_EXTRA_ECONF} 1>&2
 
         ${LOCAL_ECONF_WRAPPER} "${ECONF_SOURCE}"/configure \
@@ -90,8 +93,7 @@ econf()
             --datadir=/usr/share \
             --sysconfdir=/etc \
             --localstatedir=/var/lib \
-            ${PALUDIS_ECONF_EXTRA_OPTIONS} \
-            ${extra_options_help} \
+            "${extra_options[@]}" \
             ${libcmd} "$@" ${LOCAL_EXTRA_ECONF} || die "econf failed"
 
     else
