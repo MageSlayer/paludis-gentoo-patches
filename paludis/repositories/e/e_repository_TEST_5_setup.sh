@@ -599,6 +599,22 @@ src_install() {
 }
 END
 
+mkdir -p "cat/no-in_iuse" || exit 1
+cat << 'END' > cat/no-in_iuse/no-in_iuse-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    [[ -z $(declare -F in_iuse) ]] || die
+}
+END
+
 mkdir -p "cat/subslots" || exit 1
 cat << 'END' > cat/subslots/subslots-5.ebuild || exit 1
 EAPI="5"

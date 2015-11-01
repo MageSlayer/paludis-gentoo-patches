@@ -33,6 +33,9 @@ USE_EXPAND_VALUES_USERLAND="GNU"
 USE_EXPAND_VALUES_ARCH="cheese otherarch"
 IUSE_IMPLICIT="build"
 END
+cat<<END > eclass/test.eclass
+IUSE="eclass-flag"
+END
 
 mkdir -p "cat/global-failglob" || exit 1
 cat << 'END' > cat/global-failglob/global-failglob-6.ebuild || exit 1
@@ -539,6 +542,64 @@ src_unpack() {
 src_install() {
     einstall
 }
+END
+
+mkdir -p "cat/in_iuse" || exit 1
+cat << 'END' > cat/in_iuse/in_iuse-6.ebuild || exit 1
+EAPI="6"
+
+inherit test
+
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="+ebuild-flag"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    [[ -n $(declare -F in_iuse) ]] || die not defined
+
+    in_iuse ebuild-flag || die ebuild-flag
+    in_iuse eclass-flag || die eclass-flag
+    in_iuse build || die build
+    in_iuse cheese || die cheese
+    in_iuse otherarch || die otherarch
+    in_iuse userland_GNU || die userland_GNU
+    in_iuse userland_zOS && die userland_zOS
+    in_iuse nowhere-flag && die nowhere-flag
+}
+END
+
+mkdir -p "cat/in_iuse-global" || exit 1
+cat << 'END' > cat/in_iuse-global/in_iuse-global-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+in_iuse test && DEPEND="test? ( cat/test-dep )"
+END
+
+mkdir -p "cat/in_iuse-global-notmetadata" || exit 1
+cat << 'END' > cat/in_iuse-global-notmetadata/in_iuse-global-notmetadata-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+if [[ -n ${MERGE_TYPE} ]] && in_iuse test ; then
+    DEPEND="test? ( cat/test-dep )"
+fi
 END
 
 cd ..
