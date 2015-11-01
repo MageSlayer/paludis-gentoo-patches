@@ -167,5 +167,165 @@ src_unpack() {
 }
 END
 
+mkdir -p "cat/econf-no-docdir-htmldir" || exit 1
+cat << 'END' > cat/econf-no-docdir-htmldir/econf-no-docdir-htmldir-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cd "${WORKDIR}"
+
+    cat <<'EOF' > configure
+#!/bin/sh
+
+if echo "$@" | grep -q 'help' ; then
+    exit 0
+fi
+
+if echo "$@" | grep -q 'docdir' ; then
+    exit 1
+fi
+
+if echo "$@" | grep -q 'htmldir' ; then
+    exit 1
+fi
+
+exit 0
+EOF
+
+    chmod +x configure
+}
+END
+
+mkdir -p "cat/econf-docdir-only" || exit 1
+cat << 'END' > cat/econf-docdir-only/econf-docdir-only-6-r6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cd "${WORKDIR}"
+
+    cat <<'EOF' > configure
+#!/bin/sh
+
+if echo "$@" | grep -q 'help' ; then
+    echo --docdir
+    exit 0
+fi
+
+if ! echo "$@" | grep -q 'docdir=/usr/share/doc/econf-docdir-only-6-r6' ; then
+    exit 1
+fi
+
+if echo "$@" | grep -q 'htmldir' ; then
+    exit 1
+fi
+
+exit 0
+EOF
+
+    chmod +x configure
+}
+END
+
+mkdir -p "cat/econf-htmldir-only" || exit 1
+cat << 'END' > cat/econf-htmldir-only/econf-htmldir-only-6-r6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cd "${WORKDIR}"
+
+    cat <<'EOF' > configure
+#!/bin/sh
+
+if echo "$@" | grep -q 'help' ; then
+    echo --htmldir
+    exit 0
+fi
+
+if echo "$@" | grep -q 'docdir' ; then
+    exit 1
+fi
+
+if ! echo "$@" | grep -q 'htmldir=/usr/share/doc/econf-htmldir-only-6-r6/html' ; then
+    exit 1
+fi
+
+exit 0
+EOF
+
+    chmod +x configure
+}
+END
+
+mkdir -p "cat/econf-docdir-htmldir" || exit 1
+cat << 'END' > cat/econf-docdir-htmldir/econf-docdir-htmldir-6-r6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cd "${WORKDIR}"
+
+    cat <<'EOF' > configure
+#!/bin/sh
+
+if echo "$@" | grep -q 'help' ; then
+    echo --docdir
+    echo --htmldir
+    exit 0
+fi
+
+if ! echo "$@" | grep -q 'docdir=/usr/share/doc/econf-docdir-htmldir-6-r6' ; then
+    exit 1
+fi
+
+if ! echo "$@" | grep -q 'htmldir=/usr/share/doc/econf-docdir-htmldir-6-r6/html' ; then
+    exit 1
+fi
+
+exit 0
+EOF
+
+    chmod +x configure
+}
+END
+
 cd ..
 cd ..

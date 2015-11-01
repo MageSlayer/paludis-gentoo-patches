@@ -112,6 +112,47 @@ EOF
 }
 END
 
+mkdir -p "cat/econf-no-docdir-htmldir" || exit 1
+cat << 'END' > cat/econf-no-docdir-htmldir/econf-no-docdir-htmldir-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+src_unpack() {
+    mkdir -p ${WORKDIR}
+    cd "${WORKDIR}"
+
+    cat <<'EOF' > configure
+#!/bin/sh
+
+if echo "$@" | grep -q 'help' ; then
+    echo --docdir
+    echo --htmldir
+    exit 0
+fi
+
+if echo "$@" | grep -q 'docdir' ; then
+    exit 1
+fi
+
+if echo "$@" | grep -q 'htmldir' ; then
+    exit 1
+fi
+
+exit 0
+EOF
+
+    chmod +x configure
+}
+END
+
 mkdir -p "cat/strict-use" || exit 1
 cat << 'END' > cat/strict-use/strict-use-5.ebuild || exit 1
 EAPI="5"
