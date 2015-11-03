@@ -31,7 +31,7 @@ default_src_install()
             THANKS BUGS FAQ CREDITS CHANGELOG ; do
             [[ -s "${d}" ]] && dodoc "${d}"
         done
-    elif declare -p DOCS | grep -q ’^declare -a ’ ; then
+    elif declare -p DOCS | grep -q '^declare -a ' ; then
         dodoc "${DOCS[@]}"
     else
         dodoc ${DOCS}
