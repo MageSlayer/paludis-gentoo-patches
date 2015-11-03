@@ -52,14 +52,17 @@ for x in "$@"; do
     if $recurse && [[ -d "${x}" ]] ; then
         (
             export DOCDESTTREE="${DOCDESTTREE}/${x}"
-            cd "${x}"
-            ls * >/dev/null 2>&1 && dodoc -r *
-        )
+            if ! cd "${x}" ; then
+                false
+            elif ls * >/dev/null 2>&1 ; then
+                dodoc -r *
+            fi
+        ) || ret=2
     elif [[ -d "${x}" ]] ; then
         echo "${0}: ${x} is a directory but we are not recursing" >&2
         ret=1
     elif [[ -s "${x}" ]]; then
-        install -m0644 "${x}" "${dir}"
+        install -m0644 "${x}" "${dir}" || ret=2
     elif [[ ! -e "${x}" ]]; then
         echo "${0}: ${x} does not exist" >&2
         ret=2
