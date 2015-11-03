@@ -1284,5 +1284,40 @@ src_install() {
 }
 END
 
+mkdir -p "cat/default_src_install" || exit 1
+cat << 'END' > cat/default_src_install/default_src_install-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo testing.txt >testing.txt || die
+    echo testing.html >testing.html || die
+    cat <<'EOF' >Makefile || die
+all: ; echo monkey
+install: ; echo monkey >$(DESTDIR)/monkey
+EOF
+}
+
+DOCS="testing.txt"
+HTML_DOCS="testing.html"
+
+pkg_preinst() {
+    [[ -f ${D}/monkey ]] || die monkey
+    d=${D}/usr/share/doc/${PF}
+    [[ -d ${d} ]] || die ${d}
+    [[ -f ${d}/testing.txt ]] || die testing.txt
+    [[ -d ${d}/html ]] || die html
+    [[ -f ${d}/html/testing.html ]] || die html/testing.html
+}
+END
+
 cd ..
 cd ..
