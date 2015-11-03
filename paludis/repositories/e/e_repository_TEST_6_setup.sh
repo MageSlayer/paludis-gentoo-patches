@@ -602,5 +602,687 @@ if [[ -n ${MERGE_TYPE} ]] && in_iuse test ; then
 fi
 END
 
+mkdir -p "cat/einstalldocs" || exit 1
+cat << 'END' > cat/einstalldocs/einstalldocs-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo README >README || die
+    echo README0.txt >README0.txt || die
+    touch README1.txt || die
+    echo testing.txt >testing.txt || die
+    echo testing2.txt >testing2.txt || die
+}
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+    docinto testing
+
+    dodoc testing.txt
+    [[ -f ${d}/testing/testing.txt ]] || die testing/testing.txt
+
+    [[ -n $(declare -F einstalldocs) ]] || die not defined
+    einstalldocs || die einstalldocs
+    [[ -d ${d} ]] || die ${d}
+    [[ -f ${d}/README ]] || die README
+    [[ -f ${d}/README0.txt ]] || die README0.txt
+    [[ -f ${d}/README1.txt ]] && die README1.txt
+    [[ -d ${d}/html ]] && die html
+
+    dodoc testing2.txt
+    [[ -f ${d}/testing/testing2.txt ]] || die testing/testing2.txt
+}
+END
+
+mkdir -p "cat/einstalldocs-nothing" || exit 1
+cat << 'END' > cat/einstalldocs-nothing/einstalldocs-nothing-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+
+    einstalldocs || die einstalldocs
+    [[ -d ${d} ]] && die ${d}
+    [[ -d ${d}/html ]] && die html
+}
+END
+
+mkdir -p "cat/einstalldocs-DOCS" || exit 1
+cat << 'END' > cat/einstalldocs-DOCS/einstalldocs-DOCS-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo README >README || die
+    echo testing.txt >testing.txt || die
+    echo testing2.txt >testing2.txt || die
+    touch empty.txt || die
+    mkdir dir || die
+    echo dir/testing3.txt >dir/testing3.txt || die
+}
+
+DOCS="testing*.txt empty.txt dir"
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+
+    einstalldocs || die einstalldocs
+    [[ -d ${d} ]] || die ${d}
+    [[ -f ${d}/README ]] && die README
+    [[ -f ${d}/testing.txt ]] || die testing.txt
+    [[ -f ${d}/testing2.txt ]] || die testing2.txt
+    [[ -f ${d}/empty.txt ]] && die empty.txt
+    [[ -f ${d}/dir/testing3.txt ]] || die dir/testing3.txt
+    [[ -d ${d}/html ]] && die html
+}
+END
+
+mkdir -p "cat/einstalldocs-DOCS-array" || exit 1
+cat << 'END' > cat/einstalldocs-DOCS-array/einstalldocs-DOCS-array-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo README >README || die
+    echo testing.txt >testing.txt || die
+    echo testing2.txt >testing2.txt || die
+    touch empty.txt || die
+    mkdir dir || die
+    echo dir/testing3.txt >dir/testing3.txt || die
+    echo "with some spaces.txt" >"with some spaces.txt" || die
+}
+
+DOCS=( testing.txt empty.txt dir "with some spaces.txt" )
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+
+    einstalldocs || die einstalldocs
+    [[ -d ${d} ]] || die ${d}
+    [[ -f ${d}/README ]] && die README
+    [[ -f ${d}/testing.txt ]] || die testing.txt
+    [[ -f ${d}/testing2.txt ]] && die testing2.txt
+    [[ -f ${d}/empty.txt ]] && die empty.txt
+    [[ -f ${d}/dir/testing3.txt ]] || die dir/testing3.txt
+    [[ -f ${d}/"with some spaces.txt" ]] || die "with some spaces.txt"
+    [[ -d ${d}/html ]] && die html
+}
+END
+
+mkdir -p "cat/einstalldocs-empty-DOCS" || exit 1
+cat << 'END' > cat/einstalldocs-empty-DOCS/einstalldocs-empty-DOCS-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo README >README || die
+    echo testing.txt >testing.txt || die
+}
+
+DOCS=""
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+
+    einstalldocs || die einstalldocs
+    [[ -d ${d} ]] && die ${d}
+    [[ -f ${d}/README ]] && die README
+    [[ -f ${d}/testing.txt ]] && die testing.txt
+    [[ -d ${d}/html ]] && die html
+}
+END
+
+mkdir -p "cat/einstalldocs-empty-DOCS-array" || exit 1
+cat << 'END' > cat/einstalldocs-empty-DOCS-array/einstalldocs-empty-DOCS-array-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo README >README || die
+    echo testing.txt >testing.txt || die
+}
+
+DOCS=( )
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+
+    einstalldocs || die einstalldocs
+    [[ -d ${d} ]] && die ${d}
+    [[ -f ${d}/README ]] && die README
+    [[ -f ${d}/testing.txt ]] && die testing.txt
+    [[ -d ${d}/html ]] && die html
+}
+END
+
+mkdir -p "cat/einstalldocs-HTML_DOCS" || exit 1
+cat << 'END' > cat/einstalldocs-HTML_DOCS/einstalldocs-HTML_DOCS-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo README >README || die
+    echo testing.html >testing.html || die
+    echo testing2.html >testing2.html || die
+    touch empty.html || die
+    mkdir dir || die
+    echo dir/testing3.html >dir/testing3.html || die
+}
+
+HTML_DOCS="testing*.html empty.html dir"
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+
+    einstalldocs || die einstalldocs
+    [[ -d ${d} ]] || die ${d}
+    [[ -f ${d}/README ]] || die README
+    [[ -d ${d}/html ]] || die html
+    [[ -f ${d}/html/testing.html ]] || die html/testing.html
+    [[ -f ${d}/html/testing2.html ]] || die html/testing2.html
+    [[ -f ${d}/html/empty.html ]] && die html/empty.html
+    [[ -f ${d}/html/dir/testing3.html ]] || die html/dir/testing3.html
+}
+END
+
+mkdir -p "cat/einstalldocs-HTML_DOCS-array" || exit 1
+cat << 'END' > cat/einstalldocs-HTML_DOCS-array/einstalldocs-HTML_DOCS-array-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo README >README || die
+    echo testing.html >testing.html || die
+    echo testing2.html >testing2.html || die
+    touch empty.html || die
+    mkdir dir || die
+    echo dir/testing3.html >dir/testing3.html || die
+    echo "with some spaces.html" >"with some spaces.html" || die
+}
+
+HTML_DOCS=( testing.html empty.html dir "with some spaces.html" )
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+
+    einstalldocs || die einstalldocs
+    [[ -d ${d} ]] || die ${d}
+    [[ -f ${d}/README ]] || die README
+    [[ -d ${d}/html ]] || die html
+    [[ -f ${d}/html/testing.html ]] || die testing.html
+    [[ -f ${d}/html/testing2.html ]] && die testing2.html
+    [[ -f ${d}/html/empty.html ]] && die empty.html
+    [[ -f ${d}/html/dir/testing3.html ]] || die dir/testing3.html
+    [[ -f ${d}/html/"with some spaces.html" ]] || die "with some spaces.html"
+}
+END
+
+mkdir -p "cat/einstalldocs-empty-HTML_DOCS" || exit 1
+cat << 'END' > cat/einstalldocs-empty-HTML_DOCS/einstalldocs-empty-HTML_DOCS-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo README >README || die
+    echo testing.html >testing.html || die
+}
+
+HTML_DOCS=""
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+
+    einstalldocs || die einstalldocs
+    [[ -d ${d} ]] || die ${d}
+    [[ -f ${d}/README ]] || die README
+    [[ -d ${d}/html ]] && die html
+    [[ -f ${d}/html/testing.html ]] && die html/testing.html
+}
+END
+
+mkdir -p "cat/einstalldocs-empty-HTML_DOCS-array" || exit 1
+cat << 'END' > cat/einstalldocs-empty-HTML_DOCS-array/einstalldocs-empty-HTML_DOCS-array-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo README >README || die
+    echo testing.html >testing.html || die
+}
+
+HTML_DOCS=( )
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+
+    einstalldocs || die einstalldocs
+    [[ -d ${d} ]] || die ${d}
+    [[ -f ${d}/README ]] || die README
+    [[ -d ${d}/html ]] && die html
+    [[ -f ${d}/html/testing.html ]] && die html/testing.html
+}
+END
+
+mkdir -p "cat/einstalldocs-DOCS-HTML_DOCS" || exit 1
+cat << 'END' > cat/einstalldocs-DOCS-HTML_DOCS/einstalldocs-DOCS-HTML_DOCS-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo README >README || die
+    echo testing.txt >testing.txt || die
+    echo testing.html >testing.html || die
+}
+
+DOCS="testing.txt"
+HTML_DOCS="testing.html"
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+
+    einstalldocs || die einstalldocs
+    [[ -d ${d} ]] || die ${d}
+    [[ -f ${d}/README ]] && die README
+    [[ -f ${d}/testing.txt ]] || die testing.txt
+    [[ -d ${d}/html ]] || die html
+    [[ -f ${d}/html/testing.html ]] || die html/testing.html
+}
+END
+
+mkdir -p "cat/einstalldocs-failure" || exit 1
+cat << 'END' > cat/einstalldocs-failure/einstalldocs-failure-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo README >README || die
+    chmod -r README || die
+}
+
+src_install() {
+    einstalldocs
+}
+END
+
+mkdir -p "cat/einstalldocs-nonfatal" || exit 1
+cat << 'END' > cat/einstalldocs-nonfatal/einstalldocs-nonfatal-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo README0.txt >README0.txt || die
+    echo README1.txt >README1.txt || die
+    chmod -r README1.txt || die
+    echo README2.txt >README2.txt || die
+    echo testing.html >testing.html || die
+}
+
+HTML_DOCS="testing.html"
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+
+    nonfatal einstalldocs && die einstalldocs
+    [[ -d ${d} ]] || die ${d}
+    [[ -f ${d}/README0.txt ]] || die README0.txt
+    [[ -f ${d}/README1.txt ]] && die README1.txt
+    [[ -f ${d}/README2.txt ]] && die README2.txt
+    [[ -d ${d}/html ]] && die html
+    [[ -f ${d}/html/testing.html ]] && die html/testing.html
+}
+END
+
+mkdir -p "cat/einstalldocs-DOCS-failure" || exit 1
+cat << 'END' > cat/einstalldocs-DOCS-failure/einstalldocs-DOCS-failure-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo testing.txt >testing.txt || die
+    chmod -r testing.txt || die
+}
+
+DOCS="testing.txt"
+
+src_install() {
+    einstalldocs
+}
+END
+
+mkdir -p "cat/einstalldocs-DOCS-nonfatal" || exit 1
+cat << 'END' > cat/einstalldocs-DOCS-nonfatal/einstalldocs-DOCS-nonfatal-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo testing.txt >testing.txt || die
+    echo testing2.txt >testing2.txt || die
+    chmod -r testing2.txt || die
+    echo testing3.txt >testing3.txt || die
+    echo testing.html >testing.html || die
+}
+
+DOCS="testing*.txt"
+HTML_DOCS="testing.html"
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+
+    nonfatal einstalldocs && die einstalldocs
+    [[ -d ${d} ]] || die ${d}
+    [[ -f ${d}/testing.txt ]] || die testing.txt
+    [[ -f ${d}/testing2.txt ]] && die testing2.txt
+    [[ -f ${d}/testing3.txt ]] || die testing3.txt
+    [[ -d ${d}/html ]] && die html
+    [[ -f ${d}/html/testing.html ]] && die html/testing.html
+}
+END
+
+mkdir -p "cat/einstalldocs-DOCS-array-failure" || exit 1
+cat << 'END' > cat/einstalldocs-DOCS-array-failure/einstalldocs-DOCS-array-failure-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo testing.txt >testing.txt || die
+    chmod -r testing.txt || die
+}
+
+DOCS=( testing.txt )
+
+src_install() {
+    einstalldocs
+}
+END
+
+mkdir -p "cat/einstalldocs-DOCS-array-nonfatal" || exit 1
+cat << 'END' > cat/einstalldocs-DOCS-array-nonfatal/einstalldocs-DOCS-array-nonfatal-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo testing.txt >testing.txt || die
+    echo testing2.txt >testing2.txt || die
+    chmod -r testing2.txt || die
+    echo testing3.txt >testing3.txt || die
+    echo testing.html >testing.html || die
+}
+
+DOCS=( testing{,2,3}.txt )
+HTML_DOCS="testing.html"
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+
+    nonfatal einstalldocs && die einstalldocs
+    [[ -d ${d} ]] || die ${d}
+    [[ -f ${d}/testing.txt ]] || die testing.txt
+    [[ -f ${d}/testing2.txt ]] && die testing2.txt
+    [[ -f ${d}/testing3.txt ]] || die testing3.txt
+    [[ -d ${d}/html ]] && die html
+    [[ -f ${d}/html/testing.html ]] && die html/testing.html
+}
+END
+
+mkdir -p "cat/einstalldocs-HTML_DOCS-failure" || exit 1
+cat << 'END' > cat/einstalldocs-HTML_DOCS-failure/einstalldocs-HTML_DOCS-failure-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo testing.html >testing.html || die
+    chmod -r testing.html || die
+}
+
+HTML_DOCS="testing.html"
+
+src_install() {
+    einstalldocs
+}
+END
+
+mkdir -p "cat/einstalldocs-HTML_DOCS-nonfatal" || exit 1
+cat << 'END' > cat/einstalldocs-HTML_DOCS-nonfatal/einstalldocs-HTML_DOCS-nonfatal-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo README >README || die
+    echo testing.html >testing.html || die
+    echo testing2.html >testing2.html || die
+    chmod -r testing2.html || die
+    echo testing3.html >testing3.html || die
+}
+
+HTML_DOCS="testing*.html"
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+
+    nonfatal einstalldocs && die einstalldocs
+    [[ -d ${d} ]] || die ${d}
+    [[ -f ${d}/README ]] || die README
+    [[ -d ${d}/html ]] || die html
+    [[ -f ${d}/html/testing.html ]] || die html/testing.html
+    [[ -f ${d}/html/testing2.html ]] && die html/testing2.html
+    [[ -f ${d}/html/testing3.html ]] || die html/testing3.html
+}
+END
+
+mkdir -p "cat/einstalldocs-HTML_DOCS-array-failure" || exit 1
+cat << 'END' > cat/einstalldocs-HTML_DOCS-array-failure/einstalldocs-HTML_DOCS-array-failure-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo testing.html >testing.html || die
+    chmod -r testing.html || die
+}
+
+HTML_DOCS=( testing.html )
+
+src_install() {
+    einstalldocs
+}
+END
+
+mkdir -p "cat/einstalldocs-HTML_DOCS-array-nonfatal" || exit 1
+cat << 'END' > cat/einstalldocs-HTML_DOCS-array-nonfatal/einstalldocs-HTML_DOCS-array-nonfatal-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo README >README || die
+    echo testing.html >testing.html || die
+    echo testing2.html >testing2.html || die
+    chmod -r testing2.html || die
+    echo testing3.html >testing3.html || die
+}
+
+HTML_DOCS=( testing{,2,3}.html )
+
+src_install() {
+    d="${D}"/usr/share/doc/${PF}
+
+    nonfatal einstalldocs && die einstalldocs
+    [[ -d ${d} ]] || die ${d}
+    [[ -f ${d}/README ]] || die README
+    [[ -d ${d}/html ]] || die html
+    [[ -f ${d}/html/testing.html ]] || die testing.html
+    [[ -f ${d}/html/testing2.html ]] && die testing2.html
+    [[ -f ${d}/html/testing3.html ]] || die testing3.html
+}
+END
+
 cd ..
 cd ..

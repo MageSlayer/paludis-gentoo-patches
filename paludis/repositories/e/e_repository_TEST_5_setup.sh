@@ -615,6 +615,24 @@ pkg_setup() {
 }
 END
 
+mkdir -p "cat/no-einstalldocs" || exit 1
+cat << 'END' > cat/no-einstalldocs/no-einstalldocs-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_install() {
+    [[ -z $(declare -F einstalldocs) ]] || die
+}
+END
+
 mkdir -p "cat/subslots" || exit 1
 cat << 'END' > cat/subslots/subslots-5.ebuild || exit 1
 EAPI="5"

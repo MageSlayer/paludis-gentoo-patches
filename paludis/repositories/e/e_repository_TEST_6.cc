@@ -346,5 +346,194 @@ TEST(ERepository, InstallEAPI6)
         EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         EXPECT_THROW(id->perform_action(action), ActionFailedError);
     }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-nothing-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-DOCS-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-DOCS-array-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-empty-DOCS-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-empty-DOCS-array-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-HTML_DOCS-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-HTML_DOCS-array-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-empty-HTML_DOCS-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-empty-HTML_DOCS-array-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-DOCS-HTML_DOCS-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-failure-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-nonfatal-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-DOCS-failure-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-DOCS-nonfatal-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-DOCS-array-failure-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-DOCS-array-nonfatal-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-HTML_DOCS-failure-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-HTML_DOCS-nonfatal-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-HTML_DOCS-array-failure-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/einstalldocs-HTML_DOCS-array-nonfatal-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+    }
 }
 
