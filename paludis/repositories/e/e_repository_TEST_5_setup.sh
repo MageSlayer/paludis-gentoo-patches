@@ -686,6 +686,24 @@ src_prepare() {
 }
 END
 
+mkdir -p "cat/no-eapply_user" || exit 1
+cat << 'END' > cat/no-eapply_user/no-eapply_user-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_prepare() {
+    [[ -z $(declare -F eapply_user) ]] || die
+}
+END
+
 mkdir -p "cat/subslots" || exit 1
 cat << 'END' > cat/subslots/subslots-5.ebuild || exit 1
 EAPI="5"

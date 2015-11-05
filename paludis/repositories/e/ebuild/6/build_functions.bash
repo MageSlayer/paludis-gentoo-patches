@@ -73,6 +73,11 @@ eapply()
 }
 ebuild_need_extglob eapply
 
+eapply_user()
+{
+    return 0
+}
+
 einstall()
 {
     die "einstall is banned in EAPI 6"

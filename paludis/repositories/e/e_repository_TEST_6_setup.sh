@@ -1743,5 +1743,24 @@ cat << 'END' > cat/eapply-dir-nopatches/files/subdir/first.patch~ || exit 1
 +second
 END
 
+mkdir -p "cat/eapply_user" || exit 1
+cat << 'END' > cat/eapply_user/eapply_user-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_prepare() {
+    [[ -n $(declare -F eapply_user) ]] || die not defined
+    eapply_user || die eapply_user
+}
+END
+
 cd ..
 cd ..
