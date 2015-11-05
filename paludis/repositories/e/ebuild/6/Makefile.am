@@ -9,7 +9,8 @@ libexecprog6_SCRIPTS = \
 	list_functions.bash \
 	multilib_functions.bash \
 	output_functions.bash \
-	src_install.bash
+	src_install.bash \
+	src_prepare.bash
 
 TESTS =
 check_SCRIPTS = $(TESTS)

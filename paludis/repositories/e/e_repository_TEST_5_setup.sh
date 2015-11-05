@@ -704,6 +704,37 @@ src_prepare() {
 }
 END
 
+mkdir -p "cat/default_src_prepare/files" || exit 1
+cat << 'END' > cat/default_src_prepare/default_src_prepare-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first > file || die
+}
+
+PATCHES="${FILESDIR}/first.patch"
+
+src_configure() {
+    [[ $(< file) == first ]] || die file
+}
+END
+cat << 'END' > cat/default_src_prepare/files/first.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-first
++second
+END
+
 mkdir -p "cat/subslots" || exit 1
 cat << 'END' > cat/subslots/subslots-5.ebuild || exit 1
 EAPI="5"

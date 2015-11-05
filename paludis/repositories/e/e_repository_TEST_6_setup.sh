@@ -1762,5 +1762,186 @@ src_prepare() {
 }
 END
 
+mkdir -p "cat/default_src_prepare-nothing/files" || exit 1
+cat << 'END' > cat/default_src_prepare-nothing/default_src_prepare-nothing-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first > file || die
+}
+
+src_configure() {
+    [[ $(< file) == first ]] || die file
+}
+END
+cat << 'END' > cat/default_src_prepare-nothing/files/first.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-first
++second
+END
+
+mkdir -p "cat/default_src_prepare-PATCHES/files" || exit 1
+cat << 'END' > cat/default_src_prepare-PATCHES/default_src_prepare-PATCHES-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+PATCHES="-p0 ${FILESDIR}/first.patch ${FILESDIR}/second-*.patch"
+
+src_unpack() {
+    echo first > file || die
+}
+
+src_configure() {
+    [[ $(< file) == fourth ]] || die file
+}
+END
+cat << 'END' > cat/default_src_prepare-PATCHES/files/first.patch || exit 1
+--- file
++++ file
+@@ -1 +1 @@
+-first
++second
+END
+cat << 'END' > cat/default_src_prepare-PATCHES/files/second-1.patch || exit 1
+--- file
++++ file
+@@ -1 +1 @@
+-second
++third
+END
+cat << 'END' > cat/default_src_prepare-PATCHES/files/second-2.patch || exit 1
+--- file
++++ file
+@@ -1 +1 @@
+-third
++fourth
+END
+
+mkdir -p "cat/default_src_prepare-empty-PATCHES/files" || exit 1
+cat << 'END' > cat/default_src_prepare-empty-PATCHES/default_src_prepare-empty-PATCHES-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first > file || die
+}
+
+PATCHES=""
+
+src_configure() {
+    [[ $(< file) == first ]] || die file
+}
+END
+cat << 'END' > cat/default_src_prepare-empty-PATCHES/files/first.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-first
++second
+END
+
+mkdir -p "cat/default_src_prepare-PATCHES-array/files" || exit 1
+cat << 'END' > cat/default_src_prepare-PATCHES-array/default_src_prepare-PATCHES-array-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+PATCHES=( -p0 "${FILESDIR}/first with spaces.patch" "${FILESDIR}"/second-{1,2}.patch )
+
+src_unpack() {
+    echo first > file || die
+}
+
+src_configure() {
+    [[ $(< file) == fourth ]] || die file
+}
+END
+cat << 'END' > cat/default_src_prepare-PATCHES-array/files/"first with spaces".patch || exit 1
+--- file
++++ file
+@@ -1 +1 @@
+-first
++second
+END
+cat << 'END' > cat/default_src_prepare-PATCHES-array/files/second-1.patch || exit 1
+--- file
++++ file
+@@ -1 +1 @@
+-second
++third
+END
+cat << 'END' > cat/default_src_prepare-PATCHES-array/files/second-2.patch || exit 1
+--- file
++++ file
+@@ -1 +1 @@
+-third
++fourth
+END
+
+mkdir -p "cat/default_src_prepare-empty-PATCHES-array/files" || exit 1
+cat << 'END' > cat/default_src_prepare-empty-PATCHES-array/default_src_prepare-empty-PATCHES-array-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first > file || die
+}
+
+PATCHES=( )
+
+src_configure() {
+    [[ $(< file) == first ]] || die file
+}
+END
+cat << 'END' > cat/default_src_prepare-empty-PATCHES-array/files/first.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-first
++second
+END
+
 cd ..
 cd ..
