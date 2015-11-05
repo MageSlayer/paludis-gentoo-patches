@@ -154,6 +154,7 @@ ebuild_load_module()
     echo "Couldn't find module ${1} (looked in ${t})" 1>&2
     exit 125
 }
+ebuild_need_extglob ebuild_load_module
 
 ebuild_load_module pipe_functions
 ebuild_load_module die_functions
