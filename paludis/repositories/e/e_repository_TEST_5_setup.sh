@@ -668,6 +668,24 @@ pkg_preinst() {
 }
 END
 
+mkdir -p "cat/no-eapply" || exit 1
+cat << 'END' > cat/no-eapply/no-eapply-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_prepare() {
+    [[ -z $(declare -F eapply) ]] || die
+}
+END
+
 mkdir -p "cat/subslots" || exit 1
 cat << 'END' > cat/subslots/subslots-5.ebuild || exit 1
 EAPI="5"

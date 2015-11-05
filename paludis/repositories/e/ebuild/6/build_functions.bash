@@ -19,6 +19,60 @@
 
 ebuild_load_module --older build_functions
 
+eapply()
+{
+    local -a options files
+    local p dashdash= badmix=
+    for p in "${@}" ; do
+        if [[ -n ${dashdash} ]] ; then
+            files+=( "${p}" )
+        elif [[ ${p} == -- ]] ; then
+            options+=( "${files[@]}" )
+            files=( )
+            dashdash=yes
+        elif [[ ${p} == -* && ${#files[@]} -eq 0 ]] ; then
+            options+=( "${p}" )
+        else
+            [[ ${p} == -* ]] && badmix=yes
+            files+=( "${p}" )
+        fi
+    done
+
+    [[ -z ${dashdash} && -n ${badmix} ]] && die "options must be specified before patches"
+    [[ ${#files[@]} -eq 0 ]] && die "no patches specified"
+
+    local x st
+    for x in "${files[@]}" ; do
+        if [[ -d ${x} ]] ; then
+            local f any=
+
+            for f in "${x}"/*.@(diff|patch) ; do
+                [[ -e ${f} ]] || continue
+                any=yes
+                patch -p1 -f -g0 --no-backup-if-mismatch "${options[@]}" < "${f}"
+                st=${?}
+                if [[ ${st} -ne 0 ]] ; then
+                    paludis_die_unless_nonfatal "applying patch ${f} failed"
+                    return ${st}
+                fi
+            done
+
+            [[ -z ${any} ]] && die "no patches found in directory ${x}"
+
+        else
+            patch -p1 -f -g0 --no-backup-if-mismatch "${options[@]}" < "${x}"
+            st=${?}
+            if [[ ${st} -ne 0 ]] ; then
+                paludis_die_unless_nonfatal "applying patch ${x} failed"
+                return ${st}
+            fi
+        fi
+    done
+
+    return 0
+}
+ebuild_need_extglob eapply
+
 einstall()
 {
     die "einstall is banned in EAPI 6"

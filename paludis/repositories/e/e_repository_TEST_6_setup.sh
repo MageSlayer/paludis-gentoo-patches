@@ -1319,5 +1319,429 @@ pkg_preinst() {
 }
 END
 
+mkdir -p "cat/eapply/files/subdir" || exit 1
+cat << 'END' > cat/eapply/eapply-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first >file || die
+    echo donkey >file2 || die
+}
+
+src_prepare() {
+    [[ -n $(declare -F eapply) ]] || die not defined
+
+    eapply "${FILESDIR}"/first "${FILESDIR}"/subdir "${FILESDIR}"/"last with spaces" || die eapply
+    [[ $(< file) == seventh ]] || die file
+    [[ $(< file2) == donkey ]] || die file2
+}
+END
+cat << 'END' > cat/eapply/files/first || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-first
++second
+END
+cat << 'END' > cat/eapply/files/subdir/A.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-second
++third
+END
+cat << 'END' > cat/eapply/files/subdir/B.diff || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-third
++fourth
+END
+cat << 'END' > cat/eapply/files/subdir/"C with spaces".patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-fourth
++fifth
+END
+cat << 'END' > cat/eapply/files/subdir/D.patch~ || exit 1
+--- directory/file2
++++ directory/file2
+@@ -1 +1 @@
+-donkey
++monkey
+END
+cat << 'END' > cat/eapply/files/subdir/E.txt || exit 1
+--- directory/file2
++++ directory/file2
+@@ -1 +1 @@
+-donkey
++turkey
+END
+cat << 'END' > cat/eapply/files/subdir/a.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-fifth
++sixth
+END
+cat << 'END' > cat/eapply/files/"last with spaces" || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-sixth
++seventh
+END
+
+mkdir -p "cat/eapply-options/files/subdir" || exit 1
+cat << 'END' > cat/eapply-options/eapply-options-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first >file || die
+}
+
+src_prepare() {
+    eapply -p0 "${FILESDIR}"/first.patch "${FILESDIR}"/second.patch "${FILESDIR}"/subdir/third.patch || die eapply
+    [[ $(< file) == fourth ]] || die file
+}
+END
+cat << 'END' > cat/eapply-options/files/first.patch || exit 1
+--- file
++++ file
+@@ -1 +1 @@
+-first
++second
+END
+cat << 'END' > cat/eapply-options/files/second.patch || exit 1
+--- file
++++ file
+@@ -1 +1 @@
+-second
++third
+END
+cat << 'END' > cat/eapply-options/files/subdir/third.patch || exit 1
+--- file
++++ file
+@@ -1 +1 @@
+-third
++fourth
+END
+
+mkdir -p "cat/eapply-dashdash/files" || exit 1
+cat << 'END' > cat/eapply-dashdash/eapply-dashdash-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first >file || die
+    cp "${FILESDIR}"/-p2 . || die
+}
+
+src_prepare() {
+    eapply -p0 -- -p2 || die eapply
+    [[ $(< file) == second ]] || die file
+}
+END
+cat << 'END' > cat/eapply-dashdash/files/-p2 || exit 1
+--- file
++++ file
+@@ -1 +1 @@
+-first
++second
+END
+
+mkdir -p "cat/eapply-missing/files" || exit 1
+cat << 'END' > cat/eapply-missing/eapply-missing-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first >file || die
+}
+
+src_prepare() {
+    eapply "${FILESDIR}"/first.patch
+}
+END
+cat << 'END' > cat/eapply-missing/files/second.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-second
++third
+END
+
+mkdir -p "cat/eapply-failure/files" || exit 1
+cat << 'END' > cat/eapply-failure/eapply-failure-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first >file || die
+}
+
+src_prepare() {
+    eapply "${FILESDIR}"/fail.patch
+}
+END
+cat << 'END' > cat/eapply-failure/files/fail.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-fourth
++fifth
+END
+
+mkdir -p "cat/eapply-nonfatal/files" || exit 1
+cat << 'END' > cat/eapply-nonfatal/eapply-nonfatal-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first >file || die
+    echo donkey >file2 || die
+}
+
+src_prepare() {
+    nonfatal eapply "${FILESDIR}"/first.patch "${FILESDIR}"/fail.patch "${FILESDIR}"/last.patch && die eapply
+    [[ $(< file) == second ]] || die file
+    [[ $(< file2) == donkey ]] || die file2
+}
+END
+cat << 'END' > cat/eapply-nonfatal/files/first.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-first
++second
+END
+cat << 'END' > cat/eapply-nonfatal/files/fail.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-fourth
++fifth
+END
+cat << 'END' > cat/eapply-nonfatal/files/last.patch || exit 1
+--- directory/file2
++++ directory/file2
+@@ -1 +1 @@
+-donkey
++monkey
+END
+
+mkdir -p "cat/eapply-dir-failure/files/subdir" || exit 1
+cat << 'END' > cat/eapply-dir-failure/eapply-dir-failure-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first >file || die
+}
+
+src_prepare() {
+    eapply "${FILESDIR}"/subdir
+}
+END
+cat << 'END' > cat/eapply-dir-failure/files/subdir/fail.patch || exit 1
+--- file
++++ file
+@@ -1 +1 @@
+-first
++second
+END
+
+mkdir -p "cat/eapply-dir-nonfatal/files/subdir" || exit 1
+cat << 'END' > cat/eapply-dir-nonfatal/eapply-dir-nonfatal-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first >file || die
+    echo donkey >file2 || die
+}
+
+src_prepare() {
+    nonfatal eapply "${FILESDIR}"/subdir && die eapply
+    [[ $(< file) == second ]] || die file
+    [[ $(< file2) == donkey ]] || die file2
+}
+END
+cat << 'END' > cat/eapply-dir-nonfatal/files/subdir/A.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-first
++second
+END
+cat << 'END' > cat/eapply-dir-nonfatal/files/subdir/B.patch || exit 1
+--- file
++++ file
+@@ -1 +1 @@
+-second
++third
+END
+cat << 'END' > cat/eapply-dir-nonfatal/files/subdir/C.patch || exit 1
+--- directory/file2
++++ directory/file2
+@@ -1 +1 @@
+-donkey
++monkey
+END
+
+mkdir -p "cat/eapply-badmix/files/subdir" || exit 1
+cat << 'END' > cat/eapply-badmix/eapply-badmix-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first >file || die
+}
+
+src_prepare() {
+    nonfatal eapply "${FILESDIR}"/first.patch -p0 "${FILESDIR}"/second.patch
+}
+END
+cat << 'END' > cat/eapply-badmix/files/first.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-first
++second
+END
+cat << 'END' > cat/eapply-badmix/files/second.patch || exit 1
+--- file
++++ file
+@@ -1 +1 @@
+-second
++third
+END
+
+mkdir -p "cat/eapply-nopatches" || exit 1
+cat << 'END' > cat/eapply-nopatches/eapply-nopatches-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first >file || die
+}
+
+src_prepare() {
+    nonfatal eapply -p0
+}
+END
+
+mkdir -p "cat/eapply-dir-nopatches/files/subdir" || exit 1
+cat << 'END' > cat/eapply-dir-nopatches/eapply-dir-nopatches-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first >file || die
+}
+
+src_prepare() {
+    nonfatal eapply "${FILESDIR}"/subdir
+}
+END
+cat << 'END' > cat/eapply-dir-nopatches/files/subdir/first.patch~ || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-first
++second
+END
+
 cd ..
 cd ..
