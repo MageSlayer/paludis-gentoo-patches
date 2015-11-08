@@ -735,6 +735,23 @@ cat << 'END' > cat/default_src_prepare/files/first.patch || exit 1
 +second
 END
 
+mkdir -p "cat/bash-compat" || exit 1
+cat << 'END' > cat/bash-compat/bash-compat-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    local compat=$(shopt | sed -n -e '/^compat/s/[ \t]\+on$//p')
+    [[ ${compat} == compat32 ]] || die compat=${compat}
+}
+END
+
 mkdir -p "cat/subslots" || exit 1
 cat << 'END' > cat/subslots/subslots-5.ebuild || exit 1
 EAPI="5"

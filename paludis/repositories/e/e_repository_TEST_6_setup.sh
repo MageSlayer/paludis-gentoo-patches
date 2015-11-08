@@ -1943,5 +1943,22 @@ cat << 'END' > cat/default_src_prepare-empty-PATCHES-array/files/first.patch || 
 +second
 END
 
+mkdir -p "cat/bash-compat" || exit 1
+cat << 'END' > cat/bash-compat/bash-compat-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    local compat=$(shopt | sed -n -e '/^compat/s/[ \t]\+on$//p')
+    [[ ${compat} == compat42 ]] || die compat=${compat}
+}
+END
+
 cd ..
 cd ..
