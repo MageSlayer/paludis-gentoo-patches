@@ -156,14 +156,9 @@ namespace paludis
             bool tilde_greater_compare(const VersionSpec & other) const;
 
             /**
-             * Comparison function for =* depend operator in sensible EAPIs.
+             * Comparison function for =* depend operator.
              */
-            bool nice_equal_star_compare(const VersionSpec & other) const;
-
-            /**
-             * Comparison function for =* depend operator in Gentooish EAPIs.
-             */
-            bool stupid_equal_star_compare(const VersionSpec & other) const;
+            bool equal_star_compare(const VersionSpec & other) const;
 
             /**
              * Compare to another version.

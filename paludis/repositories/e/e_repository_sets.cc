@@ -199,7 +199,7 @@ namespace
             if (! ver.empty() && '*' == ver.at(ver.length() - 1))
             {
                 ver.erase(ver.length() - 1);
-                our_op = pds_options[epdso_nice_equal_star] ? vo_nice_equal_star : vo_stupid_equal_star;
+                our_op = vo_equal_star;
             }
             else
                 our_op = vo_equal;

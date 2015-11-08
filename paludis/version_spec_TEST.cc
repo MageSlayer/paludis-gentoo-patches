@@ -99,80 +99,42 @@ TEST(VersionSpec, TrickyParses)
     ASSERT_TRUE(v3 == VersionSpec("1.2_pre2_pre3_pre4", { }));
 }
 
-TEST(VersionSpec, StupidStar)
-{
-    ASSERT_TRUE(VersionSpec("1.2", { }).stupid_equal_star_compare(VersionSpec("1", { })));
-    ASSERT_TRUE(VersionSpec("1.2", { }).stupid_equal_star_compare(VersionSpec("1.2", { })));
-    ASSERT_TRUE(VersionSpec("1.2.1", { }).stupid_equal_star_compare(VersionSpec("1", { })));
-    ASSERT_TRUE(VersionSpec("1.2.1", { }).stupid_equal_star_compare(VersionSpec("1.2", { })));
-    ASSERT_TRUE(VersionSpec("2.2", { }).stupid_equal_star_compare(VersionSpec("2", { })));
-    ASSERT_TRUE(VersionSpec("2", { }).stupid_equal_star_compare(VersionSpec("2", { })));
-    ASSERT_TRUE(VersionSpec("2.59", { }).stupid_equal_star_compare(VersionSpec("2.5", { })));
-    ASSERT_TRUE(VersionSpec("2.59_alpha5-r1", { }).stupid_equal_star_compare(VersionSpec("2.59_alpha", { })));
-    ASSERT_TRUE(! VersionSpec("2", { }).stupid_equal_star_compare(VersionSpec("2.5", { })));
-    ASSERT_TRUE(! VersionSpec("2.59", { }).stupid_equal_star_compare(VersionSpec("2.50", { })));
-    ASSERT_TRUE(! VersionSpec("1", { }).stupid_equal_star_compare(VersionSpec("2", { })));
-
-    ASSERT_TRUE(! VersionSpec("01", { }).stupid_equal_star_compare(VersionSpec("1", { })));
-    ASSERT_TRUE(! VersionSpec("1.02", { }).stupid_equal_star_compare(VersionSpec("1.020", { })));
-    ASSERT_TRUE(VersionSpec("1.020", { }).stupid_equal_star_compare(VersionSpec("1.02", { })));
-    ASSERT_TRUE(! VersionSpec("1_alpha1", { }).stupid_equal_star_compare(VersionSpec("1_alpha01", { })));
-    ASSERT_TRUE(! VersionSpec("1_alpha01", { }).stupid_equal_star_compare(VersionSpec("1_alpha1", { })));
-    ASSERT_TRUE(VersionSpec("1_alpha01", { }).stupid_equal_star_compare(VersionSpec("1_alpha0", { })));
-    ASSERT_TRUE(VersionSpec("1_pre1", { }).stupid_equal_star_compare(VersionSpec("1_p", { })));
-    ASSERT_TRUE(VersionSpec("1_pre-scm", { }).stupid_equal_star_compare(VersionSpec("1_pre", { })));
-    ASSERT_TRUE(! VersionSpec("1_pre1", { }).stupid_equal_star_compare(VersionSpec("1_pre0", { })));
-    ASSERT_TRUE(! VersionSpec("1_alpha1", { }).stupid_equal_star_compare(VersionSpec("1_alpha-r1", { })));
-    ASSERT_TRUE(! VersionSpec("1_alpha1", { }).stupid_equal_star_compare(VersionSpec("1_beta", { })));
-
-    ASSERT_TRUE(VersionSpec("010", { }).stupid_equal_star_compare(VersionSpec("010", { })));
-    ASSERT_TRUE(VersionSpec("010", { }).stupid_equal_star_compare(VersionSpec("01", { })));
-    ASSERT_TRUE(VersionSpec("2.010", { }).stupid_equal_star_compare(VersionSpec("2.01", { })));
-    ASSERT_TRUE(VersionSpec("2.0105", { }).stupid_equal_star_compare(VersionSpec("2.010", { })));
-    ASSERT_TRUE(! VersionSpec("2.0135", { }).stupid_equal_star_compare(VersionSpec("2.010", { })));
-    ASSERT_TRUE(VersionSpec("2.010.1", { }).stupid_equal_star_compare(VersionSpec("2.01", { })));
-    ASSERT_TRUE(VersionSpec("2.011.1", { }).stupid_equal_star_compare(VersionSpec("2.01", { })));
-    ASSERT_TRUE(! VersionSpec("2.010.1", { }).stupid_equal_star_compare(VersionSpec("2.01.1", { })));
-    ASSERT_TRUE(! VersionSpec("2.011.1", { }).stupid_equal_star_compare(VersionSpec("2.01.1", { })));
-    ASSERT_TRUE(VersionSpec("2.10", { }).stupid_equal_star_compare(VersionSpec("2.1", { })));
-}
-
 TEST(VersionSpec, NiceStar)
 {
-    ASSERT_TRUE(VersionSpec("1.2", { }).nice_equal_star_compare(VersionSpec("1", { })));
-    ASSERT_TRUE(VersionSpec("1.2", { }).nice_equal_star_compare(VersionSpec("1.2", { })));
-    ASSERT_TRUE(VersionSpec("1.2.1", { }).nice_equal_star_compare(VersionSpec("1", { })));
-    ASSERT_TRUE(VersionSpec("1.2.1", { }).nice_equal_star_compare(VersionSpec("1.2", { })));
-    ASSERT_TRUE(VersionSpec("2.2", { }).nice_equal_star_compare(VersionSpec("2", { })));
-    ASSERT_TRUE(VersionSpec("2", { }).nice_equal_star_compare(VersionSpec("2", { })));
-    ASSERT_TRUE(! VersionSpec("2.59", { }).nice_equal_star_compare(VersionSpec("2.5", { })));
-    ASSERT_TRUE(VersionSpec("2.59_alpha5-r1", { }).nice_equal_star_compare(VersionSpec("2.59_alpha", { })));
-    ASSERT_TRUE(! VersionSpec("2", { }).nice_equal_star_compare(VersionSpec("2.5", { })));
-    ASSERT_TRUE(! VersionSpec("2.59", { }).nice_equal_star_compare(VersionSpec("2.50", { })));
-    ASSERT_TRUE(! VersionSpec("1", { }).nice_equal_star_compare(VersionSpec("2", { })));
+    ASSERT_TRUE(VersionSpec("1.2", { }).equal_star_compare(VersionSpec("1", { })));
+    ASSERT_TRUE(VersionSpec("1.2", { }).equal_star_compare(VersionSpec("1.2", { })));
+    ASSERT_TRUE(VersionSpec("1.2.1", { }).equal_star_compare(VersionSpec("1", { })));
+    ASSERT_TRUE(VersionSpec("1.2.1", { }).equal_star_compare(VersionSpec("1.2", { })));
+    ASSERT_TRUE(VersionSpec("2.2", { }).equal_star_compare(VersionSpec("2", { })));
+    ASSERT_TRUE(VersionSpec("2", { }).equal_star_compare(VersionSpec("2", { })));
+    ASSERT_TRUE(! VersionSpec("2.59", { }).equal_star_compare(VersionSpec("2.5", { })));
+    ASSERT_TRUE(VersionSpec("2.59_alpha5-r1", { }).equal_star_compare(VersionSpec("2.59_alpha", { })));
+    ASSERT_TRUE(! VersionSpec("2", { }).equal_star_compare(VersionSpec("2.5", { })));
+    ASSERT_TRUE(! VersionSpec("2.59", { }).equal_star_compare(VersionSpec("2.50", { })));
+    ASSERT_TRUE(! VersionSpec("1", { }).equal_star_compare(VersionSpec("2", { })));
 
-    ASSERT_TRUE(VersionSpec("01", { }).nice_equal_star_compare(VersionSpec("1", { })));
-    ASSERT_TRUE(VersionSpec("1.02", { }).nice_equal_star_compare(VersionSpec("1.020", { })));
-    ASSERT_TRUE(VersionSpec("1.020", { }).nice_equal_star_compare(VersionSpec("1.02", { })));
-    ASSERT_TRUE(VersionSpec("1_alpha1", { }).nice_equal_star_compare(VersionSpec("1_alpha01", { })));
-    ASSERT_TRUE(VersionSpec("1_alpha01", { }).nice_equal_star_compare(VersionSpec("1_alpha1", { })));
-    ASSERT_TRUE(! VersionSpec("1_alpha01", { }).nice_equal_star_compare(VersionSpec("1_alpha0", { })));
-    ASSERT_TRUE(! VersionSpec("1_pre1", { }).nice_equal_star_compare(VersionSpec("1_p", { })));
-    ASSERT_TRUE(VersionSpec("1_pre-scm", { }).nice_equal_star_compare(VersionSpec("1_pre", { })));
-    ASSERT_TRUE(! VersionSpec("1_pre1", { }).nice_equal_star_compare(VersionSpec("1_pre0", { })));
-    ASSERT_TRUE(! VersionSpec("1_alpha1", { }).nice_equal_star_compare(VersionSpec("1_alpha-r1", { })));
-    ASSERT_TRUE(! VersionSpec("1_alpha1", { }).nice_equal_star_compare(VersionSpec("1_beta", { })));
+    ASSERT_TRUE(VersionSpec("01", { }).equal_star_compare(VersionSpec("1", { })));
+    ASSERT_TRUE(VersionSpec("1.02", { }).equal_star_compare(VersionSpec("1.020", { })));
+    ASSERT_TRUE(VersionSpec("1.020", { }).equal_star_compare(VersionSpec("1.02", { })));
+    ASSERT_TRUE(VersionSpec("1_alpha1", { }).equal_star_compare(VersionSpec("1_alpha01", { })));
+    ASSERT_TRUE(VersionSpec("1_alpha01", { }).equal_star_compare(VersionSpec("1_alpha1", { })));
+    ASSERT_TRUE(! VersionSpec("1_alpha01", { }).equal_star_compare(VersionSpec("1_alpha0", { })));
+    ASSERT_TRUE(! VersionSpec("1_pre1", { }).equal_star_compare(VersionSpec("1_p", { })));
+    ASSERT_TRUE(VersionSpec("1_pre-scm", { }).equal_star_compare(VersionSpec("1_pre", { })));
+    ASSERT_TRUE(! VersionSpec("1_pre1", { }).equal_star_compare(VersionSpec("1_pre0", { })));
+    ASSERT_TRUE(! VersionSpec("1_alpha1", { }).equal_star_compare(VersionSpec("1_alpha-r1", { })));
+    ASSERT_TRUE(! VersionSpec("1_alpha1", { }).equal_star_compare(VersionSpec("1_beta", { })));
 
-    ASSERT_TRUE(VersionSpec("010", { }).nice_equal_star_compare(VersionSpec("010", { })));
-    ASSERT_TRUE(! VersionSpec("010", { }).nice_equal_star_compare(VersionSpec("01", { })));
-    ASSERT_TRUE(VersionSpec("2.010", { }).nice_equal_star_compare(VersionSpec("2.01", { })));
-    ASSERT_TRUE(VersionSpec("2.0105", { }).nice_equal_star_compare(VersionSpec("2.010", { })));
-    ASSERT_TRUE(! VersionSpec("2.0135", { }).nice_equal_star_compare(VersionSpec("2.010", { })));
-    ASSERT_TRUE(VersionSpec("2.010.1", { }).nice_equal_star_compare(VersionSpec("2.01", { })));
-    ASSERT_TRUE(VersionSpec("2.011.1", { }).nice_equal_star_compare(VersionSpec("2.01", { })));
-    ASSERT_TRUE(VersionSpec("2.010.1", { }).nice_equal_star_compare(VersionSpec("2.01.1", { })));
-    ASSERT_TRUE(! VersionSpec("2.011.1", { }).stupid_equal_star_compare(VersionSpec("2.01.1", { })));
-    ASSERT_TRUE(! VersionSpec("2.10", { }).nice_equal_star_compare(VersionSpec("2.1", { })));
+    ASSERT_TRUE(VersionSpec("010", { }).equal_star_compare(VersionSpec("010", { })));
+    ASSERT_TRUE(! VersionSpec("010", { }).equal_star_compare(VersionSpec("01", { })));
+    ASSERT_TRUE(VersionSpec("2.010", { }).equal_star_compare(VersionSpec("2.01", { })));
+    ASSERT_TRUE(! VersionSpec("2.0105", { }).equal_star_compare(VersionSpec("2.010", { })));
+    ASSERT_TRUE(! VersionSpec("2.0135", { }).equal_star_compare(VersionSpec("2.010", { })));
+    ASSERT_TRUE(VersionSpec("2.010.1", { }).equal_star_compare(VersionSpec("2.01", { })));
+    ASSERT_TRUE(! VersionSpec("2.011.1", { }).equal_star_compare(VersionSpec("2.01", { })));
+    ASSERT_TRUE(VersionSpec("2.010.1", { }).equal_star_compare(VersionSpec("2.01.1", { })));
+    ASSERT_TRUE(! VersionSpec("2.011.1", { }).equal_star_compare(VersionSpec("2.01.1", { })));
+    ASSERT_TRUE(! VersionSpec("2.10", { }).equal_star_compare(VersionSpec("2.1", { })));
 }
 
 TEST(VersionSpec, Tilde)

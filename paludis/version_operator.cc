@@ -99,8 +99,7 @@ paludis::operator<< (std::ostream & s, const VersionOperator & v)
                 s << "<=";
                 continue;
 
-            case vo_nice_equal_star:
-            case vo_stupid_equal_star:
+            case vo_equal_star:
                 s << "=*";
                 continue;
 
@@ -146,10 +145,8 @@ VersionOperator::as_version_spec_comparator() const
             return &relational_operators::operator> <const VersionSpec>;
         case vo_greater_equal:
             return &relational_operators::operator>= <const VersionSpec>;
-        case vo_nice_equal_star:
-            return &member_to_comparator<&VersionSpec::nice_equal_star_compare>;
-        case vo_stupid_equal_star:
-            return &member_to_comparator<&VersionSpec::stupid_equal_star_compare>;
+        case vo_equal_star:
+            return &member_to_comparator<&VersionSpec::equal_star_compare>;
         case vo_tilde_greater:
             return &member_to_comparator<&VersionSpec::tilde_greater_compare>;
         case last_vo:

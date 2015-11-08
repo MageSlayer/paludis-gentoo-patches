@@ -36,7 +36,7 @@ class TestCase_VersionOperator(unittest.TestCase):
     def test_04_compare(self):
         self.assert_(VersionOperator("<").compare(VersionSpec("1.0"), VersionSpec("2.0")))
         self.assert_(VersionOperator(">").compare(VersionSpec("3.0"), VersionSpec("2.0")))
-        self.assert_(VersionOperator(VersionOperatorValue.STUPID_EQUAL_STAR).compare(VersionSpec("2.0.1-r1"), VersionSpec("2.0")))
+        self.assert_(VersionOperator(VersionOperatorValue.EQUAL_STAR).compare(VersionSpec("2.0.1-r1"), VersionSpec("2.0")))
 
 if __name__ == "__main__":
     unittest.main()

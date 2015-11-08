@@ -206,7 +206,7 @@ namespace
                         {
                             ver.erase(ver.length() - 1);
                             if (vop == vo_equal)
-                                vop = vo_nice_equal_star;
+                                vop = vo_equal_star;
                             else
                                 throw PackageDepSpecError("Invalid use of * with operator '" + stringify(vop) + " inside []");
                         }
@@ -372,7 +372,7 @@ paludis::parse_user_package_dep_spec(const std::string & ss, const Environment *
             n::get_remove_trailing_version() = std::bind(&elike_get_remove_trailing_version, _1,
                     user_version_spec_options()),
             n::get_remove_version_operator() = std::bind(&elike_get_remove_version_operator, _1,
-                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star),
+                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps),
             n::has_version_operator() = std::bind(&elike_has_version_operator, _1,
                     std::cref(had_bracket_version_requirements), ELikePackageDepSpecOptions()),
             n::options_for_partially_made_package_dep_spec() = std::bind(&fixed_options_for_partially_made_package_dep_spec, std::cref(o)),
@@ -400,7 +400,7 @@ paludis::envless_parse_package_dep_spec_for_tests(const std::string & ss)
             n::get_remove_trailing_version() = std::bind(&elike_get_remove_trailing_version, _1,
                     user_version_spec_options()),
             n::get_remove_version_operator() = std::bind(&elike_get_remove_version_operator, _1,
-                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps + epdso_nice_equal_star),
+                    ELikePackageDepSpecOptions() + epdso_allow_tilde_greater_deps),
             n::has_version_operator() = std::bind(&elike_has_version_operator, _1,
                     std::cref(had_bracket_version_requirements), ELikePackageDepSpecOptions()),
             n::options_for_partially_made_package_dep_spec() = std::bind(&fixed_options_for_partially_made_package_dep_spec, std::cref(o)),

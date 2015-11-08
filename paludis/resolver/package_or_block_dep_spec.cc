@@ -104,7 +104,7 @@ PackageOrBlockDepSpec::deserialise(Deserialisation & d, const std::shared_ptr<co
 
     bool block(v.member<bool>("block"));
     PackageDepSpec spec(parse_elike_package_dep_spec(v.member<std::string>("spec"),
-                { epdso_allow_tilde_greater_deps, epdso_nice_equal_star,
+                { epdso_allow_tilde_greater_deps,
                 epdso_allow_ranged_deps, epdso_allow_use_deps, epdso_allow_use_deps_portage,
                 epdso_allow_use_dep_defaults, epdso_allow_repository_deps, epdso_allow_slot_star_deps,
                 epdso_allow_slot_equal_deps, epdso_allow_slot_equal_deps_portage,

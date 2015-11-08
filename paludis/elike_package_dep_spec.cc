@@ -174,7 +174,7 @@ paludis::elike_remove_trailing_square_bracket_if_exists(std::string & s, Partial
                     {
                         ver.erase(ver.length() - 1);
                         if (vop == vo_equal)
-                            vop = options[epdso_nice_equal_star] ? vo_nice_equal_star : vo_stupid_equal_star;
+                            vop = vo_equal_star;
                         else
                             throw PackageDepSpecError("Invalid use of * with operator '" + stringify(vop) + " inside []");
                     }
@@ -463,7 +463,7 @@ paludis::elike_get_remove_version_operator(std::string & s, const ELikePackageDe
     {
         if (op != vo_equal)
             throw PackageDepSpecError("Package dep spec uses * with operator '" + stringify(op) + "'");
-        op = options[epdso_nice_equal_star] ? vo_nice_equal_star : vo_stupid_equal_star;
+        op = vo_equal_star;
         s.erase(s.length() - 1);
     }
 

@@ -479,13 +479,10 @@ namespace
     }
 
     std::pair<bool, bool>
-    nice_equal_star_compare_comparator(const VersionSpecComponent & a, Parts::const_iterator, Parts::const_iterator,
+    equal_star_compare_comparator(const VersionSpecComponent & a, Parts::const_iterator, Parts::const_iterator,
             const VersionSpecComponent & b, Parts::const_iterator b_it, Parts::const_iterator b_it_end, int compared)
     {
         if (b.type() == vsct_empty)
-            return std::make_pair(true, true);
-        else if (a.type() == vsct_floatlike && b.type() == vsct_floatlike && next(b_it) == b_it_end &&
-                 a.number_value().compare(0, b.number_value().length(), b.number_value()) == 0)
             return std::make_pair(true, true);
         else if (a.type() == b.type() && next(b_it) == b_it_end &&
                  (b.type() == vsct_alpha || b.type() == vsct_beta || b.type() == vsct_pre ||
@@ -510,15 +507,9 @@ VersionSpec::tilde_compare(const VersionSpec & other) const
 }
 
 bool
-VersionSpec::nice_equal_star_compare(const VersionSpec & other) const
+VersionSpec::equal_star_compare(const VersionSpec & other) const
 {
-    return componentwise_compare(_imp->parts, other._imp->parts, nice_equal_star_compare_comparator);
-}
-
-bool
-VersionSpec::stupid_equal_star_compare(const VersionSpec & other) const
-{
-    return 0 == _imp->text.compare(0, other._imp->text.length(), other._imp->text);
+    return componentwise_compare(_imp->parts, other._imp->parts, equal_star_compare_comparator);
 }
 
 std::size_t

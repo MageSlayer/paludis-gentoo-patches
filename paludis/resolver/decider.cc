@@ -1189,8 +1189,7 @@ Decider::find_any_score(
 
                 case vo_equal:
                 case vo_tilde:
-                case vo_nice_equal_star:
-                case vo_stupid_equal_star:
+                case vo_equal_star:
                 case vo_tilde_greater:
                     local_score = os_equal;
                     break;

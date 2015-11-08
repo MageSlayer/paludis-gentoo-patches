@@ -11,8 +11,7 @@ make_enum_VersionOperatorValue()
     key vo_tilde            "~ dependency"
     key vo_greater          "> dependency"
     key vo_greater_equal    ">= dependency"
-    key vo_nice_equal_star  "=* dependency (sensible EAPIs)"
-    key vo_stupid_equal_star "=* dependency (Gentooish EAPIs)"
+    key vo_equal_star       "=* dependency"
     key vo_tilde_greater    "~> dependency (gems)"
 
     doxygen_comment << "END"
