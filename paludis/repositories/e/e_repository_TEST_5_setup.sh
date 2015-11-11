@@ -747,8 +747,7 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 
 pkg_setup() {
-    local compat=$(shopt | sed -n -e '/^compat/s/[ \t]\+on$//p')
-    [[ ${compat} == compat32 ]] || die compat=${compat}
+    [[ ${BASH_COMPAT} == 3.2 ]] || die BASH_COMPAT=${BASH_COMPAT}
 }
 END
 

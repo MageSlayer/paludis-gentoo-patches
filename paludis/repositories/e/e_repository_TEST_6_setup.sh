@@ -1955,8 +1955,7 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 
 pkg_setup() {
-    local compat=$(shopt | sed -n -e '/^compat/s/[ \t]\+on$//p')
-    [[ ${compat} == compat42 ]] || die compat=${compat}
+    [[ ${BASH_COMPAT} == 4.2 ]] || die BASH_COMPAT=${BASH_COMPAT}
 }
 END
 

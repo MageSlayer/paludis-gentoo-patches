@@ -284,6 +284,8 @@ EbuildCommand::operator() ()
         .setenv("PALUDIS_PIPE_COMMANDS_SUPPORTED", "yes")
         .setenv("PALUDIS_PIPE_COMMANDS_STATUS_SUPPORTED", "yes")
         .setenv("PALUDIS_PIPE_COMMAND_DELIM", "\2")
+        .setenv("PALUDIS_BASH_COMPAT",
+                params.package_id()->eapi()->supported()->ebuild_options()->bash_compat())
         .setenv("PALUDIS_SHELL_OPTIONS",
                 params.package_id()->eapi()->supported()->ebuild_options()->shell_options())
         .setenv("PALUDIS_SHELL_OPTIONS_GLOBAL",

@@ -167,6 +167,7 @@ namespace
     std::shared_ptr<const EAPIEbuildOptions> make_ebuild_options(const KeyValueConfigFile & k)
     {
         return std::make_shared<EAPIEbuildOptions>(make_named_values<EAPIEbuildOptions>(
+                        n::bash_compat() = check_get(k, "bash_compat"),
                         n::binary_from_env_variables() = check_get(k, "binary_from_env_variables"),
                         n::bracket_merged_variables() = check_get(k, "bracket_merged_variables"),
                         n::bracket_merged_variables_annotatable() = check_get(k, "bracket_merged_variables_annotatable"),
