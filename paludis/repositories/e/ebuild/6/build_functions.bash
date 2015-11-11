@@ -49,6 +49,7 @@ eapply()
             for f in "${x}"/*.@(diff|patch) ; do
                 [[ -e ${f} ]] || continue
                 any=yes
+                echo patch -p1 -f -g0 --no-backup-if-mismatch "${options[@]}" \< "${f}" 1>&2
                 patch -p1 -f -g0 --no-backup-if-mismatch "${options[@]}" < "${f}"
                 st=${?}
                 if [[ ${st} -ne 0 ]] ; then
@@ -60,6 +61,7 @@ eapply()
             [[ -z ${any} ]] && die "no patches found in directory ${x}"
 
         else
+            echo patch -p1 -f -g0 --no-backup-if-mismatch "${options[@]}" \< "${x}" 1>&2
             patch -p1 -f -g0 --no-backup-if-mismatch "${options[@]}" < "${x}"
             st=${?}
             if [[ ${st} -ne 0 ]] ; then
