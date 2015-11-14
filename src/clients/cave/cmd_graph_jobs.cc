@@ -249,9 +249,13 @@ GraphJobsCommand::run(
     }
 
     const auto filename = FSPath(graph_jobs_basename + ".graphviz");
-    SafeOFStream stream_if_file(filename, -1, true);
 
-    graph_jobs(env, cmdline, resolved->job_lists()->execute_job_list(), stream_if_file);
+    // Limit the scope of the SafeOFStream to assure it writes everything to
+    // file on destruction
+    {
+        SafeOFStream stream_if_file(filename, -1, true);
+        graph_jobs(env, cmdline, resolved->job_lists()->execute_job_list(), stream_if_file);
+    }
 
     int retcode(0);
     if (! cmdline.graph_jobs_options.a_graph_jobs_format.argument().empty())
