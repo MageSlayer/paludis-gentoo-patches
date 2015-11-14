@@ -238,18 +238,29 @@ GraphJobsCommand::run(
         close(fd);
     }
 
-    std::shared_ptr<SafeOFStream> stream_if_file;
-    if (! cmdline.graph_jobs_options.a_graph_jobs_basename.argument().empty())
-        stream_if_file = std::make_shared<SafeOFStream>(FSPath(cmdline.graph_jobs_options.a_graph_jobs_basename.argument() + ".graphviz"), -1, true);
+    const std::string graph_jobs_basename =
+            cmdline.graph_jobs_options.a_graph_jobs_basename.argument();
+
+    // If an empty basename was given just print to stdout
+    if (graph_jobs_basename.empty())
+    {
+        graph_jobs(env, cmdline, resolved->job_lists()->execute_job_list(), cout);
+        return 0;
+    }
+
+    const auto filename = FSPath(graph_jobs_basename + ".graphviz");
+    SafeOFStream stream_if_file(filename, -1, true);
+
+    graph_jobs(env, cmdline, resolved->job_lists()->execute_job_list(), stream_if_file);
 
     int retcode(0);
-
-    graph_jobs(env, cmdline, resolved->job_lists()->execute_job_list(), stream_if_file ? *stream_if_file : cout);
-
-    if (stream_if_file && ! cmdline.graph_jobs_options.a_graph_jobs_format.argument().empty())
-        retcode = create_graph(env, cmdline,
-                FSPath(cmdline.graph_jobs_options.a_graph_jobs_basename.argument() + ".graphviz"),
-                FSPath(cmdline.graph_jobs_options.a_graph_jobs_basename.argument() + "." + cmdline.graph_jobs_options.a_graph_jobs_format.argument()));
+    if (! cmdline.graph_jobs_options.a_graph_jobs_format.argument().empty())
+    {
+        const FSPath graph_file(
+                graph_jobs_basename + "." +
+                cmdline.graph_jobs_options.a_graph_jobs_format.argument());
+        retcode = create_graph(env, cmdline, filename, graph_file);
+    }
 
     return retcode;
 }
