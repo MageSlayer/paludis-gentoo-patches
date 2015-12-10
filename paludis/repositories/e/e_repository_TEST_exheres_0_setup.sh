@@ -1205,6 +1205,80 @@ src_install() {
 EOT
 }
 END
+mkdir -p "packages/cat/permitted-directories"
+cat <<'END' > packages/cat/permitted-directories/permitted-directories-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+src_install() {
+    insinto /
+    hereins it <<EOT
+EOT
+}
+END
+cat <<'END' > packages/cat/permitted-directories/permitted-directories-2.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+src_install() {
+    insinto /var
+    hereins it <<EOT
+EOT
+}
+END
+cat <<'END' > packages/cat/permitted-directories/permitted-directories-3.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+src_install() {
+    insinto /var/run
+    hereins it <<EOT
+EOT
+}
+END
+cat <<'END' > packages/cat/permitted-directories/permitted-directories-4.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+pkg_setup() {
+    exdirectory --forbid /foo
+    exdirectory --allow /foo/bar/baz
+}
+
+src_install() {
+    insinto /foo/bar/baz
+    hereins it <<EOT
+EOT
+}
+END
 mkdir -p "packages/cat/exvolatile"
 cat <<'END' > packages/cat/exvolatile/exvolatile-1.ebuild || exit 1
 DESCRIPTION="The Long Description"
