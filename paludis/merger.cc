@@ -160,9 +160,6 @@ Merger::do_dir_recursive(bool is_check, const FSPath & src, const FSPath & dst)
             else
                 on_error(is_check, "Attempted to install empty directory '" + stringify(dst) + "'");
         }
-
-        if (! _imp->params.permit_destination()(dst.strip_leading(_imp->params.root().realpath())))
-            on_error(is_check, "Not allowed to merge '" + stringify(src) + "' to '" + stringify(dst) + "'");
     }
 
     for ( ; d != d_end ; ++d)
@@ -243,13 +240,18 @@ Merger::on_file(bool is_check, const FSPath & src, const FSPath & dst)
     Context context("When handling file '" + stringify(src) + "' to '" + stringify(dst) + "':");
     const auto staged(dst / src.basename());
 
-    if (is_check &&
-        0 != _imp->params.environment()->perform_hook(extend_hook(
+    if (is_check)
+    {
+        if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_file_pre")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(staged))),
             _imp->params.maybe_output_manager()).max_exit_status())
-        make_check_fail();
+            make_check_fail();
+
+        if (! _imp->params.permit_destination()(dst.strip_leading(_imp->params.root().realpath())))
+            on_error(is_check, "Not allowed to merge '" + stringify(src) + "' to '" + stringify(dst) + "'");
+    }
 
     if (! is_check)
     {
@@ -338,13 +340,18 @@ Merger::on_sym(bool is_check, const FSPath & src, const FSPath & dst)
     Context context("When handling sym '" + stringify(src) + "' to '" + stringify(dst) + "':");
     const auto staged(dst / src.basename());
 
-    if (is_check &&
-        0 != _imp->params.environment()->perform_hook(extend_hook(
+    if (is_check)
+    {
+        if (0 != _imp->params.environment()->perform_hook(extend_hook(
                          Hook("merger_check_sym_pre")
                          ("INSTALL_SOURCE", stringify(src))
                          ("INSTALL_DESTINATION", stringify(staged))),
             _imp->params.maybe_output_manager()).max_exit_status())
-        make_check_fail();
+            make_check_fail();
+
+        if (! _imp->params.permit_destination()(dst.strip_leading(_imp->params.root().realpath())))
+            on_error(is_check, "Not allowed to merge '" + stringify(src) + "' to '" + stringify(dst) + "'");
+    }
 
     if (! is_check)
     {

@@ -51,10 +51,6 @@ PermittedDirectories::add(const FSPath & p, bool b)
 bool
 PermittedDirectories::permit(const FSPath & p) const
 {
-    /* otherwise we can't just -/ for "explicit only" */
-    if (p == FSPath("/"))
-        return true;
-
     bool result(true);
 
     for (auto r(_imp->rules.begin()), r_end(_imp->rules.end()) ;
