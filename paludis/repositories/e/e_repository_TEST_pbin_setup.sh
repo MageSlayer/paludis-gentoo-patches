@@ -52,7 +52,7 @@ src_unpack() {
 }
 
 src_install() {
-    insinto /
+    insinto /usr/share
     doins installed-${e}
 }
 END
@@ -122,7 +122,7 @@ src_unpack() {
 }
 
 src_install() {
-    insinto /
+    insinto /usr/share
     doins installed-${e}
 }
 END
@@ -144,10 +144,10 @@ src_unpack() {
 }
 
 src_install() {
-    insinto /
-    dosym symlinks-b symlinks-a
+    insinto /usr/share
+    dosym symlinks-b /usr/share/symlinks-a
     doins symlinks-b
-    dosym /symlinks-b symlinks-c
+    dosym /usr/share/symlinks-b /usr/share/symlinks-c
     find \${IMAGE} | xargs ls -ld
 }
 END

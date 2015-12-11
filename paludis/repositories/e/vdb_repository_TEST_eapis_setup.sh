@@ -179,7 +179,7 @@ WORK="${WORKBASE}"
 DEPENDENCIES=""
 
 src_install() {
-    echo MONKEY > ${IMAGE}/monkey
+    echo MONKEY > ${IMAGE}/usr/share/monkey
 }
 
 pkg_info() {

@@ -166,7 +166,7 @@ TEST_P(ERepositoryInstallEAPIPBinTest, Works)
         id->perform_action(bin_action);
     }
 
-    EXPECT_TRUE(! (root / ("installed-" + base_eapi)).stat().exists());
+    EXPECT_TRUE(! (root / "usr" / "share" / ("installed-" + base_eapi)).stat().exists());
     b_repo->invalidate();
 
     {
@@ -186,7 +186,7 @@ TEST_P(ERepositoryInstallEAPIPBinTest, Works)
         id->perform_action(install_action);
     }
 
-    EXPECT_TRUE((root / ("installed-" + base_eapi)).stat().exists());
+    EXPECT_TRUE((root / "usr" / "share" / ("installed-" + base_eapi)).stat().exists());
 }
 
 INSTANTIATE_TEST_CASE_P(Works, ERepositoryInstallEAPIPBinTest, testing::Values(
@@ -266,9 +266,9 @@ TEST(Symlinks, Works)
         id->perform_action(bin_action);
     }
 
-    EXPECT_TRUE(! (root / ("symlinks-a")).stat().exists());
-    EXPECT_TRUE(! (root / ("symlinks-b")).stat().exists());
-    EXPECT_TRUE(! (root / ("symlinks-c")).stat().exists());
+    EXPECT_TRUE(! (root / "usr" / "share" / "symlinks-a").stat().exists());
+    EXPECT_TRUE(! (root / "usr" / "share" / "symlinks-b").stat().exists());
+    EXPECT_TRUE(! (root / "usr" / "share" / "symlinks-c").stat().exists());
     b_repo->invalidate();
 
     {
@@ -288,12 +288,12 @@ TEST(Symlinks, Works)
         id->perform_action(install_action);
     }
 
-    EXPECT_TRUE((root / ("symlinks-a")).stat().exists());
-    EXPECT_TRUE((root / ("symlinks-b")).stat().exists());
-    EXPECT_TRUE((root / ("symlinks-c")).stat().exists());
+    EXPECT_TRUE((root / "usr" / "share" / "symlinks-a").stat().exists());
+    EXPECT_TRUE((root / "usr" / "share" / "symlinks-b").stat().exists());
+    EXPECT_TRUE((root / "usr" / "share" / "symlinks-c").stat().exists());
 
-    EXPECT_TRUE((root / ("symlinks-a")).stat().is_symlink());
-    EXPECT_TRUE((root / ("symlinks-b")).stat().is_regular_file());
-    EXPECT_TRUE((root / ("symlinks-c")).stat().is_symlink());
+    EXPECT_TRUE((root / "usr" / "share" / "symlinks-a").stat().is_symlink());
+    EXPECT_TRUE((root / "usr" / "share" / "symlinks-b").stat().is_regular_file());
+    EXPECT_TRUE((root / "usr" / "share" / "symlinks-c").stat().is_symlink());
 }
 
