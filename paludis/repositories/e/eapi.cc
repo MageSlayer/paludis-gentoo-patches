@@ -346,6 +346,7 @@ namespace
                 version_spec_options += destringify<VersionSpecOption>(*t);
         }
 
+        bool has_allow_empty_dirs(false);
         MergerOptions merger_options;
         {
             std::list<std::string> merger_options_tokens;
@@ -353,7 +354,10 @@ namespace
             for (std::list<std::string>::const_iterator t(merger_options_tokens.begin()),
                     t_end(merger_options_tokens.end()) ;
                     t != t_end ; ++t)
+            {
+                if (std::string("allow_empty_dirs") == *t) has_allow_empty_dirs = true;
                 merger_options += destringify<MergerOption>(*t);
+            }
         }
 
         FSMergerOptions fs_merger_options;
@@ -364,6 +368,12 @@ namespace
                     t_end(fs_merger_options_tokens.end()) ;
                     t != t_end ; ++t)
                 fs_merger_options += destringify<FSMergerOption>(*t);
+        }
+
+        auto permitted_directories = check_get(k, "permitted_directories");
+        if (has_allow_empty_dirs && std::string("") != permitted_directories)
+        {
+            throw EAPIConfigurationError("Merger code doesn't handle having both allow_empty_dirs and permitted_directories");
         }
 
         return std::make_shared<SupportedEAPI>(make_named_values<SupportedEAPI>(
@@ -384,7 +394,7 @@ namespace
                         n::package_dep_spec_parse_options() = package_dep_spec_parse_options,
                         n::parts_prefix() =
                             std::make_shared<ChoicePrefixName>(check_get(k, "parts_prefix")),
-                        n::permitted_directories() = check_get(k, "permitted_directories"),
+                        n::permitted_directories() = permitted_directories,
                         n::pipe_commands() = make_pipe_commands(k),
                         n::profile_options() = make_profile_options(k),
                         n::tools_options() = make_tool_options(k),
