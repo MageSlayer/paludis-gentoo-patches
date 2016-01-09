@@ -165,30 +165,7 @@ econf()
 
 einstall()
 {
-    if [[ "${!PALUDIS_EBUILD_PHASE_VAR}" != "install" ]] ; then
-        die "einstall called in phase ${!PALUDIS_EBUILD_PHASE_VAR}"
-    fi
-
-    if [[ -f Makefile ]] || [[ -f makefile ]] || [[ -f GNUmakefile ]] ; then
-        local makecmd=""
-        type -p gmake &>/dev/null && makecmd="gmake" || makecmd="make"
-        local cmd="${EINSTALL_WRAPPER} ${makecmd} prefix=${IMAGE}/usr"
-        cmd="${cmd} mandir=${IMAGE}/usr/share/man"
-        cmd="${cmd} infodir=${IMAGE}/usr/share/info"
-        cmd="${cmd} datadir=${IMAGE}/usr/share"
-        cmd="${cmd} sysconfdir=${IMAGE}/etc"
-        cmd="${cmd} localstatedir=${IMAGE}/var/lib"
-        cmd="${cmd} libdir=${IMAGE}/usr/${LIBDIR:-lib}"
-        if [[ ${FILESYSTEM_LAYOUT} == cross ]] ; then
-            cmd="${cmd} bindir=${IMAGE}/usr/$(exhost --target)/bin"
-            cmd="${cmd} sbindir=${IMAGE}/usr/$(exhost --target)/bin"
-        fi
-        cmd="${cmd} ${@} install"
-        echo "${cmd}" 1>&2
-        ${cmd} || paludis_die_unless_nonfatal "einstall failed" || return 247
-    else
-        paludis_die_unless_nonfatal "No Makefile for einstall" || return 247
-    fi
+    die "Function 'einstall' banned in this EAPI"
 }
 
 emagicdocs()

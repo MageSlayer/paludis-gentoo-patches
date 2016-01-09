@@ -445,54 +445,6 @@ src_install() {
     nonfatal keepdir /usr/share/monkey || die
 }
 END
-mkdir -p "packages/cat/einstall-fail"
-cat <<'END' > packages/cat/einstall-fail/einstall-fail-1.ebuild || exit 1
-DESCRIPTION="The Long Description"
-SUMMARY="The Short Description"
-HOMEPAGE="http://example.com/"
-DOWNLOADS=""
-SLOT="0"
-MYOPTIONS="spork"
-LICENCES="GPL-2"
-PLATFORMS="test"
-WORK="${WORKBASE}"
-
-src_install() {
-    einstall
-}
-END
-mkdir -p "packages/cat/nonfatal-einstall"
-cat <<'END' > packages/cat/nonfatal-einstall/nonfatal-einstall-1.ebuild || exit 1
-DESCRIPTION="The Long Description"
-SUMMARY="The Short Description"
-HOMEPAGE="http://example.com/"
-DOWNLOADS=""
-SLOT="0"
-MYOPTIONS="spork"
-LICENCES="GPL-2"
-PLATFORMS="test"
-WORK="${WORKBASE}"
-
-src_install() {
-    nonfatal einstall
-}
-END
-mkdir -p "packages/cat/nonfatal-einstall-die"
-cat <<'END' > packages/cat/nonfatal-einstall-die/nonfatal-einstall-die-1.ebuild || exit 1
-DESCRIPTION="The Long Description"
-SUMMARY="The Short Description"
-HOMEPAGE="http://example.com/"
-DOWNLOADS=""
-SLOT="0"
-MYOPTIONS="spork"
-LICENCES="GPL-2"
-PLATFORMS="test"
-WORK="${WORKBASE}"
-
-src_install() {
-    nonfatal einstall || die
-}
-END
 mkdir -p "packages/cat/dobin-success"
 cat <<'END' > packages/cat/dobin-success/dobin-success-1.ebuild || exit 1
 DESCRIPTION="The Long Description"

@@ -270,30 +270,6 @@ TEST(ERepository, InstallExheres0)
 
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                        PackageDepSpec(parse_user_package_dep_spec("cat/einstall-fail",
-                                &env, { })), nullptr, { }))]->last());
-        ASSERT_TRUE(bool(id));
-        EXPECT_THROW(id->perform_action(action), ActionFailedError);
-    }
-
-    {
-        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-einstall",
-                                &env, { })), nullptr, { }))]->last());
-        ASSERT_TRUE(bool(id));
-        id->perform_action(action);
-    }
-
-    {
-        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                        PackageDepSpec(parse_user_package_dep_spec("cat/nonfatal-einstall-die",
-                                &env, { })), nullptr, { }))]->last());
-        ASSERT_TRUE(bool(id));
-        EXPECT_THROW(id->perform_action(action), ActionFailedError);
-    }
-
-    {
-        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("cat/keepdir-success",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
