@@ -693,24 +693,22 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
         tokenise_whitespace(id->eapi()->supported()->ebuild_options()->ebuild_functions(),
                 std::inserter(ebuild_functions, ebuild_functions.end()));
 
-        for (std::set<std::string>::const_iterator f(ebuild_functions.begin()), f_end(ebuild_functions.end()) ;
-                f != f_end ; ++f)
+        for (auto function : ebuild_functions)
         {
-            if (0 == f->compare(0, 8, "builtin_"))
+            if (0 == function.compare(0, 8, "builtin_"))
                 continue;
 
-            if (raw_values.end() == raw_values.find(*f))
+            if (raw_values.end() == raw_values.find(function))
                 continue;
 
-            std::string p(*f);
-            if (0 == p.compare(0, 4, "src_"))
-                p.erase(0, 4);
-            else if (0 == p.compare(0, 4, "pkg_"))
-                p.erase(0, 4);
+            if (0 == function.compare(0, 4, "src_"))
+                function.erase(0, 4);
+            else if (0 == function.compare(0, 4, "pkg_"))
+                function.erase(0, 4);
             else
-                throw InternalError(PALUDIS_HERE, "Got strange phase function '" + p + "'");
+                throw InternalError(PALUDIS_HERE, "Got strange phase function '" + function + "'");
 
-            defined_phases.insert(p);
+            defined_phases.insert(function);
         }
 
         if (defined_phases.empty())
@@ -802,10 +800,8 @@ EbuildNoFetchCommand::extend_command(Process & process)
         process.setenv(environment_variables->env_use_expand_hidden(),
                 fetch_params.use_expand_hidden());
 
-    for (Map<std::string, std::string>::ConstIterator
-            i(fetch_params.expand_vars()->begin()),
-            j(fetch_params.expand_vars()->end()) ; i != j ; ++i)
-        process.setenv(i->first, i->second);
+    for (const auto & kv : *fetch_params.expand_vars())
+        process.setenv(kv.first, kv.second);
 }
 
 EbuildNoFetchCommand::EbuildNoFetchCommand(const EbuildCommandParams & p,
@@ -871,14 +867,12 @@ EbuildInstallCommand::extend_command(Process & process)
     if (! environment_variables->env_replacing_versions().empty())
     {
         std::string s;
-        for (PackageIDSequence::ConstIterator i(install_params.replacing_ids()->begin()),
-                i_end(install_params.replacing_ids()->end()) ;
-                i != i_end ; ++i)
-            if ((*i)->name() == params.package_id()->name())
+        for (const auto & id : *install_params.replacing_ids())
+            if (id->name() == params.package_id()->name())
             {
                 if (! s.empty())
                     s.append(" ");
-                s.append(stringify((*i)->version()));
+                s.append(stringify(id->version()));
             }
 
         process.setenv(environment_variables->env_replacing_versions(), s);
@@ -904,10 +898,8 @@ EbuildInstallCommand::extend_command(Process & process)
         process.setenv(environment_variables->env_merge_type(), s);
     }
 
-    for (Map<std::string, std::string>::ConstIterator
-            i(install_params.expand_vars()->begin()),
-            j(install_params.expand_vars()->end()) ; i != j ; ++i)
-        process.setenv(i->first, i->second);
+    for (const auto & kv : *install_params.expand_vars())
+        process.setenv(kv.first, kv.second);
 }
 
 EbuildInstallCommand::EbuildInstallCommand(const EbuildCommandParams & p,
@@ -1164,23 +1156,21 @@ EbuildPretendCommand::extend_command(Process & process)
     if (! environment_variables->env_replacing_versions().empty())
     {
         std::string s;
-        for (PackageIDSequence::ConstIterator i(pretend_params.replacing_ids()->begin()),
-                i_end(pretend_params.replacing_ids()->end()) ;
-                i != i_end ; ++i)
-            if ((*i)->name() == params.package_id()->name())
+        for (const auto & id : *pretend_params.replacing_ids())
+        {
+            if (id->name() == params.package_id()->name())
             {
                 if (! s.empty())
                     s.append(" ");
-                s.append(stringify((*i)->version()));
+                s.append(stringify(id->version()));
             }
+        }
 
         process.setenv(environment_variables->env_replacing_versions(), s);
     }
 
-    for (Map<std::string, std::string>::ConstIterator
-            i(pretend_params.expand_vars()->begin()),
-            j(pretend_params.expand_vars()->end()) ; i != j ; ++i)
-        process.setenv(i->first, i->second);
+    for (const auto & kv : *pretend_params.expand_vars())
+        process.setenv(kv.first, kv.second);
 
     process.setuid_setgid(params.environment()->reduced_uid(), params.environment()->reduced_gid());
 }
@@ -1240,10 +1230,8 @@ EbuildInfoCommand::extend_command(Process & process)
     if (! environment_variables->env_use_expand_hidden().empty())
         process.setenv(environment_variables->env_use_expand_hidden(), info_params.use_expand_hidden());
 
-    for (Map<std::string, std::string>::ConstIterator
-            i(info_params.expand_vars()->begin()),
-            j(info_params.expand_vars()->end()) ; i != j ; ++i)
-        process.setenv(i->first, i->second);
+    for (const auto & kv : *info_params.expand_vars())
+        process.setenv(kv.first, kv.second);
 
     process.setuid_setgid(params.environment()->reduced_uid(), params.environment()->reduced_gid());
 
@@ -1384,10 +1372,8 @@ EbuildBadOptionsCommand::extend_command(Process & process)
     if (! environment_variables->env_use_expand_hidden().empty())
         process.setenv(environment_variables->env_use_expand_hidden(), bad_options_params.use_expand_hidden());
 
-    for (Map<std::string, std::string>::ConstIterator
-            i(bad_options_params.expand_vars()->begin()),
-            j(bad_options_params.expand_vars()->end()) ; i != j ; ++i)
-        process.setenv(i->first, i->second);
+    for (const auto & kv : *bad_options_params.expand_vars())
+        process.setenv(kv.first, kv.second);
 
     process.setuid_setgid(params.environment()->reduced_uid(), params.environment()->reduced_gid());
 }
@@ -1439,10 +1425,8 @@ EbuildFetchExtraCommand::extend_command(Process & process)
     if (! environment_variables->env_use_expand_hidden().empty())
         process.setenv(environment_variables->env_use_expand_hidden(), fetch_extra_params.use_expand_hidden());
 
-    for (Map<std::string, std::string>::ConstIterator
-            i(fetch_extra_params.expand_vars()->begin()),
-            j(fetch_extra_params.expand_vars()->end()) ; i != j ; ++i)
-        process.setenv(i->first, i->second);
+    for (const auto & kv : *fetch_extra_params.expand_vars())
+        process.setenv(kv.first, kv.second);
 }
 
 EbuildFetchExtraCommand::EbuildFetchExtraCommand(const EbuildCommandParams & p,
