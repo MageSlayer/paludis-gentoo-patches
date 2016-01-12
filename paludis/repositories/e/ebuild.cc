@@ -296,6 +296,9 @@ EbuildCommand::operator() ()
         .setenv("PALUDIS_PROFILES_DIRS", "")
         .setenv("ROOT", params.root());
 
+    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_merge_type().empty())
+        process.setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_merge_type(), "");
+
     extend_command(process);
 
     if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_kv().empty())
