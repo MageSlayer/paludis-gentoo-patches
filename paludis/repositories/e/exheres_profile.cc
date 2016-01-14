@@ -83,6 +83,7 @@ namespace paludis
 
         const std::shared_ptr<Set<std::string> > use_expand;
         const std::shared_ptr<Set<std::string> > use_expand_hidden;
+        const std::shared_ptr<Set<std::string>> use_expand_no_describe;
         const std::shared_ptr<Set<std::string> > use_expand_unprefixed;
         const std::shared_ptr<Set<std::string> > use_expand_implicit;
         const std::shared_ptr<Set<std::string> > iuse_implicit;
@@ -105,6 +106,7 @@ namespace paludis
                         )),
             use_expand(std::make_shared<Set<std::string>>()),
             use_expand_hidden(std::make_shared<Set<std::string>>()),
+            use_expand_no_describe(std::make_shared<Set<std::string>>()),
             use_expand_unprefixed(std::make_shared<Set<std::string>>()),
             use_expand_implicit(std::make_shared<Set<std::string>>()),
             iuse_implicit(std::make_shared<Set<std::string>>()),
@@ -148,6 +150,12 @@ ExheresProfile::ExheresProfile(
         if (_imp->options_conf.want_choice_enabled_locked(nullptr,
                     ChoicePrefixName("hidden_suboptions"), *f).first.is_true())
             _imp->use_expand_hidden->insert(stringify(*f));
+
+    const std::shared_ptr<const Set<UnprefixedChoiceName>> suboptions_no_describe =
+        _imp->options_conf.known_choice_value_names(nullptr,
+                                                    ChoicePrefixName("suboptions_no_describe"));
+    for (const auto & suboption : *suboptions_no_describe)
+        _imp->use_expand_no_describe->insert(stringify(suboption));
 }
 
 ExheresProfile::~ExheresProfile()
@@ -276,6 +284,12 @@ const std::shared_ptr<const Set<std::string> >
 ExheresProfile::use_expand_hidden() const
 {
     return _imp->use_expand_hidden;
+}
+
+const std::shared_ptr<const Set<std::string>>
+ExheresProfile::use_expand_no_describe() const
+{
+    return _imp->use_expand_no_describe;
 }
 
 const std::shared_ptr<const Set<std::string> >

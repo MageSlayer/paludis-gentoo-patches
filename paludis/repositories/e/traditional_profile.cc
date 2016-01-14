@@ -1050,6 +1050,12 @@ TraditionalProfile::use_expand_hidden() const
     return _imp->use_expand_hidden;
 }
 
+const std::shared_ptr<const Set<std::string>>
+TraditionalProfile::use_expand_no_describe() const
+{
+    return nullptr;
+}
+
 const std::shared_ptr<const Set<std::string> >
 TraditionalProfile::use_expand_unprefixed() const
 {

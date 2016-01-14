@@ -52,6 +52,7 @@ namespace paludis
         typedef Name<struct name_consider_added_or_changed> consider_added_or_changed;
         typedef Name<struct name_contains_every_value> contains_every_value;
         typedef Name<struct name_hidden> hidden;
+        typedef Name<struct name_hide_description> hide_description;
         typedef Name<struct name_human_name> human_name;
         typedef Name<struct name_prefix> prefix;
         typedef Name<struct name_raw_name> raw_name;
@@ -213,6 +214,7 @@ namespace paludis
         NamedValue<n::consider_added_or_changed, bool> consider_added_or_changed;
         NamedValue<n::contains_every_value, bool> contains_every_value;
         NamedValue<n::hidden, bool> hidden;
+        NamedValue<n::hide_description, bool> hide_description;
         NamedValue<n::human_name, std::string> human_name;
         NamedValue<n::prefix, ChoicePrefixName> prefix;
         NamedValue<n::raw_name, std::string> raw_name;
@@ -281,6 +283,12 @@ namespace paludis
              * If true, this option should not usually be shown visually to a user.
              */
             bool hidden() const PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            /**
+             * If true, this option should not have a description be shown
+             * visually to the user.
+             */
+            bool hide_description() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * If true, hint that we're better not displaying our prefix to the user.

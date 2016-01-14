@@ -82,7 +82,8 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::shared_ptr<const Set<std::string> > use_expand_hidden() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
-
+                virtual const std::shared_ptr<const Set<std::string>> use_expand_no_describe() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::shared_ptr<const Set<std::string> > use_expand_unprefixed() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
                 virtual const std::shared_ptr<const Set<std::string> > use_expand_implicit() const

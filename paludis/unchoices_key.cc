@@ -42,6 +42,7 @@ namespace
                                     n::consider_added_or_changed() = false,
                                     n::contains_every_value() = true,
                                     n::hidden() = true,
+                                    n::hide_description() = false,
                                     n::human_name() = "Choices",
                                     n::prefix() = ChoicePrefixName(""),
                                     n::raw_name() = "Choices",

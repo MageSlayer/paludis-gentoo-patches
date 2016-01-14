@@ -85,6 +85,7 @@
 #include <paludis/dep_spec_annotations.hh>
 #include <paludis/slot.hh>
 
+#include <algorithm>
 #include <set>
 #include <iterator>
 #include <iostream>
@@ -582,6 +583,13 @@ namespace
                 if (! show_anyway)
                     continue;
             }
+
+            if ((*k)->hide_description())
+                if (std::none_of((*k)->begin(), (*k)->end(),
+                                 [&old_choices](const std::shared_ptr<const ChoiceValue> & value) {
+                                     return show_choice_value_even_if_hidden(value, old_choices);
+                                 }))
+                    continue;
 
             bool shown_prefix_changed(false), shown_prefix_unchanged(false);
             for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;

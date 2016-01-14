@@ -158,6 +158,7 @@ UnpackagedChoicesKey::parse_value() const
                         n::consider_added_or_changed() = false,
                         n::contains_every_value() = false,
                         n::hidden() = false,
+                        n::hide_description() = false,
                         n::human_name() = canonical_build_options_human_name(),
                         n::prefix() = canonical_build_options_prefix(),
                         n::raw_name() = canonical_build_options_raw_name(),

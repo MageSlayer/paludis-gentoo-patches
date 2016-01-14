@@ -309,6 +309,7 @@ EChoicesKey::populate_myoptions() const
                     n::consider_added_or_changed() = true,
                     n::contains_every_value() = false,
                     n::hidden() = false,
+                    n::hide_description() = false,
                     n::human_name() = eapi->ebuild_environment_variables()->env_use(),
                     n::prefix() = ChoicePrefixName(""),
                     n::raw_name() = eapi->ebuild_environment_variables()->env_use(),
@@ -332,11 +333,17 @@ EChoicesKey::populate_myoptions() const
         {
             Context local_local_context("When using raw_use_expand_key value '" + *u + "' to populate choices:");
 
+            bool hide_description = false;
+            if (const auto & repo = _imp->maybe_e_repository)
+                if (const auto & undescribed = repo->profile()->use_expand_no_describe())
+                    hide_description = undescribed->find(*u) != undescribed->end();
+
             std::string lower_u(tolower(*u));
             std::shared_ptr<Choice> exp(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                             n::consider_added_or_changed() = true,
                             n::contains_every_value() = false,
                             n::hidden() = hidden ? hidden->end() != hidden->find(*u) : false,
+                            n::hide_description() = hide_description,
                             n::human_name() = lower_u,
                             n::prefix() = ChoicePrefixName(lower_u),
                             n::raw_name() = stringify(*u),
@@ -363,6 +370,7 @@ EChoicesKey::populate_myoptions() const
                     n::consider_added_or_changed() = true,
                     n::contains_every_value() = true,
                     n::hidden() = false,
+                    n::hide_description() = false,
                     n::human_name() = parts_prefix->value(),
                     n::prefix() = prefix,
                     n::raw_name() = parts_prefix->value(),
@@ -410,6 +418,7 @@ EChoicesKey::populate_iuse(const std::shared_ptr<const Map<ChoiceNameWithPrefix,
                     n::consider_added_or_changed() = true,
                     n::contains_every_value() = false,
                     n::hidden() = false,
+                    n::hide_description() = false,
                     n::human_name() = _imp->id->eapi()->supported()->ebuild_environment_variables()->env_use(),
                     n::prefix() = ChoicePrefixName(""),
                     n::raw_name() = _imp->id->eapi()->supported()->ebuild_environment_variables()->env_use(),
@@ -533,6 +542,7 @@ EChoicesKey::populate_iuse(const std::shared_ptr<const Map<ChoiceNameWithPrefix,
                         n::consider_added_or_changed() = false,
                         n::contains_every_value() = false,
                         n::hidden() = true,
+                        n::hide_description() = false,
                         n::human_name() = env_arch,
                         n::prefix() = ChoicePrefixName(""),
                         n::raw_name() = env_arch,
@@ -556,6 +566,7 @@ EChoicesKey::populate_iuse(const std::shared_ptr<const Map<ChoiceNameWithPrefix,
                             n::consider_added_or_changed() = true,
                             n::contains_every_value() = ! _imp->id->eapi()->supported()->ebuild_options()->require_use_expand_in_iuse(),
                             n::hidden() = hidden ? hidden->end() != hidden->find(*u) : false,
+                            n::hide_description() = false,
                             n::human_name() = lower_u,
                             n::prefix() = ChoicePrefixName(lower_u),
                             n::raw_name() = stringify(*u),

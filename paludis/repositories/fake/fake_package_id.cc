@@ -496,6 +496,7 @@ FakeMetadataChoicesKey::add(const std::string & n, const std::string & v)
                         n::consider_added_or_changed() = false,
                         n::contains_every_value() = false,
                         n::hidden() = false,
+                        n::hide_description() = false,
                         n::human_name() = n.empty() ? "default" : n,
                         n::prefix() = ChoicePrefixName(n),
                         n::raw_name() = n.empty() ? "default" : n,

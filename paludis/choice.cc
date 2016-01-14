@@ -294,6 +294,12 @@ Choice::hidden() const
 }
 
 bool
+Choice::hide_description() const
+{
+    return _imp->params.hide_description();
+}
+
+bool
 Choice::show_with_no_prefix() const
 {
     return _imp->params.show_with_no_prefix();
