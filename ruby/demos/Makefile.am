@@ -3,9 +3,7 @@ include $(top_srcdir)/misc/common-makefile.am
 SUBDIRS = .
 
 AM_CXXFLAGS = -I$(top_srcdir) -I$(srcdir)/ -I$(top_srcdir)/ruby/ \
-	      @PALUDIS_CXXFLAGS_WITHOUT_PEDANTIC@ \
-	      @PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS@ \
-	      @PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST@
+	      @PALUDIS_CXXFLAGS@
 
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \
