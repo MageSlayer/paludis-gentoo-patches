@@ -340,6 +340,29 @@ pkg_setup() {
     [[ ${FOO[@]} == "1 1 2 2 3 3" ]] || die "FOO[@] != 1 1 2 2 3 3"
 }
 END
+mkdir -p "packages/cat/exarray-default-emptied"
+cat <<'END' > packages/cat/exarray-default-emptied/foo.exlib || exit 1
+myexparam bar=[ 1 2 3 ]
+
+check_foo() {
+    exparam bar[#] | grep -q ^0$ || die "Bad bar[#]"
+    exparam bar[0] | grep -q ^$ || die "Bad bar[0]"
+    exparam bar[*] | grep -q ^$ || die "Bad bar[*]"
+    exparam -v FOO bar[@]
+}
+END
+cat <<'END' > packages/cat/exarray-default-emptied/exarray-default-emptied-1.ebuild || exit 1
+require foo [ bar=[ ] ]
+WORK="${WORKBASE}"
+PLATFORMS="test"
+
+pkg_setup() {
+    check_foo || die "check_foo returned errror"
+    [[ ${#FOO[@]} -eq 0 ]] || die "Wrong number of elements, ${#FOO[@]} in FOO[@]"
+    [[ -z ${FOO[0]} ]] || die "Bad FOO[0]"
+    [[ -z ${FOO[@]} ]] || die "FOO[@] non-empty"
+}
+END
 mkdir -p "packages/cat/exarray-empty"
 cat <<'END' > packages/cat/exarray-empty/foo.exlib || exit 1
 myexparam bar=[ ]

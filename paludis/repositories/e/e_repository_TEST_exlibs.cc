@@ -186,6 +186,7 @@ INSTANTIATE_TEST_CASE_P(Works, ExlibsTest, testing::Values(
             TestInfo{"exarray-spaces", success},
             TestInfo{"exarray-default", success},
             TestInfo{"exarray-default-spaces", success},
+            TestInfo{"exarray-default-emptied", success},
             TestInfo{"exarray-empty", success},
             TestInfo{"noarray", success},
             TestInfo{"noarray-bad", unsupported},

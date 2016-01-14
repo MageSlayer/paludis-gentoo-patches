@@ -116,7 +116,7 @@ myexparam()
     fi
 
     v=$(exparam_var_name ${CURRENT_EXLIB})_${v%\[\]}
-    if [[ -z ${!v+set} && ${1} == *=* ]]; then
+    if ! declare -p ${v} &>/dev/null && [[ ${1} == *=* ]]; then
         if [[ ${1} == *=\[ && ${#} -gt 1 ]]; then
             shift
             local i a=()
