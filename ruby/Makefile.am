@@ -4,8 +4,7 @@ SUBDIRS = . demos
 
 AM_CXXFLAGS = -I$(top_srcdir) -I$(srcdir)/ \
 	      -I$(top_builddir)/ \
-	      @PALUDIS_CXXFLAGS@ \
-	      @PALUDIS_CXXFLAGS_VISIBILITY@
+	      @PALUDIS_CXXFLAGS@
 
 DEFS= \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \

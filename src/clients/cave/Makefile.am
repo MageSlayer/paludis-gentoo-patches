@@ -1,7 +1,7 @@
 include $(top_srcdir)/misc/common-makefile.am
 
 AM_CXXFLAGS = -I$(top_srcdir) -I$(top_srcdir)/src \
-	      @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST@ @PALUDIS_CXXFLAGS_VISIBILITY@
+	      @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST@
 DEFS= \
 	-DBINDIR=\"$(bindir)\" \
 	-DSYSCONFDIR=\"$(sysconfdir)\" \

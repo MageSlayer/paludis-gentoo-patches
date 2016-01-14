@@ -3,7 +3,7 @@ include $(top_srcdir)/misc/common-makefile.am
 SUBDIRS = .
 
 DISTCLEANFILES = args_handler-se.hh args_handler-se.cc
-AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 EXTRA_DIST = args_handler-se.hh args_handler-se.cc args_handler.se
 BUILT_SOURCES = args_handler-se.hh args_handler-se.cc
 

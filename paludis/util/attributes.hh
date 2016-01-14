@@ -31,7 +31,7 @@
  */
 
 /** \def PALUDIS_ATTRIBUTE
- * If we're using a recent GCC or ICC, expands to __attribute__, otherwise
+ * If we're using a GNU compatible compiler, expands to __attribute__, otherwise
  * discards its arguments.
  *
  * \ingroup g_utils
@@ -49,27 +49,18 @@
  * \ingroup g_utils
  */
 
-#if (defined(__GNUC__) && ! defined(DOXYGEN))
-#  if defined(__ICC)
-#    define PALUDIS_ATTRIBUTE(x)
-#  else
-#    if ((__GNUC__ > 3) || (__GNUC__ == 3 && __GNUC_MINOR__ >= 4))
-#      define PALUDIS_ATTRIBUTE(x) __attribute__(x)
-#      define PALUDIS_CAN_USE_ATTRIBUTE 1
-#    else
-#      define PALUDIS_ATTRIBUTE(x)
-#    endif
-#  endif
-#else
+#if defined(DOXYGEN)
 #  define PALUDIS_ATTRIBUTE(x)
+#else
+#  define PALUDIS_ATTRIBUTE(x) __attribute__(x)
 #endif
 
-#if (defined(PALUDIS_ENABLE_VISIBILITY) && ! defined(DOXYGEN))
-#  define PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((visibility("default")))
-#  define PALUDIS_HIDDEN PALUDIS_ATTRIBUTE((visibility("hidden")))
-#else
+#if defined(DOXYGEN)
 #  define PALUDIS_VISIBLE
 #  define PALUDIS_HIDDEN
+#else
+#  define PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((visibility("default")))
+#  define PALUDIS_HIDDEN PALUDIS_ATTRIBUTE((visibility("hidden")))
 #endif
 
 #define PALUDIS_TLS static __thread

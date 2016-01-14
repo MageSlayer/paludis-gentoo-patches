@@ -11,7 +11,7 @@ DISTCLEANFILES = \
 	resolver_functions-se.hh resolver_functions-se.cc \ \
 	use_existing-se.hh use_existing-se.cc
 
-AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_VISIBILITY@
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
 EXTRA_DIST = \
 	any_child_score-se.hh any_child_score-se.cc any_child_score.se \

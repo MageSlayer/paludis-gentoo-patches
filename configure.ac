@@ -314,7 +314,6 @@ PALUDIS_CXXFLAGS_NO_WEXTRA=
 PALUDIS_CXXFLAGS_NO_WWRITE_STRINGS=
 PALUDIS_CXXFLAGS_NO_WMISSING_NORETURN=
 PALUDIS_CXXFLAGS_NO_STRICT_ALIASING=
-PALUDIS_CXXFLAGS_VISIBILITY=
 
 AC_DEFUN([CHECK_CXXFLAG], [
 	save_CXXFLAGS=$CXXFLAGS
@@ -389,6 +388,8 @@ if test x"$cxxflag_success" = x"no" ; then
 	CHECK_CXXFLAG([-std=c++0x])
 fi
 
+CHECK_CXXFLAG([-fvisibility=hidden])
+CHECK_CXXFLAG([-fvisibility-inlines-hidden])
 
 AC_SUBST([PALUDIS_CXXFLAGS])
 AC_SUBST([PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST])
@@ -446,31 +447,6 @@ template class S<int>;
 dnl }}}
 
 CXXFLAGS="$save_CXXFLAGS"
-
-dnl {{{ visibility support
-AC_MSG_CHECKING([whether to enable visibility])
-AC_PREPROC_IFELSE([AC_LANG_SOURCE([
-#if ! defined(__GNUC__) || defined(__clang__)
-#  error no/broken visibility
-#endif
-])],
-	[AC_MSG_RESULT([yes])
-	 AC_MSG_CHECKING([for appropriate compiler visibility flags])
-	 old_PALUDIS_CXXFLAGS=$PALUDIS_CXXFLAGS
-	 PALUDIS_CXXFLAGS=
-	 CHECK_CXXFLAG([-fvisibility-inlines-hidden])
-	 CHECK_CXXFLAG([-fvisibility=hidden])
-	 AC_MSG_RESULT([$PALUDIS_CXXFLAGS])
-	 PALUDIS_CXXFLAGS_VISIBILITY="$PALUDIS_CXXFLAGS -DPALUDIS_ENABLE_VISIBILITY=1"
-	 PALUDIS_CXXFLAGS=$old_PALUDIS_CXXFLAGS
-	 PALUDIS_ENABLE_VISIBILITY=1
-	],
-	[AC_MSG_RESULT([no])
-	 PALUDIS_ENABLE_VISIBILITY=0
-	])
-AC_SUBST([PALUDIS_ENABLE_VISIBILITY])
-AC_SUBST([PALUDIS_CXXFLAGS_VISIBILITY])
-dnl }}}
 
 dnl {{{ disabling strict aliasing for boost bindings
 AC_MSG_CHECKING([how to disable strict aliasing when using dodgy Boost libraries])
