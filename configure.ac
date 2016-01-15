@@ -31,6 +31,7 @@ AM_INIT_AUTOMAKE
 AC_LANG([C++])
 
 PALUDIS_CXXFLAGS=
+PALUDIS_RUBY_CXXFLAGS=
 
 dnl {{{ git revision
 if test -d "${GIT_DIR:-${ac_top_srcdir:-./}/.git}" ; then
@@ -306,13 +307,6 @@ int main(int, char **)
 AC_SUBST([PTHREAD_LIBS])
 AC_SUBST([RT_LIBS])
 
-PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST=
-PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS=
-PALUDIS_CXXFLAGS_NO_WSHADOW=
-PALUDIS_CXXFLAGS_NO_WUNUSED=
-PALUDIS_CXXFLAGS_NO_WEXTRA=
-PALUDIS_CXXFLAGS_NO_WWRITE_STRINGS=
-PALUDIS_CXXFLAGS_NO_WMISSING_NORETURN=
 PALUDIS_CXXFLAGS_NO_STRICT_ALIASING=
 
 AC_DEFUN([CHECK_CXXFLAG], [
@@ -340,42 +334,23 @@ int main(int, char **)
 if test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wall])
 	CHECK_CXXFLAG([-Wextra])
-	if ! test "x$cxxflag_success" = "xyes" ; then
+	if test x"$cxxflag_success" = x"no" ; then
 		CHECK_CXXFLAG([-W])
-	else
-		PALUDIS_CXXFLAGS_NO_WEXTRA=-Wno-extra
 	fi
 	CHECK_CXXFLAG([-Wold-style-cast])
-	if test "x$cxxflag_success" = "xyes" ; then
-		PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST=-Wno-old-style-cast
-	fi
 	CHECK_CXXFLAG([-Wredundant-decls])
-	if test "x$cxxflag_success" = "xyes" ; then
-		PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS=-Wno-redundant-decls
-	fi
 	CHECK_CXXFLAG([-Wstrict-null-sentinel])
 	CHECK_CXXFLAG([-Wmissing-noreturn])
-	if test "x$cxxflag_success" = "xyes" ; then
-		PALUDIS_CXXFLAGS_NO_WMISSING_NORETURN=-Wno-missing-noreturn
-	fi
 	CHECK_CXXFLAG([-Woverloaded-virtual])
 	CHECK_CXXFLAG([-Winit-self])
 	CHECK_CXXFLAG([-Wunreachable-code])
 	CHECK_CXXFLAG([-Wunused])
-	if test "x$cxxflag_success" = "xyes" ; then
-		PALUDIS_CXXFLAGS_NO_WUNUSED=-Wno-unused
-	fi
 	CHECK_CXXFLAG([-Wunused-function])
 	CHECK_CXXFLAG([-Wshadow])
-	if test "x$cxxflag_success" = "xyes" ; then
-		PALUDIS_CXXFLAGS_NO_WSHADOW=-Wno-shadow
-	fi
 	CHECK_CXXFLAG([-Wwrite-strings])
 	CHECK_CXXFLAG([-Wsignature-shadow])
 	CHECK_CXXFLAG([-Wfloat-equal])
-	if test "x$cxxflag_success" = "xyes" ; then
-		PALUDIS_CXXFLAGS_NO_WWRITE_STRINGS=-Wno-write-strings
-	fi
+
 	CHECK_CXXFLAG([-Wno-ignored-qualifiers])
 	CHECK_CXXFLAG([-Wno-non-virtual-dtor])
 else
@@ -392,13 +367,6 @@ CHECK_CXXFLAG([-fvisibility=hidden])
 CHECK_CXXFLAG([-fvisibility-inlines-hidden])
 
 AC_SUBST([PALUDIS_CXXFLAGS])
-AC_SUBST([PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST])
-AC_SUBST([PALUDIS_CXXFLAGS_NO_WSHADOW])
-AC_SUBST([PALUDIS_CXXFLAGS_NO_WREDUNDANT_DECLS])
-AC_SUBST([PALUDIS_CXXFLAGS_NO_WEXTRA])
-AC_SUBST([PALUDIS_CXXFLAGS_NO_WUNUSED])
-AC_SUBST([PALUDIS_CXXFLAGS_NO_WWRITE_STRINGS])
-AC_SUBST([PALUDIS_CXXFLAGS_NO_WMISSING_NORETURN])
 
 save_CXXFLAGS="$CXXFLAGS"
 CXXFLAGS="$CXXFLAGS $PALUDIS_CXXFLAGS"
@@ -724,6 +692,16 @@ if test "x$enable_ruby" = "xyes" ; then
 
 	AC_SUBST([RUBY])
 	AC_SUBST([RUBY_INSTALL_DIR])
+
+	ruby_saved_CXXFLAGS="$CXXFLAGS"
+	ruby_saved_PALUDIS_CXXFLAGS="$PALUDIS_CXXFLAGS"
+	CHECK_CXXFLAG([-Wno-shadow])
+	CHECK_CXXFLAG([-Wno-redundant-decls])
+	CHECK_CXXFLAG([-Wno-old-style-cast])
+	PALUDIS_RUBY_CXXFLAGS="$PALUDIS_CXXFLAGS"
+	AC_SUBST([PALUDIS_RUBY_CXXFLAGS])
+	CXXFLAGS="$ruby_saved_CXXFLAGS"
+	PALUDIS_CXXFLAGS="$ruby_saved_PALUDIS_CXXFLAGS"
 fi
 AM_CONDITIONAL([ENABLE_RUBY], test "x$enable_ruby" = "xyes")
 dnl }}}

@@ -50,7 +50,7 @@ ifelse(`$2', `testscript', `addtestscript(`$1')', `')')dnl
 define(`add', `addthis(`$1',`$2')addthis(`$1',`$3')addthis(`$1',`$4')dnl
 addthis(`$1',`$5')addthis(`$1',`$6')addthis(`$1',`$7')addthis(`$1',`$8')')dnl
 
-AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@ @PALUDIS_CXXFLAGS_NO_WOLD_STYLE_CAST@
+AM_CXXFLAGS = -I$(top_srcdir) @PALUDIS_CXXFLAGS@
 
 include(`paludis/files.m4')
 
@@ -75,7 +75,6 @@ libpaludis_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@V
 libpaludispythonhooks_@PALUDIS_PC_SLOT@_la_SOURCES = python_hooks.cc
 libpaludispythonhooks_@PALUDIS_PC_SLOT@_la_CXXFLAGS = $(AM_CXXFLAGS) \
 	@PALUDIS_CXXFLAGS_NO_STRICT_ALIASING@ \
-	@PALUDIS_CXXFLAGS_NO_WSHADOW@ \
 	-I@PYTHON_INCLUDE_DIR@
 libpaludispythonhooks_@PALUDIS_PC_SLOT@_la_LDFLAGS = -version-info @VERSION_LIB_CURRENT@:@VERSION_LIB_REVISION@:0 @BOOST_PYTHON_LIB@ -lpython@PYTHON_VERSION@
 libpaludispythonhooks_@PALUDIS_PC_SLOT@_la_LIBADD = libpaludis_@PALUDIS_PC_SLOT@.la
