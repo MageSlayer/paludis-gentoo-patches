@@ -213,12 +213,6 @@ namespace
         return rb_str_new2((*ptr)->text().c_str());
     }
 
-    VALUE
-    empty_init(int, VALUE *, VALUE self)
-    {
-        return self;
-    }
-
     void do_register_dep_label()
     {
         /*

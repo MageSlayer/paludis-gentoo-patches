@@ -440,12 +440,6 @@ namespace
     }
 
     VALUE
-    package_dep_spec_init(int, VALUE *, VALUE self)
-    {
-        return self;
-    }
-
-    VALUE
     uri_labels_dep_spec_labels(VALUE self)
     {
         std::shared_ptr<WrappedSpecBase> * ptr;
