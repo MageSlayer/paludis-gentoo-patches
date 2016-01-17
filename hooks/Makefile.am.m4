@@ -306,7 +306,7 @@ uninstall-local :
 	rm -f $(DESTDIR)/$(libexecdir)/paludis/hooks/*/log.bash
 
 Makefile.am : Makefile.am.m4
-	$(top_srcdir)/misc/do_m4.bash Makefile.am
+	$(top_srcdir)/misc/do_m4.bash $(abs_srcdir)/Makefile.am.m4 $(abs_builddir)/Makefile.am
 
 all-local :
 	chmod +x $(builddir)/news.hook $(builddir)/eselect_env_update.bash

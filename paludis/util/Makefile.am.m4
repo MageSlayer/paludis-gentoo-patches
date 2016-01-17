@@ -83,10 +83,10 @@ paludis_util_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/util/
 paludis_util_include_HEADERS = headerlist seheaderlist
 
 Makefile.am : Makefile.am.m4 files.m4
-	$(top_srcdir)/misc/do_m4.bash Makefile.am
+	$(top_srcdir)/misc/do_m4.bash $(abs_srcdir)/Makefile.am.m4 $(abs_builddir)/Makefile.am
 
 util.hh : util.hh.m4 files.m4
-	$(top_srcdir)/misc/do_m4.bash util.hh
+	$(top_srcdir)/misc/do_m4.bash $(abs_srcdir)/Makefile.am.m4 $(abs_builddir)/util.hh
 
 libexecpaludisdir = $(libexecdir)/paludis
 libexecpaludis_SCRIPTS = echo_functions.bash

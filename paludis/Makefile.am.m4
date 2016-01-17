@@ -168,11 +168,11 @@ paludis_includedir = $(includedir)/paludis-$(PALUDIS_PC_SLOT)/paludis/
 paludis_include_HEADERS = headerlist seheaderlist
 
 Makefile.am : Makefile.am.m4 files.m4
-	$(top_srcdir)/misc/do_m4.bash Makefile.am
+	$(top_srcdir)/misc/do_m4.bash $(abs_srcdir)/Makefile.am.m4 $(abs_builddir)/Makefile.am
 
 paludis.hh : paludis.hh.m4 files.m4
-	$(top_srcdir)/misc/do_m4.bash paludis.hh
+	$(top_srcdir)/misc/do_m4.bash $(abs_srcdir)/paludis.hh.m4 $(abs_builddir)/paludis.hh
 
 comparison_policy.hh : comparison_policy.hh.m4
-	$(top_srcdir)/misc/do_m4.bash comparison_policy.hh.m4
+	$(top_srcdir)/misc/do_m4.bash $(abs_srcdir)/comparison_policy.hh.m4 $(abs_builddir)/comparison_policy.hh
 

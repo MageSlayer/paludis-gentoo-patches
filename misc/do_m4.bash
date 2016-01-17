@@ -16,8 +16,8 @@ get_m4() {
     kill $KILL_PID
 }
 
-echo ">>> $(get_m4 ) -I. -I.. -I../.. -E ${1}.m4 > ${1}"
-if ! $(get_m4 ) -I. -I.. -I../.. -E ${1}.m4 > ${1} ; then
+echo ">>> $(get_m4) -I. -I.. -I../.. -E ${1} > ${2}"
+if ! $(get_m4) -I. -I.. -I../.. -E ${1} > ${2} ; then
     echo "oops!" 1>&2
     exit 127
 fi
