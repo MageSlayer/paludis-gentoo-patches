@@ -16,8 +16,12 @@ get_m4() {
     kill $KILL_PID
 }
 
-echo ">>> $(get_m4) -I. -I.. -I../.. -E ${1} > ${2}"
-if ! $(get_m4) -I. -I.. -I../.. -E ${1} > ${2} ; then
+get_abs_top_srcdir() {
+    echo "$(dirname $(dirname "${0}"))"
+}
+
+echo ">>> $(get_m4) -I $(get_abs_top_srcdir) -E ${1} > ${2}"
+if ! $(get_m4) -I $(get_abs_top_srcdir) -E ${1} > ${2} ; then
     echo "oops!" 1>&2
     exit 127
 fi
