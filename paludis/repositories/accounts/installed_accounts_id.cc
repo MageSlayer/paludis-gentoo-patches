@@ -22,6 +22,7 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/config_file.hh>
 #include <paludis/util/options.hh>
+#include <paludis/util/persona.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/hashes.hh>
 #include <paludis/util/visitor_cast.hh>
@@ -117,44 +118,29 @@ InstalledAccountsID::need_keys_added() const
 
         /* depend upon our primary group */
         {
-            int pwd_buf_sz(sysconf(_SC_GETPW_R_SIZE_MAX));
-            if (-1 == pwd_buf_sz || pwd_buf_sz > 1024 * 128)
-            {
-                Log::get_instance()->message("accounts.getpw_r_size_max", ll_warning, lc_context) <<
-                    "Got dodgy value " << pwd_buf_sz << " from sysconf(_SC_GETPW_R_SIZE_MAX)";
-                pwd_buf_sz = 1024 * 128;
-            }
-            std::vector<char> pwd_buf(pwd_buf_sz);
-
             struct passwd pwd;
-            struct passwd * pwd_result;
+            struct passwd *result;
+            std::vector<char> buffer;
 
-            if (0 == getpwnam_r(stringify(name().package()).c_str(), &pwd, &pwd_buf[0], pwd_buf_sz, &pwd_result))
+            if (0 == getpwnam_r_s(stringify(name().package()).c_str(), buffer, pwd, result) || result == nullptr)
             {
-                int grp_buf_sz(sysconf(_SC_GETGR_R_SIZE_MAX));
-                if (-1 == grp_buf_sz || grp_buf_sz > 1024 * 128)
-                {
-                    Log::get_instance()->message("accounts.getgr_r_size_max", ll_warning, lc_context) <<
-                        "Got dodgy value " << grp_buf_sz << " from sysconf(_SC_GETPW_R_SIZE_MAX)";
-                    grp_buf_sz = 1024 * 128;
-                }
-                std::vector<char> grp_buf(grp_buf_sz);
-
                 struct group grp;
-                struct group * grp_result;
-                if (0 == getgrgid_r(pwd.pw_gid, &grp, &grp_buf[0], grp_buf_sz, &grp_result) && nullptr != grp_result)
+                struct group *result;
+                std::vector<char> buffer;
+
+                if (0 == getgrgid_r_s(pwd.pw_gid, buffer, grp, result) && nullptr != result)
                 {
-                    /* really we should only do this if the group in question is managed by accounts. users
+                    /* really we should only do this if the group in question is managed by accounts. Users
                      * might have accounts installed by hand with a group that's unmanaged. */
                     groups->insert(stringify(grp.gr_name));
                 }
                 else
-                    Log::get_instance()->message("accounts.getgrgid_r", ll_warning, lc_context) <<
-                        "getgrgid_r failed for " << name();
+                    Log::get_instance()->message("accounts.getgrgid_r", ll_warning, lc_context)
+                        << "getgrgid_r failed for " << name();
             }
             else
-                Log::get_instance()->message("accounts.getpwnam_r", ll_warning, lc_context) <<
-                    "getpwnam_r failed for " << name();
+                Log::get_instance()->message("accounts.getpwnam_r", ll_warning, lc_context)
+                    << "getpwnam_r failed for " << name();
         }
 
         /* ...and our secondary groups */

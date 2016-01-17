@@ -17,6 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <paludis/util/persona.hh>
 #include <paludis/util/process.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/pipe.hh>
@@ -806,17 +807,14 @@ Process::run()
                 if (0 != ::setgid(_imp->setgid))
                     throw ProcessError("setgid() failed");
 
-                int buflen(::sysconf(_SC_GETPW_R_SIZE_MAX));
-                if (-1 == buflen)
-                    buflen = 1 << 16;
+                struct passwd pwd;
+                struct passwd *result;
+                std::vector<char> buffer;
 
-                std::unique_ptr<char []> buf(new char[buflen]);
-                struct passwd pw;
-                struct passwd * pw_result(nullptr);
-                if (0 != getpwuid_r(_imp->setuid, &pw, buf.get(), buflen, &pw_result) || nullptr == pw_result)
+                if (0 != getpwuid_r_s(_imp->setuid, buffer, pwd, result) || result == nullptr)
                     throw ProcessError("getpwuid_r() failed");
 
-                if (0 != ::initgroups(pw_result->pw_name, getgid()))
+                if (0 != ::initgroups(pwd.pw_name, getgid()))
                     throw ProcessError("initgroups() failed");
 
                 if (0 != ::setuid(_imp->setuid))
