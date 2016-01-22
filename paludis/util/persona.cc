@@ -75,10 +75,10 @@ namespace paludis
         length =
             initial_buffer_size<_SC_GETPW_R_SIZE_MAX>("accounts.getpw_r_size");
 
-        for (buffer.reserve(length);
+        for (buffer.resize(length);
              (rv = ::getpwnam_r(name, &pwd, buffer.data(), buffer.capacity(),
                                 &result)) == ERANGE;
-             buffer.reserve(length))
+             buffer.resize(length))
           length = length * 2;
 
         return rv;
@@ -95,10 +95,10 @@ namespace paludis
         length =
             initial_buffer_size<_SC_GETGR_R_SIZE_MAX>("accounts.getgr_r_size");
 
-        for (buffer.reserve(length);
+        for (buffer.resize(length);
              (rv = ::getgrgid_r(gid, &grp, buffer.data(), buffer.capacity(),
                                 &result)) == ERANGE;
-             buffer.reserve(length))
+             buffer.resize(length))
           length = length * 2;
 
         return rv;
@@ -115,10 +115,10 @@ namespace paludis
         length =
             initial_buffer_size<_SC_GETPW_R_SIZE_MAX>("accounts.getpw_r_size");
 
-        for (buffer.reserve(length);
+        for (buffer.resize(length);
              (rv = ::getpwuid_r(uid, &pwd, buffer.data(), buffer.capacity(),
                                 &result)) == ERANGE;
-             buffer.reserve(length))
+             buffer.resize(length))
           length = length * 2;
 
         return rv;
