@@ -345,7 +345,6 @@ if test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	CHECK_CXXFLAG([-Winit-self])
 	CHECK_CXXFLAG([-Wunreachable-code])
 	CHECK_CXXFLAG([-Wunused])
-	CHECK_CXXFLAG([-Wunused-function])
 	CHECK_CXXFLAG([-Wshadow])
 	CHECK_CXXFLAG([-Wwrite-strings])
 	CHECK_CXXFLAG([-Wsignature-shadow])
