@@ -271,9 +271,7 @@ namespace paludis
 
             virtual void forward_visit(typename TypeList_::Item & n)
             {
-                /* avoid gcc being too clever about noreturn */
-                if (this)
-                    static_cast<RealClass_ *>(this)->perform_visit(n);
+                static_cast<RealClass_ *>(this)->perform_visit(n);
             }
     };
 
