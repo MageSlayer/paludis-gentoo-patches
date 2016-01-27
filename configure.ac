@@ -334,9 +334,6 @@ int main(int, char **)
 if test "x${ac_cv_cxx_compiler_gnu}" = "xyes" ; then
 	CHECK_CXXFLAG([-Wall])
 	CHECK_CXXFLAG([-Wextra])
-	if test x"$cxxflag_success" = x"no" ; then
-		CHECK_CXXFLAG([-W])
-	fi
 	CHECK_CXXFLAG([-Wold-style-cast])
 	CHECK_CXXFLAG([-Wredundant-decls])
 	CHECK_CXXFLAG([-Wstrict-null-sentinel])
