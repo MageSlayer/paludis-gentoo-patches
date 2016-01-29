@@ -63,6 +63,4 @@
 #  define PALUDIS_HIDDEN PALUDIS_ATTRIBUTE((visibility("hidden")))
 #endif
 
-#define PALUDIS_TLS static __thread
-
 #endif

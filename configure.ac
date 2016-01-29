@@ -235,17 +235,6 @@ fi
 
 PTHREAD_LIBS=""
 RT_LIBS=""
-AC_MSG_CHECKING([for compiler __thread support])
-AC_COMPILE_IFELSE([AC_LANG_SOURCE([
-int main(int, char **)
-{
-	static __thread int x(0);
-	return x;
-}
-])],
-[AC_MSG_RESULT([yes])],
-[AC_MSG_RESULT([no])
-AC_MSG_ERROR([Your compiler does not support __thread])])
 
 AC_MSG_CHECKING([whether -pthread -lpthread gets us posix threads])
 save_CXXFLAGS=$CXXFLAGS

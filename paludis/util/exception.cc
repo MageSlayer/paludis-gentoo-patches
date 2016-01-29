@@ -35,35 +35,28 @@ using namespace paludis;
 
 namespace
 {
-    PALUDIS_TLS std::list<std::string> * context = 0;
+    static thread_local std::list<std::string> context;
 }
 
 Context::Context(const std::string & s)
 {
-    if (! context)
-        context = new std::list<std::string>;
-    context->push_back(s);
+    context.push_back(s);
 }
 
 Context::~Context() noexcept(false)
 {
-    if (! context)
+    if (context.empty())
         throw InternalError(PALUDIS_HERE, "no context");
-    context->pop_back();
-    if (context->empty())
-    {
-        delete context;
-        context = 0;
-    }
+    context.pop_back();
 }
 
 std::string
 Context::backtrace(const std::string & delim)
 {
-    if (! context)
+    if (context.empty())
         return "";
 
-    return join(context->begin(), context->end(), delim) + delim;
+    return join(context.begin(), context.end(), delim) + delim;
 }
 
 namespace paludis
@@ -74,8 +67,7 @@ namespace paludis
 
         ContextData()
         {
-            if (context)
-                local_context.assign(context->begin(), context->end());
+            local_context.assign(context.begin(), context.end());
         }
 
         ContextData(const ContextData & other) :
