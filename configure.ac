@@ -355,9 +355,6 @@ fi
 AC_MSG_RESULT([${cxxflags_message}])
 
 CHECK_CXXFLAG([-std=c++11])
-if test x"$cxxflag_success" = x"no" ; then
-	CHECK_CXXFLAG([-std=c++0x])
-fi
 
 CHECK_CXXFLAG([-fvisibility=hidden])
 CHECK_CXXFLAG([-fvisibility-inlines-hidden])
