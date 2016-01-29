@@ -129,31 +129,29 @@ Decider::_resolve_decide_with_dependencies()
             break;
 
         changed = false;
-        for (ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->begin()),
-                i_end(_imp->resolutions_by_resolvent->end()) ;
-                i != i_end ; ++i)
+        for (const auto & resolution : *_imp->resolutions_by_resolvent)
         {
             /* we've already decided */
-            if ((*i)->decision())
+            if (resolution->decision())
                 continue;
 
             /* we're only being suggested. don't do this on the first pass, so
              * we don't have to do restarts for suggestions later becoming hard
              * deps. */
-            if (state < deciding_suggestions && (*i)->constraints()->all_untaken())
+            if (state < deciding_suggestions && resolution->constraints()->all_untaken())
                 continue;
 
             /* avoid deciding nothings until after we've decided things we've
              * taken, so adding extra destinations doesn't get messy. */
-            if (state < deciding_nothings && (*i)->constraints()->nothing_is_fine_too())
+            if (state < deciding_nothings && resolution->constraints()->nothing_is_fine_too())
                 continue;
 
             _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
             changed = true;
-            _decide(*i);
+            _decide(resolution);
 
-            _add_dependencies_if_necessary(*i);
+            _add_dependencies_if_necessary(resolution);
         }
     }
 }
@@ -165,28 +163,23 @@ Decider::_resolve_vias()
 
     bool changed(false);
 
-    for (ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->begin()),
-            i_end(_imp->resolutions_by_resolvent->end()) ;
-            i != i_end ; ++i)
+    for (const auto & resolution : *_imp->resolutions_by_resolvent)
     {
-        if ((*i)->resolvent().destination_type() == dt_create_binary)
+        if (resolution->resolvent().destination_type() == dt_create_binary)
             continue;
 
-        if (! _imp->fns.always_via_binary_fn()(*i))
+        if (! _imp->fns.always_via_binary_fn()(resolution))
             continue;
 
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        Resolvent binary_resolvent((*i)->resolvent());
+        Resolvent binary_resolvent(resolution->resolvent());
         binary_resolvent.destination_type() = dt_create_binary;
 
-        const std::shared_ptr<Resolution> binary_resolution(_resolution_for_resolvent(binary_resolvent, true));
-
         bool already(false);
-        for (Constraints::ConstIterator c(binary_resolution->constraints()->begin()),
-                c_end(binary_resolution->constraints()->end()) ;
-                c != c_end ; ++c)
-            if (visitor_cast<const ViaBinaryReason>(*(*c)->reason()))
+        const std::shared_ptr<Resolution> binary_resolution(_resolution_for_resolvent(binary_resolvent, true));
+        for (const auto & constraint : *binary_resolution->constraints())
+            if (visitor_cast<const ViaBinaryReason>(*constraint->reason()))
             {
                 already = true;
                 break;
@@ -197,11 +190,9 @@ Decider::_resolve_vias()
 
         changed = true;
 
-        const std::shared_ptr<const ConstraintSequence> constraints(_imp->fns.get_constraints_for_via_binary_fn()(binary_resolution, *i));
-
-        for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
-                c != c_end ; ++c)
-            _apply_resolution_constraint(binary_resolution, *c);
+        const std::shared_ptr<const ConstraintSequence> constraints(_imp->fns.get_constraints_for_via_binary_fn()(binary_resolution, resolution));
+        for (const auto & constraint : *constraints)
+            _apply_resolution_constraint(binary_resolution, constraint);
 
         _decide(binary_resolution);
     }
@@ -224,20 +215,19 @@ Decider::_resolve_dependents()
 
     const std::shared_ptr<const PackageIDSequence> staying(_collect_staying(changing.first));
 
-    for (PackageIDSequence::ConstIterator s(staying->begin()), s_end(staying->end()) ;
-            s != s_end ; ++s)
+    for (const auto & package : *staying)
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        if (! (*s)->supports_action(SupportsActionTest<UninstallAction>()))
+        if (! package->supports_action(SupportsActionTest<UninstallAction>()))
             continue;
 
-        auto dependent_upon_ids(dependent_upon(_imp->env, *s, changing.first, changing.second, staying));
+        auto dependent_upon_ids(dependent_upon(_imp->env, package, changing.first, changing.second, staying));
         if (dependent_upon_ids->empty())
             continue;
 
-        Resolvent resolvent(*s, dt_install_to_slash);
-        bool remove(_imp->fns.remove_if_dependent_fn()(*s));
+        Resolvent resolvent(package, dt_install_to_slash);
+        bool remove(_imp->fns.remove_if_dependent_fn()(package));
 
         /* we've changed things if we've not already done anything for this
          * resolvent, but only if we're going to remove it rather than mark it
@@ -246,17 +236,16 @@ Decider::_resolve_dependents()
             changed = true;
 
         auto resolution(_resolution_for_resolvent(resolvent, true));
-        auto constraints(_imp->fns.get_constraints_for_dependent_fn()(resolution, *s, dependent_upon_ids));
-        for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
-                c != c_end ; ++c)
-            _apply_resolution_constraint(resolution, *c);
+        auto constraints(_imp->fns.get_constraints_for_dependent_fn()(resolution, package, dependent_upon_ids));
+        for (const auto & constraint : *constraints)
+            _apply_resolution_constraint(resolution, constraint);
 
         if ((! remove) && (! resolution->decision()))
         {
             if (! _try_to_find_decision_for(resolution, false, false, false, false, false))
                 resolution->decision() = std::make_shared<BreakDecision>(
                         resolvent,
-                        *s,
+                        package,
                         true);
             else
             {
@@ -302,20 +291,18 @@ namespace
 
         void visit(const RemoveDecision & d)
         {
-            for (PackageIDSequence::ConstIterator i(d.ids()->begin()), i_end(d.ids()->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & package : *d.ids())
                 going_away->push_back(make_named_values<ChangeByResolvent>(
-                            n::package_id() = *i,
+                            n::package_id() = package,
                             n::resolvent() = current_resolution->resolvent()
                             ));
         }
 
         void visit(const ChangesToMakeDecision & d)
         {
-            for (PackageIDSequence::ConstIterator i(d.destination()->replacing()->begin()), i_end(d.destination()->replacing()->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & package : *d.destination()->replacing())
                 going_away->push_back(make_named_values<ChangeByResolvent>(
-                            n::package_id() = *i,
+                            n::package_id() = package,
                             n::resolvent() = current_resolution->resolvent()
                             ));
 
@@ -342,13 +329,11 @@ Decider::_collect_changing() const
 {
     ChangingCollector c;
 
-    for (ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->begin()),
-            i_end(_imp->resolutions_by_resolvent->end()) ;
-            i != i_end ; ++i)
-        if ((*i)->decision() && (*i)->decision()->taken())
+    for (const auto & resolution : *_imp->resolutions_by_resolvent)
+        if (resolution->decision() && resolution->decision()->taken())
         {
-            c.current_resolution = *i;
-            (*i)->decision()->accept(c);
+            c.current_resolution = resolution;
+            resolution->decision()->accept(c);
         }
 
     return std::make_pair(c.going_away, c.newly_available);
@@ -381,10 +366,9 @@ Decider::_collect_staying(const std::shared_ptr<const ChangeByResolventSequence>
                 generator::All() | filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))]);
 
     const std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
-    for (PackageIDSequence::ConstIterator x(existing->begin()), x_end(existing->end()) ;
-            x != x_end ; ++x)
-        if (going_away->end() == std::find_if(going_away->begin(), going_away->end(), ChangeByResolventPackageIDIs(*x)))
-            result->push_back(*x);
+    for (const auto & package : *existing)
+        if (going_away->end() == std::find_if(going_away->begin(), going_away->end(), ChangeByResolventPackageIDIs(package)))
+            result->push_back(package);
 
     return result;
 }
@@ -394,10 +378,8 @@ Decider::_resolve_confirmations()
 {
     Context context("When resolving confirmations:");
 
-    for (ResolutionsByResolvent::ConstIterator i(_imp->resolutions_by_resolvent->begin()),
-            i_end(_imp->resolutions_by_resolvent->end()) ;
-            i != i_end ; ++i)
-        _confirm(*i);
+    for (const auto & resolution : *_imp->resolutions_by_resolvent)
+        _confirm(resolution);
 }
 
 void
@@ -443,9 +425,8 @@ Decider::_make_change_type_for(
             return ct_new;
         else
         {
-            for (auto o(others->begin()), o_end(others->end()) ;
-                    o != o_end ; ++o)
-                if (same_slot(*o, decision.origin_id()))
+            for (const auto & other : *others)
+                if (same_slot(other, decision.origin_id()))
                     return ct_add_to_slot;
 
             return ct_slot_new;
@@ -456,15 +437,13 @@ Decider::_make_change_type_for(
         /* we pick the worst, so replacing 1 and 3 with 2 requires permission to
          * downgrade */
         ChangeType result(last_ct);
-        for (PackageIDSequence::ConstIterator i(decision.destination()->replacing()->begin()),
-                i_end(decision.destination()->replacing()->end()) ;
-                i != i_end ; ++i)
+        for (const auto & package : *decision.destination()->replacing())
         {
-            if ((*i)->version() == decision.origin_id()->version())
+            if (package->version() == decision.origin_id()->version())
                 result = std::min(result, ct_reinstall);
-            else if ((*i)->version() < decision.origin_id()->version())
+            else if (package->version() < decision.origin_id()->version())
                 result = std::min(result, ct_upgrade);
-            else if ((*i)->version() > decision.origin_id()->version())
+            else if (package->version() > decision.origin_id()->version())
                 result = std::min(result, ct_downgrade);
         }
 
@@ -1101,12 +1080,11 @@ Decider::_add_dependencies_if_necessary(
     const std::shared_ptr<SanitisedDependencies> deps(std::make_shared<SanitisedDependencies>());
     deps->populate(_imp->env, *this, our_resolution, package_id, changed_choices);
 
-    for (SanitisedDependencies::ConstIterator s(deps->begin()), s_end(deps->end()) ;
-            s != s_end ; ++s)
+    for (const auto & dependency : *deps)
     {
-        Context context_2("When handling dependency '" + stringify(s->spec()) + "':");
+        Context context_2("When handling dependency '" + stringify(dependency.spec()) + "':");
 
-        SpecInterest interest(_imp->fns.interest_in_spec_fn()(our_resolution, package_id, *s));
+        SpecInterest interest(_imp->fns.interest_in_spec_fn()(our_resolution, package_id, dependency));
 
         switch (interest)
         {
@@ -1121,36 +1099,33 @@ Decider::_add_dependencies_if_necessary(
 
         /* don't have an 'already met' initially, since already met varies between slots */
         const std::shared_ptr<DependencyReason> nearly_reason(std::make_shared<DependencyReason>(
-                    package_id, changed_choices, our_resolution->resolvent(), *s, indeterminate));
+                    package_id, changed_choices, our_resolution->resolvent(), dependency, indeterminate));
 
         /* empty resolvents is always ok for blockers, since blocking on things
          * that don't exist is fine */
-        bool empty_is_ok(s->spec().if_block());
+        bool empty_is_ok(dependency.spec().if_block());
         std::shared_ptr<const Resolvents> resolvents;
 
-        if (s->spec().if_package())
-            std::tie(resolvents, empty_is_ok) = _get_resolvents_for(*s->spec().if_package(), nearly_reason);
+        if (dependency.spec().if_package())
+            std::tie(resolvents, empty_is_ok) = _get_resolvents_for(*dependency.spec().if_package(), nearly_reason);
         else
-            resolvents = _get_resolvents_for_blocker(*s->spec().if_block(), nearly_reason);
+            resolvents = _get_resolvents_for_blocker(*dependency.spec().if_block(), nearly_reason);
 
         if ((! empty_is_ok) && resolvents->empty())
-            resolvents = _get_error_resolvents_for(*s->spec().if_package(), nearly_reason);
+            resolvents = _get_error_resolvents_for(*dependency.spec().if_package(), nearly_reason);
 
-        for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
-                r != r_end ; ++r)
+        for (const auto & resolvent : *resolvents)
         {
             /* now we can find out per-resolvent whether we're really already met */
             const std::shared_ptr<DependencyReason> reason(std::make_shared<DependencyReason>(
-                        package_id, changed_choices, our_resolution->resolvent(), *s,
-                        s->spec().if_block() ? _block_dep_spec_has_nothing_installed(*s->spec().if_block(), package_id, *r) :
-                        _package_dep_spec_already_met(*s->spec().if_package(), package_id)));
+                        package_id, changed_choices, our_resolution->resolvent(), dependency,
+                        dependency.spec().if_block() ? _block_dep_spec_has_nothing_installed(*dependency.spec().if_block(), package_id, resolvent) :
+                        _package_dep_spec_already_met(*dependency.spec().if_package(), package_id)));
 
-            const std::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(*r, true));
-            const std::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(our_resolution, *s, reason, interest));
-
-            for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
-                    c != c_end ; ++c)
-                _apply_resolution_constraint(dep_resolution, *c);
+            const std::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(resolvent, true));
+            const std::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_dependency(our_resolution, dependency, reason, interest));
+            for (const auto & constraint : *constraints)
+                _apply_resolution_constraint(dep_resolution, constraint);
         }
     }
 }
@@ -1174,13 +1149,11 @@ Decider::find_any_score(
     if (spec.version_requirements_ptr() && ! spec.version_requirements_ptr()->empty())
     {
         OperatorScore score(os_worse_than_worst);
-        for (VersionRequirements::ConstIterator v(spec.version_requirements_ptr()->begin()),
-                v_end(spec.version_requirements_ptr()->end()) ;
-                v != v_end ; ++v)
+        for (const auto & version : *spec.version_requirements_ptr())
         {
             OperatorScore local_score(os_worse_than_worst);
 
-            switch (v->version_operator().value())
+            switch (version.version_operator().value())
             {
                 case vo_greater:
                 case vo_greater_equal:
@@ -1259,15 +1232,13 @@ Decider::find_any_score(
             _get_resolvents_for(spec, reason_unless_block).first);
     std::list<std::shared_ptr<Decision> > could_install_decisions;
     if (resolvents_unless_block)
-        for (Resolvents::ConstIterator r(resolvents_unless_block->begin()), r_end(resolvents_unless_block->end()) ;
-                r != r_end ; ++r)
+        for (const auto & resolvent : *resolvents_unless_block)
         {
-            const std::shared_ptr<Resolution> could_install_resolution(_create_resolution_for_resolvent(*r));
+            const std::shared_ptr<Resolution> could_install_resolution(_create_resolution_for_resolvent(resolvent));
             const std::shared_ptr<ConstraintSequence> could_install_constraints(_make_constraints_from_dependency(
                         our_resolution, dep, reason_unless_block, si_take));
-            for (ConstraintSequence::ConstIterator c(could_install_constraints->begin()), c_end(could_install_constraints->end()) ;
-                    c != c_end ; ++c)
-                could_install_resolution->constraints()->add(*c);
+            for (const auto & constraint : *could_install_constraints)
+                could_install_resolution->constraints()->add(constraint);
             auto could_install_decision(_try_to_find_decision_for(could_install_resolution, false, false, false, false, false));
             if (could_install_decision)
                 could_install_decisions.push_back(could_install_decision);
@@ -1280,12 +1251,11 @@ Decider::find_any_score(
 
         Context sub_context("When working out whether it's acs_could_install_and_installedish:");
 
-        for (auto c(could_install_decisions.begin()), c_end(could_install_decisions.end()) ;
-                c != c_end ; ++ c)
+        for (const auto & decision : could_install_decisions)
         {
             const auto installed_resolvent((*_imp->env)[selection::SomeArbitraryVersion(
-                        generator::Package((*c)->resolvent().package()) |
-                        make_slot_filter((*c)->resolvent()) |
+                        generator::Package(decision->resolvent().package()) |
+                        make_slot_filter(decision->resolvent()) |
                         filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))]);
             if (! installed_resolvent->empty())
                 return std::make_pair(acs_could_install_and_installedish, operator_bias);
@@ -1622,9 +1592,8 @@ Decider::_cannot_decide_for(
                 make_slot_filter(resolution->resolvent()),
                 make_destination_type_filter(resolution->resolvent().destination_type()),
                 true, false));
-    for (PackageIDSequence::ConstIterator i(installable_ids->begin()), i_end(installable_ids->end()) ;
-            i != i_end ; ++i)
-        unsuitable_candidates->push_back(_make_unsuitable_candidate(resolution, *i, false));
+    for (const auto & package : *installable_ids)
+        unsuitable_candidates->push_back(_make_unsuitable_candidate(resolution, package, false));
 
     return std::make_shared<UnableToMakeDecision>(
                 resolution->resolvent(),
@@ -1777,14 +1746,12 @@ Decider::_find_id_for_from(
             best_version = *i;
 
         bool ok(true);
-        for (Constraints::ConstIterator c(resolution->constraints()->begin()),
-                c_end(resolution->constraints()->end()) ;
-                c != c_end ; ++c)
+        for (const auto & constraint : *resolution->constraints())
         {
-            if ((*c)->spec().if_package())
-                ok = ok && match_package(*_imp->env, *(*c)->spec().if_package(), *i, (*c)->from_id(), opts);
+            if (constraint->spec().if_package())
+                ok = ok && match_package(*_imp->env, *constraint->spec().if_package(), *i, constraint->from_id(), opts);
             else
-                ok = ok && ! match_package(*_imp->env, (*c)->spec().if_block()->blocking(), *i, (*c)->from_id(), opts);
+                ok = ok && ! match_package(*_imp->env, constraint->spec().if_block()->blocking(), *i, constraint->from_id(), opts);
 
             if (! ok)
                 break;
@@ -1798,17 +1765,15 @@ Decider::_find_id_for_from(
                                 ))));
             if (trying_changing_choices)
             {
-                for (Constraints::ConstIterator c(resolution->constraints()->begin()),
-                        c_end(resolution->constraints()->end()) ;
-                        c != c_end ; ++c)
+                for (const auto & constraint : *resolution->constraints())
                 {
                     if (! ok)
                         break;
 
-                    if (! (*c)->spec().if_package())
+                    if (! constraint->spec().if_package())
                     {
-                        if ((*c)->spec().if_block()->blocking().additional_requirements_ptr() &&
-                                ! (*c)->spec().if_block()->blocking().additional_requirements_ptr()->empty())
+                        if (constraint->spec().if_block()->blocking().additional_requirements_ptr() &&
+                                ! constraint->spec().if_block()->blocking().additional_requirements_ptr()->empty())
                         {
                             /* too complicated for now */
                             ok = false;
@@ -1816,18 +1781,16 @@ Decider::_find_id_for_from(
                         break;
                     }
 
-                    if (! (*c)->spec().if_package()->additional_requirements_ptr())
+                    if (! constraint->spec().if_package()->additional_requirements_ptr())
                     {
                         /* no additional requirements, so no tinkering required */
                         continue;
                     }
 
-                    for (auto a((*c)->spec().if_package()->additional_requirements_ptr()->begin()),
-                            a_end((*c)->spec().if_package()->additional_requirements_ptr()->end()) ;
-                            a != a_end ; ++a)
+                    for (const auto & requirement : *constraint->spec().if_package()->additional_requirements_ptr())
                     {
-                        auto b((*a)->accumulate_changes_to_make_met(_imp->env,
-                                    get_changed_choices_for(*c).get(), *i, (*c)->from_id(),
+                        auto b(requirement->accumulate_changes_to_make_met(_imp->env,
+                                    get_changed_choices_for(constraint).get(), *i, constraint->from_id(),
                                     *why_changed_choices->changed_choices()));
                         if (b.is_false())
                         {
@@ -1835,26 +1798,24 @@ Decider::_find_id_for_from(
                             break;
                         }
                         else if (b.is_true())
-                            why_changed_choices->reasons()->push_back((*c)->reason());
+                            why_changed_choices->reasons()->push_back(constraint->reason());
                     }
                 }
             }
 
             /* might have an early requirement of [x], and a later [-x], and
              * chosen to change because of the latter */
-            for (Constraints::ConstIterator c(resolution->constraints()->begin()),
-                    c_end(resolution->constraints()->end()) ;
-                    c != c_end ; ++c)
+            for (const auto & constraint : *resolution->constraints())
             {
                 if (! ok)
                     break;
 
-                if ((*c)->spec().if_package())
-                    ok = ok && match_package_with_maybe_changes(*_imp->env, *(*c)->spec().if_package(),
-                            get_changed_choices_for(*c).get(), *i, (*c)->from_id(), why_changed_choices->changed_choices().get(), { });
+                if (constraint->spec().if_package())
+                    ok = ok && match_package_with_maybe_changes(*_imp->env, *constraint->spec().if_package(),
+                            get_changed_choices_for(constraint).get(), *i, constraint->from_id(), why_changed_choices->changed_choices().get(), { });
                 else
-                    ok = ok && ! match_package_with_maybe_changes(*_imp->env, (*c)->spec().if_block()->blocking(),
-                            get_changed_choices_for(*c).get(), *i, (*c)->from_id(), why_changed_choices->changed_choices().get(), { });
+                    ok = ok && ! match_package_with_maybe_changes(*_imp->env, constraint->spec().if_block()->blocking(),
+                            get_changed_choices_for(constraint).get(), *i, constraint->from_id(), why_changed_choices->changed_choices().get(), { });
             }
 
             if (ok)
@@ -1878,9 +1839,7 @@ Decider::_get_unmatching_constraints(
 {
     const std::shared_ptr<Constraints> result(std::make_shared<Constraints>());
 
-    for (Constraints::ConstIterator c(resolution->constraints()->begin()),
-            c_end(resolution->constraints()->end()) ;
-            c != c_end ; ++c)
+    for (const auto & constraint : *resolution->constraints())
     {
         std::shared_ptr<Decision> decision;
 
@@ -1891,7 +1850,7 @@ Decider::_get_unmatching_constraints(
                         resolution->resolvent(),
                         id,
                         existing_package_id_attributes_for_no_installable_id(is_transient),
-                        ! (*c)->untaken()
+                        ! constraint->untaken()
                         );
         }
         else
@@ -1901,12 +1860,12 @@ Decider::_get_unmatching_constraints(
                         nullptr,
                         false,
                         last_ct,
-                        ! (*c)->untaken(),
+                        ! constraint->untaken(),
                         nullptr,
                         std::function<void (const ChangesToMakeDecision &)>()
                         );
-        if (! _check_constraint(*c, decision))
-            result->add(*c);
+        if (! _check_constraint(constraint, decision))
+            result->add(constraint);
     }
 
     return result;
@@ -1932,18 +1891,15 @@ Decider::add_target_with_reason(const PackageOrBlockDepSpec & spec, const std::s
     if ((! empty_is_ok) && resolvents->empty())
         resolvents = _get_error_resolvents_for(*spec.if_package(), reason);
 
-    for (Resolvents::ConstIterator r(resolvents->begin()), r_end(resolvents->end()) ;
-            r != r_end ; ++r)
+    for (const auto & resolvent : *resolvents)
     {
         Context context_2("When adding constraints from target '" + stringify(spec) + "' to resolvent '"
-                + stringify(*r) + "':");
+                + stringify(resolvent) + "':");
 
-        const std::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(*r, true));
+        const std::shared_ptr<Resolution> dep_resolution(_resolution_for_resolvent(resolvent, true));
         const std::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_target(dep_resolution, spec, reason));
-
-        for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
-                c != c_end ; ++c)
-            _apply_resolution_constraint(dep_resolution, *c);
+        for (const auto & constraint : *constraints)
+            _apply_resolution_constraint(dep_resolution, constraint);
     }
 }
 
@@ -1961,15 +1917,14 @@ Decider::purge()
     auto unused(collect_purges(_imp->env, have_now, have_now_seq,
                 std::bind(&Environment::trigger_notifier_callback, _imp->env, NotifierCallbackResolverStepEvent())));
 
-    for (PackageIDSet::ConstIterator i(unused->begin()), i_end(unused->end()) ;
-            i != i_end ; ++i)
+    for (const auto & package : *unused)
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        if (has_behaviour(*i, "used") || ! (*i)->supports_action(SupportsActionTest<UninstallAction>()))
+        if (has_behaviour(package, "used") || ! package->supports_action(SupportsActionTest<UninstallAction>()))
             continue;
 
-        Resolvent resolvent(*i, dt_install_to_slash);
+        Resolvent resolvent(package, dt_install_to_slash);
         const std::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
 
         if (resolution->decision())
@@ -1978,21 +1933,19 @@ Decider::purge()
         auto used_to_use(std::make_shared<ChangeByResolventSequence>());
         {
             auto i_seq(std::make_shared<PackageIDSequence>());
-            i_seq->push_back(*i);
-            for (auto u(unused->begin()), u_end(unused->end()) ;
-                    u != u_end ; ++u)
-                if ((*u)->supports_action(SupportsActionTest<UninstallAction>()) &&
-                        ! collect_depped_upon(_imp->env, *u, i_seq, have_now_seq)->empty())
+            i_seq->push_back(package);
+            for (const auto & id : *unused)
+                if (id->supports_action(SupportsActionTest<UninstallAction>()) &&
+                        ! collect_depped_upon(_imp->env, id, i_seq, have_now_seq)->empty())
                     used_to_use->push_back(make_named_values<ChangeByResolvent>(
-                                n::package_id() = *u,
-                                n::resolvent() = Resolvent(*u, dt_install_to_slash)
+                                n::package_id() = id,
+                                n::resolvent() = Resolvent(id, dt_install_to_slash)
                                 ));
         }
 
-        const std::shared_ptr<const ConstraintSequence> constraints(_imp->fns.get_constraints_for_purge_fn()(resolution, *i, used_to_use));
-        for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
-                c != c_end ; ++c)
-            _apply_resolution_constraint(resolution, *c);
+        const std::shared_ptr<const ConstraintSequence> constraints(_imp->fns.get_constraints_for_purge_fn()(resolution, package, used_to_use));
+        for (const auto & constraint : *constraints)
+            _apply_resolution_constraint(resolution, constraint);
 
         _decide(resolution);
     }
@@ -2130,9 +2083,8 @@ namespace
         {
             /* we do BreakConfirmation elsewhere */
             bool is_system(false);
-            for (PackageIDSequence::ConstIterator i(remove_decision.ids()->begin()), i_end(remove_decision.ids()->end()) ;
-                    i != i_end && ! is_system ; ++i)
-                if (match_package_in_set(*env, *env->set(SetName("system")), *i, { }))
+            for (const auto & package : *remove_decision.ids())
+                if (match_package_in_set(*env, *env->set(SetName("system")), package, { }))
                     is_system = true;
 
             if (is_system)
@@ -2205,12 +2157,11 @@ Decider::_resolve_purges()
     std::copy(have_now_minus_going_away->begin(), have_now_minus_going_away->end(), have_now_minus_going_away_seq->back_inserter());
 
     const std::shared_ptr<PackageIDSet> used_by_unchanging(std::make_shared<PackageIDSet>());
-    for (PackageIDSet::ConstIterator u(have_now_minus_going_away->begin()), u_end(have_now_minus_going_away->end()) ;
-            u != u_end ; ++u)
+    for (const auto & package : *have_now_minus_going_away)
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        const std::shared_ptr<const PackageIDSet> used(collect_depped_upon(_imp->env, *u, newly_unused_seq, have_now_minus_going_away_seq));
+        const std::shared_ptr<const PackageIDSet> used(collect_depped_upon(_imp->env, package, newly_unused_seq, have_now_minus_going_away_seq));
         std::copy(used->begin(), used->end(), used_by_unchanging->inserter());
     }
 
@@ -2221,39 +2172,36 @@ Decider::_resolve_purges()
     const std::shared_ptr<const SetSpecTree> world(_imp->env->set(SetName("world")));
 
     bool changed(false);
-    for (PackageIDSet::ConstIterator i(newly_really_unused->begin()), i_end(newly_really_unused->end()) ;
-            i != i_end ; ++i)
+    for (const auto & package : *newly_really_unused)
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        if (has_behaviour(*i, "used") ||
-                (! (*i)->supports_action(SupportsActionTest<UninstallAction>())))
+        if (has_behaviour(package, "used") ||
+                (! package->supports_action(SupportsActionTest<UninstallAction>())))
             continue;
 
         /* to catch packages being purged that are also in world and not used
          * by anything else */
-        if (match_package_in_set(*_imp->env, *world, *i, { }))
+        if (match_package_in_set(*_imp->env, *world, package, { }))
             continue;
 
         const std::shared_ptr<ChangeByResolventSequence> used_to_use(std::make_shared<ChangeByResolventSequence>());
         const std::shared_ptr<PackageIDSequence> star_i_set(std::make_shared<PackageIDSequence>());
-        star_i_set->push_back(*i);
-        for (ChangeByResolventSequence::ConstIterator g(going_away_newly_available.first->begin()), g_end(going_away_newly_available.first->end()) ;
-                g != g_end ; ++g)
-            if (g->package_id()->supports_action(SupportsActionTest<UninstallAction>()) &&
-                    ! collect_depped_upon(_imp->env, g->package_id(), star_i_set, have_now_minus_going_away_seq)->empty())
-                used_to_use->push_back(*g);
+        star_i_set->push_back(package);
+        for (const auto & change : *going_away_newly_available.first)
+            if (change.package_id()->supports_action(SupportsActionTest<UninstallAction>()) &&
+                    ! collect_depped_upon(_imp->env, change.package_id(), star_i_set, have_now_minus_going_away_seq)->empty())
+                used_to_use->push_back(change);
 
-        Resolvent resolvent(*i, dt_install_to_slash);
+        Resolvent resolvent(package, dt_install_to_slash);
         const std::shared_ptr<Resolution> resolution(_resolution_for_resolvent(resolvent, true));
 
         if (resolution->decision())
             continue;
 
-        const std::shared_ptr<const ConstraintSequence> constraints(_imp->fns.get_constraints_for_purge_fn()(resolution, *i, used_to_use));
-        for (ConstraintSequence::ConstIterator c(constraints->begin()), c_end(constraints->end()) ;
-                c != c_end ; ++c)
-            _apply_resolution_constraint(resolution, *c);
+        const std::shared_ptr<const ConstraintSequence> constraints(_imp->fns.get_constraints_for_purge_fn()(resolution, package, used_to_use));
+        for (const auto & constraint : *constraints)
+            _apply_resolution_constraint(resolution, constraint);
 
         _decide(resolution);
 
