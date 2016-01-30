@@ -24,7 +24,7 @@ syn match  PaludisPackageMaskConfWildcard contained /\(\*\/\@=\|\/\@<=\*\)/
             \ nextgroup=PaludisPackageMaskToken skipwhite
 syn match  PaludisPackageMaskConfSet /^[^ \t#\/]\+\S\@!/
             \ nextgroup=PaludisPackageMaskToken skipwhite
-syn match PaludisPackageMaskToken /\w\+/
+syn match PaludisPackageMaskToken /[-.\w]\+/
             \ contained skipwhite nextgroup=PaludisPackageMaskToken
 
 hi def link PaludisPackageMaskConfComment          Comment
