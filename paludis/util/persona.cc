@@ -29,17 +29,16 @@
 namespace
 {
     template <unsigned Name>
-    struct SystemConfigurationParameter;
-
-    template <>
-    struct SystemConfigurationParameter<_SC_GETPW_R_SIZE_MAX> {
-        static constexpr const char * const Spelling = "_SC_GETPW_R_SIZE_MAX";
+    struct SystemConfigurationParameter
+    {
+        static const char * const Spelling;
     };
 
     template <>
-    struct SystemConfigurationParameter<_SC_GETGR_R_SIZE_MAX> {
-        static constexpr const char * const Spelling = "_SC_GETGR_R_SIZE_MAX";
-    };
+    const char * const SystemConfigurationParameter<_SC_GETPW_R_SIZE_MAX>::Spelling = "_SC_GETPW_R_SIZE_MAX";
+
+    template <>
+    const char * const SystemConfigurationParameter<_SC_GETGR_R_SIZE_MAX>::Spelling = "_SC_GETGR_R_SIZE_MAX";
 
     template <unsigned Name, size_t DefaultSize = 1024, long DodgyLimit = 1024 * 128>
     size_t initial_buffer_size(const char *context)
