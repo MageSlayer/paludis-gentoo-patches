@@ -42,6 +42,7 @@ add(`fs_stat',                           `hh', `cc', `fwd', `gtest', `testscript
 add(`graph',                             `hh', `cc', `fwd', `impl', `gtest')
 add(`hashes',                            `hh', `cc', `gtest')
 add(`iterator_funcs',                    `hh', `gtest')
+add(`iterator_range',                    `hh')
 add(`indirect_iterator',                 `hh', `fwd', `impl', `gtest')
 add(`is_file_with_extension',            `hh', `cc', `se', `gtest', `testscript')
 add(`join',                              `hh', `gtest')
