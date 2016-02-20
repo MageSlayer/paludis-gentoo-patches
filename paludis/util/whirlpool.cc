@@ -213,7 +213,7 @@ namespace
         {
             // GCC isn't clever enough to optimise the big endian version combined with
             // from_bigendian, so do it manually.
-#ifdef PALUDIS_BIG_ENDIAN
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
             return (_a((i - j + 8) % 8) >> ((7 - j) * 8)) & 0xFF;
 #else
             return (_a((i - j + 8) % 8) >> (     j  * 8)) & 0xFF;

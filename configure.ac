@@ -89,14 +89,6 @@ dnl {{{ make pkg-config work... dumb macro...
 PKG_PROG_PKG_CONFIG([0.9.0])
 dnl }}}
 
-dnl {{{ check for byte order
-AC_C_BIGENDIAN
-if test "x$ac_cv_c_bigendian" = "xyes"; then
-    PALUDIS_CXXFLAGS="${PALUDIS_CXXFLAGS} -DPALUDIS_BIG_ENDIAN=1"
-    PALUDIS_PC_CFLAGS="${PALUDIS_PC_CFLAGS} -DPALUDIS_BIG_ENDIAN=1"
-fi
-dnl }}}
-
 need_xml_check=
 need_pcrecpp_check=
 need_libarchive_check=

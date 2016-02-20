@@ -76,7 +76,7 @@ namespace paludis
         return byte_swap_internals::ByteSwap<sizeof(T_), T_>::swap(x);
     }
 
-#ifdef PALUDIS_BIG_ENDIAN
+#if __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__
     template <typename T_>
     inline T_
     from_bigendian(T_ x)
