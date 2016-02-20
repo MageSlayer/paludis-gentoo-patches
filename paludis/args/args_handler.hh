@@ -132,8 +132,11 @@ namespace paludis
                 typedef WrappedForwardIterator<ParametersConstIteratorTag, const std::string> ParametersConstIterator;
 
                 ParametersConstIterator begin_parameters() const;
-
                 ParametersConstIterator end_parameters() const;
+
+                IteratorRange<ParameterConstIterator> parameters() const {
+                    return make_iterator_range(begin_parameters(), end_parameters());
+                }
 
                 bool empty() const;
 
@@ -194,8 +197,11 @@ namespace paludis
                 typedef WrappedForwardIterator<UsageLineConstIteratorTag, const std::string> UsageLineConstIterator;
 
                 UsageLineConstIterator begin_usage_lines() const;
-
                 UsageLineConstIterator end_usage_lines() const;
+
+                IteratorRange<UsageLineConstIterator> usage_lines() const {
+                    return make_iterator_range(begin_usage_lines(), end_usage_lines());
+                }
 
                 ///\}
 
@@ -207,8 +213,11 @@ namespace paludis
                         const std::pair<std::string, std::string> > EnvironmentLineConstIterator;
 
                 EnvironmentLineConstIterator begin_environment_lines() const;
-
                 EnvironmentLineConstIterator end_environment_lines() const;
+
+                IteratorRange<EnvironmentLineConstIterator> environment_lines() const {
+                    return make_iterator_range(begin_environment_lines(), end_environment_lines());
+                }
 
                 ///\}
 
@@ -220,8 +229,11 @@ namespace paludis
                         const std::pair<std::string, std::string> > ExamplesConstIterator;
 
                 ExamplesConstIterator begin_examples() const;
-
                 ExamplesConstIterator end_examples() const;
+
+                IteratorRange<ExamplesConstIterator> examples() const {
+                    return make_iterator_range(begin_examples(), end_examples());
+                }
 
                 ///\}
 
@@ -233,6 +245,10 @@ namespace paludis
 
                 ArgsSectionsConstIterator begin_args_sections() const;
                 ArgsSectionsConstIterator end_args_sections() const;
+
+                IteratorRange<ArgsSectionsConstIterator> args_sections() const {
+                    return make_iterator_range(begin_args_sections(), end_args_sections());
+                }
 
                 /**
                  * The 'Options' section.
@@ -252,6 +268,10 @@ namespace paludis
                 NotesIterator begin_notes() const;
                 NotesIterator end_notes() const;
 
+                IteratorRange<NotesIterator> notes() const {
+                    return make_iterator_range(begin_notes(), end_notes());
+                }
+
                 ///\}
 
                 ///\name Iterate over our extra description lines (for documentation)
@@ -261,8 +281,11 @@ namespace paludis
                 typedef WrappedForwardIterator<DescriptionLineConstIteratorTag, const std::string> DescriptionLineConstIterator;
 
                 DescriptionLineConstIterator begin_description_lines() const;
-
                 DescriptionLineConstIterator end_description_lines() const;
+
+                IteratorRange<DescriptionLineConstIterator> description_lines() const {
+                    return make_iterator_range(begin_description_lines(), end_description_lines());
+                }
 
                 ///\}
 
@@ -274,8 +297,11 @@ namespace paludis
                 typedef WrappedForwardIterator<SeeAlsoConstIteratorTag, const std::pair<std::string, int> > SeeAlsoConstIterator;
 
                 SeeAlsoConstIterator begin_see_alsos() const;
-
                 SeeAlsoConstIterator end_see_alsos() const;
+
+                IteratorRange<SeeAlsoConstIterator> see_alsos() const {
+                    return make_iterator_range(begin_see_alsos(), end_see_alsos());
+                }
 
                 ///\}
 
