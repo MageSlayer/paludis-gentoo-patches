@@ -22,6 +22,7 @@
 
 #include <paludis/args/args_section.hh>
 #include <paludis/args/args_group.hh>
+#include <paludis/util/iterator_range.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/sequence.hh>
@@ -134,8 +135,8 @@ namespace paludis
                 ParametersConstIterator begin_parameters() const;
                 ParametersConstIterator end_parameters() const;
 
-                IteratorRange<ParameterConstIterator> parameters() const {
-                    return make_iterator_range(begin_parameters(), end_parameters());
+                IteratorRange<ParametersConstIterator> parameters() const {
+                    return make_range(begin_parameters(), end_parameters());
                 }
 
                 bool empty() const;
@@ -200,7 +201,7 @@ namespace paludis
                 UsageLineConstIterator end_usage_lines() const;
 
                 IteratorRange<UsageLineConstIterator> usage_lines() const {
-                    return make_iterator_range(begin_usage_lines(), end_usage_lines());
+                    return make_range(begin_usage_lines(), end_usage_lines());
                 }
 
                 ///\}
@@ -216,7 +217,7 @@ namespace paludis
                 EnvironmentLineConstIterator end_environment_lines() const;
 
                 IteratorRange<EnvironmentLineConstIterator> environment_lines() const {
-                    return make_iterator_range(begin_environment_lines(), end_environment_lines());
+                    return make_range(begin_environment_lines(), end_environment_lines());
                 }
 
                 ///\}
@@ -232,7 +233,7 @@ namespace paludis
                 ExamplesConstIterator end_examples() const;
 
                 IteratorRange<ExamplesConstIterator> examples() const {
-                    return make_iterator_range(begin_examples(), end_examples());
+                    return make_range(begin_examples(), end_examples());
                 }
 
                 ///\}
@@ -247,7 +248,7 @@ namespace paludis
                 ArgsSectionsConstIterator end_args_sections() const;
 
                 IteratorRange<ArgsSectionsConstIterator> args_sections() const {
-                    return make_iterator_range(begin_args_sections(), end_args_sections());
+                    return make_range(begin_args_sections(), end_args_sections());
                 }
 
                 /**
@@ -269,7 +270,7 @@ namespace paludis
                 NotesIterator end_notes() const;
 
                 IteratorRange<NotesIterator> notes() const {
-                    return make_iterator_range(begin_notes(), end_notes());
+                    return make_range(begin_notes(), end_notes());
                 }
 
                 ///\}
@@ -284,7 +285,7 @@ namespace paludis
                 DescriptionLineConstIterator end_description_lines() const;
 
                 IteratorRange<DescriptionLineConstIterator> description_lines() const {
-                    return make_iterator_range(begin_description_lines(), end_description_lines());
+                    return make_range(begin_description_lines(), end_description_lines());
                 }
 
                 ///\}
@@ -300,7 +301,7 @@ namespace paludis
                 SeeAlsoConstIterator end_see_alsos() const;
 
                 IteratorRange<SeeAlsoConstIterator> see_alsos() const {
-                    return make_iterator_range(begin_see_alsos(), end_see_alsos());
+                    return make_range(begin_see_alsos(), end_see_alsos());
                 }
 
                 ///\}
