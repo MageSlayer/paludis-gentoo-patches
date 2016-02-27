@@ -244,7 +244,6 @@ namespace
                 return;
 
             for (PackageID::MetadataConstIterator m(id->begin_metadata()), m_end(id->end_metadata()); m_end != m; ++m)
-            {
                 try
                 {
                     MetadataVisitor v;
@@ -262,8 +261,7 @@ namespace
                     break;
                 }
 
-                display_callback(DoneOne());
-            }
+            display_callback(DoneOne());
         }
     }
 }
