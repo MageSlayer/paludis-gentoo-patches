@@ -157,7 +157,10 @@ main()
     ebuild_section "Generating saved ebuild and environment..."
 
     [[ -f "${EBUILD}" ]] && cp "${EBUILD}" ${vdbdir}/
-    bzip2 < ${envfile} > ${vdbdir}/environment.bz2
+    if ! bzip2 < ${envfile} > ${vdbdir}/environment.bz2 ; then
+        echo "!!! vdb write environment.bz2 failed"
+        exit 1
+    fi
 
     ebuild_section "Finished writing VDB entry"
 
