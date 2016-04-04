@@ -2,7 +2,7 @@ dnl vim: set sw=4 sts=4 ts=4 noet ft=config foldmethod=marker foldmarker={{{,}}}
 
 dnl {{{ program, version
 m4_define([MAJOR_VERSION], [2])
-m4_define([MINOR_VERSION], [4])
+m4_define([MINOR_VERSION], [6])
 m4_define([MICRO_VERSION], [0])
 m4_define([SUFFIX], [])
 m4_define([FULL_VERSION],

@@ -4,6 +4,21 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+2.6.0:
+    * Bug fixes.
+
+    * Add short option for --chroot-path.
+
+    * Ban einstall and *sbin in exheres-0.
+
+    * Remove --new-compress from rsync.
+
+    * Allow users to override wget options in wget fetcher.
+
+    * EAPI 6 is supported.
+
+    * Support emptying a default set exparam array in exheres-0.
+
 2.4.0:
     * Bug fixes.
 
