@@ -21,7 +21,7 @@ get_abs_top_srcdir() {
 }
 
 echo ">>> $(get_m4) -I $(get_abs_top_srcdir) -E ${1} > ${2}"
-if ! $(get_m4) -I $(get_abs_top_srcdir) -E ${1} > ${2} ; then
+if ! $(get_m4) -I $(get_abs_top_srcdir) -E "${1}" > "${2}" ; then
     echo "oops!" 1>&2
     exit 127
 fi
