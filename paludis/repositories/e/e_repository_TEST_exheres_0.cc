@@ -571,6 +571,22 @@ TEST(ERepository, InstallExheres0)
         ASSERT_TRUE(bool(id));
         EXPECT_THROW(id->perform_action(action), ActionFailedError);
     }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/banned-0",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/banned-1",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
 }
 
 TEST(ERepository, ReallyInstallExheres0)

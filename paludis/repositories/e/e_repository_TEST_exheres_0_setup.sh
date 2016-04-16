@@ -1098,6 +1098,40 @@ pkg_setup() {
     expecting_tests --expensive
 }
 END
+mkdir -p "packages/cat/banned"
+cat <<'END' > packages/cat/banned/banned-0.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+pkg_setup() {
+    edo banned_by_distribution illegal-executable
+}
+END
+cat <<'END' > packages/cat/banned/banned-1.ebuild || exit 1
+DESCRIPTION="The Long Description"
+SUMMARY="The Short Description"
+HOMEPAGE="http://example.com/"
+DOWNLOADS=""
+SLOT="0"
+MYOPTIONS="spork"
+LICENCES="GPL-2"
+PLATFORMS="test"
+WORK="${WORKBASE}"
+
+src_install() {
+    [[ -n ${BANNEDDIR} ]] || die
+
+    dobanned illegal-executable
+    [[ -x ${IMAGE}/${BANNEDDIR}/illegal-executable ]] || die
+}
+END
 mkdir -p "packages/cat/exdirectory-phase"
 cat <<'END' > packages/cat/exdirectory-phase/exdirectory-phase-1.ebuild || exit 1
 DESCRIPTION="The Long Description"

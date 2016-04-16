@@ -337,6 +337,9 @@ EbuildCommand::operator() ()
         process.setenv("PALUDIS_CROSS_COMPILE_TOOL_PREFIX",
                        params.tool_prefix());
 
+    if (! options->banneddir().empty())
+        process.setenv("BANNEDDIR", options->banneddir());
+
     if (options->want_portage_emulation_vars())
         add_portage_vars(process);
 

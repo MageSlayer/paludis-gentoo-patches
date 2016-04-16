@@ -40,6 +40,7 @@ namespace paludis
     {
         typedef Name<struct name_allow_tokens_in_mask_files> allow_tokens_in_mask_files;
         typedef Name<struct name_annotations> annotations;
+        typedef Name<struct name_banneddir> banneddir;
         typedef Name<struct name_bash_compat> bash_compat;
         typedef Name<struct name_best_has_version_host_root> best_has_version_host_root;
         typedef Name<struct name_binary_from_env_variables> binary_from_env_variables;
@@ -421,6 +422,7 @@ namespace paludis
 
         struct EAPIEbuildOptions
         {
+            NamedValue<n::banneddir, std::string> banneddir;
             NamedValue<n::bash_compat, std::string> bash_compat;
             NamedValue<n::binary_from_env_variables, std::string> binary_from_env_variables;
             NamedValue<n::bracket_merged_variables, std::string> bracket_merged_variables;

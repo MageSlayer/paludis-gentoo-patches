@@ -54,6 +54,8 @@ ebuild_sanitise_envvars()
     # See ticket:374.
     export PATH="/usr/bin:/usr/sbin:/bin:/sbin${PATH:+:${PATH}}"
 
+    [[ -n "${BANNEDDIR}" ]] && export PATH="${BANNEDDIR}:${PATH}"
+
     export PATH="${PALUDIS_EBUILD_DIR}/utils:${PATH}"
     # Automake likes to scatter our utilities over two directories.
     [[ -n "${PALUDIS_EBUILD_DIR_FALLBACK}" ]] && export PATH="${PALUDIS_EBUILD_DIR_FALLBACK}/utils:${PATH}"
