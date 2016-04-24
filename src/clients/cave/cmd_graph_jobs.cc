@@ -113,7 +113,7 @@ namespace
 
         void visit(const InstallJob & job) const
         {
-            output_stream << "label=\"" << short_spec(job.origin_id_spec(), full) << " -> " << job.destination_repository_name() << "\"";
+            output_stream << "label=\"" << short_spec(job.origin_id_spec(), full) << " -> " << job.destination_repository_name() << "\", ";
             switch (job.destination_type())
             {
                 case dt_install_to_slash:
@@ -141,7 +141,7 @@ namespace
         void visit(const UninstallJob & job) const
         {
             output_stream << "label=\"uninstall " << join(job.ids_to_remove_specs()->begin(), job.ids_to_remove_specs()->end(), ", ",
-                    std::bind(&short_spec, std::placeholders::_1, full)) << "\"";
+                    std::bind(&short_spec, std::placeholders::_1, full)) << "\", ";
             output_stream << "shape=hexagon, ";
             output_stream << "fillcolor=slateblue, ";
             output_stream << "style=filled";
@@ -171,7 +171,7 @@ namespace
                     if (! (requirement.required_if() - jri_require_for_independent).any())
                         continue;
 
-                output_stream << "    job" << execute_job_list->number(j) << " -> job" << requirement.job_number() << " [ ";
+                output_stream << "    job" << execute_job_list->number(j) << " -> job" << requirement.job_number() << " [";
                 if (requirement.required_if()[jri_require_always])
                     output_stream << " color=crimson";
                 else if (requirement.required_if()[jri_require_for_satisfied])
