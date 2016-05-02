@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # vim: set ft=sh sw=4 sts=4 et :
 
-testname=${2:-${1}}
+testname=$(basename ${2:-${1}})
 interp=
 [[ ${testname%.py} != ${testname} ]] && interp="${PYTHON}"
 [[ ${testname%.rb} != ${testname} ]] && interp="${RUBY} -I ./.libs/"
