@@ -77,6 +77,7 @@ namespace paludis
 
                 void on_done_merge() override;
 
+                void track_install_dir(const FSPath &, const FSPath &) override;
                 void track_install_file(const FSPath &, const FSPath &) override;
                 void track_install_sym(const FSPath &, const FSPath &) override;
 

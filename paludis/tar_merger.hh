@@ -79,6 +79,7 @@ namespace paludis
 
             virtual void add_file(const FSPath &, const FSPath &);
 
+            virtual void track_install_dir(const FSPath &, const FSPath &) = 0;
             virtual void track_install_file(const FSPath &, const FSPath &) = 0;
             virtual void track_install_sym(const FSPath &, const FSPath &) = 0;
 
@@ -86,8 +87,8 @@ namespace paludis
             TarMerger(const TarMergerParams &);
             ~TarMerger();
 
-            void on_file_main(bool is_check, const FSPath &, const FSPath &) override;
             void on_dir_main(bool is_check, const FSPath &, const FSPath &) override;
+            void on_file_main(bool is_check, const FSPath &, const FSPath &) override;
             void on_sym_main(bool is_check, const FSPath &, const FSPath &) override;
 
             void prepare_install_under() override;
