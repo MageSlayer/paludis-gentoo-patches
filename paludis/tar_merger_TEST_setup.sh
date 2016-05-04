@@ -18,6 +18,8 @@ Woohoo
 END
 chmod +x simple/subdir/subsubdir/script
 
+chmod 777 simple/subdir/subsubdir
+
 ln -s file simple/goodsym
 ln -s nothing simple/badsym
 
