@@ -635,12 +635,12 @@ AC_MSG_RESULT($enable_ruby)
 
 if test "x$enable_ruby" = "xyes" ; then
 	AC_ARG_WITH([ruby-version],
-		AS_HELP_STRING([--with-ruby-version=2.2], [Specify Ruby version]),
+		AS_HELP_STRING([--with-ruby-version=2.3], [Specify Ruby version]),
 		RUBY_VERSION="$withval",
-		RUBY_VERSION="2.2")
+		RUBY_VERSION="2.3")
 
 	case "$RUBY_VERSION" in
-		1.9|2.0|2.1|2.2)
+		2.1|2.2|2.3)
 			;;
 		*)
 			AC_MSG_ERROR([Invalid ruby version specified])
