@@ -25,7 +25,6 @@ functionality. Pestering anyone about these is liable to get you hurt a lot.</p>
 
 <ul>
     <li><a href="howdoi.html#ccache">Use <code>ccache</code></a></li>
-    <li><a href="howdoi.html#distcc">Use <code>distcc</code></a></li>
     <li><a href="howdoi.html#unmask">Unmask a Package</a></li>
     <li><a href="howdoi.html#syncfromcvs">Sync from CVS</a></li>
     <li><a href="howdoi.html#syncfromsnapshot">Sync from a Gentoo tree snapshot</a></li>

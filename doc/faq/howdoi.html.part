@@ -4,7 +4,6 @@
 
 <ul>
     <li><a href="howdoi.html#ccache">Use <code>ccache</code></a></li>
-    <li><a href="howdoi.html#distcc">Use <code>distcc</code></a></li>
     <li><a href="howdoi.html#unmask">Unmask a Package</a></li>
     <li><a href="howdoi.html#syncfromcvs">Sync from CVS</a></li>
     <li><a href="howdoi.html#syncfromsnapshot">Sync from a Gentoo tree snapshot</a></li>
@@ -29,18 +28,6 @@ SANDBOX_WRITE="${SANDBOX_WRITE}:${CCACHE_DIR}"
 will sometimes use the <code>paludisbuild</code> user when compiling.
 You can set the maxium size of the cache by running (for example)
 <code>CCACHE_DIR="/var/tmp/ccache" ccache -M 2G</code> once as root.</p>
-
-<h2 id="distcc">Use <code>distcc</code></h2>
-
-<p>To enable <code>distcc</code>, simply set the relevant variables in your
-configuration <code>bashrc</code>:</p>
-
-<pre>
-DISTCC_DIR="/var/tmp/paludis/.distcc"
-DISTCC_HOSTS="localhost another_host"
-PATH="/usr/lib/distcc/bin:${PATH}"
-SANDBOX_WRITE="${SANDBOX_WRITE}:${DISTCC_DIR}"
-</pre>
 
 <h2 id="unmask">Unmask a Package</h2>
 
