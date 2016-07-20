@@ -1,0 +1,260 @@
+
+include(GNUInstallDirs)
+
+foreach(hook
+          auto
+          install_pre
+          install_fail
+          install_post
+          install_all_pre
+          install_all_post
+          install_pretend_pre
+          install_pretend_post
+          install_pretend_display_item_pre
+          install_pretend_display_item_post
+          install_task_execute_pre
+          install_task_execute_post
+          clean_all_post
+          clean_all_pre
+          clean_fail
+          clean_post
+          clean_pre
+          uninstall_pre
+          uninstall_fail
+          uninstall_post
+          uninstall_all_pre
+          uninstall_all_post
+          sync_pre
+          sync_fail
+          sync_post
+          syn_all_pre
+          sync_all_post
+          fetch_pre
+          fetch_post
+          fetch_all_pre
+          fetch_all_post)
+  execute_process(COMMAND
+                    "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_DATADIR}/paludis/hooks/${hook}/.keep")
+  execute_process(COMMAND
+                    "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBDIR}/paludis/hooks/${hook}/.keep")
+endforeach()
+foreach(phase
+          ebuild_metadata_pre
+          ebuild_metadata_fail
+          ebuild_metadata_post
+          ebuild_variable_pre
+          ebuild_variable_fail
+          ebuild_variable_post
+          ebuild_init_pre
+          ebuild_init_fail
+          ebuild_init_post
+          ebuild_initmisc_pre
+          ebuild_initmisc_fail
+          ebuild_initmisc_post
+          ebuild_fetch_extra_pre
+          ebuild_fetch_extra_fail
+          ebuild_fetch_extra_post
+          ebuild_tidyup_pre
+          ebuild_tidyup_fail
+          ebuild_tidyup_post
+          ebuild_unpack_pre
+          ebuild_unpack_fail
+          ebuild_unpack_post
+          ebuild_prepare_pre
+          ebuild_prepare_fail
+          ebuild_prepare_post
+          ebuild_configure_pre
+          ebuild_configure_fail
+          ebuild_configure_post
+          ebuild_compile_pre
+          ebuild_compile_fail
+          ebuild_compile_post
+          ebuild_install_pre
+          ebuild_install_fail
+          ebuild_install_post
+          ebuild_test_pre
+          ebuild_test_fail
+          ebuild_test_post
+          ebuild_test_expensive_pre
+          ebuild_test_expensive_fail
+          ebuild_test_expensive_post
+          ebuild_pretend_pre
+          ebuild_pretend_fail
+          ebuild_pretend_post
+          ebuild_bad_options_pre
+          ebuild_bad_options_fail
+          ebuild_bad_options_post
+          ebuild_bad_required_use_pre
+          ebuild_bad_required_use_fail
+          ebuild_bad_required_use_post
+          ebuild_setup_pre
+          ebuild_setup_fail
+          ebuild_setup_post
+          ebuild_config_pre
+          ebuild_config_fail
+          ebuild_config_post
+          ebuild_nofetch_pre
+          ebuild_nofetch_fail
+          ebuild_nofetch_post
+          ebuild_preinst_pre
+          ebuild_preinst_fail
+          ebuild_preinst_post
+          ebuild_postinst_pre
+          ebuild_postinst_fail
+          ebuild_postinst_post
+          ebuild_prerm_pre
+          ebuild_prerm_fail
+          ebuild_prerm_post
+          ebuild_postrm_pre
+          ebuild_postrm_fail
+          ebuild_postrm_post
+          ebuild_info_pre
+          ebuild_info_fail
+          ebuild_info_post
+          ebuild_infovars_pre
+          ebuild_infovars_fail
+          ebuild_infovars_post
+          ebuild_pivotbin_pre
+          ebuild_pivotbin_fail
+          ebuild_pivotbin_post
+          ebuild_installbin_pre
+          ebuild_installbin_fail
+          ebuild_installbin_post
+          ebuild_saveenv_pre
+          ebuild_saveenv_fail
+          ebuild_saveenv_post
+          ebuild_loadenv_pre
+          ebuild_loadenv_fail
+          ebuild_loadenv_post
+          ebuild_killold_pre
+          ebuild_killold_fail
+          ebuild_killold_post)
+  execute_process(COMMAND
+                    "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_DATADIR}/paludis/hooks/${hook}/.keep")
+  execute_process(COMMAND
+                    "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBDIR}/paludis/hooks/${hook}/.keep")
+endforeach()
+foreach(level einfo;ewarn;eerror;elog)
+  execute_process(COMMAND
+                    "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_DATADIR}/paludis/hooks/${level}/.keep")
+  execute_process(COMMAND
+                    "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBDIR}/paludis/hooks/${level}/.keep")
+endforeach()
+foreach(phase
+          auto
+          install_pre
+          install_post
+          install_all_pre
+          install_all_post
+          install_pretend_pre
+          install_pretend_post
+          uninstall_pre
+          uninstall_post
+          uninstall_all_pre
+          uninstall_all_post
+          sync_pre
+          sync_post
+          sync_all_pre
+          sync_all_post
+          fetch_all_pre
+          fetch_all_post
+          fetch_all_all_pre
+          fetch_all_all_post)
+  execute_process(COMMAND
+                    "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/${phase}/.keep")
+endforeach()
+foreach(phase
+          merger_unlink_file_pre
+          merger_unlink_file_post
+          merger_unlink_dir_pre
+          merger_unlink_dir_post
+          merger_unlink_sym_pre
+          merger_unlink_sym_post
+          merger_unlink_misc_pre
+          merger_unlink_misc_post
+          merger_install_pre
+          merger_install_post
+          merger_install_file_pre
+          merger_install_file_post
+          merger_install_sym_pre
+          merger_install_sym_post
+          merger_install_dir_pre
+          merger_install_dir_post
+          merger_check_pre
+          merger_check_post
+          merger_check_file_pre
+          merger_check_file_post
+          merger_check_sym_pre
+          merger_check_sym_post
+          merger_check_dir_pre
+          merger_check_dir_post
+          unmerger_unlink_pre
+          unmerger_unlink_post
+          unmerger_unlink_file_pre
+          unmerger_unlink_file_post
+          unmerger_unlink_dir_pre
+          unmerger_unlink_dir_post
+          unmerger_unlink_sym_pre
+          unmerger_unlink_sym_post
+          unmerger_unlink_misc_pre
+          unmerger_unlink_misc_post)
+  execute_process(COMMAND
+                    "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_DATADIR}/paludis/hooks/${phase}/.keep")
+  execute_process(COMMAND
+                    "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBDIR}/paludis/hooks/${phase}/.keep")
+endforeach()
+execute_process(COMMAND
+                  "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LOCALSTATEDIR}/gentoo/news/.keep")
+foreach(directory
+          clean_all_pre
+          clean_all_post
+          clean_pre
+          clean_post
+          uninstall_all_pre
+          uninstall_all_post
+          uninstall_pre
+          uninstall_post
+          install_pre
+          install_post
+          install_all_pre
+          install_all_post
+          install_pretend_pre
+          install_pretend_post
+          sync_pre
+          sync_post
+          sync_all_pre
+          sync_all_post
+          fetch_all_pre
+          fetch_all_post
+          fetch_pre
+          fetch_post)
+  execute_process(COMMAND
+                    "${CMAKE_COMMAND}" -E make_directory "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/${directory}")
+endforeach()
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/eselect_env_update.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/install_all_post/eselect_env_update.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/eselect_env_update.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/uninstall_all_post/eselect_env_update.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/gnu_info_index.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/install_all_post/gnu_info_index.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/gnu_info_index.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/uninstall_all_post/gnu_info_index.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/install_all_pre/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/install_all_post/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/install_pre/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/install_post/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/fetch_all_pre/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/fetch_all_post/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/fetch_pre/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/fetch_post/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/clean_all_pre/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/clean_all_post/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/clean_pre/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/clean_post/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/uninstall_all_pre/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/uninstall_all_post/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/uninstall_pre/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/uninstall_post/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/sync_pre/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/log.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/sync_post/log.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/installable_cache_regen.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/sync_all_post/installable_cache_regen.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/installed_cache_regen.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/install_post/installed_cache_regen.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/installed_cache_regen.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/uninstall_post/installed_cache_regen.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/installed_cache_regen.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/clean_post/installed_cache_regen.bash")
+

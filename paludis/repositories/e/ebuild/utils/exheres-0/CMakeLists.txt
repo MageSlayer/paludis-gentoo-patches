@@ -1,0 +1,58 @@
+
+foreach(bannedscript
+          prepall
+          prepallstrip
+          prepstrip
+          prepallman
+          prepman
+          prepallinfo
+          prepinfo
+          prepdocs
+          prepalldocs
+          dohard
+          donewins
+          dosed
+          dohtml
+          ecompress
+          ecompressdir
+          fperms
+          fowners)
+  configure_file("${CMAKE_CURRENT_SOURCE_DIR}/banned_in_eapi_exheres-0"
+                 "${CMAKE_CURRENT_BINARY_DIR}/${bannedscript}"
+                 @ONLY)
+endforeach()
+
+install(PROGRAMS
+          "${CMAKE_CURRENT_BINARY_DIR}/dohard"
+          "${CMAKE_CURRENT_BINARY_DIR}/dohtml"
+          "${CMAKE_CURRENT_SOURCE_DIR}/dolib"
+          "${CMAKE_CURRENT_SOURCE_DIR}/dosbin"
+          "${CMAKE_CURRENT_BINARY_DIR}/dosed"
+          "${CMAKE_CURRENT_BINARY_DIR}/donewins"
+          "${CMAKE_CURRENT_SOURCE_DIR}/emake"
+          "${CMAKE_CURRENT_BINARY_DIR}/fperms"
+          "${CMAKE_CURRENT_BINARY_DIR}/fowners"
+          "${CMAKE_CURRENT_SOURCE_DIR}/herebin"
+          "${CMAKE_CURRENT_SOURCE_DIR}/hereconfd"
+          "${CMAKE_CURRENT_SOURCE_DIR}/hereenvd"
+          "${CMAKE_CURRENT_SOURCE_DIR}/hereinitd"
+          "${CMAKE_CURRENT_SOURCE_DIR}/hereins"
+          "${CMAKE_CURRENT_SOURCE_DIR}/heresbin"
+          "${CMAKE_CURRENT_SOURCE_DIR}/newsbin"
+          "${CMAKE_CURRENT_SOURCE_DIR}/nonfatal"
+          "${CMAKE_CURRENT_BINARY_DIR}/prepall"
+          "${CMAKE_CURRENT_BINARY_DIR}/prepallstrip"
+          "${CMAKE_CURRENT_BINARY_DIR}/prepstrip"
+          "${CMAKE_CURRENT_BINARY_DIR}/prepallman"
+          "${CMAKE_CURRENT_BINARY_DIR}/prepman"
+          "${CMAKE_CURRENT_BINARY_DIR}/prepallinfo"
+          "${CMAKE_CURRENT_BINARY_DIR}/prepinfo"
+          "${CMAKE_CURRENT_BINARY_DIR}/prepdocs"
+          "${CMAKE_CURRENT_BINARY_DIR}/prepalldocs"
+          "${CMAKE_CURRENT_BINARY_DIR}/ecompress"
+          "${CMAKE_CURRENT_BINARY_DIR}/ecompressdir"
+          "${CMAKE_CURRENT_SOURCE_DIR}/strip"
+          "${CMAKE_CURRENT_SOURCE_DIR}/banned_in_eapi_exheres-0"
+        DESTINATION
+          "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/utils/exheres-0")
+

@@ -1,0 +1,158 @@
+
+add_subdirectory(eapis)
+add_subdirectory(ebuild)
+
+if(ENABLE_XML)
+  add_definitions(-DENABLE_XML)
+
+  paludis_add_library(libpaludiserepositoryxmlthings
+                        "${CMAKE_CURRENT_SOURCE_DIR}/xml_things.cc")
+  target_include_directories(libpaludiserepositoryxmlthings
+                             PRIVATE
+                               ${LIBXML2_INCLUDE_DIR})
+  target_link_libraries(libpaludiserepositoryxmlthings
+                        PRIVATE
+                          ${LIBXML2_LIBRARIES})
+endif()
+
+paludis_add_library(libpaludiserepository
+                    OBJECT_LIBRARY
+                      "${CMAKE_CURRENT_SOURCE_DIR}/a_finder.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/aa_visitor.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/can_skip_phase.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/check_fetched_files_visitor.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/check_userpriv.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/dep_parser.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/do_fetch_action.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/do_info_action.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/do_install_action.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/do_pretend_action.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/do_pretend_fetch_action.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_choice_value.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_installed_repository.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_installed_repository_id.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_choices_key.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_key.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_keywords_key.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_mask.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_repository.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_repository_exceptions.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_repository_id.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_repository_news.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_repository_params.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_repository_sets.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_slot_key.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_string_set_key.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_stripper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/eapi.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/eapi_phase.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/ebuild.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/ebuild_flat_metadata_cache.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/ebuild_id.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/eclass_mtimes.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/exndbam_id.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/exndbam_repository.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/exheres_layout.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/exheres_mask_store.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/exheres_profile.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/extra_distribution_data.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/fetch_visitor.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/file_suffixes.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/info_metadata_key.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/iuse.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/pretend_fetch_visitor.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/fix_locked_dependencies.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/glsa.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/layout.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/licence_groups.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/make_archive_strings.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/make_use.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/manifest2_reader.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/mask_info.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/memoised_hashes.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/metadata_xml.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/myoption.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/myoptions_requirements_verifier.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/parse_annotations.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/parse_dependency_label.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/parse_plain_text_label.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/parse_uri_label.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/pbin_merger.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/permitted_directories.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/pipe_command_handler.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/profile.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/registration.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/required_use_verifier.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/source_uri_finder.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/spec_tree_pretty_printer.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/traditional_layout.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/traditional_mask_file.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/traditional_mask_store.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/traditional_profile.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/traditional_profile_file.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/use_desc.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/xml_things_handle.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/vdb_id.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/vdb_merger.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/vdb_repository.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/vdb_unmerger.cc"
+                    SE_SOURCES
+                      "${CMAKE_CURRENT_SOURCE_DIR}/dep_parser.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/iuse.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/e_repository_params.se")
+
+foreach(test
+          aa_visitor
+          dep_parser
+          fix_locked_dependencies
+          source_uri_finder)
+  paludis_add_test(${test} GTEST)
+endforeach()
+foreach(test
+          vdb_repository
+          vdb_repository_TEST_eapis
+          vdb_repository_TEST_cache
+          e_repository
+          e_repository_TEST_0
+          e_repository_TEST_1
+          e_repository_TEST_2
+          e_repository_TEST_3
+          e_repository_TEST_4
+          e_repository_TEST_5
+          e_repository_TEST_6
+          e_repository_TEST_ever
+          e_repository_TEST_exheres_0
+          e_repository_TEST_exlibs
+          e_repository_TEST_phases
+          e_repository_TEST_replacing
+          e_repository_TEST_symlink_rewriting
+          exndbam_repository
+          depend_rdepend
+          e_repository_sets
+          ebuild_flat_metadata_cache
+          fetch_visitor
+          vdb_merger
+          vdb_unmerger)
+  paludis_add_test(${test} GTEST)
+endforeach()
+
+if(ENABLE_XML)
+  paludis_add_test(xml_things GTEST)
+endif()
+
+if(ENABLE_PBINS)
+  paludis_add_test(e_repository_TEST_pbin GTEST)
+endif()
+
+install(FILES
+          "${CMAKE_CURRENT_SOURCE_DIR}/traditional.exclude"
+          "${CMAKE_CURRENT_SOURCE_DIR}/ebuild_entries_suffixes.conf"
+        DESTINATION
+          "${CMAKE_INSTALL_FULL_DATADIR}/paludis")
+if(ENABLE_XML)
+  install(TARGETS
+            libpaludiserepositoryxmlthings
+          DESTINATION
+            "${CMAKE_INSTALL_FULL_LIBDIR}")
+endif()
+

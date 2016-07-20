@@ -1,0 +1,263 @@
+
+paludis_m4process(${CMAKE_CURRENT_SOURCE_DIR}/util.hh.m4
+                  paludis_util_hh_TARGET)
+
+paludis_add_library(libpaludisutil
+                      "${CMAKE_CURRENT_SOURCE_DIR}/active_object_ptr.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/buffer_output_stream.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/channel.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/config_file.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/cookie.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/damerau_levenshtein.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/destringify.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/deferred_construction_ptr.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/digest_registry.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/discard_output_stream.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elf.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elf_dynamic_section.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elf_relocation_section.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elf_sections.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elf_symbol_section.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/enum_iterator.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/env_var_names.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/exception.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/executor.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/extract_host_from_url.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/fs_iterator.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/fs_error.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/fs_path.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/fs_stat.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/graph.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/hashes.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/is_file_with_extension.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/log.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/make_named_values.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/map.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/md5.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/named_value.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/options.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/persona.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/pipe.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/pool.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/pretty_print.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/process.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/pty.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/realpath.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/return_literal_function.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/rmd160.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/safe_ifstream.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/safe_ofstream.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/sequence.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/set.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/sha1.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/sha256.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/sha512.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/simple_parser.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/string_list_stream.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/strip.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/system.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/tail_output_stream.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/tee_output_stream.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/thread_pool.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/timestamp.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/tokeniser.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/tribool.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/type_list.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/upper_lower.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/visitor.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/visitor_cast.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/whirlpool.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/wildcard_expander.cc"
+                    SE_SOURCES
+                      "${CMAKE_CURRENT_SOURCE_DIR}/config_file.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/fs_iterator.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/fs_path.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/is_file_with_extension.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/log.se")
+add_dependencies(libpaludisutil ${paludis_util_hh_TARGET})
+target_link_libraries(libpaludisutil
+                      PRIVATE
+                        ${CMAKE_THREAD_LIBS_INIT}
+                        ${CMAKE_DL_LIBS})
+
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/echo_functions.bash.in"
+               "${CMAKE_CURRENT_BINARY_DIR}/echo_functions.bash"
+               @ONLY)
+
+add_executable(outputwrapper
+               "${CMAKE_CURRENT_SOURCE_DIR}/output_wrapper.cc")
+
+foreach(test
+          active_object_ptr
+          byte_swap
+          create_iterator
+          damerau_levenshtein
+          destringify
+          deferred_construction_ptr
+          enum_iterator
+          extract_host_from_url
+          graph
+          hashes
+          iterator_funcs
+          indirect_iterator
+          join
+          log
+          member_iterator
+          md5
+          options
+          pool
+          pretty_print
+          pty
+          return_literal_function
+          rmd160
+          save
+          sha1
+          sha256
+          sha512
+          simple_parser
+          singleton
+          stream_holder
+          stringify
+          strip
+          system
+          tail_output_stream
+          thread_pool
+          tokeniser
+          tribool
+          whirlpool
+          wrapped_forward_iterator
+          wrapped_value)
+  paludis_add_test(${test} GTEST)
+endforeach()
+
+foreach(test
+          config_file
+          fs_iterator
+          fs_path
+          fs_stat
+          is_file_with_extension
+          process
+          realpath
+          safe_ifstream
+          safe_ofstream
+          wildcard_expander)
+  paludis_add_test(${test} GTEST)
+endforeach()
+
+foreach(test buffer_output_stream;string_list_stream)
+  paludis_add_test(${test} GTEST
+                   LINK_LIBRARIES
+                     ${CMAKE_THREAD_LIBS_INIT})
+endforeach()
+
+install(TARGETS
+          libpaludisutil
+        DESTINATION
+          "${CMAKE_INSTALL_FULL_LIBDIR}")
+install(FILES
+          "${CMAKE_CURRENT_SOURCE_DIR}/active_object_ptr.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/attributes.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/buffer_output_stream.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/byte_swap.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/channel.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/checked_delete.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/clone.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/config_file.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/cookie.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/create_iterator.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/damerau_levenshtein.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/destringify.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/deferred_construction_ptr.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/digest_registry.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/discard_output_stream.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/elf.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/elf_dynamic_section.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/elf_relocation_section.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/elf_sections.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/elf_symbol_section.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/elf_types.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/enum_iterator.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/env_var_names.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/exception.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/executor.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/extract_host_from_url.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/fd_holder.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/fs_iterator.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/fs_error.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/fs_path.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/fs_stat.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/graph.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/hashes.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/iterator_funcs.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/iterator_range.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/indirect_iterator.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/is_file_with_extension.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/join.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/log.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/make_named_values.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/make_shared_copy.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/map.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/member_iterator.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/md5.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/named_value.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/no_type.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/operators.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/options.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/persona.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/pimp.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/pipe.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/pool.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/pretty_print.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/process.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/pty.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/realpath.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/remove_shared_ptr.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/return_literal_function.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/rmd160.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/safe_ifstream.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/safe_ofstream.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/save.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/sequence.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/set.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/sha1.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/sha256.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/sha512.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/simple_parser.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/singleton.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/stream_holder.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/stringify.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/string_list_stream.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/strip.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/system.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/tail_output_stream.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/tee_output_stream.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/thread_pool.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/timestamp.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/tokeniser.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/tribool.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/type_list.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/upper_lower.hh"
+          "${CMAKE_CURRENT_BINARY_DIR}/util.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/visitor.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/visitor_cast.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/whirlpool.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/wildcard_expander.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/wrapped_forward_iterator.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/wrapped_output_iterator.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/wrapped_value.hh"
+          "${CMAKE_CURRENT_BINARY_DIR}/config_file-se.hh"
+          "${CMAKE_CURRENT_BINARY_DIR}/fs_iterator-se.hh"
+          "${CMAKE_CURRENT_BINARY_DIR}/fs_path-se.hh"
+          "${CMAKE_CURRENT_BINARY_DIR}/is_file_with_extension-se.hh"
+          "${CMAKE_CURRENT_BINARY_DIR}/log-se.hh"
+        DESTINATION
+          "${CMAKE_INSTALL_FULL_INCLUDEDIR}/paludis-${PALUDIS_PKG_CONFIG_SLOT}/paludis/util")
+install(FILES
+          "${CMAKE_CURRENT_BINARY_DIR}/echo_functions.bash"
+        DESTINATION
+          "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis")
+install(TARGETS
+          outputwrapper
+        DESTINATION
+          "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/utils")
+

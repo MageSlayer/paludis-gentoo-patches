@@ -1,0 +1,126 @@
+
+paludis_add_library(libpaludisresolver
+                    STATIC_LIBRARY
+                      "${CMAKE_CURRENT_SOURCE_DIR}/accumulate_deps.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/allow_choice_changes_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/allowed_to_remove_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/allowed_to_restart_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/always_via_binary_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/any_child_score.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/can_use_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/change_by_resolvent.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/change_type.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/collect_depped_upon.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/collect_installed.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/collect_purges.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/collect_world.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/confirm_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/constraint.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/decider.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/decision.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/decision_utils.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/decisions.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/destination.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/destination_types.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/destination_utils.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/find_replacing_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/find_repository_for_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/get_constraints_for_dependent_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/get_constraints_for_purge_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/get_constraints_for_via_binary_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/get_destination_types_for_blocker_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/get_destination_types_for_error_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/get_initial_constraints_for_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/get_resolvents_for_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/get_sameness.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/get_use_existing_nothing_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/has_behaviour.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/interest_in_spec_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/job.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/job_list.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/job_lists.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/job_requirements.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/job_state.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/labels_classifier.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/make_destination_filtered_generator_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/make_origin_filtered_generator_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/make_uninstall_blocker.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/make_unmaskable_filter_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/match_qpns.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/nag.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/order_early_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/orderer.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/orderer_notes.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/package_id_comparator_with_promotion.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/package_or_block_dep_spec.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/prefer_or_avoid_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/promote_binaries.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/promote_binaries_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/reason.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/reason_utils.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/remove_hidden_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/remove_if_dependent_helper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/required_confirmations.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/resolution.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/resolutions_by_resolvent.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/resolved.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/resolvent.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/resolver.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/resolver_functions.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/same_slot.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/sanitised_dependencies.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/selection_with_promotion.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/slot_name_or_null.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/strongly_connected_component.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/suggest_restart.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/unsuitable_candidates.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/use_existing.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/why_changed_choices.cc"
+                    SE_SOURCES
+                      "${CMAKE_CURRENT_SOURCE_DIR}/any_child_score.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/change_type.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/decision.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/destination_types.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/job_requirements.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/nag.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/promote_binaries.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/resolver_functions.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/use_existing.se")
+target_link_libraries(libpaludisresolver
+                      INTERFACE
+                        ${CMAKE_THREAD_LIBS_INIT})
+
+paludis_add_library(libpaludisresolvertest
+                    STATIC
+                      "${CMAKE_CURRENT_SOURCE_DIR}/resolver_test.cc")
+# TODO(compnerd) create an object library for the SE_SOURCES that we can depend
+# on instead
+add_dependencies(libpaludisresolvertest libpaludisresolver_SE)
+
+foreach(test
+          any
+          binaries
+          continue_on_failure
+          errors
+          fetches
+          purges
+          blockers
+          cycles
+          serialisation
+          simple
+          subslots
+          suggestions
+          uninstalls)
+  paludis_add_test(resolver_TEST_${test} GTEST
+                   LINK_LIBRARIES
+                     libpaludisresolvertest
+                     libpaludisresolver)
+endforeach()
+if(ENABLE_PBINS)
+  paludis_add_test(resolver_TEST_promote_binaries GTEST)
+  target_link_libraries(resolver_TEST_promote_binaries
+                        PRIVATE
+                          libpaludisresolvertest
+                          libpaludisresolver)
+endif()
+

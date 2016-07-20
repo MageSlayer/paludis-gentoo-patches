@@ -1,0 +1,423 @@
+
+if(ENABLE_PBINS)
+  add_definitions(-DENABLE_PBINS)
+endif()
+if(ENABLE_PYTHON)
+  add_definitions(-DENABLE_PYTHON_HOOKS)
+endif()
+if(ENABLE_STRIPPER)
+  add_definitions(-DENABLE_STRIPPER)
+endif()
+
+# TODO(compnerd) remove these when we adjust hooker.cc
+add_definitions(-DPALUDIS_VERSION_MAJOR=${PROJECT_VERSION_MAJOR}
+                -DPALUDIS_VERSION_MINOR=${PROJECT_VERSION_MINOR})
+
+add_subdirectory(distributions)
+add_subdirectory(fetchers)
+add_subdirectory(syncers)
+add_subdirectory(util)
+add_subdirectory(selinux)
+add_subdirectory(repositories)
+add_subdirectory(environments)
+
+# TODO(compnerd) remove these when we no longer need to support the autotools
+# build and can change about.hh.in to use the variable names that are used in
+# CMake
+set(VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(VERSION_MICRO ${PROJECT_VERSION_PATCH})
+set(PALUDIS_PC_SLOT ${PALUDIS_PKG_CONFIG_SLOT})
+# TODO(compnerd) VERSION_SUFFIX
+# TODO(compnerd) GIT_HEAD
+set(PACKAGE ${PROJECT_NAME})
+set(CXXFLAGS ${CMAKE_CXX_FLAGS})
+list_union("${CMAKE_EXE_LINKER_FLAGS}" "${CMAKE_SHARED_LINKER_FLAGS}" LDFLAGS)
+string(REPLACE ";" " " LDFLAGS "${LDFLAGS}")
+set(CXX ${CMAKE_CXX_COMPILER})
+execute_process(COMMAND
+                  whoami
+                OUTPUT_VARIABLE
+                  BUILDUSER
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND
+                  hostname
+                OUTPUT_VARIABLE
+                  BUILDHOST
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND
+                  date +%&-%m-%dT%H:%M:%S%z
+                OUTPUT_VARIABLE
+                  BUILDDATE
+                OUTPUT_STRIP_TRAILING_WHITESPACE)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/about.hh.in"
+               "${CMAKE_CURRENT_BINARY_DIR}/about.hh"
+               @ONLY)
+
+paludis_m4process(${CMAKE_CURRENT_SOURCE_DIR}/paludis.hh.m4
+                  paludis_hh_TARGET)
+paludis_m4process(${CMAKE_CURRENT_SOURCE_DIR}/comparision_policy.hh.m4
+                  comparision_policy_hh_TARGET)
+
+set(environment_object_libraries)
+foreach(environment ${PALUDIS_ALL_ENVIRONMENTS})
+  string(TOUPPER ${environment} uc_environment)
+  if(ENABLE_${uc_environment}_ENVIRONMENT)
+    list(APPEND environment_object_libraries libpaludis${environment}environment)
+  endif()
+endforeach()
+
+set(repository_object_libraries)
+foreach(repository ${PALUDIS_ALL_REPOSITORIES})
+  string(TOUPPER ${repository} repository_uppercase)
+  if(ENABLE_${repository_uppercase}_REPOSITORY)
+    list(APPEND repository_object_libraries libpaludis${repository}repository)
+  endif()
+endforeach()
+
+paludis_add_library(libpaludis
+                      "${CMAKE_CURRENT_SOURCE_DIR}/about_metadata.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/action.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/action_names.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/additional_package_dep_spec_requirement.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/always_enabled_dependency_label.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/broken_linkage_configuration.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/broken_linkage_finder.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/buffer_output_manager.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/call_pretty_printer.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/changed_choices.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/choice.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/comma_separated_dep_parser.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/comma_separated_dep_pretty_printer.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/command_output_manager.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/common_sets.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/contents.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/create_output_manager_info.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/dep_label.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/dep_spec.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/dep_spec_annotations.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/dep_spec_data.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/dep_spec_flattener.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/distribution.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elf_linkage_checker.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elike_blocker.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elike_choices.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elike_dep_parser.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elike_conditional_dep_spec.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elike_package_dep_spec.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elike_slot_requirement.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elike_use_requirement.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/environment.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/environment_factory.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/environment_implementation.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/file_output_manager.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/filter.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/filter_handler.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/filtered_generator.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/format_messages_output_manager.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/formatted_pretty_printer.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/forward_at_finish_output_manager.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/fs_merger.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/fuzzy_finder.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/generator.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/generator_handler.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/hook.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/hooker.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/ipc_output_manager.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/libtool_linkage_checker.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/linkage_checker.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/literal_metadata_key.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/maintainer.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/mask.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/mask_utils.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/match_package.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/merger.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/merger_entry_type.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/metadata_key.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/metadata_key_holder.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/name.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/ndbam.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/ndbam_merger.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/ndbam_unmerger.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/notifier_callback.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/output_manager.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/output_manager_factory.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/output_manager_from_environment.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/package_dep_spec_collection.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/package_dep_spec_properties.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/package_id.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/paludislike_options_conf.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/partially_made_package_dep_spec.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/partitioning.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/permitted_choice_value_parameter_values.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/pretty_print_options.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/pretty_printer.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/repository.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/repository_factory.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/repository_name_cache.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/selection.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/selection_handler.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/serialise.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/set_file.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/slot.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/slot_requirement.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/spec_tree.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/standard_output_manager.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/stripper.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/syncer.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/tar_merger.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/tee_output_manager.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/unchoices_key.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/unformatted_pretty_printer.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/unmerger.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/user_dep_spec.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/version_operator.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/version_requirements.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/version_spec.cc"
+                    INCORPORATE_OBJECT_LIBRARIES
+                      ${repository_object_libraries}
+                      ${environment_object_libraries}
+                    SE_SOURCES
+                      "${CMAKE_CURRENT_SOURCE_DIR}/action.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/choice.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/create_output_manager_info.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/dep_spec_annotations.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elike_blocker.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elike_choices.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elike_dep_parser.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elike_package_dep_spec.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/elike_use_requirement.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/fs_merger.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/hook.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/mask.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/match_package.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/merger.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/merger_entry_type.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/metadata_key.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/output_manager.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/package_id.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/partially_made_package_dep_spec.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/pretty_print_options.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/repository.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/set_file.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/tar_merger.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/user_dep_spec.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/version_operator.se"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/version_spec.se")
+target_link_libraries(libpaludis
+                      PRIVATE
+                        libpaludisselinux
+                        libpaludisutil
+                        ${CMAKE_DL_LIBS}
+                        ${CMAKE_THREAD_LIBS_INIT})
+add_dependencies(libpaludis ${paludis_hh_TARGET} ${paludis_util_hh_TARGET})
+
+if(ENABLE_PYTHON)
+  paludis_add_library(libpaludispythonhooks
+                        "${CMAKE_CURRENT_SOURCE_DIR}/python_hooks.cc")
+  if(CXX_SUPPORTS_FNO_STRICT_ALIASING)
+    target_compile_options(libpaludispythonhooks PRIVATE -fno-strict-aliasing)
+  endif()
+  target_compile_definitions(libpaludispythonhooks
+                             PRIVATE
+                               -DPYTHONINSTALLDIR="${PALUDIS_PYTHON_INSTALL_DIR}")
+  target_include_directories(libpaludispythonhooks
+                             PRIVATE
+                               ${PYTHON_INCLUDE_DIRS})
+  target_link_libraries(libpaludispythonhooks
+                        PRIVATE
+                          libpaludis
+                          ${Boost_PYTHON_LIBRARY}
+                          ${PYTHON_LIBRARY})
+endif()
+
+if(ENABLE_PBINS)
+  paludis_add_library(libpaludistarextras
+                        "${CMAKE_CURRENT_SOURCE_DIR}/tar_extras.cc")
+  add_dependencies(libpaludistarextras libpaludis_SE)
+  target_link_libraries(libpaludistarextras
+                        PRIVATE
+                          ${LibArchive_LIBRARIES})
+endif()
+
+if(ENABLE_STRIPPER)
+  paludis_add_library(libpaludisstripperextras
+                        "${CMAKE_CURRENT_SOURCE_DIR}/stripper_extras.cc")
+  add_dependencies(libpaludisstripperextras libpaludis_SE)
+  target_link_libraries(libpaludisstripperextras
+                        PRIVATE
+                          ${LibMagic_LIBRARIES})
+endif()
+
+paludis_add_library(libpaludissohooks_TEST
+                    SHARED_LIBRARY
+                      "${CMAKE_CURRENT_SOURCE_DIR}/sohooks_TEST.cc")
+add_dependencies(libpaludissohooks_TEST libpaludis_SE)
+
+foreach(test
+          about
+          broken_linkage_configuration
+          comma_separated_dep_parser
+          dep_spec
+          elike_dep_parser
+          elike_use_requirement
+          environment_implementation
+          filter
+          filtered_generator
+          fs_merger
+          fuzzy_finder
+          generator
+          hooker
+          name
+          partitioning
+          repository_name_cache
+          selection
+          set_file
+          tar_merger
+          user_dep_spec
+          version_operator
+          version_spec)
+  paludis_add_test(${test} GTEST)
+endforeach()
+
+if(ENABLE_GTEST)
+  paludis_add_test(stripper GTEST)
+  add_executable(stripper_TEST_binary
+                   "${CMAKE_CURRENT_SOURCE_DIR}/stripper_TEST_binary.cc")
+  add_dependencies(stripper_TEST stripper_TEST_binary)
+endif()
+
+add_subdirectory(args)
+add_subdirectory(resolver)
+
+install(TARGETS
+          libpaludis
+        DESTINATION
+          "${CMAKE_INSTALL_FULL_LIBDIR}")
+install(FILES
+          "${CMAKE_CURRENT_BINARY_DIR}/about.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/about_metadata.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/action.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/action_names.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/additional_package_dep_spec_requirement.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/always_enabled_dependency_label.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/broken_linkage_configuration.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/broken_linkage_finder.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/buffer_output_manager.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/call_pretty_printer.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/changed_choices.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/choice.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/comma_separated_dep_parser.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/comma_separated_dep_pretty_printer.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/command_output_manager.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/common_sets.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/contents.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/create_output_manager_info.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/dep_label.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/dep_spec.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/dep_spec_annotations.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/dep_spec_data.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/dep_spec_flattener.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/distribution.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/elf_linkage_checker.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/elike_blocker.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/elike_choices.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/elike_dep_parser.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/elike_conditional_dep_spec.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/elike_package_dep_spec.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/elike_slot_requirement.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/elike_use_requirement.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/environment.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/environment_factory.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/environment_implementation.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/file_output_manager.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/filter.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/filter_handler.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/filtered_generator.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/format_messages_output_manager.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/formatted_pretty_printer.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/forward_at_finish_output_manager.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/fs_merger.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/fuzzy_finder.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/generator.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/generator_handler.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/hook.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/hooker.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/ipc_output_manager.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/libtool_linkage_checker.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/linkage_checker.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/literal_metadata_key.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/maintainer.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/mask.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/mask_utils.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/match_package.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/merger.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/merger_entry_type.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/metadata_key.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/metadata_key_holder.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/name.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/ndbam.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/ndbam_merger.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/ndbam_unmerger.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/notifier_callback.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/output_manager.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/output_manager_factory.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/output_manager_from_environment.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/package_dep_spec_collection.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/package_dep_spec_properties.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/package_id.hh"
+          "${CMAKE_CURRENT_BINARY_DIR}/paludis.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/paludislike_options_conf.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/partially_made_package_dep_spec.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/partitioning.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/permitted_choice_value_parameter_values.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/pretty_print_options.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/pretty_printer.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/repository.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/repository_factory.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/repository_name_cache.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/selection.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/selection_handler.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/serialise.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/set_file.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/slot.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/slot_requirement.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/spec_tree.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/standard_output_manager.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/stripper.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/syncer.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/tar_merger.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/tee_output_manager.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/unchoices_key.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/unformatted_pretty_printer.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/unmerger.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/user_dep_spec.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/version_operator.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/version_requirements.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/version_spec.hh"
+        DESTINATION
+          "${CMAKE_INSTALL_FULL_INCLUDEDIR}/paludis-${PALUDIS_PKG_CONFIG_SLOT}/paludis")
+install(FILES
+          "${CMAKE_CURRENT_SOURCE_DIR}/hooker.bash"
+        DESTINATION
+          "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis")
+
+if(ENABLE_PYTHON)
+  install(TARGETS
+            libpaludispythonhooks
+          DESTINATION
+            "${CMAKE_INSTALL_FULL_LIBDIR}")
+endif()
+if(ENABLE_PBINS)
+  install(TARGETS
+            libpaludistarextras
+          DESTINATION
+            "${CMAKE_INSTALL_FULL_LIBDIR}")
+endif()
+if(ENABLE_STRIPPER)
+  install(TARGETS
+            libpaludisstripperextras
+          DESTINATION
+            "${CMAKE_INSTALL_FULL_LIBDIR}")
+endif()
+
