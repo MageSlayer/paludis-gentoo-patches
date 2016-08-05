@@ -52,12 +52,12 @@ namespace
     {
         TestInfo info;
 
-        void SetUp()
+        void SetUp() override
         {
             info = GetParam();
         }
 
-        void TearDown()
+        void TearDown() override
         {
         }
     };

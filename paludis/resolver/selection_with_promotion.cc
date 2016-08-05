@@ -48,7 +48,7 @@ namespace
             {
             }
 
-            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
+            std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
                 RepositoryContentMayExcludes may_excludes(_fg.filter().may_excludes());
@@ -72,7 +72,7 @@ namespace
                 return result;
             }
 
-            virtual std::string as_string() const
+            std::string as_string() const override
             {
                 return "all versions sorted from " + stringify(_fg);
             }

@@ -56,17 +56,17 @@ namespace
             add_see_also("cave-print-checksum-algorithms", 1);
         }
 
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave print-checksum";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "prints cryptographic checksums";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Prints the checksum of the specified input using the specified algorithm. No formatting "
                 "is used, making the output suitable for parsing by scripts.";

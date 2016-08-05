@@ -62,17 +62,17 @@ namespace
     struct PerformCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave perform";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Perform an action upon a package.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Perform an action upon a package. Not suitable for direct use, although it "
                 "may be useful in some more complex scripts.";
@@ -369,7 +369,7 @@ namespace
         {
         }
 
-        void will_fetch(const FSPath & destination, const unsigned long size_in_bytes)
+        void will_fetch(const FSPath & destination, const unsigned long size_in_bytes) override
         {
             if (already_downloaded.end() != already_downloaded.find(destination))
                 return;

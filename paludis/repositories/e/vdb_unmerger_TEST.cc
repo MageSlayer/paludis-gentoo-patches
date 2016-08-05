@@ -67,7 +67,7 @@ namespace
     {
         protected:
 
-            void display(const std::string &) const
+            void display(const std::string &) const override
             {
             }
 
@@ -102,7 +102,7 @@ namespace
         {
         }
 
-        void SetUp()
+        void SetUp() override
         {
             what = GetParam();
             target = what;

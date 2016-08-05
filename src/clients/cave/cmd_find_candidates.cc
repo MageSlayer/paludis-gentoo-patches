@@ -62,17 +62,17 @@ namespace
     struct FindCandidatesCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave find-candidates";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Find a list of candidate packages for a search.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Finds a list of candidate packages for a search. Used by 'cave search'; not generally called "
                 "directly by end users. Note that this command will often select candidates that do not actually "

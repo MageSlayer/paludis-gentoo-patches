@@ -111,7 +111,7 @@ namespace
         {
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             std::ostringstream s;
 
@@ -277,67 +277,67 @@ namespace
             return s.str();
         }
 
-        virtual std::shared_ptr<const QualifiedPackageName> package_ptr() const
+        std::shared_ptr<const QualifiedPackageName> package_ptr() const override
         {
             return package;
         }
 
-        virtual std::shared_ptr<const PackageNamePart> package_name_part_ptr() const
+        std::shared_ptr<const PackageNamePart> package_name_part_ptr() const override
         {
             return package_name_part;
         }
 
-        virtual std::shared_ptr<const CategoryNamePart> category_name_part_ptr() const
+        std::shared_ptr<const CategoryNamePart> category_name_part_ptr() const override
         {
             return category_name_part;
         }
 
-        virtual std::shared_ptr<const VersionRequirements> version_requirements_ptr() const
+        std::shared_ptr<const VersionRequirements> version_requirements_ptr() const override
         {
             return version_requirements;
         }
 
-        virtual VersionRequirementsMode version_requirements_mode() const
+        VersionRequirementsMode version_requirements_mode() const override
         {
             return version_requirements_mode_v;
         }
 
-        virtual std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const
+        std::shared_ptr<const SlotRequirement> slot_requirement_ptr() const override
         {
             return slot;
         }
 
-        virtual std::shared_ptr<const RepositoryName> in_repository_ptr() const
+        std::shared_ptr<const RepositoryName> in_repository_ptr() const override
         {
             return in_repository;
         }
 
-        virtual std::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const
+        std::shared_ptr<const InstallableToRepository> installable_to_repository_ptr() const override
         {
             return installable_to_repository;
         }
 
-        virtual std::shared_ptr<const RepositoryName> from_repository_ptr() const
+        std::shared_ptr<const RepositoryName> from_repository_ptr() const override
         {
             return from_repository;
         }
 
-        virtual std::shared_ptr<const FSPath> installed_at_path_ptr() const
+        std::shared_ptr<const FSPath> installed_at_path_ptr() const override
         {
             return installed_at_path;
         }
 
-        virtual std::shared_ptr<const InstallableToPath> installable_to_path_ptr() const
+        std::shared_ptr<const InstallableToPath> installable_to_path_ptr() const override
         {
             return installable_to_path;
         }
 
-        virtual std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const
+        std::shared_ptr<const AdditionalPackageDepSpecRequirements> additional_requirements_ptr() const override
         {
             return additional_requirements;
         }
 
-        virtual const PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec() const
+        const PartiallyMadePackageDepSpecOptions options_for_partially_made_package_dep_spec() const override
         {
             return options_for_partially_made_package_dep_spec_v;
         }

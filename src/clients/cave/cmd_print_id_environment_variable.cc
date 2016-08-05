@@ -46,17 +46,17 @@ namespace
     struct PrintIDEnvironmentVariableCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave print-id-environment-variable";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Prints ID environment variables.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Prints ID environment variables. No formatting is used, "
                 "making the output suitable for parsing by scripts.";

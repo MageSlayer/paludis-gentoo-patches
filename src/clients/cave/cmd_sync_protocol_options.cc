@@ -49,17 +49,17 @@ namespace
     struct SyncProtocolOptionsCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave sync-protocol-options";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Displays options for a given sync protocol.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Displays options for a given sync protocol.";
         }

@@ -50,17 +50,17 @@ namespace
     struct OwnerCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave owner";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Shows package IDs owning a given file.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Shows package IDs owning a given file.";
         }

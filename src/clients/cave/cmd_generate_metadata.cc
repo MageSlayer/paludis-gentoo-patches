@@ -61,17 +61,17 @@ namespace
     struct GenerateMetadataCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave generate-metadata";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Pregenerate metadata for a set of IDs.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Pregenerates metadata for a set of IDs.";
         }

@@ -53,19 +53,19 @@ namespace
         StringSetArg arg_stringset;
 
         CommandLine();
-        ~CommandLine();
+        ~CommandLine() override;
 
-        std::string app_name() const
+        std::string app_name() const override
         {
             return "args_TEST";
         }
 
-        std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "tests for args";
         }
 
-        std::string app_description() const
+        std::string app_description() const override
         {
             return "Tests args";
         }

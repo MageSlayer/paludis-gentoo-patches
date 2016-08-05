@@ -159,17 +159,17 @@ namespace
     struct DumpCaveFormatsConfCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave dump-cave-formats-conf";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Output a ~/.cave/formats.conf";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Outputs suitable contents for ~/.cave/formats.conf. This file can be used to "
                 "customise the output format for many cave commands (although not commands designed "

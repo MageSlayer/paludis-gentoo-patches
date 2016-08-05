@@ -53,18 +53,18 @@ namespace
             add_usage_line("[ -x|--execute ] !spec ...");
         }
 
-        std::string app_name() const
+        std::string app_name() const override
         {
             return "cave resolve";
         }
 
-        std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Display how to resolve one or more targets, and possibly then "
                 "perform that resolution.";
         }
 
-        std::string app_description() const
+        std::string app_description() const override
         {
             return "Displays how to resolve one or more targets. If instructed, then "
                 "executes the relevant install and uninstall actions to perform that "

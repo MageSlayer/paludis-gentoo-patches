@@ -111,17 +111,17 @@ namespace
                     "The file descriptor on which the serialised resolution can be found.");
         }
 
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave print-resolution-required-confirmations";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Displays a machine-readable description of changes required for a resolution created using 'cave resolve'.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Displays a a machine-readable description of changes required for a resolution created by "
                 "'cave resolve'. Mostly for internal use; most users will not use this command directly.";

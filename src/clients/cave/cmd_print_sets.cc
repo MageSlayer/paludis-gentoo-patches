@@ -43,17 +43,17 @@ namespace
     struct PrintSetsCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave print-sets";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Prints a list of sets.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Prints a list of sets. No formatting is used, making the output suitable for "
                 "parsing by scripts.";

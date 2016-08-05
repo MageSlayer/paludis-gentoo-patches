@@ -54,17 +54,17 @@ namespace
     struct ImportCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave import";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Import a package from a directory containing its image.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Import a package from a directory containing its image. A named directory "
                 "is treated as holding the contents to install, and a dummy package name is "
@@ -155,17 +155,17 @@ namespace
         {
         }
 
-        std::string app_name() const
+        std::string app_name() const override
         {
             return "";
         }
 
-        std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "";
         }
 
-        std::string app_description() const
+        std::string app_description() const override
         {
             return "";
         }

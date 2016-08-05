@@ -92,7 +92,7 @@ namespace
     {
         std::string base_eapi;
 
-        void SetUp()
+        void SetUp() override
         {
             base_eapi = GetParam();
         }

@@ -199,17 +199,17 @@ namespace
         args::ArgsGroup g_actions;
         args::SwitchArg a_create;
 
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave manage-search-index";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Manages a search index for use by cave search.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Manages a search index for use by cave search. A search index is only valid until "
                 "a package is installed or uninstalled, or a sync is performed, or configuration is "

@@ -53,17 +53,17 @@ namespace
     struct HasVersionCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave has-version";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Returns success if there is an installed package matching a particular spec.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Returns success if there is an installed package matching a particular spec. Suitable "
                 "for use in scripts.";

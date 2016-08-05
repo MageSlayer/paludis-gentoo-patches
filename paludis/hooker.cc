@@ -77,20 +77,20 @@ namespace
             {
             }
 
-            virtual HookResult run(
+            HookResult run(
                     const Hook &,
-                    const std::shared_ptr<OutputManager> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const std::shared_ptr<OutputManager> &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const FSPath file_name() const
+            const FSPath file_name() const override
             {
                 return _file_name;
             }
 
-            virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &)
+            void add_dependencies(const Hook &, DirectedGraph<std::string, int> &) override
             {
             }
 
-            virtual const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const
+            const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const override
             {
                 return std::make_shared<Sequence<std::string>>();
             }
@@ -114,18 +114,18 @@ namespace
             {
             }
 
-            virtual HookResult run(
+            HookResult run(
                     const Hook &,
-                    const std::shared_ptr<OutputManager> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const std::shared_ptr<OutputManager> &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const FSPath file_name() const
+            const FSPath file_name() const override
             {
                 return _file_name;
             }
 
-            virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &);
+            void add_dependencies(const Hook &, DirectedGraph<std::string, int> &) override;
 
-            virtual const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const;
+            const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const override;
     };
 
     class SoHookFile :
@@ -143,18 +143,18 @@ namespace
         public:
             SoHookFile(const FSPath &, const bool, const Environment * const);
 
-            virtual HookResult run(
+            HookResult run(
                     const Hook &,
-                    const std::shared_ptr<OutputManager> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const std::shared_ptr<OutputManager> &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const FSPath file_name() const
+            const FSPath file_name() const override
             {
                 return _file_name;
             }
 
-            virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &);
+            void add_dependencies(const Hook &, DirectedGraph<std::string, int> &) override;
 
-            virtual const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const;
+            const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const override;
     };
 }
 

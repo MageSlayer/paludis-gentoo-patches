@@ -292,14 +292,14 @@ namespace
             {
             }
 
-            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag, const ChangedChoices * const,
-                    const std::shared_ptr<const PackageID> & pkg, const std::shared_ptr<const PackageID> &, const ChangedChoices * const changed_choices) const
+            bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag, const ChangedChoices * const,
+                    const std::shared_ptr<const PackageID> & pkg, const std::shared_ptr<const PackageID> &, const ChangedChoices * const changed_choices) const override
             {
                 return icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
-            virtual const std::string as_human_string(
-                    const std::shared_ptr<const PackageID> &) const
+            const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> &) const override
             {
                 return "Flag '" + stringify(flags()) + "' enabled" + default_value_human_string_fragment();
             }
@@ -316,14 +316,14 @@ namespace
             {
             }
 
-            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag, const ChangedChoices * const,
-                    const std::shared_ptr<const PackageID> & pkg, const std::shared_ptr<const PackageID> &, const ChangedChoices * const changed_choices) const
+            bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag, const ChangedChoices * const,
+                    const std::shared_ptr<const PackageID> & pkg, const std::shared_ptr<const PackageID> &, const ChangedChoices * const changed_choices) const override
             {
                 return ! icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
-            virtual const std::string as_human_string(
-                    const std::shared_ptr<const PackageID> &) const
+            const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> &) const override
             {
                 return "Flag '" + stringify(flags()) + "' disabled" + default_value_human_string_fragment();
             }
@@ -340,15 +340,15 @@ namespace
             {
             }
 
-            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag, const ChangedChoices * const,
-                    const std::shared_ptr<const PackageID> & pkg, const std::shared_ptr<const PackageID> &, const ChangedChoices * const changed_choices) const
+            bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag, const ChangedChoices * const,
+                    const std::shared_ptr<const PackageID> & pkg, const std::shared_ptr<const PackageID> &, const ChangedChoices * const changed_choices) const override
             {
                 return icky_use_query(_options, flag, pkg, changed_choices, default_value()) ||
                     ! icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
-            virtual const std::string as_human_string(
-                    const std::shared_ptr<const PackageID> &) const
+            const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> &) const override
             {
                 return "Flag '" + stringify(flags()) + "' either enabled or disabled" + default_value_human_string_fragment();
             }
@@ -378,16 +378,16 @@ namespace
             {
             }
 
-            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
+            bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const ChangedChoices * const maybe_changes_to_owner, const std::shared_ptr<const PackageID> & pkg,
-                    const std::shared_ptr<const PackageID> & from_id, const ChangedChoices * const changed_choices) const
+                    const std::shared_ptr<const PackageID> & from_id, const ChangedChoices * const changed_choices) const override
             {
                 return ! icky_use_query(_options, flag, from_id, maybe_changes_to_owner) ||
                     icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
-            virtual const std::string as_human_string(
-                    const std::shared_ptr<const PackageID> & from_id) const
+            const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & from_id) const override
             {
                 return "Flag '" + stringify(flags()) + "' enabled if it is enabled for '"
                     + stringify(*from_id) + "'" + default_value_human_string_fragment();
@@ -405,17 +405,17 @@ namespace
             {
             }
 
-            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
+            bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const ChangedChoices * const maybe_changes_to_owner,
                     const std::shared_ptr<const PackageID> & pkg, const std::shared_ptr<const PackageID> & from_id,
-                    const ChangedChoices * const changed_choices) const
+                    const ChangedChoices * const changed_choices) const override
             {
                 return icky_use_query(_options, flag, from_id, maybe_changes_to_owner) ||
                     icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
-            virtual const std::string as_human_string(
-                    const std::shared_ptr<const PackageID> & from_id) const
+            const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & from_id) const override
             {
                 return "Flag '" + stringify(flags()) + "' enabled if it is disabled for '" +
                     stringify(*from_id) + "'" + default_value_human_string_fragment();
@@ -433,16 +433,16 @@ namespace
             {
             }
 
-            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
+            bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const ChangedChoices * const maybe_changes_to_owner, const std::shared_ptr<const PackageID> & pkg,
-                    const std::shared_ptr<const PackageID> & from_id, const ChangedChoices * const changed_choices) const
+                    const std::shared_ptr<const PackageID> & from_id, const ChangedChoices * const changed_choices) const override
             {
                 return ! icky_use_query(_options, flag, from_id, maybe_changes_to_owner) ||
                     ! icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
-            virtual const std::string as_human_string(
-                    const std::shared_ptr<const PackageID> & from_id) const
+            const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & from_id) const override
             {
                 return "Flag '" + stringify(flags()) + "' disabled if it is enabled for '" +
                     stringify(*from_id) + "'" + default_value_human_string_fragment();
@@ -460,16 +460,16 @@ namespace
             {
             }
 
-            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
+            bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const ChangedChoices * const maybe_changes_to_owner, const std::shared_ptr<const PackageID> & pkg,
-                    const std::shared_ptr<const PackageID> & from_id, const ChangedChoices * const changed_choices) const
+                    const std::shared_ptr<const PackageID> & from_id, const ChangedChoices * const changed_choices) const override
             {
                 return icky_use_query(_options, flag, from_id, maybe_changes_to_owner) ||
                     ! icky_use_query(_options, flag, pkg, changed_choices, default_value());
             }
 
-            virtual const std::string as_human_string(
-                    const std::shared_ptr<const PackageID> & from_id) const
+            const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & from_id) const override
             {
                 return "Flag '" + stringify(flags()) + "' disabled if it is disabled for '" +
                     stringify(*from_id) + "'" + default_value_human_string_fragment();
@@ -487,16 +487,16 @@ namespace
             {
             }
 
-            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
+            bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const ChangedChoices * const maybe_changes_to_owner, const std::shared_ptr<const PackageID> & pkg,
-                    const std::shared_ptr<const PackageID> & from_id, const ChangedChoices * const changed_choices) const
+                    const std::shared_ptr<const PackageID> & from_id, const ChangedChoices * const changed_choices) const override
             {
                 return icky_use_query(_options, flag, pkg, changed_choices, default_value()) ==
                     icky_use_query(_options, flag, from_id, maybe_changes_to_owner);
             }
 
-            virtual const std::string as_human_string(
-                    const std::shared_ptr<const PackageID> & from_id) const
+            const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & from_id) const override
             {
                 return "Flag '" + stringify(flags()) + "' enabled or disabled like it is for '"
                     + stringify(*from_id) + "'" + default_value_human_string_fragment();
@@ -514,16 +514,16 @@ namespace
             {
             }
 
-            virtual bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
+            bool one_requirement_met_base(const Environment * const, const ChoiceNameWithPrefix & flag,
                     const ChangedChoices * const maybe_changes_to_owner, const std::shared_ptr<const PackageID> & pkg,
-                    const std::shared_ptr<const PackageID> & from_id, const ChangedChoices * const changed_choices) const
+                    const std::shared_ptr<const PackageID> & from_id, const ChangedChoices * const changed_choices) const override
             {
                 return icky_use_query(_options, flag, pkg, changed_choices, default_value()) !=
                     icky_use_query(_options, flag, from_id, maybe_changes_to_owner);
             }
 
-            virtual const std::string as_human_string(
-                    const std::shared_ptr<const PackageID> & from_id) const
+            const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & from_id) const override
             {
                 return "Flag '" + stringify(flags()) + "' enabled or disabled opposite to how it is for '"
                     + stringify(*from_id) + "'" + default_value_human_string_fragment();
@@ -545,12 +545,12 @@ namespace
             {
             }
 
-            virtual const std::pair<bool, std::string> requirement_met(
+            const std::pair<bool, std::string> requirement_met(
                     const Environment * const env,
                     const ChangedChoices * const maybe_changes_to_owner,
                     const std::shared_ptr<const PackageID> & id,
                     const std::shared_ptr<const PackageID> & from_id,
-                    const ChangedChoices * const maybe_changes_to_target) const
+                    const ChangedChoices * const maybe_changes_to_target) const override
             {
                 using namespace std::placeholders;
 
@@ -570,14 +570,14 @@ namespace
                 return result;
             }
 
-            virtual const std::string as_human_string(
-                    const std::shared_ptr<const PackageID> & from_id) const
+            const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> & from_id) const override
             {
                 return join(_reqs.begin(), _reqs.end(), "; ", std::bind(std::mem_fn(&UseRequirement::as_human_string),
                             std::placeholders::_1, from_id));
             }
 
-            virtual const std::string as_raw_string() const
+            const std::string as_raw_string() const override
             {
                 return _raw;
             }
@@ -587,12 +587,12 @@ namespace
                 _reqs.push_back(req);
             }
 
-            virtual Tribool accumulate_changes_to_make_met(
+            Tribool accumulate_changes_to_make_met(
                     const Environment * const env,
                     const ChangedChoices * const maybe_changes_to_owner,
                     const std::shared_ptr<const PackageID> & id,
                     const std::shared_ptr<const PackageID> & from_id,
-                    ChangedChoices & changed_choices) const
+                    ChangedChoices & changed_choices) const override
             {
                 Tribool result(indeterminate);
                 for (const auto & _req : _reqs)
@@ -907,12 +907,12 @@ namespace
             {
             }
 
-            virtual const std::pair<bool, std::string> requirement_met(
+            const std::pair<bool, std::string> requirement_met(
                     const Environment * const,
                     const ChangedChoices * const,
                     const std::shared_ptr<const PackageID> & id,
                     const std::shared_ptr<const PackageID> &,
-                    const ChangedChoices * const) const PALUDIS_ATTRIBUTE((warn_unused_result))
+                    const ChangedChoices * const) const override PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 if (! id->choices_key())
                     return std::make_pair(true, "");
@@ -946,12 +946,12 @@ namespace
                     return std::make_pair(true, as_human_string(id));
             }
 
-            virtual Tribool accumulate_changes_to_make_met(
+            Tribool accumulate_changes_to_make_met(
                     const Environment * const env,
                     const ChangedChoices * const maybe_changes_to_owner,
                     const std::shared_ptr<const PackageID> & id,
                     const std::shared_ptr<const PackageID> & spec_id,
-                    ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result))
+                    ChangedChoices &) const override PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 if (requirement_met(env, maybe_changes_to_owner, id, spec_id, nullptr).first)
                     return indeterminate;
@@ -959,13 +959,13 @@ namespace
                     return false;
             }
 
-            virtual const std::string as_human_string(
-                    const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result))
+            const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> &) const override PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 return "Remaining presumed flags enabled";
             }
 
-            virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            const std::string as_raw_string() const override PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 return "";
             }

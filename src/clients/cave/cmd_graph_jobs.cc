@@ -67,17 +67,17 @@ namespace
                     "The file descriptor on which the serialised resolution can be found.");
         }
 
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave graph-jobs";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Creates a Graphviz graph for jobs in a resolution created using 'cave resolve'.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Creates a Graphviz graph for jobs in a resolution created using 'cave resolve'. Mostly for "
                 "internal use; most users will not use this command directly.";

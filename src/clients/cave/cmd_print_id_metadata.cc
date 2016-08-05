@@ -49,17 +49,17 @@ namespace
     struct PrintIDMetadataCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave print-id-metadata";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Prints ID metadata.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Prints ID metadata. No formatting is used, making the output suitable for "
                 "parsing by scripts.";

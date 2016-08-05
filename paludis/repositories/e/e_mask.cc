@@ -38,11 +38,11 @@ namespace
 
         public:
             EUnacceptedMask(const char, const std::string &, const std::string &);
-            ~EUnacceptedMask();
+            ~EUnacceptedMask() override;
 
-            char key() const;
-            const std::string description() const;
-            const std::string unaccepted_key_name() const;
+            char key() const override;
+            const std::string description() const override;
+            const std::string unaccepted_key_name() const override;
     };
 }
 

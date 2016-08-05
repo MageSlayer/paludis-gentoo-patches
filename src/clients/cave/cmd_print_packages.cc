@@ -44,17 +44,17 @@ namespace
     struct PrintPackagesCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave print-packages";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Prints a list of package names.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Prints a list of package names. No formatting is used, making the output suitable for parsing by scripts.";
         }

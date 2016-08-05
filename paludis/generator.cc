@@ -139,9 +139,9 @@ namespace
         {
         }
 
-        virtual std::shared_ptr<const RepositoryNameSet> repositories(
+        std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
-                const RepositoryContentMayExcludes &) const
+                const RepositoryContentMayExcludes &) const override
         {
             using namespace std::placeholders;
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
@@ -150,7 +150,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "packages with repository " + stringify(name);
         }
@@ -166,11 +166,11 @@ namespace
         {
         }
 
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
                 const std::shared_ptr<const QualifiedPackageNameSet> & qpns,
-                const RepositoryContentMayExcludes & x) const
+                const RepositoryContentMayExcludes & x) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
@@ -195,7 +195,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "packages originally from repository " + stringify(name);
         }
@@ -211,11 +211,11 @@ namespace
         {
         }
 
-        virtual std::shared_ptr<const CategoryNamePartSet> categories(
+        std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
                 const RepositoryContentMayExcludes & x
-                ) const
+                ) const override
         {
             std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
 
@@ -230,7 +230,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "packages with category " + stringify(name);
         }
@@ -246,11 +246,11 @@ namespace
         {
         }
 
-        virtual std::shared_ptr<const CategoryNamePartSet> categories(
+        std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
                 const RepositoryContentMayExcludes & x
-                ) const
+                ) const override
         {
             std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
 
@@ -265,11 +265,11 @@ namespace
             return result;
         }
 
-        virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
+        std::shared_ptr<const QualifiedPackageNameSet> packages(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
                 const std::shared_ptr<const CategoryNamePartSet> & cats,
-                const RepositoryContentMayExcludes & x) const
+                const RepositoryContentMayExcludes & x) const override
         {
             std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
             for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
@@ -282,7 +282,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "packages named " + stringify(name);
         }
@@ -302,9 +302,9 @@ namespace
         {
         }
 
-        virtual std::shared_ptr<const RepositoryNameSet> repositories(
+        std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
-                const RepositoryContentMayExcludes & x) const
+                const RepositoryContentMayExcludes & x) const override
         {
             if (package_dep_spec_has_properties(spec, make_named_values<PackageDepSpecProperties>(
                             n::has_additional_requirements() = indeterminate,
@@ -364,10 +364,10 @@ namespace
             return result;
         }
 
-        virtual std::shared_ptr<const CategoryNamePartSet> categories(
+        std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
-                const RepositoryContentMayExcludes & x) const
+                const RepositoryContentMayExcludes & x) const override
         {
             if (spec.category_name_part_ptr())
             {
@@ -413,11 +413,11 @@ namespace
                 return AllGeneratorHandlerBase::categories(env, repos, x);
         }
 
-        virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
+        std::shared_ptr<const QualifiedPackageNameSet> packages(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
                 const std::shared_ptr<const CategoryNamePartSet> & cats,
-                const RepositoryContentMayExcludes & x) const
+                const RepositoryContentMayExcludes & x) const override
         {
             if (spec.package_name_part_ptr())
             {
@@ -448,11 +448,11 @@ namespace
                 return AllGeneratorHandlerBase::packages(env, repos, cats, x);
         }
 
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
                 const std::shared_ptr<const QualifiedPackageNameSet> & qpns,
-                const RepositoryContentMayExcludes & x) const
+                const RepositoryContentMayExcludes & x) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
@@ -474,7 +474,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             std::string suffix;
             if (options[mpo_ignore_additional_requirements])
@@ -495,9 +495,9 @@ namespace
         {
         }
 
-        virtual std::shared_ptr<const RepositoryNameSet> repositories(
+        std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
-                const RepositoryContentMayExcludes & x) const
+                const RepositoryContentMayExcludes & x) const override
         {
             std::shared_ptr<const RepositoryNameSet> r1(g1.repositories(env, x));
             if (r1->empty())
@@ -515,10 +515,10 @@ namespace
             return result;
         }
 
-        virtual std::shared_ptr<const CategoryNamePartSet> categories(
+        std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
-                const RepositoryContentMayExcludes & x) const
+                const RepositoryContentMayExcludes & x) const override
         {
             std::shared_ptr<const CategoryNamePartSet> c1(g1.categories(env, repos, x));
             if (c1->empty())
@@ -536,11 +536,11 @@ namespace
             return result;
         }
 
-        virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
+        std::shared_ptr<const QualifiedPackageNameSet> packages(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
                 const std::shared_ptr<const CategoryNamePartSet> & cats,
-                const RepositoryContentMayExcludes & x) const
+                const RepositoryContentMayExcludes & x) const override
         {
             std::shared_ptr<const QualifiedPackageNameSet> q1(g1.packages(env, repos, cats, x));
             if (q1->empty())
@@ -558,11 +558,11 @@ namespace
             return result;
         }
 
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
                 const std::shared_ptr<const QualifiedPackageNameSet> & qpns,
-                const RepositoryContentMayExcludes & x) const
+                const RepositoryContentMayExcludes & x) const override
         {
             std::shared_ptr<const PackageIDSet> i1(g1.ids(env, repos, qpns, x));
             if (i1->empty())
@@ -581,7 +581,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return stringify(g1) + " intersected with " + stringify(g2);
         }
@@ -599,9 +599,9 @@ namespace
         {
         }
 
-        virtual std::shared_ptr<const RepositoryNameSet> repositories(
+        std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
-                const RepositoryContentMayExcludes & x) const
+                const RepositoryContentMayExcludes & x) const override
         {
             std::shared_ptr<const RepositoryNameSet> r1(g1.repositories(env, x));
             std::shared_ptr<const RepositoryNameSet> r2(g2.repositories(env, x));
@@ -613,10 +613,10 @@ namespace
             return result;
         }
 
-        virtual std::shared_ptr<const CategoryNamePartSet> categories(
+        std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
-                const RepositoryContentMayExcludes & x) const
+                const RepositoryContentMayExcludes & x) const override
         {
             std::shared_ptr<const CategoryNamePartSet> c1(g1.categories(env, repos, x));
             std::shared_ptr<const CategoryNamePartSet> c2(g2.categories(env, repos, x));
@@ -628,11 +628,11 @@ namespace
             return result;
         }
 
-        virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
+        std::shared_ptr<const QualifiedPackageNameSet> packages(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
                 const std::shared_ptr<const CategoryNamePartSet> & cats,
-                const RepositoryContentMayExcludes & x) const
+                const RepositoryContentMayExcludes & x) const override
         {
             std::shared_ptr<const QualifiedPackageNameSet> q1(g1.packages(env, repos, cats, x));
             std::shared_ptr<const QualifiedPackageNameSet> q2(g2.packages(env, repos, cats, x));
@@ -644,11 +644,11 @@ namespace
             return result;
         }
 
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
                 const std::shared_ptr<const QualifiedPackageNameSet> & qpns,
-                const RepositoryContentMayExcludes & x) const
+                const RepositoryContentMayExcludes & x) const override
         {
             std::shared_ptr<const PackageIDSet> i1(g1.ids(env, repos, qpns, x));
             std::shared_ptr<const PackageIDSet> i2(g2.ids(env, repos, qpns, x));
@@ -661,7 +661,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return stringify(g1) + " unioned with " + stringify(g2);
         }
@@ -670,7 +670,7 @@ namespace
     struct AllGeneratorHandler :
         AllGeneratorHandlerBase
     {
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "all packages";
         }
@@ -680,9 +680,9 @@ namespace
     struct SomeIDsMightSupportActionGeneratorHandler :
         AllGeneratorHandlerBase
     {
-        virtual std::shared_ptr<const RepositoryNameSet> repositories(
+        std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
-                const RepositoryContentMayExcludes &) const
+                const RepositoryContentMayExcludes &) const override
         {
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
             for (auto i(env->begin_repositories()),
@@ -693,7 +693,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "packages that might support action " + stringify(ActionNames<A_>::value);
         }
@@ -702,40 +702,40 @@ namespace
     struct NothingGeneratorHandler :
         GeneratorHandler
     {
-        virtual std::shared_ptr<const RepositoryNameSet> repositories(
+        std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const,
-                const RepositoryContentMayExcludes &) const
+                const RepositoryContentMayExcludes &) const override
         {
             return std::make_shared<RepositoryNameSet>();
         }
 
-        virtual std::shared_ptr<const CategoryNamePartSet> categories(
+        std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const,
                 const std::shared_ptr<const RepositoryNameSet> &,
-                const RepositoryContentMayExcludes &) const
+                const RepositoryContentMayExcludes &) const override
         {
             return std::make_shared<CategoryNamePartSet>();
         }
 
-        virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
+        std::shared_ptr<const QualifiedPackageNameSet> packages(
                 const Environment * const,
                 const std::shared_ptr<const RepositoryNameSet> &,
                 const std::shared_ptr<const CategoryNamePartSet> &,
-                const RepositoryContentMayExcludes &) const
+                const RepositoryContentMayExcludes &) const override
         {
             return std::make_shared<QualifiedPackageNameSet>();
         }
 
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
                 const std::shared_ptr<const RepositoryNameSet> &,
                 const std::shared_ptr<const QualifiedPackageNameSet> &,
-                const RepositoryContentMayExcludes &) const
+                const RepositoryContentMayExcludes &) const override
         {
             return std::make_shared<PackageIDSet>();
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "no packages";
         }

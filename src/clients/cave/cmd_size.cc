@@ -42,17 +42,17 @@ namespace
     struct SizeCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave size";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Shows the size of files installed by a package.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Shows the size of files installed by a package.";
         }

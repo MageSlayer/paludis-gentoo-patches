@@ -56,17 +56,17 @@ namespace
     struct ContentsCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave contents";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Prints the contents of a package ID.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Display the contents of (files installed by) a given package ID.";
         }

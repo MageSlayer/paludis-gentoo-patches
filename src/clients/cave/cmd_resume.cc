@@ -84,17 +84,17 @@ namespace
             add_usage_line("--resume-file state [ --retry-failed ] [ --retry-skipped ]");
         }
 
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave resume";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Resume a failed resolution from 'cave resolve'";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Resumes a failed resultion from 'cave resolve'. To enable resumes, use "
                 "'cave resolve --resume-file state --execute', and then if errors occur, use "

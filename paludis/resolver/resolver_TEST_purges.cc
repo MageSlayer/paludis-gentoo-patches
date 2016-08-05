@@ -56,12 +56,12 @@ namespace
     {
         std::shared_ptr<ResolverTestData> data;
 
-        void SetUp()
+        void SetUp() override
         {
             data = std::make_shared<ResolverTestData>("purges", "exheres-0", "exheres");
         }
 
-        void TearDown()
+        void TearDown() override
         {
         }
     };

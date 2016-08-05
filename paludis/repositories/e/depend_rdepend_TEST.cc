@@ -83,7 +83,7 @@ namespace
         std::string eapi;
         bool special;
 
-        void SetUp()
+        void SetUp() override
         {
             eapi = GetParam().eapi;
             special = GetParam().special;

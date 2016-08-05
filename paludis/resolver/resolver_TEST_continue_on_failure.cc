@@ -64,12 +64,12 @@ namespace
     {
         std::shared_ptr<ResolverTestData> data;
 
-        void SetUp()
+        void SetUp() override
         {
             data = std::make_shared<ResolverTestData>("continue_on_failure", "exheres-0", "exheres");
         }
 
-        void TearDown()
+        void TearDown() override
         {
             data.reset();
         }

@@ -64,17 +64,17 @@ namespace
             add_note("All options available for 'cave resolve' are also permitted. See 'man cave-resolve' for details.");
         }
 
-        std::string app_name() const
+        std::string app_name() const override
         {
             return "cave purge";
         }
 
-        std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Uninstall unused packages.";
         }
 
-        std::string app_description() const
+        std::string app_description() const override
         {
             return "Uninstalls any package that is not either in 'world' or a dependency of a package "
                 "in 'world'.";

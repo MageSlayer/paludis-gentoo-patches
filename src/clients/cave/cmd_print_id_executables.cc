@@ -43,17 +43,17 @@ namespace
     struct PrintIDExecutablesCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave print-id-executables";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Prints a list of executables belonging to an ID.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Prints a list of executables belonging to an ID. "
                 "No formating is used, making the script suitable for parsing by scripts.";

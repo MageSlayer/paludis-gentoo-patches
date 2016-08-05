@@ -125,7 +125,7 @@ namespace
     struct AllFilterHandler :
         AllFilterHandlerBase
     {
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "all matches";
         }
@@ -135,9 +135,9 @@ namespace
     struct SupportsActionFilterHandler :
         AllFilterHandlerBase
     {
-        virtual std::shared_ptr<const RepositoryNameSet> repositories(
+        std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
-                const std::shared_ptr<const RepositoryNameSet> & repos) const
+                const std::shared_ptr<const RepositoryNameSet> & repos) const override
         {
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
 
@@ -151,9 +151,9 @@ namespace
             return result;
         }
 
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
@@ -167,7 +167,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "supports action " + stringify(ActionNames<A_>::value);
         }
@@ -176,14 +176,14 @@ namespace
     struct NotMaskedFilterHandler :
         AllFilterHandlerBase
     {
-        virtual const RepositoryContentMayExcludes may_excludes() const
+        const RepositoryContentMayExcludes may_excludes() const override
         {
             return { rcme_masked };
         }
 
-        virtual std::shared_ptr<const RepositoryNameSet> repositories(
+        std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
-                const std::shared_ptr<const RepositoryNameSet> & repos) const
+                const std::shared_ptr<const RepositoryNameSet> & repos) const override
         {
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
 
@@ -197,9 +197,9 @@ namespace
             return result;
         }
 
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
@@ -211,7 +211,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "not masked";
         }
@@ -229,14 +229,14 @@ namespace
         {
         }
 
-        virtual const RepositoryContentMayExcludes may_excludes() const
+        const RepositoryContentMayExcludes may_excludes() const override
         {
             return { rcme_not_installed };
         }
 
-        virtual std::shared_ptr<const RepositoryNameSet> repositories(
+        std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
-                const std::shared_ptr<const RepositoryNameSet> & repos) const
+                const std::shared_ptr<const RepositoryNameSet> & repos) const override
         {
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
 
@@ -251,9 +251,9 @@ namespace
             return result;
         }
 
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
@@ -264,7 +264,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "installed " + std::string(equal ? "" : "not ") + "at root " + stringify(root);
         }
@@ -282,43 +282,43 @@ namespace
         {
         }
 
-        virtual const RepositoryContentMayExcludes may_excludes() const
+        const RepositoryContentMayExcludes may_excludes() const override
         {
             /* we can exclude anything either filter would reject */
             return f1.may_excludes() | f2.may_excludes();
         }
 
-        virtual std::shared_ptr<const RepositoryNameSet> repositories(
+        std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
-                const std::shared_ptr<const RepositoryNameSet> & s) const
+                const std::shared_ptr<const RepositoryNameSet> & s) const override
         {
             return f2.repositories(env, f1.repositories(env, s));
         }
 
-        virtual std::shared_ptr<const CategoryNamePartSet> categories(
+        std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & r,
-                const std::shared_ptr<const CategoryNamePartSet> & c) const
+                const std::shared_ptr<const CategoryNamePartSet> & c) const override
         {
             return f2.categories(env, r, f1.categories(env, r, c));
         }
 
-        virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
+        std::shared_ptr<const QualifiedPackageNameSet> packages(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & r,
-                const std::shared_ptr<const QualifiedPackageNameSet> & q) const
+                const std::shared_ptr<const QualifiedPackageNameSet> & q) const override
         {
             return f2.packages(env, r, f1.packages(env, r, q));
         }
 
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const env,
-                const std::shared_ptr<const PackageIDSet> & s) const
+                const std::shared_ptr<const PackageIDSet> & s) const override
         {
             return f2.ids(env, f1.ids(env, s));
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return stringify(f1) + " filtered through " + stringify(f2);
         }
@@ -334,14 +334,14 @@ namespace
         {
         }
 
-        virtual const RepositoryContentMayExcludes may_excludes() const
+        const RepositoryContentMayExcludes may_excludes() const override
         {
             return { };
         }
 
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
@@ -361,7 +361,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "same slot as " + stringify(*as_id);
         }
@@ -377,14 +377,14 @@ namespace
         {
         }
 
-        virtual const RepositoryContentMayExcludes may_excludes() const
+        const RepositoryContentMayExcludes may_excludes() const override
         {
             return { };
         }
 
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
@@ -396,7 +396,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "slot is " + stringify(slot);
         }
@@ -405,9 +405,9 @@ namespace
     struct NoSlotHandler :
         AllFilterHandlerBase
     {
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
@@ -419,12 +419,12 @@ namespace
             return result;
         }
 
-        virtual const RepositoryContentMayExcludes may_excludes() const
+        const RepositoryContentMayExcludes may_excludes() const override
         {
             return { };
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "has no slot";
         }
@@ -444,14 +444,14 @@ namespace
         {
         }
 
-        virtual const RepositoryContentMayExcludes may_excludes() const
+        const RepositoryContentMayExcludes may_excludes() const override
         {
             return { };
         }
 
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const env,
-                const std::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
@@ -465,7 +465,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             std::string suffix;
             if (options[mpo_ignore_additional_requirements])
@@ -486,9 +486,9 @@ namespace
         {
         }
 
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
@@ -502,7 +502,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return desc;
         }

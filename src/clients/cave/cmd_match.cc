@@ -95,17 +95,17 @@ namespace
     struct MatchCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave match";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Determine whether a particular package version has certain properties";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Determines whether a particular package version has certain properties. Mostly for "
                 "use by 'cave search'; not generally for use by end users.";

@@ -118,23 +118,23 @@ namespace
             flag = ChoiceNameWithPrefix(s.substr(inverse ? 1 : 0, s.length() - (inverse ? 2 : 1)));
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return (inverse ? "!" : "") + stringify(flag) + "?";
         }
 
-        virtual bool condition_met(const Environment * const, const std::shared_ptr<const PackageID> & id) const
+        bool condition_met(const Environment * const, const std::shared_ptr<const PackageID> & id) const override
         {
             return icky_use_query(flag, *id, no_warning_for_unlisted) ^ inverse;
         }
 
-        virtual bool condition_meetable(const Environment * const env, const std::shared_ptr<const PackageID> & id) const
+        bool condition_meetable(const Environment * const env, const std::shared_ptr<const PackageID> & id) const override
         {
             return condition_met(env, id) || ! icky_use_query_locked(flag, *id, no_warning_for_unlisted);
         }
 
-        virtual bool condition_would_be_met_when(const Environment * const env, const std::shared_ptr<const PackageID> & id,
-                const ChangedChoices & changes) const
+        bool condition_would_be_met_when(const Environment * const env, const std::shared_ptr<const PackageID> & id,
+                const ChangedChoices & changes) const override
         {
             Tribool overridden(changes.overridden_value(flag));
 

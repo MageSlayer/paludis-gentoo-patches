@@ -58,33 +58,33 @@ namespace
         {
         }
 
-        ~EStringSetKey()
+        ~EStringSetKey() override
         {
         }
 
-        const std::shared_ptr<const Set<std::string> > parse_value() const
+        const std::shared_ptr<const Set<std::string> > parse_value() const override
         {
             return parsed_value;
         }
 
-        const std::string raw_name() const
+        const std::string raw_name() const override
         {
             return variable->name();
         }
 
-        const std::string human_name() const
+        const std::string human_name() const override
         {
             return variable->description();
         }
 
-        virtual MetadataKeyType type() const
+        MetadataKeyType type() const override
         {
             return key_type;
         }
 
-        virtual const std::string pretty_print_value(
+        const std::string pretty_print_value(
                 const PrettyPrinter & p,
-                const PrettyPrintOptions &) const
+                const PrettyPrintOptions &) const override
         {
             return join(parsed_value->begin(), parsed_value->end(), " ", CallPrettyPrinter(p));
         }

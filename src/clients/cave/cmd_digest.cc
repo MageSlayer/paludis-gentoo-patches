@@ -64,17 +64,17 @@ namespace
     struct DigestCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave digest";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Generates a digest file for a particular package in a particular repository.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Generates a digest file for a particular package in a particular repository.";
         }

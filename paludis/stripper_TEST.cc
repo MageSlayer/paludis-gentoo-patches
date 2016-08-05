@@ -33,28 +33,28 @@ namespace
     struct TestStripper :
         Stripper
     {
-        virtual void on_enter_dir(const FSPath &)
+        void on_enter_dir(const FSPath &) override
         {
         }
 
-        virtual void on_leave_dir(const FSPath &)
+        void on_leave_dir(const FSPath &) override
         {
         }
 
 
-        virtual void on_strip(const FSPath &)
+        void on_strip(const FSPath &) override
         {
         }
 
-        virtual void on_split(const FSPath &, const FSPath &)
+        void on_split(const FSPath &, const FSPath &) override
         {
         }
 
-        virtual void on_dwarf_compress(const FSPath &)
+        void on_dwarf_compress(const FSPath &) override
         {
         }
 
-        virtual void on_unknown(const FSPath &)
+        void on_unknown(const FSPath &) override
         {
         }
 

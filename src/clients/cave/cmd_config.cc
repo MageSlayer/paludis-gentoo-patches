@@ -52,17 +52,17 @@ namespace
     struct ConfigCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave config";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Perform post-install configuration on a package.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Perform post-install configuration on a package. Note that most packages do "
                 "not provide a post-install configuration script.";

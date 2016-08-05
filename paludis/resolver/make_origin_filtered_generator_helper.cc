@@ -65,9 +65,9 @@ namespace
     struct BinaryableFilterHandler :
         AllFilterHandlerBase
     {
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const
+                const std::shared_ptr<const PackageIDSet> & id) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
@@ -79,7 +79,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "binaryable";
         }

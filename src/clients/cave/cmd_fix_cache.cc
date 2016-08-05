@@ -48,17 +48,17 @@ namespace
     struct FixCacheCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave fix-cache";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Fix on-disk caches.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Fixes on-disk caches. Normally this is handled automatically when needed (e.g. after a sync, "
                 "or when a package is installed), but a forced fix-cache is required after a different package "

@@ -50,26 +50,26 @@ namespace
                                     )));
             }
 
-            ~UnChoicesKey()
+            ~UnChoicesKey() override
             {
             }
 
-            const std::shared_ptr<const Choices> parse_value() const
+            const std::shared_ptr<const Choices> parse_value() const override
             {
                 return _value;
             }
 
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 return "Choices";
             }
 
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 return "PALUDIS_CHOICES";
             }
 
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
+            MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result))
             {
                 return mkt_internal;
             }

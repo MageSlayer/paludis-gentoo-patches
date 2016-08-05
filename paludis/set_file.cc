@@ -83,10 +83,10 @@ namespace
         public:
             PaludisConfHandler(const SetFileParams &);
 
-            virtual std::shared_ptr<SetSpecTree> contents() const;
-            virtual bool add(const std::string &);
-            virtual bool remove(const std::string &);
-            virtual void rewrite() const;
+            std::shared_ptr<SetSpecTree> contents() const override;
+            bool add(const std::string &) override;
+            bool remove(const std::string &) override;
+            void rewrite() const override;
     };
 
     class PaludisBashHandler :
@@ -99,10 +99,10 @@ namespace
         public:
             PaludisBashHandler(const SetFileParams &);
 
-            virtual std::shared_ptr<SetSpecTree> contents() const;
-            virtual bool add(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
-            virtual bool remove(const std::string &) PALUDIS_ATTRIBUTE((noreturn));
-            virtual void rewrite() const PALUDIS_ATTRIBUTE((noreturn));
+            std::shared_ptr<SetSpecTree> contents() const override;
+            bool add(const std::string &) override PALUDIS_ATTRIBUTE((noreturn));
+            bool remove(const std::string &) override PALUDIS_ATTRIBUTE((noreturn));
+            void rewrite() const override PALUDIS_ATTRIBUTE((noreturn));
     };
 
     class SimpleHandler :
@@ -120,10 +120,10 @@ namespace
         public:
             SimpleHandler(const SetFileParams &);
 
-            virtual std::shared_ptr<SetSpecTree> contents() const;
-            virtual bool add(const std::string &);
-            virtual bool remove(const std::string &);
-            virtual void rewrite() const;
+            std::shared_ptr<SetSpecTree> contents() const override;
+            bool add(const std::string &) override;
+            bool remove(const std::string &) override;
+            void rewrite() const override;
     };
 
     std::shared_ptr<SetFileHandler>

@@ -36,17 +36,17 @@ namespace
     struct ManCommandLine :
         paludis::args::ArgsHandler
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "";
         }

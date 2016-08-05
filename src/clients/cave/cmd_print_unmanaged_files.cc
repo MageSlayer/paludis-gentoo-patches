@@ -53,17 +53,17 @@ namespace
     struct PrintUnmanagedFilesCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave print-unmanaged-files";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Prints a list of unmanaged files.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Prints all files under a specified root which is not owned "
                    "by an installed package.  No formatting is used, making the "

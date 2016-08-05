@@ -45,7 +45,7 @@ namespace
     {
         using UnformattedPrettyPrinter::prettify;
 
-        const std::string prettify(const PackageDepSpec & s) const
+        const std::string prettify(const PackageDepSpec & s) const override
         {
             /* cat/pkg[foo][bar] and cat/pkg[bar][foo] are the same, and := deps
              * are weird */

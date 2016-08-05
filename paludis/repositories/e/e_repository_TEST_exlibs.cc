@@ -104,7 +104,7 @@ namespace
     {
         TestInfo info;
 
-        void SetUp()
+        void SetUp() override
         {
             info = GetParam();
         }

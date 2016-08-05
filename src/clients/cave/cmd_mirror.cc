@@ -65,17 +65,17 @@ namespace
     struct MirrorCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave mirror";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Fetches files for a set of IDs.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Fetches files for a set of IDs.";
         }

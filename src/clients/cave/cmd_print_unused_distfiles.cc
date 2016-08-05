@@ -57,17 +57,17 @@ namespace
     struct PrintUnusedDistfilesCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave print-unused-distfiles";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Prints unused distfiles.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Prints all distfiles not used by any installed package. No "
                 "formatting is used, making the output suitable for parsing by scripts.";

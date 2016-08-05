@@ -65,17 +65,17 @@ namespace
     struct VerifyCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave verify";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Verify that an installed package's files haven't changed.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Verify than an installed package's files haven't changed. Note that there are "
                 "legitimate reasons for some files (such as configuration files) to have been "

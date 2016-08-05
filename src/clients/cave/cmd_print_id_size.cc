@@ -35,17 +35,17 @@ namespace
     struct PrintIDSizeCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave print-id-size";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Prints the size of files installed by a package.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Prints the size of files installed by a package. No formatting is used, making the output suitable for parsing by scripts.";
         }

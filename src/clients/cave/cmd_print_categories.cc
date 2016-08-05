@@ -43,17 +43,17 @@ namespace
     struct PrintCategoriesCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave print-categories";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Prints a list of known categories.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Prints a list of known categories. No formatting is used, making the output suitable for "
                 "parsing by scripts.";

@@ -118,7 +118,7 @@ namespace
             {
             }
 
-            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
+            std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
                 RepositoryContentMayExcludes may_excludes(_fg.filter().may_excludes());
@@ -150,7 +150,7 @@ namespace
                 return result;
             }
 
-            virtual std::string as_string() const
+            std::string as_string() const override
             {
                 return "some arbitrary version from " + stringify(_fg);
             }
@@ -165,7 +165,7 @@ namespace
             {
             }
 
-            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
+            std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
                 using namespace std::placeholders;
 
@@ -196,7 +196,7 @@ namespace
                 return result;
             }
 
-            virtual std::string as_string() const
+            std::string as_string() const override
             {
                 return "best version of each package from " + stringify(_fg);
             }
@@ -211,7 +211,7 @@ namespace
             {
             }
 
-            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
+            std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
                 using namespace std::placeholders;
 
@@ -237,7 +237,7 @@ namespace
                 return result;
             }
 
-            virtual std::string as_string() const
+            std::string as_string() const override
             {
                 return "all versions sorted from " + stringify(_fg);
             }
@@ -252,7 +252,7 @@ namespace
             {
             }
 
-            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
+            std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
                 using namespace std::placeholders;
 
@@ -277,7 +277,7 @@ namespace
                 return result;
             }
 
-            virtual std::string as_string() const
+            std::string as_string() const override
             {
                 return "all versions in some arbitrary order from " + stringify(_fg);
             }
@@ -292,7 +292,7 @@ namespace
             {
             }
 
-            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
+            std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
                 using namespace std::placeholders;
 
@@ -343,7 +343,7 @@ namespace
                 return result;
             }
 
-            virtual std::string as_string() const
+            std::string as_string() const override
             {
                 return "all versions grouped by slot from " + stringify(_fg);
             }
@@ -358,7 +358,7 @@ namespace
             {
             }
 
-            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
+            std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
                 using namespace std::placeholders;
 
@@ -409,7 +409,7 @@ namespace
                 return result;
             }
 
-            virtual std::string as_string() const
+            std::string as_string() const override
             {
                 return "best version in each slot from " + stringify(_fg);
             }
@@ -424,7 +424,7 @@ namespace
             {
             }
 
-            virtual std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const
+            std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
                 using namespace std::placeholders;
 
@@ -453,7 +453,7 @@ namespace
                 return result;
             }
 
-            virtual std::string as_string() const
+            std::string as_string() const override
             {
                 return "the single version from " + stringify(_fg);
             }

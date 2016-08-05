@@ -70,10 +70,10 @@ namespace
         public:
             HookTestEnvironment(const FSPath & hooks);
 
-            virtual ~HookTestEnvironment();
+            ~HookTestEnvironment() override;
 
-            virtual HookResult perform_hook(const Hook &, const std::shared_ptr<OutputManager> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            HookResult perform_hook(const Hook &, const std::shared_ptr<OutputManager> &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     HookTestEnvironment::HookTestEnvironment(const FSPath & hooks)
@@ -107,23 +107,23 @@ namespace
         {
         }
 
-        void record_install_file(const FSPath &, const FSPath &, const std::string &, const FSMergerStatusFlags &)
+        void record_install_file(const FSPath &, const FSPath &, const std::string &, const FSMergerStatusFlags &) override
         {
         }
 
-        void record_install_dir(const FSPath &, const FSPath &, const FSMergerStatusFlags &)
+        void record_install_dir(const FSPath &, const FSPath &, const FSMergerStatusFlags &) override
         {
         }
 
-        void record_install_sym(const FSPath &, const FSPath &, const FSMergerStatusFlags &)
+        void record_install_sym(const FSPath &, const FSPath &, const FSMergerStatusFlags &) override
         {
         }
 
-        virtual void record_install_under_dir(const FSPath &, const FSMergerStatusFlags &)
+        void record_install_under_dir(const FSPath &, const FSMergerStatusFlags &) override
         {
         }
 
-        void on_error(bool is_check, const std::string & s)
+        void on_error(bool is_check, const std::string & s) override
         {
             if (is_check)
                 make_check_fail();
@@ -131,20 +131,20 @@ namespace
                 throw FSMergerError(s);
         }
 
-        void on_warn(bool, const std::string &)
+        void on_warn(bool, const std::string &) override
         {
         }
 
-        void display_override(const std::string &) const
+        void display_override(const std::string &) const override
         {
         }
 
-        bool config_protected(const FSPath &, const FSPath &)
+        bool config_protected(const FSPath &, const FSPath &) override
         {
             return false;
         }
 
-        std::string make_config_protect_name(const FSPath & src, const FSPath &)
+        std::string make_config_protect_name(const FSPath & src, const FSPath &) override
         {
             return src.basename() + ".cfgpro";
         }

@@ -49,17 +49,17 @@ namespace
     struct PrintIDActionsCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave print-id-actions";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Prints ID actions.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Prints ID actions. No formatting is used, making the output suitable for "
                 "parsing by scripts.";

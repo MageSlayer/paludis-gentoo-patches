@@ -127,17 +127,17 @@ namespace
                     "The file descriptor on which the serialised resolution can be found.");
         }
 
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave execute-resolution";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Executes a dependency resolution created using 'cave resolve'.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Execute a dependency resolution created using 'cave resolve'. Mostly for "
                 "internal use; most users will not use this command directly.";
@@ -1215,7 +1215,7 @@ namespace
         {
         }
 
-        std::string queue_name() const
+        std::string queue_name() const override
         {
             if (0 != n_fetch_jobs)
                 return visitor_cast<const FetchJob>(*job) ? "fetch" : "execute";
@@ -1223,7 +1223,7 @@ namespace
                 return "execute";
         }
 
-        std::string unique_id() const
+        std::string unique_id() const override
         {
             return job->make_accept_returning(
                 [&] (const UninstallJob & j) {
@@ -1242,7 +1242,7 @@ namespace
                 );
         }
 
-        bool can_run() const
+        bool can_run() const override
         {
             for (JobRequirements::ConstIterator r(job->requirements()->begin()), r_end(job->requirements()->end()) ;
                     r != r_end ; ++r)
@@ -1264,7 +1264,7 @@ namespace
             return true;
         }
 
-        void pre_execute_exclusive()
+        void pre_execute_exclusive() override
         {
             last_flushed = Timestamp::now();
             last_output = last_flushed;
@@ -1352,7 +1352,7 @@ namespace
             }
         }
 
-        void execute_threaded()
+        void execute_threaded() override
         {
             if (want)
             {
@@ -1417,7 +1417,7 @@ namespace
             }
         }
 
-        void flush_threaded()
+        void flush_threaded() override
         {
             std::unique_lock<std::recursive_mutex> lock(job_mutex);
             const std::shared_ptr<OutputManager> output_manager(
@@ -1434,7 +1434,7 @@ namespace
             }
         }
 
-        void post_execute_exclusive()
+        void post_execute_exclusive() override
         {
             if (want)
             {

@@ -48,17 +48,17 @@ namespace
     struct ExecutablesCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave executables";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Display executables belonging to an ID.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Display executables belonging to an ID.";
         }

@@ -79,12 +79,12 @@ namespace
             {
             }
 
-            virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
+            std::shared_ptr<const QualifiedPackageNameSet> packages(
                     const Environment * const,
                     const std::shared_ptr<const RepositoryNameSet> &,
-                    const std::shared_ptr<const QualifiedPackageNameSet> &) const;
+                    const std::shared_ptr<const QualifiedPackageNameSet> &) const override;
 
-            virtual std::string as_string() const
+            std::string as_string() const override
             {
                 return "packages fuzzily like " + _package;
             }

@@ -45,7 +45,7 @@ namespace
         public VDBMerger
     {
         private:
-            void display_override(const std::string &) const
+            void display_override(const std::string &) const override
             {
             }
 
@@ -55,12 +55,12 @@ namespace
             {
             }
 
-            bool check()
+            bool check() override
             {
                 return FSMerger::check();
             }
 
-            void on_enter_dir(bool, const FSPath)
+            void on_enter_dir(bool, const FSPath) override
             {
             }
     };
@@ -97,7 +97,7 @@ namespace
         {
         }
 
-        void SetUp()
+        void SetUp() override
         {
             target = GetParam();
             root_dir = FSPath::cwd() / "vdb_merger_TEST_dir" / (target + "_dir") / "root";
@@ -118,7 +118,7 @@ namespace
                         ));
         }
 
-        void TearDown()
+        void TearDown() override
         {
             merger.reset();
         }

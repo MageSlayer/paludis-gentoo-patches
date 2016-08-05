@@ -134,29 +134,29 @@ namespace
         {
         }
 
-        const std::shared_ptr<const SimpleURISpecTree> parse_value() const
+        const std::shared_ptr<const SimpleURISpecTree> parse_value() const override
         {
             return vv;
         }
 
-        virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+        const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return _raw_name;
         }
 
-        virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result))
+        const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return _human_name;
         }
 
-        virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result))
+        MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return _type;
         }
 
-        virtual const std::string pretty_print_value(
+        const std::string pretty_print_value(
                 const PrettyPrinter & pretty_printer,
-                const PrettyPrintOptions &) const
+                const PrettyPrintOptions &) const override
         {
             UnwrittenHomepagePrettyPrinter p(pretty_printer);
             parse_value()->top()->accept(p);

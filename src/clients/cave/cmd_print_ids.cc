@@ -55,17 +55,17 @@ namespace
     struct PrintIDsCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave print-ids";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Prints a list of known IDs.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Prints a list of known IDs. No formatting is used, making the output suitable for "
                 "parsing by scripts.";
@@ -131,42 +131,42 @@ namespace
         {
         }
 
-        virtual const RepositoryContentMayExcludes may_excludes() const
+        const RepositoryContentMayExcludes may_excludes() const override
         {
             return { };
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "with mask '" + mask + "'";
         }
 
-        virtual std::shared_ptr<const RepositoryNameSet> repositories(
+        std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const,
-                const std::shared_ptr<const RepositoryNameSet> & r) const
+                const std::shared_ptr<const RepositoryNameSet> & r) const override
         {
             return r;
         }
 
-        virtual std::shared_ptr<const CategoryNamePartSet> categories(
+        std::shared_ptr<const CategoryNamePartSet> categories(
                 const Environment * const,
                 const std::shared_ptr<const RepositoryNameSet> &,
-                const std::shared_ptr<const CategoryNamePartSet> & c) const
+                const std::shared_ptr<const CategoryNamePartSet> & c) const override
         {
             return c;
         }
 
-        virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
+        std::shared_ptr<const QualifiedPackageNameSet> packages(
                 const Environment * const,
                 const std::shared_ptr<const RepositoryNameSet> &,
-                const std::shared_ptr<const QualifiedPackageNameSet> & q) const
+                const std::shared_ptr<const QualifiedPackageNameSet> & q) const override
         {
             return q;
         }
 
-        virtual std::shared_ptr<const PackageIDSet> ids(
+        std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & c) const
+                const std::shared_ptr<const PackageIDSet> & c) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 

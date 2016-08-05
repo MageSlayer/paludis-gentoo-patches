@@ -53,17 +53,17 @@ namespace
     struct PrintBestVersionCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave print-best-version";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Prints the best installed version matching a particular spec.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Prints the best installed version matching a particular spec. No "
                 "formatting is used, making the output suitable for parsing by scripts.";

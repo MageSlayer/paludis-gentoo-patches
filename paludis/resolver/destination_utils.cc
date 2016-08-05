@@ -65,9 +65,9 @@ namespace
     struct BinaryDestinationGeneratorHandler :
         AllGeneratorHandlerBase
     {
-        virtual std::shared_ptr<const RepositoryNameSet> repositories(
+        std::shared_ptr<const RepositoryNameSet> repositories(
                 const Environment * const env,
-                const RepositoryContentMayExcludes &) const
+                const RepositoryContentMayExcludes &) const override
         {
             using namespace std::placeholders;
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
@@ -80,7 +80,7 @@ namespace
             return result;
         }
 
-        virtual std::string as_string() const
+        std::string as_string() const override
         {
             return "binary destination repositories";
         }

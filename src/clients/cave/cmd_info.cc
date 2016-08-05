@@ -68,17 +68,17 @@ namespace
     struct InfoCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave info";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Display a summary of configuration and package information.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Displays a formatted summary of configuration and package information, e.g. for "
                 "use when submitting bug reports. The package names of any relevant packages for bug "

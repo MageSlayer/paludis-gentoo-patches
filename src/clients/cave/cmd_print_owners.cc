@@ -45,17 +45,17 @@ namespace
     struct PrintOwnersCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave print-owners";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Prints a list of package IDs owning a given file.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Prints a list of package IDs owning a given file. No formatting is used, making the output suitable for parsing by scripts.";
         }

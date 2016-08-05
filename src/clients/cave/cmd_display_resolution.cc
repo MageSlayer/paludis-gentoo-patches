@@ -124,17 +124,17 @@ namespace
                     "The file descriptor on which the serialised resolution can be found.");
         }
 
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave display-resolution";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Displays a dependency resolution created using 'cave resolve'.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Displays a dependency resolution created using 'cave resolve'. Mostly for "
                 "internal use; most users will not use this command directly.";
@@ -1056,7 +1056,7 @@ namespace
         {
         }
 
-        void will_fetch(const FSPath & destination, const unsigned long size_in_bytes)
+        void will_fetch(const FSPath & destination, const unsigned long size_in_bytes) override
         {
             if (totals->download_files.end() != totals->download_files.find(destination))
                 return;

@@ -75,17 +75,17 @@ namespace
             add_note("All options available for 'cave resolve' are also permitted. See 'man cave-resolve' for details.");
         }
 
-        std::string app_name() const
+        std::string app_name() const override
         {
             return "cave uninstall";
         }
 
-        std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Uninstall one or more packages.";
         }
 
-        std::string app_description() const
+        std::string app_description() const override
         {
             return "Uninstalls one or more packages. Note that 'cave uninstall' simply rewrites the supplied "
                 "dependency specifications and then uses 'cave resolve' to do the work; 'cave uninstall foo' is "

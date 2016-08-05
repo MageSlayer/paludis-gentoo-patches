@@ -68,17 +68,17 @@ namespace
     struct SearchCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave search";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Search for packages with particular characteristics.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Searches for packages with particular characteristics.";
         }

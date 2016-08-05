@@ -37,16 +37,16 @@ namespace
         public:
             EChoiceValue(const EChoiceValueParams &);
 
-            const UnprefixedChoiceName unprefixed_name() const;
-            const ChoiceNameWithPrefix name_with_prefix() const;
-            bool enabled() const;
-            bool enabled_by_default() const;
-            bool locked() const;
-            const std::string description() const;
-            ChoiceOrigin origin() const;
-            const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            bool presumed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const UnprefixedChoiceName unprefixed_name() const override;
+            const ChoiceNameWithPrefix name_with_prefix() const override;
+            bool enabled() const override;
+            bool enabled_by_default() const override;
+            bool locked() const override;
+            const std::string description() const override;
+            ChoiceOrigin origin() const override;
+            const std::string parameter() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool presumed() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

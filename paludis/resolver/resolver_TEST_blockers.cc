@@ -58,13 +58,13 @@ namespace
     {
         std::shared_ptr<ResolverTestData> data;
 
-        void SetUp()
+        void SetUp() override
         {
             data = std::make_shared<ResolverTestData>("blockers", "exheres-0", "exheres");
             data->get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_never);
         }
 
-        void TearDown()
+        void TearDown() override
         {
             data.reset();
         }
@@ -75,13 +75,13 @@ namespace
     {
         std::shared_ptr<ResolverTestData> data;
 
-        void SetUp()
+        void SetUp() override
         {
             data = std::make_shared<ResolverTestData>("blockers", "0", "exheres");
             data->get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_never);
         }
 
-        void TearDown()
+        void TearDown() override
         {
             data.reset();
         }

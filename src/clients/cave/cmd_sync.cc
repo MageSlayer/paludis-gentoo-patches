@@ -67,17 +67,17 @@ namespace
         args::AliasArg a_suffix;
         args::StringArg a_revision;
 
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave sync";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Sync all or specified repositories.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Syncs repositories. If any repository names are specified, these repositories "
                 "are synced. Otherwise, all syncable repositories are synced.";
@@ -131,7 +131,7 @@ namespace
         {
         }
 
-        virtual std::string queue_name() const
+        std::string queue_name() const override
         {
             /* if we're sequential, there's just one queue */
             if (cmdline.a_sequential.specified())
@@ -149,17 +149,17 @@ namespace
             return "";
         }
 
-        virtual std::string unique_id() const
+        std::string unique_id() const override
         {
             return stringify(name);
         }
 
-        virtual bool can_run() const
+        bool can_run() const override
         {
             return true;
         }
 
-        virtual void pre_execute_exclusive()
+        void pre_execute_exclusive() override
         {
             try
             {
@@ -196,7 +196,7 @@ namespace
             }
         }
 
-        virtual void execute_threaded()
+        void execute_threaded() override
         {
             if (abort)
                 return;
@@ -247,7 +247,7 @@ namespace
             }
         }
 
-        virtual void flush_threaded()
+        void flush_threaded() override
         {
             if (output_manager->want_to_flush())
                 display_active();
@@ -260,7 +260,7 @@ namespace
             }
         }
 
-        virtual void post_execute_exclusive()
+        void post_execute_exclusive() override
         {
             try
             {

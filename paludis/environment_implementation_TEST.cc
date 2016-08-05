@@ -94,7 +94,7 @@ namespace
         {
         }
 
-        std::shared_ptr<const CategoryNamePartSet> unimportant_category_names(const RepositoryContentMayExcludes &) const
+        std::shared_ptr<const CategoryNamePartSet> unimportant_category_names(const RepositoryContentMayExcludes &) const override
         {
             std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
             result->insert(CategoryNamePart("bad-cat1"));

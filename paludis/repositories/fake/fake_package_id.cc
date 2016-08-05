@@ -425,52 +425,52 @@ namespace
         {
         }
 
-        const UnprefixedChoiceName unprefixed_name() const
+        const UnprefixedChoiceName unprefixed_name() const override
         {
             return value_name;
         }
 
-        virtual const ChoiceNameWithPrefix name_with_prefix() const
+        const ChoiceNameWithPrefix name_with_prefix() const override
         {
             return ChoiceNameWithPrefix((choice->prefix().value().empty() ? "" : stringify(choice->prefix()) + ":") + stringify(value_name));
         }
 
-        virtual bool enabled() const
+        bool enabled() const override
         {
             return env->want_choice_enabled(id, choice, value_name).is_true();
         }
 
-        virtual bool enabled_by_default() const
+        bool enabled_by_default() const override
         {
             return false;
         }
 
-        virtual bool locked() const
+        bool locked() const override
         {
             return false;
         }
 
-        virtual const std::string description() const
+        const std::string description() const override
         {
             return "monkey";
         }
 
-        virtual ChoiceOrigin origin() const
+        ChoiceOrigin origin() const override
         {
             return co_explicit;
         }
 
-        virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result))
+        const std::string parameter() const override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return env->value_for_choice_parameter(id, choice, value_name);
         }
 
-        virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+        const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const override
         {
             return nullptr;
         }
 
-        virtual bool presumed() const PALUDIS_ATTRIBUTE((warn_unused_result))
+        bool presumed() const override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return false;
         }

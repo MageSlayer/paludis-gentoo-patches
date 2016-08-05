@@ -52,17 +52,17 @@ namespace
             add_usage_line("[-a|--all] [COMMAND]");
         }
 
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave help";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "display help information";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Display help information for a particular command.";
         }

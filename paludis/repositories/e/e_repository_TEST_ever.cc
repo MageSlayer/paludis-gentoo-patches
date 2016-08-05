@@ -90,7 +90,7 @@ namespace
     {
         std::string test;
 
-        void SetUp()
+        void SetUp() override
         {
             test = GetParam();
         }

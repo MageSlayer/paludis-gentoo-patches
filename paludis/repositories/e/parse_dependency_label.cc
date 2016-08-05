@@ -84,12 +84,12 @@ namespace
         {
         }
 
-        virtual bool enabled(const Environment * const env, const std::shared_ptr<const PackageID> & id) const
+        bool enabled(const Environment * const env, const std::shared_ptr<const PackageID> & id) const override
         {
             return enabled_if_option(env, id, label_text, choice_name);
         }
 
-        virtual const std::string text() const
+        const std::string text() const override
         {
             return label_text;
         }

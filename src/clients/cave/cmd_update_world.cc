@@ -49,17 +49,17 @@ namespace
     struct UpdateWorldCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave update-world";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Updates the world set.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Adds or removes items from the world set. This command is only for changing the contents "
                 "of the world set; it does not install or uninstall anything.";

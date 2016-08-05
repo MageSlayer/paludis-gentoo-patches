@@ -79,17 +79,17 @@ namespace
                     "override this, use '-- --no-lazy --no-preserve-world'.");
         }
 
-        std::string app_name() const
+        std::string app_name() const override
         {
             return "cave fix-linkage";
         }
 
-        std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Identify packages with broken linkage that can be fixed by rebuilds.";
         }
 
-        std::string app_description() const
+        std::string app_description() const override
         {
             return "Identifies packages with broken linkage that can be fixed by rebuilds. "
                 "If instructed, then executes the relevant install and uninstall actions to "
@@ -115,17 +115,17 @@ namespace
         {
         }
 
-        std::string app_name() const
+        std::string app_name() const override
         {
             return "";
         }
 
-        std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "";
         }
 
-        std::string app_description() const
+        std::string app_description() const override
         {
             return "";
         }

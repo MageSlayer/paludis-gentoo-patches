@@ -51,26 +51,26 @@ namespace
         {
         }
 
-        ~ESlotKey()
+        ~ESlotKey() override
         {
         }
 
-        virtual const Slot parse_value() const
+        const Slot parse_value() const override
         {
             return slot_value;
         }
 
-        virtual const std::string raw_name() const
+        const std::string raw_name() const override
         {
             return variable->name();
         }
 
-        virtual const std::string human_name() const
+        const std::string human_name() const override
         {
             return variable->description();
         }
 
-        virtual MetadataKeyType type() const
+        MetadataKeyType type() const override
         {
             return key_type;
         }

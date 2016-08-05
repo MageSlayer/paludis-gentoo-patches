@@ -76,17 +76,17 @@ namespace
     struct ShowCommandLine :
         CaveCommandCommandLine
     {
-        virtual std::string app_name() const
+        std::string app_name() const override
         {
             return "cave show";
         }
 
-        virtual std::string app_synopsis() const
+        std::string app_synopsis() const override
         {
             return "Display a summary of a given object.";
         }
 
-        virtual std::string app_description() const
+        std::string app_description() const override
         {
             return "Displays a formatted summary of a given object. If the object is a set, the set's "
                 "contents are listed. If the object is a repository name, information about the repository "

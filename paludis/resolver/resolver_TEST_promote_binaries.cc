@@ -54,8 +54,8 @@ namespace
         std::shared_ptr<ResolverWithBinaryTestData> data;
         static bool bin_created;
 
-        void SetUp();
-        void TearDown();
+        void SetUp() override;
+        void TearDown() override;
 
         std::shared_ptr<const PackageID> get_origin_id(std::shared_ptr<const Resolved> resolved)
         {

@@ -56,7 +56,7 @@ namespace
         {
         }
 
-        virtual void on_error(bool is_check, const std::string & s)
+        void on_error(bool is_check, const std::string & s) override
         {
             if (is_check)
                 make_check_fail();
@@ -64,19 +64,19 @@ namespace
                 throw MergerError(s);
         }
 
-        void on_warn(bool, const std::string &)
+        void on_warn(bool, const std::string &) override
         {
         }
 
-        void display_override(const std::string &) const
+        void display_override(const std::string &) const override
         {
         }
 
-        void track_install_file(const FSPath &, const FSPath &)
+        void track_install_file(const FSPath &, const FSPath &) override
         {
         }
 
-        void track_install_sym(const FSPath &, const FSPath &)
+        void track_install_sym(const FSPath &, const FSPath &) override
         {
         }
     };

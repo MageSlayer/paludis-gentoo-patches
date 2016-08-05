@@ -56,14 +56,14 @@ namespace
     {
         std::shared_ptr<ResolverWithBinaryTestData> data;
 
-        void SetUp()
+        void SetUp() override
         {
             data = std::make_shared<ResolverWithBinaryTestData>("binaries", "exheres-0", "exheres");
             data->get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_never);
             data->get_resolvents_for_helper.set_target_destination_type(dt_create_binary);
         }
 
-        void TearDown()
+        void TearDown() override
         {
             data.reset();
         }
