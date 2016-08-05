@@ -60,7 +60,7 @@ namespace paludis
         {
             if (l >= log_level)
             {
-                *stream << program_name << "@" << ::time(0) << ": ";
+                *stream << program_name << "@" << ::time(nullptr) << ": ";
                 do
                 {
                     switch (l)

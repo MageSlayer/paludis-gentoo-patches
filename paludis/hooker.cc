@@ -396,9 +396,9 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
 SoHookFile::SoHookFile(const FSPath & f, const bool, const Environment * const e) :
     _file_name(f),
     _env(e),
-    _dl(0),
-    _run(0),
-    _add_dependencies(0)
+    _dl(nullptr),
+    _run(nullptr),
+    _add_dependencies(nullptr)
 {
     /* don't use RTLD_LOCAL, g++ is over happy about template instantiations, and it
      * can lead to multiple singleton instances. */
@@ -559,14 +559,14 @@ namespace
 
 
         PyHookFileHandle() :
-            handle(0),
-            create_py_hook_file_handle(0)
+            handle(nullptr),
+            create_py_hook_file_handle(nullptr)
         {
         }
 
         ~PyHookFileHandle()
         {
-            if (0 != handle)
+            if (nullptr != handle)
                 dlclose(handle);
         }
     };

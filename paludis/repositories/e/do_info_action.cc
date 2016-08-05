@@ -121,7 +121,7 @@ paludis::erepository::do_info_action(
                 n::expand_vars() = expand_vars,
                 n::info_vars() = repo->info_vars_key() ?
                     repo->info_vars_key()->parse_value() : std::make_shared<const Set<std::string>>(),
-                n::load_environment() = static_cast<const FSPath *>(0),
+                n::load_environment() = static_cast<const FSPath *>(nullptr),
                 n::profiles() = params.profiles(),
                 n::profiles_with_parents() = profile->profiles_with_parents(),
                 n::use() = use,

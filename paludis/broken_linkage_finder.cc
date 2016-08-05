@@ -339,7 +339,7 @@ Imp<BrokenLinkageFinder>::gather_package(const std::shared_ptr<const PackageID> 
              it_end(contents->end()); it_end != it; ++it)
     {
         const ContentsFileEntry * file(visitor_cast<const ContentsFileEntry>(**it));
-        if (0 != file)
+        if (nullptr != file)
         {
             std::unique_lock<std::mutex> l(mutex);
             files.insert(std::make_pair(file->location_key()->parse_value(), pkg));

@@ -534,7 +534,7 @@ ERepository::ERepository(const ERepositoryParams & p) :
             p.environment(),
             fetch_repo_name(p.location()),
             make_named_values<RepositoryCapabilities>(
-                n::destination_interface() = p.binary_destination() ? this : 0,
+                n::destination_interface() = p.binary_destination() ? this : nullptr,
                 n::environment_variable_interface() = this,
                 n::manifest_interface() = this
                 )),
@@ -695,7 +695,7 @@ ERepository::need_mirrors() const
                     if (! ee.empty())
                     {
                         /* pick up to five random mirrors only */
-                        std::mt19937 random(std::time(0));
+                        std::mt19937 random(std::time(nullptr));
                         Randomator randomator{random};
                         std::random_shuffle(next(ee.begin()), ee.end(), randomator);
                         if (ee.size() > 6)
@@ -1142,7 +1142,7 @@ ERepository::repository_factory_create(
     std::shared_ptr<KeyValueConfigFile> layout_conf((FSPath(location) / "metadata/layout.conf").stat().exists() ?
             new KeyValueConfigFile(FSPath(location) / "metadata/layout.conf", { },
                 &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation)
-            : 0);
+            : nullptr);
 
     std::shared_ptr<ERepositorySequence> master_repositories;
     std::string master_repository_str(f("master_repository"));
@@ -1533,7 +1533,7 @@ ERepository::repository_factory_dependencies(
         std::shared_ptr<KeyValueConfigFile> layout_conf((FSPath(location) / "metadata/layout.conf").stat().exists() ?
                 new KeyValueConfigFile(FSPath(location) / "metadata/layout.conf", { },
                     &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation)
-                : 0);
+                : nullptr);
 
         if (layout_conf)
         {

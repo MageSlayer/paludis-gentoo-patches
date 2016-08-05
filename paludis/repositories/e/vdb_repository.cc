@@ -164,7 +164,7 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
             make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = this,
                 n::environment_variable_interface() = this,
-                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0)
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(nullptr)
             )),
     _imp(this, p)
 {

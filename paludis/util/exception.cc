@@ -147,7 +147,7 @@ Exception::what() const noexcept
     {
         int status(0);
         char * const name(abi::__cxa_demangle(
-                    (std::string("_Z") + typeid(*this).name()).c_str(), 0, 0, &status));
+                    (std::string("_Z") + typeid(*this).name()).c_str(), nullptr, nullptr, &status));
 
         if (0 == status)
         {

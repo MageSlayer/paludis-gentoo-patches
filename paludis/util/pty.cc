@@ -78,7 +78,7 @@ Pty::Pty(const bool close_exec, const unsigned short columns, const unsigned sho
     _fds[1] = open(&name[0], O_WRONLY | O_NOCTTY | (close_exec ? O_CLOEXEC : 0));
 #else
     const char * name(ptsname(_fds[0]));
-    if (0 == name)
+    if (nullptr == name)
     {
         close(_fds[0]);
         throw PtyError("ptsname(3) failed: " + std::string(std::strerror(errno)));

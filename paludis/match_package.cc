@@ -242,7 +242,7 @@ paludis::match_package(
         const std::shared_ptr<const PackageID> & from_id,
         const MatchPackageOptions & options)
 {
-    return match_package_with_maybe_changes(env, spec, 0, id, from_id, 0, options);
+    return match_package_with_maybe_changes(env, spec, nullptr, id, from_id, nullptr, options);
 }
 
 bool

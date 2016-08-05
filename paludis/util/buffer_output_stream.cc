@@ -44,7 +44,7 @@ namespace paludis
 BufferOutputStreamBuf::BufferOutputStreamBuf() :
     _imp()
 {
-    setg(0, 0, 0);
+    setg(nullptr, nullptr, nullptr);
 }
 
 BufferOutputStreamBuf::~BufferOutputStreamBuf()

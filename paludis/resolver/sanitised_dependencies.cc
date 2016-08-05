@@ -139,7 +139,7 @@ namespace
             parent_make_sanitised(f),
             super_complicated(false),
             nested(false),
-            active_sublist(0),
+            active_sublist(nullptr),
             seen_any(false)
         {
         }
@@ -194,7 +194,7 @@ namespace
                     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
                 else
                 {
-                    Save<std::list<PackageOrBlockDepSpec> *> save_active_sublist(&active_sublist, 0);
+                    Save<std::list<PackageOrBlockDepSpec> *> save_active_sublist(&active_sublist, nullptr);
                     active_sublist = &*child_groups.insert(child_groups.end(), std::list<PackageOrBlockDepSpec>());
                     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
                 }
@@ -209,7 +209,7 @@ namespace
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             else
             {
-                Save<std::list<PackageOrBlockDepSpec> *> save_active_sublist(&active_sublist, 0);
+                Save<std::list<PackageOrBlockDepSpec> *> save_active_sublist(&active_sublist, nullptr);
                 active_sublist = &*child_groups.insert(child_groups.end(), std::list<PackageOrBlockDepSpec>());
                 std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
             }
@@ -233,7 +233,7 @@ namespace
             }
             else
             {
-                Save<std::list<PackageOrBlockDepSpec> *> save_active_sublist(&active_sublist, 0);
+                Save<std::list<PackageOrBlockDepSpec> *> save_active_sublist(&active_sublist, nullptr);
                 active_sublist = &*child_groups.insert(child_groups.end(), std::list<PackageOrBlockDepSpec>());
                 for (std::list<SanitisedDependency>::const_iterator i(l.begin()), i_end(l.end()) ;
                         i != i_end ; ++i)

@@ -29,7 +29,7 @@ std::string
 paludis::cookie()
 {
     struct timeval t;
-    gettimeofday(&t, 0);
+    gettimeofday(&t, nullptr);
     return "C." + stringify(::getpid()) + "." + stringify(t.tv_sec) + "." + stringify(t.tv_usec) + ".C";
 }
 

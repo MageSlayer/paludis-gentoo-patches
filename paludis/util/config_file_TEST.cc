@@ -141,14 +141,14 @@ TEST(LineConfigFile, Open)
 
     FSPath ff2("config_file_TEST_dir/not_a_config_file");
     EXPECT_TRUE(! ff2.stat().exists());
-    LineConfigFile * PALUDIS_ATTRIBUTE((unused)) f2(0);
+    LineConfigFile * PALUDIS_ATTRIBUTE((unused)) f2(nullptr);
     EXPECT_THROW(f2 = new LineConfigFile(ff2, { }), ConfigFileError);
 
     if (0 != geteuid())
     {
         FSPath ff3("config_file_TEST_dir/unreadable_file");
         EXPECT_TRUE(ff3.stat().is_regular_file());
-        LineConfigFile * PALUDIS_ATTRIBUTE((unused)) f3(0);
+        LineConfigFile * PALUDIS_ATTRIBUTE((unused)) f3(nullptr);
         EXPECT_THROW(f3 = new LineConfigFile(ff3, { }), ConfigFileError);
     }
 }

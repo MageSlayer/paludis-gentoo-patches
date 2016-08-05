@@ -59,8 +59,8 @@ namespace paludis
 FakeInstalledRepository::FakeInstalledRepository(const FakeInstalledRepositoryParams & p) :
     FakeRepositoryBase(p.environment(), p.name(), make_named_values<RepositoryCapabilities>(
                 n::destination_interface() = this,
-                n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(0),
-                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(0)
+                n::environment_variable_interface() = static_cast<RepositoryEnvironmentVariableInterface *>(nullptr),
+                n::manifest_interface() = static_cast<RepositoryManifestInterface *>(nullptr)
                 )),
     _imp(p.supports_uninstall(), p.suitable_destination())
 {

@@ -73,7 +73,7 @@ namespace
             package(other.package_ptr()),
             package_name_part(other.package_name_part_ptr()),
             category_name_part(other.category_name_part_ptr()),
-            version_requirements(other.version_requirements_ptr() ? new VersionRequirements : 0),
+            version_requirements(other.version_requirements_ptr() ? new VersionRequirements : nullptr),
             version_requirements_mode_v(other.version_requirements_mode()),
             slot(other.slot_requirement_ptr()),
             in_repository(other.in_repository_ptr()),
@@ -81,7 +81,7 @@ namespace
             installable_to_repository(other.installable_to_repository_ptr()),
             installed_at_path(other.installed_at_path_ptr()),
             installable_to_path(other.installable_to_path_ptr()),
-            additional_requirements(other.additional_requirements_ptr() ? new AdditionalPackageDepSpecRequirements : 0),
+            additional_requirements(other.additional_requirements_ptr() ? new AdditionalPackageDepSpecRequirements : nullptr),
             options_for_partially_made_package_dep_spec_v(other.options_for_partially_made_package_dep_spec())
         {
             if (version_requirements)

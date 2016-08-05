@@ -1394,7 +1394,7 @@ namespace
                             a_end(constraint->spec().if_package()->additional_requirements_ptr()->end()) ;
                             a != a_end ; ++a)
                     {
-                        const std::pair<bool, std::string> p((*a)->requirement_met(env.get(), 0, u->package_id(), constraint->from_id(), 0));
+                        const std::pair<bool, std::string> p((*a)->requirement_met(env.get(), nullptr, u->package_id(), constraint->from_id(), nullptr));
                         if (p.first)
                             continue;
 

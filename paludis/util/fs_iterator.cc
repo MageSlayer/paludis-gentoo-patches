@@ -79,14 +79,14 @@ FSIterator::FSIterator(const FSPath & base, const FSIteratorOptions & options) :
         _imp->items = std::make_shared<EntrySet>(&compare_name);
 
     DIR * d(opendir(stringify(base).c_str()));
-    if (0 == d)
+    if (nullptr == d)
         throw FSError("Error opening directory '" + stringify(base) + "': " + stringify(::strerror(errno)));
 
     bool have_any_special_wants(options[fsio_want_directories] || options[fsio_want_regular_files]);
 
     struct dirent * de;
     bool done(false);
-    while (0 != ((de = readdir(d))))
+    while (nullptr != ((de = readdir(d))))
     {
         if (done)
             break;

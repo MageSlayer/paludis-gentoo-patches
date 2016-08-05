@@ -122,7 +122,7 @@ namespace
 
         bool creating_and_no_appropriate_ids() const
         {
-            bool (* can)(const std::shared_ptr<const PackageID> &)(0);
+            bool (* can)(const std::shared_ptr<const PackageID> &)(nullptr);
             switch (resolvent.destination_type())
             {
                 case dt_install_to_slash:

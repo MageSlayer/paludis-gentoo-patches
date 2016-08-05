@@ -53,13 +53,13 @@ namespace
 
         public:
             LibSELinux() :
-                _handle(0), _freecon(0), _getcon(0),
-                _getfscreatecon(0), _setfscreatecon(0),
-                _matchpathcon(0), _matchpathcon_init(0),
-                _is_selinux_enabled(0)
+                _handle(nullptr), _freecon(nullptr), _getcon(nullptr),
+                _getfscreatecon(nullptr), _setfscreatecon(nullptr),
+                _matchpathcon(nullptr), _matchpathcon_init(nullptr),
+                _is_selinux_enabled(nullptr)
             {
                 _handle = dlopen("libselinux.so", RTLD_LAZY | RTLD_LOCAL);
-                if (0 != _handle)
+                if (nullptr != _handle)
                 {
                     _freecon = STUPID_CAST(void (*)(security_context_t), dlsym(_handle, "freecon"));
                     _getcon = STUPID_CAST(int (*)(security_context_t*), dlsym(_handle, "getcon"));
@@ -80,54 +80,54 @@ namespace
 
             ~LibSELinux()
             {
-                if (0 != _handle)
+                if (nullptr != _handle)
                     dlclose(_handle);
             }
 
             void freecon(security_context_t c)
             {
-                if (0 != _freecon && is_selinux_enabled())
+                if (nullptr != _freecon && is_selinux_enabled())
                     _freecon(c);
             }
 
             int getcon(security_context_t *c)
             {
-                if (0 != _getcon && is_selinux_enabled())
+                if (nullptr != _getcon && is_selinux_enabled())
                     return _getcon(c);
                 return 0;
             }
 
             int getfscreatecon(security_context_t *c)
             {
-                if (0 != _getfscreatecon && is_selinux_enabled())
+                if (nullptr != _getfscreatecon && is_selinux_enabled())
                     return _getfscreatecon(c);
                 return 0;
             }
 
             int setfscreatecon(security_context_t c)
             {
-                if (0 != _setfscreatecon && is_selinux_enabled())
+                if (nullptr != _setfscreatecon && is_selinux_enabled())
                     return _setfscreatecon(c);
                 return 0;
             }
 
             int matchpathcon(const char *path, mode_t mode, security_context_t *con)
             {
-                if (0 != _matchpathcon && is_selinux_enabled())
+                if (nullptr != _matchpathcon && is_selinux_enabled())
                     return _matchpathcon(path, mode, con);
                 return 0;
             }
 
             int setfilecon(const char *path, security_context_t con)
             {
-                if (0 != _setfilecon && is_selinux_enabled())
+                if (nullptr != _setfilecon && is_selinux_enabled())
                     return _setfilecon(path, con);
                 return 0;
             }
 
             int matchpathcon_init(const char *path)
             {
-                if (0 != _matchpathcon_init && is_selinux_enabled())
+                if (nullptr != _matchpathcon_init && is_selinux_enabled())
                     return _matchpathcon_init(path);
                 return 0;
             }
@@ -135,7 +135,7 @@ namespace
             int is_selinux_enabled()
             {
                 // Assume that if this returns an error we can't effectively use selinux.
-                if (0 != _is_selinux_enabled)
+                if (nullptr != _is_selinux_enabled)
                     return _is_selinux_enabled() > 0 ? 1 : 0;
                 return 0;
             }
@@ -155,13 +155,13 @@ namespace paludis
 
         ~Imp()
         {
-            if (0 != _context)
+            if (nullptr != _context)
                 libselinux.freecon(_context);
         }
 
         void set(security_context_t newcon)
         {
-            if (0 != _context)
+            if (nullptr != _context)
                 libselinux.freecon(_context);
 
             _context = newcon;
@@ -170,7 +170,7 @@ namespace paludis
 }
 
 SecurityContext::SecurityContext() :
-    _imp(security_context_t(0))
+    _imp(security_context_t(nullptr))
 {
 }
 
@@ -219,7 +219,7 @@ FSCreateCon::~FSCreateCon()
 
 MatchPathCon::MatchPathCon()
 {
-    if (0 != libselinux.matchpathcon_init(0))
+    if (0 != libselinux.matchpathcon_init(nullptr))
     {
         _good=false;
 //        throw SELinuxException("Failed running matchpathcon_init.");
