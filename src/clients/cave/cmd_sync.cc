@@ -315,10 +315,9 @@ namespace
         {
             Executor executor;
 
-            for (Repos::const_iterator r(repos.begin()), r_end(repos.end()) ;
-                    r != r_end ; ++r)
+            for (const auto & repo : repos)
             {
-                const std::shared_ptr<SyncExecutive> x(std::make_shared<SyncExecutive>(env, cmdline, &executor, *r));
+                const std::shared_ptr<SyncExecutive> x(std::make_shared<SyncExecutive>(env, cmdline, &executor, repo));
                 executor.add(x);
                 executives.push_back(x);
             }

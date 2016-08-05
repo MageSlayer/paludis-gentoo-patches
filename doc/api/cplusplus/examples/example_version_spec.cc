@@ -50,21 +50,20 @@ int main(int argc, char * argv[])
         versions.insert(VersionSpec("9999", user_version_spec_options()));
 
         /* For each version... */
-        for (std::set<VersionSpec>::const_iterator v(versions.begin()), v_end(versions.end()) ;
-                v != v_end ; ++v)
+        for (const auto & version : versions)
         {
             /* Versions are stringifiable */
-            cout << *v << ":" << endl;
+            cout << version << ":" << endl;
 
             /* Show the output of various members. Not all of these are of much
              * direct use. */
-            cout << "    " << left << setw(24) << "Hash value:" << " " << "0x" << hex << v->hash() << endl;
-            cout << "    " << left << setw(24) << "Remove revision:" << " " << v->remove_revision() << endl;
-            cout << "    " << left << setw(24) << "Revision only:" << " " << v->revision_only() << endl;
-            cout << "    " << left << setw(24) << "Bump:" << " " << v->bump() << endl;
-            cout << "    " << left << setw(24) << "Is scm?" << " " << boolalpha << v->is_scm() << endl;
-            cout << "    " << left << setw(24) << "Has -try?" << " " << boolalpha << v->has_try_part() << endl;
-            cout << "    " << left << setw(24) << "Has -scm?" << " " << boolalpha << v->has_scm_part() << endl;
+            cout << "    " << left << setw(24) << "Hash value:" << " " << "0x" << hex << version.hash() << endl;
+            cout << "    " << left << setw(24) << "Remove revision:" << " " << version.remove_revision() << endl;
+            cout << "    " << left << setw(24) << "Revision only:" << " " << version.revision_only() << endl;
+            cout << "    " << left << setw(24) << "Bump:" << " " << version.bump() << endl;
+            cout << "    " << left << setw(24) << "Is scm?" << " " << boolalpha << version.is_scm() << endl;
+            cout << "    " << left << setw(24) << "Has -try?" << " " << boolalpha << version.has_try_part() << endl;
+            cout << "    " << left << setw(24) << "Has -scm?" << " " << boolalpha << version.has_scm_part() << endl;
             cout << endl;
         }
     }

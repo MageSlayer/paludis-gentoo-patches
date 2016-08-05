@@ -197,16 +197,15 @@ namespace
         Edges::const_iterator e(edges.find(node));
         if (e != edges.end())
         {
-            for (NodesWithProperties::const_iterator n(e->second.begin()), n_end(e->second.end()) ;
-                    n != n_end ; ++n)
+            for (const auto & n : e->second)
             {
-                TarjanDataMap::iterator n_data(data.find(n->first));
+                TarjanDataMap::iterator n_data(data.find(n.first));
                 if (data.end() == n_data)
                 {
-                    n_data = tarjan(n->first, edges, data, stack, index, result);
+                    n_data = tarjan(n.first, edges, data, stack, index, result);
                     node_data->second.lowlink() = std::min(node_data->second.lowlink(), n_data->second.lowlink());
                 }
-                else if (stack.end() != std::find(stack.begin(), stack.end(), n->first))
+                else if (stack.end() != std::find(stack.begin(), stack.end(), n.first))
                     node_data->second.lowlink() = std::min(node_data->second.lowlink(), n_data->second.index());
             }
         }
@@ -302,14 +301,12 @@ NAG::sorted_strongly_connected_components(
 
     /* build edges between SCCs */
     PlainEdges all_scc_edges, scc_edges, scc_edges_backwards;
-    for (Edges::const_iterator e(_imp->edges.begin()), e_end(_imp->edges.end()) ;
-            e != e_end ; ++e)
+    for (const auto & edge : _imp->edges)
     {
-        RepresentativeNodes::const_iterator from(representative_nodes.find(e->first));
-        for (NodesWithProperties::const_iterator n(e->second.begin()), n_end(e->second.end()) ;
-                n != n_end ; ++n)
+        RepresentativeNodes::const_iterator from(representative_nodes.find(edge.first));
+        for (const auto & n : edge.second)
         {
-            RepresentativeNodes::const_iterator to(representative_nodes.find(n->first));
+            RepresentativeNodes::const_iterator to(representative_nodes.find(n.first));
             if (! (to->second == from->second))
             {
                 all_scc_edges.insert(std::make_pair(from->second, Nodes())).first->second.insert(to->second);
@@ -344,13 +341,12 @@ NAG::sorted_strongly_connected_components(
             auto this_scc_edges(all_scc_edges.find(ordering_now->second));
             if (this_scc_edges != all_scc_edges.end())
             {
-                for (auto e(this_scc_edges->second.begin()), e_end(this_scc_edges->second.end()) ;
-                        e != e_end ; ++e)
+                for (const auto & e : this_scc_edges->second)
                 {
-                    auto p(pending_fetches.find(*e));
+                    auto p(pending_fetches.find(e));
                     if (p != pending_fetches.end())
                     {
-                        result->push_back(sccs.find(*e)->second);
+                        result->push_back(sccs.find(e)->second);
                         pending_fetches.erase(p);
                     }
                 }
@@ -431,14 +427,13 @@ NAG::serialise(Serialiser & s) const
     w.member(SerialiserFlags<serialise::container>(), "nodes", _imp->nodes);
 
     int c(0);
-    for (Edges::const_iterator e(_imp->edges.begin()), e_end(_imp->edges.end()) ;
-            e != e_end ; ++e)
+    for (const auto & edge : _imp->edges)
     {
-        for (NodesWithProperties::const_iterator n(e->second.begin()), n_end(e->second.end()) ;
+        for (NodesWithProperties::const_iterator n(edge.second.begin()), n_end(edge.second.end()) ;
                 n != n_end ; ++n)
         {
             ++c;
-            w.member(SerialiserFlags<>(), "edge." + stringify(c) + ".f", e->first);
+            w.member(SerialiserFlags<>(), "edge." + stringify(c) + ".f", edge.first);
             w.member(SerialiserFlags<>(), "edge." + stringify(c) + ".t", n->first);
             w.member(SerialiserFlags<>(), "edge." + stringify(c) + ".p", n->second);
         }

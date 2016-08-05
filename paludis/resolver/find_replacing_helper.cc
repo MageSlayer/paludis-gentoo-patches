@@ -95,12 +95,10 @@ FindReplacingHelper::operator() (
         repos.insert(repo->name());
 
     std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
-    for (std::set<RepositoryName>::const_iterator r(repos.begin()),
-            r_end(repos.end()) ;
-            r != r_end ; ++r)
+    for (const auto & r : repos)
     {
         std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsUnsorted(
-                    generator::Package(id->name()) & generator::InRepository(*r))]);
+                    generator::Package(id->name()) & generator::InRepository(r))]);
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)
         {

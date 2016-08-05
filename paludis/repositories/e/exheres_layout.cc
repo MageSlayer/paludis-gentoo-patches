@@ -591,24 +591,23 @@ namespace
             return;
 
         std::list<FSPath> files((FSIterator(d, { })), FSIterator());
-        for (std::list<FSPath>::iterator f(files.begin()) ;
-                f != files.end() ; ++f)
+        for (auto & file : files)
         {
-            FSStat f_stat(f->stat());
+            FSStat f_stat(file.stat());
             if (f_stat.is_directory())
             {
-                if ("CVS" != f->basename())
-                    aux_files_helper((*f), m, qpn);
+                if ("CVS" != file.basename())
+                    aux_files_helper(file, m, qpn);
             }
             else
             {
                 if (! f_stat.is_regular_file())
                     continue;
-                if (is_file_with_prefix_extension((*f),
+                if (is_file_with_prefix_extension(file,
                             ("digest-"+stringify(qpn.package())), "",
                             { }))
                     continue;
-                m->insert((*f), "AUX");
+                m->insert(file, "AUX");
             }
         }
     }
@@ -620,18 +619,17 @@ ExheresLayout::manifest_files(const QualifiedPackageName & qpn, const FSPath & p
     auto result(std::make_shared<Map<FSPath, std::string, FSPathComparator>>());
 
     std::list<FSPath> package_files((FSIterator(package_dir, { })), FSIterator());
-    for (std::list<FSPath>::iterator f(package_files.begin()) ;
-            f != package_files.end() ; ++f)
+    for (auto & package_file : package_files)
     {
-        FSStat f_stat(f->stat());
-        if (! f_stat.is_regular_file() || ((*f).basename() == "Manifest") )
+        FSStat f_stat(package_file.stat());
+        if (! f_stat.is_regular_file() || (package_file.basename() == "Manifest") )
             continue;
 
         std::string file_type("MISC");
-        if (FileSuffixes::get_instance()->is_package_file(qpn, (*f)))
-            file_type = FileSuffixes::get_instance()->get_package_file_manifest_key((*f), qpn);
+        if (FileSuffixes::get_instance()->is_package_file(qpn, package_file))
+            file_type = FileSuffixes::get_instance()->get_package_file_manifest_key(package_file, qpn);
 
-        result->insert((*f), file_type);
+        result->insert(package_file, file_type);
     }
 
     aux_files_helper((package_dir / "files"), result, qpn);

@@ -182,9 +182,9 @@ SHA256::hexsum() const
 {
     std::stringstream result;
 
-    for (int j(0) ; j < 8 ; ++j)
+    for (unsigned int j : _h)
         result << std::hex << std::right << std::setw(8) << std::setfill('0') <<
-            static_cast<unsigned int>(_h[j]) << std::flush;
+            static_cast<unsigned int>(j) << std::flush;
 
     return result.str();
 }

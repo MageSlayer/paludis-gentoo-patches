@@ -555,10 +555,9 @@ namespace
                 using namespace std::placeholders;
 
                 std::pair<bool, std::string> result(true, "");
-                for (Reqs::const_iterator r(_reqs.begin()), r_end(_reqs.end()) ;
-                        r != r_end ; ++r)
+                for (const auto & _req : _reqs)
                 {
-                    std::pair<bool, std::string> r_result((*r)->requirement_met(env, maybe_changes_to_owner, id, from_id, maybe_changes_to_target));
+                    std::pair<bool, std::string> r_result(_req->requirement_met(env, maybe_changes_to_owner, id, from_id, maybe_changes_to_target));
                     if (! r_result.first)
                     {
                         if (! result.first)
@@ -596,10 +595,9 @@ namespace
                     ChangedChoices & changed_choices) const
             {
                 Tribool result(indeterminate);
-                for (auto r(_reqs.begin()), r_end(_reqs.end()) ;
-                        r != r_end ; ++r)
+                for (const auto & _req : _reqs)
                 {
-                    auto b((*r)->accumulate_changes_to_make_met(env, maybe_changes_to_owner, id, from_id, changed_choices));
+                    auto b(_req->accumulate_changes_to_make_met(env, maybe_changes_to_owner, id, from_id, changed_choices));
                     if (b.is_false())
                         return false;
                     else if (b.is_true())

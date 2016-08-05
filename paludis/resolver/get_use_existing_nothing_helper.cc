@@ -105,9 +105,8 @@ namespace
             const QualifiedPackageName & name,
             const std::list<PackageDepSpec> & list)
     {
-        for (auto l(list.begin()), l_end(list.end()) ;
-                l != l_end ; ++l)
-            if (match_qpns(*env, *l, name))
+        for (const auto & l : list)
+            if (match_qpns(*env, l, name))
                 return true;
         return false;
     }

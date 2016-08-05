@@ -219,13 +219,12 @@ DumpCaveFormatsConfCommand::run(
     get_formats.collect();
 
     std::string current_section;
-    for (auto i(get_formats.storers.begin()), i_end(get_formats.storers.end()) ;
-            i != i_end ; ++i)
+    for (auto & storer : get_formats.storers)
     {
-        std::string::size_type p(i->first.find("/"));
+        std::string::size_type p(storer.first.find("/"));
         if (std::string::npos == p)
-            throw InternalError(PALUDIS_HERE, "weird key " + i->first);
-        std::string section(i->first.substr(0, p)), key(i->first.substr(p + 1));
+            throw InternalError(PALUDIS_HERE, "weird key " + storer.first);
+        std::string section(storer.first.substr(0, p)), key(storer.first.substr(p + 1));
 
         if (current_section != section)
         {
@@ -234,9 +233,9 @@ DumpCaveFormatsConfCommand::run(
         }
 
         cout << key << " = ";
-        if (0 == i->second.value.compare(0, 1, " "))
+        if (0 == storer.second.value.compare(0, 1, " "))
             cout << "\\";
-        cout << i->second.value << endl;
+        cout << storer.second.value << endl;
     }
 
     return EXIT_SUCCESS;

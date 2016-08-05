@@ -222,10 +222,8 @@ EnvironmentImplementation::remove_notifier_callback(const NotifierCallbackID i)
 void
 EnvironmentImplementation::trigger_notifier_callback(const NotifierCallbackEvent & e) const
 {
-    for (std::map<unsigned, NotifierCallbackFunction>::const_iterator i(_imp->notifier_callbacks.begin()),
-            i_end(_imp->notifier_callbacks.end()) ;
-            i != i_end ; ++i)
-        (i->second)(e);
+    for (const auto & notifier_callback : _imp->notifier_callbacks)
+        (notifier_callback.second)(e);
 }
 
 void
@@ -369,12 +367,10 @@ EnvironmentImplementation::add_repository(int importance, const std::shared_ptr<
             throw DuplicateRepositoryError(stringify(repository->name()));
 
     std::list<std::shared_ptr<Repository> >::iterator q(_imp->repositories.end());
-    for (std::multimap<int, std::list<std::shared_ptr<Repository> >::iterator>::iterator
-            p(_imp->repository_importances.begin()), p_end(_imp->repository_importances.end()) ;
-            p != p_end ; ++p)
-        if (p->first > importance)
+    for (auto & repository_importance : _imp->repository_importances)
+        if (repository_importance.first > importance)
         {
-            q = p->second;
+            q = repository_importance.second;
             break;
         }
 

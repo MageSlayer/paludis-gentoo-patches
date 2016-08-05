@@ -53,10 +53,9 @@ PermittedDirectories::permit(const FSPath & p) const
 {
     bool result(true);
 
-    for (auto r(_imp->rules.begin()), r_end(_imp->rules.end()) ;
-            r != r_end ; ++r)
-        if (p.starts_with(r->first))
-            result = r->second;
+    for (const auto & rule : _imp->rules)
+        if (p.starts_with(rule.first))
+            result = rule.second;
 
     return result;
 }

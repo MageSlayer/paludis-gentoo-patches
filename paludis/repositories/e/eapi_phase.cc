@@ -90,10 +90,9 @@ EAPIPhase::option(const std::string & s) const
 std::string
 EAPIPhase::equal_option(const std::string & s) const
 {
-    for (std::set<std::string>::const_iterator i(_imp->options.begin()), i_end(_imp->options.end()) ;
-            i != i_end ; ++i)
-        if (0 == i->compare(0, s.length() + 1, s + "="))
-            return i->substr(s.length() + 1);
+    for (const auto & option : _imp->options)
+        if (0 == option.compare(0, s.length() + 1, s + "="))
+            return option.substr(s.length() + 1);
 
     return "";
 }

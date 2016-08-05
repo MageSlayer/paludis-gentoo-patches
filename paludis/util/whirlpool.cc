@@ -455,8 +455,8 @@ Whirlpool::hexsum() const
 {
     std::stringstream result;
     result << std::hex << std::right << std::setfill('0');
-    for (int i = 0; i < 8; ++i)
-        result << std::setw(16) << from_bigendian(H[i]);
+    for (unsigned long i : H)
+        result << std::setw(16) << from_bigendian(i);
     return result.str();
 }
 

@@ -165,9 +165,9 @@ RMD160::hexsum() const
 {
     std::stringstream result;
 
-    for (int j(0) ; j < 5 ; ++j)
+    for (unsigned int j : _h)
         result << std::hex << std::right << std::setw(8) << std::setfill('0') <<
-            _e(static_cast<unsigned int>(_h[j])) << std::flush;
+            _e(static_cast<unsigned int>(j)) << std::flush;
 
     return result.str();
 }

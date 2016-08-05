@@ -164,10 +164,9 @@ PrintUnusedDistfilesCommand::run(
         selections.push_back(selection::AllVersionsUnsorted(generator::InRepository(RepositoryName(*c))));
 
     std::set<std::shared_ptr<const PackageID>, PackageIDComparator> already_done((PackageIDComparator(env.get())));
-    for (auto s(selections.begin()), s_end(selections.end()) ;
-            s != s_end ; ++s)
+    for (auto & selection : selections)
     {
-        auto ids((*env)[*s]);
+        auto ids((*env)[selection]);
 
         for (PackageIDSequence::ConstIterator iter(ids->begin()), end(ids->end()) ;
                 iter != end ; ++iter)
@@ -205,9 +204,9 @@ PrintUnusedDistfilesCommand::run(
     // Iterate through the distdirs and compare their contents with the used distfiles
     //
 
-    for (auto dir(distdirs.begin()), d_end(distdirs.end()) ; dir != d_end ; ++dir)
+    for (const auto & distdir : distdirs)
     {
-        for (FSIterator file(*dir, {fsio_include_dotfiles, fsio_want_regular_files}), f_end ;
+        for (FSIterator file(distdir, {fsio_include_dotfiles, fsio_want_regular_files}), f_end ;
             file != f_end ; ++file)
         {
             if (used_distfiles.find(file->basename()) == used_distfiles.end())

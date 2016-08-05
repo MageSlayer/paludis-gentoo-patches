@@ -208,9 +208,8 @@ PrintUnmanagedFilesCommand::run(const std::shared_ptr<Environment> & env,
                         std::inserter(unmanaged_files, unmanaged_files.begin()),
                         FSPathComparator());
 
-    for (auto entry(unmanaged_files.begin()), end(unmanaged_files.end());
-            entry != end; ++entry)
-        cout << *entry << endl;
+    for (const auto & unmanaged_file : unmanaged_files)
+        cout << unmanaged_file << endl;
 
     return EXIT_SUCCESS;
 }

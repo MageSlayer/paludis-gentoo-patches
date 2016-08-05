@@ -194,7 +194,7 @@ namespace
     void escape_asciidoc(std::ostream & stream, const std::string & s)
     {
         char previous('\0');
-        for (auto t(s.begin()), t_end(s.end()) ; t != t_end ; ++t)
+        for (char t : s)
         {
             switch (previous)
             {
@@ -203,13 +203,13 @@ namespace
                 case '\n':
                 case '\t':
                 case '\'':
-                    if ('*' == *t)
+                    if ('*' == t)
                         stream << '\\';
                     break;
                 // Escape '*/*' -> '\*/*'
             }
-            stream << *t;
-            previous = *t;
+            stream << t;
+            previous = t;
         }
     }
 }

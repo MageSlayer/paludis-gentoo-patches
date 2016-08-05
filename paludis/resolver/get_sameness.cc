@@ -185,10 +185,9 @@ paludis::resolver::get_sameness(
                     std::inserter(common, common.begin()));
         }
 
-        for (std::set<ChoiceNameWithPrefix>::const_iterator f(common.begin()), f_end(common.end()) ;
-                f != f_end ; ++f)
-            if (installable_choices->find_by_name_with_prefix(*f)->enabled() !=
-                    existing_choices->find_by_name_with_prefix(*f)->enabled())
+        for (const auto & f : common)
+            if (installable_choices->find_by_name_with_prefix(f)->enabled() !=
+                    existing_choices->find_by_name_with_prefix(f)->enabled())
             {
                 is_same = false;
                 is_same_metadata = false;

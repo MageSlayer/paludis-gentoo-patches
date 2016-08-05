@@ -44,27 +44,24 @@ TeeOutputStreamBuf::~TeeOutputStreamBuf()
 TeeOutputStreamBuf::int_type
 TeeOutputStreamBuf::overflow(int_type c)
 {
-    for (std::list<std::ostream *>::iterator i(_imp->streams.begin()), i_end(_imp->streams.end()) ;
-            i != i_end ; ++i)
-        (*i)->put(c);
+    for (auto & stream : _imp->streams)
+        stream->put(c);
     return c;
 }
 
 int
 TeeOutputStreamBuf::sync()
 {
-    for (std::list<std::ostream *>::iterator i(_imp->streams.begin()), i_end(_imp->streams.end()) ;
-            i != i_end ; ++i)
-        **i << std::flush;
+    for (auto & stream : _imp->streams)
+        *stream << std::flush;
     return 0;
 }
 
 std::streamsize
 TeeOutputStreamBuf::xsputn(const char * s, std::streamsize num)
 {
-    for (std::list<std::ostream *>::iterator i(_imp->streams.begin()), i_end(_imp->streams.end()) ;
-            i != i_end ; ++i)
-        (*i)->write(s, num);
+    for (auto & stream : _imp->streams)
+        stream->write(s, num);
     return num;
 }
 

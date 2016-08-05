@@ -376,17 +376,16 @@ FancyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::strin
         std::set<std::string> deps_s;
         tokenise_whitespace(deps, std::inserter(deps_s, deps_s.end()));
 
-        for (std::set<std::string>::const_iterator d(deps_s.begin()), d_end(deps_s.end()) ;
-                d != d_end ; ++d)
+        for (const auto & deps_ : deps_s)
         {
-            if (g.has_node(*d))
-                g.add_edge(strip_trailing_string(file_name().basename(), ".hook"), *d, 0);
+            if (g.has_node(deps_))
+                g.add_edge(strip_trailing_string(file_name().basename(), ".hook"), deps_, 0);
             else if (depend)
                 Log::get_instance()->message("hook.fancy.dependency_not_found", ll_warning, lc_context)
-                    << "Hook dependency '" << *d << "' for '" << file_name() << "' not found";
+                    << "Hook dependency '" << deps_ << "' for '" << file_name() << "' not found";
             else
                 Log::get_instance()->message("hook.fancy.after_not_found", ll_debug, lc_context)
-                    << "Hook after '" << *d << "' for '" << file_name() << "' not found";
+                    << "Hook after '" << deps_ << "' for '" << file_name() << "' not found";
         }
     }
     else
@@ -490,10 +489,9 @@ namespace paludis
 
             Context context("When loading auto hooks:");
 
-            for (std::list<std::pair<FSPath, bool> >::const_iterator d(dirs.begin()), d_end(dirs.end()) ;
-                    d != d_end ; ++d)
+            for (const auto & dir : dirs)
             {
-                FSPath d_a(d->first / "auto");
+                FSPath d_a(dir.first / "auto");
                 if (! d_a.stat().is_directory())
                     continue;
 
@@ -504,12 +502,12 @@ namespace paludis
 
                     if (is_file_with_extension(*e, ".hook", { }))
                     {
-                        hook_file = std::make_shared<FancyHookFile>(*e, d->second, env);
+                        hook_file = std::make_shared<FancyHookFile>(*e, dir.second, env);
                         name = strip_trailing_string(e->basename(), ".hook");
                     }
                     else if (is_file_with_extension(*e, so_suffix, { }))
                     {
-                        hook_file = std::make_shared<SoHookFile>(*e, d->second, env);
+                        hook_file = std::make_shared<SoHookFile>(*e, dir.second, env);
                         name = strip_trailing_string(e->basename(), so_suffix);
                     }
 

@@ -794,9 +794,8 @@ Process::run()
                 ::setenv("LINES", stringify(lines).c_str(), 1);
             }
 
-            for (auto m(_imp->setenvs.begin()), m_end(_imp->setenvs.end()) ;
-                    m != m_end ; ++m)
-                ::setenv(m->first.c_str(), m->second.c_str(), 1);
+            for (auto & m : _imp->setenvs)
+                ::setenv(m.first.c_str(), m.second.c_str(), 1);
 
             if (! _imp->chdir.empty())
                 if (-1 == ::chdir(_imp->chdir.c_str()))

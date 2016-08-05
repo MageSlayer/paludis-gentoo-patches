@@ -175,8 +175,7 @@ FindCandidatesCommand::run_hosted(
 
         SearchExtrasHandle::get_instance()->cleanup_db_function(db);
 
-        for (auto s(specs.begin()), s_end(specs.end()) ;
-                s != s_end ; ++s)
+        for (auto & spec : specs)
         {
             step("Checking indexed candidates");
 
@@ -190,10 +189,9 @@ FindCandidatesCommand::run_hosted(
             {
                 bool ok(false);
 
-                for (auto m(matches.begin()), m_end(matches.end()) ;
-                        m != m_end ; ++m)
-                    if (match_package(*env, *m, *(*env)[selection::RequireExactlyOne(generator::Matches(
-                                        parse_user_package_dep_spec(*s, env.get(), { }), nullptr, { }))]->begin(), nullptr, { }))
+                for (auto & matche : matches)
+                    if (match_package(*env, matche, *(*env)[selection::RequireExactlyOne(generator::Matches(
+                                        parse_user_package_dep_spec(spec, env.get(), { }), nullptr, { }))]->begin(), nullptr, { }))
                     {
                         ok = true;
                         break;
@@ -203,7 +201,7 @@ FindCandidatesCommand::run_hosted(
                     continue;
             }
 
-            yield(parse_user_package_dep_spec(*s, env.get(), { }));
+            yield(parse_user_package_dep_spec(spec, env.get(), { }));
         }
     }
     else if (! search_options.a_matching.specified())
@@ -218,10 +216,9 @@ FindCandidatesCommand::run_hosted(
         step("Searching categories");
 
         CategoryNames category_names;
-        for (RepositoryNames::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
-                r != r_end ; ++r)
+        for (const auto & repository_name : repository_names)
         {
-            const std::shared_ptr<const Repository> repo(env->fetch_repository(*r));
+            const std::shared_ptr<const Repository> repo(env->fetch_repository(repository_name));
             const std::shared_ptr<const CategoryNamePartSet> cats(repo->category_names({ }));
             std::copy(cats->begin(), cats->end(), std::inserter(category_names, category_names.end()));
         }
@@ -229,22 +226,19 @@ FindCandidatesCommand::run_hosted(
         step("Searching packages");
 
         QualifiedPackageNames package_names;
-        for (RepositoryNames::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
-                r != r_end ; ++r)
+        for (const auto & repository_name : repository_names)
         {
-            const std::shared_ptr<const Repository> repo(env->fetch_repository(*r));
-            for (CategoryNames::const_iterator c(category_names.begin()), c_end(category_names.end()) ;
-                    c != c_end ; ++c)
+            const std::shared_ptr<const Repository> repo(env->fetch_repository(repository_name));
+            for (const auto & category_name : category_names)
             {
-                const std::shared_ptr<const QualifiedPackageNameSet> qpns(repo->package_names(*c, { }));
+                const std::shared_ptr<const QualifiedPackageNameSet> qpns(repo->package_names(category_name, { }));
                 std::copy(qpns->begin(), qpns->end(), std::inserter(package_names, package_names.end()));
             }
         }
 
         step("Searching versions");
 
-        for (QualifiedPackageNames::const_iterator q(package_names.begin()), q_end(package_names.end()) ;
-                q != q_end ; ++q)
+        for (const auto & package_name : package_names)
         {
             try
             {
@@ -252,12 +246,12 @@ FindCandidatesCommand::run_hosted(
                 {
                     if (search_options.a_visible.specified())
                     {
-                        const auto ids((*env)[selection::AllVersionsUnsorted(generator::Package(*q) | filter::NotMasked())]);
+                        const auto ids((*env)[selection::AllVersionsUnsorted(generator::Package(package_name) | filter::NotMasked())]);
                         check_candidates(yield, step, ids);
                     }
                     else
                     {
-                        const auto ids((*env)[selection::AllVersionsUnsorted(generator::Package(*q))]);
+                        const auto ids((*env)[selection::AllVersionsUnsorted(generator::Package(package_name))]);
                         check_candidates(yield, step, ids);
                     }
                 }
@@ -265,19 +259,19 @@ FindCandidatesCommand::run_hosted(
                 {
                     std::shared_ptr<const PackageIDSequence> ids;
 
-                    ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
+                    ids = ((*env)[selection::BestVersionOnly(generator::Package(package_name) | filter::SupportsAction<InstallAction>() | filter::NotMasked())]);
 
                     if (search_options.a_visible.specified())
                     {
                         if (ids->empty())
-                            ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::NotMasked())]);
+                            ids = ((*env)[selection::BestVersionOnly(generator::Package(package_name) | filter::NotMasked())]);
                     }
                     else
                     {
                         if (ids->empty())
-                            ids = ((*env)[selection::BestVersionOnly(generator::Package(*q) | filter::SupportsAction<InstallAction>())]);
+                            ids = ((*env)[selection::BestVersionOnly(generator::Package(package_name) | filter::SupportsAction<InstallAction>())]);
                         if (ids->empty())
-                            ids = ((*env)[selection::BestVersionOnly(generator::Package(*q))]);
+                            ids = ((*env)[selection::BestVersionOnly(generator::Package(package_name))]);
                     }
 
                     check_candidates(yield, step, ids);
@@ -289,7 +283,7 @@ FindCandidatesCommand::run_hosted(
             }
             catch (const Exception & e)
             {
-                std::cerr << "When processing '" << *q << "' got exception '" << e.message() << "' (" << e.what() << ")" << std::endl;
+                std::cerr << "When processing '" << package_name << "' got exception '" << e.message() << "' (" << e.what() << ")" << std::endl;
                 retcode |= 1;
             }
         }

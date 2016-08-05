@@ -140,11 +140,10 @@ FixCacheCommand::run(
                 r != r_end; ++r)
             repository_names.insert(r->name());
 
-    for (std::set<RepositoryName>::const_iterator r(repository_names.begin()), r_end(repository_names.end()) ;
-            r != r_end; ++r)
+    for (const auto & repository_name : repository_names)
     {
-        cout << fuc(fs_fixing(), fv<'s'>(stringify(*r)));
-        const std::shared_ptr<Repository> repo(env->fetch_repository(*r));
+        cout << fuc(fs_fixing(), fv<'s'>(stringify(repository_name)));
+        const std::shared_ptr<Repository> repo(env->fetch_repository(repository_name));
         repo->regenerate_cache();
     }
 

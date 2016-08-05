@@ -827,27 +827,25 @@ TraditionalProfile::use_masked(
                 result = fs->second;
         }
 
-        for (PackageFlagStatusMapList::const_iterator g(i->package_use_mask.begin()),
-                g_end(i->package_use_mask.end()) ; g != g_end ; ++g)
+        for (const auto & g : i->package_use_mask)
         {
-            if (! match_package(*_imp->env, *g->first, id, nullptr, { }))
+            if (! match_package(*_imp->env, *g.first, id, nullptr, { }))
                 continue;
 
-            FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
-            if (g->second.end() != h)
+            FlagStatusMap::const_iterator h(g.second.find(value_prefixed));
+            if (g.second.end() != h)
                 result = h->second;
         }
 
         if (id->is_stable())
         {
-            for (PackageFlagStatusMapList::const_iterator gs(i->package_use_stable_mask.begin()),
-                     gs_end(i->package_use_stable_mask.end()) ; gs != gs_end ; ++gs)
+            for (const auto & gs : i->package_use_stable_mask)
             {
-                if (! match_package(*_imp->env, *gs->first, id, nullptr, { }))
+                if (! match_package(*_imp->env, *gs.first, id, nullptr, { }))
                     continue;
 
-                FlagStatusMap::const_iterator hs(gs->second.find(value_prefixed));
-                if (gs->second.end() != hs)
+                FlagStatusMap::const_iterator hs(gs.second.find(value_prefixed));
+                if (gs.second.end() != hs)
                     result = hs->second;
             }
         }
@@ -884,27 +882,25 @@ TraditionalProfile::use_forced(
                 result = fs->second;
         }
 
-        for (PackageFlagStatusMapList::const_iterator g(i->package_use_force.begin()),
-                g_end(i->package_use_force.end()) ; g != g_end ; ++g)
+        for (const auto & g : i->package_use_force)
         {
-            if (! match_package(*_imp->env, *g->first, id, nullptr, { }))
+            if (! match_package(*_imp->env, *g.first, id, nullptr, { }))
                 continue;
 
-            FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
-            if (g->second.end() != h)
+            FlagStatusMap::const_iterator h(g.second.find(value_prefixed));
+            if (g.second.end() != h)
                 result = h->second;
         }
 
         if (id->is_stable())
         {
-            for (PackageFlagStatusMapList::const_iterator gs(i->package_use_stable_force.begin()),
-                     gs_end(i->package_use_stable_force.end()) ; gs != gs_end ; ++gs)
+            for (const auto & gs : i->package_use_stable_force)
             {
-                if (! match_package(*_imp->env, *gs->first, id, nullptr, { }))
+                if (! match_package(*_imp->env, *gs.first, id, nullptr, { }))
                     continue;
 
-                FlagStatusMap::const_iterator hs(gs->second.find(value_prefixed));
-                if (gs->second.end() != hs)
+                FlagStatusMap::const_iterator hs(gs.second.find(value_prefixed));
+                if (gs.second.end() != hs)
                     result = hs->second;
             }
         }
@@ -927,14 +923,13 @@ TraditionalProfile::use_state_ignoring_masks(
     for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
             i_end(_imp->stacked_values_list.end()) ; i != i_end ; ++i)
     {
-        for (PackageFlagStatusMapList::const_iterator g(i->package_use.begin()),
-                g_end(i->package_use.end()) ; g != g_end ; ++g)
+        for (const auto & g : i->package_use)
         {
-            if (! match_package(*_imp->env, *g->first, id, nullptr, { }))
+            if (! match_package(*_imp->env, *g.first, id, nullptr, { }))
                 continue;
 
-            FlagStatusMap::const_iterator h(g->second.find(value_prefixed));
-            if (g->second.end() != h)
+            FlagStatusMap::const_iterator h(g.second.find(value_prefixed));
+            if (g.second.end() != h)
                 result = h->second ? true : false;
         }
     }
@@ -1029,10 +1024,9 @@ TraditionalProfile::profile_masks(const std::shared_ptr<const PackageID> & id) c
     PackageMaskMap::const_iterator rr(_imp->package_mask.find(id->name()));
     if (_imp->package_mask.end() != rr)
     {
-        for (std::list<std::pair<std::shared_ptr<const PackageDepSpec>, std::shared_ptr<const MaskInfo> > >::const_iterator k(rr->second.begin()),
-                k_end(rr->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->env, *k->first, id, nullptr, { }))
-                result->push_back(*k->second);
+        for (const auto & k : rr->second)
+            if (match_package(*_imp->env, *k.first, id, nullptr, { }))
+                result->push_back(*k.second);
     }
 
     return result;

@@ -507,15 +507,14 @@ PaludisEnvironment::populate_sets() const
         sets_dirs.push_back(FSPath(LIBDIR) / "paludis" / "sets");
     }
 
-    for (auto sets_dir(sets_dirs.begin()), sets_dir_end(sets_dirs.end()) ;
-            sets_dir != sets_dir_end ; ++ sets_dir)
+    for (auto & sets_dir : sets_dirs)
     {
-        Context context("When looking in sets directory '" + stringify(*sets_dir) + "':");
+        Context context("When looking in sets directory '" + stringify(sets_dir) + "':");
 
-        if (! sets_dir->stat().exists())
+        if (! sets_dir.stat().exists())
             continue;
 
-        for (FSIterator d(*sets_dir, { fsio_inode_sort }), d_end ; d != d_end ; ++d)
+        for (FSIterator d(sets_dir, { fsio_inode_sort }), d_end ; d != d_end ; ++d)
         {
             if (is_file_with_extension(*d, ".bash", { }))
             {

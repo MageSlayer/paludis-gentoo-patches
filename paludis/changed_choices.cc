@@ -61,14 +61,13 @@ ChangedChoices::empty() const
 void
 ChangedChoices::add_additional_requirements_to(PartiallyMadePackageDepSpec & spec) const
 {
-    for (auto o(_imp->overrides.begin()), o_end(_imp->overrides.end()) ;
-            o != o_end ; ++o)
+    for (const auto & override : _imp->overrides)
     {
-        if (o->second)
-            spec.additional_requirement(parse_elike_use_requirement("" + stringify(o->first) + "(-)",
+        if (override.second)
+            spec.additional_requirement(parse_elike_use_requirement("" + stringify(override.first) + "(-)",
                         { euro_allow_default_values }, nullptr));
         else
-            spec.additional_requirement(parse_elike_use_requirement("-" + stringify(o->first) + "(-)",
+            spec.additional_requirement(parse_elike_use_requirement("-" + stringify(override.first) + "(-)",
                         { euro_allow_default_values }, nullptr));
     }
 }
@@ -91,12 +90,11 @@ ChangedChoices::serialise(Serialiser & s) const
     ss.member(SerialiserFlags<>(), "count", stringify(_imp->overrides.size()));
 
     int n(0);
-    for (auto o(_imp->overrides.begin()), o_end(_imp->overrides.end()) ;
-            o != o_end ; ++o)
+    for (const auto & override : _imp->overrides)
     {
         ++n;
-        ss.member(SerialiserFlags<>(), stringify(n) + "a" , stringify(o->first));
-        ss.member(SerialiserFlags<>(), stringify(n) + "b" , stringify(o->second));
+        ss.member(SerialiserFlags<>(), stringify(n) + "a" , stringify(override.first));
+        ss.member(SerialiserFlags<>(), stringify(n) + "b" , stringify(override.second));
     }
 }
 

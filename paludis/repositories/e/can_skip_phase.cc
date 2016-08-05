@@ -48,10 +48,9 @@ paludis::erepository::can_skip_phase(
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(skipifno, ",", "",
             inserter(skip_if_no_values, skip_if_no_values.begin()));
 
-    for (std::set<std::string>::const_iterator i(skip_if_no_values.begin()), i_end(skip_if_no_values.end()) ;
-            i != i_end ; ++i)
+    for (const auto & skip_if_no_value : skip_if_no_values)
     {
-        if (*i == "*sources")
+        if (skip_if_no_value == "*sources")
         {
             if (id->fetches_key())
             {
@@ -80,7 +79,7 @@ paludis::erepository::can_skip_phase(
         else
         {
             auto d(id->defined_phases_key()->parse_value());
-            if (d->end() != d->find(*i))
+            if (d->end() != d->find(skip_if_no_value))
                 return false;
         }
     }

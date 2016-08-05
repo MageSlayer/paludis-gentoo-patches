@@ -176,11 +176,11 @@ paludis::erepository::parse_dependency_label(
 
     std::shared_ptr<DependenciesLabelsDepSpec> l(std::make_shared<DependenciesLabelsDepSpec>());
 
-    for (std::set<std::string>::iterator it = labels.begin(), it_e = labels.end(); it != it_e; ++it)
+    for (const auto & label : labels)
     {
-        std::string c(e.supported()->dependency_labels()->class_for_label(*it)), cc;
+        std::string c(e.supported()->dependency_labels()->class_for_label(label)), cc;
         if (c.empty())
-            throw EDepParseError(s, "Unknown label '" + *it + "'");
+            throw EDepParseError(s, "Unknown label '" + label + "'");
 
         std::string::size_type p(c.find('/'));
         if (std::string::npos != p)
@@ -192,12 +192,12 @@ paludis::erepository::parse_dependency_label(
         if (c == "DependenciesTestLabel")
         {
             if (cc.empty())
-                l->add_label(DepLabelsStore::get_instance()->get(e.name(), c, *it));
+                l->add_label(DepLabelsStore::get_instance()->get(e.name(), c, label));
             else
-                l->add_label(DepLabelsStore::get_instance()->get_test(e.name(), c, ChoiceNameWithPrefix(cc), *it));
+                l->add_label(DepLabelsStore::get_instance()->get_test(e.name(), c, ChoiceNameWithPrefix(cc), label));
         }
         else
-            l->add_label(DepLabelsStore::get_instance()->get(e.name(), c, *it));
+            l->add_label(DepLabelsStore::get_instance()->get(e.name(), c, label));
     }
 
     return l;

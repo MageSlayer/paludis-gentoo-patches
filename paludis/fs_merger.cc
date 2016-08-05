@@ -156,14 +156,14 @@ FSMerger::prepare_install_under()
     for (FSPath d(_imp->params.root().realpath() / _imp->params.install_under()), d_end(_imp->params.root().realpath()) ;
             d != d_end ; d = d.dirname())
         dd.push_front(d);
-    for (std::list<FSPath>::iterator d(dd.begin()), d_end(dd.end()) ; d != d_end ; ++d)
-        if (! d->stat().exists())
+    for (auto & d : dd)
+        if (! d.stat().exists())
         {
-            d->mkdir(0755, { });
-            track_install_under_dir(*d, FSMergerStatusFlags());
+            d.mkdir(0755, { });
+            track_install_under_dir(d, FSMergerStatusFlags());
         }
         else
-            track_install_under_dir(*d, FSMergerStatusFlags() + msi_used_existing);
+            track_install_under_dir(d, FSMergerStatusFlags() + msi_used_existing);
 }
 
 void

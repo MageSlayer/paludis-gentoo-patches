@@ -439,13 +439,12 @@ namespace
                     fv<'i'>(std::string(indent, ' ')));
 
             std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(k.begin_metadata(), k.end_metadata());
-            for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
-                    s(keys.begin()), s_end(keys.end()) ; s != s_end ; ++s)
+            for (const auto & key : keys)
             {
                 InfoDisplayer i(env, cmdline, basic_ppos, indent + 1,
-                        ((*s)->type() == mkt_significant), maybe_current_id, maybe_old_id, old_id_is_installed, out);
-                if (want_key(cmdline, *s, maybe_current_id))
-                    accept_visitor(i)(**s);
+                        (key->type() == mkt_significant), maybe_current_id, maybe_old_id, old_id_is_installed, out);
+                if (want_key(cmdline, key, maybe_current_id))
+                    accept_visitor(i)(*key);
             }
         }
 
@@ -1073,12 +1072,11 @@ namespace
 
         const std::shared_ptr<const Repository> repo(env->fetch_repository(s));
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(repo->begin_metadata(), repo->end_metadata());
-        for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
-                k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
+        for (const auto & key : keys)
         {
-            InfoDisplayer i(env, cmdline, basic_ppos, 0, ((*k)->type() == mkt_significant), nullptr, nullptr, false, cout);
-            if (want_key(cmdline, *k, nullptr))
-                accept_visitor(i)(**k);
+            InfoDisplayer i(env, cmdline, basic_ppos, 0, (key->type() == mkt_significant), nullptr, nullptr, false, cout);
+            if (want_key(cmdline, key, nullptr))
+                accept_visitor(i)(*key);
         }
         cout << endl;
     }
@@ -1107,13 +1105,12 @@ namespace
 
         out << fuc(fs_package_id_heading(), fv<'s'>(stringify(*best)), fv<'t'>(in_sets));
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(best->begin_metadata(), best->end_metadata());
-        for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
-                k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
+        for (const auto & key : keys)
         {
-            bool explicit_key(cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), (*k)->raw_name()));
-            InfoDisplayer i(env, cmdline, basic_ppos, 0, ((*k)->type() == mkt_significant) || explicit_key, best, maybe_old_id, old_id_is_installed, out);
-            if (want_key(cmdline, *k, best))
-                accept_visitor(i)(**k);
+            bool explicit_key(cmdline.a_key.end_args() != std::find(cmdline.a_key.begin_args(), cmdline.a_key.end_args(), key->raw_name()));
+            InfoDisplayer i(env, cmdline, basic_ppos, 0, (key->type() == mkt_significant) || explicit_key, best, maybe_old_id, old_id_is_installed, out);
+            if (want_key(cmdline, key, best))
+                accept_visitor(i)(*key);
         }
 
         if (best->masked())
@@ -1182,16 +1179,15 @@ namespace
         if (! best_installable)
             best_installable = best_not_installed;
 
-        for (std::set<RepositoryName>::const_iterator r(repos.begin()), r_end(repos.end()) ;
-                r != r_end ; ++r)
+        for (const auto & r : repos)
         {
-            header_out << fuc(fs_package_repository(), fv<'s'>(stringify(*r)));
+            header_out << fuc(fs_package_repository(), fv<'s'>(stringify(r)));
             std::string slot_name;
             bool need_space(false);
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                     i != i_end ; ++i)
             {
-                if ((*i)->repository_name() != *r)
+                if ((*i)->repository_name() != r)
                     continue;
 
                 if (slot_name != slot_as_string(*i))
@@ -1295,10 +1291,10 @@ namespace
 
             std::stringstream rest_out;
 
-            for (auto r(repos.begin()), r_end(repos.end()) ; r != r_end ; ++r)
+            for (const auto & repo : repos)
             {
                 auto r_ids((*env)[selection::AllVersionsGroupedBySlot(generator::Matches(
-                                PartiallyMadePackageDepSpec(s).in_repository(*r), nullptr, { }))]);
+                                PartiallyMadePackageDepSpec(s).in_repository(repo), nullptr, { }))]);
                 if (! r_ids->empty())
                     do_one_package_with_ids(cmdline, env, basic_ppos, s, r_ids, cout, rest_out);
             }

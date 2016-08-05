@@ -102,9 +102,8 @@ SerialiserObjectWriterHandler<false, false, const PackageID>::write(Serialiser &
 void
 Serialiser::escape_write(const std::string & t)
 {
-    for (std::string::const_iterator c(t.begin()), c_end(t.end()) ;
-            c != c_end ; ++c)
-        switch (*c)
+    for (char c : t)
+        switch (c)
         {
             case '\\':
             case '"':
@@ -114,7 +113,7 @@ Serialiser::escape_write(const std::string & t)
                 raw_stream() << '\\';
                 /* fall through */
             default:
-                raw_stream() << *c;
+                raw_stream() << c;
         }
 }
 

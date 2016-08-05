@@ -343,34 +343,32 @@ UnavailableRepository::repository_factory_create(
     std::vector<std::string> sync_tokens;
     tokenise_whitespace(f("sync"), std::back_inserter(sync_tokens));
     std::string source;
-    for (auto t(sync_tokens.begin()), t_end(sync_tokens.end()) ;
-            t != t_end ; ++t)
-        if ((! t->empty()) && (':' == t->at(t->length() - 1)))
-            source = t->substr(0, t->length() - 1);
+    for (auto & sync_token : sync_tokens)
+        if ((! sync_token.empty()) && (':' == sync_token.at(sync_token.length() - 1)))
+            source = sync_token.substr(0, sync_token.length() - 1);
         else
         {
             std::string v;
             if (sync->end() != sync->find(source))
                 v = sync->find(source)->second + " ";
             sync->erase(source);
-            sync->insert(source, v + *t);
+            sync->insert(source, v + sync_token);
         }
 
     auto sync_options(std::make_shared<Map<std::string, std::string> >());
     std::vector<std::string> sync_options_tokens;
     tokenise_whitespace(f("sync_options"), std::back_inserter(sync_options_tokens));
     source = "";
-    for (auto t(sync_options_tokens.begin()), t_end(sync_options_tokens.end()) ;
-            t != t_end ; ++t)
-        if ((! t->empty()) && (':' == t->at(t->length() - 1)))
-            source = t->substr(0, t->length() - 1);
+    for (auto & sync_options_token : sync_options_tokens)
+        if ((! sync_options_token.empty()) && (':' == sync_options_token.at(sync_options_token.length() - 1)))
+            source = sync_options_token.substr(0, sync_options_token.length() - 1);
         else
         {
             std::string v;
             if (sync_options->end() != sync_options->find(source))
                 v = sync_options->find(source)->second + " ";
             sync_options->erase(source);
-            sync_options->insert(source, v + *t);
+            sync_options->insert(source, v + sync_options_token);
         }
 
     return std::make_shared<UnavailableRepository>(

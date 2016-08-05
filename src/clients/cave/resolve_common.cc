@@ -608,25 +608,24 @@ namespace
 
         std::cout << "Dumping restarts:" << std::endl << std::endl;
 
-        for (std::list<SuggestRestart>::const_iterator r(restarts.begin()), r_end(restarts.end()) ;
-                r != r_end ; ++r)
+        for (const auto & restart : restarts)
         {
-            std::cout << "* " << r->resolvent() << std::endl;
+            std::cout << "* " << restart.resolvent() << std::endl;
 
             std::cout << "    Had decided upon ";
-            auto c(get_decided_id_or_null(r->previous_decision()));
+            auto c(get_decided_id_or_null(restart.previous_decision()));
             if (c)
                 std::cout << *c;
             else
-                std::cout << r->previous_decision()->accept_returning<std::string>(KindNameVisitor());
+                std::cout << restart.previous_decision()->accept_returning<std::string>(KindNameVisitor());
 
             std::cout << std::endl;
 
-            std::cout << "    Which did not satisfy " << r->problematic_constraint()->spec()
-                << ", use existing " << r->problematic_constraint()->use_existing();
-            if (r->problematic_constraint()->nothing_is_fine_too())
+            std::cout << "    Which did not satisfy " << restart.problematic_constraint()->spec()
+                << ", use existing " << restart.problematic_constraint()->use_existing();
+            if (restart.problematic_constraint()->nothing_is_fine_too())
                 std::cout << ", nothing is fine too";
-            std::cout << " " << r->problematic_constraint()->reason()->accept_returning<std::string>(ShortReasonName());
+            std::cout << " " << restart.problematic_constraint()->reason()->accept_returning<std::string>(ShortReasonName());
             std::cout << std::endl;
         }
 

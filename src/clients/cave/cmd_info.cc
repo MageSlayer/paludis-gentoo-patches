@@ -154,11 +154,10 @@ namespace
         {
             cout << fuc(fs_metadata_subsection(), fv<'i'>(std::string(indent, ' ')), fv<'s'>(k.human_name()));
             std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(k.begin_metadata(), k.end_metadata());
-            for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
-                    s(keys.begin()), s_end(keys.end()) ; s != s_end ; ++s)
+            for (const auto & key : keys)
             {
                 InfoDisplayer i(env, cmdline, indent + 1);
-                (*s)->accept(i);
+                key->accept(i);
             }
         }
 
@@ -293,14 +292,13 @@ namespace
     {
         cout << fuc(fs_repository_heading(), fv<'s'>(stringify(repo->name())));
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(repo->begin_metadata(), repo->end_metadata());
-        for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
-                k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
+        for (const auto & key : keys)
         {
-            if ((*k)->type() == mkt_internal)
+            if (key->type() == mkt_internal)
                 continue;
 
             InfoDisplayer i(env.get(), cmdline, 1);
-            (*k)->accept(i);
+            key->accept(i);
         }
         cout << endl;
     }
@@ -311,14 +309,13 @@ namespace
     {
         cout << fuc(fs_heading(), fv<'s'>("Environment Information"));
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(env->begin_metadata(), env->end_metadata());
-        for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
-                k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
+        for (const auto & key : keys)
         {
-            if ((*k)->type() == mkt_internal)
+            if (key->type() == mkt_internal)
                 continue;
 
             InfoDisplayer i(env.get(), cmdline, 1);
-            (*k)->accept(i);
+            key->accept(i);
         }
         cout << endl;
     }
@@ -330,14 +327,13 @@ namespace
         cout << fuc(fs_heading(), fv<'s'>("Package Manager Information"));
         std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator> keys(AboutMetadata::get_instance()->begin_metadata(),
                 AboutMetadata::get_instance()->end_metadata());
-        for (std::set<std::shared_ptr<const MetadataKey>, MetadataKeyComparator>::const_iterator
-                k(keys.begin()), k_end(keys.end()) ; k != k_end ; ++k)
+        for (const auto & key : keys)
         {
-            if ((*k)->type() == mkt_internal)
+            if (key->type() == mkt_internal)
                 continue;
 
             InfoDisplayer i(env.get(), cmdline, 1);
-            (*k)->accept(i);
+            key->accept(i);
         }
         cout << endl;
     }

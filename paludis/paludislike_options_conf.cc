@@ -362,15 +362,14 @@ namespace
             std::string & result_value)
     {
 
-        for (ValuesGroups::const_iterator i(values_groups.begin()), i_end(values_groups.end()) ;
-                i != i_end ; ++i)
+        for (const auto & values_group : values_groups)
         {
-            if (i->prefix() != prefix)
+            if (values_group.prefix() != prefix)
                 continue;
 
-            seen_minus_star = seen_minus_star || i->minus_star();
+            seen_minus_star = seen_minus_star || values_group.minus_star();
 
-            std::pair<Values::const_iterator, Values::const_iterator> range(i->values().equal_range(
+            std::pair<Values::const_iterator, Values::const_iterator> range(values_group.values().equal_range(
                         make_named_values<Value>(
                             n::equals_value() = "",
                             n::locked() = false,
@@ -398,15 +397,13 @@ namespace
             const std::shared_ptr<Set<UnprefixedChoiceName> > & known)
     {
 
-        for (ValuesGroups::const_iterator i(values_groups.begin()), i_end(values_groups.end()) ;
-                i != i_end ; ++i)
+        for (const auto & values_group : values_groups)
         {
-            if (i->prefix() != prefix)
+            if (values_group.prefix() != prefix)
                 continue;
 
-            for (Values::const_iterator v(i->values().begin()), v_end(i->values().end()) ;
-                    v != v_end ; ++v)
-                known->insert(v->unprefixed_name());
+            for (const auto & v : values_group.values())
+                known->insert(v.unprefixed_name());
         }
     }
 
@@ -420,22 +417,20 @@ namespace
             std::pair<Tribool, bool> & result_state,
             std::string & result_value)
     {
-        for (SpecsWithValuesGroups::const_iterator i(specs_with_values_groups.begin()),
-                i_end(specs_with_values_groups.end()) ;
-                i != i_end ; ++i)
+        for (const auto & specs_with_values_group : specs_with_values_groups)
         {
             if (maybe_id)
             {
-                if (! match_package(*env, i->spec(), maybe_id, nullptr, { }))
+                if (! match_package(*env, specs_with_values_group.spec(), maybe_id, nullptr, { }))
                     continue;
             }
             else
             {
-                if (! match_anything(i->spec()))
+                if (! match_anything(specs_with_values_group.spec()))
                     continue;
             }
 
-            check_values_groups(env, maybe_id, prefix, unprefixed_name, i->values_groups(),
+            check_values_groups(env, maybe_id, prefix, unprefixed_name, specs_with_values_group.values_groups(),
                     seen_minus_star, result_state, result_value);
         }
     }
@@ -447,22 +442,20 @@ namespace
             const SpecsWithValuesGroups & specs_with_values_groups,
             const std::shared_ptr<Set<UnprefixedChoiceName> > & known)
     {
-        for (SpecsWithValuesGroups::const_iterator i(specs_with_values_groups.begin()),
-                i_end(specs_with_values_groups.end()) ;
-                i != i_end ; ++i)
+        for (const auto & specs_with_values_group : specs_with_values_groups)
         {
             if (maybe_id)
             {
-                if (! match_package(*env, i->spec(), maybe_id, nullptr, { }))
+                if (! match_package(*env, specs_with_values_group.spec(), maybe_id, nullptr, { }))
                     continue;
             }
             else
             {
-                if (! match_anything(i->spec()))
+                if (! match_anything(specs_with_values_group.spec()))
                     continue;
             }
 
-            collect_known_from_values_groups(env, maybe_id, prefix, i->values_groups(), known);
+            collect_known_from_values_groups(env, maybe_id, prefix, specs_with_values_group.values_groups(), known);
         }
     }
 }

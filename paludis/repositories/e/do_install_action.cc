@@ -203,13 +203,12 @@ paludis::erepository::do_install_action(
     {
         std::vector<std::string> tokens;
         tokenise_whitespace(id->eapi()->supported()->permitted_directories(), std::back_inserter(tokens));
-        for (auto t(tokens.begin()), t_end(tokens.end()) ;
-                t != t_end ; ++t)
+        for (auto & token : tokens)
         {
-            if (t->at(0) == '-')
-                permitted_directories->add(FSPath(t->substr(1)), false);
-            else if (t->at(0) == '+')
-                permitted_directories->add(FSPath(t->substr(1)), true);
+            if (token.at(0) == '-')
+                permitted_directories->add(FSPath(token.substr(1)), false);
+            else if (token.at(0) == '+')
+                permitted_directories->add(FSPath(token.substr(1)), true);
             else
                 throw InternalError(PALUDIS_HERE, "bad permitted_directories");
         }

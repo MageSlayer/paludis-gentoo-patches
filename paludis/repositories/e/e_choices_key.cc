@@ -605,15 +605,14 @@ EChoicesKey::populate_iuse(const std::shared_ptr<const Map<ChoiceNameWithPrefix,
                 if (IsExpand(i->first, delim)(*u))
                     values.insert(UnprefixedChoiceName(i->first.value().substr(u->length() + delim.length())));
 
-            for (std::set<UnprefixedChoiceName>::const_iterator v(values.begin()), v_end(values.end()) ;
-                    v != v_end ; ++v)
+            for (const auto & value : values)
             {
-                std::map<ChoiceNameWithPrefix, ChoiceOptions>::const_iterator i(i_values.find(ChoiceNameWithPrefix(lower_u + delim + stringify(*v))));
+                std::map<ChoiceNameWithPrefix, ChoiceOptions>::const_iterator i(i_values.find(ChoiceNameWithPrefix(lower_u + delim + stringify(value))));
                 if (i_values.end() != i)
-                    exp->add(_imp->id->make_choice_value(exp, *v, i->second.default_value(), false, i->second.implicit() ? co_implicit : co_explicit,
+                    exp->add(_imp->id->make_choice_value(exp, value, i->second.default_value(), false, i->second.implicit() ? co_implicit : co_explicit,
                                 get_maybe_description(d, i->first), false, false));
                 else
-                    exp->add(_imp->id->make_choice_value(exp, *v, indeterminate, false, co_implicit, "", false, false));
+                    exp->add(_imp->id->make_choice_value(exp, value, indeterminate, false, co_implicit, "", false, false));
             }
         }
     }

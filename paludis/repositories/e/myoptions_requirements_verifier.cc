@@ -257,9 +257,8 @@ MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<PlainText
         std::shared_ptr<const ChoiceValue> choice_value(find_choice_value(_imp->id, *_imp->current_prefix_stack.begin(), active_flag));
 
         if (choice_value && choice_value->enabled() == active_myoption.second)
-            for (std::list<int>::iterator l(_imp->number_enabled_stack.begin()), l_end(_imp->number_enabled_stack.end()) ;
-                    l != l_end ; ++l)
-                ++*l;
+            for (int & l : _imp->number_enabled_stack)
+                ++l;
     }
 
     if ((! node.spec()->maybe_annotations()) || (node.spec()->maybe_annotations()->begin() == node.spec()->maybe_annotations()->end()))

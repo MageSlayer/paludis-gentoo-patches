@@ -27,17 +27,16 @@ const std::string
 paludis::args::escape(const std::string & s)
 {
     std::stringstream result;
-    for (std::string::const_iterator c(s.begin()), c_end(s.end()) ;
-            c != c_end ; ++c)
+    for (char c : s)
     {
-        if ((*c >= 'a' && *c <= 'z') ||
-                (*c >= 'A' && *c <= 'Z') ||
-                (*c >= '0' && *c <= '9') ||
-                *c == '-' ||
-                *c == '_')
-            result << *c;
+        if ((c >= 'a' && c <= 'z') ||
+                (c >= 'A' && c <= 'Z') ||
+                (c >= '0' && c <= '9') ||
+                c == '-' ||
+                c == '_')
+            result << c;
         else
-            result << '\\' << *c;
+            result << '\\' << c;
     }
 
     return result.str();

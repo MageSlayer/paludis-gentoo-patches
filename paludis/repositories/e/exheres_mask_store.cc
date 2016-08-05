@@ -189,9 +189,9 @@ ExheresMaskStore::query(const std::shared_ptr<const PackageID> & id) const
     auto result(std::make_shared<MasksInfo>());
     auto r(_imp->repo_mask.find(id->name()));
     if (_imp->repo_mask.end() != r)
-        for (auto k(r->second.begin()), k_end(r->second.end()) ; k != k_end ; ++k)
-            if (match_package(*_imp->env, k->first, id, nullptr, { }))
-                result->push_back(*k->second);
+        for (const auto & k : r->second)
+            if (match_package(*_imp->env, k.first, id, nullptr, { }))
+                result->push_back(*k.second);
 
     return result;
 }

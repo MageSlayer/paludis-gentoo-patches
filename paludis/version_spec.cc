@@ -274,13 +274,12 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
         }
 
         /* Now we can change empty values to "0" */
-        for (Parts::iterator i(_imp->parts.begin()),
-                i_end(_imp->parts.end()) ; i != i_end ; ++i)
-            if ((*i).number_value().empty() &&
-                    (((*i).type() >= vsct_alpha && (*i).type() <= vsct_rc) ||
-                     (*i).type() == vsct_patch ||
-                     (*i).type() == vsct_trypart))
-                (*i).number_value() = "0";
+        for (auto & part : _imp->parts)
+            if (part.number_value().empty() &&
+                    ((part.type() >= vsct_alpha && part.type() <= vsct_rc) ||
+                     part.type() == vsct_patch ||
+                     part.type() == vsct_trypart))
+                part.number_value() = "0";
     }
 
     /* revision */
@@ -523,12 +522,11 @@ VersionSpec::hash() const
     do
     {
         bool first(true);
-        for (std::vector<VersionSpecComponent>::const_iterator r(_imp->parts.begin()), r_end(_imp->parts.end()) ;
-                r != r_end ; ++r)
+        for (const auto & part : _imp->parts)
         {
-            if ((*r).number_value() == "0" && (*r).type() == vsct_revision)
+            if (part.number_value() == "0" && part.type() == vsct_revision)
                 continue;
-            if ((*r).type() == vsct_ignore)
+            if (part.type() == vsct_ignore)
                 continue;
 
             std::size_t hh(result & h_mask);
@@ -536,10 +534,10 @@ VersionSpec::hash() const
             result ^= (hh >> h_shift);
 
             std::string r_v;
-            if ((*r).type() == vsct_floatlike)
-                r_v = strip_trailing((*r).number_value(), "0");
+            if (part.type() == vsct_floatlike)
+                r_v = strip_trailing(part.number_value(), "0");
             else
-                r_v = (*r).number_value();
+                r_v = part.number_value();
 
             size_t x(0);
             int zeroes(0);
@@ -554,7 +552,7 @@ VersionSpec::hash() const
             }
             first = false;
 
-            result ^= (static_cast<std::size_t>((*r).type()) + (x << 3) + (zeroes << 12));
+            result ^= (static_cast<std::size_t>(part.type()) + (x << 3) + (zeroes << 12));
         }
     } while (false);
 

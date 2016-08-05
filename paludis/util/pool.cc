@@ -86,11 +86,10 @@ PoolKeysHasher::operator() (const PoolKeys & keys) const
 {
     std::size_t result(0);
 
-    for (auto i(keys._imp->values->begin()), i_end(keys._imp->values->end()) ;
-            i != i_end ; ++i)
+    for (auto & i : *keys._imp->values)
     {
         result <<= 4;
-        result ^= (*i)->hash();
+        result ^= i->hash();
     }
 
     return result;

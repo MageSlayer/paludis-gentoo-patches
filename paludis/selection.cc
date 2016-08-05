@@ -326,9 +326,8 @@ namespace
                 }
 
                 PackageIDComparator comparator(env);
-                for (SlotMap::iterator i(by_slot.begin()), i_end(by_slot.end()) ;
-                        i != i_end ; ++i)
-                    i->second->sort(comparator);
+                for (auto & i : by_slot)
+                    i.second->sort(comparator);
 
                 while (! by_slot.empty())
                 {
@@ -393,9 +392,8 @@ namespace
                 }
 
                 PackageIDComparator comparator(env);
-                for (SlotMap::iterator i(by_slot.begin()), i_end(by_slot.end()) ;
-                        i != i_end ; ++i)
-                    i->second->sort(comparator);
+                for (auto & i : by_slot)
+                    i.second->sort(comparator);
 
                 while (! by_slot.empty())
                 {

@@ -391,13 +391,11 @@ namespace
         }
 
         cout << fuc(fs_explanation_constraints_header());
-        for (auto c(reasons_for_constraints.begin()), c_end(reasons_for_constraints.end()) ;
-                c != c_end ; ++c)
+        for (auto & reasons_for_constraint : reasons_for_constraints)
         {
-            cout << fuc(fs_explanation_constraint(), fv<'c'>(c->first));
-            for (auto r(c->second.begin()), r_end(c->second.end()) ;
-                    r != r_end ; ++r)
-                cout << fuc(fs_explanation_constraint_reason(), fv<'r'>(*r));
+            cout << fuc(fs_explanation_constraint(), fv<'c'>(reasons_for_constraint.first));
+            for (const auto & r : reasons_for_constraint.second)
+                cout << fuc(fs_explanation_constraint_reason(), fv<'r'>(r));
         }
     }
 
@@ -744,16 +742,14 @@ namespace
                 reasons.insert(r.first);
         }
 
-        for (std::set<std::string>::const_iterator r(changes_reasons.begin()), r_end(changes_reasons.end()) ;
-                r != r_end ; ++r)
+        for (const auto & changes_reason : changes_reasons)
         {
-            special_reasons.erase(*r);
-            reasons.erase(*r);
+            special_reasons.erase(changes_reason);
+            reasons.erase(changes_reason);
         }
 
-        for (std::set<std::string>::const_iterator r(special_reasons.begin()), r_end(special_reasons.end()) ;
-                r != r_end ; ++r)
-            reasons.erase(*r);
+        for (const auto & special_reason : special_reasons)
+            reasons.erase(special_reason);
 
         if (reasons.empty() && special_reasons.empty() && changes_reasons.empty())
             return;
@@ -765,9 +761,8 @@ namespace
         if (! changes_reasons.empty())
         {
             cout << fuc(fs_changes_reasons_start());
-            for (std::set<std::string>::const_iterator r(changes_reasons.begin()), r_end(changes_reasons.end()) ;
-                    r != r_end ; ++r)
-                cout << fuc(fs_reason_changes(), fv<'c'>(++n_shown != 1 ? ", " : ""), fv<'r'>(*r));
+            for (const auto & changes_reason : changes_reasons)
+                cout << fuc(fs_reason_changes(), fv<'c'>(++n_shown != 1 ? ", " : ""), fv<'r'>(changes_reason));
             cout << fuc(fs_changes_reasons_end());
         }
 
@@ -775,13 +770,11 @@ namespace
             cout << fuc(fs_reasons());
         n_shown = 0;
 
-        for (std::set<std::string>::const_iterator r(special_reasons.begin()), r_end(special_reasons.end()) ;
-                r != r_end ; ++r)
-            cout << fuc(fs_reason_special(), fv<'c'>(++n_shown != 1 ? ", " : ""), fv<'r'>(*r));
+        for (const auto & special_reason : special_reasons)
+            cout << fuc(fs_reason_special(), fv<'c'>(++n_shown != 1 ? ", " : ""), fv<'r'>(special_reason));
 
         int n_remaining(reasons.size());
-        for (std::set<std::string>::const_iterator r(reasons.begin()), r_end(reasons.end()) ;
-                r != r_end ; ++r)
+        for (const auto & reason : reasons)
         {
             if (n_shown >= 3 && n_remaining > 1)
             {
@@ -790,7 +783,7 @@ namespace
             }
 
             --n_remaining;
-            cout << fuc(fs_reason_normal(), fv<'c'>(++n_shown != 1 ? ", " : ""), fv<'r'>(*r));
+            cout << fuc(fs_reason_normal(), fv<'c'>(++n_shown != 1 ? ", " : ""), fv<'r'>(reason));
         }
 
         cout << fuc(fs_reasons_end());
@@ -1381,17 +1374,16 @@ namespace
                         (*c)->reason()->accept_returning<std::pair<std::string, Tribool> >(g).first);
             }
 
-            for (auto c(duplicates.begin()), c_end(duplicates.end()) ;
-                    c != c_end ; ++c)
+            for (auto & duplicate : duplicates)
             {
-                auto constraint(c->second.first);
+                auto constraint(duplicate.second.first);
 
                 ReasonNameGetter g(false, true);
                 std::string s(constraint_as_string(*constraint) + " from " +
                         constraint->reason()->accept_returning<std::pair<std::string, Tribool> >(g).first);
 
-                if (c->second.second.size() > 1)
-                    s.append(" (and " + stringify(c->second.second.size() - 1) + " more)");
+                if (duplicate.second.second.size() > 1)
+                    s.append(" (and " + stringify(duplicate.second.second.size() - 1) + " more)");
                 cout << fuc(fs_unable_unsuitable_did_not_meet(), fv<'s'>(s));
 
                 if (constraint->spec().if_package() && constraint->spec().if_package()->additional_requirements_ptr() &&
@@ -1420,21 +1412,19 @@ namespace
     {
         Context context("When displaying choices to explain:");
 
-        for (ChoicesToExplain::const_iterator p(choices_to_explain.begin()), p_end(choices_to_explain.end()) ;
-                p != p_end ; ++p)
+        for (const auto & p : choices_to_explain)
         {
-            cout << fuc(fs_choice_to_explain_prefix(), fv<'s'>(p->first));
+            cout << fuc(fs_choice_to_explain_prefix(), fv<'s'>(p.first));
 
-            for (ChoiceValuesToExplain::const_iterator v(p->second.begin()), v_end(p->second.end()) ;
-                    v != v_end ; ++v)
+            for (const auto & v : p.second)
             {
                 bool all_same(true);
                 const std::shared_ptr<const ChoiceValue> first_choice_value(
-                        (*v->second->begin())->choices_key()->parse_value()->find_by_name_with_prefix(v->first));
+                        (*v.second->begin())->choices_key()->parse_value()->find_by_name_with_prefix(v.first));
                 std::string description(first_choice_value->description());
-                for (PackageIDSequence::ConstIterator w(next(v->second->begin())), w_end(v->second->end()) ;
+                for (PackageIDSequence::ConstIterator w(next(v.second->begin())), w_end(v.second->end()) ;
                         w != w_end ; ++w)
-                    if ((*w)->choices_key()->parse_value()->find_by_name_with_prefix(v->first)->description() != description)
+                    if ((*w)->choices_key()->parse_value()->find_by_name_with_prefix(v.first)->description() != description)
                     {
                         all_same = false;
                         break;
@@ -1445,11 +1435,11 @@ namespace
                 else
                 {
                     cout << fuc(fs_choice_to_explain_not_all_same(), fv<'s'>(stringify(first_choice_value->unprefixed_name())));
-                    for (PackageIDSequence::ConstIterator w(v->second->begin()), w_end(v->second->end()) ;
+                    for (PackageIDSequence::ConstIterator w(v.second->begin()), w_end(v.second->end()) ;
                             w != w_end ; ++w)
                     {
                         const std::shared_ptr<const ChoiceValue> value(
-                                (*w)->choices_key()->parse_value()->find_by_name_with_prefix(v->first));
+                                (*w)->choices_key()->parse_value()->find_by_name_with_prefix(v.first));
                         cout << fuc(fs_choice_to_explain_one(), fv<'s'>((*w)->canonical_form(idcf_no_version)), fv<'d'>(value->description()));
                     }
                 }

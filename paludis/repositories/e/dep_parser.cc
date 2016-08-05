@@ -494,9 +494,8 @@ namespace
                     continue;
 
                 case dsak_expandable:
-                    for (auto c(children.begin()), c_end(children.end()) ;
-                            c != c_end ; ++c)
-                        add_expanded_annotation(eapi, *c, *a);
+                    for (const auto & c : children)
+                        add_expanded_annotation(eapi, c, *a);
                     continue;
 
                 case last_dsak:
@@ -553,9 +552,8 @@ paludis::erepository::parse_depend(const std::string & s, const Environment * co
 
     parse_elike_dependencies(s, callbacks, { });
 
-    for (auto b(stack.begin()->block_children().begin()), b_end(stack.begin()->block_children().end()) ;
-            b != b_end ; ++b)
-        add_synthetic_block_annotations(eapi, b->first, b->second);
+    for (auto & b : stack.begin()->block_children())
+        add_synthetic_block_annotations(eapi, b.first, b.second);
 
     return top;
 }
@@ -604,9 +602,8 @@ paludis::erepository::parse_commented_set(const std::string & s, const Environme
 
     parse_elike_dependencies(s, callbacks, { edpo_allow_embedded_comments });
 
-    for (auto b(stack.begin()->block_children().begin()), b_end(stack.begin()->block_children().end()) ;
-            b != b_end ; ++b)
-        add_synthetic_block_annotations(eapi, b->first, b->second);
+    for (auto & b : stack.begin()->block_children())
+        add_synthetic_block_annotations(eapi, b.first, b.second);
 
     return top;
 }

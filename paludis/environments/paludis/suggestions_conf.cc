@@ -190,30 +190,28 @@ SuggestionsConf::interest_in_suggestion(
         SpecificMap::const_iterator i(_imp->qualified.find(from_id->name()));
         if (i != _imp->qualified.end())
         {
-            for (PDSToValuesList::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
-                    j != j_end ; ++j)
+            for (const auto & j : i->second)
             {
-                if (! match_package(*_imp->env, *j->first, from_id, nullptr, { }))
+                if (! match_package(*_imp->env, *j.first, from_id, nullptr, { }))
                     continue;
 
-                for (ValuesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;
-                        l != l_end ; ++l)
+                for (const auto & l : j.second)
                 {
-                    if (! l->group_requirement.empty())
+                    if (! l.group_requirement.empty())
                     {
-                        if (spec_group == l->group_requirement)
-                            return l->negated ? false : true;
+                        if (spec_group == l.group_requirement)
+                            return l.negated ? false : true;
                     }
                     else
                     {
-                        if (! l->pkg_requirement.empty())
-                            if (stringify(spec.package_ptr()->package()) != l->pkg_requirement)
+                        if (! l.pkg_requirement.empty())
+                            if (stringify(spec.package_ptr()->package()) != l.pkg_requirement)
                                 continue;
-                        if (! l->cat_requirement.empty())
-                            if (stringify(spec.package_ptr()->category()) != l->cat_requirement)
+                        if (! l.cat_requirement.empty())
+                            if (stringify(spec.package_ptr()->category()) != l.cat_requirement)
                                 continue;
 
-                        return l->negated ? false : true;
+                        return l.negated ? false : true;
                     }
                 }
             }
@@ -271,24 +269,23 @@ SuggestionsConf::interest_in_suggestion(
         if (! match_package(*_imp->env, *j->first, from_id, nullptr, { }))
             continue;
 
-        for (ValuesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;
-                l != l_end ; ++l)
+        for (const auto & l : j->second)
         {
-            if (! l->group_requirement.empty())
+            if (! l.group_requirement.empty())
             {
-                if (spec_group == l->group_requirement)
-                    return l->negated ? false : true;
+                if (spec_group == l.group_requirement)
+                    return l.negated ? false : true;
             }
             else
             {
-                if (! l->pkg_requirement.empty())
-                    if (stringify(spec.package_ptr()->package()) != l->pkg_requirement)
+                if (! l.pkg_requirement.empty())
+                    if (stringify(spec.package_ptr()->package()) != l.pkg_requirement)
                         continue;
-                if (! l->cat_requirement.empty())
-                    if (stringify(spec.package_ptr()->category()) != l->cat_requirement)
+                if (! l.cat_requirement.empty())
+                    if (stringify(spec.package_ptr()->category()) != l.cat_requirement)
                         continue;
 
-                return l->negated ? false : true;
+                return l.negated ? false : true;
             }
         }
     }

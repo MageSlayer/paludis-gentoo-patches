@@ -145,22 +145,20 @@ KeywordsConf::query(const std::shared_ptr<const KeywordNameSet> & k, const std::
         SpecificMap::const_iterator i(_imp->qualified.find(e->name()));
         if (i != _imp->qualified.end())
         {
-            for (PDSToKeywordsList::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
-                    j != j_end ; ++j)
+            for (const auto & j : i->second)
             {
-                if (! match_package(*_imp->env, *j->first, e, nullptr, { }))
+                if (! match_package(*_imp->env, *j.first, e, nullptr, { }))
                     continue;
 
-                for (KeywordsList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;
-                        l != l_end ; ++l)
+                for (const auto & l : j.second)
                 {
-                    if (*l == star_keyword)
+                    if (l == star_keyword)
                         return true;
 
-                    else if (*l == minus_star_keyword)
+                    else if (l == minus_star_keyword)
                         break_when_done = true;
 
-                    else if (k->end() != k->find(*l))
+                    else if (k->end() != k->find(l))
                         return true;
                 }
             }
@@ -217,13 +215,12 @@ KeywordsConf::query(const std::shared_ptr<const KeywordNameSet> & k, const std::
         if (! match_package(*_imp->env, *j->first, e, nullptr, { }))
             continue;
 
-        for (KeywordsList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;
-                l != l_end ; ++l)
+        for (const auto & l : j->second)
         {
-            if (k->end() != k->find(*l))
+            if (k->end() != k->find(l))
                 return true;
 
-            if (*l == star_keyword)
+            if (l == star_keyword)
                 return true;
         }
     }

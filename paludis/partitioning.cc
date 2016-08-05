@@ -46,9 +46,8 @@ Partitioning::~Partitioning() = default;
 void
 Partitioning::mark(const std::vector<FSPath> & paths, const PartName & name)
 {
-    for (auto path = paths.begin(), path_end = paths.end();
-         path != path_end; ++path)
-        _imp->parts.push_back(std::make_pair(*path, name));
+    for (const auto & path : paths)
+        _imp->parts.push_back(std::make_pair(path, name));
 }
 
 PartName

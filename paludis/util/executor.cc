@@ -157,9 +157,8 @@ Executor::execute()
 
         _imp->condition.wait_for(lock, std::chrono::milliseconds(_imp->ms_update_interval));
 
-        for (Running::iterator r(running.begin()), r_end(running.end()) ;
-                r != r_end ; ++r)
-            r->second.second->flush_threaded();
+        for (auto & r : running)
+            r.second.second->flush_threaded();
 
         for (ReadyForPost::iterator p(_imp->ready_for_post.begin()), p_end(_imp->ready_for_post.end()) ;
                 p != p_end ; ++p)

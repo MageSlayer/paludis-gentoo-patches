@@ -319,27 +319,26 @@ SimpleHandler::_create_contents() const
     Context context("When parsing atoms in simple set file '" + stringify(_p.file_name()) + "':");
 
     _contents = std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
-    for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
-            i != i_end ; ++i)
+    for (const auto & _line : _lines)
     {
-        if (i->empty())
+        if (_line.empty())
             continue;
 
-        if ('#' == i->at(0))
+        if ('#' == _line.at(0))
             continue;
 
-        Context c("When handling line '" + stringify(*i) + "':");
+        Context c("When handling line '" + stringify(_line) + "':");
 
         try
         {
-            if (std::string::npos == i->find('/'))
+            if (std::string::npos == _line.find('/'))
             {
-                std::shared_ptr<NamedSetDepSpec> p(std::make_shared<NamedSetDepSpec>(SetName(*i)));
+                std::shared_ptr<NamedSetDepSpec> p(std::make_shared<NamedSetDepSpec>(SetName(_line)));
                 _contents->top()->append(p);
             }
             else
             {
-                std::shared_ptr<PackageDepSpec> p(std::make_shared<PackageDepSpec>(_p.parser()(stringify(*i))));
+                std::shared_ptr<PackageDepSpec> p(std::make_shared<PackageDepSpec>(_p.parser()(stringify(_line))));
                 _contents->top()->append(p);
             }
         }
@@ -350,7 +349,7 @@ SimpleHandler::_create_contents() const
         catch (const Exception & e)
         {
             Log::get_instance()->message("set_file.ignoring_line", ll_warning, lc_context)
-                << "Ignoring line '" << *i << "' due to exception '" << e.message() << "' (" << e.what() << "'";
+                << "Ignoring line '" << _line << "' due to exception '" << e.message() << "' (" << e.what() << "'";
         }
     }
 }
@@ -417,9 +416,8 @@ SimpleHandler::rewrite() const
     {
         SafeOFStream f(_p.file_name(), -1, true);
 
-        for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
-                i != i_end ; ++i)
-            f << *i << std::endl;
+        for (const auto & _line : _lines)
+            f << _line << std::endl;
     }
     catch (const SafeOFStreamError & e)
     {
@@ -445,9 +443,8 @@ PaludisConfHandler::_create_contents() const
     Context context("When parsing atoms in paludis conf set file '" + stringify(_p.file_name()) + "':");
 
     _contents = std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
-    for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
-            i != i_end ; ++i)
-        do_one_conf_line(*i, _contents, _p);
+    for (const auto & _line : _lines)
+        do_one_conf_line(_line, _contents, _p);
 }
 
 std::shared_ptr<SetSpecTree>
@@ -510,9 +507,8 @@ PaludisConfHandler::rewrite() const
     {
         SafeOFStream f(_p.file_name(), -1, true);
 
-        for (std::list<std::string>::const_iterator i(_lines.begin()), i_end(_lines.end()) ;
-                i != i_end ; ++i)
-            f << *i << std::endl;
+        for (const auto & _line : _lines)
+            f << _line << std::endl;
     }
     catch (const SafeOFStreamError & e)
     {

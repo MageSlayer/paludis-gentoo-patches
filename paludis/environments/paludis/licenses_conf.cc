@@ -139,20 +139,19 @@ namespace
     void expand(const Environment * const env, LicensesList & list)
     {
         LicensesList extras;
-        for (auto i(list.begin()), i_end(list.end()) ;
-                i != i_end ; ++i)
+        for (auto & i : list)
         {
-            std::string s(*i);
+            std::string s(i);
             if (0 == s.compare(0, 1, "-", 0, 1))
             {
-                auto l(env->expand_licence(i->substr(1)));
+                auto l(env->expand_licence(i.substr(1)));
                 for (auto v(l->begin()), v_end(l->end()) ;
                         v != v_end ; ++v)
                     extras.push_back("-" + *v);
             }
             else
             {
-                auto l(env->expand_licence(*i));
+                auto l(env->expand_licence(i));
                 for (auto v(l->begin()), v_end(l->end()) ;
                         v != v_end ; ++v)
                     extras.push_back(*v);
@@ -175,9 +174,8 @@ LicensesConf::query(const std::string & t, const std::shared_ptr<const PackageID
             for (auto q(_imp->qualified.begin()), q_end(_imp->qualified.end()) ;
                     q != q_end ; ++q)
             {
-                for (auto p(q->second.begin()), p_end(q->second.end()) ;
-                        p != p_end ; ++p)
-                    expand(_imp->env, p->second);
+                for (auto & p : q->second)
+                    expand(_imp->env, p.second);
             }
 
             for (auto p(_imp->unqualified.begin()), p_end(_imp->unqualified.end()) ;
@@ -196,22 +194,20 @@ LicensesConf::query(const std::string & t, const std::shared_ptr<const PackageID
         SpecificMap::const_iterator i(_imp->qualified.find(e->name()));
         if (i != _imp->qualified.end())
         {
-            for (PDSToLicensesList::const_iterator j(i->second.begin()), j_end(i->second.end()) ;
-                    j != j_end ; ++j)
+            for (const auto & j : i->second)
             {
-                if (! match_package(*_imp->env, *j->first, e, nullptr, { }))
+                if (! match_package(*_imp->env, *j.first, e, nullptr, { }))
                     continue;
 
-                for (LicensesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;
-                        l != l_end ; ++l)
+                for (const auto & l : j.second)
                 {
-                    if (*l == t)
+                    if (l == t)
                         return true;
 
-                    if (*l == "*")
+                    if (l == "*")
                         return true;
 
-                    if (*l == "-*")
+                    if (l == "-*")
                         break_when_done = true;
                 }
             }
@@ -267,13 +263,12 @@ LicensesConf::query(const std::string & t, const std::shared_ptr<const PackageID
         if (! match_package(*_imp->env, *j->first, e, nullptr, { }))
             continue;
 
-        for (LicensesList::const_iterator l(j->second.begin()), l_end(j->second.end()) ;
-                l != l_end ; ++l)
+        for (const auto & l : j->second)
         {
-            if (*l == t)
+            if (l == t)
                 return true;
 
-            if (*l == "*")
+            if (l == "*")
                 return true;
         }
     }

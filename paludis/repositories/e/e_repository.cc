@@ -1362,34 +1362,32 @@ ERepository::repository_factory_create(
     std::vector<std::string> sync_tokens;
     tokenise_whitespace(f("sync"), std::back_inserter(sync_tokens));
     std::string source;
-    for (auto t(sync_tokens.begin()), t_end(sync_tokens.end()) ;
-            t != t_end ; ++t)
-        if ((! t->empty()) && (':' == t->at(t->length() - 1)))
-            source = t->substr(0, t->length() - 1);
+    for (auto & sync_token : sync_tokens)
+        if ((! sync_token.empty()) && (':' == sync_token.at(sync_token.length() - 1)))
+            source = sync_token.substr(0, sync_token.length() - 1);
         else
         {
             std::string v;
             if (sync->end() != sync->find(source))
                 v = sync->find(source)->second + " ";
             sync->erase(source);
-            sync->insert(source, v + *t);
+            sync->insert(source, v + sync_token);
         }
 
     auto sync_options(std::make_shared<Map<std::string, std::string> >());
     std::vector<std::string> sync_options_tokens;
     tokenise_whitespace(f("sync_options"), std::back_inserter(sync_options_tokens));
     source = "";
-    for (auto t(sync_options_tokens.begin()), t_end(sync_options_tokens.end()) ;
-            t != t_end ; ++t)
-        if ((! t->empty()) && (':' == t->at(t->length() - 1)))
-            source = t->substr(0, t->length() - 1);
+    for (auto & sync_options_token : sync_options_tokens)
+        if ((! sync_options_token.empty()) && (':' == sync_options_token.at(sync_options_token.length() - 1)))
+            source = sync_options_token.substr(0, sync_options_token.length() - 1);
         else
         {
             std::string v;
             if (sync_options->end() != sync_options->find(source))
                 v = sync_options->find(source)->second + " ";
             sync_options->erase(source);
-            sync_options->insert(source, v + *t);
+            sync_options->insert(source, v + sync_options_token);
         }
 
     std::string builddir(f("builddir"));
@@ -1868,16 +1866,15 @@ ERepository::merge(const MergeParams & m)
     }
 
     if (_imp->params.write_cache() != FSPath("/var/empty"))
-        for (auto r(replaces.begin()), r_end(replaces.end()) ;
-                r != r_end ; ++r)
+        for (auto & replace : replaces)
         {
             FSPath cache(_imp->params.write_cache());
 
             if (_imp->params.append_repository_name_to_write_cache())
                 cache /= stringify(name());
 
-            cache /= stringify((*r)->name().category());
-            cache /= (stringify((*r)->name().package()) + "-" + stringify((*r)->version()));
+            cache /= stringify(replace->name().category());
+            cache /= (stringify(replace->name().package()) + "-" + stringify(replace->version()));
 
             if (cache.stat().is_regular_file_or_symlink_to_regular_file())
             {

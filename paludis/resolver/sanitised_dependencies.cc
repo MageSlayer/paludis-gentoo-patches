@@ -274,15 +274,14 @@ namespace
                     std::pair<AnyChildScore, OperatorScore> worst_score(acs_better_than_best, os_better_than_best);
 
                     /* score of a group is the score of the worst child. */
-                    for (std::list<PackageOrBlockDepSpec>::const_iterator h(g->begin()), h_end(g->end()) ;
-                            h != h_end ; ++h)
+                    for (const auto & h : *g)
                     {
-                        auto s(maybe_make_sanitised(PackageOrBlockDepSpec(*h)));
+                        auto s(maybe_make_sanitised(PackageOrBlockDepSpec(h)));
                         if (s)
                         {
                             auto score(decider.find_any_score(our_resolution, our_id, *s));
                             Log::get_instance()->message("resolver.sanitised_dependencies.any_score", ll_debug, lc_context)
-                                << "Scored " << *h << " as " << score.first << " " << score.second;
+                                << "Scored " << h << " as " << score.first << " " << score.second;
 
                             if (score < worst_score)
                                 worst_score = score;
@@ -299,10 +298,9 @@ namespace
                 if (g_best != child_groups.end())
                 {
                     /* might be nothing to do, if no labels are enabled */
-                    for (std::list<PackageOrBlockDepSpec>::const_iterator h(g_best->begin()), h_end(g_best->end()) ;
-                            h != h_end ; ++h)
+                    for (const auto & h : *g_best)
                     {
-                        auto s(maybe_make_sanitised(*h));
+                        auto s(maybe_make_sanitised(h));
                         if (s)
                             apply(*s);
                     }
@@ -370,9 +368,8 @@ namespace
             auto classifier(classifier_builder->create());
             if (classifier->any_enabled)
             {
-                for (auto c(conditions_stack.begin()), c_end(conditions_stack.end()) ;
-                        c != c_end ; ++c)
-                    acs << (acs.str().empty() ? "" : ", ") << stringify(*c);
+                for (auto & c : conditions_stack)
+                    acs << (acs.str().empty() ? "" : ", ") << stringify(c);
 
                 return make_shared_copy(make_named_values<SanitisedDependency>(
                             n::active_conditions_as_string() = acs.str(),
