@@ -72,9 +72,7 @@ ArgsVisitor::ArgsVisitor(ArgsHandler::ArgsIterator * ai, ArgsHandler::ArgsIterat
 {
 }
 
-ArgsVisitor::~ArgsVisitor()
-{
-}
+ArgsVisitor::~ArgsVisitor() = default;
 
 const std::string &
 ArgsVisitor::get_param(const ArgsOption & arg)

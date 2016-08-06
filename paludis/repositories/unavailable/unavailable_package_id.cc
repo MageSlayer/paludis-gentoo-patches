@@ -88,9 +88,7 @@ UnavailablePackageID::UnavailablePackageID(const UnavailablePackageIDParams & en
     add_mask(_imp->mask);
 }
 
-UnavailablePackageID::~UnavailablePackageID()
-{
-}
+UnavailablePackageID::~UnavailablePackageID() = default;
 
 void
 UnavailablePackageID::need_keys_added() const

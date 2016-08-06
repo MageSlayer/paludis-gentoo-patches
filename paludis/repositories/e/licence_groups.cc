@@ -47,9 +47,7 @@ LicenceGroups::LicenceGroups() :
 {
 }
 
-LicenceGroups::~LicenceGroups()
-{
-}
+LicenceGroups::~LicenceGroups() = default;
 
 void
 LicenceGroups::add(const FSPath & p)

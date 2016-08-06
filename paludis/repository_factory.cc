@@ -126,9 +126,7 @@ RepositoryFactory::RepositoryFactory() :
     register_repositories(static_cast<const TypeOrNoType<REPOSITORY_GROUP_IF_unpackaged>::Type *>(nullptr), this);
 }
 
-RepositoryFactory::~RepositoryFactory()
-{
-}
+RepositoryFactory::~RepositoryFactory() = default;
 
 const std::shared_ptr<Repository>
 RepositoryFactory::create(

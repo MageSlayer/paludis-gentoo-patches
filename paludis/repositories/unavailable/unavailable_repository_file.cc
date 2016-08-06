@@ -65,9 +65,7 @@ UnavailableRepositoryFile::UnavailableRepositoryFile(const FSPath & f) :
     _load(f);
 }
 
-UnavailableRepositoryFile::~UnavailableRepositoryFile()
-{
-}
+UnavailableRepositoryFile::~UnavailableRepositoryFile() = default;
 
 UnavailableRepositoryFile::ConstIterator
 UnavailableRepositoryFile::begin() const

@@ -62,9 +62,7 @@ Unmerger::Unmerger(const UnmergerOptions & o) :
 {
 }
 
-Unmerger::~Unmerger()
-{
-}
+Unmerger::~Unmerger() = default;
 
 void
 Unmerger::add_unmerge_entry(const EntryType et, const std::shared_ptr<const ContentsEntry> & e)

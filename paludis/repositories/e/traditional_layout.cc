@@ -173,9 +173,7 @@ TraditionalLayout::TraditionalLayout(
     }
 }
 
-TraditionalLayout::~TraditionalLayout()
-{
-}
+TraditionalLayout::~TraditionalLayout() = default;
 
 FSPath
 TraditionalLayout::categories_file() const

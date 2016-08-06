@@ -54,7 +54,7 @@ namespace paludis
 
         public:
             StringListStreamBase();
-            ~StringListStreamBase();
+            ~StringListStreamBase() = default;
     };
 
     class PALUDIS_VISIBLE StringListStream :
@@ -64,7 +64,7 @@ namespace paludis
     {
         public:
             StringListStream();
-            ~StringListStream();
+            ~StringListStream() = default;
 
             void nothing_more_to_write();
     };

@@ -52,9 +52,7 @@
 
 using namespace paludis;
 
-HookFile::~HookFile()
-{
-}
+HookFile::~HookFile() = default;
 
 namespace
 {
@@ -534,9 +532,7 @@ Hooker::Hooker(const Environment * const e) :
 {
 }
 
-Hooker::~Hooker()
-{
-}
+Hooker::~Hooker() = default;
 
 void
 Hooker::add_dir(const FSPath & dir, const bool v)

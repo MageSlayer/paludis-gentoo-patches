@@ -73,9 +73,7 @@ Hook::AllowedOutputValues::AllowedOutputValues(const AllowedOutputValues & other
     _imp->allowed_values = other._imp->allowed_values;
 }
 
-Hook::AllowedOutputValues::~AllowedOutputValues()
-{
-}
+Hook::AllowedOutputValues::~AllowedOutputValues() = default;
 
 Hook::AllowedOutputValues
 Hook::AllowedOutputValues::operator() (const std::string & v) const
@@ -97,9 +95,7 @@ Hook::Hook(const Hook & h) :
 {
 }
 
-Hook::~Hook()
-{
-}
+Hook::~Hook() = default;
 
 Hook
 Hook::operator() (const std::string & k, const std::string & v) const

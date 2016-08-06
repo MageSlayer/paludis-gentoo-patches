@@ -54,9 +54,7 @@ AAVisitor::AAVisitor() :
 {
 }
 
-AAVisitor::~AAVisitor()
-{
-}
+AAVisitor::~AAVisitor() = default;
 
 void
 AAVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::Type & node)

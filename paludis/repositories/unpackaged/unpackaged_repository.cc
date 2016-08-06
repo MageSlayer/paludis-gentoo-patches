@@ -103,9 +103,7 @@ UnpackagedRepository::UnpackagedRepository(const RepositoryName & n,
     _add_metadata_keys();
 }
 
-UnpackagedRepository::~UnpackagedRepository()
-{
-}
+UnpackagedRepository::~UnpackagedRepository() = default;
 
 void
 UnpackagedRepository::_add_metadata_keys() const

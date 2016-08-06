@@ -53,9 +53,7 @@ UnpackagedStripper::UnpackagedStripper(const UnpackagedStripperOptions & options
 {
 }
 
-UnpackagedStripper::~UnpackagedStripper()
-{
-}
+UnpackagedStripper::~UnpackagedStripper() = default;
 
 void
 UnpackagedStripper::on_enter_dir(const FSPath &)

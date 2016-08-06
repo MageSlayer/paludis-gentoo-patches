@@ -113,9 +113,7 @@ FetchVisitor::FetchVisitor(
 {
 }
 
-FetchVisitor::~FetchVisitor()
-{
-}
+FetchVisitor::~FetchVisitor() = default;
 
 void
 FetchVisitor::visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node)

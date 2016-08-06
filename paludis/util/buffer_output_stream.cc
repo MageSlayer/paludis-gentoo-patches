@@ -47,9 +47,7 @@ BufferOutputStreamBuf::BufferOutputStreamBuf() :
     setg(nullptr, nullptr, nullptr);
 }
 
-BufferOutputStreamBuf::~BufferOutputStreamBuf()
-{
-}
+BufferOutputStreamBuf::~BufferOutputStreamBuf() = default;
 
 BufferOutputStreamBuf::int_type
 BufferOutputStreamBuf::overflow(int_type c)
@@ -112,16 +110,8 @@ BufferOutputStreamBase::BufferOutputStreamBase()
 {
 }
 
-BufferOutputStreamBase::~BufferOutputStreamBase()
-{
-}
-
 BufferOutputStream::BufferOutputStream() :
     std::ostream(&buf)
-{
-}
-
-BufferOutputStream::~BufferOutputStream()
 {
 }
 

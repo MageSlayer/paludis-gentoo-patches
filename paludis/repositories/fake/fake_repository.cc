@@ -60,9 +60,7 @@ FakeRepository::FakeRepository(const FakeRepositoryParams & params) :
     add_metadata_key(_imp->format_key);
 }
 
-FakeRepository::~FakeRepository()
-{
-}
+FakeRepository::~FakeRepository() = default;
 
 namespace paludis
 {

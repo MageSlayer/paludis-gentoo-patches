@@ -49,9 +49,7 @@ DigestRegistry::DigestRegistry()
 {
 }
 
-DigestRegistry::~DigestRegistry()
-{
-}
+DigestRegistry::~DigestRegistry() = default;
 
 DigestRegistry::Function
 DigestRegistry::get(const std::string & algo) const

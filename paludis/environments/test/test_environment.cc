@@ -100,9 +100,7 @@ TestEnvironment::TestEnvironment(const FSPath & r, bool au) :
     add_metadata_key(_imp->system_root_key);
 }
 
-TestEnvironment::~TestEnvironment()
-{
-}
+TestEnvironment::~TestEnvironment() = default;
 
 bool
 TestEnvironment::accept_keywords(const std::shared_ptr<const KeywordNameSet> & k, const std::shared_ptr<const PackageID> &) const

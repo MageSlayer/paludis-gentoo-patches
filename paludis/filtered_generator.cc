@@ -56,9 +56,7 @@ FilteredGenerator::FilteredGenerator(const FilteredGenerator & g, const Filter &
 {
 }
 
-FilteredGenerator::~FilteredGenerator()
-{
-}
+FilteredGenerator::~FilteredGenerator() = default;
 
 FilteredGenerator &
 FilteredGenerator::operator= (const FilteredGenerator & other)

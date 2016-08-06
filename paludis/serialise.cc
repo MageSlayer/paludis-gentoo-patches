@@ -51,9 +51,7 @@ Serialiser::Serialiser(std::ostream & s) :
 {
 }
 
-Serialiser::~Serialiser()
-{
-}
+Serialiser::~Serialiser() = default;
 
 std::ostream &
 Serialiser::raw_stream()
@@ -175,9 +173,7 @@ Deserialiser::Deserialiser(const Environment * const e, std::istream & s) :
 {
 }
 
-Deserialiser::~Deserialiser()
-{
-}
+Deserialiser::~Deserialiser() = default;
 
 std::istream &
 Deserialiser::stream()
@@ -280,9 +276,7 @@ Deserialisation::Deserialisation(const std::string & i, Deserialiser & d) :
     }
 }
 
-Deserialisation::~Deserialisation()
-{
-}
+Deserialisation::~Deserialisation() = default;
 
 const std::string
 Deserialisation::item_name() const

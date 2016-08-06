@@ -76,9 +76,7 @@ LibtoolLinkageChecker::LibtoolLinkageChecker(const FSPath & root) :
 {
 }
 
-LibtoolLinkageChecker::~LibtoolLinkageChecker()
-{
-}
+LibtoolLinkageChecker::~LibtoolLinkageChecker() = default;
 
 bool
 LibtoolLinkageChecker::check_file(const FSPath & file)

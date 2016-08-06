@@ -55,9 +55,7 @@ PretendJob::PretendJob(const PackageDepSpec & o, const RepositoryName & r, const
 {
 }
 
-PretendJob::~PretendJob()
-{
-}
+PretendJob::~PretendJob() = default;
 
 const PackageDepSpec
 PretendJob::origin_id_spec() const
@@ -97,10 +95,6 @@ PretendJob::serialise(Serialiser & s) const
         .member(SerialiserFlags<>(), "destination_type", stringify(destination_type()))
         .member(SerialiserFlags<>(), "destination_repository_name", stringify(destination_repository_name()))
         ;
-}
-
-ExecuteJob::~ExecuteJob()
-{
 }
 
 const std::shared_ptr<ExecuteJob>
@@ -146,9 +140,7 @@ FetchJob::FetchJob(
 {
 }
 
-FetchJob::~FetchJob()
-{
-}
+FetchJob::~FetchJob() = default;
 
 const PackageDepSpec
 FetchJob::origin_id_spec() const
@@ -258,9 +250,7 @@ InstallJob::InstallJob(
 {
 }
 
-InstallJob::~InstallJob()
-{
-}
+InstallJob::~InstallJob() = default;
 
 const PackageDepSpec
 InstallJob::origin_id_spec() const
@@ -397,9 +387,7 @@ UninstallJob::UninstallJob(
 {
 }
 
-UninstallJob::~UninstallJob()
-{
-}
+UninstallJob::~UninstallJob() = default;
 
 const std::shared_ptr<const Sequence<PackageDepSpec> >
 UninstallJob::ids_to_remove_specs() const

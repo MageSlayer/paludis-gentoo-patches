@@ -29,9 +29,7 @@
 using namespace paludis;
 using namespace paludis::erepository;
 
-Profile::~Profile()
-{
-}
+Profile::~Profile() = default;
 
 ProfileFactory::ProfileFactory()
 {

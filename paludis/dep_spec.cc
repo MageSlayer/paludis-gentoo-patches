@@ -57,9 +57,7 @@ DepSpec::DepSpec() :
 {
 }
 
-DepSpec::~DepSpec()
-{
-}
+DepSpec::~DepSpec() = default;
 
 const std::shared_ptr<const DepSpecAnnotations>
 DepSpec::maybe_annotations() const
@@ -159,9 +157,7 @@ ConditionalDepSpec::ConditionalDepSpec(const ConditionalDepSpec & other) :
     set_annotations(other.maybe_annotations());
 }
 
-ConditionalDepSpec::~ConditionalDepSpec()
-{
-}
+ConditionalDepSpec::~ConditionalDepSpec() = default;
 
 bool
 ConditionalDepSpec::condition_met(const Environment * const env, const std::shared_ptr<const PackageID> & id) const
@@ -338,9 +334,7 @@ StringDepSpec::StringDepSpec(const std::string & s) :
 {
 }
 
-StringDepSpec::~StringDepSpec()
-{
-}
+StringDepSpec::~StringDepSpec() = default;
 
 
 PlainTextDepSpec::PlainTextDepSpec(const std::string & s) :
@@ -361,9 +355,7 @@ PlainTextLabelDepSpec::PlainTextLabelDepSpec(const std::string & s) :
 {
 }
 
-PlainTextLabelDepSpec::~PlainTextLabelDepSpec()
-{
-}
+PlainTextLabelDepSpec::~PlainTextLabelDepSpec() = default;
 
 std::shared_ptr<DepSpec>
 PlainTextLabelDepSpec::clone() const
@@ -552,9 +544,7 @@ PackageDepSpec::PackageDepSpec(const std::shared_ptr<const PackageDepSpecData> &
 {
 }
 
-PackageDepSpec::~PackageDepSpec()
-{
-}
+PackageDepSpec::~PackageDepSpec() = default;
 
 PackageDepSpec::PackageDepSpec(const PackageDepSpec & d) :
     Cloneable<DepSpec>(d),

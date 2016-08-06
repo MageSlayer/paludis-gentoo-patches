@@ -148,9 +148,7 @@ namespace paludis
     {
     }
 
-    Imp<VDBRepository>::~Imp()
-    {
-    }
+    Imp<VDBRepository>::~Imp() = default;
 }
 
 VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
@@ -171,9 +169,7 @@ VDBRepository::VDBRepository(const VDBRepositoryParams & p) :
     _add_metadata_keys();
 }
 
-VDBRepository::~VDBRepository()
-{
-}
+VDBRepository::~VDBRepository() = default;
 
 void
 VDBRepository::_add_metadata_keys() const

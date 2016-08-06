@@ -184,9 +184,7 @@ FSIterator::FSIterator() :
     _imp->iter = _imp->items->end();
 }
 
-FSIterator::~FSIterator()
-{
-}
+FSIterator::~FSIterator() = default;
 
 FSIterator &
 FSIterator::operator= (const FSIterator & other)

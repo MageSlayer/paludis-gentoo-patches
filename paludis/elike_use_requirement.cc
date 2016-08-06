@@ -98,9 +98,7 @@ namespace
             {
             }
 
-            virtual ~UseRequirement()
-            {
-            }
+            virtual ~UseRequirement() = default;
 
             virtual bool one_requirement_met_base(
                     const Environment * const,

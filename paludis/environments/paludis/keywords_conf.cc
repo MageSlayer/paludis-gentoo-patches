@@ -77,9 +77,7 @@ KeywordsConf::KeywordsConf(const PaludisEnvironment * const e) :
 {
 }
 
-KeywordsConf::~KeywordsConf()
-{
-}
+KeywordsConf::~KeywordsConf() = default;
 
 void
 KeywordsConf::add(const FSPath & filename)

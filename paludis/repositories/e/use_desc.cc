@@ -84,9 +84,7 @@ UseDesc::UseDesc(const std::shared_ptr<const UseDescFileInfoSequence> & f) :
 {
 }
 
-UseDesc::~UseDesc()
-{
-}
+UseDesc::~UseDesc() = default;
 
 const std::string
 UseDesc::describe(

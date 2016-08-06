@@ -105,9 +105,7 @@ Orderer::Orderer(
 {
 }
 
-Orderer::~Orderer()
-{
-}
+Orderer::~Orderer() = default;
 
 namespace
 {

@@ -178,9 +178,7 @@ EInstalledRepositoryID::EInstalledRepositoryID(const QualifiedPackageName & q, c
 {
 }
 
-EInstalledRepositoryID::~EInstalledRepositoryID()
-{
-}
+EInstalledRepositoryID::~EInstalledRepositoryID() = default;
 
 void
 EInstalledRepositoryID::need_keys_added() const

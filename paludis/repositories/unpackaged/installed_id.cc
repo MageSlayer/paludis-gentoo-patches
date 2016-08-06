@@ -426,9 +426,7 @@ InstalledUnpackagedID::InstalledUnpackagedID(const Environment * const e, const 
     add_metadata_key(_imp->behaviours_key);
 }
 
-InstalledUnpackagedID::~InstalledUnpackagedID()
-{
-}
+InstalledUnpackagedID::~InstalledUnpackagedID() = default;
 
 void
 InstalledUnpackagedID::need_keys_added() const

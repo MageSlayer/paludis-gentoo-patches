@@ -82,9 +82,7 @@ VDBUnmerger::VDBUnmerger(const VDBUnmergerOptions & o) :
 {
 }
 
-VDBUnmerger::~VDBUnmerger()
-{
-}
+VDBUnmerger::~VDBUnmerger() = default;
 
 Hook
 VDBUnmerger::extend_hook(const Hook & h) const

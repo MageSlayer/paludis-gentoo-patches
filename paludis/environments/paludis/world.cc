@@ -55,9 +55,7 @@ World::World(const Environment * const e, const std::shared_ptr<const FSPath> & 
 {
 }
 
-World::~World()
-{
-}
+World::~World() = default;
 
 bool
 World::add_to_world(const SetName & s) const

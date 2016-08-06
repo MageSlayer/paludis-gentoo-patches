@@ -21,7 +21,5 @@
 
 using namespace paludis;
 
-SelectionHandler::~SelectionHandler()
-{
-}
+SelectionHandler::~SelectionHandler() = default;
 

@@ -97,9 +97,7 @@ CommandLine::CommandLine() :
 {
 }
 
-CommandLine::~CommandLine()
-{
-}
+CommandLine::~CommandLine() = default;
 
 TEST(Args, Simple)
 {

@@ -218,9 +218,7 @@ BrokenLinkageConfiguration::BrokenLinkageConfiguration(const FSPath & root) :
         join(_imp->ld_so_conf.begin(), _imp->ld_so_conf.end(), " ") << "\"";
 }
 
-BrokenLinkageConfiguration::~BrokenLinkageConfiguration()
-{
-}
+BrokenLinkageConfiguration::~BrokenLinkageConfiguration() = default;
 
 void
 Imp<BrokenLinkageConfiguration>::load_from_environment()

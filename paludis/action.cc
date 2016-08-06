@@ -32,9 +32,7 @@ using namespace paludis;
 
 #include <paludis/action-se.cc>
 
-Action::~Action()
-{
-}
+Action::~Action() = default;
 
 namespace paludis
 {
@@ -56,9 +54,7 @@ InstallAction::InstallAction(const InstallActionOptions & o) :
 {
 }
 
-InstallAction::~InstallAction()
-{
-}
+InstallAction::~InstallAction() = default;
 
 namespace paludis
 {
@@ -80,9 +76,7 @@ FetchAction::FetchAction(const FetchActionOptions & o) :
 {
 }
 
-FetchAction::~FetchAction()
-{
-}
+FetchAction::~FetchAction() = default;
 
 namespace paludis
 {
@@ -104,9 +98,7 @@ UninstallAction::UninstallAction(const UninstallActionOptions & o) :
 {
 }
 
-UninstallAction::~UninstallAction()
-{
-}
+UninstallAction::~UninstallAction() = default;
 
 namespace paludis
 {
@@ -130,9 +122,7 @@ PretendAction::PretendAction(const PretendActionOptions & o) :
 {
 }
 
-PretendAction::~PretendAction()
-{
-}
+PretendAction::~PretendAction() = default;
 
 bool
 PretendAction::failed() const
@@ -166,9 +156,7 @@ PretendFetchAction::PretendFetchAction(const FetchActionOptions & o) :
 {
 }
 
-PretendFetchAction::~PretendFetchAction()
-{
-}
+PretendFetchAction::~PretendFetchAction() = default;
 
 namespace paludis
 {
@@ -190,9 +178,7 @@ InfoAction::InfoAction(const InfoActionOptions & o) :
 {
 }
 
-InfoAction::~InfoAction()
-{
-}
+InfoAction::~InfoAction() = default;
 
 namespace paludis
 {
@@ -214,13 +200,9 @@ ConfigAction::ConfigAction(const ConfigActionOptions & o) :
 {
 }
 
-ConfigAction::~ConfigAction()
-{
-}
+ConfigAction::~ConfigAction() = default;
 
-SupportsActionTestBase::~SupportsActionTestBase()
-{
-}
+SupportsActionTestBase::~SupportsActionTestBase() = default;
 
 ActionFailedError::ActionFailedError(const std::string & msg) noexcept :
     Exception(msg)

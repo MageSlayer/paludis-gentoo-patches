@@ -53,9 +53,7 @@ EStripper::EStripper(const EStripperOptions & options) :
 {
 }
 
-EStripper::~EStripper()
-{
-}
+EStripper::~EStripper() = default;
 
 void
 EStripper::on_enter_dir(const FSPath &)

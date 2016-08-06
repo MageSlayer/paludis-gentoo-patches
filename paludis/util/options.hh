@@ -55,9 +55,10 @@ namespace paludis
             ///\{
 
             OptionsStore();
-            OptionsStore(const OptionsStore &);
-            const OptionsStore & operator= (const OptionsStore &);
-            ~OptionsStore();
+            OptionsStore(const OptionsStore &) = default;
+            ~OptionsStore() = default;
+
+            OptionsStore & operator= (const OptionsStore &) = default;
 
             ///\}
 

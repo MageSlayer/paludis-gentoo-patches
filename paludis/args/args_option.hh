@@ -99,7 +99,7 @@ namespace paludis
                 /**
                  * Destructor.
                  */
-                virtual ~ArgsOption();
+                virtual ~ArgsOption() = default;
 
             public:
                 /**
@@ -217,7 +217,7 @@ namespace paludis
                 SwitchArg(ArgsGroup * const group, const std::string & long_name, char short_name,
                         const std::string & description, const bool can_be_negated);
 
-                ~SwitchArg();
+                ~SwitchArg() = default;
 
                 virtual bool can_be_negated() const;
 

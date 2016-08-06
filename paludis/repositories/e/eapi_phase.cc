@@ -77,9 +77,7 @@ EAPIPhase::EAPIPhase(const std::string & s) :
     std::copy(next(t), tokens.end(), std::back_inserter(_imp->commands));
 }
 
-EAPIPhase::~EAPIPhase()
-{
-}
+EAPIPhase::~EAPIPhase() = default;
 
 bool
 EAPIPhase::option(const std::string & s) const
@@ -121,9 +119,7 @@ EAPIPhases::EAPIPhases(const std::string & s) :
         _imp->phases.push_back(std::make_shared<EAPIPhase>(*t));
 }
 
-EAPIPhases::~EAPIPhases()
-{
-}
+EAPIPhases::~EAPIPhases() = default;
 
 EAPIPhases::ConstIterator
 EAPIPhases::begin_phases() const

@@ -44,9 +44,7 @@ DamerauLevenshtein::DamerauLevenshtein(const std::string & name) :
 {
 }
 
-DamerauLevenshtein::~DamerauLevenshtein()
-{
-}
+DamerauLevenshtein::~DamerauLevenshtein() = default;
 
 unsigned
 DamerauLevenshtein::distance_with(const std::string & candidate) const

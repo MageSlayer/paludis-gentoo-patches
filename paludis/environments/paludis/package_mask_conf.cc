@@ -71,9 +71,7 @@ PackageMaskConf::PackageMaskConf(const PaludisEnvironment * const e, const bool 
 {
 }
 
-PackageMaskConf::~PackageMaskConf()
-{
-}
+PackageMaskConf::~PackageMaskConf() = default;
 
 void
 PackageMaskConf::add(const FSPath & filename)

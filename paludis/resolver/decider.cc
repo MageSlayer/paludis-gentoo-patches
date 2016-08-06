@@ -110,9 +110,7 @@ Decider::Decider(const Environment * const e, const ResolverFunctions & f,
 {
 }
 
-Decider::~Decider()
-{
-}
+Decider::~Decider() = default;
 
 void
 Decider::_resolve_decide_with_dependencies()

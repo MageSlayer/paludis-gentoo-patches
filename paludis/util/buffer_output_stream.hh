@@ -52,7 +52,7 @@ namespace paludis
 
         public:
             BufferOutputStreamBase();
-            ~BufferOutputStreamBase();
+            ~BufferOutputStreamBase() = default;
     };
 
     class PALUDIS_VISIBLE BufferOutputStream :
@@ -61,7 +61,7 @@ namespace paludis
     {
         public:
             BufferOutputStream();
-            ~BufferOutputStream();
+            ~BufferOutputStream() = default;
 
             void unbuffer(std::ostream &);
             bool anything_to_unbuffer() const PALUDIS_ATTRIBUTE((warn_unused_result));

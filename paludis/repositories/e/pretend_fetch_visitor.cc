@@ -91,9 +91,7 @@ PretendFetchVisitor::PretendFetchVisitor(
 {
 }
 
-PretendFetchVisitor::~PretendFetchVisitor()
-{
-}
+PretendFetchVisitor::~PretendFetchVisitor() = default;
 
 void
 PretendFetchVisitor::visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node)

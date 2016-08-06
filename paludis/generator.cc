@@ -75,9 +75,7 @@ Generator::operator= (const Generator & other)
     return *this;
 }
 
-Generator::~Generator()
-{
-}
+Generator::~Generator() = default;
 
 Generator::operator FilteredGenerator () const
 {

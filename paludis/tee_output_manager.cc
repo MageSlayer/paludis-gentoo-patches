@@ -93,9 +93,7 @@ TeeOutputManager::TeeOutputManager(
         _imp->stderr_stream.add_stream(&(*i)->stderr_stream());
 }
 
-TeeOutputManager::~TeeOutputManager()
-{
-}
+TeeOutputManager::~TeeOutputManager() = default;
 
 std::ostream &
 TeeOutputManager::stdout_stream()

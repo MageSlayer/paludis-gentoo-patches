@@ -282,9 +282,7 @@ FakeMetadataSpecTreeKey<FetchableURISpecTree>::FakeMetadataSpecTreeKey(const std
     set_from_string(v);
 }
 
-FakeMetadataSpecTreeKey<FetchableURISpecTree>::~FakeMetadataSpecTreeKey()
-{
-}
+FakeMetadataSpecTreeKey<FetchableURISpecTree>::~FakeMetadataSpecTreeKey() = default;
 
 void
 FakeMetadataSpecTreeKey<FetchableURISpecTree>::set_from_string(const std::string & s)
@@ -337,9 +335,7 @@ FakeMetadataSpecTreeKey<DependencySpecTree>::FakeMetadataSpecTreeKey(const std::
     set_from_string(v);
 }
 
-FakeMetadataSpecTreeKey<DependencySpecTree>::~FakeMetadataSpecTreeKey()
-{
-}
+FakeMetadataSpecTreeKey<DependencySpecTree>::~FakeMetadataSpecTreeKey() = default;
 
 void
 FakeMetadataSpecTreeKey<DependencySpecTree>::set_from_string(const std::string & s)
@@ -483,9 +479,7 @@ FakeMetadataChoicesKey::FakeMetadataChoicesKey(const Environment * const e,
 {
 }
 
-FakeMetadataChoicesKey::~FakeMetadataChoicesKey()
-{
-}
+FakeMetadataChoicesKey::~FakeMetadataChoicesKey() = default;
 
 void
 FakeMetadataChoicesKey::add(const std::string & n, const std::string & v)
@@ -557,9 +551,7 @@ FakeUnacceptedMask::FakeUnacceptedMask(const char c, const std::string & s, cons
 {
 }
 
-FakeUnacceptedMask::~FakeUnacceptedMask()
-{
-}
+FakeUnacceptedMask::~FakeUnacceptedMask() = default;
 
 char
 FakeUnacceptedMask::key() const
@@ -583,9 +575,7 @@ FakeUnsupportedMask::FakeUnsupportedMask()
 {
 }
 
-FakeUnsupportedMask::~FakeUnsupportedMask()
-{
-}
+FakeUnsupportedMask::~FakeUnsupportedMask() = default;
 
 char
 FakeUnsupportedMask::key() const
@@ -681,9 +671,7 @@ FakePackageID::FakePackageID(const Environment * const e, const RepositoryName &
 {
 }
 
-FakePackageID::~FakePackageID()
-{
-}
+FakePackageID::~FakePackageID() = default;
 
 const std::string
 FakePackageID::canonical_form(const PackageIDCanonicalForm f) const

@@ -52,7 +52,3 @@ Pipe::Pipe(const bool close_exec)
     }
 }
 
-Pipe::~Pipe()
-{
-}
-

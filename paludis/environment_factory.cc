@@ -83,9 +83,7 @@ EnvironmentFactory::EnvironmentFactory() :
     register_environment(static_cast<const TypeOrNoType<ENVIRONMENT_GROUP_IF_test>::Type *>(nullptr), this);
 }
 
-EnvironmentFactory::~EnvironmentFactory()
-{
-}
+EnvironmentFactory::~EnvironmentFactory() = default;
 
 const std::shared_ptr<Environment>
 EnvironmentFactory::create(const std::string & s) const

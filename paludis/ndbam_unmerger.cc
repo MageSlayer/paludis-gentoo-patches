@@ -82,9 +82,7 @@ NDBAMUnmerger::NDBAMUnmerger(const NDBAMUnmergerOptions & o) :
 {
 }
 
-NDBAMUnmerger::~NDBAMUnmerger()
-{
-}
+NDBAMUnmerger::~NDBAMUnmerger() = default;
 
 Hook
 NDBAMUnmerger::extend_hook(const Hook & h) const

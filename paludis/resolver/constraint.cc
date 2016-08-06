@@ -66,9 +66,7 @@ Constraints::Constraints() :
 {
 }
 
-Constraints::~Constraints()
-{
-}
+Constraints::~Constraints() = default;
 
 bool
 Constraints::all_untaken() const

@@ -185,9 +185,7 @@ RepositoryNameCache::RepositoryNameCache(
 {
 }
 
-RepositoryNameCache::~RepositoryNameCache()
-{
-}
+RepositoryNameCache::~RepositoryNameCache() = default;
 
 std::shared_ptr<const CategoryNamePartSet>
 RepositoryNameCache::category_names_containing_package(const PackageNamePart & p) const

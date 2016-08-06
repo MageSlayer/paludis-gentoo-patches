@@ -27,9 +27,7 @@ StandardOutputManager::StandardOutputManager()
 {
 }
 
-StandardOutputManager::~StandardOutputManager()
-{
-}
+StandardOutputManager::~StandardOutputManager() = default;
 
 std::ostream &
 StandardOutputManager::stdout_stream()

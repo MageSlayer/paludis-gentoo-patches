@@ -221,9 +221,7 @@ CommandFactory::CommandFactory() :
     _imp->handlers.insert(std::make_pair("verify", std::bind(&make_command<VerifyCommand>)));
 }
 
-CommandFactory::~CommandFactory()
-{
-}
+CommandFactory::~CommandFactory() = default;
 
 const std::shared_ptr<cave::Command>
 CommandFactory::create(const std::string & s) const

@@ -79,9 +79,7 @@ UnavailableRepositoryDependenciesKey::UnavailableRepositoryDependenciesKey(const
 {
 }
 
-UnavailableRepositoryDependenciesKey::~UnavailableRepositoryDependenciesKey()
-{
-}
+UnavailableRepositoryDependenciesKey::~UnavailableRepositoryDependenciesKey() = default;
 
 const std::shared_ptr<const DependencySpecTree>
 UnavailableRepositoryDependenciesKey::parse_value() const

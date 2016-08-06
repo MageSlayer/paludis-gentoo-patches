@@ -53,9 +53,7 @@ MemoisedHashes::MemoisedHashes() :
 {
 }
 
-MemoisedHashes::~MemoisedHashes()
-{
-}
+MemoisedHashes::~MemoisedHashes() = default;
 
 const std::string
 MemoisedHashes::get(const std::string & algo, const FSPath & file, SafeIFStream & stream) const

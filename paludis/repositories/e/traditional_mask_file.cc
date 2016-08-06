@@ -133,9 +133,7 @@ TraditionalMaskFile::end() const
     return ConstIterator(_imp->lines.end());
 }
 
-TraditionalMaskFile::~TraditionalMaskFile()
-{
-}
+TraditionalMaskFile::~TraditionalMaskFile() = default;
 
 namespace paludis
 {

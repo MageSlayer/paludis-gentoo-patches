@@ -175,9 +175,7 @@ ExheresLayout::ExheresLayout(const Environment * const e, const ERepository * co
     }
 }
 
-ExheresLayout::~ExheresLayout()
-{
-}
+ExheresLayout::~ExheresLayout() = default;
 
 FSPath
 ExheresLayout::categories_file() const

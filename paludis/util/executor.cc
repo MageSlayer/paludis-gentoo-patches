@@ -34,9 +34,7 @@ typedef std::list<std::shared_ptr<Executive> > ExecutiveList;
 typedef std::map<std::string, ExecutiveList> Queues;
 typedef std::list<std::shared_ptr<Executive> > ReadyForPost;
 
-Executive::~Executive()
-{
-}
+Executive::~Executive() = default;
 
 namespace paludis
 {
@@ -68,9 +66,7 @@ Executor::Executor(int ms_update_interval) :
 {
 }
 
-Executor::~Executor()
-{
-}
+Executor::~Executor() = default;
 
 void
 Executor::_one(const std::shared_ptr<Executive> executive)

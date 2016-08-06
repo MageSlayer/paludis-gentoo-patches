@@ -30,9 +30,7 @@
 
 using namespace paludis;
 
-Environment::~Environment()
-{
-}
+Environment::~Environment() = default;
 
 const Filter &
 Environment::all_filter()
@@ -67,9 +65,7 @@ NoSuchRepositoryError::NoSuchRepositoryError(const RepositoryName & n) noexcept 
 {
 }
 
-NoSuchRepositoryError::~NoSuchRepositoryError()
-{
-}
+NoSuchRepositoryError::~NoSuchRepositoryError() = default;
 
 RepositoryName
 NoSuchRepositoryError::name() const

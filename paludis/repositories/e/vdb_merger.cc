@@ -107,9 +107,7 @@ VDBMerger::VDBMerger(const VDBMergerParams & p) :
 {
 }
 
-VDBMerger::~VDBMerger()
-{
-}
+VDBMerger::~VDBMerger() = default;
 
 Hook
 VDBMerger::extend_hook(const Hook & h)

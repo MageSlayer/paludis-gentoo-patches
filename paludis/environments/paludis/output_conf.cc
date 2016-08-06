@@ -123,9 +123,7 @@ OutputConf::OutputConf(const PaludisEnvironment * const e) :
 {
 }
 
-OutputConf::~OutputConf()
-{
-}
+OutputConf::~OutputConf() = default;
 
 namespace
 {

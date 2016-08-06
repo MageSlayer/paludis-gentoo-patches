@@ -28,9 +28,7 @@ using namespace paludis;
 
 #include <paludis/output_manager-se.cc>
 
-OutputManager::~OutputManager()
-{
-}
+OutputManager::~OutputManager() = default;
 
 namespace paludis
 {

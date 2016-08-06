@@ -71,9 +71,7 @@ PackageID::PackageID() :
 {
 }
 
-PackageID::~PackageID()
-{
-}
+PackageID::~PackageID() = default;
 
 void
 PackageID::add_mask(const std::shared_ptr<const Mask> & k) const
@@ -186,9 +184,7 @@ PackageIDComparator::PackageIDComparator(const PackageIDComparator & other) :
     _imp->m = other._imp->m;
 }
 
-PackageIDComparator::~PackageIDComparator()
-{
-}
+PackageIDComparator::~PackageIDComparator() = default;
 
 bool
 PackageIDComparator::operator() (const std::shared_ptr<const PackageID> & a,

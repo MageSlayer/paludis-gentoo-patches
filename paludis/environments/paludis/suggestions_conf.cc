@@ -118,9 +118,7 @@ SuggestionsConf::SuggestionsConf(const PaludisEnvironment * const e) :
 {
 }
 
-SuggestionsConf::~SuggestionsConf()
-{
-}
+SuggestionsConf::~SuggestionsConf() = default;
 
 void
 SuggestionsConf::add(const FSPath & filename)

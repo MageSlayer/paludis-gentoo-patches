@@ -506,9 +506,7 @@ UserKeyRequirement::UserKeyRequirement(const std::string & s) :
 {
 }
 
-UserKeyRequirement::~UserKeyRequirement()
-{
-}
+UserKeyRequirement::~UserKeyRequirement() = default;
 
 namespace
 {
@@ -1174,9 +1172,7 @@ ExcludeRequirement::ExcludeRequirement(const PackageDepSpec & s) :
 {
 }
 
-ExcludeRequirement::~ExcludeRequirement()
-{
-}
+ExcludeRequirement::~ExcludeRequirement() = default;
 
 const std::pair<bool, std::string>
 ExcludeRequirement::requirement_met(

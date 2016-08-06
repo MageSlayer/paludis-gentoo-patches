@@ -70,9 +70,7 @@ Filter::operator= (const Filter & other)
     return *this;
 }
 
-Filter::~Filter()
-{
-}
+Filter::~Filter() = default;
 
 std::shared_ptr<const RepositoryNameSet>
 Filter::repositories(

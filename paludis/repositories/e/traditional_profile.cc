@@ -790,9 +790,7 @@ TraditionalProfile::TraditionalProfile(
         handle_profile_arch_var(_imp, arch_var_if_special);
 }
 
-TraditionalProfile::~TraditionalProfile()
-{
-}
+TraditionalProfile::~TraditionalProfile() = default;
 
 std::shared_ptr<const FSPathSequence>
 TraditionalProfile::profiles_with_parents() const

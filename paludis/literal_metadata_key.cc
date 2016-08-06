@@ -150,9 +150,7 @@ LiteralMetadataFSPathSequenceKey::LiteralMetadataFSPathSequenceKey(const std::st
 {
 }
 
-LiteralMetadataFSPathSequenceKey::~LiteralMetadataFSPathSequenceKey()
-{
-}
+LiteralMetadataFSPathSequenceKey::~LiteralMetadataFSPathSequenceKey() = default;
 
 const std::shared_ptr<const FSPathSequence>
 LiteralMetadataFSPathSequenceKey::parse_value() const
@@ -191,9 +189,7 @@ LiteralMetadataStringSetKey::LiteralMetadataStringSetKey(const std::string & r, 
 {
 }
 
-LiteralMetadataStringSetKey::~LiteralMetadataStringSetKey()
-{
-}
+LiteralMetadataStringSetKey::~LiteralMetadataStringSetKey() = default;
 
 const std::shared_ptr<const Set<std::string> >
 LiteralMetadataStringSetKey::parse_value() const
@@ -207,9 +203,7 @@ LiteralMetadataStringStringMapKey::LiteralMetadataStringStringMapKey(const std::
 {
 }
 
-LiteralMetadataStringStringMapKey::~LiteralMetadataStringStringMapKey()
-{
-}
+LiteralMetadataStringStringMapKey::~LiteralMetadataStringStringMapKey() = default;
 
 const std::shared_ptr<const Map<std::string, std::string> >
 LiteralMetadataStringStringMapKey::parse_value() const
@@ -223,9 +217,7 @@ LiteralMetadataStringSequenceKey::LiteralMetadataStringSequenceKey(const std::st
 {
 }
 
-LiteralMetadataStringSequenceKey::~LiteralMetadataStringSequenceKey()
-{
-}
+LiteralMetadataStringSequenceKey::~LiteralMetadataStringSequenceKey() = default;
 
 const std::shared_ptr<const Sequence<std::string> >
 LiteralMetadataStringSequenceKey::parse_value() const
@@ -390,9 +382,7 @@ LiteralMetadataTimeKey::LiteralMetadataTimeKey(
 {
 }
 
-LiteralMetadataTimeKey::~LiteralMetadataTimeKey()
-{
-}
+LiteralMetadataTimeKey::~LiteralMetadataTimeKey() = default;
 
 const std::string
 LiteralMetadataTimeKey::human_name() const
@@ -424,9 +414,7 @@ LiteralMetadataMaintainersKey::LiteralMetadataMaintainersKey(const std::string &
 {
 }
 
-LiteralMetadataMaintainersKey::~LiteralMetadataMaintainersKey()
-{
-}
+LiteralMetadataMaintainersKey::~LiteralMetadataMaintainersKey() = default;
 
 const std::shared_ptr<const Maintainers>
 LiteralMetadataMaintainersKey::parse_value() const

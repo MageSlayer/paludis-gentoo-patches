@@ -47,9 +47,7 @@ ContentsEntry::ContentsEntry(const FSPath & n) :
     add_metadata_key(_imp->location_key);
 }
 
-ContentsEntry::~ContentsEntry()
-{
-}
+ContentsEntry::~ContentsEntry() = default;
 
 void
 ContentsEntry::need_keys_added() const
@@ -86,9 +84,7 @@ ContentsFileEntry::ContentsFileEntry(const FSPath & our_name,
         add_metadata_key(_imp->part_key);
 }
 
-ContentsFileEntry::~ContentsFileEntry()
-{
-}
+ContentsFileEntry::~ContentsFileEntry() = default;
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
 ContentsFileEntry::part_key() const
@@ -134,9 +130,7 @@ ContentsSymEntry::ContentsSymEntry(const FSPath & our_name,
         add_metadata_key(_imp->part_key);
 }
 
-ContentsSymEntry::~ContentsSymEntry()
-{
-}
+ContentsSymEntry::~ContentsSymEntry() = default;
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
 ContentsSymEntry::target_key() const
@@ -170,9 +164,7 @@ Contents::Contents() :
 {
 }
 
-Contents::~Contents()
-{
-}
+Contents::~Contents() = default;
 
 void
 Contents::add(const std::shared_ptr<const ContentsEntry> & c)

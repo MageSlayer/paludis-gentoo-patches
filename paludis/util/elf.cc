@@ -215,11 +215,6 @@ namespace paludis
     }
 }
 
-InvalidElfFileError::InvalidElfFileError(const InvalidElfFileError & other) :
-    Exception(other)
-{
-}
-
 InvalidElfFileError::InvalidElfFileError(const std::string & s) noexcept:
     Exception(s)
 {

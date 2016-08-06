@@ -59,9 +59,7 @@ OutputManagerFromEnvironment::OutputManagerFromEnvironment(
 {
 }
 
-OutputManagerFromEnvironment::~OutputManagerFromEnvironment()
-{
-}
+OutputManagerFromEnvironment::~OutputManagerFromEnvironment() = default;
 
 const std::shared_ptr<OutputManager>
 OutputManagerFromEnvironment::operator() (const Action & a)

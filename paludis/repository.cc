@@ -51,9 +51,7 @@ NoSuchSetError::NoSuchSetError(const std::string & our_name) noexcept :
 {
 }
 
-NoSuchSetError::~NoSuchSetError()
-{
-}
+NoSuchSetError::~NoSuchSetError() = default;
 
 RecursivelyDefinedSetError::RecursivelyDefinedSetError(const std::string & our_name) noexcept :
     Exception("Set '" + our_name + "' is recursively defined"),
@@ -61,9 +59,7 @@ RecursivelyDefinedSetError::RecursivelyDefinedSetError(const std::string & our_n
 {
 }
 
-RecursivelyDefinedSetError::~RecursivelyDefinedSetError()
-{
-}
+RecursivelyDefinedSetError::~RecursivelyDefinedSetError() = default;
 
 namespace paludis
 {
@@ -134,9 +130,7 @@ Repository::Repository(
             << "' is blacklisted with reason '" << reason << "'.";
 }
 
-Repository::~Repository()
-{
-}
+Repository::~Repository() = default;
 
 const RepositoryName
 Repository::name() const noexcept
@@ -169,17 +163,11 @@ Repository::purge_invalid_cache() const
 {
 }
 
-RepositoryEnvironmentVariableInterface::~RepositoryEnvironmentVariableInterface()
-{
-}
+RepositoryEnvironmentVariableInterface::~RepositoryEnvironmentVariableInterface() = default;
 
-RepositoryDestinationInterface::~RepositoryDestinationInterface()
-{
-}
+RepositoryDestinationInterface::~RepositoryDestinationInterface() = default;
 
-RepositoryManifestInterface::~RepositoryManifestInterface()
-{
-}
+RepositoryManifestInterface::~RepositoryManifestInterface() = default;
 
 std::shared_ptr<const CategoryNamePartSet>
 Repository::unimportant_category_names(const RepositoryContentMayExcludes &) const

@@ -68,9 +68,7 @@ FakeInstalledRepository::FakeInstalledRepository(const FakeInstalledRepositoryPa
     add_metadata_key(_imp->installed_root_key);
 }
 
-FakeInstalledRepository::~FakeInstalledRepository()
-{
-}
+FakeInstalledRepository::~FakeInstalledRepository() = default;
 
 bool
 FakeInstalledRepository::is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const

@@ -411,9 +411,7 @@ namespace paludis
             sync_hosts->insert(i->first, extract_host_from_url(i->second));
     }
 
-    Imp<ERepository>::~Imp()
-    {
-    }
+    Imp<ERepository>::~Imp() = default;
 
     void
     Imp<ERepository>::need_profiles() const
@@ -543,9 +541,7 @@ ERepository::ERepository(const ERepositoryParams & p) :
     _add_metadata_keys();
 }
 
-ERepository::~ERepository()
-{
-}
+ERepository::~ERepository() = default;
 
 void
 ERepository::_add_metadata_keys() const

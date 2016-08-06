@@ -200,9 +200,7 @@ DynamicEntryValue<ElfType_>::DynamicEntryValue(const std::string & name) :
 }
 
 template <typename ElfType_>
-DynamicEntryValue<ElfType_>::~DynamicEntryValue()
-{
-}
+DynamicEntryValue<ElfType_>::~DynamicEntryValue() = default;
 
 template <typename ElfType_>
 void

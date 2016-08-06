@@ -79,9 +79,7 @@ ExheresMaskStore::ExheresMaskStore(
     _populate();
 }
 
-ExheresMaskStore::~ExheresMaskStore()
-{
-}
+ExheresMaskStore::~ExheresMaskStore() = default;
 
 namespace
 {

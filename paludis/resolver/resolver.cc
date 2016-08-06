@@ -88,9 +88,7 @@ Resolver::Resolver(const Environment * const e, const ResolverFunctions & f) :
 {
 }
 
-Resolver::~Resolver()
-{
-}
+Resolver::~Resolver() = default;
 
 void
 Resolver::add_target(const PackageOrBlockDepSpec & spec, const std::string & extra_information)

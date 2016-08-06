@@ -52,9 +52,7 @@ StringListStreamBuf::StringListStreamBuf() :
     setg(nullptr, nullptr, nullptr);
 }
 
-StringListStreamBuf::~StringListStreamBuf()
-{
-}
+StringListStreamBuf::~StringListStreamBuf() = default;
 
 StringListStreamBuf::int_type
 StringListStreamBuf::overflow(int_type c)
@@ -122,17 +120,9 @@ StringListStreamBase::StringListStreamBase()
 {
 }
 
-StringListStreamBase::~StringListStreamBase()
-{
-}
-
 StringListStream::StringListStream() :
     std::istream(&buf),
     std::ostream(&buf)
-{
-}
-
-StringListStream::~StringListStream()
 {
 }
 

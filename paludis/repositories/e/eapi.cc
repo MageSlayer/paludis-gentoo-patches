@@ -455,9 +455,7 @@ EAPIData::EAPIData() :
 {
 }
 
-EAPIData::~EAPIData()
-{
-}
+EAPIData::~EAPIData() = default;
 
 std::shared_ptr<const EAPI>
 EAPIData::eapi_from_string(const std::string & s) const
@@ -525,9 +523,7 @@ EAPILabels::EAPILabels(const EAPILabels & other) :
 {
 }
 
-EAPILabels::~EAPILabels()
-{
-}
+EAPILabels::~EAPILabels() = default;
 
 const std::string
 EAPILabels::class_for_label(const std::string & l) const

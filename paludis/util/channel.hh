@@ -50,7 +50,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            Channel();
+            Channel() = default;
 
             virtual ~Channel();
 

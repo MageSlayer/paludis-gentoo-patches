@@ -155,9 +155,7 @@ Stripper::Stripper(const StripperOptions & options) :
 {
 }
 
-Stripper::~Stripper()
-{
-}
+Stripper::~Stripper() = default;
 
 void
 Stripper::strip()

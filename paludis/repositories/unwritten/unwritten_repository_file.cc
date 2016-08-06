@@ -70,9 +70,7 @@ UnwrittenRepositoryFile::UnwrittenRepositoryFile(const FSPath & f) :
     _load(f);
 }
 
-UnwrittenRepositoryFile::~UnwrittenRepositoryFile()
-{
-}
+UnwrittenRepositoryFile::~UnwrittenRepositoryFile() = default;
 
 UnwrittenRepositoryFile::ConstIterator
 UnwrittenRepositoryFile::begin() const

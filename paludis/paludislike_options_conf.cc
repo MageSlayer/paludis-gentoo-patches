@@ -170,9 +170,7 @@ PaludisLikeOptionsConf::PaludisLikeOptionsConf(const PaludisLikeOptionsConfParam
 {
 }
 
-PaludisLikeOptionsConf::~PaludisLikeOptionsConf()
-{
-}
+PaludisLikeOptionsConf::~PaludisLikeOptionsConf() = default;
 
 void
 PaludisLikeOptionsConf::add_file(const FSPath & f)

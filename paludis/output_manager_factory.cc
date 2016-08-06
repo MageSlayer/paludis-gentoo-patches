@@ -102,9 +102,7 @@ OutputManagerFactory::OutputManagerFactory() :
     add_manager(TeeOutputManager::factory_managers(), TeeOutputManager::factory_create);
 }
 
-OutputManagerFactory::~OutputManagerFactory()
-{
-}
+OutputManagerFactory::~OutputManagerFactory() = default;
 
 const std::shared_ptr<OutputManager>
 OutputManagerFactory::create(

@@ -35,7 +35,7 @@ namespace paludis
         public paludis::Exception
     {
         public:
-            InvalidElfFileError(const InvalidElfFileError &);
+            InvalidElfFileError(const InvalidElfFileError &) = default;
             InvalidElfFileError(const std::string &) noexcept;
     };
 

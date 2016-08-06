@@ -60,9 +60,7 @@ PackageIDComparatorWithPromotion::PackageIDComparatorWithPromotion(const Package
     _imp->m = other._imp->m;
 }
 
-PackageIDComparatorWithPromotion::~PackageIDComparatorWithPromotion()
-{
-}
+PackageIDComparatorWithPromotion::~PackageIDComparatorWithPromotion() = default;
 
 bool
 PackageIDComparatorWithPromotion::operator() (const std::shared_ptr<const PackageID> & a,

@@ -57,9 +57,7 @@ UseConf::UseConf(const PaludisEnvironment * const e) :
 {
 }
 
-UseConf::~UseConf()
-{
-}
+UseConf::~UseConf() = default;
 
 void
 UseConf::add(const FSPath & filename)

@@ -139,9 +139,7 @@ UnpackagedID::UnpackagedID(const Environment * const e, const QualifiedPackageNa
         add_metadata_key(_imp->preserve_work_key);
 }
 
-UnpackagedID::~UnpackagedID()
-{
-}
+UnpackagedID::~UnpackagedID() = default;
 
 void
 UnpackagedID::need_keys_added() const

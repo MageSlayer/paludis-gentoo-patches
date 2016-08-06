@@ -92,9 +92,7 @@ FormatMessagesOutputManager::FormatMessagesOutputManager(
 {
 }
 
-FormatMessagesOutputManager::~FormatMessagesOutputManager()
-{
-}
+FormatMessagesOutputManager::~FormatMessagesOutputManager() = default;
 
 std::ostream &
 FormatMessagesOutputManager::stdout_stream()

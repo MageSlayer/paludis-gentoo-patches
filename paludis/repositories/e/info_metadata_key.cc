@@ -93,9 +93,7 @@ InfoVarsMetadataKey::InfoVarsMetadataKey(const std::shared_ptr<const FSPathSeque
 {
 }
 
-InfoVarsMetadataKey::~InfoVarsMetadataKey()
-{
-}
+InfoVarsMetadataKey::~InfoVarsMetadataKey() = default;
 
 const std::shared_ptr<const Set<std::string> >
 InfoVarsMetadataKey::parse_value() const
@@ -148,9 +146,7 @@ InfoPkgsMetadataKey::InfoPkgsMetadataKey(const Environment * const e,
 {
 }
 
-InfoPkgsMetadataKey::~InfoPkgsMetadataKey()
-{
-}
+InfoPkgsMetadataKey::~InfoPkgsMetadataKey() = default;
 
 void
 InfoPkgsMetadataKey::need_keys_added() const

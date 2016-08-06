@@ -50,9 +50,7 @@ MetadataKeyHolder::MetadataKeyHolder() :
 {
 }
 
-MetadataKeyHolder::~MetadataKeyHolder()
-{
-}
+MetadataKeyHolder::~MetadataKeyHolder() = default;
 
 void
 MetadataKeyHolder::add_metadata_key(const std::shared_ptr<const MetadataKey> & k) const

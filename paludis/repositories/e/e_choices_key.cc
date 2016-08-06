@@ -97,9 +97,7 @@ EChoicesKey::EChoicesKey(
 {
 }
 
-EChoicesKey::~EChoicesKey()
-{
-}
+EChoicesKey::~EChoicesKey() = default;
 
 namespace
 {

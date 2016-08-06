@@ -52,9 +52,7 @@ TailOutputStreamBuf::TailOutputStreamBuf(const unsigned int n) :
 {
 }
 
-TailOutputStreamBuf::~TailOutputStreamBuf()
-{
-}
+TailOutputStreamBuf::~TailOutputStreamBuf() = default;
 
 TailOutputStreamBuf::int_type
 TailOutputStreamBuf::overflow(int_type c)

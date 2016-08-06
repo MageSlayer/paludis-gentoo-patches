@@ -191,9 +191,7 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::sha
     _imp->checkers.clear();
 }
 
-BrokenLinkageFinder::~BrokenLinkageFinder()
-{
-}
+BrokenLinkageFinder::~BrokenLinkageFinder() = default;
 
 void
 Imp<BrokenLinkageFinder>::search_directory(const FSPath & directory)

@@ -174,9 +174,7 @@ SecurityContext::SecurityContext() :
 {
 }
 
-SecurityContext::~SecurityContext()
-{
-}
+SecurityContext::~SecurityContext() = default;
 
 std::shared_ptr<const SecurityContext> SecurityContext::current_context()
 {
@@ -228,9 +226,7 @@ MatchPathCon::MatchPathCon()
         _good=true;
 }
 
-MatchPathCon::~MatchPathCon()
-{
-}
+MatchPathCon::~MatchPathCon() = default;
 
 bool MatchPathCon::good() const
 {

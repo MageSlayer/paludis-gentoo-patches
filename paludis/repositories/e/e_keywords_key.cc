@@ -59,9 +59,7 @@ namespace
         {
         }
 
-        ~EKeywordsKey() override
-        {
-        }
+        ~EKeywordsKey() override = default;
 
         const std::shared_ptr<const Set<KeywordName> > parse_value() const override
         {

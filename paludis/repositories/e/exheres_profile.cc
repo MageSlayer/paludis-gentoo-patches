@@ -158,9 +158,7 @@ ExheresProfile::ExheresProfile(
         _imp->use_expand_no_describe->insert(stringify(suboption));
 }
 
-ExheresProfile::~ExheresProfile()
-{
-}
+ExheresProfile::~ExheresProfile() = default;
 
 void
 ExheresProfile::_load_dir(const FSPath & f)

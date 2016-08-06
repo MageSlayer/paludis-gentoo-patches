@@ -141,9 +141,7 @@ ConfigFile::Source::operator= (const ConfigFile::Source & other)
     return *this;
 }
 
-ConfigFile::Source::~Source()
-{
-}
+ConfigFile::Source::~Source() = default;
 
 const std::string &
 ConfigFile::Source::text() const
@@ -157,9 +155,7 @@ ConfigFile::Source::filename() const
     return _imp->filename;
 }
 
-ConfigFile::~ConfigFile()
-{
-}
+ConfigFile::~ConfigFile() = default;
 
 namespace paludis
 {
@@ -304,9 +300,7 @@ LineConfigFile::LineConfigFile(const Source & sr, const LineConfigFileOptions & 
     }
 }
 
-LineConfigFile::~LineConfigFile()
-{
-}
+LineConfigFile::~LineConfigFile() = default;
 
 LineConfigFile::ConstIterator
 LineConfigFile::begin() const
@@ -819,9 +813,7 @@ KeyValueConfigFile::KeyValueConfigFile(
     _imp->active_key_prefix = "";
 }
 
-KeyValueConfigFile::~KeyValueConfigFile()
-{
-}
+KeyValueConfigFile::~KeyValueConfigFile() = default;
 
 KeyValueConfigFile::ConstIterator
 KeyValueConfigFile::begin() const

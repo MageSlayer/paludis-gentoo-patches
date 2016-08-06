@@ -80,9 +80,7 @@ LicensesConf::LicensesConf(const PaludisEnvironment * const e) :
 {
 }
 
-LicensesConf::~LicensesConf()
-{
-}
+LicensesConf::~LicensesConf() = default;
 
 void
 LicensesConf::add(const FSPath & filename)

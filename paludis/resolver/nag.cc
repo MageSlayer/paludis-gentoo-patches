@@ -132,9 +132,7 @@ NAG::NAG() :
 {
 }
 
-NAG::~NAG()
-{
-}
+NAG::~NAG() = default;
 
 void
 NAG::add_node(const NAGIndex & r)

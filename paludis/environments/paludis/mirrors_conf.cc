@@ -65,9 +65,7 @@ MirrorsConf::MirrorsConf(const PaludisEnvironment * const e) :
 {
 }
 
-MirrorsConf::~MirrorsConf()
-{
-}
+MirrorsConf::~MirrorsConf() = default;
 
 void
 MirrorsConf::add(const FSPath & filename)

@@ -554,9 +554,7 @@ Process::Process(ProcessCommand && c) :
 {
 }
 
-Process::~Process()
-{
-}
+Process::~Process() = default;
 
 RunningProcessHandle
 Process::run()

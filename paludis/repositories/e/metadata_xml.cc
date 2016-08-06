@@ -50,9 +50,7 @@ MetadataXMLPool::MetadataXMLPool() :
 {
 }
 
-MetadataXMLPool::~MetadataXMLPool()
-{
-}
+MetadataXMLPool::~MetadataXMLPool() = default;
 
 const std::shared_ptr<const MetadataXML>
 MetadataXMLPool::metadata_if_exists(const FSPath & f) const

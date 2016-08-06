@@ -137,9 +137,7 @@ ElfLinkageChecker::ElfLinkageChecker(const FSPath & root, const std::shared_ptr<
 {
 }
 
-ElfLinkageChecker::~ElfLinkageChecker()
-{
-}
+ElfLinkageChecker::~ElfLinkageChecker() = default;
 
 bool
 ElfLinkageChecker::check_file(const FSPath & file)

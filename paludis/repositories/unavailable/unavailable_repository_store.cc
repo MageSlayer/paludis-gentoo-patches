@@ -82,9 +82,7 @@ UnavailableRepositoryStore::UnavailableRepositoryStore(
     _populate(env, f);
 }
 
-UnavailableRepositoryStore::~UnavailableRepositoryStore()
-{
-}
+UnavailableRepositoryStore::~UnavailableRepositoryStore() = default;
 
 void
 UnavailableRepositoryStore::_populate(const Environment * const env, const FSPath & f)

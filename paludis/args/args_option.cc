@@ -70,10 +70,6 @@ ArgsOption::ArgsOption(ArgsGroup * const g, const std::string & our_long_name,
     g->section()->handler()->add_option(this, our_long_name, our_short_name);
 }
 
-ArgsOption::~ArgsOption()
-{
-}
-
 void
 ArgsOption::remove()
 {
@@ -85,10 +81,6 @@ SwitchArg::SwitchArg(ArgsGroup * const our_group, const std::string & our_long_n
         const std::string & our_description, const bool c) :
     ArgsOption(our_group, our_long_name, our_short_name, our_description),
     _can_be_negated(c)
-{
-}
-
-SwitchArg::~SwitchArg()
 {
 }
 
@@ -294,9 +286,7 @@ StringSequenceArg::StringSequenceArg(ArgsGroup * const g, const std::string & ou
 {
 }
 
-StringSequenceArg::~StringSequenceArg()
-{
-}
+StringSequenceArg::~StringSequenceArg() = default;
 
 StringSequenceArg::ConstIterator
 StringSequenceArg::begin_args() const
@@ -411,9 +401,7 @@ StringSetArg::StringSetArgOptions::StringSetArgOptions(const StringSetArg::Strin
             std::back_inserter(_imp->options));
 }
 
-StringSetArg::StringSetArgOptions::~StringSetArgOptions()
-{
-}
+StringSetArg::StringSetArgOptions::~StringSetArgOptions() = default;
 
 StringSetArg::StringSetArgOptions::StringSetArgOptions() :
     _imp()
@@ -444,9 +432,7 @@ StringArg::set_argument(const std::string & arg)
     _argument = arg;
 }
 
-EnumArg::~EnumArg()
-{
-}
+EnumArg::~EnumArg() = default;
 
 EnumArg::EnumArgOptions::EnumArgOptions(const std::string & opt, const std::string & desc) :
     _imp()
@@ -490,9 +476,7 @@ EnumArg::EnumArgOptions::operator() (const std::string & opt, const char s, cons
     return *this;
 }
 
-EnumArg::EnumArgOptions::~EnumArgOptions()
-{
-}
+EnumArg::EnumArgOptions::~EnumArgOptions() = default;
 
 EnumArg::EnumArg(ArgsGroup * const our_group, const std::string & our_long_name,
         const char our_short_name, const std::string & our_description,
@@ -545,9 +529,7 @@ EnumArg::forwardable_args() const
     return result;
 }
 
-StringSetArg::~StringSetArg()
-{
-}
+StringSetArg::~StringSetArg() = default;
 
 StringSetArg::AllowedArgConstIterator
 StringSetArg::begin_allowed_args() const

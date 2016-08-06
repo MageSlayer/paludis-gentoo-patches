@@ -110,7 +110,3 @@ Pty::Pty(const bool close_exec, const unsigned short columns, const unsigned sho
     }
 }
 
-Pty::~Pty()
-{
-}
-

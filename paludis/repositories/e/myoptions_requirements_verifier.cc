@@ -73,9 +73,7 @@ MyOptionsRequirementsVerifier::MyOptionsRequirementsVerifier(
 {
 }
 
-MyOptionsRequirementsVerifier::~MyOptionsRequirementsVerifier()
-{
-}
+MyOptionsRequirementsVerifier::~MyOptionsRequirementsVerifier() = default;
 
 const std::shared_ptr<const Sequence<std::string> >
 MyOptionsRequirementsVerifier::unmet_requirements() const

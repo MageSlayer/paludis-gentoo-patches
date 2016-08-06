@@ -74,9 +74,7 @@ EbuildCommand::EbuildCommand(const EbuildCommandParams & p) :
 {
 }
 
-EbuildCommand::~EbuildCommand()
-{
-}
+EbuildCommand::~EbuildCommand() = default;
 
 bool
 EbuildCommand::success()
@@ -383,9 +381,7 @@ EbuildMetadataCommand::EbuildMetadataCommand(const EbuildCommandParams & p) :
 {
 }
 
-EbuildMetadataCommand::~EbuildMetadataCommand()
-{
-}
+EbuildMetadataCommand::~EbuildMetadataCommand() = default;
 
 std::string
 EbuildMetadataCommand::commands() const

@@ -55,9 +55,7 @@ namespace paludis
     };
 }
 
-JobState::~JobState()
-{
-}
+JobState::~JobState() = default;
 
 const std::shared_ptr<JobState>
 JobState::deserialise(Deserialisation & d)
@@ -111,9 +109,7 @@ JobActiveState::JobActiveState() :
 {
 }
 
-JobActiveState::~JobActiveState()
-{
-}
+JobActiveState::~JobActiveState() = default;
 
 void
 JobActiveState::set_output_manager(const std::shared_ptr<OutputManager> & m)
@@ -159,9 +155,7 @@ JobSucceededState::JobSucceededState(const std::shared_ptr<OutputManager> & m) :
 {
 }
 
-JobSucceededState::~JobSucceededState()
-{
-}
+JobSucceededState::~JobSucceededState() = default;
 
 const std::shared_ptr<OutputManager>
 JobSucceededState::output_manager() const
@@ -189,9 +183,7 @@ JobFailedState::JobFailedState(const std::shared_ptr<OutputManager> & m) :
 {
 }
 
-JobFailedState::~JobFailedState()
-{
-}
+JobFailedState::~JobFailedState() = default;
 
 const std::shared_ptr<OutputManager>
 JobFailedState::output_manager() const

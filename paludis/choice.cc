@@ -173,9 +173,7 @@ Choices::Choices() :
 {
 }
 
-Choices::~Choices()
-{
-}
+Choices::~Choices() = default;
 
 void
 Choices::add(const std::shared_ptr<const Choice> & c)
@@ -259,9 +257,7 @@ Choice::Choice(const ChoiceParams & p) :
 {
 }
 
-Choice::~Choice()
-{
-}
+Choice::~Choice() = default;
 
 void
 Choice::add(const std::shared_ptr<const ChoiceValue> & v)
@@ -329,9 +325,7 @@ Choice::end() const
     return ConstIterator(_imp->values.end());
 }
 
-ChoiceValue::~ChoiceValue()
-{
-}
+ChoiceValue::~ChoiceValue() = default;
 
 namespace paludis
 {

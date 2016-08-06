@@ -110,9 +110,7 @@ UnavailableRepository::UnavailableRepository(const UnavailableRepositoryParams &
     _add_metadata_keys();
 }
 
-UnavailableRepository::~UnavailableRepository()
-{
-}
+UnavailableRepository::~UnavailableRepository() = default;
 
 const bool
 UnavailableRepository::is_unimportant() const

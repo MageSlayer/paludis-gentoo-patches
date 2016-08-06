@@ -51,9 +51,7 @@ namespace
         {
         }
 
-        ~ESlotKey() override
-        {
-        }
+        ~ESlotKey() override = default;
 
         const Slot parse_value() const override
         {

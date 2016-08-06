@@ -85,9 +85,7 @@ DistributionData::DistributionData() :
 {
 }
 
-DistributionData::~DistributionData()
-{
-}
+DistributionData::~DistributionData() = default;
 
 std::shared_ptr<const Distribution>
 DistributionData::distribution_from_string(const std::string & s) const

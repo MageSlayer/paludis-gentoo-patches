@@ -128,9 +128,7 @@ Manifest2Reader::Manifest2Reader(const FSPath & f) :
     }
 }
 
-Manifest2Reader::~Manifest2Reader()
-{
-}
+Manifest2Reader::~Manifest2Reader() = default;
 
 Manifest2Reader::ConstIterator
 Manifest2Reader::begin() const

@@ -32,17 +32,11 @@ using namespace paludis;
 
 #include <paludis/metadata_key-se.cc>
 
-MetadataKey::~MetadataKey()
-{
-}
+MetadataKey::~MetadataKey() = default;
 
-MetadataSectionKey::~MetadataSectionKey()
-{
-}
+MetadataSectionKey::~MetadataSectionKey() = default;
 
-MetadataTimeKey::~MetadataTimeKey()
-{
-}
+MetadataTimeKey::~MetadataTimeKey() = default;
 
 template <typename T_>
 MetadataCollectionKey<T_>::~MetadataCollectionKey()
@@ -59,13 +53,9 @@ MetadataValueKey<T_>::~MetadataValueKey()
 {
 }
 
-MetadataSpecTreeKey<FetchableURISpecTree>::~MetadataSpecTreeKey()
-{
-}
+MetadataSpecTreeKey<FetchableURISpecTree>::~MetadataSpecTreeKey() = default;
 
-MetadataSpecTreeKey<DependencySpecTree>::~MetadataSpecTreeKey()
-{
-}
+MetadataSpecTreeKey<DependencySpecTree>::~MetadataSpecTreeKey() = default;
 
 namespace paludis
 {

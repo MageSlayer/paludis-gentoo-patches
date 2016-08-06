@@ -310,9 +310,7 @@ EbuildFlatMetadataCache::EbuildFlatMetadataCache(const Environment * const v, co
 {
 }
 
-EbuildFlatMetadataCache::~EbuildFlatMetadataCache()
-{
-}
+EbuildFlatMetadataCache::~EbuildFlatMetadataCache() = default;
 
 bool
 EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const bool silent_on_stale)

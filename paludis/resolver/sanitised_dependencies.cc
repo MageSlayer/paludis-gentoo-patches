@@ -477,9 +477,7 @@ SanitisedDependencies::SanitisedDependencies() :
 {
 }
 
-SanitisedDependencies::~SanitisedDependencies()
-{
-}
+SanitisedDependencies::~SanitisedDependencies() = default;
 
 void
 SanitisedDependencies::_populate_one(

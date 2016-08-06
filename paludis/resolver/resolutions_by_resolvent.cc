@@ -58,9 +58,7 @@ ResolutionsByResolvent::ResolutionsByResolvent() :
 {
 }
 
-ResolutionsByResolvent::~ResolutionsByResolvent()
-{
-}
+ResolutionsByResolvent::~ResolutionsByResolvent() = default;
 
 ResolutionsByResolvent::ConstIterator
 ResolutionsByResolvent::begin() const

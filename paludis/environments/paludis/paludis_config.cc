@@ -849,9 +849,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
     _imp->bashrc_files->push_back(_imp->local_config_dir / dist->bashrc_filename());
 }
 
-PaludisConfig::~PaludisConfig()
-{
-}
+PaludisConfig::~PaludisConfig() = default;
 
 namespace
 {

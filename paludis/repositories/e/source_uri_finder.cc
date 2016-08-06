@@ -75,9 +75,7 @@ SourceURIFinder::SourceURIFinder(const Environment * const e, const Repository *
 {
 }
 
-SourceURIFinder::~SourceURIFinder()
-{
-}
+SourceURIFinder::~SourceURIFinder() = default;
 
 SourceURIFinder::ConstIterator
 SourceURIFinder::begin() const

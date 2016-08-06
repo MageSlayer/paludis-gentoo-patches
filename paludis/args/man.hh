@@ -115,7 +115,7 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
                 AsciidocWriter(std::ostream & os);
-                ~AsciidocWriter();
+                ~AsciidocWriter() = default;
                 ///\}
 
                 void heading(const std::string & name, const std::string & section,

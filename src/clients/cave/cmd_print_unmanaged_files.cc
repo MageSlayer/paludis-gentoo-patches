@@ -90,9 +90,7 @@ namespace
             {
             }
 
-            ~CollectRecursiveDirectoryContents()
-            {
-            }
+            ~CollectRecursiveDirectoryContents() = default;
 
             void operator()(const FSPath& path)
             {
@@ -125,9 +123,7 @@ namespace
             {
             }
 
-            ~CollectPackageContents()
-            {
-            }
+            ~CollectPackageContents() = default;
 
             void operator()(const std::shared_ptr<const PackageID>& package)
             {

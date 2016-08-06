@@ -75,11 +75,7 @@ namespace
         {
         }
 
-        CombineSets(const CombineSets & other) :
-            top(other.top),
-            tree(other.tree)
-        {
-        }
+        CombineSets(const CombineSets & other) = default;
 
         std::shared_ptr<const SetSpecTree> result() const
         {
@@ -148,9 +144,7 @@ EnvironmentImplementation::EnvironmentImplementation() :
 {
 }
 
-EnvironmentImplementation::~EnvironmentImplementation()
-{
-}
+EnvironmentImplementation::~EnvironmentImplementation() = default;
 
 
 std::shared_ptr<const FSPathSequence>

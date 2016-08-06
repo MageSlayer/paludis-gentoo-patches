@@ -104,9 +104,7 @@ UnwrittenRepository::UnwrittenRepository(const UnwrittenRepositoryParams & p) :
     _add_metadata_keys();
 }
 
-UnwrittenRepository::~UnwrittenRepository()
-{
-}
+UnwrittenRepository::~UnwrittenRepository() = default;
 
 const bool
 UnwrittenRepository::is_unimportant() const

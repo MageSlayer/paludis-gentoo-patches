@@ -138,9 +138,7 @@ NDBAM::NDBAM(const FSPath & l,
     }
 }
 
-NDBAM::~NDBAM()
-{
-}
+NDBAM::~NDBAM() = default;
 
 std::shared_ptr<const CategoryNamePartSet>
 NDBAM::category_names()

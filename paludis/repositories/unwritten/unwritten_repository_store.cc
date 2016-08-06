@@ -97,9 +97,7 @@ UnwrittenRepositoryStore::UnwrittenRepositoryStore(
         _populate(env, f);
 }
 
-UnwrittenRepositoryStore::~UnwrittenRepositoryStore()
-{
-}
+UnwrittenRepositoryStore::~UnwrittenRepositoryStore() = default;
 
 void
 UnwrittenRepositoryStore::_populate(const Environment * const env, const FSPath & f)

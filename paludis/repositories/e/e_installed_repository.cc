@@ -80,9 +80,7 @@ EInstalledRepository::EInstalledRepository(const EInstalledRepositoryParams & p,
 {
 }
 
-EInstalledRepository::~EInstalledRepository()
-{
-}
+EInstalledRepository::~EInstalledRepository() = default;
 
 bool
 EInstalledRepository::some_ids_might_support_action(const SupportsActionTestBase & test) const

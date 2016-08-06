@@ -133,9 +133,7 @@ ArgsHandler::ArgsHandler() :
 {
 }
 
-ArgsHandler::~ArgsHandler()
-{
-}
+ArgsHandler::~ArgsHandler() = default;
 
 void
 ArgsHandler::add_usage_line(const std::string & l)

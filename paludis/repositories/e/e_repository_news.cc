@@ -114,9 +114,7 @@ ERepositoryNews::ERepositoryNews(const Environment * const e, const ERepository 
 {
 }
 
-ERepositoryNews::~ERepositoryNews()
-{
-}
+ERepositoryNews::~ERepositoryNews() = default;
 
 void
 ERepositoryNews::update_news() const
@@ -350,9 +348,7 @@ NewsFile::NewsFile(const FSPath & our_filename) :
         throw NewsError(our_filename, "No Revision header specified");
 }
 
-NewsFile::~NewsFile()
-{
-}
+NewsFile::~NewsFile() = default;
 
 NewsFile::DisplayIfInstalledConstIterator
 NewsFile::begin_display_if_installed() const

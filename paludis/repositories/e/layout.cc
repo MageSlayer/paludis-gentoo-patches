@@ -34,9 +34,7 @@ Layout::Layout(const std::shared_ptr<const FSPathSequence> & l) :
 {
 }
 
-Layout::~Layout()
-{
-}
+Layout::~Layout() = default;
 
 const std::shared_ptr<const FSPathSequence>
 Layout::master_repositories_locations() const

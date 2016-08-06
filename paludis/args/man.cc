@@ -185,9 +185,7 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
     }
 }
 
-DocWriter::~DocWriter()
-{
-}
+DocWriter::~DocWriter() = default;
 
 namespace
 {
@@ -216,10 +214,6 @@ namespace
 
 AsciidocWriter::AsciidocWriter(std::ostream & os) :
     _os(os)
-{
-}
-
-AsciidocWriter::~AsciidocWriter()
 {
 }
 

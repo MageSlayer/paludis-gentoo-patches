@@ -22,9 +22,7 @@
 
 using namespace paludis;
 
-FilterHandler::~FilterHandler()
-{
-}
+FilterHandler::~FilterHandler() = default;
 
 std::shared_ptr<const RepositoryNameSet>
 AllFilterHandlerBase::repositories(const Environment * const,

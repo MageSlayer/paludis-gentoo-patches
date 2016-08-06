@@ -294,13 +294,9 @@ namespace
     }
 }
 
-SetFileHandler::SetFileHandler()
-{
-}
+SetFileHandler::SetFileHandler() = default;
 
-SetFileHandler::~SetFileHandler()
-{
-}
+SetFileHandler::~SetFileHandler() = default;
 
 SimpleHandler::SimpleHandler(const SetFileParams & p) :
     _p(p)
@@ -593,9 +589,7 @@ SetFile::SetFile(const SetFileParams & p) :
 {
 }
 
-SetFile::~SetFile()
-{
-}
+SetFile::~SetFile() = default;
 
 const std::shared_ptr<const SetSpecTree>
 SetFile::contents() const

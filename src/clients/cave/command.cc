@@ -22,7 +22,5 @@
 using namespace paludis;
 using namespace cave;
 
-Command::~Command()
-{
-}
+Command::~Command() = default;
 

@@ -134,9 +134,7 @@ WildcardExpander::WildcardExpander(const WildcardExpander & other) :
 {
 }
 
-WildcardExpander::~WildcardExpander()
-{
-}
+WildcardExpander::~WildcardExpander() = default;
 
 WildcardExpander &
 WildcardExpander::operator= (const WildcardExpander & other)

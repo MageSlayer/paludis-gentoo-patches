@@ -27,9 +27,7 @@ using namespace paludis;
 
 #include <paludis/mask-se.cc>
 
-Mask::~Mask()
-{
-}
+Mask::~Mask() = default;
 
 const std::string
 UserMask::token() const

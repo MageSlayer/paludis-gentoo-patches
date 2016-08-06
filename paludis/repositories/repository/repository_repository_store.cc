@@ -76,9 +76,7 @@ RepositoryRepositoryStore::RepositoryRepositoryStore(
     _populate();
 }
 
-RepositoryRepositoryStore::~RepositoryRepositoryStore()
-{
-}
+RepositoryRepositoryStore::~RepositoryRepositoryStore() = default;
 
 void
 RepositoryRepositoryStore::_populate()

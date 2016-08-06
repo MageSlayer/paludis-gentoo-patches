@@ -32,9 +32,7 @@
 
 using namespace paludis;
 
-GeneratorHandler::~GeneratorHandler()
-{
-}
+GeneratorHandler::~GeneratorHandler() = default;
 
 std::shared_ptr<const RepositoryNameSet>
 AllGeneratorHandlerBase::repositories(

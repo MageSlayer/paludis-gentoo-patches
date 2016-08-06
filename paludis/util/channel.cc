@@ -28,10 +28,6 @@
 
 using namespace paludis;
 
-Channel::Channel()
-{
-}
-
 Channel::~Channel()
 {
     Context context("When destroying channel FDs '" + stringify(read_fd()) + "', '" + stringify(write_fd()) + "'");

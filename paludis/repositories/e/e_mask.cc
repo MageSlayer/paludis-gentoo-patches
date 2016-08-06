@@ -53,9 +53,7 @@ EUnacceptedMask::EUnacceptedMask(const char k, const std::string & d, const std:
 {
 }
 
-EUnacceptedMask::~EUnacceptedMask()
-{
-}
+EUnacceptedMask::~EUnacceptedMask() = default;
 
 char
 EUnacceptedMask::key() const
@@ -98,9 +96,7 @@ EUnsupportedMask::EUnsupportedMask(const char k, const std::string & d, const st
 {
 }
 
-EUnsupportedMask::~EUnsupportedMask()
-{
-}
+EUnsupportedMask::~EUnsupportedMask() = default;
 
 char
 EUnsupportedMask::key() const
@@ -150,9 +146,7 @@ ERepositoryMask::ERepositoryMask(const char k, const std::string & d, const std:
 {
 }
 
-ERepositoryMask::~ERepositoryMask()
-{
-}
+ERepositoryMask::~ERepositoryMask() = default;
 
 char
 ERepositoryMask::key() const

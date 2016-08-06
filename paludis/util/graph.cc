@@ -40,7 +40,3 @@ NoGraphTopologicalOrderExistsError::remaining_nodes() const
     return _remaining_nodes;
 }
 
-NoGraphTopologicalOrderExistsError::~NoGraphTopologicalOrderExistsError()
-{
-}
-

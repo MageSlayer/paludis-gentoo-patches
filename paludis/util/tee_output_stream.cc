@@ -37,9 +37,7 @@ TeeOutputStreamBuf::TeeOutputStreamBuf() :
 {
 }
 
-TeeOutputStreamBuf::~TeeOutputStreamBuf()
-{
-}
+TeeOutputStreamBuf::~TeeOutputStreamBuf() = default;
 
 TeeOutputStreamBuf::int_type
 TeeOutputStreamBuf::overflow(int_type c)

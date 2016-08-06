@@ -96,9 +96,7 @@ EDependenciesKey::EDependenciesKey(
 {
 }
 
-EDependenciesKey::~EDependenciesKey()
-{
-}
+EDependenciesKey::~EDependenciesKey() = default;
 
 const std::shared_ptr<const DependencySpecTree>
 EDependenciesKey::parse_value() const
@@ -181,9 +179,7 @@ ELicenseKey::ELicenseKey(
 {
 }
 
-ELicenseKey::~ELicenseKey()
-{
-}
+ELicenseKey::~ELicenseKey() = default;
 
 const std::shared_ptr<const LicenseSpecTree>
 ELicenseKey::parse_value() const
@@ -251,9 +247,7 @@ EFetchableURIKey::EFetchableURIKey(const Environment * const e,
 {
 }
 
-EFetchableURIKey::~EFetchableURIKey()
-{
-}
+EFetchableURIKey::~EFetchableURIKey() = default;
 
 const std::shared_ptr<const FetchableURISpecTree>
 EFetchableURIKey::parse_value() const
@@ -361,9 +355,7 @@ ESimpleURIKey::ESimpleURIKey(const Environment * const e,
 {
 }
 
-ESimpleURIKey::~ESimpleURIKey()
-{
-}
+ESimpleURIKey::~ESimpleURIKey() = default;
 
 const std::shared_ptr<const SimpleURISpecTree>
 ESimpleURIKey::parse_value() const
@@ -435,9 +427,7 @@ EPlainTextSpecKey::EPlainTextSpecKey(const Environment * const e,
 {
 }
 
-EPlainTextSpecKey::~EPlainTextSpecKey()
-{
-}
+EPlainTextSpecKey::~EPlainTextSpecKey() = default;
 
 const std::shared_ptr<const PlainTextSpecTree>
 EPlainTextSpecKey::parse_value() const
@@ -513,9 +503,7 @@ EMyOptionsKey::EMyOptionsKey(
 {
 }
 
-EMyOptionsKey::~EMyOptionsKey()
-{
-}
+EMyOptionsKey::~EMyOptionsKey() = default;
 
 const std::shared_ptr<const PlainTextSpecTree>
 EMyOptionsKey::parse_value() const
@@ -592,9 +580,7 @@ ERequiredUseKey::ERequiredUseKey(
 {
 }
 
-ERequiredUseKey::~ERequiredUseKey()
-{
-}
+ERequiredUseKey::~ERequiredUseKey() = default;
 
 const std::shared_ptr<const RequiredUseSpecTree>
 ERequiredUseKey::parse_value() const
@@ -683,9 +669,7 @@ EMTimeKey::EMTimeKey(const std::string & r, const std::string & h, const FSPath 
 {
 }
 
-EMTimeKey::~EMTimeKey()
-{
-}
+EMTimeKey::~EMTimeKey() = default;
 
 Timestamp
 EMTimeKey::parse_value() const

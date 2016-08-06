@@ -165,9 +165,7 @@ PaludisEnvironment::PaludisEnvironment(const std::string & s) :
     add_metadata_key(_imp->system_root_key);
 }
 
-PaludisEnvironment::~PaludisEnvironment()
-{
-}
+PaludisEnvironment::~PaludisEnvironment() = default;
 
 bool
 PaludisEnvironment::accept_keywords(const std::shared_ptr<const KeywordNameSet> & k,

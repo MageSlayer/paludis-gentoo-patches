@@ -73,9 +73,7 @@ TraditionalMaskStore::TraditionalMaskStore(
     _populate();
 }
 
-TraditionalMaskStore::~TraditionalMaskStore()
-{
-}
+TraditionalMaskStore::~TraditionalMaskStore() = default;
 
 void
 TraditionalMaskStore::_populate()

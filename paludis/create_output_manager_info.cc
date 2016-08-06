@@ -124,9 +124,7 @@ CreateOutputManagerForPackageIDActionInfo::CreateOutputManagerForPackageIDAction
 {
 }
 
-CreateOutputManagerForPackageIDActionInfo::~CreateOutputManagerForPackageIDActionInfo()
-{
-}
+CreateOutputManagerForPackageIDActionInfo::~CreateOutputManagerForPackageIDActionInfo() = default;
 
 const std::shared_ptr<const PackageID>
 CreateOutputManagerForPackageIDActionInfo::package_id() const
@@ -195,9 +193,7 @@ CreateOutputManagerForRepositorySyncInfo::CreateOutputManagerForRepositorySyncIn
 {
 }
 
-CreateOutputManagerForRepositorySyncInfo::~CreateOutputManagerForRepositorySyncInfo()
-{
-}
+CreateOutputManagerForRepositorySyncInfo::~CreateOutputManagerForRepositorySyncInfo() = default;
 
 const RepositoryName
 CreateOutputManagerForRepositorySyncInfo::repository_name() const

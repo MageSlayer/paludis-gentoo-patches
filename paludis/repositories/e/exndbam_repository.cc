@@ -120,9 +120,7 @@ ExndbamRepository::ExndbamRepository(const RepositoryName & n, const ExndbamRepo
     _add_metadata_keys();
 }
 
-ExndbamRepository::~ExndbamRepository()
-{
-}
+ExndbamRepository::~ExndbamRepository() = default;
 
 void
 ExndbamRepository::_add_metadata_keys() const

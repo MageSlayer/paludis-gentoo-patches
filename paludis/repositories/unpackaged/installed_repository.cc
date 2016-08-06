@@ -104,9 +104,7 @@ InstalledUnpackagedRepository::InstalledUnpackagedRepository(
     _add_metadata_keys();
 }
 
-InstalledUnpackagedRepository::~InstalledUnpackagedRepository()
-{
-}
+InstalledUnpackagedRepository::~InstalledUnpackagedRepository() = default;
 
 void
 InstalledUnpackagedRepository::_add_metadata_keys() const

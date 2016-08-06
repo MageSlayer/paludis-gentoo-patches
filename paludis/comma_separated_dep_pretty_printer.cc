@@ -57,9 +57,7 @@ CommaSeparatedDepPrettyPrinter::CommaSeparatedDepPrettyPrinter(
 {
 }
 
-CommaSeparatedDepPrettyPrinter::~CommaSeparatedDepPrettyPrinter()
-{
-}
+CommaSeparatedDepPrettyPrinter::~CommaSeparatedDepPrettyPrinter() = default;
 
 void
 CommaSeparatedDepPrettyPrinter::visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & node)

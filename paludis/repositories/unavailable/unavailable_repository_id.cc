@@ -112,9 +112,7 @@ UnavailableRepositoryID::UnavailableRepositoryID(const UnavailableRepositoryIDPa
         add_mask(_imp->mask);
 }
 
-UnavailableRepositoryID::~UnavailableRepositoryID()
-{
-}
+UnavailableRepositoryID::~UnavailableRepositoryID() = default;
 
 void
 UnavailableRepositoryID::need_keys_added() const

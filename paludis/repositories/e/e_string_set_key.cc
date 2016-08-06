@@ -58,9 +58,7 @@ namespace
         {
         }
 
-        ~EStringSetKey() override
-        {
-        }
+        ~EStringSetKey() override = default;
 
         const std::shared_ptr<const Set<std::string> > parse_value() const override
         {

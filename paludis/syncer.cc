@@ -119,15 +119,9 @@ DefaultSyncer::sync(const SyncOptions & opts) const
         throw SyncFailedError(_local, _remote);
 }
 
-Syncer::Syncer()
-{
-}
+Syncer::Syncer() = default;
 
-Syncer::~Syncer()
-{
-}
+Syncer::~Syncer() = default;
 
-DefaultSyncer::~DefaultSyncer()
-{
-}
+DefaultSyncer::~DefaultSyncer() = default;
 

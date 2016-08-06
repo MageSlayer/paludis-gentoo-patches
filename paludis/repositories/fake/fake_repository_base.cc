@@ -68,9 +68,7 @@ FakeRepositoryBase::FakeRepositoryBase(const Environment * const e,
 {
 }
 
-FakeRepositoryBase::~FakeRepositoryBase()
-{
-}
+FakeRepositoryBase::~FakeRepositoryBase() = default;
 
 bool
 FakeRepositoryBase::has_category_named(const CategoryNamePart & c, const RepositoryContentMayExcludes &) const

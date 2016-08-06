@@ -107,9 +107,7 @@ UnwrittenID::UnwrittenID(const UnwrittenIDParams & entry) :
     add_mask(_imp->mask);
 }
 
-UnwrittenID::~UnwrittenID()
-{
-}
+UnwrittenID::~UnwrittenID() = default;
 
 void
 UnwrittenID::need_keys_added() const

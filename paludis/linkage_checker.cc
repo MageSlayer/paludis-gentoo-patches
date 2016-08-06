@@ -21,11 +21,7 @@
 
 using namespace paludis;
 
-LinkageChecker::LinkageChecker()
-{
-}
+LinkageChecker::LinkageChecker() = default;
 
-LinkageChecker::~LinkageChecker()
-{
-}
+LinkageChecker::~LinkageChecker() = default;
 

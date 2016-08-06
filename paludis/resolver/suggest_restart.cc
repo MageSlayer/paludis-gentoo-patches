@@ -70,9 +70,7 @@ SuggestRestart::SuggestRestart(const SuggestRestart & o) :
 {
 }
 
-SuggestRestart::~SuggestRestart()
-{
-}
+SuggestRestart::~SuggestRestart() = default;
 
 const Resolvent
 SuggestRestart::resolvent() const

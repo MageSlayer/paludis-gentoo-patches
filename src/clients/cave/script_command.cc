@@ -56,9 +56,7 @@ ScriptCommand::ScriptCommand(const std::string &, const FSPath & e) :
 {
 }
 
-ScriptCommand::~ScriptCommand()
-{
-}
+ScriptCommand::~ScriptCommand() = default;
 
 int
 ScriptCommand::run(

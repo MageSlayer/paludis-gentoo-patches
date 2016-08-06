@@ -67,9 +67,7 @@ UnpackagedDependencyKey::UnpackagedDependencyKey(const Environment * const env,
 {
 }
 
-UnpackagedDependencyKey::~UnpackagedDependencyKey()
-{
-}
+UnpackagedDependencyKey::~UnpackagedDependencyKey() = default;
 
 const std::shared_ptr<const DependencySpecTree>
 UnpackagedDependencyKey::parse_value() const
@@ -143,9 +141,7 @@ UnpackagedChoicesKey::UnpackagedChoicesKey(const Environment * const env, const 
 {
 }
 
-UnpackagedChoicesKey::~UnpackagedChoicesKey()
-{
-}
+UnpackagedChoicesKey::~UnpackagedChoicesKey() = default;
 
 const std::shared_ptr<const Choices>
 UnpackagedChoicesKey::parse_value() const

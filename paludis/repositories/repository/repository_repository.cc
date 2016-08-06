@@ -101,9 +101,7 @@ RepositoryRepository::RepositoryRepository(const RepositoryRepositoryParams & p)
     _add_metadata_keys();
 }
 
-RepositoryRepository::~RepositoryRepository()
-{
-}
+RepositoryRepository::~RepositoryRepository() = default;
 
 const bool
 RepositoryRepository::is_unimportant() const

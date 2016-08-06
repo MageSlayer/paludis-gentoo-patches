@@ -93,23 +93,7 @@ namespace
                         additional_requirements->back_inserter());
         }
 
-        PartiallyMadePackageDepSpecData(const PartiallyMadePackageDepSpecData & other) :
-            PackageDepSpecData(other),
-            package(other.package),
-            package_name_part(other.package_name_part),
-            category_name_part(other.category_name_part),
-            version_requirements(other.version_requirements),
-            version_requirements_mode_v(other.version_requirements_mode_v),
-            slot(other.slot),
-            in_repository(other.in_repository),
-            from_repository(other.from_repository),
-            installable_to_repository(other.installable_to_repository),
-            installed_at_path(other.installed_at_path),
-            installable_to_path(other.installable_to_path),
-            additional_requirements(other.additional_requirements),
-            options_for_partially_made_package_dep_spec_v(other.options_for_partially_made_package_dep_spec_v)
-        {
-        }
+        PartiallyMadePackageDepSpecData(const PartiallyMadePackageDepSpecData & other) = default;
 
         std::string as_string() const override
         {
@@ -383,9 +367,7 @@ PartiallyMadePackageDepSpec::PartiallyMadePackageDepSpec(const PackageDepSpec & 
 {
 }
 
-PartiallyMadePackageDepSpec::~PartiallyMadePackageDepSpec()
-{
-}
+PartiallyMadePackageDepSpec::~PartiallyMadePackageDepSpec() = default;
 
 PartiallyMadePackageDepSpec &
 PartiallyMadePackageDepSpec::package(const QualifiedPackageName & name)

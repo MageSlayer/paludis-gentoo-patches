@@ -128,9 +128,7 @@ Log::Log() :
 {
 }
 
-Log::~Log()
-{
-}
+Log::~Log() = default;
 
 void
 Log::set_log_level(const LogLevel l)

@@ -74,9 +74,7 @@ Selection::Selection(const Selection & other) :
 {
 }
 
-Selection::~Selection()
-{
-}
+Selection::~Selection() = default;
 
 Selection &
 Selection::operator= (const Selection & other)

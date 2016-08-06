@@ -119,9 +119,7 @@ CheckFetchedFilesVisitor::CheckFetchedFilesVisitor(
 {
 }
 
-CheckFetchedFilesVisitor::~CheckFetchedFilesVisitor()
-{
-}
+CheckFetchedFilesVisitor::~CheckFetchedFilesVisitor() = default;
 
 void
 CheckFetchedFilesVisitor::visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & node)

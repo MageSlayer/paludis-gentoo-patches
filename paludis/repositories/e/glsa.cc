@@ -83,9 +83,7 @@ GLSAPackage::GLSAPackage(const QualifiedPackageName & n) :
 {
 }
 
-GLSAPackage::~GLSAPackage()
-{
-}
+GLSAPackage::~GLSAPackage() = default;
 
 GLSAPackage::ArchsConstIterator
 GLSAPackage::begin_archs() const
@@ -152,9 +150,7 @@ GLSA::GLSA() :
 {
 }
 
-GLSA::~GLSA()
-{
-}
+GLSA::~GLSA() = default;
 
 GLSA::PackagesConstIterator
 GLSA::begin_packages() const

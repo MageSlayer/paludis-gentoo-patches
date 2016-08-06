@@ -70,10 +70,7 @@ namespace paludis
             local_context.assign(context.begin(), context.end());
         }
 
-        ContextData(const ContextData & other) :
-            local_context(other.local_context)
-        {
-        }
+        ContextData(const ContextData & other) = default;
     };
 }
 

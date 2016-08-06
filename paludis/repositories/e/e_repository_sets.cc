@@ -96,9 +96,7 @@ ERepositorySets::ERepositorySets(const Environment * const e, const ERepository 
 {
 }
 
-ERepositorySets::~ERepositorySets()
-{
-}
+ERepositorySets::~ERepositorySets() = default;
 
 const std::shared_ptr<const SetSpecTree>
 ERepositorySets::package_set(const SetName & ss) const

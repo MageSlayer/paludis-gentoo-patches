@@ -349,9 +349,7 @@ VersionSpec::operator= (const VersionSpec & other)
     return *this;
 }
 
-VersionSpec::~VersionSpec()
-{
-}
+VersionSpec::~VersionSpec() = default;
 
 namespace
 {

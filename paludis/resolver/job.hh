@@ -62,7 +62,7 @@ namespace paludis
                 FetchJob, InstallJob, UninstallJob>::Type>
         {
             public:
-                virtual ~ExecuteJob();
+                virtual ~ExecuteJob() = default;
 
                 virtual const std::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
                 virtual void set_state(const std::shared_ptr<JobState> &) = 0;

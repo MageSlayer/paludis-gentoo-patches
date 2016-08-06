@@ -239,9 +239,7 @@ SimpleParser::SimpleParser(const std::string & s) :
 {
 }
 
-SimpleParser::~SimpleParser()
-{
-}
+SimpleParser::~SimpleParser() = default;
 
 bool
 SimpleParser::consume(const SimpleParserExpression & e1)

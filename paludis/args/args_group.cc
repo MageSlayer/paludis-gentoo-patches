@@ -77,9 +77,7 @@ ArgsGroup::remove(ArgsOption * const value)
         remove();
 }
 
-ArgsGroup::~ArgsGroup()
-{
-}
+ArgsGroup::~ArgsGroup() = default;
 
 ArgsGroup::ConstIterator
 ArgsGroup::begin() const

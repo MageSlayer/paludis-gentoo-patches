@@ -163,9 +163,7 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
         _imp->candidates.push_back((*i)->name());
 }
 
-FuzzyCandidatesFinder::~FuzzyCandidatesFinder()
-{
-}
+FuzzyCandidatesFinder::~FuzzyCandidatesFinder() = default;
 
 FuzzyCandidatesFinder::CandidatesConstIterator
 FuzzyCandidatesFinder::begin() const
@@ -216,9 +214,7 @@ FuzzyRepositoriesFinder::FuzzyRepositoriesFinder(const Environment & e, const st
             _imp->candidates.push_back((*r)->name());
 }
 
-FuzzyRepositoriesFinder::~FuzzyRepositoriesFinder()
-{
-}
+FuzzyRepositoriesFinder::~FuzzyRepositoriesFinder() = default;
 
 FuzzyRepositoriesFinder::RepositoriesConstIterator
 FuzzyRepositoriesFinder::begin() const

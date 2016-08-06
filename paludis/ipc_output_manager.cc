@@ -491,9 +491,7 @@ OutputManagerFromIPC::OutputManagerFromIPC(const Environment * const e,
 {
 }
 
-OutputManagerFromIPC::~OutputManagerFromIPC()
-{
-}
+OutputManagerFromIPC::~OutputManagerFromIPC() = default;
 
 const std::shared_ptr<OutputManager>
 OutputManagerFromIPC::operator() (const Action & a)

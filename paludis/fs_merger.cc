@@ -121,9 +121,7 @@ FSMerger::FSMerger(const FSMergerParams & p) :
 {
 }
 
-FSMerger::~FSMerger()
-{
-}
+FSMerger::~FSMerger() = default;
 
 void
 FSMerger::merge()

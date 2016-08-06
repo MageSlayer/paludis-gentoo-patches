@@ -45,9 +45,7 @@ paludis::operator<< (std::ostream & s, const DependenciesLabel & l)
     return s;
 }
 
-URILabel::~URILabel()
-{
-}
+URILabel::~URILabel() = default;
 
 template <typename T_>
 SpecificURILabel<T_>::SpecificURILabel(const std::string & t) :
@@ -67,9 +65,7 @@ SpecificURILabel<T_>::text() const
     return _text;
 }
 
-DependenciesLabel::~DependenciesLabel()
-{
-}
+DependenciesLabel::~DependenciesLabel() = default;
 
 namespace paludis
 {

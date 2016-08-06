@@ -92,9 +92,7 @@ EclassMtimes::EclassMtimes(const ERepository * r, const std::shared_ptr<const FS
 {
 }
 
-EclassMtimes::~EclassMtimes()
-{
-}
+EclassMtimes::~EclassMtimes() = default;
 
 const std::pair<FSPath, FSStat> *
 EclassMtimes::eclass(const std::string & e) const

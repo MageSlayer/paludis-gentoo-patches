@@ -72,9 +72,7 @@ AboutMetadata::AboutMetadata() :
     add_metadata_key(_imp->build_date_key);
 }
 
-AboutMetadata::~AboutMetadata()
-{
-}
+AboutMetadata::~AboutMetadata() = default;
 
 void
 AboutMetadata::need_keys_added() const

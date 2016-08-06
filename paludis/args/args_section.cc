@@ -56,9 +56,7 @@ ArgsSection::ArgsSection(ArgsHandler * const h, const std::string & s) :
     h->add(this);
 }
 
-ArgsSection::~ArgsSection()
-{
-}
+ArgsSection::~ArgsSection() = default;
 
 ArgsSection::GroupsConstIterator
 ArgsSection::begin() const

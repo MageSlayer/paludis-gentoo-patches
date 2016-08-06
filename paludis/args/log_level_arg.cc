@@ -35,10 +35,6 @@ LogLevelArg::LogLevelArg(ArgsGroup * const grp, const std::string & ln,
 {
 }
 
-LogLevelArg::~LogLevelArg()
-{
-}
-
 LogLevel
 LogLevelArg::option() const
 {

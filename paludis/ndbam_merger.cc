@@ -93,9 +93,7 @@ NDBAMMerger::NDBAMMerger(const NDBAMMergerParams & p) :
 {
 }
 
-NDBAMMerger::~NDBAMMerger()
-{
-}
+NDBAMMerger::~NDBAMMerger() = default;
 
 Hook
 NDBAMMerger::extend_hook(const Hook & h)

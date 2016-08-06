@@ -46,9 +46,7 @@ SafeOFStreamBuf::SafeOFStreamBuf(const int f, const bool buffer) :
         _imp->buffered_text = std::make_shared<std::string>();
 }
 
-SafeOFStreamBuf::~SafeOFStreamBuf()
-{
-}
+SafeOFStreamBuf::~SafeOFStreamBuf() = default;
 
 SafeOFStreamBuf::int_type
 SafeOFStreamBuf::overflow(int_type c)

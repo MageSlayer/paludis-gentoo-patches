@@ -35,9 +35,7 @@
 using namespace paludis;
 using namespace paludis::resolver;
 
-Reason::~Reason()
-{
-}
+Reason::~Reason() = default;
 
 namespace paludis
 {
@@ -58,9 +56,7 @@ TargetReason::TargetReason(const std::string & x) :
 {
 }
 
-TargetReason::~TargetReason()
-{
-}
+TargetReason::~TargetReason() = default;
 
 const std::string
 TargetReason::extra_information() const
@@ -109,9 +105,7 @@ DependencyReason::DependencyReason(const std::shared_ptr<const PackageID> & i,
 {
 }
 
-DependencyReason::~DependencyReason()
-{
-}
+DependencyReason::~DependencyReason() = default;
 
 const std::shared_ptr<const PackageID>
 DependencyReason::from_id() const
@@ -174,9 +168,7 @@ DependentReason::DependentReason(const DependentPackageID & i) :
 {
 }
 
-DependentReason::~DependentReason()
-{
-}
+DependentReason::~DependentReason() = default;
 
 const DependentPackageID
 DependentReason::dependent_upon() const
@@ -211,9 +203,7 @@ WasUsedByReason::WasUsedByReason(const std::shared_ptr<const ChangeByResolventSe
 {
 }
 
-WasUsedByReason::~WasUsedByReason()
-{
-}
+WasUsedByReason::~WasUsedByReason() = default;
 
 const std::shared_ptr<const ChangeByResolventSequence>
 WasUsedByReason::ids_and_resolvents_being_removed() const
@@ -250,9 +240,7 @@ PresetReason::PresetReason(const std::string & m, const std::shared_ptr<const Re
 {
 }
 
-PresetReason::~PresetReason()
-{
-}
+PresetReason::~PresetReason() = default;
 
 const std::shared_ptr<const Reason>
 PresetReason::maybe_reason_for_preset() const
@@ -296,9 +284,7 @@ SetReason::SetReason(const SetName & s, const std::shared_ptr<const Reason> & r)
 {
 }
 
-SetReason::~SetReason()
-{
-}
+SetReason::~SetReason() = default;
 
 const SetName
 SetReason::set_name() const
@@ -342,9 +328,7 @@ LikeOtherDestinationTypeReason::LikeOtherDestinationTypeReason(const Resolvent &
 {
 }
 
-LikeOtherDestinationTypeReason::~LikeOtherDestinationTypeReason()
-{
-}
+LikeOtherDestinationTypeReason::~LikeOtherDestinationTypeReason() = default;
 
 const Resolvent
 LikeOtherDestinationTypeReason::other_resolvent() const
@@ -386,9 +370,7 @@ ViaBinaryReason::ViaBinaryReason(const Resolvent & r) :
 {
 }
 
-ViaBinaryReason::~ViaBinaryReason()
-{
-}
+ViaBinaryReason::~ViaBinaryReason() = default;
 
 const Resolvent
 ViaBinaryReason::other_resolvent() const

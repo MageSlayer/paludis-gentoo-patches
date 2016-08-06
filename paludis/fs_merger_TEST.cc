@@ -82,9 +82,7 @@ namespace
             hook_dirs.push_back(std::make_pair(hooks, false));
     }
 
-    HookTestEnvironment::~HookTestEnvironment()
-    {
-    }
+    HookTestEnvironment::~HookTestEnvironment() = default;
 
     HookResult
     HookTestEnvironment::perform_hook(const Hook & hook, const std::shared_ptr<OutputManager> & optional_output_manager) const

@@ -28,22 +28,6 @@ OptionsStore::OptionsStore() :
 {
 }
 
-OptionsStore::OptionsStore(const OptionsStore & s) :
-    _bits(s._bits)
-{
-}
-
-const OptionsStore &
-OptionsStore::operator= (const OptionsStore & s)
-{
-    _bits = s._bits;
-    return *this;
-}
-
-OptionsStore::~OptionsStore()
-{
-}
-
 void
 OptionsStore::add(const unsigned e)
 {

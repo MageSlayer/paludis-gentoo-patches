@@ -221,9 +221,7 @@ EbuildID::EbuildID(const QualifiedPackageName & q, const VersionSpec & v,
 {
 }
 
-EbuildID::~EbuildID()
-{
-}
+EbuildID::~EbuildID() = default;
 
 void
 EbuildID::need_non_xml_keys_added() const

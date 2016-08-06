@@ -50,9 +50,7 @@ CommandLine::app_description() const
     return "This is an example program.";
 }
 
-CommandLine::~CommandLine()
-{
-}
+CommandLine::~CommandLine() = default;
 
 void
 examples::show_help_and_exit(const char * const argv[])

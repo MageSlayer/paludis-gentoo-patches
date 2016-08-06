@@ -50,9 +50,7 @@ namespace
                                     )));
             }
 
-            ~UnChoicesKey() override
-            {
-            }
+            ~UnChoicesKey() override = default;
 
             const std::shared_ptr<const Choices> parse_value() const override
             {

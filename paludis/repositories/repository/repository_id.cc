@@ -84,9 +84,7 @@ RepositoryID::RepositoryID(const RepositoryIDParams & entry) :
     add_metadata_key(_imp->behaviours_key);
 }
 
-RepositoryID::~RepositoryID()
-{
-}
+RepositoryID::~RepositoryID() = default;
 
 void
 RepositoryID::need_keys_added() const
