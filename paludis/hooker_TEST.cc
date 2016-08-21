@@ -41,24 +41,23 @@ TEST(Hooker, Works)
 
     hooker.add_dir(FSPath("hooker_TEST_dir/"), false);
 #ifdef ENABLE_PYTHON_HOOKS
-    result = hooker.perform_hook(Hook("py_hook"),
-            nullptr);
+    result = hooker.perform_hook(Hook("py_hook"), nullptr);
     EXPECT_EQ(0, result.max_exit_status());
 #endif
-    result = hooker.perform_hook(Hook("simple_hook"),
-            nullptr);
+
+    result = hooker.perform_hook(Hook("simple_hook"), nullptr);
     EXPECT_EQ(3, result.max_exit_status());
     EXPECT_EQ("", result.output());
-    result = hooker.perform_hook(Hook("fancy_hook"),
-            nullptr);
+
+    result = hooker.perform_hook(Hook("fancy_hook"), nullptr);
     EXPECT_EQ(5, result.max_exit_status());
     EXPECT_EQ("", result.output());
-    result = hooker.perform_hook(Hook("so_hook"),
-            nullptr);
+
+    result = hooker.perform_hook(Hook("so_hook"), nullptr);
     EXPECT_EQ(6, result.max_exit_status());
     EXPECT_EQ("", result.output());
-    result = hooker.perform_hook(Hook("several_hooks"),
-            nullptr);
+
+    result = hooker.perform_hook(Hook("several_hooks"), nullptr);
     EXPECT_EQ(7, result.max_exit_status());
     EXPECT_EQ("", result.output());
 
