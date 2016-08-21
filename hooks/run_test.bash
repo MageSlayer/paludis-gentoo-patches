@@ -31,15 +31,15 @@ test_equality()
     fi
 }
 
-if test -f "$TEST_SCRIPT_DIR""${1%.bash}"_"setup.sh" ; then
-    echo ">>> setup for test ${1%.bash}"
-    if ! "$TEST_SCRIPT_DIR""${1%.bash}"_"setup.sh" ; then
-        echo ">>> exiting with error for test ${1%.bash}"
+if test -f "$TEST_SCRIPT_DIR""$(basename "${1}")"_"setup.sh" ; then
+    echo ">>> setup for test $(basename "${1}")"
+    if ! "$TEST_SCRIPT_DIR""$(basename "${1}")"_"setup.sh" ; then
+        echo ">>> exiting with error for test $(basename "${1}")"
         exit 255
     fi
 fi
 
-echo "Test program ${1%.bash}:"
+echo "Test program $(basename "${1}"):"
 source "${1}" || exit 200
 
 for testname in $(set | grep '_TEST *() *$' ) ; do
@@ -50,10 +50,10 @@ for testname in $(set | grep '_TEST *() *$' ) ; do
     [[ -z "$local_test_status" ]] && echo " OK" || echo " FAIL"
 done
 
-if test -f "$TEST_SCRIPT_DIR""${1%.bash}"_"cleanup.sh" ; then
-    echo ">>> cleanup for test ${1%.bash}"
-    if ! "$TEST_SCRIPT_DIR""${1%.bash}"_"cleanup.sh" ; then
-        echo ">>> exiting with error for test ${1%.bash}"
+if test -f "$TEST_SCRIPT_DIR""$(basename "${1}")"_"cleanup.sh" ; then
+    echo ">>> cleanup for test $(basename "${1}")"
+    if ! "$TEST_SCRIPT_DIR""$(basename "${1}")"_"cleanup.sh" ; then
+        echo ">>> exiting with error for test $(basename "${1}")"
         exit 255
     fi
 fi
