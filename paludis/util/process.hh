@@ -31,6 +31,7 @@
 #include <memory>
 #include <functional>
 #include <initializer_list>
+#include <vector>
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -73,7 +74,16 @@ namespace paludis
 
             void echo_command_to(std::ostream &);
 
-            void exec() PALUDIS_ATTRIBUTE((noreturn));
+            ProcessCommand & setenv(const std::string &, const std::string &);
+            ProcessCommand & clearenv();
+            ProcessCommand & chdir(const FSPath &);
+            ProcessCommand & setuid_setgid(uid_t, gid_t);
+
+            void exec_prepare();
+            void exec(int err_fd = -1) PALUDIS_ATTRIBUTE((noreturn));
+
+            const std::vector<std::string>& get_args();
+            const std::string& get_args_string();
     };
 
     class PALUDIS_VISIBLE Process
@@ -90,6 +100,11 @@ namespace paludis
 
             RunningProcessHandle run() PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            Process & setenv(const std::string &, const std::string &);
+            Process & clearenv();
+            Process & chdir(const FSPath &);
+            Process & setuid_setgid(uid_t, gid_t);
+
             Process & capture_stdout(std::ostream &);
             Process & capture_stderr(std::ostream &);
             Process & capture_output_to_fd(std::ostream &, int fd_or_minus_one, const std::string & env_var_with_fd);
@@ -97,12 +112,7 @@ namespace paludis
             Process & set_stdin_fd(int);
             Process & pipe_command_handler(const std::string &, const ProcessPipeCommandFunction &);
 
-            Process & setenv(const std::string &, const std::string &);
-            Process & clearenv();
-
-            Process & chdir(const FSPath &);
             Process & use_ptys();
-            Process & setuid_setgid(uid_t, gid_t);
             Process & echo_command_to(std::ostream &);
 
             Process & prefix_stdout(const std::string &);
@@ -112,6 +122,11 @@ namespace paludis
             Process & sandbox();
             Process & sydbox();
 
+            /* NOTE: Do not use this functionality together with a
+             *       multi-threaded process. Not only will all but the
+             *       executing thread disappear, but locks the other
+             *       threads held may be still locked or data protected by
+             *       them might be in an inconsistent state. */
             Process & as_main_process();
     };
 

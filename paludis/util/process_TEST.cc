@@ -304,6 +304,18 @@ TEST(Process, Clearenv)
     EXPECT_EQ("", stdout_stream.str());
 }
 
+TEST(Process, ClearenvPres)
+{
+    ::setenv("PALUDIS_BANANAS", "PALUDIS_IN PYJAMAS", 1);
+    std::stringstream stdout_stream;
+    Process printenv_process(ProcessCommand({"printenv", "PALUDIS_BANANAS"}));
+    printenv_process.capture_stdout(stdout_stream);
+    printenv_process.clearenv();
+
+    EXPECT_EQ(0, printenv_process.run().wait());
+    EXPECT_EQ("PALUDIS_IN PYJAMAS\n", stdout_stream.str());
+}
+
 TEST(Process, SendFD)
 {
     std::stringstream stdout_stream, in_stream;
@@ -328,5 +340,11 @@ TEST(Process, SendFDFixed)
 
     EXPECT_EQ(0, cat_process.run().wait());
     EXPECT_EQ("monkey\n", stdout_stream.str());
+}
+
+TEST(Process, ExecError)
+{
+    Process process(ProcessCommand({"paludis-nonexisting-command"}));
+    EXPECT_THROW({ process.run(); }, ProcessError);
 }
 

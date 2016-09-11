@@ -45,6 +45,7 @@
 #include <pwd.h>
 #include <signal.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/select.h>
@@ -65,11 +66,212 @@ namespace paludis
         std::vector<std::string> args;
         std::string args_string;
 
+        std::map<std::string, std::string> setenvs;
+        bool clearenv;
+        std::string chdir;
+        uid_t setuid;
+        gid_t setgid;
+
+        std::vector<std::string> env_storage;
+        std::vector<const char*> env_ptrs;
+
+        std::string args_storage;
+        std::vector<const char*> argv_ptrs;
+
+        gid_t groups[NGROUPS_MAX];
+        int group_count;
+
         Imp(std::vector<std::string> && i, const std::string & s) :
             args(i),
-            args_string(s)
+            args_string(s),
+            clearenv(false),
+            setuid(getuid()),
+            setgid(getgid())
         {
         }
+
+        void clear_alloc()
+        {
+            env_storage.clear();
+            env_ptrs.clear();
+            args_storage.clear();
+            argv_ptrs.clear();
+        }
+    };
+};
+
+namespace
+{
+    class ExecError
+    {
+        public:
+            enum Type
+            {
+                NO_ERROR = 0,
+
+                ERROR_READING_FAILED,
+                ERROR_SENDING_FAILED,
+                CHDIR_FAILED,
+                SETGID_FAILED,
+                SETGROUPS_FAILED,
+                SETUID_FAILED,
+                EXECVE_FAILED,
+                EXECVPE_FAILED,
+                DUP2_FAILED,
+                FCNTL_FAILED,
+                WAITPID_FAILED,
+                PTHREAD_SIGMASK_FAILED
+            };
+
+            ExecError(Type t, int e) :
+                type(t),
+                errsv(e)
+            {}
+
+            ExecError(int err_fd)
+            {
+                ExecError tmp;
+                ssize_t r = read_all(err_fd, static_cast<void*>(&tmp), sizeof(ExecError));
+
+                if (r < 0)
+                {
+                    type = ERROR_READING_FAILED;
+                    errsv = errno;
+                }
+                else if (0 == r)
+                {
+                    type = NO_ERROR;
+                    errsv = 0;
+                }
+                else if (sizeof(ExecError) != r)
+                {
+                    type = ERROR_SENDING_FAILED;
+                    errsv = 0;
+                }
+                else
+                {
+                    type = tmp.type;
+                    errsv = tmp.errsv;
+                }
+            }
+
+            void send(int err_fd) const
+            {
+                /* Just a small AS-safe function to get the error code to the
+                 * parent process. */
+                write_all(err_fd, static_cast<const void*>(this), sizeof(ExecError));
+            }
+
+            operator std::string() const
+            {
+                std::string msg;
+
+                switch (type)
+                {
+                    case NO_ERROR:
+                        return "the exec call in the child process succeeded";
+                    case ERROR_READING_FAILED:
+                        msg = "read() on the error fd failed in the parent";
+                        break;
+                    case ERROR_SENDING_FAILED:
+                        return "the child process did not send a complete error message";
+                    case CHDIR_FAILED:
+                        msg = "chdir() failed in the child process";
+                        break;
+                    case SETGID_FAILED:
+                        msg = "setgid() failed in the child process";
+                        break;
+                    case SETGROUPS_FAILED:
+                        msg = "setgroups() failed in the child process";
+                        break;
+                    case SETUID_FAILED:
+                        msg = "setuid() failed in the child process";
+                        break;
+                    case EXECVE_FAILED:
+                        msg = "execve() failed in the child process";
+                        break;
+                    case EXECVPE_FAILED:
+                        msg = "execvpe() failed in the child process";
+                        break;
+                    case DUP2_FAILED:
+                        msg = "dup2() failed in the child process";
+                        break;
+                    case FCNTL_FAILED:
+                        msg = "fcntl() failed in the child process";
+                        break;
+                    case WAITPID_FAILED:
+                        msg = "waitpid() failed in the child process";
+                        break;
+                    case PTHREAD_SIGMASK_FAILED:
+                        return "pthread_sigmask() failed in the child process";
+                    default:
+                        return "unknown err.type received on the error pipeline";
+                }
+                msg += ": " + std::string(std::strerror(errsv));
+                return msg;
+            }
+
+            operator bool() const
+            {
+                return type != NO_ERROR;
+            }
+        private:
+            Type type;
+            int errsv;
+
+            ExecError() :
+                type(NO_ERROR),
+                errsv(0)
+            {}
+
+            static int write_all(int fd, const void *buf_, size_t count)
+            {
+                const char *buf = static_cast<const char*>(buf_);
+                const char *cur = buf;
+                const char *end = buf + count;
+
+                while(cur != end)
+                {
+                    ssize_t r = write(fd, cur, end-cur);
+
+                    if (r < 0)
+                    {
+                        if(errno == EINTR)
+                            continue;
+                        else
+                            return -1;
+                    }
+
+                    cur += r;
+                }
+
+                return 0;
+            }
+
+            static ssize_t read_all(int fd, void *buf_, size_t count)
+            {
+                char *buf = static_cast<char*>(buf_);
+                char *cur = buf;
+                char *end = buf + count;
+
+                ssize_t r = -1;
+                while(cur != end && r != 0)
+                {
+                    r = read(fd, cur, end-cur);
+
+                    if (r < 0)
+                    {
+                        if(errno == EINTR)
+                            continue;
+                        else
+                            return -1;
+                    }
+
+                    cur += r;
+                }
+
+                return cur-buf;
+            }
     };
 }
 
@@ -90,21 +292,100 @@ ProcessCommand::ProcessCommand(ProcessCommand && other) :
 
 ProcessCommand::~ProcessCommand() = default;
 
+ProcessCommand &
+ProcessCommand::setenv(const std::string & a, const std::string & b)
+{
+    _imp->setenvs.insert(std::make_pair(a, b)).first->second = b;
+    _imp->clear_alloc();
+    return *this;
+}
+
+ProcessCommand &
+ProcessCommand::clearenv()
+{
+    _imp->clearenv = true;
+    _imp->clear_alloc();
+    return *this;
+}
+
+ProcessCommand &
+ProcessCommand::chdir(const FSPath & f)
+{
+    _imp->chdir = stringify(f.realpath_if_exists());
+    return *this;
+}
+
+ProcessCommand &
+ProcessCommand::setuid_setgid(uid_t u, gid_t g)
+{
+    _imp->setuid = u;
+    _imp->setgid = g;
+    return *this;
+}
+
 void
 ProcessCommand::prepend_args(const std::initializer_list<std::string> & l)
 {
+    _imp->clear_alloc();
     _imp->args.insert(_imp->args.begin(), l);
 }
 
 void
 ProcessCommand::append_args(const std::initializer_list<std::string> & l)
 {
+    _imp->clear_alloc();
     _imp->args.insert(_imp->args.end(), l);
 }
 
 void
-ProcessCommand::exec()
+ProcessCommand::echo_command_to(std::ostream & s)
 {
+    for (auto v_begin(_imp->args.begin()), v(v_begin), v_end(_imp->args.end()) ;
+            v != v_end ; ++v)
+    {
+        if (v != v_begin)
+            s << " ";
+        s << *v;
+    }
+
+    s << std::endl;
+}
+
+void
+ProcessCommand::exec_prepare()
+{
+
+    if (! _imp->env_ptrs.empty())
+        return;
+
+    _imp->clear_alloc();
+
+    std::map<std::string, std::string> env_map = _imp->setenvs;
+    for(const char * const * it(environ) ; nullptr != *it ; ++it)
+    {
+        std::string var(*it);
+        size_t delim = var.find('=');
+
+        std::string name = var.substr(0, delim);
+        std::string val  = delim == std::string::npos || delim+1 > var.size() ? "" : var.substr(delim+1);
+
+        if (!_imp->clearenv ||
+            "PALUDIS_" == name.substr(0, 8) ||
+            "PATH" == name ||
+            "HOME" == name ||
+            "LD_LIBRARY_PATH" == name)
+            env_map.insert(std::make_pair(name, val));
+    }
+
+    for (std::map<std::string, std::string>::const_iterator it(env_map.begin()),
+            it_end(env_map.end()) ; it_end != it ; ++it)
+        _imp->env_storage.push_back(it->first + "=" + it->second);
+
+    for(const std::string & env : _imp->env_storage)
+        _imp->env_ptrs.push_back(env.c_str());
+
+    _imp->env_ptrs.push_back(static_cast<char*>(nullptr));
+
     if (! _imp->args_string.empty())
     {
         std::string s;
@@ -120,46 +401,80 @@ ProcessCommand::exec()
             s.append(" ");
         s.append(_imp->args_string);
 
-        execl("/bin/sh", "sh", "-c", s.c_str(), static_cast<char *>(nullptr));
-
-        throw ProcessError("execl failed");
+        _imp->args_storage = s;
+        _imp->argv_ptrs = { "sh", "-c", _imp->args_storage.c_str() };
     }
     else
     {
         if (_imp->args.size() < 1)
             throw ProcessError("No command specified");
 
-        /* no need to worry about free()ing this lot, since if our execvp fails we
-         * call _exit() shortly afterwards */
-
-        char ** argv(new char * [_imp->args.size() + 1]);
-        argv[_imp->args.size()] = nullptr;
         for (auto v_begin(_imp->args.begin()), v(v_begin), v_end(_imp->args.end()) ;
                 v != v_end ; ++v)
+            _imp->argv_ptrs.push_back(v->c_str());
+    }
+    _imp->argv_ptrs.push_back(static_cast<char*>(nullptr));
+
+    _imp->group_count = NGROUPS_MAX;
+    struct passwd pwd;
+    struct passwd *result;
+    std::vector<char> buffer;
+
+    if (0 != getpwuid_r_s(_imp->setuid, buffer, pwd, result) || result == nullptr)
+        throw ProcessError("getpwuid_r() failed");
+
+    if (getgrouplist(pwd.pw_name, _imp->setgid, _imp->groups, &_imp->group_count) < 0)
+        throw ProcessError("getgrouplist() failed");
+}
+
+namespace
+{
+    void
+    send_error(int err_fd, const ExecError & e)
+    {
+        if (-1 == err_fd)
         {
-            argv[v - v_begin] = new char [v->length() + 1];
-            argv[v - v_begin][v->length()] = '\0';
-            std::copy(v->begin(), v->end(), argv[v - v_begin]);
+            throw ProcessError(e);
         }
-
-        execvp(_imp->args[0].c_str(), argv);
-
-        throw ProcessError("execvp failed");
+        else
+        {
+            e.send(err_fd);
+            _exit(1);
+        }
     }
 }
 
 void
-ProcessCommand::echo_command_to(std::ostream & s)
+ProcessCommand::exec(int err_fd)
 {
-    for (auto v_begin(_imp->args.begin()), v(v_begin), v_end(_imp->args.end()) ;
-            v != v_end ; ++v)
+    if (! _imp->chdir.empty())
+        if (-1 == ::chdir(_imp->chdir.c_str()))
+            send_error(err_fd, ExecError(ExecError::CHDIR_FAILED, errno));
+
+    if (_imp->setuid != getuid() || _imp->setgid != getgid())
     {
-        if (v != v_begin)
-            s << " ";
-        s << *v;
+        if (0 != ::setgid(_imp->setgid))
+            send_error(err_fd, ExecError(ExecError::SETGID_FAILED, errno));
+
+        if (0 != ::setgroups(_imp->group_count, _imp->groups))
+            send_error(err_fd, ExecError(ExecError::SETGROUPS_FAILED, errno));
+
+        if (0 != ::setuid(_imp->setuid))
+            send_error(err_fd, ExecError(ExecError::SETUID_FAILED, errno));
     }
 
-    s << std::endl;
+    if (! _imp->args_string.empty())
+    {
+        if (execve("/bin/sh", const_cast<char *const *>(_imp->argv_ptrs.data()), const_cast<char *const *>(_imp->env_ptrs.data())) < 0)
+            send_error(err_fd, ExecError(ExecError::EXECVE_FAILED, errno));
+    }
+    else
+    {
+        if (execvpe(_imp->argv_ptrs[0], const_cast<char *const *>(_imp->argv_ptrs.data()), const_cast<char *const *>(_imp->env_ptrs.data())) < 0)
+            send_error(err_fd, ExecError(ExecError::EXECVPE_FAILED, errno));
+    }
+
+    _exit(1);
 }
 
 namespace paludis
@@ -514,11 +829,6 @@ namespace paludis
         std::string pipe_command_handler_env_var;
         int set_stdin_fd;
 
-        std::map<std::string, std::string> setenvs;
-        bool clearenv;
-        std::string chdir;
-        uid_t setuid;
-        gid_t setgid;
         std::ostream * echo_command_to;
 
         std::string prefix_stdout;
@@ -538,9 +848,6 @@ namespace paludis
             send_input_to_fd_stream(nullptr),
             send_input_to_fd_fd(-1),
             set_stdin_fd(-1),
-            clearenv(false),
-            setuid(getuid()),
-            setgid(getgid()),
             echo_command_to(nullptr),
             extra_newlines_if_any_output_exists(false),
             as_main_process(false)
@@ -671,6 +978,65 @@ Process::run()
         }
     }
 
+    int capture_output_to_fd_env_fd = -1;
+    if (thread && thread->capture_output_to_fd_pipe && ! _imp->capture_output_to_fd_env_var.empty())
+    {
+        const int src_fd(thread->capture_output_to_fd_pipe->write_fd());
+        const int tgt_fd(_imp->capture_output_to_fd_fd);
+
+        if (-1 == tgt_fd)
+            capture_output_to_fd_env_fd = src_fd;
+        else
+            capture_output_to_fd_env_fd = tgt_fd;
+    }
+
+    int send_input_to_fd_env_fd = -1;
+    if (thread && thread->send_input_to_fd_pipe && ! _imp->send_input_to_fd_env_var.empty())
+    {
+        const int src_fd(thread->send_input_to_fd_pipe->read_fd());
+        const int tgt_fd(_imp->send_input_to_fd_fd);
+
+        if (-1 == tgt_fd)
+            send_input_to_fd_env_fd = src_fd;
+        else
+            send_input_to_fd_env_fd = tgt_fd;
+    }
+
+    int pipe_command_handler_response_pipe_env_fd = -1;
+    int pipe_command_handler_command_pipe_env_fd = -1;
+    if (thread && thread->pipe_command_handler && ! _imp->pipe_command_handler_env_var.empty())
+    {
+        pipe_command_handler_response_pipe_env_fd = thread->pipe_command_handler_response_pipe->read_fd();
+        pipe_command_handler_command_pipe_env_fd = thread->pipe_command_handler_command_pipe->write_fd();
+    }
+
+    if (-1 != capture_output_to_fd_env_fd)
+        _imp->command.setenv(_imp->capture_output_to_fd_env_var, stringify(capture_output_to_fd_env_fd));
+    if (-1 != send_input_to_fd_env_fd)
+        _imp->command.setenv(_imp->send_input_to_fd_env_var, stringify(send_input_to_fd_env_fd));
+    if (-1 != pipe_command_handler_response_pipe_env_fd)
+        _imp->command.setenv(_imp->pipe_command_handler_env_var + "_READ_FD", stringify(pipe_command_handler_response_pipe_env_fd));
+    if (-1 != pipe_command_handler_command_pipe_env_fd)
+        _imp->command.setenv(_imp->pipe_command_handler_env_var + "_WRITE_FD", stringify(pipe_command_handler_command_pipe_env_fd));
+
+    if (set_tty_size_envvars)
+    {
+        _imp->command.setenv("COLUMNS", stringify(columns));
+        _imp->command.setenv("LINES", stringify(lines));
+    }
+
+    /* Prepare exec so we don't allocate after fork */
+    _imp->command.exec_prepare();
+
+    /* This pipe is used for error handling. It will be open until the
+     * child process either fails to exec, in which case the error is sent
+     * to the parent through it, or the child succeeds to exec, in which
+     * case the pipe is closed through CLOEXEC and nothing is ever written
+     * to it. The parent process will throw an appropriate exception if it
+     * receives an error from the child. */
+    Pipe error_pipe(true);
+    const int err_fd = error_pipe.write_fd();
+
     /* Temporarily disable SIGINT and SIGTERM to this thread */
     sigset_t intandterm;
     sigemptyset(&intandterm);
@@ -684,146 +1050,125 @@ Process::run()
         throw ProcessError("fork() failed: " + stringify(::strerror(errno)));
     else if ((0 == child) ^ _imp->as_main_process)
     {
-        try
+        if (_imp->as_main_process)
         {
-            if (_imp->as_main_process)
+            int status;
+            if (-1 == ::waitpid(child, &status, 0))
             {
-                int status;
-                if (-1 == ::waitpid(child, &status, 0))
-                    throw ProcessError("waitpid() returned -1");
+                ExecError(ExecError::WAITPID_FAILED, errno).send(err_fd);
+                _exit(1);
             }
+        }
 
-            /* clear any SIGINT or SIGTERM handlers we inherit, and unblock signals */
-            struct sigaction act;
-            sigemptyset(&act.sa_mask);
-            act.sa_handler = SIG_DFL;
-            act.sa_flags = 0;
-            sigaction(SIGINT,  &act, nullptr);
-            sigaction(SIGTERM, &act, nullptr);
-            if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, nullptr))
-                throw ProcessError("pthread_sigmask failed");
+        /* clear any SIGINT or SIGTERM handlers we inherit, and unblock signals */
+        struct sigaction act;
+        sigemptyset(&act.sa_mask);
+        act.sa_handler = SIG_DFL;
+        act.sa_flags = 0;
+        sigaction(SIGINT,  &act, nullptr);
+        sigaction(SIGTERM, &act, nullptr);
+        if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, nullptr))
+        {
+            ExecError(ExecError::PTHREAD_SIGMASK_FAILED, 0).send(err_fd);
+            _exit(1);
+        }
 
-            if (_imp->clearenv)
+        if (thread && thread->capture_stdout_pipe)
+        {
+            if (-1 == ::dup2(thread->capture_stdout_pipe->write_fd(), STDOUT_FILENO))
             {
-                std::map<std::string, std::string> setenvs;
-                for (const char * const * it(environ) ; nullptr != *it ; ++it)
+                ExecError(ExecError::DUP2_FAILED, errno).send(err_fd);
+                _exit(1);
+            }
+        }
+
+        if (thread && thread->capture_stderr_pipe)
+        {
+            if (-1 == ::dup2(thread->capture_stderr_pipe->write_fd(), STDERR_FILENO))
+            {
+                ExecError(ExecError::DUP2_FAILED, errno).send(err_fd);
+                _exit(1);
+            }
+        }
+
+        if (thread && thread->capture_output_to_fd_pipe)
+        {
+            const int src_fd(thread->capture_output_to_fd_pipe->write_fd());
+            const int tgt_fd(_imp->capture_output_to_fd_fd);
+
+            if (-1 == tgt_fd)
+            {
+                int flags = ::fcntl(src_fd, F_GETFD);
+                if (-1 == flags || -1 == ::fcntl(src_fd, F_SETFD, flags & ~FD_CLOEXEC))
                 {
-                    std::string var(*it);
-                    if (std::string::npos != var.find('=') &&
-                            ("PALUDIS_" == var.substr(0, 8) ||
-                             "PATH=" == var.substr(0, 5) ||
-                             "HOME=" == var.substr(0, 5) ||
-                             "LD_LIBRARY_PATH=" == var.substr(0, 16)))
-                        setenvs.insert(std::make_pair(var.substr(0, var.find('=')), var.substr(var.find('=') + 1)));
-                }
-                ::clearenv();
-
-                for (std::map<std::string, std::string>::const_iterator it(setenvs.begin()),
-                        it_end(setenvs.end()) ; it_end != it ; ++it)
-                    ::setenv(it->first.c_str(), it->second.c_str(), 1);
-            }
-
-            if (thread && thread->capture_stdout_pipe)
-            {
-                if (-1 == ::dup2(thread->capture_stdout_pipe->write_fd(), STDOUT_FILENO))
-                    throw ProcessError("dup2() failed");
-            }
-
-            if (thread && thread->capture_stderr_pipe)
-            {
-                if (-1 == ::dup2(thread->capture_stderr_pipe->write_fd(), STDERR_FILENO))
-                    throw ProcessError("dup2() failed");
-            }
-
-            if (thread && thread->capture_output_to_fd_pipe)
-            {
-                int fd(_imp->capture_output_to_fd_fd);
-                if (-1 == fd)
-                    fd = ::dup(thread->capture_output_to_fd_pipe->write_fd());
-                else
-                    fd = ::dup2(thread->capture_output_to_fd_pipe->write_fd(), fd);
-
-                if (-1 == fd)
-                    throw ProcessError("dup failed");
-                else if (! _imp->capture_output_to_fd_env_var.empty())
-                    ::setenv(_imp->capture_output_to_fd_env_var.c_str(), stringify(fd).c_str(), 1);
-            }
-
-            if (thread && thread->send_input_to_fd_pipe)
-            {
-                int fd(_imp->send_input_to_fd_fd);
-                if (-1 == fd)
-                    fd = ::dup(thread->send_input_to_fd_pipe->read_fd());
-                else
-                    fd = ::dup2(thread->send_input_to_fd_pipe->read_fd(), fd);
-
-                if (-1 == fd)
-                    throw ProcessError("dup failed");
-                else if (! _imp->send_input_to_fd_env_var.empty())
-                    ::setenv(_imp->send_input_to_fd_env_var.c_str(), stringify(fd).c_str(), 1);
-            }
-
-            if (thread && thread->pipe_command_handler)
-            {
-                int read_fd(::dup(thread->pipe_command_handler_response_pipe->read_fd()));
-                if (-1 == read_fd)
-                    throw ProcessError("dup failed");
-
-                int write_fd(::dup(thread->pipe_command_handler_command_pipe->write_fd()));
-                if (-1 == write_fd)
-                    throw ProcessError("dup failed");
-
-                if (! _imp->pipe_command_handler_env_var.empty())
-                {
-                    ::setenv((_imp->pipe_command_handler_env_var + "_READ_FD").c_str(), stringify(read_fd).c_str(), 1);
-                    ::setenv((_imp->pipe_command_handler_env_var + "_WRITE_FD").c_str(), stringify(write_fd).c_str(), 1);
+                    ExecError(ExecError::FCNTL_FAILED, errno).send(err_fd);
+                    _exit(1);
                 }
             }
-
-            if (-1 != _imp->set_stdin_fd)
+            else
             {
-                if (-1 == ::dup2(_imp->set_stdin_fd, STDIN_FILENO))
-                    throw ProcessError("dup2() failed");
+                if (-1 == ::dup2(src_fd, tgt_fd))
+                {
+                    ExecError(ExecError::DUP2_FAILED, errno).send(err_fd);
+                    _exit(1);
+                }
             }
-
-            if (set_tty_size_envvars)
-            {
-                ::setenv("COLUMNS", stringify(columns).c_str(), 1);
-                ::setenv("LINES", stringify(lines).c_str(), 1);
-            }
-
-            for (auto & m : _imp->setenvs)
-                ::setenv(m.first.c_str(), m.second.c_str(), 1);
-
-            if (! _imp->chdir.empty())
-                if (-1 == ::chdir(_imp->chdir.c_str()))
-                    throw ProcessError("chdir() failed");
-
-            if (_imp->setuid != getuid() || _imp->setgid != getgid())
-            {
-                if (0 != ::setgid(_imp->setgid))
-                    throw ProcessError("setgid() failed");
-
-                struct passwd pwd;
-                struct passwd *result;
-                std::vector<char> buffer;
-
-                if (0 != getpwuid_r_s(_imp->setuid, buffer, pwd, result) || result == nullptr)
-                    throw ProcessError("getpwuid_r() failed");
-
-                if (0 != ::initgroups(pwd.pw_name, getgid()))
-                    throw ProcessError("initgroups() failed");
-
-                if (0 != ::setuid(_imp->setuid))
-                    throw ProcessError("setuid() failed");
-            }
-
-            _imp->command.exec();
         }
-        catch (const ProcessError & e)
+
+        if (thread && thread->send_input_to_fd_pipe)
         {
-            std::cerr << "Eek! child thread got error '" << e.message() << "'" << std::endl;
+            const int src_fd(thread->send_input_to_fd_pipe->read_fd());
+            const int tgt_fd(_imp->send_input_to_fd_fd);
+
+            if (-1 == tgt_fd)
+            {
+                int flags = ::fcntl(src_fd, F_GETFD);
+                if (-1 == flags || -1 == ::fcntl(src_fd, F_SETFD, flags & ~FD_CLOEXEC))
+                {
+                    ExecError(ExecError::FCNTL_FAILED, errno).send(err_fd);
+                    _exit(1);
+                }
+            }
+            else
+            {
+                if (-1 == ::dup2(src_fd, tgt_fd))
+                {
+                    ExecError(ExecError::DUP2_FAILED, errno).send(err_fd);
+                    _exit(1);
+                }
+            }
         }
+
+        if (thread && thread->pipe_command_handler)
+        {
+            int read_fd = thread->pipe_command_handler_response_pipe->read_fd();
+            int read_flags = ::fcntl(read_fd, F_GETFD);
+            if (-1 == read_flags || -1 == ::fcntl(read_fd, F_SETFD, read_flags & ~FD_CLOEXEC))
+            {
+                ExecError(ExecError::FCNTL_FAILED, errno).send(err_fd);
+                _exit(1);
+            }
+
+            int write_fd = thread->pipe_command_handler_command_pipe->write_fd();
+            int write_flags = ::fcntl(write_fd, F_GETFD);
+            if (-1 == write_flags || -1 == ::fcntl(write_fd, F_SETFD, write_flags & ~FD_CLOEXEC))
+            {
+                ExecError(ExecError::FCNTL_FAILED, errno).send(err_fd);
+                _exit(1);
+            }
+        }
+
+        if (-1 != _imp->set_stdin_fd)
+        {
+            if (-1 == ::dup2(_imp->set_stdin_fd, STDIN_FILENO))
+            {
+                ExecError(ExecError::DUP2_FAILED, errno).send(err_fd);
+                _exit(1);
+            }
+        }
+
+        _imp->command.exec(err_fd);
+
         _exit(1);
     }
     else
@@ -849,10 +1194,52 @@ Process::run()
         if (0 != pthread_sigmask(SIG_UNBLOCK, &intandterm, nullptr))
             throw ProcessError("pthread_sigmask failed");
 
+        /* Close our end of the error pipe so we actually get EOF if the
+         * child closes its end. */
+        close(error_pipe.write_fd());
+        error_pipe.clear_write_fd();
+
+        ExecError error(error_pipe.read_fd());
+        if (error)
+        {
+            if (-1 == ::waitpid(child, nullptr, 0))
+                throw ProcessError("waitpid() returned -1");
+
+            throw ProcessError(error);
+        }
+
         if (thread)
             thread->start();
         return RunningProcessHandle(_imp->as_main_process ? 0 : child, std::move(thread));
     }
+}
+
+Process &
+Process::setenv(const std::string & name, const std::string & val)
+{
+    _imp->command.setenv(name, val);
+    return *this;
+}
+
+Process &
+Process::clearenv()
+{
+    _imp->command.clearenv();
+    return *this;
+}
+
+Process &
+Process::chdir(const FSPath & path)
+{
+    _imp->command.chdir(path);
+    return *this;
+}
+
+Process &
+Process::setuid_setgid(uid_t uid, gid_t gid)
+{
+    _imp->command.setuid_setgid(uid, gid);
+    return *this;
 }
 
 Process &
@@ -908,38 +1295,9 @@ Process::pipe_command_handler(const std::string & v, const ProcessPipeCommandFun
 }
 
 Process &
-Process::setenv(const std::string & a, const std::string & b)
-{
-    _imp->setenvs.insert(std::make_pair(a, b)).first->second = b;
-    return *this;
-}
-
-Process &
-Process::clearenv()
-{
-    _imp->clearenv = true;
-    return *this;
-}
-
-Process &
-Process::chdir(const FSPath & f)
-{
-    _imp->chdir = stringify(f.realpath_if_exists());
-    return *this;
-}
-
-Process &
 Process::use_ptys()
 {
     _imp->use_ptys = true;
-    return *this;
-}
-
-Process &
-Process::setuid_setgid(uid_t u, gid_t g)
-{
-    _imp->setuid = u;
-    _imp->setgid = g;
     return *this;
 }
 
@@ -1009,7 +1367,7 @@ Process::sandbox()
         {
             _imp->command.prepend_args({ "sandbox" });
             if (getenv_with_default("BASH_ENV", "").empty())
-                setenv("BASH_ENV", "/dev/null");
+                _imp->command.setenv("BASH_ENV", "/dev/null");
         }
     }
 
