@@ -184,7 +184,7 @@ _cave_cmd_execute-resolution()
     '*--skip-phase[Skip the named phases]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
     '*--abort-at-phase[Abort when a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
     '*--skip-until-phase[Skip every phase until a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
-    '*--change-phases-for[Control to which packages these phase options apply]:Which:((all first last))' \
+    '*--change-phases-for[Control to which packages these phase options apply]:Which:((all first !first last !last targets !targets))' \
     '--display-resolution-program[The program used to display the resolution]:Command: ' \
     '--graph-jobs-resolution-program[The program used to graph jobs]:Command: ' \
     '--execute-resolution-program[The program used to execute the resolution]:Command: ' \
@@ -732,11 +732,12 @@ _cave_resolve_arguments=(
     '*'{--not-usable,-N}'[Consider installed packages matching the supplied specification as being unusable when breaking dependency cycles]' \
     '*'{--early,-E}'[When given a collection of otherwise equally desirable packages to order, order packages matching the supplied spec first]' \
     '*'{--late,-L}'[When given a collection of otherwise equally desirable packages to order, order packages matching the supplied spec last]' \
-    '(--make -m)'{--make,-m}'[Specify what to do with targets]:Make:((auto a install i binaries b chroot c))' \
+    '(--make -m)'{--make,-m}'[Specify what to do with targets]:Make:((auto a install i binaries b chroot c cross-compile x))' \
     '(--make-dependencies -M)'{--make-dependencies,-M}'[Specify what to do with dependencies of targets]:When:((auto runtime r all a none n))' \
     '*'{--via-binary,-b}'[When building a package matching the supplied spec, create a binary package and use that for the install]' \
     '(--dependencies-to-slash -/)'{--dependencies-to-slash,-/}'[Specify what to do with dependencies for the / filesystem when not working on /]:When:((all a runtime r build b none n))' \
     '*'{--chroot-path,-2}'[When making a chroot, only consider destination repositories whose root is this value]:Root:'
+    '*'{--cross-host,-4}'[Specify which cross host to use]:Host:' \
     '--one-binary-per-slot[When building a binary package, remove other versions in the same repository and slot]' \
     '--ignore-unable-decisions[Ignore any resolvent for which we were unable to make a decision. Specifying this will break your system]' \
     '--ignore-unorderable-jobs[Ignore any job we were unable to order. Specifying this will break your system]' \
@@ -750,7 +751,7 @@ _cave_resolve_arguments=(
     '*--skip-phase[Skip the named phases]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
     '*--abort-at-phase[Abort when a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
     '*--skip-until-phase[Skip every phase until a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
-    '*--change-phases-for[Control to which packages these phase options apply]:Which:((all first last))' \
+    '*--change-phases-for[Control to which packages these phase options apply]:Which:((all first !first last !last targets !targets))' \
     '--show-option-descriptions[Whether to display descriptions for package options]:Which:((none new changed all))' \
     '--show-descriptions[Whether to display package descriptions]:When:((none new all))' \
     '(--explain -X)'{--explain,-X}'[Explain why the resolver made a particular decision]:Spec: ' \
@@ -797,7 +798,7 @@ _cave_cmd_resume()
     '*--skip-phase[Skip the named phases]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
     '*--abort-at-phase[Abort when a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
     '*--skip-until-phase[Skip every phase until a named phase is encountered]:Phase:((fetch_extra killold init setup unpack prepare configure compile test test_expensive install strip preinst merge prerm postrm postinst tidyup))' \
-    '*--change-phases-for[Control to which packages these phase options apply]:Which:((all first last))' \
+    '*--change-phases-for[Control to which packages these phase options apply]:Which:((all first !first last !last targets !targets))' \
     '--display-resolution-program[The program used to display the resolution]:Command: ' \
     '--graph-jobs-resolution-program[The program used to graph jobs]:Command: ' \
     '--execute-resolution-program[The program used to execute the resolution]:Command: ' \
