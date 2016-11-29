@@ -90,7 +90,7 @@ PrintCommandsCommand::run(
     {
         std::shared_ptr<Command> instance(CommandFactory::get_instance()->create(*cmd));
 
-        if (! cmdline.a_all.specified() && ! instance->importance() == ci_core)
+        if (! cmdline.a_all.specified() && instance->importance() != ci_core)
             continue;
         if (instance->importance() == ci_ignore)
             continue;
