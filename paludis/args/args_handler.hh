@@ -354,10 +354,8 @@ namespace paludis
 
     extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::ParametersConstIteratorTag, const std::string>;
     extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::UsageLineConstIteratorTag, const std::string>;
-    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::EnvironmentLineConstIteratorTag,
-            const std::pair<std::string, std::string> >;
-    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::ExamplesConstIteratorTag,
-            const std::pair<std::string, std::string> >;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::EnvironmentLineConstIteratorTag, const std::pair<std::string, std::string>>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::ExamplesConstIteratorTag, const std::pair<std::string, std::string>>;
     extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::ArgsSectionsConstIteratorTag, const args::ArgsSection>;
     extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::DescriptionLineConstIteratorTag, const std::string>;
     extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::NotesIteratorTag, const std::string>;

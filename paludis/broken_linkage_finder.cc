@@ -443,9 +443,7 @@ BrokenLinkageFinder::end_missing_requirements(
 
 namespace paludis
 {
-    template class WrappedForwardIterator<BrokenLinkageFinder::BrokenPackageConstIteratorTag,
-             const std::shared_ptr<const PackageID> >;
-    template class WrappedForwardIterator<BrokenLinkageFinder::BrokenFileConstIteratorTag,
-             const FSPath>;
-    template class WrappedForwardIterator<BrokenLinkageFinder::MissingRequirementConstIteratorTag, const std::string>;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<BrokenLinkageFinder::BrokenPackageConstIteratorTag, const std::shared_ptr<const PackageID>>;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<BrokenLinkageFinder::BrokenFileConstIteratorTag, const FSPath>;
+    template class PALUDIS_VISIBLE WrappedForwardIterator<BrokenLinkageFinder::MissingRequirementConstIteratorTag, const std::string>;
 }

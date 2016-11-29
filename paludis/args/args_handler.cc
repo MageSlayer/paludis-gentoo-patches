@@ -483,10 +483,8 @@ namespace paludis
 {
     template class WrappedForwardIterator<ArgsHandler::ParametersConstIteratorTag, const std::string>;
     template class WrappedForwardIterator<ArgsHandler::UsageLineConstIteratorTag, const std::string>;
-    template class WrappedForwardIterator<ArgsHandler::EnvironmentLineConstIteratorTag,
-             const std::pair<std::string, std::string> >;
-    template class WrappedForwardIterator<ArgsHandler::ExamplesConstIteratorTag,
-             const std::pair<std::string, std::string> >;
+    template class WrappedForwardIterator<ArgsHandler::EnvironmentLineConstIteratorTag, const std::pair<std::string, std::string>>;
+    template class WrappedForwardIterator<ArgsHandler::ExamplesConstIteratorTag, const std::pair<std::string, std::string>>;
     template class WrappedForwardIterator<ArgsHandler::ArgsSectionsConstIteratorTag, const ArgsSection>;
     template class WrappedForwardIterator<ArgsHandler::NotesIteratorTag, const std::string>;
     template class WrappedForwardIterator<ArgsHandler::DescriptionLineConstIteratorTag, const std::string>;
