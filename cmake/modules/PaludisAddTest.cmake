@@ -30,6 +30,7 @@ function(paludis_add_test test_name)
                             libpaludis
                             libpaludisutil
                             ${GTEST_BOTH_LIBRARIES}
+                            ${CMAKE_THREAD_LIBS_INIT}
                             ${PAT_LINK_LIBRARIES})
   endif()
 
