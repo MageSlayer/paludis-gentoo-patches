@@ -48,7 +48,7 @@ endif()
 
 set(PALUDIS_VIM_INSTALL_DIR "${CMAKE_INSTALL_FULL_DATADIR}/vim/vimfiles" CACHE PATH
     "vim installation directory")
-set(RUBY_VERSION "2.3" CACHE STRING "Ruby Version (2;1;2.2;2.3)")
+set(RUBY_VERSION "2.3" CACHE STRING "Ruby Version (2.1;2.2;2.3)")
 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 set(THREADS_PREFER_PTHREADS_FLAG TRUE)
