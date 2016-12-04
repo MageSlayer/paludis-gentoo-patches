@@ -38,7 +38,7 @@ TEST(StreamHolder, Convert)
 {
     StreamHolder<std::stringstream> s("Dog");
     ASSERT_FALSE(!s);
-    ASSERT_TRUE(s);
+    ASSERT_TRUE(static_cast<bool>(s));
 
     std::stringstream& r(s);
     std::stringstream* p(s);
