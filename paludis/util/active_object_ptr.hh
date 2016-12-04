@@ -61,15 +61,9 @@ namespace paludis
             {
             }
 
-            ActiveObjectPtr(const ActiveObjectPtr & other) :
-                _ptr(other._ptr),
-                _mutex(other._mutex)
-            {
-            }
+            ActiveObjectPtr(const ActiveObjectPtr & other) = default;
 
-            ~ActiveObjectPtr()
-            {
-            }
+            ~ActiveObjectPtr() = default;
 
             ActiveObjectPtr &
             operator= (const ActiveObjectPtr & other)

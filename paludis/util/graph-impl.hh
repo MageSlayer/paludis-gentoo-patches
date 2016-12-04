@@ -99,9 +99,7 @@ namespace paludis
         ///\name Basic operations
         ///\{
 
-        Imp()
-        {
-        }
+        Imp() = default;
 
         Imp(const std::map<Node_, std::map<Node_, Edge_, Comparator_>, Comparator_> s) :
             store(s)
@@ -124,9 +122,7 @@ namespace paludis
     }
 
     template <typename Node_, typename Edge_, typename Comparator_>
-    DirectedGraph<Node_, Edge_, Comparator_>::~DirectedGraph()
-    {
-    }
+    DirectedGraph<Node_, Edge_, Comparator_>::~DirectedGraph() = default;
 
     template <typename Node_, typename Edge_, typename Comparator_>
     void
@@ -174,23 +170,19 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            NodeConstIterator(const NodeConstIterator & other) :
-                _i(other._i)
-            {
-            }
+          NodeConstIterator(const NodeConstIterator & other) = default;
 
-            ~NodeConstIterator()
-            {
-            }
+          ~NodeConstIterator() = default;
 
-            ///\}
+          ///\}
 
-            ///\name Comparison operators
-            ///\{
+          ///\name Comparison operators
+          ///\{
 
-            bool operator== (const NodeConstIterator & other) const
-            {
-                return _i == other._i;
+          bool
+          operator==(const NodeConstIterator & other) const
+          {
+              return _i == other._i;
             }
 
             bool operator!= (const NodeConstIterator & other) const

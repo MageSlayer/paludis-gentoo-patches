@@ -82,9 +82,7 @@ namespace paludis
     }
 
     template <typename Tag_>
-    WrappedValue<Tag_>::~WrappedValue()
-    {
-    }
+    WrappedValue<Tag_>::~WrappedValue() = default;
 
     template <typename Tag_>
     const typename WrappedValueTraits<Tag_>::UnderlyingType &

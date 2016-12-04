@@ -31,9 +31,7 @@ namespace paludis
     }
 
     template <typename Value_, typename Iter_>
-    CreateInsertIterator<Value_, Iter_>::~CreateInsertIterator()
-    {
-    }
+    CreateInsertIterator<Value_, Iter_>::~CreateInsertIterator() = default;
 
     template <typename Value_, typename Iter_>
     CreateInsertIterator<Value_, Iter_>::CreateInsertIterator(const CreateInsertIterator & i) :

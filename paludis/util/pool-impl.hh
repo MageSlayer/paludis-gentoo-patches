@@ -66,9 +66,7 @@ namespace paludis
     }
 
     template <typename T_>
-    Pool<T_>::~Pool()
-    {
-    }
+    Pool<T_>::~Pool() = default;
 
     template <typename T_>
     struct PreventConversion

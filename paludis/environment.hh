@@ -134,9 +134,7 @@ namespace paludis
 
             NoSuchPackageError(const std::string & name) noexcept;
 
-            virtual ~NoSuchPackageError()
-            {
-            }
+            virtual ~NoSuchPackageError() = default;
 
             ///\}
 

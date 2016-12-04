@@ -44,9 +44,7 @@ namespace paludis
     }
 
     template <typename Data_>
-    ExtraDistributionData<Data_>::~ExtraDistributionData()
-    {
-    }
+    ExtraDistributionData<Data_>::~ExtraDistributionData() = default;
 
     template <typename T_>
     struct ExtraDistributionDataData;

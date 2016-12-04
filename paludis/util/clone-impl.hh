@@ -31,9 +31,7 @@
 namespace paludis
 {
     template <typename T_>
-    Cloneable<T_>::~Cloneable()
-    {
-    }
+    Cloneable<T_>::~Cloneable() = default;
 
     template<typename Base_, typename Child_>
     std::shared_ptr<Base_>
@@ -42,10 +40,8 @@ namespace paludis
         return std::shared_ptr<Base_>(std::make_shared<Child_>(*static_cast<const Child_ *>(this)));
     }
 
-    template<typename Base_, typename Child_>
-    CloneUsingThis<Base_, Child_>::~CloneUsingThis()
-    {
-    }
+    template <typename Base_, typename Child_>
+    CloneUsingThis<Base_, Child_>::~CloneUsingThis() = default;
 }
 
 #endif

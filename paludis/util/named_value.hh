@@ -80,21 +80,14 @@ namespace paludis
             {
             }
 
-            NamedValue(const NamedValue & v) :
-                _value(v._value)
-            {
-            }
+            NamedValue(const NamedValue & v) = default;
 
             NamedValue(NamedValue && v) :
                 _value(std::move(v._value))
             {
             }
 
-            NamedValue & operator=(const NamedValue & v)
-            {
-                _value = v._value;
-                return *this;
-            }
+            NamedValue & operator=(const NamedValue & v) = default;
 
             V_ & operator() ()
             {

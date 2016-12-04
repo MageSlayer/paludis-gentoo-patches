@@ -25,11 +25,8 @@
 
 namespace paludis
 {
-    template <typename Value_, typename Iterator_,
-             Value_ std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>
-    MemberIterator<Value_, Iterator_, member_>::MemberIterator()
-    {
-    }
+    template <typename Value_, typename Iterator_, Value_ std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::*member_>
+    MemberIterator<Value_, Iterator_, member_>::MemberIterator() = default;
 
     template <typename Value_, typename Iterator_,
              Value_ std::remove_reference<typename std::iterator_traits<Iterator_>::value_type>::type::* member_>

@@ -41,12 +41,7 @@ namespace paludis
             {
             }
 
-            DeferredConstructionPtr(const DeferredConstructionPtr & other) :
-                _ptr(other._ptr),
-                _f(other._f),
-                _done(other._done)
-            {
-            }
+            DeferredConstructionPtr(const DeferredConstructionPtr & other) = default;
 
             DeferredConstructionPtr &
             operator= (const DeferredConstructionPtr & other)
