@@ -12,19 +12,8 @@ set(CPACK_SOURCE_IGNORE_FILES
       "\\\\.sw[opn]$"
       ".*~"
       "cscope.*"
-      # TODO(compnerd) remove this set when the autotools build system is removed
       "/.gitignore"
       "/.gitreview"
-      "/aclocal.m4"
-      "/autogen.bash"
-      "/autom4te.cache/"
-      "/autotools_prepare.bash"
-      "/config.h.in"
-      "/configure.ac"
-      "Makefile.am"
-      "Makefile.am.m4"
-      "Makefile.in"
-      "/misc/common-makefile.am"
       "files.m4"
       "${CPACK_SOURCE_IGNORE_FILES}")
 
