@@ -352,15 +352,15 @@ namespace paludis
         std::ostream & operator<< (std::ostream &, const ArgsHandler &) PALUDIS_VISIBLE;
     }
 
-    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::ParametersConstIteratorTag, const std::string>;
-    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::UsageLineConstIteratorTag, const std::string>;
-    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::EnvironmentLineConstIteratorTag, const std::pair<std::string, std::string>>;
-    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::ExamplesConstIteratorTag, const std::pair<std::string, std::string>>;
-    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::ArgsSectionsConstIteratorTag, const args::ArgsSection>;
-    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::DescriptionLineConstIteratorTag, const std::string>;
-    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::NotesIteratorTag, const std::string>;
-    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::ArgsIteratorTag, std::string>;
-    extern template class PALUDIS_VISIBLE WrappedForwardIterator<args::ArgsHandler::SeeAlsoConstIteratorTag, const std::pair<std::string, int> >;
+    extern template class WrappedForwardIterator<args::ArgsHandler::ParametersConstIteratorTag, const std::string>;
+    extern template class WrappedForwardIterator<args::ArgsHandler::UsageLineConstIteratorTag, const std::string>;
+    extern template class WrappedForwardIterator<args::ArgsHandler::EnvironmentLineConstIteratorTag, const std::pair<std::string, std::string>>;
+    extern template class WrappedForwardIterator<args::ArgsHandler::ExamplesConstIteratorTag, const std::pair<std::string, std::string>>;
+    extern template class WrappedForwardIterator<args::ArgsHandler::ArgsSectionsConstIteratorTag, const args::ArgsSection>;
+    extern template class WrappedForwardIterator<args::ArgsHandler::DescriptionLineConstIteratorTag, const std::string>;
+    extern template class WrappedForwardIterator<args::ArgsHandler::NotesIteratorTag, const std::string>;
+    extern template class WrappedForwardIterator<args::ArgsHandler::ArgsIteratorTag, std::string>;
+    extern template class WrappedForwardIterator<args::ArgsHandler::SeeAlsoConstIteratorTag, const std::pair<std::string, int> >;
 }
 
 #endif
