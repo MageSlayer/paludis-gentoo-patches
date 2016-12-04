@@ -21,6 +21,7 @@
 #ifndef PALUDIS_GUARD_ARGS_ARGS_OPTION_HH
 #define PALUDIS_GUARD_ARGS_ARGS_OPTION_HH 1
 
+#include <paludis/util/iterator_range.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/type_list.hh>
@@ -350,8 +351,8 @@ namespace paludis
                 typedef WrappedForwardIterator<ConstIteratorTag, const std::string> ConstIterator;
 
                 ConstIterator begin_args() const;
-
                 ConstIterator end_args() const;
+                IteratorRange<ConstIterator> args() const;
 
                 ///\}
 

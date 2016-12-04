@@ -222,6 +222,12 @@ StringSetArg::end_args() const
     return ConstIterator(_imp->args.end());
 }
 
+IteratorRange<StringSetArg::ConstIterator>
+StringSetArg::args() const
+{
+    return {_imp->args};
+}
+
 void
 StringSetArg::add_argument(const std::string & arg)
 {

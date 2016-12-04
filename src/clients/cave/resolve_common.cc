@@ -137,16 +137,15 @@ namespace
 
         const std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
         bool seen_sets(false), seen_packages(false);
-        for (Sequence<std::pair<std::string, std::string> >::ConstIterator p(targets->begin()), p_end(targets->end()) ;
-                p != p_end ; ++p)
+        for (const auto & target : *targets)
         {
-            if (p->first.empty())
+            if (target.first.empty())
                 continue;
 
-            std::string p_suggesion(p->first);
+            std::string p_suggesion(target.first);
             try
             {
-                auto b(split_elike_blocker(p->first));
+                auto b(split_elike_blocker(target.first));
 
                 if (ebk_no_block != std::get<0>(b))
                 {
@@ -155,13 +154,13 @@ namespace
                     PackageDepSpec s(parse_spec_with_nice_error(std::get<2>(b), env.get(), { }, filter::All()));
                     BlockDepSpec bs(make_uninstall_blocker(s));
                     result->push_back(stringify(bs));
-                    resolver->add_target(bs, p->second);
+                    resolver->add_target(bs, target.second);
                 }
                 else
                 {
                     PackageDepSpec s(parse_spec_with_nice_error(std::get<2>(b), env.get(), { updso_throw_if_set }, filter::All()));
                     result->push_back(stringify(s));
-                    resolver->add_target(s, p->second);
+                    resolver->add_target(s, target.second);
                     seen_packages = true;
                 }
             }
@@ -170,8 +169,8 @@ namespace
                 if (seen_sets)
                     throw args::DoHelp("Cannot specify multiple set targets");
 
-                resolver->add_target(SetName(p->first), p->second);
-                result->push_back(p->first);
+                resolver->add_target(SetName(target.first), target.second);
+                result->push_back(target.first);
                 seen_sets = true;
             }
         }
@@ -189,22 +188,19 @@ namespace
                         generator::All() |
                         installed_filter)]);
 
-            for (auto p(resolution_options.a_reinstall_dependents_of.begin_args()), p_end(resolution_options.a_reinstall_dependents_of.end_args()) ;
-                    p != p_end ; ++p)
+            for (const auto & package : resolution_options.a_reinstall_dependents_of.args())
             {
-                PackageDepSpec s(parse_spec_with_nice_error(*p, env.get(), { }, installed_filter));
+                PackageDepSpec s(parse_spec_with_nice_error(package, env.get(), { }, installed_filter));
                 auto ids((*env)[selection::AllVersionsSorted(generator::Matches(s, nullptr, { }) | installed_filter)]);
                 if (ids->empty())
-                    throw args::DoHelp("Found nothing installed matching '" + *p + "' for --" + resolution_options.a_reinstall_dependents_of.long_name());
+                    throw args::DoHelp("Found nothing installed matching '" + package + "' for --" + resolution_options.a_reinstall_dependents_of.long_name());
 
-                for (auto i(ids->begin()), i_end(ids->end()) ;
-                        i != i_end ; ++i)
+                for (const auto & id : *ids)
                 {
-                    auto dependents(collect_dependents(env.get(), *i, installed_ids));
-                    for (auto d(dependents->begin()), d_end(dependents->end()) ;
-                            d != d_end ; ++d)
+                    auto dependents(collect_dependents(env.get(), id, installed_ids));
+                    for (const auto & dependent : *dependents)
                     {
-                        BlockDepSpec bs(make_uninstall_blocker((*d)->uniquely_identifying_spec()));
+                        BlockDepSpec bs(make_uninstall_blocker(dependent->uniquely_identifying_spec()));
                         resolver->add_target(bs, "reinstalling dependents of " + stringify(s));
                     }
                 }
@@ -267,38 +263,36 @@ namespace
         {
             std::shared_ptr<Sequence<std::string> > args(std::make_shared<Sequence<std::string>>());
 
-            for (args::ArgsSection::GroupsConstIterator g(display_options.begin()), g_end(display_options.end()) ;
-                    g != g_end ; ++g)
+            for (const auto & group : display_options)
             {
-                for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
-                        o != o_end ; ++o)
-                    if ((*o)->specified())
+                for (const auto & option : group)
+                {
+                    if (option->specified())
                     {
-                        const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                        const std::shared_ptr<const Sequence<std::string> > f(option->forwardable_args());
                         std::copy(f->begin(), f->end(), args->back_inserter());
                     }
+                }
             }
 
-            for (Sequence<std::pair<std::string, std::string> >::ConstIterator p(targets->begin()), p_end(targets->end()) ;
-                    p != p_end ; ++p)
-                args->push_back(p->first);
+            for (const auto & target : *targets)
+                args->push_back(target.first);
 
             if (program_options.a_display_resolution_program.specified())
             {
                 std::string command(program_options.a_display_resolution_program.argument());
 
                 if (keys_if_import)
-                    for (Map<std::string, std::string>::ConstIterator k(keys_if_import->begin()),
-                            k_end(keys_if_import->end()) ;
-                            k != k_end ; ++k)
+                {
+                    for (const auto & kv : *keys_if_import)
                     {
                         args->push_back("--unpackaged-repository-params");
-                        args->push_back(k->first + "=" + k->second);
+                        args->push_back(kv.first + "=" + kv.second);
                     }
+                }
 
-                for (Sequence<std::string>::ConstIterator a(args->begin()), a_end(args->end()) ;
-                        a != a_end ; ++a)
-                    command = command + " " + args::escape(*a);
+                for (const auto & arg : *args)
+                    command = command + " " + args::escape(arg);
 
                 Process process((ProcessCommand(command)));
                 process
@@ -341,33 +335,32 @@ namespace
 
         std::shared_ptr<Sequence<std::string> > args(std::make_shared<Sequence<std::string>>());
 
-        for (args::ArgsSection::GroupsConstIterator g(graph_jobs_options.begin()), g_end(graph_jobs_options.end()) ;
-                g != g_end ; ++g)
+        for (const auto & group : graph_jobs_options)
         {
-            for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
-                    o != o_end ; ++o)
-                if ((*o)->specified())
+            for (const auto & option : group)
+            {
+                if (option->specified())
                 {
-                    const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    const std::shared_ptr<const Sequence<std::string> > f(option->forwardable_args());
                     std::copy(f->begin(), f->end(), args->back_inserter());
                 }
+            }
         }
 
-        for (args::ArgsSection::GroupsConstIterator g(program_options.begin()), g_end(program_options.end()) ;
-                g != g_end ; ++g)
+        for (const auto & group : program_options)
         {
-            for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
-                    o != o_end ; ++o)
-                if ((*o)->specified())
+            for (const auto & option : group)
+            {
+                if (option->specified())
                 {
-                    const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    const std::shared_ptr<const Sequence<std::string> > f(option->forwardable_args());
                     std::copy(f->begin(), f->end(), args->back_inserter());
                 }
+            }
         }
 
-        for (Sequence<std::pair<std::string, std::string> >::ConstIterator p(targets->begin()), p_end(targets->end()) ;
-                p != p_end ; ++p)
-            args->push_back(p->first);
+        for (const auto & target : *targets)
+            args->push_back(target.first);
 
         int result;
         if (program_options.a_graph_jobs_program.specified())
@@ -375,17 +368,16 @@ namespace
             std::string command(program_options.a_graph_jobs_program.argument());
 
             if (keys_if_import)
-                for (Map<std::string, std::string>::ConstIterator k(keys_if_import->begin()),
-                        k_end(keys_if_import->end()) ;
-                        k != k_end ; ++k)
+            {
+                for (const auto & kv : *keys_if_import)
                 {
                     args->push_back("--unpackaged-repository-params");
-                    args->push_back(k->first + "=" + k->second);
+                    args->push_back(kv.first + "=" + kv.second);
                 }
+            }
 
-            for (Sequence<std::string>::ConstIterator a(args->begin()), a_end(args->end()) ;
-                    a != a_end ; ++a)
-                command = command + " " + args::escape(*a);
+            for (const auto & arg : *args)
+                command = command + " " + args::escape(arg);
 
             Process process((ProcessCommand(command)));
             process
@@ -427,50 +419,47 @@ namespace
         if (is_set)
             args->push_back("--set");
 
-        for (args::ArgsSection::GroupsConstIterator g(program_options.begin()), g_end(program_options.end()) ;
-                g != g_end ; ++g)
+        for (const auto & group : program_options)
         {
-            for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
-                    o != o_end ; ++o)
-                if ((*o)->specified())
+            for (const auto & option : group)
+            {
+                if (option->specified())
                 {
-                    const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    const std::shared_ptr<const Sequence<std::string> > f(option->forwardable_args());
                     std::copy(f->begin(), f->end(), args->back_inserter());
                 }
+            }
         }
 
-        for (args::ArgsSection::GroupsConstIterator g(execution_options.begin()), g_end(execution_options.end()) ;
-                g != g_end ; ++g)
+        for (const auto & group : execution_options)
         {
-            for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
-                    o != o_end ; ++o)
-                if ((*o)->specified())
+            for (const auto & option : group)
+            {
+                if (option->specified())
                 {
-                    const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    const std::shared_ptr<const Sequence<std::string> > f(option->forwardable_args());
                     std::copy(f->begin(), f->end(), args->back_inserter());
                 }
+            }
         }
 
         if (pretend_only || ! resolution_options.a_execute.specified())
             args->push_back("--pretend");
 
-        for (Sequence<std::string>::ConstIterator p(world_specs->begin()), p_end(world_specs->end()) ;
-                p != p_end ; ++p)
+        for (const auto & spec : *world_specs)
         {
             args->push_back("--world-specs");
-            args->push_back(*p);
+            args->push_back(spec);
         }
 
-        for (auto p(removed_if_dependent_names->begin()), p_end(removed_if_dependent_names->end()) ;
-                p != p_end ; ++p)
+        for (const auto & name : *removed_if_dependent_names)
         {
             args->push_back("--removed-if-dependent-names");
-            args->push_back(*p);
+            args->push_back(name);
         }
 
-        for (Sequence<std::pair<std::string, std::string> >::ConstIterator p(targets->begin()), p_end(targets->end()) ;
-                p != p_end ; ++p)
-            args->push_back(p->first);
+        for (const auto & target : *targets)
+            args->push_back(target.first);
 
         if (program_options.a_execute_resolution_program.specified() || resolution_options.a_execute.specified())
         {
@@ -484,17 +473,16 @@ namespace
                 command = "$CAVE execute-resolution";
 
             if (keys_if_import)
-                for (Map<std::string, std::string>::ConstIterator k(keys_if_import->begin()),
-                        k_end(keys_if_import->end()) ;
-                        k != k_end ; ++k)
+            {
+                for (const auto & kv : *keys_if_import)
                 {
                     args->push_back("--unpackaged-repository-params");
-                    args->push_back(k->first + "=" + k->second);
+                    args->push_back(kv.first + "=" + kv.second);
                 }
+            }
 
-            for (Sequence<std::string>::ConstIterator a(args->begin()), a_end(args->end()) ;
-                    a != a_end ; ++a)
-                command = command + " " + args::escape(*a);
+            for (const auto & arg : *args)
+                command = command + " " + args::escape(arg);
 
             Process process((ProcessCommand(command)));
             process
@@ -685,9 +673,8 @@ namespace
     {
         const RemoveDecision * const remove_decision(visitor_cast<const RemoveDecision>(*resolution->decision()));
         if (remove_decision)
-            for (auto r(resolution->constraints()->begin()), r_end(resolution->constraints()->end()) ;
-                    r != r_end ; ++r)
-                if (visitor_cast<const DependentReason>(*(*r)->reason()))
+            for (const auto & constraint : *resolution->constraints())
+                if (visitor_cast<const DependentReason>(*constraint->reason()))
                     return make_shared_copy((*remove_decision->ids()->begin())->name());
         return nullptr;
     }
@@ -697,11 +684,9 @@ namespace
             const std::shared_ptr<const Resolved> & resolved)
     {
         auto result(std::make_shared<Sequence<std::string> >());
-        for (auto d(resolved->taken_change_or_remove_decisions()->begin()),
-                d_end(resolved->taken_change_or_remove_decisions()->end()) ;
-                d != d_end ; ++d)
+        for (const auto & decision : *resolved->taken_change_or_remove_decisions())
         {
-            auto n(name_if_dependent_remove(*resolved->resolutions_by_resolvent()->find(d->first->resolvent())));
+            auto n(name_if_dependent_remove(*resolved->resolutions_by_resolvent()->find(decision.first->resolvent())));
             if (n)
                 result->push_back(stringify(*n));
         }
@@ -786,45 +771,33 @@ paludis::cave::resolve_common(
     allow_choice_changes_helper.set_allow_choice_changes(! resolution_options.a_no_override_flags.specified());
 
     AllowedToRemoveHelper allowed_to_remove_helper(env.get());
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_uninstall.begin_args()),
-            i_end(resolution_options.a_permit_uninstall.end_args()) ;
-            i != i_end ; ++i)
-        allowed_to_remove_helper.add_allowed_to_remove_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_permit_uninstall.args())
+        allowed_to_remove_helper.add_allowed_to_remove_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
     AllowedToRestartHelper allowed_to_restart_helper(env.get());
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_no_restarts_for.begin_args()),
-            i_end(resolution_options.a_no_restarts_for.end_args()) ;
-            i != i_end ; ++i)
-        allowed_to_restart_helper.add_no_restarts_for_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_no_restarts_for.args())
+        allowed_to_restart_helper.add_no_restarts_for_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
     AlwaysViaBinaryHelper always_via_binary_helper(env.get());
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_via_binary.begin_args()),
-            i_end(resolution_options.a_via_binary.end_args()) ;
-            i != i_end ; ++i)
-        always_via_binary_helper.add_always_via_binary_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_via_binary.args())
+        always_via_binary_helper.add_always_via_binary_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
     CanUseHelper can_use_helper(env.get());
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_not_usable.begin_args()),
-            i_end(resolution_options.a_not_usable.end_args()) ;
-            i != i_end ; ++i)
-        can_use_helper.add_cannot_use_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_not_usable.args())
+        can_use_helper.add_cannot_use_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
     ConfirmHelper confirm_helper(env.get());
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_downgrade.begin_args()),
-            i_end(resolution_options.a_permit_downgrade.end_args()) ;
-            i != i_end ; ++i)
-        confirm_helper.add_permit_downgrade_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_permit_old_version.begin_args()),
-            i_end(resolution_options.a_permit_old_version.end_args()) ;
-            i != i_end ; ++i)
-        confirm_helper.add_permit_old_version_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_uninstalls_may_break.begin_args()),
-            i_end(resolution_options.a_uninstalls_may_break.end_args()) ;
-            i != i_end ; ++i)
-        if (*i == "system")
+    for (const auto & spec : resolution_options.a_permit_downgrade.args())
+        confirm_helper.add_permit_downgrade_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
+
+    for (const auto & spec : resolution_options.a_permit_old_version.args())
+        confirm_helper.add_permit_old_version_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
+
+    for (const auto & spec : resolution_options.a_uninstalls_may_break.args())
+        if (spec == "system")
             confirm_helper.set_allowed_to_break_system(true);
         else
-            confirm_helper.add_allowed_to_break_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+            confirm_helper.add_allowed_to_break_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
     FindReplacingHelper find_replacing_helper(env.get());
     find_replacing_helper.set_one_binary_per_slot(resolution_options.a_one_binary_per_slot.specified());
@@ -834,17 +807,12 @@ paludis::cave::resolve_common(
         find_repository_for_helper.set_chroot_path(FSPath(resolution_options.a_chroot_path.argument()));
 
     GetConstraintsForDependentHelper get_constraints_for_dependent_helper(env.get());
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_less_restrictive_remove_blockers.begin_args()),
-            i_end(resolution_options.a_less_restrictive_remove_blockers.end_args()) ;
-            i != i_end ; ++i)
-        get_constraints_for_dependent_helper.add_less_restrictive_remove_blockers_spec(
-                parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_less_restrictive_remove_blockers.args())
+        get_constraints_for_dependent_helper.add_less_restrictive_remove_blockers_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
     GetConstraintsForPurgeHelper get_constraints_for_purge_helper(env.get());
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_purge.begin_args()),
-            i_end(resolution_options.a_purge.end_args()) ;
-            i != i_end ; ++i)
-        get_constraints_for_purge_helper.add_purge_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_purge.args())
+        get_constraints_for_purge_helper.add_purge_spec(parse_spec_with_nice_error(spec, env.get(), { updso_allow_wildcards }, filter::All()));
 
     GetConstraintsForViaBinaryHelper get_constraints_for_via_binary_helper(env.get());
 
@@ -855,23 +823,17 @@ paludis::cave::resolve_common(
     get_destination_types_for_error_helper.set_target_destination_type(destination_type_from_arg(env.get(), resolution_options.a_make));
 
     GetInitialConstraintsForHelper get_initial_constraints_for_helper(env.get());
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
-            i_end(resolution_options.a_without.end_args()) ;
-            i != i_end ; ++i)
-        get_initial_constraints_for_helper.add_without_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_without.args())
+        get_initial_constraints_for_helper.add_without_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_preset.begin_args()),
-            i_end(resolution_options.a_preset.end_args()) ;
-            i != i_end ; ++i)
-        get_initial_constraints_for_helper.add_preset_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()), nullptr);
+    for (const auto & spec : resolution_options.a_preset.args())
+        get_initial_constraints_for_helper.add_preset_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()), nullptr);
 
     get_initial_constraints_for_helper.set_reinstall_scm_days(reinstall_scm_days(resolution_options));
 
     RemoveHiddenHelper remove_hidden_helper(env.get());
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_hide.begin_args()),
-            i_end(resolution_options.a_hide.end_args()) ;
-            i != i_end ; ++i)
-        remove_hidden_helper.add_hide_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_hide.args())
+        remove_hidden_helper.add_hide_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
     GetResolventsForHelper get_resolvents_for_helper(env.get(), std::cref(remove_hidden_helper));
     get_resolvents_for_helper.set_target_destination_type(destination_type_from_arg(env.get(), resolution_options.a_make));
@@ -957,15 +919,11 @@ paludis::cave::resolve_common(
                 + resolution_options.a_target_slots.long_name() + "'");
 
     GetUseExistingNothingHelper get_use_existing_nothing_helper(env.get());
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_without.begin_args()),
-            i_end(resolution_options.a_without.end_args()) ;
-            i != i_end ; ++i)
-        get_use_existing_nothing_helper.add_without_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_without.args())
+        get_use_existing_nothing_helper.add_without_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_with.begin_args()),
-            i_end(resolution_options.a_with.end_args()) ;
-            i != i_end ; ++i)
-        get_use_existing_nothing_helper.add_with_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_with.args())
+        get_use_existing_nothing_helper.add_with_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
     get_use_existing_nothing_helper.set_use_existing_for_dependencies(use_existing_from_arg(resolution_options.a_keep, false));
     get_use_existing_nothing_helper.set_use_existing_for_targets(use_existing_from_arg(resolution_options.a_keep_targets, false));
@@ -981,110 +939,93 @@ paludis::cave::resolve_common(
     make_unmaskable_filter_helper.set_override_masks(! resolution_options.a_no_override_masks.specified());
 
     OrderEarlyHelper order_early_helper(env.get());
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_early.begin_args()),
-            i_end(resolution_options.a_early.end_args()) ;
-            i != i_end ; ++i)
-        order_early_helper.add_early_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_early.args())
+        order_early_helper.add_early_spec(parse_spec_with_nice_error(spec, env.get(), { updso_allow_wildcards }, filter::All()));
 
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_late.begin_args()),
-            i_end(resolution_options.a_late.end_args()) ;
-            i != i_end ; ++i)
-        order_early_helper.add_late_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_late.args())
+        order_early_helper.add_late_spec(parse_spec_with_nice_error(spec, env.get(), { updso_allow_wildcards }, filter::All()));
 
     PreferOrAvoidHelper prefer_or_avoid_helper(env.get());
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_favour.begin_args()),
-            i_end(resolution_options.a_favour.end_args()) ;
-            i != i_end ; ++i)
-        prefer_or_avoid_helper.add_prefer_name(disambiguate_if_necessary(env.get(), *i));
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_avoid.begin_args()),
-            i_end(resolution_options.a_avoid.end_args()) ;
-            i != i_end ; ++i)
-        prefer_or_avoid_helper.add_avoid_name(disambiguate_if_necessary(env.get(), *i));
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_favour_matching.begin_args()),
-            i_end(resolution_options.a_favour_matching.end_args()) ;
-            i != i_end ; ++i)
-        prefer_or_avoid_helper.add_prefer_matching((*env)[selection::AllVersionsUnsorted(generator::Matches(
-                        parse_spec_with_nice_error(*i, env.get(), { }, filter::All()), nullptr, { }))]);
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_avoid_matching.begin_args()),
-            i_end(resolution_options.a_avoid_matching.end_args()) ;
-            i != i_end ; ++i)
-        prefer_or_avoid_helper.add_avoid_matching((*env)[selection::AllVersionsUnsorted(generator::Matches(
-                        parse_spec_with_nice_error(*i, env.get(), { }, filter::All()), nullptr, { }))]);
+    for (const auto & spec : resolution_options.a_favour.args())
+        prefer_or_avoid_helper.add_prefer_name(disambiguate_if_necessary(env.get(), spec));
+
+    for (const auto & spec : resolution_options.a_avoid.args())
+        prefer_or_avoid_helper.add_avoid_name(disambiguate_if_necessary(env.get(), spec));
+
+    for (const auto & spec : resolution_options.a_favour_matching.args())
+        prefer_or_avoid_helper.add_prefer_matching((*env)[selection::AllVersionsUnsorted(generator::Matches(parse_spec_with_nice_error(spec, env.get(), {},
+                                                                                                                                       filter::All()),
+                                                                                                            nullptr, { }))]);
+
+    for (const auto & spec : resolution_options.a_avoid_matching.args())
+        prefer_or_avoid_helper.add_avoid_matching((*env)[selection::AllVersionsUnsorted(generator::Matches(parse_spec_with_nice_error(spec, env.get(), {},
+                                                                                                                                      filter::All()),
+                                                                                                           nullptr, {}))]);
 
     RemoveIfDependentHelper remove_if_dependent_helper(env.get());
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_remove_if_dependent.begin_args()),
-            i_end(resolution_options.a_remove_if_dependent.end_args()) ;
-            i != i_end ; ++i)
-        remove_if_dependent_helper.add_remove_if_dependent_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_remove_if_dependent.args())
+        remove_if_dependent_helper.add_remove_if_dependent_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
     InterestInSpecHelper interest_in_spec_helper(env.get());
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_take.begin_args()),
-            i_end(resolution_options.a_take.end_args()) ;
-            i != i_end ; ++i)
+    for (const auto & spec : resolution_options.a_take.args())
     {
-        bool might_be_group(std::string::npos == i->find_first_not_of(
-                    "abcdefghijklmnopqrstuvwxyz"
-                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                    "0123456789-_"));
+        bool might_be_group(std::string::npos ==
+                            spec.find_first_not_of("abcdefghijklmnopqrstuvwxyz"
+                                                   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                                   "0123456789-_"));
 
         if (might_be_group)
         {
-            interest_in_spec_helper.add_take_group(*i);
+            interest_in_spec_helper.add_take_group(spec);
             try
             {
-                interest_in_spec_helper.add_take_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+                interest_in_spec_helper.add_take_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
             }
             catch (const Exception &)
             {
             }
         }
         else
-            interest_in_spec_helper.add_take_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+        {
+            interest_in_spec_helper.add_take_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
+        }
     }
 
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_take_from.begin_args()),
-            i_end(resolution_options.a_take_from.end_args()) ;
-            i != i_end ; ++i)
-        interest_in_spec_helper.add_take_from_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_take_from.args())
+        interest_in_spec_helper.add_take_from_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_ignore.begin_args()),
-            i_end(resolution_options.a_ignore.end_args()) ;
-            i != i_end ; ++i)
+    for (const auto & spec : resolution_options.a_ignore.args())
     {
-        bool might_be_group(std::string::npos == i->find_first_not_of(
-                    "abcdefghijklmnopqrstuvwxyz"
-                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                    "0123456789-_"));
+        bool might_be_group(std::string::npos ==
+                            spec.find_first_not_of("abcdefghijklmnopqrstuvwxyz"
+                                                   "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                                                   "0123456789-_"));
 
         if (might_be_group)
         {
-            interest_in_spec_helper.add_ignore_group(*i);
+            interest_in_spec_helper.add_ignore_group(spec);
             try
             {
-                interest_in_spec_helper.add_ignore_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+                interest_in_spec_helper.add_ignore_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
             }
             catch (const Exception &)
             {
             }
         }
         else
-            interest_in_spec_helper.add_ignore_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+        {
+            interest_in_spec_helper.add_ignore_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
+        }
     }
 
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_ignore_from.begin_args()),
-            i_end(resolution_options.a_ignore_from.end_args()) ;
-            i != i_end ; ++i)
-        interest_in_spec_helper.add_ignore_from_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_ignore_from.args())
+        interest_in_spec_helper.add_ignore_from_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_no_dependencies_from.begin_args()),
-            i_end(resolution_options.a_no_dependencies_from.end_args()) ;
-            i != i_end ; ++i)
-        interest_in_spec_helper.add_no_dependencies_from_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_no_dependencies_from.args())
+        interest_in_spec_helper.add_no_dependencies_from_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
-    for (args::StringSetArg::ConstIterator i(resolution_options.a_no_blockers_from.begin_args()),
-            i_end(resolution_options.a_no_blockers_from.end_args()) ;
-            i != i_end ; ++i)
-        interest_in_spec_helper.add_no_blockers_from_spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+    for (const auto & spec : resolution_options.a_no_blockers_from.args())
+        interest_in_spec_helper.add_no_blockers_from_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
     interest_in_spec_helper.set_follow_installed_dependencies(! resolution_options.a_no_follow_installed_dependencies.specified());
     interest_in_spec_helper.set_follow_installed_build_dependencies(resolution_options.a_follow_installed_build_dependencies.specified());
@@ -1173,11 +1114,10 @@ paludis::cave::resolve_common(
                     if (first)
                     {
                         if (targets_cleaned_up)
-                            for (auto t(targets_cleaned_up->begin()), t_end(targets_cleaned_up->end()) ;
-                                    t != t_end ; ++t)
-                                if ('!' != t->at(0) && std::string::npos != t->find('/'))
+                            for (const auto & target : *targets_cleaned_up)
+                                if ('!' != target.at(0) && std::string::npos != target.find('/'))
                                 {
-                                    PackageDepSpec ts(parse_spec_with_nice_error(*t, env.get(), { }, filter::All()));
+                                    PackageDepSpec ts(parse_spec_with_nice_error(target, env.get(), { }, filter::All()));
                                     if (ts.version_requirements_ptr() && ! ts.version_requirements_ptr()->empty())
                                     {
                                         confirm_helper.add_permit_downgrade_spec(ts);

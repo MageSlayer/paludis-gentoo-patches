@@ -359,19 +359,18 @@ GetResolventsForHelper::operator() (
     {
         result.second = true;
 
-        for (PackageIDSequence::ConstIterator i(result_ids->begin()), i_end(result_ids->end()) ;
-                i != i_end ; ++i)
+        for (const auto & id : *result_ids)
         {
-            DestinationTypes destination_types(get_destination_types_for_fn(_imp->env, spec,
-                        _imp->target_destination_type, _imp->want_target_dependencies, _imp->want_target_runtime_dependencies,
-                        _imp->want_dependencies_on_slash, _imp->want_runtime_dependencies_on_slash, *i, reason));
+            DestinationTypes destination_types(get_destination_types_for_fn(_imp->env, spec, _imp->target_destination_type, _imp->want_target_dependencies,
+                                                                            _imp->want_target_runtime_dependencies, _imp->want_dependencies_on_slash,
+                                                                            _imp->want_runtime_dependencies_on_slash, id, reason));
 
             if (destination_types.any())
             {
                 result.second = false;
                 for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
                     if (destination_types[*t])
-                        result.first->push_back(Resolvent(*i, *t));
+                        result.first->push_back(Resolvent(id, *t));
             }
         }
     }

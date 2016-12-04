@@ -133,34 +133,26 @@ namespace
     struct SupportsActionFilterHandler :
         AllFilterHandlerBase
     {
-        std::shared_ptr<const RepositoryNameSet> repositories(
-                const Environment * const env,
-                const std::shared_ptr<const RepositoryNameSet> & repos) const override
+        std::shared_ptr<const RepositoryNameSet>
+        repositories(const Environment * const env, const std::shared_ptr<const RepositoryNameSet> & repos) const override
         {
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
 
-            for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
-                    r != r_end ; ++r)
-            {
-                if (env->fetch_repository(*r)->some_ids_might_support_action(SupportsActionTest<A_>()))
-                    result->insert(*r);
-            }
+            for (const auto & repository : *repos)
+                if (env->fetch_repository(repository)->some_ids_might_support_action(SupportsActionTest<A_>()))
+                    result->insert(repository);
 
             return result;
         }
 
-        std::shared_ptr<const PackageIDSet> ids(
-                const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const override
+        std::shared_ptr<const PackageIDSet>
+        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & set) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                    i != i_end ; ++i)
-            {
-                if ((*i)->supports_action(SupportsActionTest<A_>()))
-                    result->insert(*i);
-            }
+            for (const auto & id : *set)
+                if (id->supports_action(SupportsActionTest<A_>()))
+                    result->insert(id);
 
             return result;
         }
@@ -179,32 +171,26 @@ namespace
             return { rcme_masked };
         }
 
-        std::shared_ptr<const RepositoryNameSet> repositories(
-                const Environment * const env,
-                const std::shared_ptr<const RepositoryNameSet> & repos) const override
+        std::shared_ptr<const RepositoryNameSet>
+        repositories(const Environment * const env, const std::shared_ptr<const RepositoryNameSet> & repos) const override
         {
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
 
-            for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
-                    r != r_end ; ++r)
-            {
-                if (env->fetch_repository(*r)->some_ids_might_not_be_masked())
-                    result->insert(*r);
-            }
+            for (const auto & repository : *repos)
+                if (env->fetch_repository(repository)->some_ids_might_not_be_masked())
+                    result->insert(repository);
 
             return result;
         }
 
-        std::shared_ptr<const PackageIDSet> ids(
-                const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const override
+        std::shared_ptr<const PackageIDSet>
+        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & set) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                    i != i_end ; ++i)
-                if (! (*i)->masked())
-                    result->insert(*i);
+            for (const auto & id : *set)
+                if (! id->masked())
+                    result->insert(id);
 
             return result;
         }
@@ -232,32 +218,28 @@ namespace
             return { rcme_not_installed };
         }
 
-        std::shared_ptr<const RepositoryNameSet> repositories(
-                const Environment * const env,
-                const std::shared_ptr<const RepositoryNameSet> & repos) const override
+        std::shared_ptr<const RepositoryNameSet>
+        repositories(const Environment * const env, const std::shared_ptr<const RepositoryNameSet> & repos) const override
         {
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
 
-            for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
-                    r != r_end ; ++r)
+            for (const auto & repository : *repos)
             {
-                const std::shared_ptr<const Repository> repo(env->fetch_repository(*r));
+                const std::shared_ptr<const Repository> repo(env->fetch_repository(repository));
                 if (repo->installed_root_key() && (equal == (root == repo->installed_root_key()->parse_value())))
-                    result->insert(*r);
+                    result->insert(repository);
             }
 
             return result;
         }
 
-        std::shared_ptr<const PackageIDSet> ids(
-                const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const override
+        std::shared_ptr<const PackageIDSet>
+        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & set) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                    i != i_end ; ++i)
-                result->insert(*i);
+            for (const auto & id : *set)
+                result->insert(id);
 
             return result;
         }
@@ -337,24 +319,24 @@ namespace
             return { };
         }
 
-        std::shared_ptr<const PackageIDSet> ids(
-                const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const override
+        std::shared_ptr<const PackageIDSet>
+        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & set) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & id : *set)
+            {
                 if (as_id->slot_key())
                 {
-                    if ((*i)->slot_key() && (*i)->slot_key()->parse_value().parallel_value() == as_id->slot_key()->parse_value().parallel_value())
-                        result->insert(*i);
+                    if (id->slot_key() && id->slot_key()->parse_value().parallel_value() == as_id->slot_key()->parse_value().parallel_value())
+                        result->insert(id);
                 }
                 else
                 {
-                    if (! (*i)->slot_key())
-                        result->insert(*i);
+                    if (! id->slot_key())
+                        result->insert(id);
                 }
+            }
 
             return result;
         }
@@ -380,16 +362,14 @@ namespace
             return { };
         }
 
-        std::shared_ptr<const PackageIDSet> ids(
-                const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const override
+        std::shared_ptr<const PackageIDSet>
+        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & set) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                    i != i_end ; ++i)
-                if ((*i)->slot_key() && (*i)->slot_key()->parse_value().parallel_value() == slot)
-                    result->insert(*i);
+            for (const auto & id : *set)
+                if (id->slot_key() && id->slot_key()->parse_value().parallel_value() == slot)
+                    result->insert(id);
 
             return result;
         }
@@ -403,16 +383,14 @@ namespace
     struct NoSlotHandler :
         AllFilterHandlerBase
     {
-        std::shared_ptr<const PackageIDSet> ids(
-                const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const override
+        std::shared_ptr<const PackageIDSet>
+        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & set) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                    i != i_end ; ++i)
-                if (! (*i)->slot_key())
-                    result->insert(*i);
+            for (const auto & id : *set)
+                if (! id->slot_key())
+                    result->insert(id);
 
             return result;
         }

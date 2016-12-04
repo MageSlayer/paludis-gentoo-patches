@@ -78,9 +78,8 @@ AllowedToRemoveHelper::operator() (
             }
             );
 
-    for (auto c(resolution->constraints()->begin()), c_end(resolution->constraints()->end()) ;
-            c != c_end ; ++c)
-        if ((*c)->reason()->accept_returning<bool>(v))
+    for (const auto & constraint : *resolution->constraints())
+        if (constraint->reason()->accept_returning<bool>(v))
             return true;
 
     return _imp->allowed_to_remove_specs.match_any(_imp->env, id, { });

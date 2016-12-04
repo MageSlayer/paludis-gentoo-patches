@@ -70,9 +70,8 @@ PackageDepSpecCollection::match_any(
         if (match_package(*env, named.first->second, id, _imp->from_id, opts))
             return true;
 
-    for (auto u(_imp->unnamed.begin()), u_end(_imp->unnamed.end()) ;
-            u != u_end ; ++u)
-        if (match_package(*env, *u, id, _imp->from_id, opts))
+    for (const auto & unnamed : _imp->unnamed)
+        if (match_package(*env, unnamed, id, _imp->from_id, opts))
             return true;
 
     return false;

@@ -999,20 +999,15 @@ Decider::_copy_other_destination_constraints(const std::shared_ptr<Resolution> &
         Resolvent copy_from_resolvent(resolution->resolvent());
         copy_from_resolvent.destination_type() = *t;
 
-        const std::shared_ptr<Resolution> copy_from_resolution(
-                _resolution_for_resolvent(copy_from_resolvent, indeterminate));
+        const std::shared_ptr<Resolution> copy_from_resolution(_resolution_for_resolvent(copy_from_resolvent, indeterminate));
         if (! copy_from_resolution)
             continue;
 
-        for (Constraints::ConstIterator c(copy_from_resolution->constraints()->begin()),
-                c_end(copy_from_resolution->constraints()->end()) ;
-                c != c_end ; ++c)
+        for (const auto & copy : *copy_from_resolution->constraints())
         {
-            const std::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_other_destination(
-                        resolution, copy_from_resolution, *c));
-            for (ConstraintSequence::ConstIterator d(constraints->begin()), d_end(constraints->end()) ;
-                    d != d_end ; ++d)
-                _apply_resolution_constraint(resolution, *d);
+            const std::shared_ptr<ConstraintSequence> constraints(_make_constraints_from_other_destination(resolution, copy_from_resolution, copy));
+            for (const auto & constraint : *constraints)
+                _apply_resolution_constraint(resolution, constraint);
         }
     }
 }
