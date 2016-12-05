@@ -130,9 +130,9 @@ foreach(phase
           ebuild_killold_fail
           ebuild_killold_post)
   execute_process(COMMAND
-                    "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_DATADIR}/paludis/hooks/${hook}/.keep")
+                    "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_DATADIR}/paludis/hooks/${phase}/.keep")
   execute_process(COMMAND
-                    "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBDIR}/paludis/hooks/${hook}/.keep")
+                    "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBDIR}/paludis/hooks/${phase}/.keep")
 endforeach()
 foreach(level einfo;ewarn;eerror;elog)
   execute_process(COMMAND
