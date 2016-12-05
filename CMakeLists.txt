@@ -6,6 +6,8 @@ cmake_policy(SET CMP0051 NEW)
 cmake_policy(SET CMP0057 NEW)
 cmake_policy(SET CMP0058 NEW)
 
+project(paludis VERSION 3.0.0)
+
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
 include(CheckIncludeFile)
@@ -21,7 +23,6 @@ set(CMAKE_INSTALL_FULL_HTMLDIR "${CMAKE_INSTALL_FULL_DOCDIR}")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-project(paludis VERSION 3.0.0)
 set(PALUDIS_PKG_CONFIG_SLOT ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR})
 
 option(BUILD_SHARED_LIBS "build shared libraries" ON)
