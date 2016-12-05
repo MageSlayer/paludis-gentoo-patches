@@ -1,6 +1,33 @@
 
 include(GNUInstallDirs)
 
+foreach(directory
+          clean_all_pre
+          clean_all_post
+          clean_pre
+          clean_post
+          uninstall_all_pre
+          uninstall_all_post
+          uninstall_pre
+          uninstall_post
+          install_pre
+          install_post
+          install_all_pre
+          install_all_post
+          install_pretend_pre
+          install_pretend_post
+          sync_pre
+          sync_post
+          sync_all_pre
+          sync_all_post
+          fetch_all_pre
+          fetch_all_post
+          fetch_pre
+          fetch_post)
+  execute_process(COMMAND
+                    "${CMAKE_COMMAND}" -E make_directory "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/${directory}")
+endforeach()
+
 foreach(hook
           auto
           install_pre
@@ -205,32 +232,6 @@ foreach(phase
 endforeach()
 execute_process(COMMAND
                   "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LOCALSTATEDIR}/gentoo/news/.keep")
-foreach(directory
-          clean_all_pre
-          clean_all_post
-          clean_pre
-          clean_post
-          uninstall_all_pre
-          uninstall_all_post
-          uninstall_pre
-          uninstall_post
-          install_pre
-          install_post
-          install_all_pre
-          install_all_post
-          install_pretend_pre
-          install_pretend_post
-          sync_pre
-          sync_post
-          sync_all_pre
-          sync_all_post
-          fetch_all_pre
-          fetch_all_post
-          fetch_pre
-          fetch_post)
-  execute_process(COMMAND
-                    "${CMAKE_COMMAND}" -E make_directory "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/${directory}")
-endforeach()
 execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/eselect_env_update.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/install_all_post/eselect_env_update.bash")
 execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/eselect_env_update.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/uninstall_all_post/eselect_env_update.bash")
 execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/gnu_info_index.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/install_all_post/gnu_info_index.bash")
