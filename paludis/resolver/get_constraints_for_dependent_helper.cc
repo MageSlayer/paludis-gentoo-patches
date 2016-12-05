@@ -88,11 +88,9 @@ GetConstraintsForDependentHelper::operator() (
         spec = std::make_shared<PackageDepSpec>(partial_spec);
     }
 
-    for (auto i(dependent_upon_ids->begin()), i_end(dependent_upon_ids->end()) ;
-            i != i_end ; ++i)
+    for (const auto & dependent : *dependent_upon_ids)
     {
-        auto reason(std::make_shared<DependentReason>(*i));
-
+        auto reason(std::make_shared<DependentReason>(dependent));
         result->push_back(std::make_shared<Constraint>(make_named_values<Constraint>(
                         n::destination_type() = dt_install_to_slash,
                         n::force_unable() = false,

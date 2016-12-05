@@ -148,8 +148,7 @@ namespace
 
         void visit(const DependencySpecTree::NodeType<PackageDepSpec>::Type & s)
         {
-            for (typename C_::ConstIterator g(going_away->begin()), g_end(going_away->end()) ;
-                    g != g_end ; ++g)
+            for (const auto & removing : *going_away)
             {
                 auto spec(s.spec());
 
@@ -167,14 +166,13 @@ namespace
                     }
                 }
 
-                if (! match_package(*env, *spec, dependent_checker_id(*g), id_for_specs, { }))
+                if (! match_package(*env, *spec, dependent_checker_id(removing), id_for_specs, { }))
                     continue;
 
                 bool any(false);
-                for (typename C_::ConstIterator n(newly_available->begin()), n_end(newly_available->end()) ;
-                        n != n_end ; ++n)
+                for (const auto & installing : *newly_available)
                 {
-                    if (match_package(*env, *spec, dependent_checker_id(*n), id_for_specs, { }))
+                    if (match_package(*env, *spec, dependent_checker_id(installing), id_for_specs, { }))
                     {
                         any = true;
                         break;
@@ -182,7 +180,7 @@ namespace
                 }
 
                 if (! any)
-                    result->push_back(ResultValueMaker<typename R_::value_type>::create(*g, *labels_stack.begin()));
+                    result->push_back(ResultValueMaker<typename R_::value_type>::create(removing, *labels_stack.begin()));
             }
         }
 
