@@ -1,7 +1,7 @@
 
 paludis_add_test(conditional_functions BASH EBUILD_MODULE_SUFFIXES exheres-0)
 
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_SOURCE_DIR}/build_functions.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/builtin_infovars.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/builtin_init.bash"

@@ -1,5 +1,5 @@
 
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_SOURCE_DIR}/build_functions.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/list_functions.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/multilib_functions.bash"

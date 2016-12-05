@@ -397,7 +397,7 @@ install(FILES
           "${CMAKE_CURRENT_SOURCE_DIR}/version_spec.hh"
         DESTINATION
           "${CMAKE_INSTALL_FULL_INCLUDEDIR}/paludis-${PALUDIS_PKG_CONFIG_SLOT}/paludis")
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_SOURCE_DIR}/hooker.bash"
         DESTINATION
           "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis")

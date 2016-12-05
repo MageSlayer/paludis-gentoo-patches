@@ -50,7 +50,7 @@ add_custom_target(syncers-keep
                   DEPENDS
                     "${CMAKE_CURRENT_BINARY_DIR}/.keep")
 
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_BINARY_DIR}/dobzr"
           "${CMAKE_CURRENT_BINARY_DIR}/dobzr+aftp"
           "${CMAKE_CURRENT_BINARY_DIR}/dobzr+file"

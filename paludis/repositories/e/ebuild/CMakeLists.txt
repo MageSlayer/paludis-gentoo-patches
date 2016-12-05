@@ -15,7 +15,7 @@ paludis_add_test(kernel_functions BASH
                  EBUILD_MODULE_SUFFIXES 0
                  TEST_RUNNER "${CMAKE_CURRENT_SOURCE_DIR}/run_test.bash")
 
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_SOURCE_DIR}/binary_functions.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/die_functions.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/ebuild.bash"

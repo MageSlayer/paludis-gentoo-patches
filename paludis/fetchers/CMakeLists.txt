@@ -17,7 +17,7 @@ add_custom_target(fetchers-keep
 
 add_subdirectory(demos)
 
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_BINARY_DIR}/dohttp"
           "${CMAKE_CURRENT_BINARY_DIR}/dohttps"
           "${CMAKE_CURRENT_BINARY_DIR}/doftp"

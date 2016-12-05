@@ -28,7 +28,7 @@ paludis_add_test(wrapped_getfsize BASH
                  EBUILD_MODULE_SUFFIXES 0
                  TEST_RUNNER "${CMAKE_CURRENT_SOURCE_DIR}/run_test.bash")
 
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_SOURCE_DIR}/canonicalise"
           "${CMAKE_CURRENT_SOURCE_DIR}/dobin"
           "${CMAKE_CURRENT_SOURCE_DIR}/doconfd"

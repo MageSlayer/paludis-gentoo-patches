@@ -14,7 +14,7 @@ configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake_install.cmake.in"
 #paludis_add_test(news BASH
 #                 TEST_RUNNER "${CMAKE_CURRENT_SOURCE_DIR}/run_test.bash")
 
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_SOURCE_DIR}/gnu_info_index.bash"
           "${CMAKE_CURRENT_BINARY_DIR}/eselect_env_update.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/log.bash"
@@ -22,12 +22,12 @@ install(FILES
           "${CMAKE_CURRENT_SOURCE_DIR}/installed_cache_regen.bash"
         DESTINATION
           "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common")
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_BINARY_DIR}/news.hook"
           "${CMAKE_CURRENT_SOURCE_DIR}/find_config_updates.hook"
         DESTINATION
           "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/auto")
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_SOURCE_DIR}/update_config_protect_list.bash"
         DESTINATION
           "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/install_post")

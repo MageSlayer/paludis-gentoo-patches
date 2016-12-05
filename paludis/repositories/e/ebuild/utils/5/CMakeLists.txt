@@ -1,5 +1,5 @@
 
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_SOURCE_DIR}/doheader"
           "${CMAKE_CURRENT_SOURCE_DIR}/newheader"
         DESTINATION

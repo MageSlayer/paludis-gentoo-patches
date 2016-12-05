@@ -252,7 +252,7 @@ install(FILES
           "${CMAKE_CURRENT_BINARY_DIR}/log-se.hh"
         DESTINATION
           "${CMAKE_INSTALL_FULL_INCLUDEDIR}/paludis-${PALUDIS_PKG_CONFIG_SLOT}/paludis/util")
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_BINARY_DIR}/echo_functions.bash"
         DESTINATION
           "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis")

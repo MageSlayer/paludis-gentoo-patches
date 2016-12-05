@@ -1,5 +1,5 @@
 
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_SOURCE_DIR}/builtin_bad_required_use.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/pkg_pretend.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/src_install.bash"

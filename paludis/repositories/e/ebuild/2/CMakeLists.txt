@@ -1,5 +1,5 @@
 
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_SOURCE_DIR}/eclass_functions.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/pkg_nofetch.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/src_compile.bash"

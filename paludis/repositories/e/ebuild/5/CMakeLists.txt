@@ -1,5 +1,5 @@
 
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_SOURCE_DIR}/src_test.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/usex.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/list_functions.bash"

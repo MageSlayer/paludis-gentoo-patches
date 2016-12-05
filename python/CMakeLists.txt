@@ -123,7 +123,7 @@ if(ENABLE_PYTHON)
             paludis
           DESTINATION
             "${PALUDIS_PYTHON_INSTALL_DIR}")
-  install(FILES
+  install(PROGRAMS
             "${CMAKE_CURRENT_SOURCE_DIR}/paludis_output_wrapper.py"
           DESTINATION
             "${PALUDIS_PYTHON_INSTALL_DIR}")

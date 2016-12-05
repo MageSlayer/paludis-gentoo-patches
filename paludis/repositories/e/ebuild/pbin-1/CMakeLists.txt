@@ -1,5 +1,5 @@
 
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_SOURCE_DIR}/builtin_installbin.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/builtin_pivotbin.bash"
         DESTINATION

@@ -297,7 +297,7 @@ foreach(subcommand ${CAVE_SUBCOMMANDS})
           DESTINATION
             "${CMAKE_INSTALL_FULL_MANDIR}/man1")
 endforeach()
-install(FILES
+install(PROGRAMS
           "${CMAKE_CURRENT_SOURCE_DIR}/moo"
         DESTINATION
           "${CMAKE_INSTALL_FULL_LIBEXECDIR}/cave/commands")
