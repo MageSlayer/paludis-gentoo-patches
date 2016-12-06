@@ -117,9 +117,8 @@ foreach(test
                      libpaludisresolver)
 endforeach()
 if(ENABLE_PBINS)
-  paludis_add_test(resolver_TEST_promote_binaries GTEST)
-  target_link_libraries(resolver_TEST_promote_binaries
-                        PRIVATE
+  paludis_add_test(resolver_TEST_promote_binaries GTEST
+                   LINK_LIBRARIES
                           libpaludisresolvertest
                           libpaludisresolver)
 endif()
