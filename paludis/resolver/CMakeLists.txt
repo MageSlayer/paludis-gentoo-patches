@@ -114,7 +114,8 @@ foreach(test
   paludis_add_test(resolver_TEST_${test} GTEST
                    LINK_LIBRARIES
                      libpaludisresolvertest
-                     libpaludisresolver)
+                     libpaludisresolver
+                     libpaludisutil)
 endforeach()
 if(ENABLE_PBINS)
   paludis_add_test(resolver_TEST_promote_binaries GTEST
