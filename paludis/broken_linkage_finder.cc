@@ -370,8 +370,8 @@ BrokenLinkageFinder::begin_broken_files(const std::shared_ptr<const PackageID> &
 
         return BrokenFileConstIterator(first_iterator(it->second.begin()));
     }
-    else
-        return BrokenFileConstIterator(first_iterator(_imp->orphan_breakage.begin()));
+
+    return BrokenFileConstIterator(first_iterator(_imp->orphan_breakage.begin()));
 }
 
 BrokenLinkageFinder::BrokenFileConstIterator
@@ -385,8 +385,8 @@ BrokenLinkageFinder::end_broken_files(const std::shared_ptr<const PackageID> & p
 
         return BrokenFileConstIterator(first_iterator(it->second.end()));
     }
-    else
-        return BrokenFileConstIterator(first_iterator(_imp->orphan_breakage.end()));
+
+    return BrokenFileConstIterator(first_iterator(_imp->orphan_breakage.end()));
 }
 
 BrokenLinkageFinder::MissingRequirementConstIterator
