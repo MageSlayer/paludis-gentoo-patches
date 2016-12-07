@@ -195,36 +195,30 @@ FixLinkageCommand::run(const std::shared_ptr<Environment> & env,
 
     std::shared_ptr<Sequence<std::pair<std::string, std::string>>> targets(std::make_shared<Sequence<std::pair<std::string, std::string>>>());
 
-    for (BrokenLinkageFinder::BrokenPackageConstIterator pkg_it(finder->begin_broken_packages()),
-             pkg_it_end(finder->end_broken_packages()); pkg_it_end != pkg_it; ++pkg_it)
+    for (const auto & package : finder->broken_packages())
     {
         cout << endl;
 
-        cout << "* " << **pkg_it << endl;
+        cout << "* " << *package << endl;
 
         std::set<FSPath, FSPathComparator> broken_files;
-        for (BrokenLinkageFinder::BrokenFileConstIterator file_it(finder->begin_broken_files(*pkg_it)),
-                 file_it_end(finder->end_broken_files(*pkg_it)); file_it_end != file_it; ++file_it)
+        for (const auto & file : finder->broken_files(package))
         {
-            cout << "    " << *file_it;
-            cout << " (requires "
-                      << join(finder->begin_missing_requirements(*pkg_it, *file_it),
-                              finder->end_missing_requirements(*pkg_it, *file_it),
-                              " ") << ")";
-            std::copy(finder->begin_missing_requirements(*pkg_it, *file_it), finder->end_missing_requirements(*pkg_it, *file_it),
-                    create_inserter<FSPath>(std::inserter(broken_files, broken_files.end())));
+            cout << "    " << file;
+            cout << " (requires " << join(finder->begin_missing_requirements(package, file), finder->end_missing_requirements(package, file), " ") << ")";
+            std::copy(finder->begin_missing_requirements(package, file), finder->end_missing_requirements(package, file),
+                      create_inserter<FSPath>(std::inserter(broken_files, broken_files.end())));
             cout << endl;
         }
 
         PartiallyMadePackageDepSpec part_spec({ });
-        part_spec.package((*pkg_it)->name());
-        if ((*pkg_it)->slot_key())
-            part_spec.slot_requirement(std::make_shared<UserSlotExactPartialRequirement>((*pkg_it)->slot_key()->parse_value().parallel_value()));
+        part_spec.package(package->name());
+        if (package->slot_key())
+            part_spec.slot_requirement(std::make_shared<UserSlotExactPartialRequirement>(package->slot_key()->parse_value().parallel_value()));
 
         if (cmdline.a_exact.specified())
-            part_spec.version_requirement(make_named_values<VersionRequirement>(
-                        n::version_operator() = vo_equal,
-                        n::version_spec() = (*pkg_it)->version()));
+            part_spec.version_requirement(make_named_values<VersionRequirement>(n::version_operator() = vo_equal,
+                                                                                n::version_spec() = package->version()));
 
         targets->push_back(std::make_pair(stringify(PackageDepSpec(part_spec)), join(broken_files.begin(), broken_files.end(), ", ")));
     }
@@ -237,14 +231,10 @@ FixLinkageCommand::run(const std::shared_ptr<Environment> & env,
         else
             cout << endl << "The following files that depend on the specified library(ies) are not owned by any installed package:" << endl;
 
-        for (BrokenLinkageFinder::BrokenFileConstIterator file_it(finder->begin_broken_files(orphans)),
-                 file_it_end(finder->end_broken_files(orphans)); file_it_end != file_it; ++file_it)
+        for (const auto & file : finder->broken_files(orphans))
         {
-            cout << "    " << *file_it;
-            cout << " (requires "
-                      << join(finder->begin_missing_requirements(orphans, *file_it),
-                              finder->end_missing_requirements(orphans, *file_it),
-                              " ") << ")";
+            cout << "    " << file;
+            cout << " (requires " << join(finder->begin_missing_requirements(orphans, file), finder->end_missing_requirements(orphans, file), " ") << ")";
             cout << endl;
         }
     }

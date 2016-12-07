@@ -359,6 +359,12 @@ BrokenLinkageFinder::end_broken_packages() const
     return BrokenPackageConstIterator(first_iterator(_imp->breakage.end()));
 }
 
+IteratorRange<BrokenLinkageFinder::BrokenPackageConstIterator>
+BrokenLinkageFinder::broken_packages() const
+{
+    return {begin_broken_packages(), end_broken_packages()};
+}
+
 BrokenLinkageFinder::BrokenFileConstIterator
 BrokenLinkageFinder::begin_broken_files(const std::shared_ptr<const PackageID> & pkg) const
 {
@@ -389,9 +395,15 @@ BrokenLinkageFinder::end_broken_files(const std::shared_ptr<const PackageID> & p
     return BrokenFileConstIterator(first_iterator(_imp->orphan_breakage.end()));
 }
 
+IteratorRange<BrokenLinkageFinder::BrokenFileConstIterator>
+BrokenLinkageFinder::broken_files(const std::shared_ptr<const PackageID> & package) const
+{
+    return {begin_broken_files(package), end_broken_files(package)};
+}
+
 BrokenLinkageFinder::MissingRequirementConstIterator
-BrokenLinkageFinder::begin_missing_requirements(
-    const std::shared_ptr<const PackageID> & pkg, const FSPath & file) const
+BrokenLinkageFinder::begin_missing_requirements(const std::shared_ptr<const PackageID> & pkg,
+                                                const FSPath & file) const
 {
     if (pkg)
     {
@@ -416,8 +428,8 @@ BrokenLinkageFinder::begin_missing_requirements(
 }
 
 BrokenLinkageFinder::MissingRequirementConstIterator
-BrokenLinkageFinder::end_missing_requirements(
-    const std::shared_ptr<const PackageID> & pkg, const FSPath & file) const
+BrokenLinkageFinder::end_missing_requirements(const std::shared_ptr<const PackageID> & pkg,
+                                              const FSPath & file) const
 {
     if (pkg)
     {
@@ -439,6 +451,13 @@ BrokenLinkageFinder::end_missing_requirements(
 
         return MissingRequirementConstIterator(file_it->second.end());
     }
+}
+
+IteratorRange<BrokenLinkageFinder::MissingRequirementConstIterator>
+BrokenLinkageFinder::missing_requirements(const std::shared_ptr<const PackageID> & package,
+                                          const FSPath & file) const
+{
+    return {begin_missing_requirements(package, file), end_missing_requirements(package, file)};
 }
 
 namespace paludis

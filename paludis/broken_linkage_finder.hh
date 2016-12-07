@@ -22,6 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_path-fwd.hh>
+#include <paludis/util/iterator_range.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/sequence-fwd.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
@@ -46,11 +47,10 @@ namespace paludis
             BrokenLinkageFinder & operator= (const BrokenLinkageFinder &) = delete;
 
             struct BrokenPackageConstIteratorTag;
-            typedef WrappedForwardIterator<BrokenPackageConstIteratorTag,
-                    const std::shared_ptr<const PackageID>
-                        > BrokenPackageConstIterator;
+            typedef WrappedForwardIterator<BrokenPackageConstIteratorTag, const std::shared_ptr<const PackageID>> BrokenPackageConstIterator;
             BrokenPackageConstIterator begin_broken_packages() const PALUDIS_ATTRIBUTE((warn_unused_result));
             BrokenPackageConstIterator end_broken_packages() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            IteratorRange<BrokenPackageConstIterator> broken_packages() const;
 
             struct BrokenFileConstIteratorTag;
             typedef WrappedForwardIterator<BrokenFileConstIteratorTag, const FSPath> BrokenFileConstIterator;
@@ -58,15 +58,15 @@ namespace paludis
                 const PALUDIS_ATTRIBUTE((warn_unused_result));
             BrokenFileConstIterator end_broken_files(const std::shared_ptr<const PackageID> &)
                 const PALUDIS_ATTRIBUTE((warn_unused_result));
+            IteratorRange<BrokenFileConstIterator> broken_files(const std::shared_ptr<const PackageID> &) const;
 
             struct MissingRequirementConstIteratorTag;
             typedef WrappedForwardIterator<MissingRequirementConstIteratorTag, const std::string> MissingRequirementConstIterator;
-            MissingRequirementConstIterator begin_missing_requirements(
-                const std::shared_ptr<const PackageID> &, const FSPath &)
+            MissingRequirementConstIterator begin_missing_requirements(const std::shared_ptr<const PackageID> &, const FSPath &)
                 const PALUDIS_ATTRIBUTE((warn_unused_result));
-            MissingRequirementConstIterator end_missing_requirements(
-                const std::shared_ptr<const PackageID> &, const FSPath &)
+            MissingRequirementConstIterator end_missing_requirements(const std::shared_ptr<const PackageID> &, const FSPath &)
                 const PALUDIS_ATTRIBUTE((warn_unused_result));
+            IteratorRange<MissingRequirementConstIterator> missing_requirements(const std::shared_ptr<const PackageID> &, const FSPath &) const;
     };
 }
 
