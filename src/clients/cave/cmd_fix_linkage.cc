@@ -133,21 +133,19 @@ namespace
 }
 
 int
-FixLinkageCommand::run(
-        const std::shared_ptr<Environment> & env,
-        const std::shared_ptr<const Sequence<std::string > > & args
-        )
+FixLinkageCommand::run(const std::shared_ptr<Environment> & env,
+                       const std::shared_ptr<const Sequence<std::string > > & args)
 {
     FixLinkageCommandLine cmdline;
     OptionsForResolve resolve_cmdline;
 
     cmdline.run(args, "CAVE", "CAVE_FIX_LINKAGE_OPTIONS", "CAVE_FIX_LINKAGE_CMDLINE",
-            args::ArgsHandlerOptions() + args::aho_separate_after_dashes);
+                args::ArgsHandlerOptions() + args::aho_separate_after_dashes);
 
     resolve_cmdline.resolution_options.a_lazy.set_specified(args::aos_weak);
     resolve_cmdline.execution_options.a_preserve_world.set_specified(args::aos_weak);
     resolve_cmdline.run(cmdline.separate_after_dashes_args(),
-            "CAVE", "CAVE_RESOLVE_OPTIONS", "CAVE_RESOLVE_CMDLINE");
+                        "CAVE", "CAVE_RESOLVE_OPTIONS", "CAVE_RESOLVE_CMDLINE");
 
     if (cmdline.a_help.specified())
     {
@@ -181,8 +179,7 @@ FixLinkageCommand::run(
     std::shared_ptr<BrokenLinkageFinder> finder;
     {
         DisplayCallback display_callback("Searching: ");
-        ScopedNotifierCallback display_callback_holder(env.get(),
-                NotifierCallbackFunction(std::cref(display_callback)));
+        ScopedNotifierCallback display_callback_holder(env.get(), NotifierCallbackFunction(std::cref(display_callback)));
         finder = std::make_shared<BrokenLinkageFinder>(env.get(), libraries);
     }
 
@@ -196,7 +193,7 @@ FixLinkageCommand::run(
         return EXIT_SUCCESS;
     }
 
-    std::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(std::make_shared<Sequence<std::pair<std::string, std::string> >>());
+    std::shared_ptr<Sequence<std::pair<std::string, std::string>>> targets(std::make_shared<Sequence<std::pair<std::string, std::string>>>());
 
     for (BrokenLinkageFinder::BrokenPackageConstIterator pkg_it(finder->begin_broken_packages()),
              pkg_it_end(finder->end_broken_packages()); pkg_it_end != pkg_it; ++pkg_it)
@@ -252,12 +249,8 @@ FixLinkageCommand::run(
         }
     }
 
-    return resolve_common(env, resolve_cmdline.resolution_options,
-            resolve_cmdline.execution_options,
-            resolve_cmdline.display_options,
-            resolve_cmdline.graph_jobs_options,
-            resolve_cmdline.program_options,
-            nullptr, targets, nullptr, false);
+    return resolve_common(env, resolve_cmdline.resolution_options, resolve_cmdline.execution_options, resolve_cmdline.display_options, resolve_cmdline.graph_jobs_options,
+                          resolve_cmdline.program_options, nullptr, targets, nullptr, false);
 }
 
 std::shared_ptr<args::ArgsHandler>
