@@ -23,6 +23,7 @@
 
 #include <paludis/util/elf_sections.hh>
 #include <paludis/util/exception.hh>
+#include <paludis/util/iterator_range.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
 #include <iosfwd>
@@ -115,6 +116,10 @@ namespace paludis
             typedef paludis::WrappedForwardIterator<SectionIteratorTag, Section<ElfType_> > SectionIterator;
             SectionIterator section_begin() const;
             SectionIterator section_end() const;
+            IteratorRange<SectionIterator> sections() const noexcept
+            {
+                return {section_begin(), section_end()};
+            }
 
             SectionIterator get_section_by_index(unsigned int index) const;
 

@@ -23,6 +23,7 @@
 
 #include <paludis/util/elf_sections.hh>
 #include <paludis/util/clone.hh>
+#include <paludis/util/iterator_range.hh>
 #include <paludis/util/singleton.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator-fwd.hh>
@@ -213,6 +214,10 @@ namespace paludis
             typedef WrappedForwardIterator<EntryIteratorTag, DynamicEntry<ElfType_> > EntryIterator;
             EntryIterator entry_begin() const;
             EntryIterator entry_end() const;
+            IteratorRange<EntryIterator> entries() const noexcept
+            {
+                return {entry_begin(), entry_end()};
+            }
     };
 }
 

@@ -126,8 +126,8 @@ namespace paludis
         Imp(const FSPath & the_root, const std::shared_ptr<const Sequence<std::string>> & the_libraries) :
             root(the_root)
         {
-            for (auto it(the_libraries->begin()), it_end(the_libraries->end()); it_end != it; ++it)
-                check_libraries.insert(*it);
+            for (const auto & library : *the_libraries)
+                check_libraries.insert(library);
         }
     };
 }
@@ -179,19 +179,17 @@ Imp<ElfLinkageChecker>::check_elf(const FSPath & file, std::istream & stream)
         if (check_libraries.empty() && ET_DYN == elf.get_type())
             handle_library(file, arch);
 
-        for (typename ElfObject<ElfType_>::SectionIterator sec_it(elf.section_begin()),
-                 sec_it_end(elf.section_end()); sec_it_end != sec_it; ++sec_it)
+        for (const auto & section : elf.sections())
         {
-            const DynamicSection<ElfType_> * dyn_sec(visitor_cast<const DynamicSection<ElfType_> >(*sec_it));
-
-            if (nullptr != dyn_sec)
-                for (typename DynamicSection<ElfType_>::EntryIterator ent_it(dyn_sec->entry_begin()),
-                         ent_it_end(dyn_sec->entry_end()); ent_it_end != ent_it; ++ent_it)
+            if (const auto *dyn_sec = visitor_cast<const DynamicSection<ElfType_>>(section))
+            {
+                for (const auto & entry : dyn_sec->entries())
                 {
-                    const DynamicEntryString<ElfType_> * ent_str(visitor_cast<const DynamicEntryString<ElfType_> >(*ent_it));
-
-                    if (nullptr != ent_str && "NEEDED" == ent_str->tag_name())
+                    if (const auto *ent_str = visitor_cast<const DynamicEntryString<ElfType_>>(entry))
                     {
+                        if (ent_str->tag_name() != "NEEDED")
+                            continue;
+
                         const std::string & req((*ent_str)());
                         if (check_libraries.empty() || check_libraries.end() != check_libraries.find(req))
                         {
@@ -201,6 +199,7 @@ Imp<ElfLinkageChecker>::check_elf(const FSPath & file, std::istream & stream)
                         }
                     }
                 }
+            }
         }
     }
     catch (const InvalidElfFileError & e)
@@ -270,38 +269,33 @@ ElfLinkageChecker::need_breakage_added(
     typedef std::map<std::string, std::set<ElfArchitecture> > AllMissing;
     AllMissing all_missing;
 
-    for (Needed::iterator arch_it(_imp->needed.begin()),
-             arch_it_end(_imp->needed.end()); arch_it_end != arch_it; ++arch_it)
+    for (const auto & arch : _imp->needed)
     {
-        std::sort(_imp->libraries[arch_it->first].begin(), _imp->libraries[arch_it->first].end());
-        _imp->libraries[arch_it->first].erase(
-            std::unique(_imp->libraries[arch_it->first].begin(),
-                        _imp->libraries[arch_it->first].end()),
-            _imp->libraries[arch_it->first].end());
+        std::sort(_imp->libraries[arch.first].begin(), _imp->libraries[arch.first].end());
+        _imp->libraries[arch.first].erase(std::unique(_imp->libraries[arch.first].begin(),
+                                                      _imp->libraries[arch.first].end()),
+                                          _imp->libraries[arch.first].end());
 
         std::vector<std::string> missing;
-        std::set_difference(first_iterator(arch_it->second.begin()),
-                            first_iterator(arch_it->second.end()),
-                            _imp->libraries[arch_it->first].begin(),
-                            _imp->libraries[arch_it->first].end(),
+        std::set_difference(first_iterator(arch.second.begin()),
+                            first_iterator(arch.second.end()),
+                            _imp->libraries[arch.first].begin(),
+                            _imp->libraries[arch.first].end(),
                             std::back_inserter(missing));
-        for (std::vector<std::string>::const_iterator it(missing.begin()),
-                 it_end(missing.end()); it_end != it; ++it)
-            all_missing[*it].insert(arch_it->first);
+        for (const auto & item : missing)
+            all_missing[item].insert(arch.first);
     }
 
-    for (std::vector<FSPath>::const_iterator dir_it(_imp->extra_lib_dirs.begin()),
-             dir_it_end(_imp->extra_lib_dirs.end()); dir_it_end != dir_it; ++dir_it)
+    for (const auto & directory : _imp->extra_lib_dirs)
     {
-        Context ctx("When searching for missing libraries in '" + stringify(*dir_it) + "':");
+        Context ctx("When searching for missing libraries in '" + stringify(directory) + "':");
 
-        for (AllMissing::iterator missing_it(all_missing.begin()),
-                 missing_it_end(all_missing.end()); missing_it_end != missing_it; ++missing_it)
+        for (auto & missing : all_missing)
         {
-            if (missing_it->second.empty())
+            if (missing.second.empty())
                 continue;
 
-            FSPath file(dereference_with_root(*dir_it / missing_it->first, _imp->root));
+            FSPath file(dereference_with_root(directory / missing.first, _imp->root));
             if (! file.stat().is_regular_file())
             {
                 Log::get_instance()->message("broken_linkage_finder.missing", ll_debug, lc_context)
@@ -313,8 +307,8 @@ ElfLinkageChecker::need_breakage_added(
             {
                 SafeIFStream stream(file);
 
-                if (! (_imp->check_extra_elf<Elf32Type>(file, stream, missing_it->second) ||
-                       _imp->check_extra_elf<Elf64Type>(file, stream, missing_it->second)))
+                if (! (_imp->check_extra_elf<Elf32Type>(file, stream, missing.second) ||
+                       _imp->check_extra_elf<Elf64Type>(file, stream, missing.second)))
                     Log::get_instance()->message("broken_linkage_finder.not_an_elf", ll_debug, lc_no_context)
                         << "'" << file << "' is not an ELF file";
             }
@@ -327,13 +321,11 @@ ElfLinkageChecker::need_breakage_added(
         }
     }
 
-    for (AllMissing::const_iterator missing_it(all_missing.begin()),
-             missing_it_end(all_missing.end()); missing_it_end != missing_it; ++missing_it)
-        for (std::set<ElfArchitecture>::const_iterator arch_it(missing_it->second.begin()),
-                 arch_it_end(missing_it->second.end()); arch_it_end != arch_it; ++arch_it)
-            std::for_each(_imp->needed[*arch_it][missing_it->first].begin(),
-                          _imp->needed[*arch_it][missing_it->first].end(),
-                          std::bind(callback, _1, missing_it->first));
+    for (const auto & missing : all_missing)
+        for (const auto & arch : missing.second)
+            std::for_each(_imp->needed[arch][missing.first].begin(),
+                          _imp->needed[arch][missing.first].end(),
+                          std::bind(callback, _1, missing.first));
 
 }
 
