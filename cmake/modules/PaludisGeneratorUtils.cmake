@@ -21,7 +21,8 @@ function(paludis_m4process input_file target)
     string(REGEX REPLACE "\\.[^.]*$" "" output_file "${output_file}")
   endif()
 
-  set(target_name paludis-m4process-${input_file_basename})
+  string(MD5 md5 "paludis-m4process-${output_file}")
+  set(target_name paludis-m4process-${md5}-${input_file_basename})
 
   add_custom_command(OUTPUT
                        ${output_file}
@@ -52,7 +53,8 @@ function(paludis_seprocess input_file)
   get_filename_component(input_file_basename_we "${input_file}" NAME_WE)
 
   set(output_header_file "${CMAKE_CURRENT_BINARY_DIR}/${input_file_basename_we}-se.hh")
-  set(header_target_name paludis-seprocess-${input_file_basename_we}-se.hh)
+  string(MD5 md5 "paludis-seprocess-${output_header_file}")
+  set(header_target_name paludis-seprocess-${md5}-${input_file_basename_we}-se.hh)
   set(${PSEP_HEADER_TARGET} ${header_target_name} PARENT_SCOPE)
 
   add_custom_command(OUTPUT
@@ -66,7 +68,8 @@ function(paludis_seprocess input_file)
 
 
   set(output_source_file "${CMAKE_CURRENT_BINARY_DIR}/${input_file_basename_we}-se.cc")
-  set(source_target_name paludis-seprocess-${input_file_basename_we}-se.cc)
+  string(MD5 md5 "paludis-seprocess-${output_source_file}")
+  set(source_target_name paludis-seprocess-${md5}-${input_file_basename_we}-se.cc)
   set(${PSEP_SOURCE_TARGET} ${source_target_name} PARENT_SCOPE)
 
   add_custom_command(OUTPUT
@@ -98,7 +101,8 @@ function(paludis_nnprocess input_file)
   get_filename_component(input_file_basename_we "${input_file}" NAME_WE)
 
   set(output_header_file "${CMAKE_CURRENT_BINARY_DIR}/${input_file_basename_we}-nn.hh")
-  set(header_target_name paludis-nnprocess-${input_file_basename_we}-nn.hh)
+  string(MD5 md5 "paludis-nnprocess-${output_header_file}")
+  set(header_target_name paludis-nnprocess-${md5}-${input_file_basename_we}-nn.hh)
 
   add_custom_command(OUTPUT
                        ${output_header_file}
@@ -111,7 +115,8 @@ function(paludis_nnprocess input_file)
 
 
   set(output_source_file "${CMAKE_CURRENT_BINARY_DIR}/${input_file_basename_we}-nn.cc")
-  set(source_target_name paludis-nnprocess-${input_file_basename_we}-nn.cc)
+  string(MD5 md5 "paludis-nnprocess-${output_source_file}")
+  set(source_target_name paludis-nnprocess-${md5}-${input_file_basename_we}-nn.cc)
 
   add_custom_command(OUTPUT
                        ${output_source_file}
