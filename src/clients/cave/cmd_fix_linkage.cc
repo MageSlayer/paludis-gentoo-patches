@@ -165,17 +165,16 @@ FixLinkageCommand::run(
         resolve_cmdline.resolution_options.a_execute.set_specified(args::aos_specified);
 
     auto libraries(std::make_shared<Sequence<std::string>>());
-    for (auto l(cmdline.a_libraries.begin_args()), l_end(cmdline.a_libraries.end_args()) ;
-            l != l_end ; ++l)
+    for (const auto & library : cmdline.a_libraries.args())
     {
-        libraries->push_back(*l);
-        if (std::string::npos != l->find('/'))
+        libraries->push_back(library);
+        if (std::string::npos != library.find('/'))
         {
-            FSPath f(*l);
+            FSPath f(library);
             libraries->push_back(f.basename());
             Log::get_instance()->message("cave.fix_linkage.library_path", ll_warning, lc_no_context)
-                << "Argument --" << cmdline.a_libraries.long_name() << " '" << *l << "' includes a '/', which "
-                "probably does not do what you want. Generally you should not specify a path to a library.";
+                << "Argument --" << cmdline.a_libraries.long_name() << " '" << library
+                << "' includes a '/', which probably does not do what you want. Generally you should not specify a path to a library.";
         }
     }
 
