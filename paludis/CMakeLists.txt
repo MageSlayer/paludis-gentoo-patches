@@ -252,7 +252,7 @@ endif()
 paludis_add_library(libpaludissohooks_TEST
                     SHARED_LIBRARY
                       "${CMAKE_CURRENT_SOURCE_DIR}/sohooks_TEST.cc")
-add_dependencies(libpaludissohooks_TEST libpaludis_SE)
+add_dependencies(libpaludissohooks_TEST libpaludis_SE libpaludisutil_SE)
 
 foreach(test
           about
