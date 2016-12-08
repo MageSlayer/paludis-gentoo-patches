@@ -13,6 +13,7 @@ install(PROGRAMS
           "${CMAKE_CURRENT_SOURCE_DIR}/builtin_killoldrm.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/builtin_saveenv.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/builtin_tidyup.bash"
+          "${CMAKE_CURRENT_SOURCE_DIR}/builtin_tidyuprm.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/builtin_variable.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/conditional_functions.bash"
           "${CMAKE_CURRENT_SOURCE_DIR}/ever_functions.bash"
