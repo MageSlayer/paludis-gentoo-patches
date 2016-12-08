@@ -134,7 +134,7 @@ namespace
     }
 
     struct WrappedSpecBase;
-    template <typename> struct WrappedSpec;
+    template <typename> class WrappedSpec;
 
     struct WrappedSpecBase :
         virtual DeclareAbstractAcceptMethods<WrappedSpecBase, MakeTypeList<
