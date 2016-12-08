@@ -84,7 +84,7 @@ if(ENABLE_PYTHON)
                           libadditionaltests)
   set_target_properties(additional_tests PROPERTIES
                         OUTPUT_NAME
-                          additional_Tests
+                          additional_tests
                         PREFIX
                           "")
 
