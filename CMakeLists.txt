@@ -304,11 +304,6 @@ if(ENABLE_PBINS)
 endif()
 
 if(ENABLE_PYTHON)
-  # TODO(compnerd) adjust for non-gcc compilers
-  if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 4.0.0)
-    message(SEND_ERROR "gcc >= 4.0.0 is required for python support")
-  endif()
-
   find_package(PythonInterp)
   if(NOT PYTHONINTERP_FOUND)
     message(SEND_ERROR "python is required for python support")
