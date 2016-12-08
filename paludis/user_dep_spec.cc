@@ -773,19 +773,6 @@ namespace
             return false;
         }
 
-        bool visit(const MetadataSpecTreeKey<SetSpecTree> & s) const
-        {
-            switch (op)
-            {
-                case ukro_equal:
-                    return false;
-                case ukro_less_or_subset:
-                    return s.parse_value()->top()->accept_returning<bool>(SpecTreeSearcher(env, id, pattern));
-            }
-
-            return false;
-        }
-
         bool visit(const MetadataSpecTreeKey<PlainTextSpecTree> & s) const
         {
             switch (op)
