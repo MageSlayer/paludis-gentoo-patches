@@ -232,7 +232,7 @@ foreach(phase
 endforeach()
 execute_process(COMMAND
                   "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LOCALSTATEDIR}/gentoo/news/.keep")
-execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/eselect_env_update.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/install_all_post/eselect_env_update.bash")
+execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/eselect_env_update.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/install_post/eselect_env_update.bash")
 execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/eselect_env_update.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/uninstall_all_post/eselect_env_update.bash")
 execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/gnu_info_index.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/install_all_post/gnu_info_index.bash")
 execute_process(COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/common/gnu_info_index.bash" "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/hooks/uninstall_all_post/gnu_info_index.bash")
