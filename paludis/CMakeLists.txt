@@ -203,7 +203,9 @@ paludis_add_library(libpaludis
                       "${CMAKE_CURRENT_SOURCE_DIR}/tar_merger.se"
                       "${CMAKE_CURRENT_SOURCE_DIR}/user_dep_spec.se"
                       "${CMAKE_CURRENT_SOURCE_DIR}/version_operator.se"
-                      "${CMAKE_CURRENT_SOURCE_DIR}/version_spec.se")
+                      "${CMAKE_CURRENT_SOURCE_DIR}/version_spec.se"
+                    SE_HEADERS
+                      libpaludis_SE_HEADERS)
 target_link_libraries(libpaludis
                       PRIVATE
                         libpaludisselinux
@@ -477,6 +479,7 @@ install(FILES
           "${CMAKE_CURRENT_SOURCE_DIR}/version_requirements.hh"
           "${CMAKE_CURRENT_SOURCE_DIR}/version_spec-fwd.hh"
           "${CMAKE_CURRENT_SOURCE_DIR}/version_spec.hh"
+          ${libpaludis_SE_HEADERS}
         DESTINATION
           "${CMAKE_INSTALL_FULL_INCLUDEDIR}/paludis-${PALUDIS_PKG_CONFIG_SLOT}/paludis")
 install(PROGRAMS

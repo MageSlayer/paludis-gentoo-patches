@@ -4,7 +4,7 @@ include(PaludisGeneratorUtils)
 
 function(paludis_add_library library_name)
   set(options SHARED_LIBRARY STATIC_LIBRARY OBJECT_LIBRARY UNVERSIONED)
-  set(single_value_args)
+  set(single_value_args SE_HEADERS)
   set(multiple_value_args NN_SOURCES SE_SOURCES INCORPORATE_OBJECT_LIBRARIES)
 
   cmake_parse_arguments(PAL "${options}" "${single_value_args}" "${multiple_value_args}" ${ARGN})
@@ -41,18 +41,25 @@ function(paludis_add_library library_name)
                     DEPENDS
                       ${nndependencies})
 
+  set(seheaders)
   set(sedependencies)
   foreach(se_source ${PAL_SE_SOURCES})
     paludis_seprocess(${se_source}
                       HEADER_TARGET
                         ${se_source}_HEADER_TARGET
                       SOURCE_TARGET
-                        ${se_source}_SOURCE_TARGET)
+                        ${se_source}_SOURCE_TARGET
+                      HEADER_FILE
+                        ${se_source}_HEADER_FILE)
+    list(APPEND seheaders ${${se_source}_HEADER_FILE})
     list(APPEND sedependencies ${${se_source}_HEADER_TARGET};${${se_source}_SOURCE_TARGET})
   endforeach()
   add_custom_target(${library_name}_SE
                     DEPENDS
                       ${sedependencies})
+  if(PAL_SE_HEADERS)
+    set(${PAL_SE_HEADERS} ${seheaders} PARENT_SCOPE)
+  endif()
 
   set(object_libraries_expressions)
   foreach(library ${PAL_INCORPORATE_OBJECT_LIBRARIES})

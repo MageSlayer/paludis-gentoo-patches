@@ -73,7 +73,9 @@ paludis_add_library(libpaludisutil
                       "${CMAKE_CURRENT_SOURCE_DIR}/fs_iterator.se"
                       "${CMAKE_CURRENT_SOURCE_DIR}/fs_path.se"
                       "${CMAKE_CURRENT_SOURCE_DIR}/is_file_with_extension.se"
-                      "${CMAKE_CURRENT_SOURCE_DIR}/log.se")
+                      "${CMAKE_CURRENT_SOURCE_DIR}/log.se"
+                    SE_HEADERS
+                      libpaludisutil_SE_HEADERS)
 add_dependencies(libpaludisutil ${paludis_util_hh_TARGET})
 target_link_libraries(libpaludisutil
                       PRIVATE
@@ -296,11 +298,7 @@ install(FILES
           "${CMAKE_CURRENT_SOURCE_DIR}/wrapped_value-fwd.hh"
           "${CMAKE_CURRENT_SOURCE_DIR}/wrapped_value-impl.hh"
           "${CMAKE_CURRENT_SOURCE_DIR}/wrapped_value.hh"
-          "${CMAKE_CURRENT_BINARY_DIR}/config_file-se.hh"
-          "${CMAKE_CURRENT_BINARY_DIR}/fs_iterator-se.hh"
-          "${CMAKE_CURRENT_BINARY_DIR}/fs_path-se.hh"
-          "${CMAKE_CURRENT_BINARY_DIR}/is_file_with_extension-se.hh"
-          "${CMAKE_CURRENT_BINARY_DIR}/log-se.hh"
+          ${libpaludisutil_SE_HEADERS}
         DESTINATION
           "${CMAKE_INSTALL_FULL_INCLUDEDIR}/paludis-${PALUDIS_PKG_CONFIG_SLOT}/paludis/util")
 install(PROGRAMS

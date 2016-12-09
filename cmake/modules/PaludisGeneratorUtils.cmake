@@ -37,7 +37,7 @@ endfunction()
 
 # TODO(compnerd) convert misc/make_se.bash into a cmake script
 function(paludis_seprocess input_file)
-  set(single_value_args HEADER_TARGET SOURCE_TARGET)
+  set(single_value_args HEADER_FILE HEADER_TARGET SOURCE_FILE SOURCE_TARGET)
   set(multiple_value_args)
 
   cmake_parse_arguments(PSEP "${options}" "${single_value_args}" "${multiple_value_args}" ${ARGN})
@@ -80,6 +80,14 @@ function(paludis_seprocess input_file)
                        "${PROJECT_SOURCE_DIR}/misc/make_se.bash"
                        ${input_file})
   add_custom_target(${source_target_name} DEPENDS ${output_source_file} COMMENT ${output_source_file})
+
+  if(PSEP_HEADER_FILE)
+    set(${PSEP_HEADER_FILE} ${output_header_file} PARENT_SCOPE)
+  endif()
+
+  if(PSEP_SOURCE_FILE)
+    set(${PSEP_SOURCE_FILE} ${output_source_file} PARENT_SCOPE)
+  endif()
 endfunction()
 
 # TODO(compnerd) convert make_nn.bash into a cmake script
