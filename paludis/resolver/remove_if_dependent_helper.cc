@@ -37,9 +37,7 @@ namespace paludis
         const Environment * const env;
         PackageDepSpecCollection remove_if_dependent_specs;
 
-        Imp(const Environment * const e) :
-            env(e),
-            remove_if_dependent_specs(nullptr)
+        Imp(const Environment * const e) : env(e), remove_if_dependent_specs(nullptr)
         {
         }
     };
@@ -59,8 +57,7 @@ RemoveIfDependentHelper::add_remove_if_dependent_spec(const PackageDepSpec & spe
 }
 
 bool
-RemoveIfDependentHelper::operator() (
-        const std::shared_ptr<const PackageID> & id) const
+RemoveIfDependentHelper::operator()(const std::shared_ptr<const PackageID> & id) const
 {
     return _imp->remove_if_dependent_specs.match_any(_imp->env, id, { });
 }

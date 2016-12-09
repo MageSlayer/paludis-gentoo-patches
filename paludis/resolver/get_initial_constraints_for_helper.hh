@@ -55,8 +55,7 @@ namespace paludis
 
                 void set_reinstall_scm_days(const int);
 
-                const std::shared_ptr<Constraints> operator() (
-                        const Resolvent &) const;
+                const std::shared_ptr<Constraints> operator()(const Resolvent &) const;
         };
     }
 

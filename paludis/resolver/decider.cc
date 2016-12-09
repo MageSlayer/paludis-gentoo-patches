@@ -1681,10 +1681,8 @@ Decider::_installed_ids(const std::shared_ptr<const Resolution> & resolution) co
 {
     Context context("When finding installed IDs for '" + stringify(resolution->resolvent()) + "':");
 
-    return (*_imp->env)[selection::AllVersionsSorted(
-            _imp->fns.make_destination_filtered_generator_fn()(generator::Package(resolution->resolvent().package()), resolution) |
-            make_slot_filter(resolution->resolvent())
-            )];
+    return (*_imp->env)[selection::AllVersionsSorted(_imp->fns.make_destination_filtered_generator_fn()(generator::Package(resolution->resolvent().package()), resolution) |
+                                                     make_slot_filter(resolution->resolvent()))];
 }
 
 const std::shared_ptr<const PackageIDSequence>

@@ -44,9 +44,8 @@ namespace paludis
 
                 void add_allowed_to_remove_spec(const PackageDepSpec &);
 
-                bool operator() (
-                        const std::shared_ptr<const Resolution> &,
-                        const std::shared_ptr<const PackageID> &) const;
+                bool operator()(const std::shared_ptr<const Resolution> &,
+                                const std::shared_ptr<const PackageID> &) const;
         };
     }
 

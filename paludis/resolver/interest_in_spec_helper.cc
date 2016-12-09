@@ -247,10 +247,9 @@ namespace
 }
 
 SpecInterest
-InterestInSpecHelper::operator() (
-        const std::shared_ptr<const Resolution> & resolution,
-        const std::shared_ptr<const PackageID> & id,
-        const SanitisedDependency & dep) const
+InterestInSpecHelper::operator() (const std::shared_ptr<const Resolution> & resolution,
+                                  const std::shared_ptr<const PackageID> & id,
+                                  const SanitisedDependency & dep) const
 {
     Context context("When determining interest in '" + stringify(dep.spec()) + "':");
 
@@ -265,19 +264,13 @@ InterestInSpecHelper::operator() (
             return si_take;
 
         if (dep.spec().if_package())
-        {
-            for (auto l(_imp->take_specs.begin()), l_end(_imp->take_specs.end()) ;
-                    l != l_end ; ++l)
-                if (match_qpns(*_imp->env, *l, *dep.spec().if_package()->package_ptr()))
+            for (const auto & spec : _imp->take_specs)
+                if (match_qpns(*_imp->env, spec, *dep.spec().if_package()->package_ptr()))
                     return si_take;
-        }
 
-        for (auto l(_imp->take_from_specs.begin()), l_end(_imp->take_from_specs.end()) ;
-                l != l_end ; ++l)
-        {
-            if (match_package(*_imp->env, *l, id, nullptr, { }))
+        for (const auto & spec : _imp->take_from_specs)
+            if (match_package(*_imp->env, spec, id, nullptr, { }))
                 return si_take;
-        }
 
         std::string spec_group;
         {
@@ -294,19 +287,13 @@ InterestInSpecHelper::operator() (
             return si_take;
 
         if (dep.spec().if_package())
-        {
-            for (auto l(_imp->ignore_specs.begin()), l_end(_imp->ignore_specs.end()) ;
-                    l != l_end ; ++l)
-                if (match_qpns(*_imp->env, *l, *dep.spec().if_package()->package_ptr()))
+            for (const auto & spec : _imp->ignore_specs)
+                if (match_qpns(*_imp->env, spec, *dep.spec().if_package()->package_ptr()))
                     return si_ignore;
-        }
 
-        for (auto l(_imp->ignore_from_specs.begin()), l_end(_imp->ignore_from_specs.end()) ;
-                l != l_end ; ++l)
-        {
-            if (match_package(*_imp->env, *l, id, nullptr, { }))
+        for (const auto & spec : _imp->ignore_from_specs)
+            if (match_package(*_imp->env, spec, id, nullptr, { }))
                 return si_ignore;
-        }
 
         if ((! spec_group.empty()) && _imp->ignore_groups.end() != _imp->ignore_groups.find(spec_group))
             return si_ignore;
@@ -314,10 +301,9 @@ InterestInSpecHelper::operator() (
         /* we also take suggestions and recommendations that have already been installed */
         if (dep.spec().if_package())
         {
-            const std::shared_ptr<const PackageIDSequence> installed_ids(
-                    (*_imp->env)[selection::SomeArbitraryVersion(
-                        generator::Matches(*dep.spec().if_package(), dep.from_id(), { }) |
-                        filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))]);
+            const std::shared_ptr<const PackageIDSequence> installed_ids =
+                (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*dep.spec().if_package(), dep.from_id(), {}) |
+                                                             filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))];
             if (! installed_ids->empty())
                 return si_take;
         }
@@ -349,8 +335,8 @@ InterestInSpecHelper::operator() (
 
         return si_untaken;
     }
-    else
-        return si_ignore;
+
+    return si_ignore;
 }
 
 namespace paludis

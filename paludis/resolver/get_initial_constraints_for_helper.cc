@@ -138,8 +138,7 @@ GetInitialConstraintsForHelper::operator() (const Resolvent & resolvent) const
     auto i(_imp->initial_constraints.find(resolvent));
     if (i == _imp->initial_constraints.end())
         return _make_initial_constraints_for(resolvent);
-    else
-        return i->second;
+    return i->second;
 }
 
 namespace
@@ -183,36 +182,27 @@ namespace
 
             return (current_time.seconds() - installed_time) > (24 * 60 * 60 * n);
         }
-        else
-            return false;
-    }
-
-    bool installed_is_scm_older_than(
-            const Environment * const env,
-            const Resolvent & q,
-            const int n)
-    {
-        Context context("When working out whether '" + stringify(q) + "' has installed SCM packages:");
-
-        const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
-                    destination_filtered_generator(env, q.destination_type(), generator::Package(q.package())) |
-                    make_slot_filter(q)
-                    )]);
-
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
-        {
-            if (is_scm_older_than(*i, n))
-                return true;
-        }
-
         return false;
     }
 
-    bool use_existing_from_withish(
-            const Environment * const env,
-            const QualifiedPackageName & name,
-            const std::list<PackageDepSpec> & list)
+    bool installed_is_scm_older_than(const Environment * const env,
+                                     const Resolvent & r, const int n)
+    {
+        Context context("When working out whether '" + stringify(r) + "' has installed SCM packages:");
+
+        const std::shared_ptr<const PackageIDSequence> ids =
+            (*env)[selection::AllVersionsUnsorted(destination_filtered_generator(env, r.destination_type(), generator::Package(r.package())) |
+                                                  make_slot_filter(r))];
+
+        for (const auto & package : *ids)
+            if (is_scm_older_than(package, n))
+                return true;
+        return false;
+    }
+
+    bool use_existing_from_withish(const Environment * const env,
+                                   const QualifiedPackageName & name,
+                                   const std::list<PackageDepSpec> & list)
     {
         for (const auto & l : list)
             if (match_qpns(*env, l, name))
@@ -222,8 +212,7 @@ namespace
 }
 
 const std::shared_ptr<Constraints>
-GetInitialConstraintsForHelper::_make_initial_constraints_for(
-        const Resolvent & resolvent) const
+GetInitialConstraintsForHelper::_make_initial_constraints_for(const Resolvent & resolvent) const
 {
     auto result(std::make_shared<Constraints>());
 

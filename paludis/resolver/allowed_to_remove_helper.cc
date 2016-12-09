@@ -37,9 +37,7 @@ namespace paludis
         const Environment * const env;
         PackageDepSpecCollection allowed_to_remove_specs;
 
-        Imp(const Environment * const e) :
-            env(e),
-            allowed_to_remove_specs(nullptr)
+        Imp(const Environment * const e) : env(e), allowed_to_remove_specs(nullptr)
         {
         }
     };
@@ -59,30 +57,23 @@ AllowedToRemoveHelper::add_allowed_to_remove_spec(const PackageDepSpec & spec)
 }
 
 bool
-AllowedToRemoveHelper::operator() (
-        const std::shared_ptr<const Resolution> & resolution,
-        const std::shared_ptr<const PackageID> & id) const
+AllowedToRemoveHelper::operator()(const std::shared_ptr<const Resolution> & resolution,
+                                  const std::shared_ptr<const PackageID> & id) const
 {
-    auto v = make_visitor(
-            [&] (const DependentReason &)  { return true; },
-            [&] (const TargetReason &)     { return true; },
-            [&] (const DependencyReason &) { return false; },
-            [&] (const WasUsedByReason &)  { return true; },
-            [&] (const ViaBinaryReason &)  { return false; },
-            [&] (const PresetReason &)     { return false; },
-            [&] (const SetReason & r, const Revisit<bool, Reason> & revisit) {
-                return revisit(*r.reason_for_set());
-            },
-            [&] (const LikeOtherDestinationTypeReason & r, const Revisit<bool, Reason> & revisit) {
-                return revisit(*r.reason_for_other());
-            }
-            );
+    auto v = make_visitor([&](const DependentReason &) { return true; },
+                          [&](const TargetReason &) { return true; },
+                          [&](const DependencyReason &) { return false; },
+                          [&](const WasUsedByReason &) { return true; },
+                          [&](const ViaBinaryReason &) { return false; },
+                          [&](const PresetReason &) { return false; },
+                          [&](const SetReason & r, const Revisit<bool, Reason> & revisit) { return revisit(*r.reason_for_set()); },
+                          [&](const LikeOtherDestinationTypeReason & r, const Revisit<bool, Reason> & revisit) { return revisit(*r.reason_for_other()); });
 
     for (const auto & constraint : *resolution->constraints())
         if (constraint->reason()->accept_returning<bool>(v))
             return true;
 
-    return _imp->allowed_to_remove_specs.match_any(_imp->env, id, { });
+    return _imp->allowed_to_remove_specs.match_any(_imp->env, id, {});
 }
 
 namespace paludis

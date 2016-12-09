@@ -42,9 +42,8 @@ namespace paludis
                 explicit MakeDestinationFilteredGeneratorHelper(const Environment * const);
                 ~MakeDestinationFilteredGeneratorHelper();
 
-                FilteredGenerator operator() (
-                        const Generator &,
-                        const std::shared_ptr<const Resolution> &) const;
+                FilteredGenerator operator()(const Generator &,
+                                             const std::shared_ptr<const Resolution> &) const;
         };
     }
 

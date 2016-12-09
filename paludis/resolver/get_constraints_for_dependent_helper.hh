@@ -50,10 +50,9 @@ namespace paludis
 
                 void add_less_restrictive_remove_blockers_spec(const PackageDepSpec &);
 
-                const std::shared_ptr<ConstraintSequence> operator() (
-                        const std::shared_ptr<const Resolution> &,
-                        const std::shared_ptr<const PackageID> &,
-                        const std::shared_ptr<const DependentPackageIDSequence> &) const;
+                const std::shared_ptr<ConstraintSequence> operator()(const std::shared_ptr<const Resolution> &,
+                                                                     const std::shared_ptr<const PackageID> &,
+                                                                     const std::shared_ptr<const DependentPackageIDSequence> &) const;
         };
     }
 

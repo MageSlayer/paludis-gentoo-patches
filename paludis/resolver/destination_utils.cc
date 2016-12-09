@@ -97,10 +97,9 @@ namespace
 }
 
 FilteredGenerator
-paludis::resolver::destination_filtered_generator(
-        const Environment * const env,
-        const DestinationType t,
-        const Generator & g)
+paludis::resolver::destination_filtered_generator(const Environment * const env,
+                                                  const DestinationType t,
+                                                  const Generator & g)
 {
     switch (t)
     {

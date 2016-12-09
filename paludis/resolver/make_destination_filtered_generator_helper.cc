@@ -43,8 +43,7 @@ namespace paludis
     {
         const Environment * const env;
 
-        Imp(const Environment * const e) :
-            env(e)
+        Imp(const Environment * const e) : env(e)
         {
         }
     };
@@ -58,9 +57,8 @@ MakeDestinationFilteredGeneratorHelper::MakeDestinationFilteredGeneratorHelper(c
 MakeDestinationFilteredGeneratorHelper::~MakeDestinationFilteredGeneratorHelper() = default;
 
 FilteredGenerator
-MakeDestinationFilteredGeneratorHelper::operator() (
-        const Generator & g,
-        const std::shared_ptr<const Resolution> & r) const
+MakeDestinationFilteredGeneratorHelper::operator()(const Generator & g,
+                                                   const std::shared_ptr<const Resolution> & r) const
 {
     return destination_filtered_generator(_imp->env, r->resolvent().destination_type(), g);
 }

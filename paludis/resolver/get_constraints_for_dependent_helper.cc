@@ -47,9 +47,7 @@ namespace paludis
         const Environment * const env;
         PackageDepSpecCollection less_restrictive_remove_blockers_specs;
 
-        Imp(const Environment * const e) :
-            env(e),
-            less_restrictive_remove_blockers_specs(nullptr)
+        Imp(const Environment * const e) : env(e), less_restrictive_remove_blockers_specs(nullptr)
         {
         }
     };
@@ -69,16 +67,17 @@ GetConstraintsForDependentHelper::add_less_restrictive_remove_blockers_spec(cons
 }
 
 const std::shared_ptr<ConstraintSequence>
-GetConstraintsForDependentHelper::operator() (
-        const std::shared_ptr<const Resolution> &,
-        const std::shared_ptr<const PackageID> & id,
-        const std::shared_ptr<const DependentPackageIDSequence> & dependent_upon_ids) const
+GetConstraintsForDependentHelper::operator()(const std::shared_ptr<const Resolution> &,
+                                             const std::shared_ptr<const PackageID> & id,
+                                             const std::shared_ptr<const DependentPackageIDSequence> & dependent_upon_ids) const
 {
     auto result(std::make_shared<ConstraintSequence>());
 
     std::shared_ptr<PackageDepSpec> spec;
     if (_imp->less_restrictive_remove_blockers_specs.match_any(_imp->env, id, { }))
+    {
         spec = make_shared_copy(id->uniquely_identifying_spec());
+    }
     else
     {
         PartiallyMadePackageDepSpec partial_spec({ });
