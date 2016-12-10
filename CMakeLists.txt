@@ -262,7 +262,7 @@ if(${CONFIG_FRAMEWORK} STREQUAL "auto")
                     eclectic_path
                   ERROR_QUIET
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
-  if(${eclectic_path} STREQUAL "")
+  if("${eclectic_path}" STREQUAL "")
     set(CONFIG_FRAMEWORK eselect)
   else()
     set(CONFIG_FRAMEWORK eclectic)
