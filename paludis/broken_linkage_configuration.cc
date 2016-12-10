@@ -342,33 +342,38 @@ Imp<BrokenLinkageConfiguration>::add_defaults()
 {
     Context ctx("When adding default settings:");
 
-    static const std::string default_ld_library_mask(
-        "libodbcinst.so libodbc.so libjava.so libjvm.so");
-    static const std::string default_search_dirs(
-        "/bin /sbin /usr/bin /usr/sbin /lib* /usr/lib*");
-    static const std::string default_search_dirs_mask(
-        "/lib*/modules");
-    static const std::string default_ld_so_conf("/lib /usr/lib");
+    static const char * default_ld_library_mask[] = {
+        "libodbcinst.so", "libodbc.so", "libjava.so", "libjvm.so",
+    };
+    static const char * default_search_dirs[] = {
+        "/bin", "/sbin", "/usr/bin", "/usr/sbin", "/lib*", "/usr/lib*",
+    };
+    static const char * default_search_dirs_mask[] = {
+        "/lib*/modules",
+    };
+    static const char * default_ld_so_conf[] = {
+        "/lib", "/usr/lib",
+    };
 
     Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
-        << "Got LD_LIBRARY_MASK=\"" << default_ld_library_mask << "\"";
-    tokenise_whitespace(
-            default_ld_library_mask, std::back_inserter(ld_library_mask));
+        << "Got LD_LIBRARY_MASK=\"" << join(std::begin(default_ld_library_mask), std::end(default_ld_library_mask), " ") << "\"";
+    std::copy(std::begin(default_ld_library_mask), std::end(default_ld_library_mask),
+              std::back_inserter(ld_library_mask));
 
     Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
-        << "Got SEARCH_DIRS=\"" << default_search_dirs << "\"";
-    tokenise_whitespace(
-            default_search_dirs, create_inserter<FSPath>(std::back_inserter(search_dirs)));
+        << "Got SEARCH_DIRS=\"" << join(std::begin(default_search_dirs), std::end(default_search_dirs), " ") << "\"";
+    std::copy(std::begin(default_search_dirs), std::end(default_search_dirs),
+              create_inserter<FSPath>(std::back_inserter(search_dirs)));
 
     Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
-        << "Got SEARCH_DIRS_MASK=\"" << default_search_dirs_mask << "\"";
-    tokenise_whitespace(
-            default_search_dirs_mask, create_inserter<FSPath>(std::back_inserter(search_dirs_mask)));
+        << "Got SEARCH_DIRS_MASK=\"" << join(std::begin(default_search_dirs_mask), std::end(default_search_dirs_mask), " ") << "\"";
+    std::copy(std::begin(default_search_dirs_mask), std::end(default_search_dirs_mask),
+              create_inserter<FSPath>(std::back_inserter(search_dirs_mask)));
 
     Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
-        << "Default ld.so.conf contents is \"" << default_ld_so_conf << "\"";
-    tokenise_whitespace(
-            default_ld_so_conf, create_inserter<FSPath>(std::back_inserter(ld_so_conf)));
+        << "Default ld.so.conf contents is \"" << join(std::begin(default_ld_so_conf), std::end(default_ld_so_conf), " ") << "\"";
+    std::copy(std::begin(default_ld_so_conf), std::end(default_ld_so_conf),
+              create_inserter<FSPath>(std::back_inserter(ld_so_conf)));
 }
 
 BrokenLinkageConfiguration::DirsIterator
