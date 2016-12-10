@@ -114,8 +114,8 @@ namespace
     {
         std::vector<FSPath> scratch;
 
-        for (std::vector<FSPath>::const_iterator it(vec.begin()), it_end(vec.end()); it_end != it; ++it)
-            std::copy(WildcardExpander(stringify(*it), root), WildcardExpander(),
+        for (const auto & path : vec)
+            std::copy(WildcardExpander(stringify(path), root), WildcardExpander(),
                       std::back_inserter(scratch));
 
         using std::swap;
@@ -133,9 +133,8 @@ namespace
         std::sort(vec.begin(), vec.end(), comparator);
         vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
 
-        Log::get_instance()->message("broken_linkage_finder.config",
-                ll_debug, lc_context) << "Final " << varname << "=\"" <<
-            join(vec.begin(), vec.end(),  " ") << "\"";
+        Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
+            << "Final " << varname << "=\"" << join(vec.begin(), vec.end(),  " ") << "\"";
     }
 
     bool
@@ -158,33 +157,37 @@ namespace
         if (file_stat.is_regular_file_or_symlink_to_regular_file())
         {
             LineConfigFile lines(file, opts);
-            for (auto it(lines.begin()), it_end(lines.end()); it_end != it; ++it)
+            for (const auto & line : lines)
             {
                 std::vector<std::string> tokens;
-                tokenise_whitespace(*it, std::back_inserter(tokens));
+                tokenise_whitespace(line, std::back_inserter(tokens));
 
                 if ("include" == tokens.at(0))
                 {
-                    for (auto it2(next(tokens.begin())), it2_end(tokens.end()); it2_end != it2; ++it2)
+                    for (const auto & token : tokens)
                     {
-                        FSPath rel('/' == it2->at(0) ? root : file.dirname());
-                        for (WildcardExpander it3(*it2, rel), it3_end; it3_end != it3; ++it3)
+                        FSPath rel('/' == token.at(0) ? root : file.dirname());
+                        for (WildcardExpander it3(token, rel), it3_end; it3_end != it3; ++it3)
                         {
                             Context ctx("When reading included file '" + stringify(rel / *it3) + "':");
                             parse_ld_so_conf(root, rel / *it3, opts, res);
                         }
                     }
                 }
-
                 else if (equals_ci("hwdep", tokens.at(0))) // XXX
+                {
                     Log::get_instance()->message("broken_linkage_finder.etc_ld_so_conf.hwdep", ll_warning, lc_context)
                         << "'hwdep' line in '" << file << "' is not supported";
-                else if (std::string::npos != it->find('='))
+                }
+                else if (std::string::npos != line.find('='))
+                {
                     Log::get_instance()->message("broken_linkage_finder.etc_ld_so_conf.equals", ll_warning, lc_context)
                         << "'=' line in '" << file << "' is not supported";
-
+                }
                 else
-                    res.push_back(*it);
+                {
+                    res.push_back(line);
+                }
             }
         }
 
@@ -227,8 +230,7 @@ Imp<BrokenLinkageConfiguration>::load_from_environment()
 
     Context ctx("When checking environment variables:");
 
-    std::function<std::string (const std::string &)> fromenv(
-        std::bind(getenv_with_default, _1, ""));
+    std::function<std::string (const std::string &)> fromenv(std::bind(getenv_with_default, _1, ""));
 
     from_string(fromenv, "LD_LIBRARY_MASK",  ld_library_mask);
     from_string(fromenv, "SEARCH_DIRS",      search_dirs);
@@ -255,31 +257,32 @@ Imp<BrokenLinkageConfiguration>::load_from_etc_revdep_rebuild(const FSPath & roo
         opts += kvcfo_disallow_space_around_equals;
         opts += kvcfo_disallow_space_inside_unquoted_values;
 
-        for (std::vector<FSPath>::iterator it(conf_files.begin()),
-                 it_end(conf_files.end()); it_end != it; ++it)
+        for (const auto & file : conf_files)
         {
-            Context ctx_file("When reading '" + stringify(*it) + "':");
+            Context ctx_file("When reading '" + stringify(file) + "':");
 
-            if (it->stat().is_regular_file_or_symlink_to_regular_file())
+            if (file.stat().is_regular_file_or_symlink_to_regular_file())
             {
-                KeyValueConfigFile kvs(*it, opts,
-                        &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
+                KeyValueConfigFile kvs(file, opts, &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
-                std::function<std::string (const std::string &)> fromfile(
-                    std::bind(&KeyValueConfigFile::get, std::cref(kvs), _1));
+                std::function<std::string(const std::string &)> fromfile(std::bind(&KeyValueConfigFile::get, std::cref(kvs), _1));
 
                 from_string(fromfile, "LD_LIBRARY_MASK",  ld_library_mask);
                 from_string(fromfile, "SEARCH_DIRS",      search_dirs);
                 from_string(fromfile, "SEARCH_DIRS_MASK", search_dirs_mask);
             }
             else
+            {
                 Log::get_instance()->message("broken_linkage_finder.failure", ll_warning, lc_context)
-                    << "'" << *it << "' is not a regular file";
+                    << "'" << file << "' is not a regular file";
+            }
         }
     }
     else if (etc_revdep_rebuild_stat.exists())
+    {
         Log::get_instance()->message("broken_linkage_finder.etc_revdep_rebuild.not_a_directory", ll_warning, lc_context)
             << "'" << etc_revdep_rebuild << "' exists but is not a directory";
+    }
 }
 
 void
