@@ -90,37 +90,39 @@ target_link_libraries(libpaludisresolver
                       INTERFACE
                         ${CMAKE_THREAD_LIBS_INIT})
 
-paludis_add_library(libpaludisresolvertest
-                    STATIC
-                      "${CMAKE_CURRENT_SOURCE_DIR}/resolver_test.cc")
-# TODO(compnerd) create an object library for the SE_SOURCES that we can depend
-# on instead
-add_dependencies(libpaludisresolvertest libpaludisresolver_SE)
+if(ENABLE_GTEST)
+  paludis_add_library(libpaludisresolvertest
+                      STATIC
+                        "${CMAKE_CURRENT_SOURCE_DIR}/resolver_test.cc")
+  # TODO(compnerd) create an object library for the SE_SOURCES that we can depend
+  # on instead
+  add_dependencies(libpaludisresolvertest libpaludisresolver_SE libpaludisutil_SE)
 
-foreach(test
-          any
-          binaries
-          continue_on_failure
-          errors
-          fetches
-          purges
-          blockers
-          cycles
-          serialisation
-          simple
-          subslots
-          suggestions
-          uninstalls)
-  paludis_add_test(resolver_TEST_${test} GTEST
-                   LINK_LIBRARIES
-                     libpaludisresolvertest
-                     libpaludisresolver
-                     libpaludisutil)
-endforeach()
-if(ENABLE_PBINS)
-  paludis_add_test(resolver_TEST_promote_binaries GTEST
-                   LINK_LIBRARIES
-                          libpaludisresolvertest
-                          libpaludisresolver)
+  foreach(test
+            any
+            binaries
+            continue_on_failure
+            errors
+            fetches
+            purges
+            blockers
+            cycles
+            serialisation
+            simple
+            subslots
+            suggestions
+            uninstalls)
+    paludis_add_test(resolver_TEST_${test} GTEST
+                     LINK_LIBRARIES
+                       libpaludisresolvertest
+                       libpaludisresolver
+                       libpaludisutil)
+  endforeach()
+  if(ENABLE_PBINS)
+    paludis_add_test(resolver_TEST_promote_binaries GTEST
+                     LINK_LIBRARIES
+                            libpaludisresolvertest
+                            libpaludisresolver)
+  endif()
 endif()
 
