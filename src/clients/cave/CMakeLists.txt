@@ -96,7 +96,7 @@ target_link_libraries(libcavematchextras
 if(ENABLE_SEARCH_INDEX)
   paludis_add_library(libcavesearchextras
                         "${CMAKE_CURRENT_SOURCE_DIR}/search_extras.cc")
-  target_compile_definitions(libcavesearchextras
+  target_compile_definitions(libcave
                              PRIVATE
                                -DENABLE_SEARCH_INDEX=1)
   target_link_libraries(libcavesearchextras
