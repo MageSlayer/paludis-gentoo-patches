@@ -30,7 +30,7 @@ namespace paludis
     {
         public:
             OutputManager() = default;
-            virtual ~OutputManager() = 0;
+            virtual ~OutputManager() noexcept(false) = 0;
 
             OutputManager(const OutputManager &) = delete;
             OutputManager & operator= (const OutputManager &) = delete;

@@ -53,7 +53,7 @@ namespace paludis
                     const std::string & succeeded_command,
                     const std::string & nothing_more_to_come_command
                     );
-            ~CommandOutputManager();
+            ~CommandOutputManager() noexcept(false);
 
             virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result));

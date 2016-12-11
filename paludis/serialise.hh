@@ -136,7 +136,7 @@ namespace paludis
                     Deserialisation &,
                     const std::string & class_name);
 
-            ~Deserialisator();
+            ~Deserialisator() noexcept(false);
 
             const Deserialisation & deserialisation() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

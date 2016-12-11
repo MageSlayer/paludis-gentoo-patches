@@ -71,7 +71,7 @@ namespace paludis
                     const Environment * const,
                     const std::function<void (const std::shared_ptr<OutputManager> &)> &);
 
-            ~IPCInputManager();
+            ~IPCInputManager() noexcept(false);
 
             const std::function<std::string (const std::string &)> pipe_command_handler()
                 PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -104,7 +104,7 @@ namespace paludis
                     const ClientOutputFeatures &
                     );
 
-            ~OutputManagerFromIPC();
+            ~OutputManagerFromIPC() noexcept(false);
 
             const std::shared_ptr<OutputManager> operator() (const Action &);
 

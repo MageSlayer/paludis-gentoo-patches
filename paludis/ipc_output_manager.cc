@@ -125,7 +125,7 @@ IPCOutputManager::IPCOutputManager(const int r, const int w, const CreateOutputM
         << "Constructed";
 }
 
-IPCOutputManager::~IPCOutputManager()
+IPCOutputManager::~IPCOutputManager() noexcept(false)
 {
     *_imp->pipe_command_write_stream << "FINISHED 1" << '\0' << std::flush;
 
@@ -245,7 +245,7 @@ IPCInputManager::IPCInputManager(const Environment * const e,
 {
 }
 
-IPCInputManager::~IPCInputManager()
+IPCInputManager::~IPCInputManager() noexcept(false)
 {
     char c('x');
     if (1 != write(_imp->finished_pipe.write_fd(), &c, 1))
@@ -491,7 +491,9 @@ OutputManagerFromIPC::OutputManagerFromIPC(const Environment * const e,
 {
 }
 
-OutputManagerFromIPC::~OutputManagerFromIPC() = default;
+OutputManagerFromIPC::~OutputManagerFromIPC() noexcept(false)
+{
+}
 
 const std::shared_ptr<OutputManager>
 OutputManagerFromIPC::operator() (const Action & a)

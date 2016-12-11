@@ -114,7 +114,7 @@ CommandOutputManager::CommandOutputManager(const std::string & s, const std::str
     _imp->stderr_stream.reset(new SafeOFStream(_imp->stderr_pipe->write_fd(), false));
 }
 
-CommandOutputManager::~CommandOutputManager()
+CommandOutputManager::~CommandOutputManager() noexcept(false)
 {
     nothing_more_to_come();
 

@@ -332,7 +332,7 @@ Deserialisator::Deserialisator(Deserialisation & d, const std::string & c) :
         _imp->keys.insert(std::make_pair((*i)->item_name(), *i));
 }
 
-Deserialisator::~Deserialisator()
+Deserialisator::~Deserialisator() noexcept(false)
 {
     if (! std::uncaught_exception())
     {

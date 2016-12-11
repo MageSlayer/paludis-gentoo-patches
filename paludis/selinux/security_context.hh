@@ -149,7 +149,7 @@ namespace paludis
             /**
              * Destructor
              */
-            ~FSCreateCon();
+            ~FSCreateCon() noexcept(false);
     };
 
     /**

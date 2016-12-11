@@ -209,7 +209,7 @@ FSCreateCon::FSCreateCon(const std::shared_ptr<const SecurityContext> & newfscre
         throw SELinuxException("Couldn't set filesystem creation context to '" + stringify(*_context) + "'.");
 }
 
-FSCreateCon::~FSCreateCon()
+FSCreateCon::~FSCreateCon() noexcept(false)
 {
     if (0 != libselinux.setfscreatecon(_prev_context->_imp->_context))
         throw SELinuxException("Couldn't reset filesystem creation context to '" + stringify(*_prev_context) + "'.");
