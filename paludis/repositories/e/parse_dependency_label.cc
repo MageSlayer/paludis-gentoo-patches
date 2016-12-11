@@ -160,10 +160,9 @@ namespace
 }
 
 std::shared_ptr<DependenciesLabelsDepSpec>
-paludis::erepository::parse_dependency_label(
-        const Environment * const,
-        const std::string & s,
-        const EAPI & e)
+paludis::erepository::parse_dependency_label(const Environment * const,
+                                             const std::string & s,
+                                             const EAPI & e)
 {
     Context context("When parsing label string '" + s + "' using EAPI '" + e.name() + "':");
 
@@ -171,8 +170,7 @@ paludis::erepository::parse_dependency_label(
         throw EDepParseError(s, "Empty label");
 
     std::set<std::string> labels;
-    std::string label(s.substr(0, s.length() - 1));
-    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(label, "+", "", std::inserter(labels, labels.end()));
+    tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(s.substr(0, s.length() - 1), "+", "", std::inserter(labels, labels.end()));
 
     std::shared_ptr<DependenciesLabelsDepSpec> l(std::make_shared<DependenciesLabelsDepSpec>());
 
