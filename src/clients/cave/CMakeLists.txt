@@ -86,6 +86,7 @@ paludis_add_library(libcave
                       "${CMAKE_CURRENT_SOURCE_DIR}/resolve_common.cc"
                       "${CMAKE_CURRENT_SOURCE_DIR}/resume_data.cc"
                       "${CMAKE_CURRENT_SOURCE_DIR}/size_common.cc")
+add_dependencies(libcave libpaludisargs_SE libpaludisresolver_SE)
 
 paludis_add_library(libcavematchextras
                       "${CMAKE_CURRENT_SOURCE_DIR}/match_extras.cc")

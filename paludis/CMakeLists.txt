@@ -234,7 +234,7 @@ endif()
 if(ENABLE_PBINS)
   paludis_add_library(libpaludistarextras
                         "${CMAKE_CURRENT_SOURCE_DIR}/tar_extras.cc")
-  add_dependencies(libpaludistarextras libpaludis_SE)
+  add_dependencies(libpaludistarextras libpaludis_SE libpaludisutil_SE)
   target_link_libraries(libpaludistarextras
                         PRIVATE
                           ${LibArchive_LIBRARIES})
@@ -243,7 +243,7 @@ endif()
 if(ENABLE_STRIPPER)
   paludis_add_library(libpaludisstripperextras
                         "${CMAKE_CURRENT_SOURCE_DIR}/stripper_extras.cc")
-  add_dependencies(libpaludisstripperextras libpaludis_SE)
+  add_dependencies(libpaludisstripperextras libpaludis_SE libpaludisutil_SE)
   target_link_libraries(libpaludisstripperextras
                         PRIVATE
                           ${LibMagic_LIBRARIES})
