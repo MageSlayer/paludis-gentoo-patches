@@ -45,7 +45,7 @@ namespace paludis
                     const int pipe_read_fd,
                     const int pipe_write_fd,
                     const CreateOutputManagerInfo &);
-            ~IPCOutputManager();
+            ~IPCOutputManager() noexcept(false);
 
             virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
             virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
