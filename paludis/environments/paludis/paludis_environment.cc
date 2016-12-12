@@ -505,7 +505,7 @@ PaludisEnvironment::populate_sets() const
         sets_dirs.push_back(FSPath(LIBDIR) / "paludis" / "sets");
     }
 
-    for (auto & sets_dir : sets_dirs)
+    for (const auto & sets_dir : sets_dirs)
     {
         Context context("When looking in sets directory '" + stringify(sets_dir) + "':");
 
