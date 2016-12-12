@@ -230,7 +230,7 @@ class EnvironmentImplementationWrapper :
         }
 
         // FIXME - Hooks are not exposed
-        virtual HookResult perform_hook(const Hook & h, const std::shared_ptr<OutputManager> &) const
+        virtual HookResult perform_hook(const Hook &, const std::shared_ptr<OutputManager> &) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
@@ -406,7 +406,7 @@ class EnvironmentImplementationWrapper :
         }
 
         virtual QualifiedPackageName fetch_unique_qualified_package_name(
-                const PackageNamePart &, const Filter & = all_filter(), const bool disambiguate = true) const
+                const PackageNamePart &, const Filter & = all_filter(), const bool /*disambiguate*/ = true) const
         {
             throw PythonMethodNotImplemented("EnvironmentImplementation", "fetch_unique_qualified_package_name");
         }
