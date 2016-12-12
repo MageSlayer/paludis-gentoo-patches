@@ -88,7 +88,7 @@ paludis_add_library(libpaludisresolver
                       "${CMAKE_CURRENT_SOURCE_DIR}/use_existing.se")
 target_link_libraries(libpaludisresolver
                       INTERFACE
-                        ${CMAKE_THREAD_LIBS_INIT})
+                        Threads::Threads)
 
 if(ENABLE_GTEST)
   paludis_add_library(libpaludisresolvertest

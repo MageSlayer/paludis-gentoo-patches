@@ -77,7 +77,7 @@ paludis_add_library(libpaludisutil
 add_dependencies(libpaludisutil ${paludis_util_hh_TARGET})
 target_link_libraries(libpaludisutil
                       PRIVATE
-                        ${CMAKE_THREAD_LIBS_INIT}
+                        Threads::Threads
                         ${CMAKE_DL_LIBS})
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/echo_functions.bash.in"
@@ -147,7 +147,7 @@ endforeach()
 foreach(test buffer_output_stream;string_list_stream)
   paludis_add_test(${test} GTEST
                    LINK_LIBRARIES
-                     ${CMAKE_THREAD_LIBS_INIT})
+                     Threads::Threads)
 endforeach()
 
 install(TARGETS

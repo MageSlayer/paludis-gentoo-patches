@@ -32,7 +32,7 @@ if(ENABLE_RUBY)
                         PRIVATE
                           libpaludis
                           libpaludisutil
-                          ${CMAKE_THREAD_LIBS_INIT})
+                          Threads::Threads)
 
   paludis_add_library(Paludis UNVERSIONED SHARED_LIBRARY
                         "${CMAKE_CURRENT_SOURCE_DIR}/paludis_ruby_so.cc")

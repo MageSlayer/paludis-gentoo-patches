@@ -209,7 +209,7 @@ target_link_libraries(libpaludis
                         libpaludisselinux
                         libpaludisutil
                         ${CMAKE_DL_LIBS}
-                        ${CMAKE_THREAD_LIBS_INIT})
+                        Threads::Threads)
 add_dependencies(libpaludis ${paludis_hh_TARGET} ${paludis_util_hh_TARGET})
 
 if(ENABLE_PYTHON)
