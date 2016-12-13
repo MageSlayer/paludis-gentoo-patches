@@ -35,6 +35,8 @@ namespace paludis
                 const std::shared_ptr<const PackageID> & id,
                 const std::string & format)
             PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
+
+        extern const std::string format_package_id_help;
     }
 }
 

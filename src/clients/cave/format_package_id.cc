@@ -48,6 +48,9 @@ paludis::cave::format_package_id(
     m->insert('s', id->slot_key() ? stringify(id->slot_key()->parse_value().parallel_value()) : "");
     m->insert('S', id->slot_key() ? stringify(id->slot_key()->parse_value().raw_value()) : "");
     m->insert(':', id->slot_key() ? ":" : "");
+    m->insert('I', stringify(id->name().category()) + '/' + stringify(id->name().package()) +
+         (id->slot_key() ?
+             ":" + stringify(id->slot_key()->parse_value().parallel_value()) : ""));
     m->insert('r', stringify(id->repository_name()));
     m->insert('F', id->canonical_form(idcf_full));
     m->insert('V', id->canonical_form(idcf_version));
@@ -57,4 +60,12 @@ paludis::cave::format_package_id(
     return format_string(format, m);
 }
 
-
+const std::string paludis::cave::format_package_id_help(
+    "Select the output format. Special tokens recognised are "
+    "%c for category, %p for package, %v for version, %s for slot, %S for slot in its native format, "
+    "%: for ':' if we have a slot and "
+    "empty otherwise, %r for repository, %F for the canonical full form, %V for the canonical full "
+    "version, %W for the canonical full unversioned form, %N for the canonical full unnamed form, "
+    "%u for a uniquely identifying dependency spec, %I is equivalent to %c/%p%:%s,"
+    "\\n for newline, \\t for tab. Default is '%F\\n'."
+);

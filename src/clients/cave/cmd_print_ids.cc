@@ -106,13 +106,7 @@ namespace
                     ("unsupported",   "masked because it is unsupported")
                    ),
             g_display_options(main_options_section(), "Display Options", "Controls the output format."),
-            a_format(&g_display_options, "format", 'f', "Select the output format. Special tokens recognised are "
-                    "%c for category, %p for package, %v for version, %s for slot, %S for slot in its native format, "
-                    "%: for ':' if we have a slot and "
-                    "empty otherwise, %r for repository, %F for the canonical full form, %V for the canonical full "
-                    "version, %W for the canonical full unversioned form, %N for the canonical full unnamed form, "
-                    "%u for a uniquely identifying dependency spec, "
-                    "\\n for newline, \\t for tab. Default is '%F\\n'.")
+            a_format(&g_display_options, "format", 'f', format_package_id_help)
         {
             add_usage_line("[ --matching spec ] [ --supporting action ] [ --with-mask mask-kind ]");
             a_format.set_argument("%F\\n");
