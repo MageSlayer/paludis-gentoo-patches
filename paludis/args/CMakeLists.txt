@@ -14,6 +14,9 @@ paludis_add_library(libpaludisargs
                       "${CMAKE_CURRENT_SOURCE_DIR}/man.cc"
                     SE_SOURCES
                       "${CMAKE_CURRENT_SOURCE_DIR}/args_handler.se")
+target_link_libraries(libpaludisargs
+                      PRIVATE
+                        libpaludisutil)
 
 paludis_add_test(args_TEST GTEST
                  LINK_LIBRARIES

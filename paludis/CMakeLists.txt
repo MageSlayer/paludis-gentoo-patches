@@ -240,6 +240,8 @@ if(ENABLE_PBINS)
   add_dependencies(libpaludistarextras libpaludis_SE libpaludisutil_SE)
   target_link_libraries(libpaludistarextras
                         PRIVATE
+                          libpaludis
+                          libpaludisutil
                           ${LibArchive_LIBRARIES})
 endif()
 
@@ -249,12 +251,18 @@ if(ENABLE_STRIPPER)
   add_dependencies(libpaludisstripperextras libpaludis_SE libpaludisutil_SE)
   target_link_libraries(libpaludisstripperextras
                         PRIVATE
+                          libpaludis
+                          libpaludisutil
                           ${LibMagic_LIBRARIES})
 endif()
 
 paludis_add_library(libpaludissohooks_TEST
                     SHARED_LIBRARY
                       "${CMAKE_CURRENT_SOURCE_DIR}/sohooks_TEST.cc")
+target_link_libraries(libpaludissohooks_TEST
+                      PRIVATE
+                        libpaludis
+                        libpaludisutil)
 add_dependencies(libpaludissohooks_TEST libpaludis_SE libpaludisutil_SE)
 
 foreach(test

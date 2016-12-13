@@ -102,6 +102,7 @@ if(ENABLE_SEARCH_INDEX)
                                -DENABLE_SEARCH_INDEX=1)
   target_link_libraries(libcavesearchextras
                         PRIVATE
+                          libpaludisutil
                           ${SQLite3_LIBRARIES})
 endif()
 

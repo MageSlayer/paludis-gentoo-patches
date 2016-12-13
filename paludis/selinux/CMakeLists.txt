@@ -4,6 +4,7 @@ paludis_add_library(libpaludisselinux
 add_dependencies(libpaludisselinux libpaludisutil_SE)
 target_link_libraries(libpaludisselinux
                       PRIVATE
+                        libpaludisutil
                         ${CMAKE_DL_LIBS})
 
 install(FILES

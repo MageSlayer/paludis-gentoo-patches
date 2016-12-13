@@ -12,6 +12,8 @@ if(ENABLE_XML)
                                ${LIBXML2_INCLUDE_DIR})
   target_link_libraries(libpaludiserepositoryxmlthings
                         PRIVATE
+                          libpaludis
+                          libpaludisutil
                           ${LIBXML2_LIBRARIES})
 endif()
 
