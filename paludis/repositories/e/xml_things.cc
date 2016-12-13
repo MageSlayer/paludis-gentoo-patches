@@ -22,6 +22,7 @@
 #include <paludis/util/make_named_values.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/map.hh>
+#include <paludis/util/map-impl.hh>
 #include <paludis/util/tokeniser.hh>
 #include <paludis/choice.hh>
 #include <paludis/maintainer.hh>
