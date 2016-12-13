@@ -24,7 +24,9 @@ if(ENABLE_DOXYGEN)
                        "${CMAKE_CURRENT_SOURCE_DIR}/references.doxygen"
                        "${DOXYGEN_TAG_FILE}"
                      OUTPUT
-                       "${CMAKE_CURRENT_BINARY_DIR}/cplusplus")
+                       "${CMAKE_CURRENT_BINARY_DIR}/cplusplus"
+                     WORKING_DIRECTORY
+                       "${CMAKE_CURRENT_SOURCE_DIR}")
   add_custom_target(c++-api-docs
                     ALL
                     DEPENDS
