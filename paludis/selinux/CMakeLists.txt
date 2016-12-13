@@ -1,6 +1,7 @@
 
 paludis_add_library(libpaludisselinux
                       "${CMAKE_CURRENT_SOURCE_DIR}/security_context.cc")
+add_dependencies(libpaludisselinux libpaludisutil_SE)
 target_link_libraries(libpaludisselinux
                       PRIVATE
                         ${CMAKE_DL_LIBS})
