@@ -36,9 +36,8 @@ else()
                  ${CMAKE_INSTALL_FULL_LIBDIR})
 
   if(Jansson_INCLUDE_DIR AND EXISTS "${Jansson_INCLUDE_DIR}/jansson.h")
-    file(STRINGS "${Jansson_INCLUDE_DIR}/jansson.h"
-         REGEX "^#[ ]*define[ ]+JANSSON_VERSION[ ]+\".*\""
-         jansson_version_str)
+    file(STRINGS "${Jansson_INCLUDE_DIR}/jansson.h" jansson_version_str
+         REGEX "^#[ ]*define[ ]+JANSSON_VERSION[ ]+\".*\"")
     string(REGEX
            REPLACE "^[ ]*define[ ]+JANSSON_VERSION[ ]+\"([^\"]*)\".*" "\\1"
            Jansson_VERSION_STRING "${jansson_version_str}")
@@ -48,7 +47,7 @@ else()
   include(FindPackageHandleStandardArgs)
   find_package_handle_standard_args(Jansson
                                     REQUIRED_VARS
-                                      Jansson_INCLUDE_DIRS
+                                      Jansson_INCLUDE_DIR
                                       Jansson_LIBRARIES
                                     VERSION_VAR
                                       Jansson_VERSION_STRING)
