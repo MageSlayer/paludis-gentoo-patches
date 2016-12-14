@@ -22,6 +22,7 @@
 #include <python/wrapped_value.hh>
 #include <python/iterable.hh>
 #include <python/options.hh>
+#include <paludis/util/set-impl.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 
 #include <paludis/name.hh>
