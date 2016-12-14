@@ -229,6 +229,7 @@ if(ENABLE_PYTHON)
   target_link_libraries(libpaludispythonhooks
                         PRIVATE
                           libpaludis
+                          libpaludisutil
                           ${Boost_PYTHON_LIBRARY}
                           ${PYTHON_LIBRARY})
 endif()

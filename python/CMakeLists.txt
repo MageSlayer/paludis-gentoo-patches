@@ -43,7 +43,10 @@ if(ENABLE_PYTHON)
                                ${Boost_INCLUDE_DIRS})
   target_link_libraries(libpaludispython
                         PRIVATE
-                          libpaludis)
+                          ${Boost_LIBRARIES}
+                          ${PYTHON_LIBRARIES}
+                          libpaludis
+                          libpaludisutil)
 
   paludis_add_library(paludis UNVERSIONED SHARED_LIBRARY
                         "${CMAKE_CURRENT_SOURCE_DIR}/paludis_python_so.cc")
@@ -70,6 +73,10 @@ if(ENABLE_PYTHON)
                                ${Boost_INCLUDE_DIRS})
   target_link_libraries(libadditionaltests
                         PRIVATE
+                          ${Boost_LIBRARIES}
+                          ${PYTHON_LIBRARIES}
+                          libpaludis
+                          libpaludisutil
                           libpaludispython)
 
   paludis_add_library(additional_tests UNVERSIONED SHARED_LIBRARY
@@ -81,6 +88,7 @@ if(ENABLE_PYTHON)
   target_link_libraries(additional_tests
                         PRIVATE
                           ${Boost_PYTHON_LIBRARY}
+                          ${PYTHON_LIBRARIES}
                           libadditionaltests)
   set_target_properties(additional_tests PROPERTIES
                         OUTPUT_NAME
