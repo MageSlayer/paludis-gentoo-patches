@@ -32,6 +32,7 @@ if(ENABLE_RUBY)
                         PRIVATE
                           libpaludis
                           libpaludisutil
+                          ${RUBY_LIBRARY}
                           Threads::Threads)
 
   paludis_add_library(Paludis UNVERSIONED SHARED_LIBRARY
