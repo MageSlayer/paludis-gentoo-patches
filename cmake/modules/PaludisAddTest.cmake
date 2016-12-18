@@ -98,6 +98,7 @@ function(paludis_add_test test_name)
                     SYSCONFDIR=${CMAKE_INSTALL_FULL_SYSCONFDIR}
                     TEST_SCRIPT_DIR=${CMAKE_CURRENT_SOURCE_DIR}/
                     TOP_BUILDDIR=${CMAKE_BINARY_DIR}
+                    SYDBOX_ACTIVE=\${SYDBOX_ACTIVE}
                     ${pat_environment_variables}
              "${BASH_EXECUTABLE}" ${pat_test_runner} "${pat_test_binary}")
 endfunction()
