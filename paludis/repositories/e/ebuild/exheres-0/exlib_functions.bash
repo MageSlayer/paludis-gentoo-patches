@@ -266,9 +266,13 @@ require()
             has ${v} ${!a_v} || die "${CURRENT_EXLIB}.exlib takes no ${v} parameter"
         done
 
-        # die on exported exlib phases which don't get defined
-        for v in ${PALUDIS_CHECK_EXPORTED_PHASES} ; do
-            type -t ${v} >/dev/null || die "exported phase function ${v} does not exist"
+        for v in ${PALUDIS_EBUILD_FUNCTIONS} ; do
+            c_v=${CURRENT_EXLIB}_${v}
+            if has ${c_v} ${PALUDIS_CHECK_EXPORTED_PHASES}; then
+                type -t ${c_v} >/dev/null || die "exported phase function ${v} does not exist"
+            else
+                type -t ${c_v} >/dev/null && die "phase function ${c_v} exists but was not exported"
+            fi
         done
         export PALUDIS_CHECK_EXPORTED_PHASES="${old_PALUDIS_CHECK_EXPORTED_PHASES}"
 

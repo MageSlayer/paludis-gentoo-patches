@@ -615,6 +615,8 @@ src_unpack() {
 END
 mkdir -p "packages/cat/called-cross-phase-exlib"
 cat <<'END' > packages/cat/called-cross-phase-exlib/verify.exlib || exit 1
+export_exlib_phases pkg_setup
+
 verify_pkg_setup() {
     :
 }
