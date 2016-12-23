@@ -59,6 +59,10 @@ if(ENABLE_PYTHON)
 
   paludis_add_library(libadditionaltests
                         "${CMAKE_CURRENT_SOURCE_DIR}/additional_tests.cc")
+  target_compile_options(libadditionaltests
+                         PRIVATE
+                           -Wno-unused-variable
+                           -Wno-unused-result)
   target_link_libraries(libadditionaltests
                         PRIVATE
                           Boost::python
