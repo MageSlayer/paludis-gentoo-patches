@@ -336,7 +336,8 @@ endif()
 if(ENABLE_RUBY)
   if(NOT "${RUBY_VERSION}" STREQUAL "2.1" AND
      NOT "${RUBY_VERSION}" STREQUAL "2.2" AND
-     NOT "${RUBY_VERSION}" STREQUAL "2.3")
+     NOT "${RUBY_VERSION}" STREQUAL "2.3" AND
+     NOT "${RUBY_VERSION}" STREQUAL "2.4")
    message(SEND_ERROR "invalid ruby version specified (${RUBY_VERSION})")
   endif()
 
