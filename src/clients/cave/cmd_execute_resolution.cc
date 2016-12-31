@@ -606,10 +606,8 @@ namespace
         return 0 == retcode;
     }
 
-    void update_world(
-            const std::shared_ptr<Environment> & env,
-            const ExecuteResolutionCommandLine & cmdline,
-            const bool removes)
+    void
+    update_world(const std::shared_ptr<Environment> & env, const ExecuteResolutionCommandLine & cmdline, const bool removes)
     {
         std::string command(cmdline.program_options.a_update_world_program.argument());
         if (command.empty())
@@ -625,29 +623,27 @@ namespace
                 return;
 
             command.append(" --set");
-            for (args::StringSetArg::ConstIterator a(cmdline.a_world_specs.begin_args()),
-                    a_end(cmdline.a_world_specs.end_args()) ;
-                    a != a_end ; ++a)
+            for (const auto & spec : cmdline.a_world_specs.args())
             {
-                if (*a == "world" || *a == "system" || *a == "security"
-                        || *a == "everything" || *a == "insecurity"
-                        || *a == "installed-packages" || *a == "installed-slots"
-                        || *a == "nothing")
-                    cout << fuc(fs_special_set_world(), fv<'a'>(*a));
+                if (spec == "world" || spec == "system" || spec == "security" ||
+                    spec == "everything" || spec == "insecurity" ||
+                    spec == "installed-packages" || spec == "installed-slots" ||
+                    spec == "nothing")
+                {
+                    cout << fuc(fs_special_set_world(), fv<'a'>(spec));
+                }
                 else
                 {
                     any = true;
-                    command.append(" " + *a);
+                    command.append(" " + spec);
                 }
             }
         }
         else
         {
-            for (args::StringSetArg::ConstIterator a(cmdline.a_world_specs.begin_args()),
-                    a_end(cmdline.a_world_specs.end_args()) ;
-                    a != a_end ; ++a)
+            for (const auto & arg : cmdline.a_world_specs.args())
             {
-                auto p(split_elike_blocker(*a));
+                auto p(split_elike_blocker(arg));
                 switch (std::get<0>(p))
                 {
                     case ebk_no_block:
@@ -703,9 +699,8 @@ namespace
         }
     }
 
-    void execute_update_world(
-            const std::shared_ptr<Environment> & env,
-            const ExecuteResolutionCommandLine & cmdline)
+    void
+    execute_update_world(const std::shared_ptr<Environment> & env, const ExecuteResolutionCommandLine & cmdline)
     {
         if (cmdline.execution_options.a_preserve_world.specified() || cmdline.execution_options.a_fetch.specified())
             return;
@@ -720,12 +715,10 @@ namespace
         if (command.empty())
             command = "$CAVE update-world --verbose --remove --if-nothing-left ";
 
-        for (args::StringSetArg::ConstIterator a(cmdline.a_removed_if_dependent_names.begin_args()),
-                a_end(cmdline.a_removed_if_dependent_names.end_args()) ;
-                a != a_end ; ++a)
+        for (const auto & spec : cmdline.a_removed_if_dependent_names.args())
         {
             any = true;
-            command.append(" " + stringify(*a));
+            command.append(" " + stringify(spec));
         }
 
         if (any)
