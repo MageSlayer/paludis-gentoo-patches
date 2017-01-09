@@ -304,6 +304,7 @@ if(ENABLE_PBINS)
 endif()
 
 if(ENABLE_PYTHON)
+  set(Python_ADDITIONAL_VERSIONS 2.7 2.6 2.5)
   find_package(PythonInterp)
   if(NOT PYTHONINTERP_FOUND)
     message(SEND_ERROR "python is required for python support")
