@@ -315,6 +315,7 @@ if(ENABLE_PYTHON)
                     PALUDIS_PYEXECDIR
                   ERROR_QUIET
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
+  get_filename_component(PALUDIS_PYEXECDIR ${PALUDIS_PYEXECDIR} REALPATH)
 
   find_package(PythonLibs)
 
