@@ -343,16 +343,15 @@ namespace
             {
                 if (spec.installed_at_path_ptr())
                 {
-                    for (auto i(env->begin_repositories()),
-                            i_end(env->end_repositories()) ; i != i_end ; ++i)
+                    for (const auto & repository : env->repositories())
                     {
-                        if (! (*i)->installed_root_key())
+                        if (! repository->installed_root_key())
                             continue;
 
-                        if ((*i)->installed_root_key()->parse_value() != *spec.installed_at_path_ptr())
+                        if (repository->installed_root_key()->parse_value() != *spec.installed_at_path_ptr())
                             continue;
 
-                        result->insert((*i)->name());
+                        result->insert(repository->name());
                     }
                 }
                 else
@@ -683,10 +682,9 @@ namespace
                 const RepositoryContentMayExcludes &) const override
         {
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
-            for (auto i(env->begin_repositories()),
-                    i_end(env->end_repositories()) ; i != i_end ; ++i)
-                if ((*i)->some_ids_might_support_action(SupportsActionTest<A_>()))
-                    result->insert((*i)->name());
+            for (const auto & repository : env->repositories())
+                if (repository->some_ids_might_support_action(SupportsActionTest<A_>()))
+                    result->insert(repository->name());
 
             return result;
         }

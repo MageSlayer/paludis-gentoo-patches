@@ -738,19 +738,18 @@ Hooker::perform_hook(
         switch (hook.output_dest)
         {
             case hod_stdout:
-                for (auto r(_imp->env->begin_repositories()),
-                        r_end(_imp->env->end_repositories()) ; r != r_end ; ++r)
-                    result.max_exit_status() = std::max(result.max_exit_status(),
-                            ((*r)->perform_hook(hook, optional_output_manager)).max_exit_status());
+                for (const auto & repository : _imp->env->repositories())
+                    result.max_exit_status() = std::max(result.max_exit_status(), (repository->perform_hook(hook, optional_output_manager)).max_exit_status());
                 continue;
 
             case hod_grab:
-                for (auto r(_imp->env->begin_repositories()),
-                        r_end(_imp->env->end_repositories()) ; r != r_end ; ++r)
+                for (const auto & repository : _imp->env->repositories())
                 {
-                    HookResult tmp((*r)->perform_hook(hook, optional_output_manager));
+                    HookResult tmp(repository->perform_hook(hook, optional_output_manager));
                     if (tmp.max_exit_status() > result.max_exit_status())
+                    {
                         result = tmp;
+                    }
                     else if (! tmp.output().empty())
                     {
                         if (hook.validate_value(tmp.output()))
@@ -759,8 +758,10 @@ Hooker::perform_hook(
                                 return tmp;
                         }
                         else
+                        {
                             Log::get_instance()->message("hook.bad_output", ll_warning, lc_context)
                                 << "Hook returned invalid output: '" << tmp.output() << "'";
+                        }
                     }
                 }
                 continue;

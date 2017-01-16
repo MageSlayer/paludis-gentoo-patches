@@ -403,9 +403,8 @@ InfoCommand::run(
     do_about(cmdline, env);
     do_env(cmdline, env);
 
-    for (auto r(env->begin_repositories()), r_end(env->end_repositories()) ;
-            r != r_end ; ++r)
-        do_one_repository(cmdline, env, *r);
+    for (const auto & repository : env->repositories())
+        do_one_repository(cmdline, env, repository);
 
     if (cmdline.begin_parameters() == cmdline.end_parameters())
     {

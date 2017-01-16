@@ -382,9 +382,8 @@ SyncCommand::run(
             repos.insert(n);
         }
     else
-        for (auto p(env->begin_repositories()), p_end(env->end_repositories()) ;
-                p != p_end ; ++p)
-            repos.insert((*p)->name());
+        for (const auto & repository : env->repositories())
+            repos.insert(repository->name());
 
     if (1 == repos.size())
         cmdline.a_sequential.set_specified(args::aos_weak);
@@ -400,10 +399,10 @@ SyncCommand::run(
 
     retcode |= sync_these(env, cmdline, repos);
 
-    for (auto r(env->begin_repositories()), r_end(env->end_repositories()) ; r != r_end ; ++r)
+    for (const auto & repository : env->repositories())
     {
-        (*r)->invalidate();
-        (*r)->purge_invalid_cache();
+        repository->invalidate();
+        repository->purge_invalid_cache();
     }
 
     if (0 != env->perform_hook(Hook("sync_all_post")

@@ -174,8 +174,8 @@ PackageIDComparator::PackageIDComparator(const Environment * const e) :
     _imp()
 {
     unsigned c(0);
-    for (auto r(e->begin_repositories()), r_end(e->end_repositories()) ; r != r_end ; ++r)
-        _imp->m.insert(std::make_pair((*r)->name(), ++c));
+    for (const auto & repository : e->repositories())
+        _imp->m.insert(std::make_pair(repository->name(), ++c));
 }
 
 PackageIDComparator::PackageIDComparator(const PackageIDComparator & other) :

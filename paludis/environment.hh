@@ -37,6 +37,7 @@
 #include <paludis/notifier_callback-fwd.hh>
 #include <paludis/filter-fwd.hh>
 
+#include <paludis/util/iterator_range.hh>
 #include <paludis/util/options-fwd.hh>
 #include <paludis/util/tribool-fwd.hh>
 #include <paludis/util/visitor.hh>
@@ -706,6 +707,10 @@ namespace paludis
 
             virtual RepositoryConstIterator end_repositories() const
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+
+            IteratorRange<RepositoryConstIterator> repositories() const {
+                return {begin_repositories(), end_repositories()};
+            }
 
             ///\}
     };

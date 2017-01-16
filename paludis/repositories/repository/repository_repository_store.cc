@@ -81,8 +81,8 @@ RepositoryRepositoryStore::~RepositoryRepositoryStore() = default;
 void
 RepositoryRepositoryStore::_populate()
 {
-    for (auto r(_imp->env->begin_repositories()), r_end(_imp->env->end_repositories()) ; r != r_end ; ++r)
-        _populate_one((*r)->name());
+    for (const auto & repository : _imp->env->repositories())
+        _populate_one(repository->name());
 }
 
 void

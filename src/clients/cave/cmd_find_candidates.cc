@@ -209,9 +209,8 @@ FindCandidatesCommand::run_hosted(
         step("Searching repositories");
 
         RepositoryNames repository_names;
-        for (Environment::RepositoryConstIterator r(env->begin_repositories()),
-                r_end(env->end_repositories()) ; r != r_end ; ++r)
-            repository_names.insert((*r)->name());
+        for (const auto & repository : env->repositories())
+            repository_names.insert(repository->name());
 
         step("Searching categories");
 

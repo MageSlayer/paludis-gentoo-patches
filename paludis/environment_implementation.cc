@@ -279,9 +279,8 @@ EnvironmentImplementation::_need_sets() const
     if (_imp->loaded_sets)
         return;
 
-    for (auto r(begin_repositories()), r_end(end_repositories()) ;
-            r != r_end ; ++r)
-        (*r)->populate_sets();
+    for (const auto & repository : repositories())
+        repository->populate_sets();
 
     populate_sets();
     populate_standard_sets();
@@ -374,10 +373,9 @@ EnvironmentImplementation::add_repository(int importance, const std::shared_ptr<
 const std::shared_ptr<const Repository>
 EnvironmentImplementation::fetch_repository(const RepositoryName & name) const
 {
-    for (RepositoryConstIterator r(begin_repositories()), r_end(end_repositories()) ;
-            r != r_end ; ++r)
-        if ((*r)->name() == name)
-            return *r;
+    for (const auto & repository : repositories())
+        if (repository->name() == name)
+            return repository;
 
     throw NoSuchRepositoryError(name);
 }
@@ -385,10 +383,9 @@ EnvironmentImplementation::fetch_repository(const RepositoryName & name) const
 const std::shared_ptr<Repository>
 EnvironmentImplementation::fetch_repository(const RepositoryName & name)
 {
-    for (RepositoryConstIterator r(begin_repositories()), r_end(end_repositories()) ;
-            r != r_end ; ++r)
-        if ((*r)->name() == name)
-            return *r;
+    for (const auto & repository : repositories())
+        if (repository->name() == name)
+            return repository;
 
     throw NoSuchRepositoryError(name);
 }
@@ -396,9 +393,8 @@ EnvironmentImplementation::fetch_repository(const RepositoryName & name)
 bool
 EnvironmentImplementation::has_repository_named(const RepositoryName & name) const
 {
-    for (RepositoryConstIterator r(begin_repositories()), r_end(end_repositories()) ;
-            r != r_end ; ++r)
-        if ((*r)->name() == name)
+    for (const auto & repository : repositories())
+        if (repository->name() == name)
             return true;
 
     return false;
@@ -585,9 +581,9 @@ EnvironmentImplementation::more_important_than(const RepositoryName & lhs, const
 {
     std::map<std::string, int> rank;
     int x(0);
-    for (auto r(begin_repositories()), r_end(end_repositories()) ;
-            r != r_end ; ++r)
-        rank.insert(std::make_pair(stringify((*r)->name()), ++x));
+
+    for (const auto & repository : repositories())
+        rank.insert(std::make_pair(stringify(repository->name()), ++x));
 
     std::map<std::string, int>::const_iterator l(rank.find(stringify(lhs)));
     if (l == rank.end())
@@ -628,10 +624,9 @@ EnvironmentImplementation::expand_licence(
 
         result->insert(t);
 
-        for (auto r(begin_repositories()), r_end(end_repositories()) ;
-                r != r_end ; ++r)
+        for (const auto & repository : repositories())
         {
-            auto l((*r)->maybe_expand_licence_nonrecursively(t));
+            auto l(repository->maybe_expand_licence_nonrecursively(t));
             if (l)
                 for (auto i(l->begin()), i_end(l->end()) ;
                         i != i_end ; ++i)

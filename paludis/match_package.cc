@@ -189,16 +189,15 @@ paludis::match_package_with_maybe_changes(
                 return false;
 
         bool ok(false);
-        for (auto d(env.begin_repositories()), d_end(env.end_repositories()) ;
-                d != d_end ; ++d)
+        for (const auto & repository : env.repositories())
         {
-            if (! (*d)->destination_interface())
+            if (! repository->destination_interface())
                 continue;
-            if (! (*d)->installed_root_key())
+            if (! repository->installed_root_key())
                 continue;
-            if ((*d)->installed_root_key()->parse_value() != spec.installable_to_path_ptr()->path())
+            if (repository->installed_root_key()->parse_value() != spec.installable_to_path_ptr()->path())
                 continue;
-            if (! (*d)->destination_interface()->is_suitable_destination_for(id))
+            if (! repository->destination_interface()->is_suitable_destination_for(id))
                 continue;
 
             ok = true;

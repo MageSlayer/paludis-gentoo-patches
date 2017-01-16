@@ -100,37 +100,36 @@ AccountsRepositoryStore::_load(const RepositoryName & repository_name)
 {
     Context context("When loading data for AccountsRepository:");
 
-    for (auto r(_imp->env->begin_repositories()), r_end(_imp->env->end_repositories()) ;
-            r != r_end ; ++r)
+    for (const auto & repository : _imp->env->repositories())
     {
-        Context r_context("When loading data for repository '" + stringify((*r)->name()) + "':");
+        Context r_context("When loading data for repository '" + stringify(repository->name()) + "':");
 
-        Repository::MetadataConstIterator k_iter((*r)->find_metadata("accounts_repository_data_location"));
-        if (k_iter == (*r)->end_metadata())
+        Repository::MetadataConstIterator k_iter(repository->find_metadata("accounts_repository_data_location"));
+        if (k_iter == repository->end_metadata())
         {
-            Log::get_instance()->message("accounts.no_key_from_repository", ll_debug, lc_context) <<
-                "Repository " << (*r)->name() << " defines no accounts_repository_data_location key";
+            Log::get_instance()->message("accounts.no_key_from_repository", ll_debug, lc_context)
+                << "Repository " << repository->name() << " defines no accounts_repository_data_location key";
             continue;
         }
 
         const MetadataValueKey<FSPath> * k(visitor_cast<const MetadataValueKey<FSPath> >(**k_iter));
         if (! k)
         {
-            Log::get_instance()->message("accounts.bad_key_from_repository", ll_warning, lc_context) <<
-                "Repository " << (*r)->name() << " defines an accounts_repository_data_location key, but it is not an FSPath key";
+            Log::get_instance()->message("accounts.bad_key_from_repository", ll_warning, lc_context)
+                << "Repository " << repository->name() << " defines an accounts_repository_data_location key, but it is not an FSPath key";
             continue;
         }
 
         FSPath dir(k->parse_value());
         if (! dir.stat().is_directory_or_symlink_to_directory())
         {
-            Log::get_instance()->message("accounts.empty_key_from_repository", ll_warning, lc_context) <<
-                "Repository " << (*r)->name() << " has accounts_repository_data_location " << dir << ", but this is not a directory";
+            Log::get_instance()->message("accounts.empty_key_from_repository", ll_warning, lc_context)
+                << "Repository " << repository->name() << " has accounts_repository_data_location " << dir << ", but this is not a directory";
             continue;
         }
 
         std::shared_ptr<Set<std::string> > r_set(std::make_shared<Set<std::string>>());
-        r_set->insert(stringify((*r)->name()));
+        r_set->insert(stringify(repository->name()));
         std::shared_ptr<LiteralMetadataStringSetKey> r_key(std::make_shared<LiteralMetadataStringSetKey>("defined_by", "Defined by repository", mkt_internal, r_set));
         _load_one(repository_name, r_key, dir);
     }

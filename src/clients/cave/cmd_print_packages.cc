@@ -94,15 +94,13 @@ PrintPackagesCommand::run(
 
     std::set<QualifiedPackageName> all_packages;
 
-    for (auto r(env->begin_repositories()), r_end(env->end_repositories());
-            r != r_end; ++r)
+    for (const auto & repository : env->repositories())
     {
         if (cmdline.a_repository.specified())
-            if (cmdline.a_repository.end_args() == std::find(
-                        cmdline.a_repository.begin_args(), cmdline.a_repository.end_args(), stringify((*r)->name())))
+            if (cmdline.a_repository.end_args() == std::find(cmdline.a_repository.begin_args(), cmdline.a_repository.end_args(), stringify(repository->name())))
                 continue;
 
-        std::shared_ptr<const CategoryNamePartSet> categories((*r)->category_names({ }));
+        std::shared_ptr<const CategoryNamePartSet> categories(repository->category_names({}));
         for (CategoryNamePartSet::ConstIterator c(categories->begin()), c_end(categories->end());
                 c != c_end; ++c)
         {
@@ -111,7 +109,7 @@ PrintPackagesCommand::run(
                             cmdline.a_category.begin_args(), cmdline.a_category.end_args(), stringify(*c)))
                     continue;
 
-            std::shared_ptr<const QualifiedPackageNameSet> packages((*r)->package_names(*c, { }));
+            std::shared_ptr<const QualifiedPackageNameSet> packages(repository->package_names(*c, { }));
             std::copy(packages->begin(), packages->end(), std::inserter(all_packages, all_packages.begin()));
         }
     }

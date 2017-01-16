@@ -75,30 +75,28 @@ FindRepositoryForHelper::operator() (
 {
     std::shared_ptr<const Repository> result;
 
-    for (auto r(_imp->env->begin_repositories()), r_end(_imp->env->end_repositories()) ;
-            r != r_end ; ++r)
+    for (const auto & repository : _imp->env->repositories())
     {
         switch (resolution->resolvent().destination_type())
         {
             case dt_install_to_slash:
-                if ((! (*r)->installed_root_key()) ||
-                    ((*r)->installed_root_key()->parse_value() != _imp->env->system_root_key()->parse_value()))
+                if ((!repository->installed_root_key()) || (repository->installed_root_key()->parse_value() != _imp->env->system_root_key()->parse_value()))
                     continue;
                 break;
 
             case dt_install_to_chroot:
                 if (_imp->chroot_path) {
-                    if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->parse_value() != *_imp->chroot_path))
+                    if ((!repository->installed_root_key()) || (repository->installed_root_key()->parse_value() != *_imp->chroot_path))
                         continue;
                 }
                 else {
-                    if ((! (*r)->installed_root_key()) || ((*r)->installed_root_key()->parse_value() == _imp->env->system_root_key()->parse_value()))
+                    if ((!repository->installed_root_key()) || (repository->installed_root_key()->parse_value() == _imp->env->system_root_key()->parse_value()))
                         continue;
                 }
                 break;
 
             case dt_create_binary:
-                if ((*r)->installed_root_key())
+                if (repository->installed_root_key())
                     continue;
                 break;
 
@@ -106,26 +104,22 @@ FindRepositoryForHelper::operator() (
                 break;
         }
 
-        if ((*r)->destination_interface() &&
-                (*r)->destination_interface()->is_suitable_destination_for(decision.origin_id()))
+        if (repository->destination_interface() && repository->destination_interface()->is_suitable_destination_for(decision.origin_id()))
         {
             if (result)
             {
-                if (is_fake(*r) && ! is_fake(result))
-                {
-                }
-                else if (is_fake(result) && ! is_fake(*r))
-                {
-                    result = *r;
-                }
+                if (is_fake(repository) && ! is_fake(result))
+                    ;
+                else if (is_fake(result) && ! is_fake(repository))
+                    result = repository;
                 else
-                    throw ConfigurationError("For '" + stringify(*decision.origin_id())
-                            + "' with destination type " + stringify(resolution->resolvent().destination_type())
-                            + ", don't know whether to install to ::" + stringify(result->name())
-                            + " or ::" + stringify((*r)->name()));
+                    throw ConfigurationError("For '" + stringify(*decision.origin_id()) + "' with destination type " + stringify(resolution->resolvent().destination_type()) +
+                                             ", don't know whether to install to ::" + stringify(result->name()) + " or ::" + stringify(repository->name()));
             }
             else
-                result = *r;
+            {
+                result = repository;
+            }
         }
     }
 

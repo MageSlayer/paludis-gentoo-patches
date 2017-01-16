@@ -308,14 +308,12 @@ EInstalledRepository::perform_info(
         /* try to find an info_vars file from any repo */
         if (! i)
         {
-            for (auto r(_imp->params.environment()->begin_repositories()), r_end(_imp->params.environment()->end_repositories()) ;
-                    r != r_end ; ++r)
+            for (const auto & repository : _imp->params.environment()->repositories())
             {
-                Repository::MetadataConstIterator m((*r)->find_metadata("info_vars"));
-                if ((*r)->end_metadata() != m)
+                Repository::MetadataConstIterator m(repository->find_metadata("info_vars"));
+                if (repository->end_metadata() != m)
                 {
-                    const MetadataCollectionKey<Set<std::string> > * const mm(
-                            visitor_cast<const MetadataCollectionKey<Set<std::string> > >(**m));
+                    const MetadataCollectionKey<Set<std::string>> * const mm(visitor_cast<const MetadataCollectionKey<Set<std::string>>>(**m));
                     if (mm)
                     {
                         i = mm->parse_value();

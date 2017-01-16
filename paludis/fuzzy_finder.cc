@@ -209,9 +209,9 @@ FuzzyRepositoriesFinder::FuzzyRepositoriesFinder(const Environment & e, const st
         }
     }
 
-    for (auto r(e.begin_repositories()), r_end(e.end_repositories()) ; r != r_end ; ++r)
-        if (distance_calculator.distance_with(tolower_0_cost(stringify((*r)->name()))) <= threshold)
-            _imp->candidates.push_back((*r)->name());
+    for (const auto & repository : e.repositories())
+        if (distance_calculator.distance_with(tolower_0_cost(stringify(repository->name()))) <= threshold)
+            _imp->candidates.push_back(repository->name());
 }
 
 FuzzyRepositoriesFinder::~FuzzyRepositoriesFinder() = default;

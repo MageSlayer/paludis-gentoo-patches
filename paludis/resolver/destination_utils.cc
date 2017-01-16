@@ -65,17 +65,16 @@ namespace
     struct BinaryDestinationGeneratorHandler :
         AllGeneratorHandlerBase
     {
-        std::shared_ptr<const RepositoryNameSet> repositories(
-                const Environment * const env,
-                const RepositoryContentMayExcludes &) const override
+        std::shared_ptr<const RepositoryNameSet>
+        repositories(const Environment * const env,
+                     const RepositoryContentMayExcludes &) const override
         {
-            using namespace std::placeholders;
-            std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
-            for (auto r(env->begin_repositories()), r_end(env->end_repositories()) ;
-                    r != r_end ; ++r)
-                if (! (*r)->installed_root_key())
-                    if ((*r)->destination_interface())
-                        result->insert((*r)->name());
+            auto result(std::make_shared<RepositoryNameSet>());
+
+            for (const auto & repository : env->repositories())
+                if (! repository->installed_root_key())
+                    if (repository->destination_interface())
+                        result->insert(repository->name());
 
             return result;
         }

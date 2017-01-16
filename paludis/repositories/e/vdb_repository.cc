@@ -1100,41 +1100,38 @@ VDBRepository::perform_updates()
     std::cout << std::endl << "Checking for updates (package moves etc):" << std::endl;
 
     std::map<FSPath, std::time_t, FSPathComparator> update_timestamps;
-    for (auto r(_imp->params.environment()->begin_repositories()),
-            r_end(_imp->params.environment()->end_repositories()) ;
-            r != r_end ; ++r)
+    for (const auto & repository : _imp->params.environment()->repositories())
     {
-        Context context_2("When performing updates from '" + stringify((*r)->name()) + "':");
+        Context context_2("When performing updates from '" + stringify(repository->name()) + "':");
 
         try
         {
-            if (0 == stringify((*r)->name()).compare(0, 2, "x-"))
+            if (0 == stringify(repository->name()).compare(0, 2, "x-"))
             {
                 /* ticket:897. not really the best solution, but it'll do for now. */
                 continue;
             }
 
-            Repository::MetadataConstIterator k_iter((*r)->find_metadata("e_updates_location"));
-            if (k_iter == (*r)->end_metadata())
+            Repository::MetadataConstIterator k_iter(repository->find_metadata("e_updates_location"));
+            if (k_iter == repository->end_metadata())
             {
-                Log::get_instance()->message("e.vdb.updates.no_key", ll_debug, lc_context) <<
-                    "Repository " << (*r)->name() << " defines no e_updates_location key";
+                Log::get_instance()->message("e.vdb.updates.no_key", ll_debug, lc_context) << "Repository " << repository->name() << " defines no e_updates_location key";
                 continue;
             }
 
             const MetadataValueKey<FSPath> * k(visitor_cast<const MetadataValueKey<FSPath> >(**k_iter));
             if (! k)
             {
-                Log::get_instance()->message("e.vdb.udpates.bad_key", ll_warning, lc_context) <<
-                    "Repository " << (*r)->name() << " defines an e_updates_location key, but it is not an FSPath key";
+                Log::get_instance()->message("e.vdb.udpates.bad_key", ll_warning, lc_context)
+                    << "Repository " << repository->name() << " defines an e_updates_location key, but it is not an FSPath key";
                 continue;
             }
 
             FSPath dir(k->parse_value());
             if (! dir.stat().is_directory_or_symlink_to_directory())
             {
-                Log::get_instance()->message("e.vdb.updates.bad_key", ll_warning, lc_context) <<
-                    "Repository " << (*r)->name() << " has e_updates_location " << dir << ", but this is not a directory";
+                Log::get_instance()->message("e.vdb.updates.bad_key", ll_warning, lc_context)
+                    << "Repository " << repository->name() << " has e_updates_location " << dir << ", but this is not a directory";
                 continue;
             }
 

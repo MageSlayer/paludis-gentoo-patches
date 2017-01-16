@@ -188,11 +188,10 @@ PrintUnusedDistfilesCommand::run(
 
     std::set<FSPath, FSPathComparator> distdirs;
 
-    for (auto repo(env->begin_repositories()), end(env->end_repositories()) ;
-            repo != end ; ++repo)
+    for (const auto & repository : env->repositories())
     {
-        auto distdir_metadata((*repo)->find_metadata("distdir"));
-        if (distdir_metadata != (*repo)->end_metadata())
+        auto distdir_metadata(repository->find_metadata("distdir"));
+        if (distdir_metadata != repository->end_metadata())
         {
             auto path_key(visitor_cast<const MetadataValueKey<FSPath>>(**distdir_metadata));
             if (path_key)

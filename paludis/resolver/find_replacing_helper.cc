@@ -68,12 +68,10 @@ FindReplacingHelper::set_one_binary_per_slot(bool value)
 }
 
 const std::shared_ptr<const PackageIDSequence>
-FindReplacingHelper::operator() (
-        const std::shared_ptr<const PackageID> & id,
-        const std::shared_ptr<const Repository> & repo) const
+FindReplacingHelper::operator()(const std::shared_ptr<const PackageID> & id,
+                                const std::shared_ptr<const Repository> & repo) const
 {
-    Context context("When working out what is replaced by '" + stringify(*id) +
-            "' when it is installed to '" + stringify(repo->name()) + "':");
+    Context context("When working out what is replaced by '" + stringify(*id) + "' when it is installed to '" + stringify(repo->name()) + "':");
 
     std::set<RepositoryName> repos;
 
@@ -81,15 +79,9 @@ FindReplacingHelper::operator() (
     {
         const auto & dest_root = repo->installed_root_key()->parse_value();
 
-        for (auto r(_imp->env->begin_repositories()), r_end(_imp->env->end_repositories()) ;
-                r != r_end ; ++r)
-        {
-            const auto repository = *r;
-
-            if (repository->installed_root_key() &&
-                    repository->installed_root_key()->parse_value() == dest_root)
+        for (const auto & repository : _imp->env->repositories())
+            if (repository->installed_root_key() && repository->installed_root_key()->parse_value() == dest_root)
                 repos.insert(repository->name());
-        }
     }
     else
         repos.insert(repo->name());
@@ -97,14 +89,10 @@ FindReplacingHelper::operator() (
     std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
     for (const auto & r : repos)
     {
-        std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsUnsorted(
-                    generator::Package(id->name()) & generator::InRepository(r))]);
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
-        {
-            if ((*i)->version() == id->version() || (same_slot(*i, id) && (_imp->one_binary_per_slot || repo->installed_root_key())))
-                result->push_back(*i);
-        }
+        std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::AllVersionsUnsorted(generator::Package(id->name()) & generator::InRepository(r))]);
+        for (const auto & package : *ids)
+            if (package->version() == id->version() || (same_slot(package, id) && (_imp->one_binary_per_slot || repo->installed_root_key())))
+                result->push_back(package);
     }
 
     return result;

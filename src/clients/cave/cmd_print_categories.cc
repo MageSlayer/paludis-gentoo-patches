@@ -95,12 +95,10 @@ PrintCategoriesCommand::run(
         throw args::DoHelp("print-categories takes no parameters");
 
     std::set<CategoryNamePart> categories;
-    for (auto r(env->begin_repositories()), r_end(env->end_repositories()) ;
-            r != r_end ; ++r)
+    for (const auto & repository : env->repositories())
     {
         if (cmdline.a_repository.specified())
-            if (cmdline.a_repository.end_args() == std::find(cmdline.a_repository.begin_args(),
-                        cmdline.a_repository.end_args(), stringify((*r)->name())))
+            if (cmdline.a_repository.end_args() == std::find(cmdline.a_repository.begin_args(), cmdline.a_repository.end_args(), stringify(repository->name())))
                 continue;
 
         if (cmdline.a_containing.specified())
@@ -108,13 +106,13 @@ PrintCategoriesCommand::run(
             for (args::StringSetArg::ConstIterator p(cmdline.a_containing.begin_args()), p_end(cmdline.a_containing.end_args()) ;
                     p != p_end ; ++p)
             {
-                std::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names_containing_package(PackageNamePart(*p), { }));
+                std::shared_ptr<const CategoryNamePartSet> cats(repository->category_names_containing_package(PackageNamePart(*p), { }));
                 std::copy(cats->begin(), cats->end(), std::inserter(categories, categories.begin()));
             }
         }
         else
         {
-            std::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names({ }));
+            std::shared_ptr<const CategoryNamePartSet> cats(repository->category_names({ }));
             std::copy(cats->begin(), cats->end(), std::inserter(categories, categories.begin()));
         }
     }
