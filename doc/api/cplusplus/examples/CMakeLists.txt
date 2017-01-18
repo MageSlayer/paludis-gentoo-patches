@@ -13,7 +13,7 @@ paludis_add_library(libpaludisexamples
 target_link_libraries(libpaludisexamples
                       INTERFACE
                         libpaludisargs)
-add_dependencies(libpaludisexamples libpaludisargs_SE)
+add_dependencies(libpaludisexamples libpaludisargs_SE libpaludisutil_SE)
 
 function(add_example example)
   add_executable(example_${example}
