@@ -27,6 +27,7 @@
 #include <paludis/version_spec.hh>
 #include <paludis/action.hh>
 #include <paludis/dep_spec.hh>
+#include <paludis/contents.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 
 using namespace paludis;

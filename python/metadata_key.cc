@@ -27,6 +27,8 @@
 #include <paludis/environment.hh>
 #include <paludis/maintainer.hh>
 #include <paludis/slot.hh>
+#include <paludis/choice.hh>
+#include <paludis/package_id.hh>
 #include <paludis/util/set.hh>
 #include <paludis/util/sequence.hh>
 #include <paludis/util/timestamp.hh>

@@ -34,6 +34,8 @@
 #include <paludis/standard_output_manager.hh>
 #include <paludis/environment.hh>
 #include <paludis/environment_factory.hh>
+#include <paludis/mask.hh>
+#include <paludis/repository.hh>
 
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/tribool.hh>

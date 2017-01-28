@@ -21,6 +21,7 @@
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/fs_path.hh>
 #include <paludis/contents.hh>
+#include <paludis/metadata_key.hh>
 
 using namespace paludis;
 using namespace paludis::python;
