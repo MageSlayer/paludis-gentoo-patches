@@ -277,9 +277,8 @@ namespace
             }
 
             std::string command(cmdline.program_options.a_perform_program.argument());
-            for (Sequence<std::string>::ConstIterator a(args->begin()), a_end(args->end()) ;
-                    a != a_end ; ++a)
-                command = command + " " + args::escape(*a);
+            for (const auto & arg : *args)
+                command = command + " " + args::escape(arg);
 
             IPCInputManager input_manager(env.get(), std::function<void (const std::shared_ptr<OutputManager> &)>());
 
@@ -311,17 +310,16 @@ namespace
         std::string r;
 
         if (maybe_replacing_specs)
-            for (auto i(maybe_replacing_specs->begin()), i_end(maybe_replacing_specs->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & spec : *maybe_replacing_specs)
             {
                 if (r.empty())
                     r = " replacing ";
                 else
                     r.append(", ");
 
-                const auto replacing_ids((*env)[selection::BestVersionOnly(generator::Matches(*i, nullptr, { }))]);
+                const auto replacing_ids((*env)[selection::BestVersionOnly(generator::Matches(spec, nullptr, { }))]);
                 if (replacing_ids->empty())
-                    r.append(stringify(*i));
+                    r.append(stringify(spec));
                 else if (id_specs->empty() || *id_specs->begin()->package_ptr() != (*replacing_ids->begin())->name())
                     r.append(stringify(**replacing_ids->begin()));
                 else
@@ -338,15 +336,14 @@ namespace
         std::string r;
 
         if (id_specs)
-            for (auto i(id_specs->begin()), i_end(id_specs->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & id : *id_specs)
             {
                 if (! r.empty())
                     r.append(", ");
 
-                const auto ids((*env)[selection::BestVersionOnly(generator::Matches(*i, nullptr, { }))]);
+                const auto ids((*env)[selection::BestVersionOnly(generator::Matches(id, nullptr, { }))]);
                 if (ids->empty())
-                    r.append(stringify(*i));
+                    r.append(stringify(id));
                 else
                     r.append(stringify(**ids->begin()));
             }
@@ -504,10 +501,8 @@ namespace
             command.append("--output-exclusivity with-others ");
         command.append(stringify(id_spec));
         command.append(" --destination " + stringify(destination_repository_name));
-        for (Sequence<PackageDepSpec>::ConstIterator i(replacing_specs->begin()),
-                i_end(replacing_specs->end()) ;
-                i != i_end ; ++i)
-            command.append(" --replacing " + stringify(*i));
+        for (const auto & spec : *replacing_specs)
+            command.append(" --replacing " + stringify(spec));
 
         command.append(" --x-of-y '" + make_x_of_y(x, y, f, s) + "'");
 
@@ -743,15 +738,13 @@ namespace
                     nullptr).max_exit_status())
             throw ActionAbortedError("Aborted by hook");
 
-        for (JobList<PretendJob>::ConstIterator c(lists->pretend_job_list()->begin()),
-                c_end(lists->pretend_job_list()->end()) ;
-                c != c_end ; ++c)
+        for (const auto & job : *lists->pretend_job_list())
         {
             if (++x == 1)
                 cout << "Executing pretend actions: " << std::flush;
 
             std::shared_ptr<OutputManager> output_manager_goes_here;
-            if (! do_pretend(env, cmdline, (*c)->origin_id_spec(), (*c)->destination_repository_name(),
+            if (! do_pretend(env, cmdline, job->origin_id_spec(), job->destination_repository_name(),
                     x, y, f, s, string_to_backspace, output_manager_goes_here))
             {
                 failed = true;
@@ -952,10 +945,8 @@ namespace
                             uninstall_item.set_state(active_state);
                         }
 
-                        for (Sequence<PackageDepSpec>::ConstIterator i(uninstall_item.ids_to_remove_specs()->begin()),
-                                i_end(uninstall_item.ids_to_remove_specs()->end()) ;
-                                i != i_end ; ++i)
-                            if (! do_uninstall(env, cmdline, n_fetch_jobs, *i, counts.x_installs, counts.y_installs,
+                        for (const auto & id : *uninstall_item.ids_to_remove_specs())
+                            if (! do_uninstall(env, cmdline, n_fetch_jobs, id, counts.x_installs, counts.y_installs,
                                         counts.f_installs, counts.s_installs, uninstall_item.was_target(),
                                         job_mutex, *active_state, executor_mutex))
                             {
@@ -1237,13 +1228,12 @@ namespace
 
         bool can_run() const override
         {
-            for (JobRequirements::ConstIterator r(job->requirements()->begin()), r_end(job->requirements()->end()) ;
-                    r != r_end ; ++r)
+            for (const auto & requirement : *job->requirements())
             {
-                if (! r->required_if()[jri_fetching])
+                if (! requirement.required_if()[jri_fetching])
                     continue;
 
-                const std::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(r->job_number()));
+                const std::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(requirement.job_number()));
                 if (! req->state()->make_accept_returning(
                             [&] (const JobSkippedState &)   { return true; },
                             [&] (const JobPendingState &)   { return false; },
@@ -1302,13 +1292,12 @@ namespace
                     want = false;
                 else
                 {
-                    for (JobRequirements::ConstIterator r(job->requirements()->begin()), r_end(job->requirements()->end()) ;
-                            r != r_end && want ; ++r)
+                    for (const auto & requirement : *job->requirements())
                     {
-                        if (! r->required_if()[require_if])
+                        if (! requirement.required_if()[require_if])
                             continue;
 
-                        const std::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(r->job_number()));
+                        const std::shared_ptr<const ExecuteJob> req(*lists->execute_job_list()->fetch(requirement.job_number()));
                         want = want && req->state()->make_accept_returning(
                                 [&] (const JobPendingState &) {
                                     /* it's still pending because it's a circular dep that we ended up ignoring */
@@ -1468,10 +1457,8 @@ namespace
         std::mutex retcode_mutex;
         ExecuteCounts counts;
 
-        for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
-                c_end(lists->execute_job_list()->end()) ;
-                c != c_end ; ++c)
-            (*c)->accept(counts);
+        for (const auto & job : *lists->execute_job_list())
+            job->accept(counts);
 
         if (0 != env->perform_hook(Hook("install_all_pre")
                     ("TARGETS", join(cmdline.begin_parameters(), cmdline.end_parameters(), " ")),
@@ -1495,10 +1482,8 @@ namespace
         Executor executor(100);
 
         std::string old_heading;
-        for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
-                c_end(lists->execute_job_list()->end()) ;
-                c != c_end ; ++c)
-            executor.add(std::make_shared<ExecuteJobExecutive>(env, cmdline, executor, n_fetch_jobs, *c, lists, require_if, retcode_mutex,
+        for (const auto & job : *lists->execute_job_list())
+            executor.add(std::make_shared<ExecuteJobExecutive>(env, cmdline, executor, n_fetch_jobs, job, lists, require_if, retcode_mutex,
                             retcode, counts, old_heading));
 
         executor.execute();
@@ -1517,11 +1502,9 @@ namespace
             const ExecuteResolutionCommandLine & cmdline,
             const int n_fetch_jobs)
     {
-        for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
-                c_end(lists->execute_job_list()->end()) ;
-                c != c_end ; ++c)
-            if (! (*c)->state())
-                (*c)->set_state(std::make_shared<JobPendingState>());
+        for (const auto & job : *lists->execute_job_list())
+            if (! job->state())
+                job->set_state(std::make_shared<JobPendingState>());
 
         int retcode(0);
 
@@ -1560,17 +1543,16 @@ namespace
             {
                 const auto origin_ids((*env)[selection::BestVersionOnly(generator::Matches(j.origin_id_spec(), nullptr, { }))]);
 
-                for (auto i(j.replacing_specs()->begin()), i_end(j.replacing_specs()->end()) ;
-                        i != i_end ; ++i)
+                for (const auto & spec : *j.replacing_specs())
                 {
                     if (r.empty())
                         r = " replacing ";
                     else
                         r.append(", ");
 
-                    const auto ids((*env)[selection::BestVersionOnly(generator::Matches(*i, nullptr, { }))]);
+                    const auto ids((*env)[selection::BestVersionOnly(generator::Matches(spec, nullptr, { }))]);
                     if (ids->empty())
-                        r.append(stringify(*i));
+                        r.append(stringify(spec));
                     else if (origin_ids->empty() || (*origin_ids->begin())->name() != (*ids->begin())->name())
                         r.append(stringify(**ids->begin()));
                     else
@@ -1662,12 +1644,10 @@ namespace
     {
         bool done_heading(false);
 
-        for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
-                c_end(lists->execute_job_list()->end()) ;
-                c != c_end ; ++c)
+        for (const auto & job : *lists->execute_job_list())
         {
-            (*c)->state()->accept(SummaryDisplayer(env, *c, something_failed, done_heading));
-            (*c)->set_state(nullptr);
+            job->state()->accept(SummaryDisplayer(env, job, something_failed, done_heading));
+            job->set_state(nullptr);
         }
     }
 
