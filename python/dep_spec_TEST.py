@@ -31,6 +31,7 @@ class TestCase_1_DepSpecs(unittest.TestCase):
         self.pds3 = parse_user_package_dep_spec("*/*::testrepo", self.env,
                 [UserPackageDepSpecOption.ALLOW_WILDCARDS])
         self.pds4 = parse_user_package_dep_spec("cat/pkg::testrepo", self.env, [])
+        self.pds5 = parse_user_package_dep_spec(">=foo/bar-1:3/4::testrepo", self.env, [])
         self.bds = BlockDepSpec("!>=foo/bar-1:100::testrepo", self.pds)
         self.nds = NamedSetDepSpec("system")
 
@@ -64,6 +65,10 @@ class TestCase_1_DepSpecs(unittest.TestCase):
         self.assertEqual(str(self.pds.slot_requirement.slot), "100")
 
         self.assertEqual(self.pds2.slot_requirement, None)
+
+        self.assert_(isinstance(self.pds5.slot_requirement, SlotExactFullRequirement))
+        self.assertEqual(str(self.pds5.slot_requirement.slots[0]), "3")
+        self.assertEqual(str(self.pds5.slot_requirement.slots[1]), "4")
 
     def test_05_package(self):
         self.get_depspecs()

@@ -138,6 +138,7 @@ void expose_slot_requirement()
      */
     register_shared_ptrs_to_python<SlotExactFullRequirement>(rsp_const);
     bp::implicitly_convertible<std::shared_ptr<SlotExactFullRequirement>, std::shared_ptr<SlotRequirement> >();
+    bp::to_python_converter<std::pair<SlotName, SlotName>, pair_to_tuple<SlotName, SlotName>>();
     bp::class_<SlotExactFullRequirement, std::shared_ptr<SlotExactFullRequirement>, bp::bases<SlotRequirement>, boost::noncopyable>
         (
          "SlotExactFullRequirement",
@@ -145,6 +146,11 @@ void expose_slot_requirement()
          "such as ``:3/3`` or ``:=3/3``.",
          bp::no_init
         )
+
+        .add_property("slots", &SlotExactFullRequirement::slots,
+                "[ro] (SlotName, SlotName)\n"
+                "The slot parts in question."
+                )
         ;
 
     /**
@@ -171,6 +177,11 @@ void expose_slot_requirement()
          "A SlotAnyPartialLockedRequirement is a SlotRequirement for ``:3=`` slot requirements.",
          bp::no_init
         )
+
+        .add_property("slot", &SlotAnyPartialLockedRequirement::slot,
+                "[ro] SlotName\n"
+                "The slot in question."
+                )
         ;
 
     /**
