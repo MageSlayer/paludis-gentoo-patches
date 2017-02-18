@@ -205,12 +205,18 @@ if(NOT USE_PREBUILT_DOCUMENTATION)
                      DEPENDS
                        "${PROJECT_SOURCE_DIR}/misc/asciidoc.conf"
                        "${CMAKE_CURRENT_BINARY_DIR}/cave.txt")
+  # without a target inbetween asciidoc and the consumers of the .xml, asciidoc will be run multiple times in parallel, leading to half-written .xml files and breaking parallel build.
+  add_custom_target(cave-xml-generator
+                    DEPENDS
+                      "${CMAKE_CURRENT_BINARY_DIR}/cave.xml"
+                    COMMENT
+                      "Checking if cave.xml needs to be generated")
   add_custom_command(OUTPUT
                        "${CMAKE_CURRENT_BINARY_DIR}/cave.1"
                      COMMAND
                        xmlto man "${CMAKE_CURRENT_BINARY_DIR}/cave.xml"
                      DEPENDS
-                       "${CMAKE_CURRENT_BINARY_DIR}/cave.xml")
+                       cave-xml-generator)
   add_custom_command(OUTPUT
                        "${CMAKE_CURRENT_BINARY_DIR}/cave.html-man-fragment"
                      COMMAND
@@ -222,7 +228,7 @@ if(NOT USE_PREBUILT_DOCUMENTATION)
                        "${CMAKE_CURRENT_BINARY_DIR}/cave.html-man-fragment-dir/index.html"
                        "${CMAKE_CURRENT_BINARY_DIR}/cave.html-man-fragment-dir"
                      DEPENDS
-                       "${CMAKE_CURRENT_BINARY_DIR}/cave.xml")
+                       cave-xml-generator)
 
   foreach(subcommand ${CAVE_SUBCOMMANDS})
     add_custom_command(OUTPUT
@@ -238,12 +244,18 @@ if(NOT USE_PREBUILT_DOCUMENTATION)
                        DEPENDS
                          "${PROJECT_SOURCE_DIR}/misc/asciidoc.conf"
                          "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.txt")
+    # without a target inbetween asciidoc and the consumers of the .xml, asciidoc will be run multiple times in parallel, leading to half-written .xml files and breaking parallel build.
+    add_custom_target(cave-${subcommand}-xml-generator
+                      DEPENDS
+                        "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.xml"
+                      COMMENT
+                        "Checking if cave-${subcommand}.xml needs to be generated")
     add_custom_command(OUTPUT
                          "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.1"
                        COMMAND
                          xmlto man "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.xml"
                        DEPENDS
-                         "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.xml")
+                         cave-${subcommand}-xml-generator)
     add_custom_command(OUTPUT
                          "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.html-man-fragment"
                        COMMAND
@@ -255,7 +267,7 @@ if(NOT USE_PREBUILT_DOCUMENTATION)
                          "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.html-man-fragment-dir/index.html"
                          "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.html-man-fragment-dir"
                        DEPENDS
-                         "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.xml")
+                         cave-${subcommand}-xml-generator)
   endforeach()
 
   set(html-fragments "${CMAKE_CURRENT_BINARY_DIR}/cave.html-man-fragment")
