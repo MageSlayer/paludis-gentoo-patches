@@ -201,9 +201,7 @@ if(NOT USE_PREBUILT_DOCUMENTATION)
   add_custom_command(OUTPUT
                        "${CMAKE_CURRENT_BINARY_DIR}/cave.xml"
                      COMMAND
-                       asciidoc --doctype=manpage --backend=docbook --out-file "${CMAKE_CURRENT_BINARY_DIR}/cave.xml.tmp" --conf "${PROJECT_SOURCE_DIR}/misc/asciidoc.conf" "${CMAKE_CURRENT_BINARY_DIR}/cave.txt"
-                     COMMAND
-                       mv "${CMAKE_CURRENT_BINARY_DIR}/cave.xml.tmp" "${CMAKE_CURRENT_BINARY_DIR}/cave.xml"
+                       asciidoc --doctype=manpage --backend=docbook --out-file "${CMAKE_CURRENT_BINARY_DIR}/cave.xml" --conf "${PROJECT_SOURCE_DIR}/misc/asciidoc.conf" "${CMAKE_CURRENT_BINARY_DIR}/cave.txt"
                      DEPENDS
                        "${PROJECT_SOURCE_DIR}/misc/asciidoc.conf"
                        "${CMAKE_CURRENT_BINARY_DIR}/cave.txt")
@@ -236,9 +234,7 @@ if(NOT USE_PREBUILT_DOCUMENTATION)
     add_custom_command(OUTPUT
                          "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.xml"
                        COMMAND
-                         asciidoc --doctype=manpage --backend=docbook --out-file "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.xml.tmp" --conf "${PROJECT_SOURCE_DIR}/misc/asciidoc.conf" "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.txt"
-                       COMMAND
-                         mv "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.xml.tmp" "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.xml"
+                         asciidoc --doctype=manpage --backend=docbook --out-file "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.xml" --conf "${PROJECT_SOURCE_DIR}/misc/asciidoc.conf" "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.txt"
                        DEPENDS
                          "${PROJECT_SOURCE_DIR}/misc/asciidoc.conf"
                          "${CMAKE_CURRENT_BINARY_DIR}/cave-${subcommand}.txt")
