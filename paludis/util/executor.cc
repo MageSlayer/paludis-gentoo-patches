@@ -27,6 +27,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <iostream>
+#include <functional>
 
 using namespace paludis;
 

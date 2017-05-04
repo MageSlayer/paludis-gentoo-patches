@@ -34,6 +34,7 @@
 #include <paludis/match_package-fwd.hh>
 #include <paludis/repository-fwd.hh>
 #include <memory>
+#include <functional>
 
 /** \file
  * Declarations for the Filter class.
