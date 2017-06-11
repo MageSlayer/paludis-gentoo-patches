@@ -157,11 +157,11 @@ namespace
             default:
                 if (0 == pkg.compare(pkg.length() - 6, 6, "-darcs"))
                     return true;
-
+                [[gnu::fallthrough]];
             case 5:
                 if (0 == pkg.compare(pkg.length() - 5, 5, "-live"))
                     return true;
-
+                [[gnu::fallthrough]];
             case 4:
                 if (0 == pkg.compare(pkg.length() - 4, 4, "-cvs"))
                     return true;
