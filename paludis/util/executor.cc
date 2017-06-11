@@ -21,13 +21,13 @@
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/exception.hh>
 #include <paludis/util/stringify.hh>
-#include <map>
-#include <list>
-#include <thread>
-#include <mutex>
 #include <condition_variable>
-#include <iostream>
 #include <functional>
+#include <iostream>
+#include <list>
+#include <map>
+#include <mutex>
+#include <thread>
 
 using namespace paludis;
 
