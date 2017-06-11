@@ -27,6 +27,6 @@ using namespace paludis;
 
 TEST(FilteredGenerator, Works)
 {
-    generator::All() | filter::All();
+    auto packages = generator::All() | filter::All();
 }
 
