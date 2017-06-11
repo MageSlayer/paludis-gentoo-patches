@@ -33,6 +33,7 @@
 #include <paludis/dep_spec-fwd.hh>
 #include <paludis/match_package-fwd.hh>
 #include <paludis/repository-fwd.hh>
+#include <functional>
 #include <memory>
 #include <functional>
 
