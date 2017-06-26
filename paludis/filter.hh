@@ -35,7 +35,6 @@
 #include <paludis/repository-fwd.hh>
 #include <functional>
 #include <memory>
-#include <functional>
 
 /** \file
  * Declarations for the Filter class.
