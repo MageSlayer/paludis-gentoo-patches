@@ -155,28 +155,24 @@ paludis::resolver::get_sameness(
             existing_choices = existing_id->choices_key()->parse_value();
 
             std::set<ChoiceNameWithPrefix> i_common, u_common;
-            for (Choices::ConstIterator k(installable_choices->begin()), k_end(installable_choices->end()) ;
-                    k != k_end ; ++k)
+            for (const auto & c : *installable_choices)
             {
-                if (! (*k)->consider_added_or_changed())
+                if (! c->consider_added_or_changed())
                     continue;
 
-                for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
-                        i != i_end ; ++i)
-                    if (co_explicit == (*i)->origin())
-                        i_common.insert((*i)->name_with_prefix());
+                for (const auto & v : *c)
+                    if (co_explicit == v->origin())
+                        i_common.insert(v->name_with_prefix());
             }
 
-            for (Choices::ConstIterator k(existing_choices->begin()), k_end(existing_choices->end()) ;
-                    k != k_end ; ++k)
+            for (const auto & c : *existing_choices)
             {
-                if (! (*k)->consider_added_or_changed())
+                if (! c->consider_added_or_changed())
                     continue;
 
-                for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
-                        i != i_end ; ++i)
-                    if (co_explicit == (*i)->origin())
-                        u_common.insert((*i)->name_with_prefix());
+                for (const auto & v : *c)
+                    if (co_explicit == v->origin())
+                        u_common.insert(v->name_with_prefix());
             }
 
             std::set_intersection(
