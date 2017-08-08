@@ -95,14 +95,15 @@ namespace
             const std::shared_ptr<const RepositoryNameSet> &,
             const std::shared_ptr<const QualifiedPackageNameSet> & pkgs) const
     {
-        std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
+        auto result = std::make_shared<QualifiedPackageNameSet>();
+        if (_package.length() < 3)
+            return result;
 
-        for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()),
-                    p_end(pkgs->end()); p_end != p; ++p)
-            if (((_package.length() >= 3) && (std::string::npos != stringify(p->package()).find(_package))) || (
-                        tolower(p->package().value()[0]) == _first_char &&
-                        _distance_calculator.distance_with(tolower_0_cost(p->package().value())) <= _threshold))
-                result->insert(*p);
+        for (const auto & p : *pkgs)
+            if ((std::string::npos != stringify(p.package()).find(_package)) || (
+                        tolower(p.package().value()[0]) == _first_char &&
+                        _distance_calculator.distance_with(tolower_0_cost(p.package().value())) <= _threshold))
+                result->insert(p);
 
         return result;
     }
