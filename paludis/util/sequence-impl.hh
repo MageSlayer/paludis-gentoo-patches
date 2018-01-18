@@ -25,6 +25,7 @@
 #include <paludis/util/wrapped_output_iterator-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <list>
+#include <string>
 #include <iterator>
 
 /** \file

@@ -24,7 +24,7 @@
 #include <paludis/tar_merger.hh>
 #include <paludis/output_manager-fwd.hh>
 #include <paludis/package_id-fwd.hh>
-#include <tr1/memory>
+#include <memory>
 
 namespace paludis
 {

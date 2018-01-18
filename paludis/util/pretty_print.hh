@@ -22,6 +22,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <string>
+#include <time.h>
 
 /** \file
  * Pretty print function.

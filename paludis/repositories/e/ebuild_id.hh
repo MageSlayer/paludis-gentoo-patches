@@ -25,6 +25,7 @@
 #include <paludis/repositories/e/eapi-fwd.hh>
 #include <paludis/repositories/e/e_repository_id.hh>
 #include <paludis/util/exception.hh>
+#include <time.h>
 
 namespace paludis
 {

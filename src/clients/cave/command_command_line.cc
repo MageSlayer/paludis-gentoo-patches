@@ -18,6 +18,7 @@
  */
 
 #include "command_command_line.hh"
+#include <iostream>
 
 using namespace paludis;
 using namespace cave;
