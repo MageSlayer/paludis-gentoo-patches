@@ -266,7 +266,7 @@ namespace
 
             if (host.empty())
                 for (const auto & repository : *repos)
-                    if (auto cross_ompile_host_key = env->fetch_repository(repository)->cross_compile_host_key())
+                    if (auto cross_compile_host_key = env->fetch_repository(repository)->cross_compile_host_key())
                         continue;
                     else
                         result->insert(repository);
