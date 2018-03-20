@@ -62,6 +62,7 @@ namespace paludis
         bool follow_installed_dependencies;
         Tribool take_suggestions;
         Tribool take_recommendations;
+        std::string cross_compile_host;
 
         Imp(const Environment * const e) :
             env(e),
@@ -155,6 +156,12 @@ InterestInSpecHelper::set_take_recommendations(const Tribool v)
     _imp->take_recommendations = v;
 }
 
+void
+InterestInSpecHelper::set_cross_compile_host(const std::string & host)
+{
+    _imp->cross_compile_host = host;
+}
+
 namespace
 {
     bool ignore_dep_from(
@@ -176,6 +183,7 @@ namespace
         const PackageDepSpecCollection & no_dependencies_from_specs;
         const bool follow_installed_build_dependencies;
         const bool follow_installed_dependencies;
+        const std::string host;
         const SanitisedDependency dep;
 
         bool visit(const ExistingNoChangeDecision & decision) const
@@ -204,7 +212,8 @@ namespace
                 const std::shared_ptr<const PackageIDSequence> installed_ids(
                         (*env)[selection::SomeArbitraryVersion(
                             generator::Matches(*dep.spec().if_package(), dep.from_id(), { }) |
-                            filter::InstalledAtRoot(env->system_root_key()->parse_value()))]);
+                            filter::InstalledAtRoot(env->system_root_key()->parse_value()) |
+                            filter::CrossCompileHost(host))]);
                 if (installed_ids->empty())
                     return false;
             }
@@ -254,7 +263,7 @@ InterestInSpecHelper::operator() (const std::shared_ptr<const Resolution> & reso
     Context context("When determining interest in '" + stringify(dep.spec()) + "':");
 
     CareAboutDepFnVisitor v{_imp->env, _imp->no_blockers_from_specs, _imp->no_dependencies_from_specs,
-        _imp->follow_installed_build_dependencies, _imp->follow_installed_dependencies, dep};
+        _imp->follow_installed_build_dependencies, _imp->follow_installed_dependencies, _imp->cross_compile_host, dep};
 
     if (resolution->decision()->accept_returning<bool>(v))
     {
@@ -304,7 +313,8 @@ InterestInSpecHelper::operator() (const std::shared_ptr<const Resolution> & reso
         {
             const std::shared_ptr<const PackageIDSequence> installed_ids =
                 (*_imp->env)[selection::SomeArbitraryVersion(generator::Matches(*dep.spec().if_package(), dep.from_id(), {}) |
-                                                             filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()))];
+                                                             filter::InstalledAtRoot(_imp->env->system_root_key()->parse_value()) |
+                                                             filter::CrossCompileHost(_imp->cross_compile_host))];
             if (! installed_ids->empty())
                 return si_take;
         }

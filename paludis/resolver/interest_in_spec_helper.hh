@@ -59,6 +59,7 @@ namespace paludis
 
                 void set_take_suggestions(const Tribool);
                 void set_take_recommendations(const Tribool);
+                void set_cross_compile_host(const std::string &);
 
                 SpecInterest operator() (
                         const std::shared_ptr<const Resolution> &,

@@ -977,6 +977,8 @@ paludis::cave::resolve_common(
         remove_if_dependent_helper.add_remove_if_dependent_spec(parse_spec_with_nice_error(spec, env.get(), {updso_allow_wildcards}, filter::All()));
 
     InterestInSpecHelper interest_in_spec_helper(env.get());
+    if (resolution_options.a_cross_host.specified())
+        interest_in_spec_helper.set_cross_compile_host(resolution_options.a_cross_host.argument());
     for (const auto & spec : resolution_options.a_take.args())
     {
         bool might_be_group(std::string::npos ==
