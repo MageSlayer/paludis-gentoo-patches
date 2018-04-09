@@ -141,7 +141,10 @@ EbuildCommand::operator() ()
                     throw ActionFailedError("Need to be able to use non-0 user and group for userpriv for '" +
                             stringify(*package_id) + "'");
         }
-        process.setuid_setgid(params.environment()->reduced_uid(), params.environment()->reduced_gid());
+        process
+            .setuid_setgid(params.environment()->reduced_uid(), params.environment()->reduced_gid())
+            .setenv("USER", params.environment()->reduced_username())
+            .setenv("LOGNAME", params.environment()->reduced_username());
     }
 
     using namespace std::placeholders;
