@@ -422,6 +422,11 @@ namespace paludis
                 PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 
             /**
+             * User name to use when reduced privs are permissible.
+             */
+            virtual std::string reduced_username() const = 0;
+
+            /**
              * User id to use when reduced privs are permissible.
              */
             virtual uid_t reduced_uid() const = 0;

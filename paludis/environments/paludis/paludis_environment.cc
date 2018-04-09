@@ -294,6 +294,16 @@ PaludisEnvironment::mirrors(const std::string & m) const
     return _imp->config->mirrors_conf()->query(m);
 }
 
+std::string
+PaludisEnvironment::reduced_username() const
+{
+    uid_t u(getuid());
+    if (0 == u)
+        return _imp->config->reduced_username();
+    else
+        return get_user_name(u);
+}
+
 uid_t
 PaludisEnvironment::reduced_uid() const
 {

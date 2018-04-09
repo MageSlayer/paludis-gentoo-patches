@@ -115,6 +115,12 @@ TestEnvironment::accept_license(const std::string &, const std::shared_ptr<const
     return true;
 }
 
+std::string
+TestEnvironment::reduced_username() const
+{
+    return getenv_with_default(env_vars::reduced_username, get_user_name(getuid()));
+}
+
 uid_t
 TestEnvironment::reduced_uid() const
 {

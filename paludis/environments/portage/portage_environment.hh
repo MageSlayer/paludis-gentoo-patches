@@ -76,7 +76,6 @@ namespace paludis
             bool _add_string_to_world(const std::string &) const;
             bool _remove_string_from_world(const std::string &) const;
 
-            std::string reduced_username() const;
             std::string reduced_groupname() const;
 
         protected:
@@ -141,6 +140,8 @@ namespace paludis
 
             virtual bool unmasked_by_user(const std::shared_ptr<const PackageID> &, const std::string &) const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
+
+            virtual std::string reduced_username() const;
 
             virtual uid_t reduced_uid() const;
 

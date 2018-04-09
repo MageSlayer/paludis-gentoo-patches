@@ -85,6 +85,9 @@ namespace paludis
             virtual std::shared_ptr<const FSPathSequence> hook_dirs() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
+            virtual std::string reduced_username() const
+                PALUDIS_ATTRIBUTE((warn_unused_result));
+
             virtual uid_t reduced_uid() const
                 PALUDIS_ATTRIBUTE((warn_unused_result));
 
