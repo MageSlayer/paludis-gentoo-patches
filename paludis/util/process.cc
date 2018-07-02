@@ -98,7 +98,7 @@ namespace paludis
             argv_ptrs.clear();
         }
     };
-};
+}
 
 namespace
 {
