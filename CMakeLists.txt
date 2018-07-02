@@ -49,6 +49,11 @@ endif()
 
 set(PALUDIS_VIM_INSTALL_DIR "${CMAKE_INSTALL_FULL_DATADIR}/vim/vimfiles" CACHE PATH
     "vim installation directory")
+
+set(PYTHON_SUPPORTED_VERSIONS 2.7 3.5 3.6 3.7)
+set(PYTHON_VERSION "2.7" CACHE STRING
+  "Python version (${PYTHON_SUPPORTED_VERSIONS}) (requires corresponding Boost.Python as well)")
+
 set(RUBY_SUPPORTED_VERSIONS 2.1 2.2 2.3 2.4 2.5 2.6)
 set(RUBY_VERSION "2.3" CACHE STRING "Ruby Version (${RUBY_SUPPORTED_VERSIONS})")
 
@@ -305,8 +310,12 @@ if(ENABLE_PBINS)
 endif()
 
 if(ENABLE_PYTHON)
-  set(Python_ADDITIONAL_VERSIONS 2.7 2.6 2.5)
-  find_package(PythonInterp)
+  list(FIND PYTHON_SUPPORTED_VERSIONS "${PYTHON_VERSION}" _python_version_index)
+  if(_python_version_index EQUAL -1)
+    message(SEND_ERROR "Invalid Python version specified (${PYTHON_VERSION})")
+  endif()
+
+  find_package(PythonInterp ${PYTHON_VERSION})
   if(NOT PYTHONINTERP_FOUND)
     message(SEND_ERROR "python is required for python support")
   endif()
@@ -318,16 +327,16 @@ if(ENABLE_PYTHON)
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
   get_filename_component(PALUDIS_PYEXECDIR ${PALUDIS_PYEXECDIR} REALPATH)
 
-  find_package(PythonLibs)
+  find_package(PythonLibs ${PYTHON_VERSION})
 
   set(Boost_PYTHON_VERSION ${PYTHON_VERSION})
   find_package(Boost REQUIRED
                COMPONENTS
                  python)
-endif()
 
-set(PALUDIS_PYTHON_INSTALL_DIR "${PALUDIS_PYEXECDIR}" CACHE PATH
-    "python installation dir")
+  set(PALUDIS_PYTHON_INSTALL_DIR "${PALUDIS_PYEXECDIR}" CACHE PATH
+      "python installation dir")
+endif()
 
 if(ENABLE_PYTHON_DOCS)
   if(NOT ENABLE_PYTHON)
