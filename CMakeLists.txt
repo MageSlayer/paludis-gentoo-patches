@@ -311,7 +311,7 @@ if(ENABLE_PYTHON)
     message(SEND_ERROR "python is required for python support")
   endif()
   execute_process(COMMAND
-                    "${PYTHON_EXECUTABLE}" -c "from distutils import sysconfig; print sysconfig.get_python_lib(1)"
+                    "${PYTHON_EXECUTABLE}" -c "from distutils import sysconfig; print(sysconfig.get_python_lib(1))"
                   OUTPUT_VARIABLE
                     PALUDIS_PYEXECDIR
                   ERROR_QUIET
