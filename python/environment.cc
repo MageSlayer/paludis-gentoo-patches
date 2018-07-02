@@ -167,6 +167,16 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "hook_dirs");
         }
 
+        virtual std::string reduced_username() const
+        {
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
+
+            if (bp::override f = get_override("reduced_username"))
+                return f();
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "reduced_username");
+        }
+
         virtual uid_t reduced_uid() const
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
@@ -504,6 +514,11 @@ void expose_environment()
                 "Return true if the first repository is more important than the second."
             )
 
+        .def("reduced_username", &Environment::reduced_username,
+                "reduced_username() -> str\n"
+                "User name to use when reduced privs are permissible."
+            )
+
         .def("reduced_uid", &Environment::reduced_uid,
                 "reduced_uid() -> int\n"
                 "User id to use when reduced privs are permissible."
@@ -581,6 +596,11 @@ void expose_environment()
         .def("hook_dirs", bp::pure_virtual(&EnvImp::hook_dirs),
                 "hook_dirs() -> list of paths\n"
                 "Return directories to search for hooks."
+            )
+
+        .def("reduced_username", bp::pure_virtual(&EnvImp::reduced_username),
+                "reduced_username() -> str\n"
+                "User name to use when reduced privs are permissible."
             )
 
         .def("reduced_uid", bp::pure_virtual(&EnvImp::reduced_uid),
