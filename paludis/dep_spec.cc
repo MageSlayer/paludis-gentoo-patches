@@ -652,6 +652,6 @@ namespace paludis
     template class Pimp<URILabelsDepSpec>;
     template class Pimp<DependenciesLabelsDepSpec>;
 
-    template class PALUDIS_VISIBLE WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag, const std::shared_ptr<const DependenciesLabel>>;
-    template class PALUDIS_VISIBLE WrappedForwardIterator<URILabelsDepSpec::ConstIteratorTag, const std::shared_ptr<const URILabel>>;
+    template class WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag, const std::shared_ptr<const DependenciesLabel>>;
+    template class WrappedForwardIterator<URILabelsDepSpec::ConstIteratorTag, const std::shared_ptr<const URILabel>>;
 }
