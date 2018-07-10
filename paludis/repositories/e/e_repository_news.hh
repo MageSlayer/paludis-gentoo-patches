@@ -93,7 +93,6 @@ namespace paludis
 
             ///\}
 
-            std::string version() const;
             ///\name Iterate over our Display-If-Installed headers
             ///\{
 
@@ -132,6 +131,8 @@ namespace paludis
             DisplayIfProfileConstIterator end_display_if_profile() const;
 
             ///\}
+
+	    int version() const;
     };
 }
 

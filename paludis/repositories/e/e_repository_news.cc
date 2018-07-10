@@ -42,6 +42,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/user_dep_spec.hh>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -196,6 +197,7 @@ ERepositoryNews::update_news() const
             {
                 Context header_context("When checking Display-If-Profile headers:");
 
+                int vers = news.version();
                 bool local_show(false);
                 std::shared_ptr<const FSPathSequence> c(_imp->params.profiles());
                 for (FSPathSequence::ConstIterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
@@ -203,24 +205,20 @@ ERepositoryNews::update_news() const
                     std::string profile(strip_leading_string(strip_trailing_string(
                                 strip_leading_string(stringify(p->realpath()),
                                     stringify(_imp->e_repository->location_key()->parse_value().realpath() / "profiles")), "/"), "/"));
-                    Log::get_instance()->message("e.news.profile_path", ll_debug, lc_no_context) <<
-                        "Profile path is '" << profile << "'";
+
                     for (NewsFile::DisplayIfProfileConstIterator i(news.begin_display_if_profile()),
                             i_end(news.end_display_if_profile()) ; i != i_end ; ++i){
-                       if ( 0 == news.version().compare(0, 2, "1.", 0, 2))
-                       {
+
+                        Log::get_instance()->message("e.news.profile_path", ll_debug, lc_no_context) <<
+                            "Profile path is '" << profile << "'" << " and '" << *i << "'";
+
+                        if (vers > 0)
+                        {
                             if (profile == *i)
                                 local_show = true;
-                       }
-                       else if ( 0 == news.version().compare(0, 2, "2.", 0, 2))
-                       {
-                           // Check wildcard ( "/*" ) profile paths
-                           if ( 0 == (*i).compare((*i).length() - 2, 2, "/*")){
-                               if (  0 == (profile.compare(0, (*i).length()-2, *i, 0, (*i).length() -2 )))
-                                local_show = true;
-                            }
-                            else if ( profile == *i )
-                                local_show = true;
+                        } else {
+                            Log::get_instance()->message("e.news.version", ll_warning, lc_no_context) <<
+                                "News file has unsupported version";
                         }
                     }
                 }
@@ -277,8 +275,21 @@ namespace paludis
         DisplayIfList display_if_installed;
         DisplayIfList display_if_keyword;
         DisplayIfList display_if_profile;
-        std::string version;
+        int version;
     };
+}
+
+int parse_version(const std::string &s)
+{
+    // get news version
+    VersionSpec v(s, user_version_spec_options());
+    if (v == VersionSpec("1.0", user_version_spec_options())) {
+        return 1;
+    }
+    if (v == VersionSpec("2.0", user_version_spec_options())) {
+        return 2;
+    }
+    return -1;
 }
 
 NewsFile::NewsFile(const FSPath & our_filename) :
@@ -333,27 +344,14 @@ NewsFile::NewsFile(const FSPath & our_filename) :
                     throw NewsError(our_filename, "Multiple News-Item-Format headers specified");
 
                 seen_news_item_format = true;
-                if ( 0 == v.compare(0, 2, "1.",0, 2) )
+
+                int vers = parse_version(v);
+                if (vers < 0)
                 {
-                    if ( v != "1.0" )
-                    {
-                        Log::get_instance()->message("e.news.format", ll_warning, lc_context) <<
-                            "News file '" << our_filename << "' uses news item format '" << v << "', but we only support "
-                            "version 1 news up to 1.0.";
-                    }
-                }
-                else if ( 0 == v.compare(0, 2, "2.", 0, 2))
-                {
-                    if ( v != "2.0")
-                    {
-                        Log::get_instance()->message("e.news.format", ll_warning, lc_context) <<
-                            "News file '" << our_filename << "' uses news item format '" << v << "', but we only support "
-                            "version 2 news items up to 2.0.";
-                    }
-                }
-                else
                     throw NewsError(our_filename, "Unsupported News-Item-Format '" + v + "'");
-                _imp->version = v;
+                }
+
+                _imp->version = vers;
             }
             else if (k == "Posted")
                 seen_posted = true;
@@ -368,7 +366,7 @@ NewsFile::NewsFile(const FSPath & our_filename) :
         throw NewsError(our_filename, "No News-Item-Format header specified");
     if (! seen_author)
         throw NewsError(our_filename, "No Author header specified");
-    if ( _imp->version == "1.0" &&  ! seen_content_type)
+    if ( _imp->version == 1 && ! seen_content_type)
         throw NewsError(our_filename, "No Content-Type header specified");
     if (! seen_title)
         throw NewsError(our_filename, "No Title header specified");
@@ -421,7 +419,8 @@ NewsError::NewsError(const FSPath & f, const std::string & m) noexcept :
 {
 }
 
-std::string NewsFile::version() const{
+int NewsFile::version() const
+{
     return _imp->version;
 }
 
