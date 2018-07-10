@@ -169,15 +169,20 @@ ERepositoryNews::update_news() const
             {
                 Context header_context("When checking Display-If-Installed headers:");
 
+                int vers = news.version();
                 bool local_show(false);
                 for (NewsFile::DisplayIfInstalledConstIterator i(news.begin_display_if_installed()),
-                        i_end(news.end_display_if_installed()) ; i != i_end ; ++i)
+                         i_end(news.end_display_if_installed()) ; i != i_end ; ++i) {
                     if (! (*_imp->environment)[selection::SomeArbitraryVersion(
                                 generator::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
-                                            eapi.supported()->package_dep_spec_parse_options(),
+                                            eapi.supported()->package_dep_spec_parse_options() |
+                                               ((vers == 2) ?
+                                                  ELikePackageDepSpecOptions() + epdso_allow_slot_deps :
+                                                  ELikePackageDepSpecOptions()),
                                             eapi.supported()->version_spec_options())), nullptr, { }) |
                                 filter::InstalledAtRoot(_imp->environment->preferred_root_key()->parse_value()))]->empty())
                         local_show = true;
+                }
                 show &= local_show;
             }
 
