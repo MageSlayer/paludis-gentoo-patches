@@ -93,6 +93,7 @@ namespace paludis
 
             ///\}
 
+            std::string version() const;
             ///\name Iterate over our Display-If-Installed headers
             ///\{
 
