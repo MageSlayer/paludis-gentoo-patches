@@ -131,6 +131,8 @@ namespace paludis
             DisplayIfProfileConstIterator end_display_if_profile() const;
 
             ///\}
+
+	    int version() const;
     };
 }
 

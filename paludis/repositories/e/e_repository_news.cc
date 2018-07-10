@@ -42,6 +42,7 @@
 #include <paludis/filter.hh>
 #include <paludis/filtered_generator.hh>
 #include <paludis/metadata_key.hh>
+#include <paludis/user_dep_spec.hh>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -168,15 +169,20 @@ ERepositoryNews::update_news() const
             {
                 Context header_context("When checking Display-If-Installed headers:");
 
+                int vers = news.version();
                 bool local_show(false);
                 for (NewsFile::DisplayIfInstalledConstIterator i(news.begin_display_if_installed()),
-                        i_end(news.end_display_if_installed()) ; i != i_end ; ++i)
+                         i_end(news.end_display_if_installed()) ; i != i_end ; ++i) {
                     if (! (*_imp->environment)[selection::SomeArbitraryVersion(
                                 generator::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
-                                            eapi.supported()->package_dep_spec_parse_options(),
+                                            eapi.supported()->package_dep_spec_parse_options() |
+                                               ((vers == 2) ?
+                                                  ELikePackageDepSpecOptions() + epdso_allow_slot_deps :
+                                                  ELikePackageDepSpecOptions()),
                                             eapi.supported()->version_spec_options())), nullptr, { }) |
                                 filter::InstalledAtRoot(_imp->environment->preferred_root_key()->parse_value()))]->empty())
                         local_show = true;
+                }
                 show &= local_show;
             }
 
@@ -196,6 +202,7 @@ ERepositoryNews::update_news() const
             {
                 Context header_context("When checking Display-If-Profile headers:");
 
+                int vers = news.version();
                 bool local_show(false);
                 std::shared_ptr<const FSPathSequence> c(_imp->params.profiles());
                 for (FSPathSequence::ConstIterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
@@ -203,12 +210,22 @@ ERepositoryNews::update_news() const
                     std::string profile(strip_leading_string(strip_trailing_string(
                                 strip_leading_string(stringify(p->realpath()),
                                     stringify(_imp->e_repository->location_key()->parse_value().realpath() / "profiles")), "/"), "/"));
-                    Log::get_instance()->message("e.news.profile_path", ll_debug, lc_no_context) <<
-                        "Profile path is '" << profile << "'";
+
                     for (NewsFile::DisplayIfProfileConstIterator i(news.begin_display_if_profile()),
-                            i_end(news.end_display_if_profile()) ; i != i_end ; ++i)
-                        if (profile == *i)
-                            local_show = true;
+                            i_end(news.end_display_if_profile()) ; i != i_end ; ++i){
+
+                        Log::get_instance()->message("e.news.profile_path", ll_debug, lc_no_context) <<
+                            "Profile path is '" << profile << "'" << " and '" << *i << "'";
+
+                        if (vers > 0)
+                        {
+                            if (profile == *i)
+                                local_show = true;
+                        } else {
+                            Log::get_instance()->message("e.news.version", ll_warning, lc_no_context) <<
+                                "News file has unsupported version";
+                        }
+                    }
                 }
                 show &= local_show;
             }
@@ -263,7 +280,21 @@ namespace paludis
         DisplayIfList display_if_installed;
         DisplayIfList display_if_keyword;
         DisplayIfList display_if_profile;
+        int version;
     };
+}
+
+int parse_version(const std::string &s)
+{
+    // get news version
+    VersionSpec v(s, user_version_spec_options());
+    if (v == VersionSpec("1.0", user_version_spec_options())) {
+        return 1;
+    }
+    if (v == VersionSpec("2.0", user_version_spec_options())) {
+        return 2;
+    }
+    return -1;
 }
 
 NewsFile::NewsFile(const FSPath & our_filename) :
@@ -318,12 +349,14 @@ NewsFile::NewsFile(const FSPath & our_filename) :
                     throw NewsError(our_filename, "Multiple News-Item-Format headers specified");
 
                 seen_news_item_format = true;
-                if (0 != v.compare(0, 2, "1.", 0, 2))
+
+                int vers = parse_version(v);
+                if (vers < 0)
+                {
                     throw NewsError(our_filename, "Unsupported News-Item-Format '" + v + "'");
-                if (v != "1.0")
-                    Log::get_instance()->message("e.news.format", ll_warning, lc_context) <<
-                        "News file '" << our_filename << "' uses news item format '" << v << "', but we only support "
-                        "versions up to 1.0.";
+                }
+
+                _imp->version = vers;
             }
             else if (k == "Posted")
                 seen_posted = true;
@@ -338,7 +371,7 @@ NewsFile::NewsFile(const FSPath & our_filename) :
         throw NewsError(our_filename, "No News-Item-Format header specified");
     if (! seen_author)
         throw NewsError(our_filename, "No Author header specified");
-    if (! seen_content_type)
+    if ( _imp->version == 1 && ! seen_content_type)
         throw NewsError(our_filename, "No Content-Type header specified");
     if (! seen_title)
         throw NewsError(our_filename, "No Title header specified");
@@ -389,6 +422,11 @@ NewsFile::end_display_if_profile() const
 NewsError::NewsError(const FSPath & f, const std::string & m) noexcept :
     Exception("Error in news file '" + stringify(f) + "': " + m)
 {
+}
+
+int NewsFile::version() const
+{
+    return _imp->version;
 }
 
 namespace paludis
