@@ -51,9 +51,9 @@ TEST(Iterator, Previous)
     v.push_back(2);
     std::vector<int>::iterator iter(v.end());
 
-    ASSERT_TRUE(*(previous(iter)) == 2);
-    ASSERT_TRUE(previous(previous(iter)) == v.begin());
-    iter = previous(iter);
+    ASSERT_TRUE(*(prev(iter)) == 2);
+    ASSERT_TRUE(prev(prev(iter)) == v.begin());
+    iter = prev(iter);
     ASSERT_TRUE(--iter == v.begin());
 }
 

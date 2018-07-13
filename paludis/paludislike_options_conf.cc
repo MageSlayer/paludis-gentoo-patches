@@ -253,7 +253,7 @@ PaludisLikeOptionsConf::add_file(const FSPath & f)
             {
                 /* foo: */
                 std::string p;
-                std::transform(t->begin(), previous(t->end()), std::back_inserter(p), &::tolower);
+                std::transform(t->begin(), prev(t->end()), std::back_inserter(p), &::tolower);
 
                 values_group = &*values_groups->insert(values_groups->end(), make_named_values<ValuesGroup>(
                             n::minus_star() = false,
