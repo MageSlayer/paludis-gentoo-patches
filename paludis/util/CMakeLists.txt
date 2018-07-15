@@ -67,6 +67,8 @@ paludis_add_library(libpaludisutil
                       "${CMAKE_CURRENT_SOURCE_DIR}/visitor.cc"
                       "${CMAKE_CURRENT_SOURCE_DIR}/visitor_cast.cc"
                       "${CMAKE_CURRENT_SOURCE_DIR}/whirlpool.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/blake2b.cc"
+                      "${CMAKE_CURRENT_SOURCE_DIR}/blake2b-ref.c"
                       "${CMAKE_CURRENT_SOURCE_DIR}/wildcard_expander.cc"
                     SE_SOURCES
                       "${CMAKE_CURRENT_SOURCE_DIR}/config_file.se"
@@ -127,6 +129,7 @@ foreach(test
           tokeniser
           tribool
           whirlpool
+          blake2b
           wrapped_forward_iterator
           wrapped_value)
   paludis_add_test(${test} GTEST)
@@ -288,6 +291,7 @@ install(FILES
           "${CMAKE_CURRENT_SOURCE_DIR}/visitor_cast-fwd.hh"
           "${CMAKE_CURRENT_SOURCE_DIR}/visitor_cast.hh"
           "${CMAKE_CURRENT_SOURCE_DIR}/whirlpool.hh"
+          "${CMAKE_CURRENT_SOURCE_DIR}/blake2b.hh"
           "${CMAKE_CURRENT_SOURCE_DIR}/wildcard_expander.hh"
           "${CMAKE_CURRENT_SOURCE_DIR}/wrapped_forward_iterator-fwd.hh"
           "${CMAKE_CURRENT_SOURCE_DIR}/wrapped_forward_iterator-impl.hh"
