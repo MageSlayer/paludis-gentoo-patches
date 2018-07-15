@@ -129,6 +129,7 @@ foreach(test
           tokeniser
           tribool
           whirlpool
+          blake2b
           wrapped_forward_iterator
           wrapped_value)
   paludis_add_test(${test} GTEST)
