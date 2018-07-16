@@ -7,5 +7,8 @@ Unfortunately, Paludis no longer officially supports Gentoo, thus this repo is a
 #### License
 Same as original Paludis - GPLv2
 
+#### Gentoo overlay
+https://github.com/MageSlayer/paludis-gentoo-overlay
+
 #### Official Exherbo site:
     http://paludis.exherbo.org/
