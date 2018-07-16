@@ -319,9 +319,11 @@ if(ENABLE_PYTHON)
 
   find_package(PythonLibs)
 
+  # looks like cmake (latest tested - 3.11.4) does not support cleaner way of 
+  # searching for Boost-Python under Gentoo
   find_package(Boost REQUIRED
                COMPONENTS
-                 python)
+               "python-${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
 endif()
 
 set(PALUDIS_PYTHON_INSTALL_DIR "${PALUDIS_PYEXECDIR}" CACHE PATH

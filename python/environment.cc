@@ -187,6 +187,15 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "reduced_gid");
         }
 
+        virtual std::string reduced_username() const
+        {
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
+
+            if (bp::override f = get_override("reduced_username"))
+                return f();
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "reduced_username");
+        }
 
         virtual std::shared_ptr<const MirrorsSequence> mirrors(const std::string & s) const
             PALUDIS_ATTRIBUTE((warn_unused_result))
