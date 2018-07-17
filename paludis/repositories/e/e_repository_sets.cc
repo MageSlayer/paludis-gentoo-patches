@@ -175,8 +175,11 @@ namespace
         {
             try
             {
-                PackageDepSpec spec(parse_elike_package_dep_spec(stringify(id->name()) + ":" + r.slot(), eapi.supported()->package_dep_spec_parse_options(),
-                            eapi.supported()->version_spec_options()));
+                // who knows when (EAPI=???) Gentoo introduced slots in GLSA ?
+                PackageDepSpec spec(parse_elike_package_dep_spec(stringify(id->name()) + ":" + r.slot(),
+                                                                 eapi.supported()->package_dep_spec_parse_options() |
+                                                                 (ELikePackageDepSpecOptions() + epdso_allow_slot_deps),
+                                                                 eapi.supported()->version_spec_options()));
                 if (! match_package(*env, spec, id, nullptr, { }))
                     return false;
             }
