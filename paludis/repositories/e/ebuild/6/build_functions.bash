@@ -75,9 +75,35 @@ eapply()
 }
 ebuild_need_extglob eapply
 
+# Ported epatch_user
 eapply_user()
 {
-    return 0
+    : ${EPATCH_USER_SOURCE:=${PORTAGE_CONFIGROOT%/}/etc/portage/patches}
+
+    [[ $# -ne 0 ]] && die "epatch_user takes no options"
+
+    # Allow multiple calls to this function; ignore all but the first
+    local applied="${T}/epatch_user.log"
+    [[ -e ${applied} ]] && return 2
+
+    # don't clobber any EPATCH vars that the parent might want
+    local EPATCH_SOURCE check
+    for check in ${CATEGORY}/{${P}-${PR},${P},${PN}}{,:${SLOT%/*}}; do
+        EPATCH_SOURCE=${EPATCH_USER_SOURCE}/${CTARGET}/${check}
+        [[ -r ${EPATCH_SOURCE} ]] || EPATCH_SOURCE=${EPATCH_USER_SOURCE}/${CHOST}/${check}
+        [[ -r ${EPATCH_SOURCE} ]] || EPATCH_SOURCE=${EPATCH_USER_SOURCE}/${check}
+        if [[ -d ${EPATCH_SOURCE} ]] ; then
+            EPATCH_SOURCE=${EPATCH_SOURCE} \
+            EPATCH_SUFFIX="patch" \
+            EPATCH_FORCE="yes" \
+            EPATCH_MULTI_MSG="Applying user patches from ${EPATCH_SOURCE} ..." \
+            epatch
+            echo "${EPATCH_SOURCE}" > "${applied}"
+            return 0
+        fi
+    done
+    echo "none" > "${applied}"
+    return 1
 }
 
 einstall()
