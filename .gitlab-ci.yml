@@ -1,0 +1,16 @@
+image: exherbo/exherbo_ci
+
+before_script:
+    - chgrp tty /dev/tty
+    - cave resolve -1x repository/media repository/python repository/scientific repository/x11
+    - echo "dev-lang/python:2.7 sqlite" >> /etc/paludis/options.conf
+    - cave resolve -x dev-cpp/gtest dev-db/sqlite dev-libs/boost dev-libs/jansson dev-python/Sphinx dev-ruby/syntax --permit-old-version sphinxcontrib-websupport --skip-phase test > /dev/null
+
+build:
+    script:
+    - mkdir build
+    - cd build
+    - cmake -DENABLE_GTEST:BOOL=TRUE -DENABLE_PBINS:BOOL=TRUE -DENABLE_PYTHON:BOOL=TRUE -DENABLE_RUBY:BOOL=TRUE -DENABLE_SEARCH_INDEX:BOOL=TRUE -DENABLE_VIM:BOOL=TRUE -DENABLE_XML:BOOL=TRUE -DPALUDIS_CLIENTS=cave -DPALUDIS_ENVIRONMENTS="default;test" -DPALUDIS_REPOSITORIES="default;accounts;gemcutter;repository" -DPALUDIS_DEFAULT_DISTRIBUTION=exherbo -DCONFIG_FRAMEWORK=eclectic ..
+    - make -j$(nproc)
+    - make ARGS="--verbose" test
+    - make install DESTDIR=../install
