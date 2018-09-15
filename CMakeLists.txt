@@ -49,7 +49,8 @@ endif()
 
 set(PALUDIS_VIM_INSTALL_DIR "${CMAKE_INSTALL_FULL_DATADIR}/vim/vimfiles" CACHE PATH
     "vim installation directory")
-set(RUBY_VERSION "2.3" CACHE STRING "Ruby Version (2.1;2.2;2.3)")
+set(RUBY_SUPPORTED_VERSIONS 2.1 2.2 2.3 2.4 2.5 2.6)
+set(RUBY_VERSION "2.3" CACHE STRING "Ruby Version (${RUBY_SUPPORTED_VERSIONS})")
 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
@@ -336,13 +337,10 @@ if(ENABLE_PYTHON_DOCS)
 endif()
 
 if(ENABLE_RUBY)
-  if(NOT "${RUBY_VERSION}" STREQUAL "2.1" AND
-     NOT "${RUBY_VERSION}" STREQUAL "2.2" AND
-     NOT "${RUBY_VERSION}" STREQUAL "2.3" AND
-     NOT "${RUBY_VERSION}" STREQUAL "2.4" AND
-     NOT "${RUBY_VERSION}" STREQUAL "2.5" AND
-     NOT "${RUBY_VERSION}" STREQUAL "2.6")
-   message(SEND_ERROR "invalid ruby version specified (${RUBY_VERSION})")
+  list(FIND RUBY_SUPPORTED_VERSIONS "${RUBY_VERSION}" _ruby_version_index)
+
+  if(_ruby_version_index EQUAL -1)
+    message(SEND_ERROR "invalid ruby version specified (${RUBY_VERSION})")
   endif()
 
   find_package(Ruby ${RUBY_VERSION} REQUIRED)
