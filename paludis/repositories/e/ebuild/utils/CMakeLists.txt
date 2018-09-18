@@ -1,6 +1,7 @@
 
 add_subdirectory(4)
 add_subdirectory(5)
+add_subdirectory(7)
 add_subdirectory(exheres-0)
 
 foreach(prep all;allstrip;allman;allinfo;strip;man;info;docs;alldocs)
