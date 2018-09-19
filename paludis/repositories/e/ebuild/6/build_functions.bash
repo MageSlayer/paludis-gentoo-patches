@@ -77,34 +77,31 @@ ebuild_need_extglob eapply
 
 eapply_user()
 {
+    if [[ "${!PALUDIS_EBUILD_PHASE_VAR}" != "prepare" ]]; then
+        paludis_die_unless_nonfatal "eapply_user called in EBUILD_PHASE ${!PALUDIS_EBUILD_PHASE_VAR}. It may not be run outside src_prepare for this EAPI."
+    fi
+
     : ${EPATCH_USER_SOURCE:=${PALUDIS_USER_PATCHES%/}}
     [[ $# -ne 0 ]] && die "eapply_user takes no options"
 
     # Allow multiple calls to this function; ignore all but the first
     local applied="${T}/eapply_user.log"
-    [[ -e ${applied} ]] && return 2
+    [[ -e ${applied} ]] && return 0
 
     # don't clobber any EPATCH vars that the parent might want
     local EPATCH_SOURCE check
     for check in ${CATEGORY}/{${P}-${PR},${P},${PN}}{,:${SLOT%/*}}; do
-        EPATCH_SOURCE=""
-        # CTARGET might be empty, let's avoid double slashes...
-        [[ -n ${CTARGET} ]] && EPATCH_SOURCE="${EPATCH_USER_SOURCE}/${CTARGET}/${check}"
-        [[ -r ${EPATCH_SOURCE} ]] || EPATCH_SOURCE="${EPATCH_USER_SOURCE}/${CHOST}/${check}"
-        [[ -r ${EPATCH_SOURCE} ]] || EPATCH_SOURCE="${EPATCH_USER_SOURCE}/${check}"
+        EPATCH_SOURCE="${EPATCH_USER_SOURCE}/${check}"
         if [[ -d ${EPATCH_SOURCE} ]] ; then
-            EPATCH_SOURCE="${EPATCH_SOURCE}" \
-            EPATCH_SUFFIX="patch" \
-            EPATCH_FORCE="yes" \
-            EPATCH_MULTI_MSG="Applying user patches from ${EPATCH_SOURCE} ..." \
-            epatch
+            eapply "${EPATCH_SOURCE}"
             echo "${EPATCH_SOURCE}" > "${applied}"
             return 0
         fi
     done
     echo "none" > "${applied}"
-    return 1
+    return 0
 }
+ebuild_need_extglob eapply_user
 
 einstall()
 {

@@ -1762,6 +1762,142 @@ src_prepare() {
 }
 END
 
+mkdir -p "../root/var/paludis/user_patches/cat/eapply_user2-6" || exit 1
+cat << 'END' > ../root/var/paludis/user_patches/cat/eapply_user2-6/eapply_user2-6.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-first
++second
+END
+
+mkdir -p "cat/eapply_user2" || exit 1
+cat << 'END' > cat/eapply_user2/eapply_user2-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first > file || die
+}
+
+src_prepare() {
+    [[ -n $(declare -F eapply_user) ]] || die not defined
+    eapply_user || die eapply_user
+    local f=$(cat file)
+    [ "$f" != "second" ] && die patch failed
+}
+END
+
+mkdir -p "../root/var/paludis/user_patches/cat/eapply_user3-6-r1" || exit 1
+cat << 'END' > ../root/var/paludis/user_patches/cat/eapply_user3-6-r1/eapply_user3-6-r1.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-first
++second
+END
+
+mkdir -p "cat/eapply_user3" || exit 1
+cat << 'END' > cat/eapply_user3/eapply_user3-6-r1.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first > file || die
+}
+
+src_prepare() {
+    [[ -n $(declare -F eapply_user) ]] || die not defined
+    eapply_user || die eapply_user
+    local f=$(cat file)
+    [ "$f" != "second" ] && die patch failed
+}
+END
+
+mkdir -p "../root/var/paludis/user_patches/cat/eapply_user4-6:1" || exit 1
+cat << 'END' > ../root/var/paludis/user_patches/cat/eapply_user4-6:1/eapply_user4-6-r1.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-first
++second
+END
+
+mkdir -p "cat/eapply_user4" || exit 1
+cat << 'END' > cat/eapply_user4/eapply_user4-6-r1.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="1"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first > file || die
+}
+
+src_prepare() {
+    [[ -n $(declare -F eapply_user) ]] || die not defined
+    eapply_user || die eapply_user
+    local f=$(cat file)
+    [ "$f" != "second" ] && die patch failed
+}
+END
+
+mkdir -p "../root/var/paludis/user_patches/cat/eapply_user5" || exit 1
+cat << 'END' > ../root/var/paludis/user_patches/cat/eapply_user5/eapply_user5.patch || exit 1
+--- directory/file
++++ directory/file
+@@ -1 +1 @@
+-first
++second
+END
+
+mkdir -p "cat/eapply_user5" || exit 1
+cat << 'END' > cat/eapply_user5/eapply_user5-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="1"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_unpack() {
+    echo first > file || die
+}
+
+src_prepare() {
+    [[ -n $(declare -F eapply_user) ]] || die not defined
+    eapply_user || die eapply_user
+    local f=$(cat file)
+    [ "$f" != "second" ] && die patch failed
+}
+END
+
 mkdir -p "cat/default_src_prepare-nothing/files" || exit 1
 cat << 'END' > cat/default_src_prepare-nothing/default_src_prepare-nothing-6.ebuild || exit 1
 EAPI="6"
