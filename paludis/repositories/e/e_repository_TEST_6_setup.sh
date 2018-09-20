@@ -1898,6 +1898,27 @@ src_prepare() {
 }
 END
 
+# test for empty patch directory
+mkdir -p "../root/var/paludis/user_patches/cat/eapply_user6-6" || exit 1
+mkdir -p "cat/eapply_user6" || exit 1
+cat << 'END' > cat/eapply_user6/eapply_user6-6.ebuild || exit 1
+EAPI="6"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S=${WORKDIR}
+
+src_prepare() {
+    [[ -n $(declare -F eapply_user) ]] || die not defined
+    eapply_user || die eapply_user
+}
+END
+
 mkdir -p "cat/default_src_prepare-nothing/files" || exit 1
 cat << 'END' > cat/default_src_prepare-nothing/default_src_prepare-nothing-6.ebuild || exit 1
 EAPI="6"
