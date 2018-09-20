@@ -702,6 +702,18 @@ TEST(ERepository, InstallEAPI6)
     }
 
     {
+        setenv("PALUDIS_USER_PATCHES", stringify(FSPath::cwd() / "e_repository_TEST_6_dir" /
+                                                 "root" / "var" / "paludis" / "user_patches").c_str(), 1);
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/eapply_user6-6",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("6", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(action);
+        unsetenv("PALUDIS_USER_PATCHES");
+    }
+
+    {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/default_src_prepare-nothing-6",
                                 &env, { })), nullptr, { }))]->last());

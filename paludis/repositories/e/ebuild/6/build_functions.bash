@@ -93,9 +93,21 @@ eapply_user()
     for check in ${CATEGORY}/{${P}-${PR},${P},${PN}}{,:${SLOT%/*}}; do
         EPATCH_SOURCE="${EPATCH_USER_SOURCE}/${check}"
         if [[ -d ${EPATCH_SOURCE} ]] ; then
-            eapply "${EPATCH_SOURCE}"
-            echo "${EPATCH_SOURCE}" > "${applied}"
-            return 0
+            # Check for the directory being non-empty, because PMS
+            # for some reason thinks it's fine for eapply to bail out
+            # with an error if given an empty directory...
+            local -i empty=1
+            for f in "${EPATCH_SOURCE}/"*.@(diff|patch); do
+                if [[ -f "${f}" ]]; then
+                    empty=0
+                    break;
+                fi
+            done
+            if [[ "${empty}" -ne "1" ]]; then
+                eapply "${EPATCH_SOURCE}"
+                echo "${EPATCH_SOURCE}" > "${applied}"
+                return 0
+            fi
         fi
     done
     echo "none" > "${applied}"
