@@ -16,6 +16,10 @@ man-*
 *_TEST_dir/
 *.tmp
 *.log
+*.cmake
+*.html.part
+**/CMakeFiles
+Makefile
 paludis-*.*.*.tar.bz2
 tags
 
