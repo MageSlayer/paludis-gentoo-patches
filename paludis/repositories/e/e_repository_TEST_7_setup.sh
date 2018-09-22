@@ -55,5 +55,64 @@ src_install() {
 }
 END
 
+# negative test for "dolib"
+mkdir -p "cat/banned-functions2"
+cat <<END > cat/banned-functions2/banned-functions2-7.ebuild || exit 1
+EAPI="7"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="\${WORKDIR}"
+
+src_install() {
+    dolib libfoo.a foo.o
+}
+END
+
+mkdir -p "cat/banned-functions3"
+cat <<END > cat/banned-functions3/banned-functions3-7.ebuild || exit 1
+EAPI="7"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="\${WORKDIR}"
+
+src_unpack() {
+    echo 'libfoo.a' > libfoo.a
+    echo 'foo.o' > foo.o
+    echo 'libfoo.so' > libfoo.so
+    echo 'libfoo.so.1' > libfoo.so.1
+}
+
+src_install() {
+    local ld="\${D%/}/usr/lib"
+    local perms
+
+    dolib.a libfoo.a foo.o
+
+    perms=\$(stat -c "%a" "\$ld/libfoo.a")
+    [[ \$perms == "644" ]] || die permission error
+    perms=\$(stat -c "%a" "\$ld/foo.o")
+    [[ \$perms == "644" ]] || die permission error
+
+    dolib.so libfoo.so libfoo.so.1
+
+    perms=\$(stat -c "%a" "\$ld/libfoo.so")
+    [[ \$perms == "755" ]] || die permission error
+    perms=\$(stat -c "%a" "\$ld/libfoo.so.1")
+    [[ \$perms == "755" ]] || die permission error
+}
+END
+
 cd ..
 cd ..
