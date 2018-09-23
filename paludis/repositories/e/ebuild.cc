@@ -308,7 +308,7 @@ EbuildCommand::operator() ()
             process.setenv(eapi->ebuild_metadata_variables()->iuse_effective()->name(), join(iu->begin(), iu->end(), " "));
         }
 
-    if (options->support_eclasses())
+    if (options->support_eclasses() && options->support_eclass_dir())
         process
             .setenv("ECLASSDIR", stringify(*params.eclassdirs()->begin()))
             .setenv("ECLASSDIRS", join(params.eclassdirs()->begin(), params.eclassdirs()->end(), " "));
@@ -1449,4 +1449,3 @@ EbuildFetchExtraCommand::EbuildFetchExtraCommand(const EbuildCommandParams & p,
     fetch_extra_params(f)
 {
 }
-
