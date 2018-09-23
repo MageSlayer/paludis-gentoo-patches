@@ -286,7 +286,7 @@ EbuildCommand::operator() ()
 
     if (! environment_variables->env_kv().empty())
         process.setenv(environment_variables->env_kv(), kernel_version());
-    if (! environment_variables->env_portdir().empty())
+    if (! environment_variables->env_portdir().empty() && options->support_portdir())
         process.setenv(environment_variables->env_portdir(), stringify(params.portdir()));
     if (! environment_variables->env_distdir().empty())
         process.setenv(environment_variables->env_distdir(), stringify(params.distdir()));

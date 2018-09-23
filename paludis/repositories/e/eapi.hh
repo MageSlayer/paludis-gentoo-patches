@@ -209,6 +209,7 @@ namespace paludis
         typedef Name<struct name_suggestions_group_name> suggestions_group_name;
         typedef Name<struct name_support_eclasses> support_eclasses;
         typedef Name<struct name_support_eclass_dir> support_eclass_dir;
+        typedef Name<struct name_support_portdir> support_portdir;
         typedef Name<struct name_support_exlibs> support_exlibs;
         typedef Name<struct name_supported> supported;
         typedef Name<struct name_system_implicit> system_implicit;
@@ -464,6 +465,7 @@ namespace paludis
             NamedValue<n::source_merged_variables, std::string> source_merged_variables;
             NamedValue<n::support_eclasses, bool> support_eclasses;
             NamedValue<n::support_eclass_dir, bool> support_eclass_dir;
+            NamedValue<n::support_portdir, bool> support_portdir;
             NamedValue<n::support_exlibs, bool> support_exlibs;
             NamedValue<n::utility_path_suffixes, std::string> utility_path_suffixes;
             NamedValue<n::vdb_from_env_unless_empty_variables, std::string> vdb_from_env_unless_empty_variables;
