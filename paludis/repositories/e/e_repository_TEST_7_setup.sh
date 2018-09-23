@@ -114,5 +114,24 @@ src_install() {
 }
 END
 
+# negative test for "libopts"
+mkdir -p "cat/banned-functions4"
+cat <<END > cat/banned-functions4/banned-functions4-7.ebuild || exit 1
+EAPI="7"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="\${WORKDIR}"
+
+src_install() {
+    libopts "-m0644"
+}
+END
+
 cd ..
 cd ..
