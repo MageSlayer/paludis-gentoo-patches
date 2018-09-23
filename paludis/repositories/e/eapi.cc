@@ -203,6 +203,7 @@ namespace
                         n::shell_options_global() = check_get(k, "shell_options_global"),
                         n::source_merged_variables() = check_get(k, "source_merged_variables"),
                         n::support_eclasses() = destringify_key<bool>(k, "support_eclasses"),
+                        n::support_eclass_dir() = destringify_key<bool>(k, "support_eclass_dir"),
                         n::support_exlibs() = destringify_key<bool>(k, "support_exlibs"),
                         n::utility_path_suffixes() = check_get(k, "utility_path_suffixes"),
                         n::vdb_from_env_unless_empty_variables() = check_get(k, "vdb_from_env_unless_empty_variables"),
