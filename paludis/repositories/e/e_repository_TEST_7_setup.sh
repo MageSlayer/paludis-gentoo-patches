@@ -133,5 +133,48 @@ src_install() {
 }
 END
 
+mkdir -p "cat/vers"
+cat <<END > cat/vers/vers-7.ebuild || exit 1
+EAPI="7"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="\${WORKDIR}"
+
+src_install() {
+    [[ \$(ver_cut 0 1.2.3) == "" ]] || die ver_cut1 failed
+    [[ \$(ver_cut 0-1 1.2.3) == "1" ]] || die ver_cut2 failed
+    [[ \$(ver_cut 1 1.2.3) == "1" ]] || die ver_cut3 failed
+    [[ \$(ver_cut 1- 1.2.3) == "1.2.3" ]] || die ver_cut4 failed
+    [[ \$(ver_cut 1-2 1.2.3) == "1.2" ]] || die ver_cut5 failed
+    [[ \$(ver_cut 1-3 1.2.3) == "1.2.3" ]] || die ver_cut6 failed
+    [[ \$(ver_cut 2 1.2.3) == "2" ]] || die ver_cut7 failed
+    [[ \$(ver_cut 2-3 1.2.3) == "2.3" ]] || die ver_cut8 failed
+    [[ \$(ver_cut 3- 1.2.3) == "3" ]] || die ver_cut9 failed
+    [[ \$(ver_cut 4- 1.2.3) == "" ]] || die ver_cut10 failed
+
+    [[ \$(ver_rs 0 \# 1.2.3) == "1.2.3" ]] || die ver_rs1 failed
+    [[ \$(ver_rs 0 \# .11.2.) == "#11.2." ]] || die ver_rs2 failed
+    [[ \$(ver_rs 0-1 \# 1.2.3) == "1#2.3" ]] || die ver_rs3 failed
+    [[ \$(ver_rs 1 \# 1.2.3) == "1#2.3" ]] || die ver_rs4 failed
+    [[ \$(ver_rs 1-2 \# 1.2.3) == "1#2#3" ]] || die ver_rs5 failed
+    [[ \$(ver_rs 2 \# 1.2.3) == "1.2#3" ]] || die ver_rs6 failed
+    [[ \$(ver_rs 2-3 \# 1.2.3) == "1.2#3" ]] || die ver_rs7 failed
+    [[ \$(ver_rs 3 \# 1.2.3) == "1.2.3" ]] || die ver_rs8 failed
+
+    ver_test 1.2 -gt 1.1 || die ver_test1 failed
+    ver_test 1.1.1 -ge 1.1 || die ver_test2 failed
+    ver_test 1.1 -eq 1.1 || die ver_test3 failed
+    ver_test 1.1 -ne 1.2 || die ver_test4 failed
+    ver_test 1.1 -le 1.2 || die ver_test5 failed
+    ver_test 1.0 -lt 1.2 || die ver_test6 failed
+}
+END
+
 cd ..
 cd ..
