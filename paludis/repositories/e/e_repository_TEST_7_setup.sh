@@ -176,5 +176,39 @@ src_install() {
 }
 END
 
+mkdir -p "cat/no-trail-slash"
+cat <<'END' > cat/no-trail-slash/no-trail-slash-7.ebuild || exit 1
+EAPI="7"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+test_vars() {
+    [[ $ROOT == "" ]] || die ROOT is non-empty
+    [[ $EROOT == "" ]] || die EROOT is non-empty
+    [[ $D == ${D%/} ]] || die D has trailing slash
+    [[ $ED == ${ED%/} ]] || die ED has trailing slash
+}
+
+pkg_setup() {
+    test_vars
+}
+
+src_install() {
+    test_vars
+}
+
+pkg_postinst() {
+    test_vars
+}
+
+END
+
 cd ..
 cd ..
