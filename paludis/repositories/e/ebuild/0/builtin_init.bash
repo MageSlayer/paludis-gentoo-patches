@@ -16,7 +16,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-builtin_init()
+default_builtin_init()
 {
     local a
 
@@ -81,6 +81,11 @@ builtin_init()
         [[ -z "${!a}" ]] && die "\$${a} unset or empty"
         declare -r ${a}="${!a}"
     done
+}
+
+builtin_init()
+{
+    default_builtin_init
 }
 
 ebuild_f_init()
