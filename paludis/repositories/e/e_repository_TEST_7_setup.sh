@@ -35,6 +35,11 @@ IUSE_IMPLICIT="build"
 END
 cat<<END > eclass/test.eclass
 IUSE="eclass-flag"
+
+eclass_func() {
+    :
+}
+
 END
 
 mkdir -p "cat/banned-functions"
@@ -131,6 +136,28 @@ S="\${WORKDIR}"
 src_install() {
     libopts "-m0644"
 }
+END
+
+# test for inherit/eclasses still working after ECLASSDIR/ECLASSDIRS removal
+mkdir -p "cat/banned-functions5"
+cat <<END > cat/banned-functions5/banned-functions5-7.ebuild || exit 1
+EAPI="7"
+inherit test
+
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="\${WORKDIR}"
+
+src_install() {
+    eclass_func
+}
+
 END
 
 mkdir -p "cat/vers"
