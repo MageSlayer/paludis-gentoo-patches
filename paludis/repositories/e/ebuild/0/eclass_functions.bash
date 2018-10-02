@@ -40,7 +40,9 @@ inherit()
     local e ee location v v_qa
     for e in "$@" ; do
         location=
-        for ee in ${ECLASSDIRS:-${ECLASSDIR}} ; do
+        local edirs=${ECLASSDIRS:-${ECLASSDIR}}
+        edirs=${edirs:-${PALUDIS_ECLASSDIRS}}
+        for ee in $edirs ; do
             [[ -f "${ee}/${e}.eclass" ]] && location="${ee}/${e}.eclass"
         done
         local old_ECLASS="${ECLASS}"

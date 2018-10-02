@@ -308,10 +308,17 @@ EbuildCommand::operator() ()
             process.setenv(eapi->ebuild_metadata_variables()->iuse_effective()->name(), join(iu->begin(), iu->end(), " "));
         }
 
-    if (options->support_eclasses() && options->support_eclass_dir())
-        process
-            .setenv("ECLASSDIR", stringify(*params.eclassdirs()->begin()))
-            .setenv("ECLASSDIRS", join(params.eclassdirs()->begin(), params.eclassdirs()->end(), " "));
+    if (options->support_eclasses()) {
+        auto edirs = join(params.eclassdirs()->begin(), params.eclassdirs()->end(), " ");
+        if (options->support_eclass_dir()) {
+            process
+                .setenv("ECLASSDIR", stringify(*params.eclassdirs()->begin()))
+                .setenv("ECLASSDIRS", edirs);
+        } else {
+            process
+                .setenv("PALUDIS_ECLASSDIRS", edirs);
+        }
+    }
 
     if (options->support_exlibs())
         process
