@@ -393,6 +393,7 @@ PyHookFile::_get_traceback() const
 
     PyObject * ptype, * pvalue, * ptraceback;
     PyErr_Fetch(&ptype, &pvalue, &ptraceback);
+    PyErr_NormalizeException(&ptype, &pvalue, &ptraceback);
 
     if (ptype == NULL)
         ptype = Py_None;
