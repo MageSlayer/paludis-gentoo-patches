@@ -1,16 +1,56 @@
-image: exherbo/exherbo_ci
+stages:
+  - build
+  - test
 
-before_script:
-    - chgrp tty /dev/tty
-    - cave resolve -1x repository/media repository/python repository/scientific repository/x11
-    - echo "dev-lang/python:2.7 sqlite" >> /etc/paludis/options.conf
-    - cave resolve -x dev-cpp/gtest dev-db/sqlite dev-libs/boost dev-libs/jansson dev-python/Sphinx dev-ruby/syntax --permit-old-version sphinxcontrib-websupport --skip-phase test > /dev/null
+.build-template: &build-template
+  stage: build
+  image: paludis/${DISTRIBUTION}-${COMPILER}:${VERSION}
+  script:
+    - mkdir -pv build-obj && cd build-obj
+    - ../ci/configure-paludis.sh .. ${DISTRIBUTION} ${COMPILER}
+    - ninja -j$(nproc) all
+  cache: &build_artifact_cache
+    key: build-${DISTRIBUTION}-${COMPILER}-${VERSION}
+    paths:
+      - build-obj/
 
-build:
-    script:
-    - mkdir build
-    - cd build
-    - cmake -DCMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES:PATH='/usr/x86_64-pc-linux-gnu/include;/usr/host/include' -DCMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES:PATH='/usr/x86_64-pc-linux-gnu/include;/usr/host/include' -DENABLE_GTEST:BOOL=TRUE -DENABLE_PBINS:BOOL=TRUE -DENABLE_PYTHON:BOOL=TRUE -DENABLE_RUBY:BOOL=TRUE -DENABLE_SEARCH_INDEX:BOOL=TRUE -DENABLE_VIM:BOOL=TRUE -DENABLE_XML:BOOL=TRUE -DPALUDIS_CLIENTS=cave -DPALUDIS_ENVIRONMENTS="default;test" -DPALUDIS_REPOSITORIES="default;accounts;gemcutter;repository" -DPALUDIS_DEFAULT_DISTRIBUTION=exherbo -DCONFIG_FRAMEWORK=eclectic ..
-    - make -j$(nproc)
-    - make ARGS="--verbose" test
-    - make install DESTDIR=../install
+.test-template: &test-template
+  stage: test
+  image: paludis/${DISTRIBUTION}-${COMPILER}:${VERSION}
+  cache: *build_artifact_cache
+  script:
+    - cd build-obj
+    - ctest -V
+
+build:exherbo:
+  variables:
+    DISTRIBUTION: "exherbo"
+    COMPILER: "gcc"
+    VERSION: "latest"
+  <<: *build-template
+
+test:exherbo:
+  variables:
+    DISTRIBUTION: "exherbo"
+    COMPILER: "gcc"
+    VERSION: "latest"
+  dependencies:
+    - build:exherbo
+  <<: *test-template
+
+build:gentoo:
+  variables:
+    DISTRIBUTION: "gentoo"
+    COMPILER: "gcc"
+    VERSION: "latest"
+  <<: *build-template
+
+test:gentoo:
+  variables:
+    DISTRIBUTION: "gentoo"
+    COMPILER: "gcc"
+    VERSION: "latest"
+  dependencies:
+    - build:gentoo
+  <<: *test-template
+
