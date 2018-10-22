@@ -65,6 +65,13 @@ best_version()
         type=--slash
         shift
     fi
+    case $1 in
+        -r|-d|-b)
+            # TODO check whether we support this in EAPI
+            # TODO implement the cross-compiling features
+            shift
+            ;;
+    esac
     [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
     local r=$(paludis_pipe_command BEST_VERSION "$EAPI" $type "$1" )
     echo ${r#*;}
@@ -78,6 +85,13 @@ has_version()
         type=--slash
         shift
     fi
+    case $1 in
+        -r|-d|-b)
+            # TODO check whether we support this in EAPI
+            # TODO implement the cross-compiling features
+            shift
+            ;;
+    esac
     [[ "${#@}" -ne 1 ]] && die "$0 should take exactly one arg"
     local r=$(paludis_pipe_command HAS_VERSION "$EAPI" $type "$1" )
     return ${r%%;*}
