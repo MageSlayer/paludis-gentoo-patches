@@ -22,15 +22,12 @@ function(paludis_add_test test_name)
                      "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.cc")
   endif()
   if(PAT_GTEST)
-    target_include_directories(${test_name}
-                               PRIVATE
-                                 ${GTEST_INCLUDE_DIRS})
     target_link_libraries(${test_name}
                           PRIVATE
                             libpaludis
                             libpaludisutil
-                            ${GTEST_BOTH_LIBRARIES}
-                            Threads::Threads
+                            GTest::GTest
+                            GTest::Main
                             ${PAT_LINK_LIBRARIES})
   endif()
 
