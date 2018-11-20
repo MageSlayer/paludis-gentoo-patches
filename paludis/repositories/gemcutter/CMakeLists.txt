@@ -13,12 +13,9 @@ add_dependencies(libpaludisgemcutterrepository libpaludisutil_SE)
 
 paludis_add_library(libpaludisgemcutterrepositoryjsonthings
                       json_things.cc)
-target_include_directories(libpaludisgemcutterrepositoryjsonthings
-                           PRIVATE
-                             ${Jansson_INCLUDE_DIRS})
 target_link_libraries(libpaludisgemcutterrepositoryjsonthings
                       PRIVATE
-                        ${Jansson_LIBRARIES})
+                        Jansson::Jansson)
 
 install(TARGETS
           libpaludisgemcutterrepositoryjsonthings

@@ -52,5 +52,13 @@ else()
                                     VERSION_VAR
                                       Jansson_VERSION_STRING)
   mark_as_advanced(Jansson_INCLUDE_DIR Jansson_LIBRARIES)
+
+  if(Jansson_FOUND AND NOT TARGET Jansson::Jansson)
+     add_library(Jansson::Jansson UNKNOWN IMPORTED)
+     set_target_properties(Jansson::Jansson PROPERTIES
+         IMPORTED_LOCATION "${Jansson_LIBRARIES}"
+         INTERFACE_INCLUDE_DIRECTORIES "${Jansson_INCLUDE_DIR}"
+     )
+  endif()
 endif()
 
