@@ -2112,7 +2112,7 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 
 pkg_setup() {
-    [[ ${BASH_COMPAT} == 4.2 ]] || die BASH_COMPAT=${BASH_COMPAT}
+    [[ ${BASH_COMPAT} == 4.4 ]] || die BASH_COMPAT=${BASH_COMPAT}
 }
 END
 
