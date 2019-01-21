@@ -74,6 +74,10 @@ econf()
             fi
         fi
 
+        # Workaround for buggy autoconf (does not use CONFIG_SHELL properly)
+        # See https://github.com/MageSlayer/paludis-gentoo-patches/issues/13 for details...
+        [[ -z "${LOCAL_ECONF_WRAPPER}" ]] && LOCAL_ECONF_WRAPPER="$CONFIG_SHELL"
+        
         echo ${LOCAL_ECONF_WRAPPER} "${ECONF_SOURCE}"/configure \
             --prefix=/usr \
             --host=${CHOST} \
