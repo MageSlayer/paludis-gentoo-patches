@@ -38,6 +38,23 @@ test:exherbo:
     - build:exherbo
   <<: *test-template
 
+build:exherbo-clang:
+  variables:
+    DISTRIBUTION: "exherbo"
+    COMPILER: "clang"
+    VERSION: "latest"
+  <<: *build-template
+
+test:exherbo-clang:
+  variables:
+    DISTRIBUTION: "exherbo"
+    COMPILER: "clang"
+    VERSION: "latest"
+  dependencies:
+    - build:exherbo-clang
+  allow_failure: true
+  <<: *test-template
+
 build:gentoo:
   variables:
     DISTRIBUTION: "gentoo"
