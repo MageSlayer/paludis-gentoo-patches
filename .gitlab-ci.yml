@@ -1,6 +1,7 @@
 stages:
   - build
   - test
+  - clang-tidy
 
 .build-template: &build-template
   stage: build
@@ -88,4 +89,13 @@ test:gentoo:
   dependencies:
     - build:gentoo
   <<: *test-template
+
+clang-tidy:
+  stage: clang-tidy
+  dependencies:
+    - build:exherbo-clang
+  image: paludis/exherbo-clang
+  script:
+    - export PATH="${PATH}:$(llvm-config --prefix)/share/clang"
+    - run-clang-tidy.py -j$(nproc) -p build-obj/ -header-filter="${PWD}/.*"
 
