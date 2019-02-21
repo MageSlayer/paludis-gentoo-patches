@@ -63,25 +63,25 @@ namespace paludis
             ///\since 0.26
             FakeRepository(const FakeRepositoryParams &);
 
-            ~FakeRepository();
+            ~FakeRepository() override;
 
             ///\}
 
-            virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+            bool some_ids_might_support_action(const SupportsActionTestBase &) const override;
 
-            virtual bool some_ids_might_not_be_masked() const;
+            bool some_ids_might_not_be_masked() const override;
 
-            virtual const bool is_unimportant() const;
+            const bool is_unimportant() const override;
 
-            virtual const std::shared_ptr<const Set<std::string> > maybe_expand_licence_nonrecursively(
-                    const std::string &) const;
+            const std::shared_ptr<const Set<std::string> > maybe_expand_licence_nonrecursively(
+                    const std::string &) const override;
 
             /* Keys */
 
-            virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
-            virtual const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const;
+            const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const override;
+            const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const override;
+            const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const override;
+            const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const override;
     };
 }
 

@@ -140,12 +140,12 @@ namespace paludis
             /**
              * Destructor.
              */
-            virtual ~DefaultSyncer();
+            ~DefaultSyncer() override;
 
             /**
              * Perform the sync.
              */
-            virtual void sync(const SyncOptions &) const;
+            void sync(const SyncOptions &) const override;
     };
 
     /**

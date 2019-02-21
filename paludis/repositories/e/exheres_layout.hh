@@ -52,91 +52,91 @@ namespace paludis
                         const ERepository * const, const FSPath &,
                         const std::shared_ptr<const FSPathSequence> &);
 
-                virtual ~ExheresLayout();
+                ~ExheresLayout() override;
 
                 ///\}
 
-                virtual bool has_category_named(const CategoryNamePart &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool has_category_named(const CategoryNamePart &) const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual bool has_package_named(const QualifiedPackageName &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool has_package_named(const QualifiedPackageName &) const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual FSPath categories_file() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                FSPath categories_file() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<const CategoryNamePartSet> category_names() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::shared_ptr<const CategoryNamePartSet> category_names() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<const QualifiedPackageNameSet> package_names(
+                std::shared_ptr<const QualifiedPackageNameSet> package_names(
                         const CategoryNamePart &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<const PackageIDSequence> package_ids(
+                std::shared_ptr<const PackageIDSequence> package_ids(
                         const QualifiedPackageName &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::shared_ptr<const FSPathSequence> info_packages_files() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const FSPathSequence> info_packages_files() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::shared_ptr<const FSPathSequence> info_variables_files() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const FSPathSequence> info_variables_files() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual FSPath package_directory(const QualifiedPackageName &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                FSPath package_directory(const QualifiedPackageName &) const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual FSPath category_directory(const CategoryNamePart &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                FSPath category_directory(const CategoryNamePart &) const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual FSPath binary_ebuild_directory(const QualifiedPackageName &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                FSPath binary_ebuild_directory(const QualifiedPackageName &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<const FSPathSequence> arch_list_files() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::shared_ptr<const FSPathSequence> arch_list_files() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<const FSPathSequence> repository_mask_files() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::shared_ptr<const FSPathSequence> repository_mask_files() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<const FSPathSequence> profiles_desc_files() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::shared_ptr<const FSPathSequence> profiles_desc_files() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<const FSPathSequence> mirror_files() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::shared_ptr<const FSPathSequence> mirror_files() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<const UseDescFileInfoSequence> use_desc_files() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::shared_ptr<const UseDescFileInfoSequence> use_desc_files() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual FSPath profiles_base_dir() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                FSPath profiles_base_dir() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<const FSPathSequence> exlibsdirs(const QualifiedPackageName &) const;
+                std::shared_ptr<const FSPathSequence> exlibsdirs(const QualifiedPackageName &) const override;
 
-                virtual std::shared_ptr<const FSPathSequence> exlibsdirs_global() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::shared_ptr<const FSPathSequence> exlibsdirs_global() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<const FSPathSequence> exlibsdirs_category(const CategoryNamePart &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::shared_ptr<const FSPathSequence> exlibsdirs_category(const CategoryNamePart &) const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<const FSPathSequence> exlibsdirs_package(const QualifiedPackageName &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::shared_ptr<const FSPathSequence> exlibsdirs_package(const QualifiedPackageName &) const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<const FSPathSequence> licenses_dirs() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::shared_ptr<const FSPathSequence> licenses_dirs() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<Map<FSPath, std::string, FSPathComparator> > manifest_files(
+                std::shared_ptr<Map<FSPath, std::string, FSPathComparator> > manifest_files(
                         const QualifiedPackageName &, const FSPath &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<MetadataValueKey<FSPath> > accounts_repository_data_location_key() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::shared_ptr<MetadataValueKey<FSPath> > accounts_repository_data_location_key() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<MetadataValueKey<FSPath> > e_updates_location_key() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::shared_ptr<MetadataValueKey<FSPath> > e_updates_location_key() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<MetadataValueKey<FSPath> > licence_groups_location_key() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::shared_ptr<MetadataValueKey<FSPath> > licence_groups_location_key() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual std::shared_ptr<const MasksInfo> repository_masks(const std::shared_ptr<const PackageID> &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::shared_ptr<const MasksInfo> repository_masks(const std::shared_ptr<const PackageID> &) const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

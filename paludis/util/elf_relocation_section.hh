@@ -105,9 +105,9 @@ namespace paludis
 
         public:
             RelocationSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &, std::istream &, bool);
-            virtual ~RelocationSection();
+            ~RelocationSection() override;
 
-            virtual std::string get_type() const
+            std::string get_type() const override
             {
                 return Relocation_::type_name;
             }

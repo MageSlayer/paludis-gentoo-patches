@@ -181,7 +181,7 @@ namespace
             {
             }
 
-            virtual const std::shared_ptr<const DepSpec> base_spec() const
+            const std::shared_ptr<const DepSpec> base_spec() const override
             {
                 return _spec;
             }
@@ -199,7 +199,7 @@ namespace
             template <typename Iter_>
             WrappedSpec * add_children(Iter_ cur, const Iter_ end);
 
-            virtual const std::shared_ptr<const Children> children() const
+            const std::shared_ptr<const Children> children() const override
             {
                 return _children;
             }

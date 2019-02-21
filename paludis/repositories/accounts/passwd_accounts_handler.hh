@@ -30,7 +30,7 @@ namespace paludis
             public AccountsHandler
         {
             public:
-                virtual void merge(const MergeParams &);
+                void merge(const MergeParams &) override;
 
                 void merge_user(const MergeParams &);
                 void merge_group(const MergeParams &);

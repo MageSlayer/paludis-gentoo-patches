@@ -52,7 +52,7 @@ namespace paludis
 
             explicit Pipe(const bool close_exec);
 
-            virtual ~Pipe() = default;
+            ~Pipe() override = default;
 
             ///\}
 

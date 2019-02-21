@@ -38,7 +38,7 @@ namespace examples
 
         private:
             CommandLine();
-            ~CommandLine();
+            ~CommandLine() override;
 
         public:
             virtual void run(const int, const char * const * const,
@@ -48,9 +48,9 @@ namespace examples
             ///\name Program information
             ///\{
 
-            virtual std::string app_name() const;
-            virtual std::string app_synopsis() const;
-            virtual std::string app_description() const;
+            std::string app_name() const override;
+            std::string app_synopsis() const override;
+            std::string app_description() const override;
 
             ///\}
 

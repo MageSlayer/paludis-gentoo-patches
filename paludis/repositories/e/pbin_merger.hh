@@ -69,25 +69,25 @@ namespace paludis
                 Pimp<PbinMerger> _imp;
 
             protected:
-                virtual void on_error(bool is_check, const std::string &);
-                virtual void on_warn(bool is_check, const std::string &);
-                virtual void display_override(const std::string &) const;
+                void on_error(bool is_check, const std::string &) override;
+                void on_warn(bool is_check, const std::string &) override;
+                void display_override(const std::string &) const override;
 
-                virtual void on_enter_dir(bool is_check, const FSPath);
+                void on_enter_dir(bool is_check, const FSPath) override;
 
-                virtual void on_done_merge();
+                void on_done_merge() override;
 
-                virtual void track_install_file(const FSPath &, const FSPath &);
-                virtual void track_install_sym(const FSPath &, const FSPath &);
+                void track_install_file(const FSPath &, const FSPath &) override;
+                void track_install_sym(const FSPath &, const FSPath &) override;
 
             public:
                 PbinMerger(const PbinMergerParams &);
                 ~PbinMerger();
 
-                virtual Hook extend_hook(const Hook &);
+                Hook extend_hook(const Hook &) override;
 
-                virtual void merge();
-                virtual bool check();
+                void merge() override;
+                bool check() override;
         };
     }
 }

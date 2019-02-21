@@ -41,17 +41,17 @@ namespace paludis
                     const Environment * const env, const std::shared_ptr<const Choice> &,
                     const bool mask);
 
-            virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual ChoiceOrigin origin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool presumed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const UnprefixedChoiceName unprefixed_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const ChoiceNameWithPrefix name_with_prefix() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled_by_default() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool locked() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string description() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            ChoiceOrigin origin() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string parameter() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool presumed() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -69,17 +69,17 @@ namespace paludis
                     const Environment * const env, const std::shared_ptr<const Choice> &,
                     const bool mask);
 
-            virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual ChoiceOrigin origin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool presumed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const UnprefixedChoiceName unprefixed_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const ChoiceNameWithPrefix name_with_prefix() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled_by_default() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool locked() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string description() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            ChoiceOrigin origin() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string parameter() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool presumed() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -97,17 +97,17 @@ namespace paludis
                     const Environment * const env, const std::shared_ptr<const Choice> &,
                     const bool mask);
 
-            virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual ChoiceOrigin origin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool presumed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const UnprefixedChoiceName unprefixed_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const ChoiceNameWithPrefix name_with_prefix() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled_by_default() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool locked() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string description() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            ChoiceOrigin origin() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string parameter() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool presumed() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -124,17 +124,17 @@ namespace paludis
             ELikeJobsChoiceValue(const std::shared_ptr<const PackageID> &,
                     const Environment * const env, const std::shared_ptr<const Choice> &);
 
-            virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual ChoiceOrigin origin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool presumed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const UnprefixedChoiceName unprefixed_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const ChoiceNameWithPrefix name_with_prefix() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled_by_default() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool locked() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string description() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            ChoiceOrigin origin() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string parameter() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool presumed() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -150,17 +150,17 @@ namespace paludis
             ELikeTraceChoiceValue(const std::shared_ptr<const PackageID> &,
                     const Environment * const env, const std::shared_ptr<const Choice> &);
 
-            virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual ChoiceOrigin origin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool presumed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const UnprefixedChoiceName unprefixed_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const ChoiceNameWithPrefix name_with_prefix() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled_by_default() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool locked() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string description() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            ChoiceOrigin origin() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string parameter() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool presumed() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -178,17 +178,17 @@ namespace paludis
                     const Environment * const env, const std::shared_ptr<const Choice> &,
                     const ELikeSymbolsChoiceValueParameter _force);
 
-            virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual ChoiceOrigin origin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool presumed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const UnprefixedChoiceName unprefixed_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const ChoiceNameWithPrefix name_with_prefix() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled_by_default() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool locked() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string description() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            ChoiceOrigin origin() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string parameter() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool presumed() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -210,17 +210,17 @@ namespace paludis
                     const Environment * const env, const std::shared_ptr<const Choice> &,
                     const ELikeWorkChoiceValueParameter force);
 
-            virtual const UnprefixedChoiceName unprefixed_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const ChoiceNameWithPrefix name_with_prefix() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled_by_default() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool locked() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string description() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual ChoiceOrigin origin() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string parameter() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool presumed() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const UnprefixedChoiceName unprefixed_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const ChoiceNameWithPrefix name_with_prefix() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled_by_default() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool locked() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string description() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            ChoiceOrigin origin() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string parameter() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool presumed() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const UnprefixedChoiceName canonical_unprefixed_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const ChoiceNameWithPrefix canonical_name_with_prefix() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -244,26 +244,26 @@ namespace paludis
             ///\name Properties
             ///\{
 
-            virtual const UnprefixedChoiceName unprefixed_name() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const ChoiceNameWithPrefix name_with_prefix() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool enabled_by_default() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool presumed() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual bool locked() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string description() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual ChoiceOrigin origin() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string parameter() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            const UnprefixedChoiceName unprefixed_name() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const ChoiceNameWithPrefix name_with_prefix() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool enabled_by_default() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool presumed() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool locked() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string description() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            ChoiceOrigin origin() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string parameter() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const PermittedChoiceValueParameterValues> permitted_parameter_values() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// \}
 

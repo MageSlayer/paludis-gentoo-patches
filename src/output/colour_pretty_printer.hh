@@ -29,19 +29,19 @@ class ColourPrettyPrinter :
     public paludis::FormattedPrettyPrinter
 {
     protected:
-        virtual const std::string format_enabled(const std::string &) const;
-        virtual const std::string format_disabled(const std::string &) const;
-        virtual const std::string format_installed(const std::string &) const;
-        virtual const std::string format_installable(const std::string &) const;
-        virtual const std::string format_masked(const std::string &) const;
-        virtual const std::string format_plain(const std::string &) const;
+        const std::string format_enabled(const std::string &) const override;
+        const std::string format_disabled(const std::string &) const override;
+        const std::string format_installed(const std::string &) const override;
+        const std::string format_installable(const std::string &) const override;
+        const std::string format_masked(const std::string &) const override;
+        const std::string format_plain(const std::string &) const override;
 
     public:
         ColourPrettyPrinter(const paludis::Environment * const, const std::shared_ptr<const paludis::PackageID> &);
-        ~ColourPrettyPrinter();
+        ~ColourPrettyPrinter() override;
 
-        virtual const std::string indentify(const int) const;
-        virtual const std::string newline() const;
+        const std::string indentify(const int) const override;
+        const std::string newline() const override;
 
         using FormattedPrettyPrinter::prettify;
 

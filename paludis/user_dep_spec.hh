@@ -62,9 +62,9 @@ namespace paludis
         public:
             UserSlotExactFullRequirement(const std::pair<SlotName, SlotName> &);
 
-            virtual const std::pair<SlotName, SlotName> slots() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::pair<SlotName, SlotName> slots() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string as_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE UserSlotExactPartialRequirement :
@@ -81,9 +81,9 @@ namespace paludis
 
             ///\}
 
-            virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const SlotName slot() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string as_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -103,27 +103,27 @@ namespace paludis
             ///\{
 
             UserKeyRequirement(const std::string &);
-            ~UserKeyRequirement();
+            ~UserKeyRequirement() override;
 
             ///\}
 
-            virtual const std::pair<bool, std::string> requirement_met(
+            const std::pair<bool, std::string> requirement_met(
                     const Environment * const, const ChangedChoices *,
                     const std::shared_ptr<const PackageID> &,
                     const std::shared_ptr<const PackageID> &,
-                    const ChangedChoices * const) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const ChangedChoices * const) const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string as_human_string(
-                    const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string as_raw_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual Tribool accumulate_changes_to_make_met(
+            Tribool accumulate_changes_to_make_met(
                     const Environment * const,
                     const ChangedChoices * const,
                     const std::shared_ptr<const PackageID> &,
                     const std::shared_ptr<const PackageID> &,
-                    ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    ChangedChoices &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     extern template class Pimp<UserKeyRequirement>;
@@ -144,27 +144,27 @@ namespace paludis
             ///\{
 
             ExcludeRequirement(const PackageDepSpec &);
-            ~ExcludeRequirement();
+            ~ExcludeRequirement() override;
 
             ///\}
 
-            virtual const std::pair<bool, std::string> requirement_met(
+            const std::pair<bool, std::string> requirement_met(
                     const Environment * const, const ChangedChoices *,
                     const std::shared_ptr<const PackageID> &,
                     const std::shared_ptr<const PackageID> &,
-                    const ChangedChoices * const) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const ChangedChoices * const) const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string as_human_string(
-                    const std::shared_ptr<const PackageID> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string as_human_string(
+                    const std::shared_ptr<const PackageID> &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string as_raw_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string as_raw_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual Tribool accumulate_changes_to_make_met(
+            Tribool accumulate_changes_to_make_met(
                     const Environment * const,
                     const ChangedChoices * const,
                     const std::shared_ptr<const PackageID> &,
                     const std::shared_ptr<const PackageID> &,
-                    ChangedChoices &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    ChangedChoices &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

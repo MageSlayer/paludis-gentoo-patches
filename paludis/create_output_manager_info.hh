@@ -109,7 +109,7 @@ namespace paludis
              */
             const ClientOutputFeatures client_output_features() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void serialise(Serialiser &) const;
+            void serialise(Serialiser &) const override;
 
             static const std::shared_ptr<CreateOutputManagerForPackageIDActionInfo> deserialise(
                     Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -153,7 +153,7 @@ namespace paludis
              */
             const ClientOutputFeatures client_output_features() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void serialise(Serialiser &) const;
+            void serialise(Serialiser &) const override;
 
             static const std::shared_ptr<CreateOutputManagerForRepositorySyncInfo> deserialise(
                     Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));

@@ -1,7 +1,6 @@
 ---
 Checks: "-*,\
 modernize-*,\
--modernize-use-override,\
 -modernize-loop-convert,\
 -modernize-use-emplace,\
 -modernize-use-using,\

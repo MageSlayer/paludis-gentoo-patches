@@ -76,12 +76,12 @@ namespace paludis
         public virtual Cloneable<Base_>
     {
         public:
-            virtual std::shared_ptr<Base_> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<Base_> clone() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\name Basic operations
             ///\{
 
-            virtual ~CloneUsingThis();
+            ~CloneUsingThis() override;
 
             ///\}
     };

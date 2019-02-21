@@ -30,17 +30,17 @@ namespace paludis
         struct CaveCommandLine :
             args::ArgsHandler
         {
-            virtual std::string app_name() const
+            std::string app_name() const override
             {
                 return "cave";
             }
 
-            virtual std::string app_synopsis() const
+            std::string app_synopsis() const override
             {
                 return "A commandline client for the other package mangler.";
             }
 
-            virtual std::string app_description() const
+            std::string app_description() const override
             {
                 return "The front-end to a number of commands.";
             }

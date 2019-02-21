@@ -68,26 +68,26 @@ namespace paludis
         public GeneratorHandler
     {
         public:
-            virtual std::shared_ptr<const RepositoryNameSet> repositories(
+            std::shared_ptr<const RepositoryNameSet> repositories(
                     const Environment * const env,
-                    const RepositoryContentMayExcludes &) const;
+                    const RepositoryContentMayExcludes &) const override;
 
-            virtual std::shared_ptr<const CategoryNamePartSet> categories(
+            std::shared_ptr<const CategoryNamePartSet> categories(
                     const Environment * const env,
                     const std::shared_ptr<const RepositoryNameSet> & repos,
-                    const RepositoryContentMayExcludes &) const;
+                    const RepositoryContentMayExcludes &) const override;
 
-            virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
+            std::shared_ptr<const QualifiedPackageNameSet> packages(
                     const Environment * const env,
                     const std::shared_ptr<const RepositoryNameSet> & repos,
                     const std::shared_ptr<const CategoryNamePartSet> & cats,
-                    const RepositoryContentMayExcludes &) const;
+                    const RepositoryContentMayExcludes &) const override;
 
-            virtual std::shared_ptr<const PackageIDSet> ids(
+            std::shared_ptr<const PackageIDSet> ids(
                     const Environment * const env,
                     const std::shared_ptr<const RepositoryNameSet> & repos,
                     const std::shared_ptr<const QualifiedPackageNameSet> & qpns,
-                    const RepositoryContentMayExcludes &) const;
+                    const RepositoryContentMayExcludes &) const override;
     };
 }
 

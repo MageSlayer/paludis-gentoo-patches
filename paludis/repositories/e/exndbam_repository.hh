@@ -62,7 +62,7 @@ namespace paludis
             void _add_metadata_keys() const;
 
         protected:
-            virtual void need_keys_added() const;
+            void need_keys_added() const override;
 
         public:
             /**
@@ -73,60 +73,60 @@ namespace paludis
             /**
              * Destructor.
              */
-            ~ExndbamRepository();
+            ~ExndbamRepository() override;
 
-            virtual void invalidate();
+            void invalidate() override;
 
-            virtual void regenerate_cache() const;
+            void regenerate_cache() const override;
 
             /* RepositoryDestinationInterface */
 
-            virtual void merge(const MergeParams &);
+            void merge(const MergeParams &) override;
 
             /* Repository */
 
-            virtual std::shared_ptr<const PackageIDSequence> package_ids(
+            std::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &,
                     const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const QualifiedPackageNameSet> package_names(
+            std::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &,
                     const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const CategoryNamePartSet> category_names(
+            std::shared_ptr<const CategoryNamePartSet> category_names(
                     const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+            std::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart &,
                     const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool has_package_named(const QualifiedPackageName &,
+            bool has_package_named(const QualifiedPackageName &,
                     const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool has_category_named(const CategoryNamePart &,
+            bool has_category_named(const CategoryNamePart &,
                     const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const bool is_unimportant() const;
+            const bool is_unimportant() const override;
 
             /* Keys */
 
-            virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
-            virtual const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const;
+            const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const override;
+            const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const override;
+            const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const override;
+            const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const override;
 
             ///\name For use by ExndbamID
             ///\{
 
             void perform_uninstall(
                     const std::shared_ptr<const erepository::ERepositoryID> & id,
-                    const UninstallAction &) const;
+                    const UninstallAction &) const override;
 
             ///\}
 
@@ -147,7 +147,7 @@ namespace paludis
 
             ///\}
 
-            virtual void perform_updates();
+            void perform_updates() override;
     };
 
     class PALUDIS_VISIBLE ExndbamRepositoryConfigurationError : public ConfigurationError
