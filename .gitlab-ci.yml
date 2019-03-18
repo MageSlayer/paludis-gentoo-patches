@@ -38,6 +38,24 @@ test:exherbo:
     - build:exherbo
   <<: *test-template
 
+build:exherbo-testing:
+  variables:
+    DISTRIBUTION: "exherbo"
+    COMPILER: "gcc"
+    VERSION: "next"
+  allow_failure: true
+  <<: *build-template
+
+test:exherbo-testing:
+  variables:
+    DISTRIBUTION: "exherbo"
+    COMPILER: "gcc"
+    VERSION: "next"
+  dependencies:
+    - build:exherbo-testing
+  allow_failure: true
+  <<: *test-template
+
 build:exherbo-clang:
   variables:
     DISTRIBUTION: "exherbo"

@@ -1,12 +1,17 @@
 FROM exherbo/exherbo-x86_64-pc-linux-gnu-base:latest
 MAINTAINER Marvin Schmidt <marv@exherbo.org>
 
+# Control dependency versions
+ARG DEPENDENCY_VERSIONS
+ENV DEPENDENCY_VERSIONS ${DEPENDENCY_VERSIONS:-stable}
+
 # Switch to option.conf.d layout
 RUN rm /etc/paludis/options.conf \
     && mkdir /etc/paludis/options.conf.d
 
 COPY ./config/options/* /etc/paludis/options.conf.d/
 COPY ./config/sets/paludis-deps.conf /etc/paludis/sets/
+RUN echo "*/* ${DEPENDENCY_VERSIONS}" >> /etc/paludis/package_unmask.conf
 
 RUN chgrp tty /dev/tty \
     && eclectic env update \
