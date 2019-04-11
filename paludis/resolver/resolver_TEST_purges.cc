@@ -69,13 +69,13 @@ namespace
 
 TEST_F(ResolverPurgesTestCase, Purges)
 {
-    data->install("purges", "target", "0")->build_dependencies_key()->set_from_string(
+    data->install("purges", "target", "0")->build_dependencies_target_key()->set_from_string(
             "purges/still-used-dep purges/old-dep purges/old-dep-locked purges/unrelated-dep");
     data->install("purges", "old-dep", "0");
     data->install("purges", "old-dep-locked", "0")->behaviours_set()->insert("used");
     data->install("purges", "still-used-dep", "0");
     data->install("purges", "unrelated-dep", "0");
-    data->install("purges", "unrelated", "0")->build_dependencies_key()->set_from_string("purges/unrelated-dep");
+    data->install("purges", "unrelated", "0")->build_dependencies_target_key()->set_from_string("purges/unrelated-dep");
 
     data->get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("purges/old-dep", &data->env, { }));
 
@@ -106,7 +106,7 @@ TEST_F(ResolverPurgesTestCase, StarSlotPurges)
     data->install("star-slot-purges", "target", "1")->set_slot(SlotName("1"));
     data->install("star-slot-purges", "target", "2")->set_slot(SlotName("2"));
 
-    data->install("star-slot-purges", "uses", "1")->build_dependencies_key()->set_from_string("star-slot-purges/target:*");
+    data->install("star-slot-purges", "uses", "1")->build_dependencies_target_key()->set_from_string("star-slot-purges/target:*");
 
     data->get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("star-slot-purges/target", &data->env, { }));
 

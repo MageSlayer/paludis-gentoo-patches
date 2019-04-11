@@ -570,8 +570,11 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
         id->load_dependencies(m.dependencies()->name(), m.dependencies()->description(), get(keys, m.dependencies()->name()));
     else
     {
-        if (! m.build_depend()->name().empty())
-            id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), get(keys, m.build_depend()->name()), false);
+        if (! m.build_depend_target()->name().empty())
+            id->load_build_depend_target(m.build_depend_target()->name(), m.build_depend_target()->description(), get(keys, m.build_depend_target()->name()), false);
+
+        if (! m.build_depend_host()->name().empty())
+            id->load_build_depend_host(m.build_depend_host()->name(), m.build_depend_host()->description(), get(keys, m.build_depend_host()->name()), false);
 
         if (! m.run_depend()->name().empty())
         {

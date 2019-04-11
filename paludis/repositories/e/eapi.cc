@@ -122,7 +122,8 @@ namespace
     {
         return std::make_shared<EAPIEbuildMetadataVariables>(make_named_values<EAPIEbuildMetadataVariables>(
             n::bugs_to() = make_metadata_variable(k, "bugs_to"),
-            n::build_depend() = make_metadata_variable(k, "build_depend"),
+            n::build_depend_target() = make_metadata_variable(k, "build_depend_target"),
+            n::build_depend_host() = make_metadata_variable(k, "build_depend_host"),
             n::defined_phases() = make_metadata_variable(k, "defined_phases"),
             n::dependencies() = make_metadata_variable(k, "dependencies"),
             n::eapi() = make_metadata_variable(k, "eapi"),

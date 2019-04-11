@@ -54,14 +54,17 @@ namespace
     struct UnpackagedIDData :
         Singleton<UnpackagedIDData>
     {
-        std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> build_dependencies_target_labels;
+        std::shared_ptr<DependenciesLabelSequence> build_dependencies_host_labels;
         std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
 
         UnpackagedIDData() :
-            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            build_dependencies_target_labels(std::make_shared<DependenciesLabelSequence>()),
+            build_dependencies_host_labels(std::make_shared<DependenciesLabelSequence>()),
             run_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
         {
-            build_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build_dependencies"));
+            build_dependencies_target_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build_dependencies_target"));
+            build_dependencies_host_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build_dependencies_host"));
             run_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run_dependencies"));
         }
     };
@@ -79,7 +82,8 @@ namespace paludis
 
         const std::shared_ptr<LiteralMetadataValueKey<Slot> > slot_key;
         const std::shared_ptr<LiteralMetadataValueKey<FSPath> > fs_location_key;
-        const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key;
+        const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_target_key;
+        const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_host_key;
         const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key;
         const std::shared_ptr<const MetadataValueKey<std::string> > description_key;
         const std::shared_ptr<const UnpackagedChoicesKey> choices_key;
@@ -92,7 +96,8 @@ namespace paludis
                 const SlotName & s,
                 const RepositoryName & n,
                 const FSPath & l,
-                const std::string & b,
+                const std::string & bt,
+                const std::string & bh,
                 const std::string & r,
                 const std::string & d,
                 const Tribool ds,
@@ -107,8 +112,10 @@ namespace paludis
                             n::parallel_value() = s,
                             n::raw_value() = stringify(s)))),
             fs_location_key(std::make_shared<LiteralMetadataValueKey<FSPath> >("location", "Location", mkt_normal, l)),
-            build_dependencies_key(std::make_shared<UnpackagedDependencyKey>(env, "build_dependencies", "Build dependencies", mkt_dependencies,
-                        UnpackagedIDData::get_instance()->build_dependencies_labels, b)),
+            build_dependencies_target_key(std::make_shared<UnpackagedDependencyKey>(env, "build_dependencies_target", "Build dependencies", mkt_dependencies,
+                        UnpackagedIDData::get_instance()->build_dependencies_target_labels, bt)),
+            build_dependencies_host_key(std::make_shared<UnpackagedDependencyKey>(env, "build_dependencies_host", "Build dependencies", mkt_dependencies,
+                        UnpackagedIDData::get_instance()->build_dependencies_host_labels, bh)),
             run_dependencies_key(std::make_shared<UnpackagedDependencyKey>(env, "run_dependencies", "Run dependencies", mkt_dependencies,
                         UnpackagedIDData::get_instance()->run_dependencies_labels, r)),
             description_key(std::make_shared<LiteralMetadataValueKey<std::string> >("description", "Description", mkt_significant, d)),
@@ -124,12 +131,13 @@ namespace paludis
 
 UnpackagedID::UnpackagedID(const Environment * const e, const QualifiedPackageName & q,
         const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSPath & l,
-        const std::string & b, const std::string & r, const std::string & d, const Tribool ds, const Tribool dw) :
-    _imp(e, q, v, s, n, l, b, r, d, ds, dw, this)
+        const std::string & bt, const std::string & bh, const std::string & r, const std::string & d, const Tribool ds, const Tribool dw) :
+    _imp(e, q, v, s, n, l, bt, bh, r, d, ds, dw, this)
 {
     add_metadata_key(_imp->slot_key);
     add_metadata_key(_imp->fs_location_key);
-    add_metadata_key(_imp->build_dependencies_key);
+    add_metadata_key(_imp->build_dependencies_target_key);
+    add_metadata_key(_imp->build_dependencies_host_key);
     add_metadata_key(_imp->run_dependencies_key);
     add_metadata_key(_imp->description_key);
     add_metadata_key(_imp->choices_key);
@@ -217,9 +225,15 @@ UnpackagedID::dependencies_key() const
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-UnpackagedID::build_dependencies_key() const
+UnpackagedID::build_dependencies_target_key() const
 {
-    return _imp->build_dependencies_key;
+    return _imp->build_dependencies_target_key;
+}
+
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+UnpackagedID::build_dependencies_host_key() const
+{
+    return _imp->build_dependencies_host_key;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >

@@ -694,7 +694,8 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
             std::string var(tokens[3]);
 
-            if ((var == eapi->supported()->ebuild_metadata_variables()->build_depend()->name()) ||
+            if ((var == eapi->supported()->ebuild_metadata_variables()->build_depend_target()->name()) ||
+                    (var == eapi->supported()->ebuild_metadata_variables()->build_depend_host()->name()) ||
                     (var == eapi->supported()->ebuild_metadata_variables()->run_depend()->name()) ||
                     (var == eapi->supported()->ebuild_metadata_variables()->pdepend()->name()) ||
                     (var == eapi->supported()->ebuild_metadata_variables()->dependencies()->name()))

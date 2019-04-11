@@ -192,7 +192,8 @@ paludis::resolver::get_sameness(
 
     if (is_same_metadata)
     {
-        is_same_metadata = is_same_metadata && is_same_dependencies(existing_id->build_dependencies_key(), installable_id->build_dependencies_key());
+        is_same_metadata = is_same_metadata && is_same_dependencies(existing_id->build_dependencies_target_key(), installable_id->build_dependencies_target_key());
+        is_same_metadata = is_same_metadata && is_same_dependencies(existing_id->build_dependencies_host_key(), installable_id->build_dependencies_host_key());
         is_same_metadata = is_same_metadata && is_same_dependencies(existing_id->run_dependencies_key(), installable_id->run_dependencies_key());
         is_same_metadata = is_same_metadata && is_same_dependencies(existing_id->post_dependencies_key(), installable_id->post_dependencies_key());
         is_same_metadata = is_same_metadata && is_same_dependencies(existing_id->dependencies_key(), installable_id->dependencies_key());

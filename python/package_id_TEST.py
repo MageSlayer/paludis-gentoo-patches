@@ -126,11 +126,17 @@ class TestCase_01_PackageID(unittest.TestCase):
         mask = next(iter(self.mpid.masks))
         self.assertTrue(isinstance(mask, UnacceptedMask))
 
-    def test_18_build_dependencies_key(self):
+    def test_18_0_build_dependencies_target_key(self):
         self.assertTrue(
-            isinstance(self.pid.build_dependencies_key(), MetadataDependencySpecTreeKey)
+            isinstance(self.pid.build_dependencies_target_key(), MetadataDependencySpecTreeKey)
         )
-        self.assertEqual(self.ipid.build_dependencies_key(), None)
+        self.assertEqual(self.ipid.build_dependencies_target_key(), None)
+
+    def test_18_1_build_dependencies_host_key(self):
+        self.assertTrue(
+            isinstance(self.pid.build_dependencies_host_key(), MetadataDependencySpecTreeKey)
+        )
+        self.assertEqual(self.ipid.build_dependencies_host_key(), None)
 
     def test_19_run_dependencies_key(self):
         self.assertEqual(self.pid.run_dependencies_key(), None)

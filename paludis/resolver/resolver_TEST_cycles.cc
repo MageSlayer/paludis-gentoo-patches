@@ -71,8 +71,8 @@ namespace
 
 TEST_F(ResolverCyclesTestCase, NoChanges)
 {
-    data->install("no-changes", "dep-a", "1")->build_dependencies_key()->set_from_string("no-changes/dep-b");
-    data->install("no-changes", "dep-b", "1")->build_dependencies_key()->set_from_string("no-changes/dep-a");
+    data->install("no-changes", "dep-a", "1")->build_dependencies_target_key()->set_from_string("no-changes/dep-b");
+    data->install("no-changes", "dep-b", "1")->build_dependencies_target_key()->set_from_string("no-changes/dep-a");
 
     data->get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_same);
 
@@ -322,7 +322,7 @@ TEST_F(TriangleSelf1True, Works) { common_test_code(); }
 
 TEST_F(ResolverCyclesTestCase, CycleDeps)
 {
-    data->install("cycle-deps", "dep-g", "1")->build_dependencies_key()->set_from_string("cycle-deps/dep-c");
+    data->install("cycle-deps", "dep-g", "1")->build_dependencies_target_key()->set_from_string("cycle-deps/dep-c");
 
     data->get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_same);
 

@@ -108,7 +108,7 @@ namespace
         {
             if (direct_dep_installed_)
                 data->install("continue-on-failure", "direct-dep", "0");
-            data->install("continue-on-failure", "unchanged-dep", "1")->build_dependencies_key()->set_from_string("continue-on-failure/indirect-dep");
+            data->install("continue-on-failure", "unchanged-dep", "1")->build_dependencies_target_key()->set_from_string("continue-on-failure/indirect-dep");
 
             data->get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_same);
             data->get_use_existing_nothing_helper.set_use_existing_for_targets(ue_if_same);
@@ -161,10 +161,10 @@ TEST_F(ContinueOnFailureT, Works) { common_test_code(); }
 
 TEST_F(ResolverContinueOnFailureTestCase, Uninstall)
 {
-    data->install("continue-on-failure-uninstall", "dep-of-dep", "1")->build_dependencies_key()->set_from_string("");
-    data->install("continue-on-failure-uninstall", "dep", "1")->build_dependencies_key()->set_from_string("continue-on-failure-uninstall/dep-of-dep");
-    data->install("continue-on-failure-uninstall", "target", "1")->build_dependencies_key()->set_from_string("continue-on-failure-uninstall/dep");
-    data->install("continue-on-failure-uninstall", "needs-target", "1")->build_dependencies_key()->set_from_string("continue-on-failure-uninstall/target");
+    data->install("continue-on-failure-uninstall", "dep-of-dep", "1")->build_dependencies_target_key()->set_from_string("");
+    data->install("continue-on-failure-uninstall", "dep", "1")->build_dependencies_target_key()->set_from_string("continue-on-failure-uninstall/dep-of-dep");
+    data->install("continue-on-failure-uninstall", "target", "1")->build_dependencies_target_key()->set_from_string("continue-on-failure-uninstall/dep");
+    data->install("continue-on-failure-uninstall", "needs-target", "1")->build_dependencies_target_key()->set_from_string("continue-on-failure-uninstall/target");
 
     data->get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/dep-of-dep", &data->env, { }));
     data->get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("continue-on-failure-uninstall/dep", &data->env, { }));
@@ -217,7 +217,7 @@ TEST_F(ResolverContinueOnFailureTestCase, Uninstall)
 
 TEST_F(ResolverContinueOnFailureTestCase, Purge)
 {
-    data->install("continue-on-failure-purge", "target", "0")->build_dependencies_key()->set_from_string("continue-on-failure-purge/going");
+    data->install("continue-on-failure-purge", "target", "0")->build_dependencies_target_key()->set_from_string("continue-on-failure-purge/going");
     data->install("continue-on-failure-purge", "going", "1");
 
     data->get_constraints_for_purge_helper.add_purge_spec(parse_user_package_dep_spec("continue-on-failure-purge/going", &data->env, { }));

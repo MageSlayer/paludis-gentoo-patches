@@ -197,7 +197,13 @@ RepositoryID::dependencies_key() const
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-RepositoryID::build_dependencies_key() const
+RepositoryID::build_dependencies_target_key() const
+{
+    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+}
+
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+RepositoryID::build_dependencies_host_key() const
 {
     return nullptr;
 }

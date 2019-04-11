@@ -1328,9 +1328,12 @@ VDBRepository::perform_updates()
                         generator::InRepository(name()))]);
             for (const auto & id : *ids)
             {
-                if (id->build_dependencies_key())
-                    rewrite_dependencies(id->fs_location_key()->parse_value() / id->build_dependencies_key()->raw_name(),
-                            id->build_dependencies_key(), dep_rewrites);
+                if (id->build_dependencies_target_key())
+                    rewrite_dependencies(id->fs_location_key()->parse_value() / id->build_dependencies_target_key()->raw_name(),
+                            id->build_dependencies_target_key(), dep_rewrites);
+                if (id->build_dependencies_host_key())
+                    rewrite_dependencies(id->fs_location_key()->parse_value() / id->build_dependencies_host_key()->raw_name(),
+                            id->build_dependencies_host_key(), dep_rewrites);
                 if (id->run_dependencies_key())
                     rewrite_dependencies(id->fs_location_key()->parse_value() / id->run_dependencies_key()->raw_name(),
                             id->run_dependencies_key(), dep_rewrites);

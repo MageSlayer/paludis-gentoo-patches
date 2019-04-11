@@ -410,8 +410,8 @@ TEST(ERepository, MetadataUncached)
             EXPECT_EQ("The Description", id1->short_description_key()->parse_value());
             UnformattedPrettyPrinter ff;
             erepository::SpecTreePrettyPrinter pd(ff, { });
-            ASSERT_TRUE(bool(id1->build_dependencies_key()));
-            id1->build_dependencies_key()->parse_value()->top()->accept(pd);
+            ASSERT_TRUE(bool(id1->build_dependencies_target_key()));
+            id1->build_dependencies_target_key()->parse_value()->top()->accept(pd);
             EXPECT_EQ("foo/bar", stringify(pd));
             erepository::SpecTreePrettyPrinter pr(ff, { });
             ASSERT_TRUE(bool(id1->run_dependencies_key()));
@@ -426,8 +426,8 @@ TEST(ERepository, MetadataUncached)
             ASSERT_TRUE(bool(id2->short_description_key()));
             EXPECT_EQ("dquote \" squote ' backslash \\ dollar $", id2->short_description_key()->parse_value());
             erepository::SpecTreePrettyPrinter pd2(ff, { });
-            ASSERT_TRUE(bool(id2->build_dependencies_key()));
-            id2->build_dependencies_key()->parse_value()->top()->accept(pd2);
+            ASSERT_TRUE(bool(id2->build_dependencies_target_key()));
+            id2->build_dependencies_target_key()->parse_value()->top()->accept(pd2);
             EXPECT_EQ("foo/bar bar/baz", stringify(pd2));
             erepository::SpecTreePrettyPrinter pr2(ff, { });
             ASSERT_TRUE(bool(id2->run_dependencies_key()));

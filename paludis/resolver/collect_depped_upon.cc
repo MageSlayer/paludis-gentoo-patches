@@ -237,7 +237,7 @@ paludis::resolver::dependent_upon(
     }
     else
     {
-        for (auto& fn : { &PackageID::build_dependencies_key, &PackageID::run_dependencies_key, &PackageID::post_dependencies_key })
+        for (auto& fn : { &PackageID::build_dependencies_target_key, &PackageID::build_dependencies_host_key, &PackageID::run_dependencies_key, &PackageID::post_dependencies_key })
         {
             auto key(((*id).*fn)());
             if (key)
@@ -264,8 +264,10 @@ paludis::resolver::collect_depped_upon(
         id->dependencies_key()->parse_value()->top()->accept(c);
     else
     {
-        if (id->build_dependencies_key())
-            id->build_dependencies_key()->parse_value()->top()->accept(c);
+        if (id->build_dependencies_target_key())
+            id->build_dependencies_target_key()->parse_value()->top()->accept(c);
+        if (id->build_dependencies_host_key())
+            id->build_dependencies_host_key()->parse_value()->top()->accept(c);
         if (id->run_dependencies_key())
             id->run_dependencies_key()->parse_value()->top()->accept(c);
         if (id->post_dependencies_key())
@@ -297,8 +299,10 @@ paludis::resolver::collect_dependents(
             id->dependencies_key()->parse_value()->top()->accept(c);
         else
         {
-            if (id->build_dependencies_key())
-                id->build_dependencies_key()->parse_value()->top()->accept(c);
+            if (id->build_dependencies_target_key())
+                id->build_dependencies_target_key()->parse_value()->top()->accept(c);
+            if (id->build_dependencies_host_key())
+                id->build_dependencies_host_key()->parse_value()->top()->accept(c);
             if (id->run_dependencies_key())
                 id->run_dependencies_key()->parse_value()->top()->accept(c);
             if (id->post_dependencies_key())

@@ -1020,8 +1020,10 @@ UserKeyRequirement::requirement_met(
     {
         if (_imp->key == "$behaviours")
             key_requirement = id->behaviours_key().get();
-        else if (_imp->key == "$build_dependencies")
-            key_requirement = id->build_dependencies_key().get();
+        else if (_imp->key == "$build_dependencies_target")
+            key_requirement = id->build_dependencies_target_key().get();
+        else if (_imp->key == "$build_dependencies_host")
+            key_requirement = id->build_dependencies_host_key().get();
         else if (_imp->key == "$choices")
             key_requirement = id->choices_key().get();
         else if (_imp->key == "$dependencies")
