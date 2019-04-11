@@ -510,8 +510,10 @@ SanitisedDependencies::populate(
         _populate_one(env, decider, resolution, id, changed, &PackageID::dependencies_key);
     else
     {
-        if (id->build_dependencies_key())
-            _populate_one(env, decider, resolution, id, changed, &PackageID::build_dependencies_key);
+        if (id->build_dependencies_target_key())
+            _populate_one(env, decider, resolution, id, changed, &PackageID::build_dependencies_target_key);
+        if (id->build_dependencies_host_key())
+            _populate_one(env, decider, resolution, id, changed, &PackageID::build_dependencies_host_key);
         if (id->run_dependencies_key())
             _populate_one(env, decider, resolution, id, changed, &PackageID::run_dependencies_key);
         if (id->post_dependencies_key())

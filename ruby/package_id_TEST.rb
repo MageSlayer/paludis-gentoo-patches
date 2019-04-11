@@ -253,9 +253,14 @@ module Paludis
             assert_equal ['~test'], pid_testrepo.keywords_key.parse_value
         end
 
-        def test_build_dependencies_key
-            assert_kind_of MetadataDependencySpecTreeKey, pid_testrepo.build_dependencies_key
-            assert_kind_of AllDepSpec, pid_testrepo.build_dependencies_key.parse_value
+        def test_build_dependencies_target_key
+            assert_kind_of MetadataDependencySpecTreeKey, pid_testrepo.build_dependencies_target_key
+            assert_kind_of AllDepSpec, pid_testrepo.build_dependencies_target_key.parse_value
+        end
+
+        def test_build_dependencies_host_key
+            assert_kind_of MetadataDependencySpecTreeKey, pid_testrepo.build_dependencies_host_key
+            assert_kind_of AllDepSpec, pid_testrepo.build_dependencies_host_key.parse_value
         end
 
         def test_homepage_key
@@ -333,9 +338,15 @@ module Paludis
             end
         end
 
-        def test_build_dependencies_key
+        def test_build_dependencies_target_key
             assert_raise NameError do
-                pid_bad.build_dependencies_key.parse_value
+                pid_bad.build_dependencies_target_key.parse_value
+            end
+        end
+
+        def test_build_dependencies_host_key
+            assert_raise NameError do
+                pid_bad.build_dependencies_host_key.parse_value
             end
         end
     end

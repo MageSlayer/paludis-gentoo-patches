@@ -186,8 +186,11 @@ namespace
                 id->load_dependencies(m.dependencies()->name(), m.dependencies()->description(),
                         lines.at(m.dependencies()->flat_list_index()));
 
-            if (-1 != m.build_depend()->flat_list_index() && ! m.build_depend()->name().empty())
-                id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), lines.at(m.build_depend()->flat_list_index()), false);
+            if (-1 != m.build_depend_target()->flat_list_index() && ! m.build_depend_target()->name().empty())
+                id->load_build_depend_target(m.build_depend_target()->name(), m.build_depend_target()->description(), lines.at(m.build_depend_target()->flat_list_index()), false);
+
+            if (-1 != m.build_depend_host()->flat_list_index() && ! m.build_depend_host()->name().empty())
+                id->load_build_depend_host(m.build_depend_host()->name(), m.build_depend_host()->description(), lines.at(m.build_depend_host()->flat_list_index()), false);
 
             if (-1 != m.run_depend()->flat_list_index() && ! m.run_depend()->name().empty())
                 id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), lines.at(m.run_depend()->flat_list_index()), false);
@@ -567,8 +570,11 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
                 id->load_dependencies(m.dependencies()->name(), m.dependencies()->description(),
                         keys[m.dependencies()->name()]);
 
-            if (! m.build_depend()->name().empty())
-                id->load_build_depend(m.build_depend()->name(), m.build_depend()->description(), keys[m.build_depend()->name()], false);
+            if (! m.build_depend_target()->name().empty())
+                id->load_build_depend_target(m.build_depend_target()->name(), m.build_depend_target()->description(), keys[m.build_depend_target()->name()], false);
+
+            if (! m.build_depend_host()->name().empty())
+                id->load_build_depend_host(m.build_depend_host()->name(), m.build_depend_host()->description(), keys[m.build_depend_host()->name()], false);
 
             if (! m.run_depend()->name().empty())
                 id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), keys[m.run_depend()->name()], false);
@@ -822,8 +828,10 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
                 s.append(flatten(id->dependencies_key()->parse_value()));
             else
             {
-                if (id->build_dependencies_key())
-                    s.append(flatten(id->build_dependencies_key()->parse_value()) + " ");
+                if (id->build_dependencies_target_key())
+                    s.append(flatten(id->build_dependencies_target_key()->parse_value()) + " ");
+                if (id->build_dependencies_host_key())
+                    s.append(flatten(id->build_dependencies_host_key()->parse_value()) + " ");
                 if (id->run_dependencies_key())
                     s.append(flatten(id->run_dependencies_key()->parse_value()) + " ");
                 if (id->post_dependencies_key())
@@ -839,8 +847,11 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
             write_kv(cache, m.use()->name(), join(v->begin(), v->end(), " "));
         }
 
-        if (! m.build_depend()->name().empty() && id->build_dependencies_key())
-            write_kv(cache, m.build_depend()->name(), flatten(id->build_dependencies_key()->parse_value()));
+        if (! m.build_depend_target()->name().empty() && id->build_dependencies_target_key())
+            write_kv(cache, m.build_depend_target()->name(), flatten(id->build_dependencies_target_key()->parse_value()));
+
+        if (! m.build_depend_host()->name().empty() && id->build_dependencies_host_key())
+            write_kv(cache, m.build_depend_host()->name(), flatten(id->build_dependencies_host_key()->parse_value()));
 
         if (! m.run_depend()->name().empty() && id->run_dependencies_key())
             write_kv(cache, m.run_depend()->name(), flatten(id->run_dependencies_key()->parse_value()));

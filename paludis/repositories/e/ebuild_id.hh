@@ -74,7 +74,8 @@ namespace paludis
 
                 virtual const std::shared_ptr<const MetadataValueKey<Slot> > slot_key() const;
                 virtual const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
-                virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_target_key() const;
+                virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_host_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
                 virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const;
@@ -126,7 +127,9 @@ namespace paludis
                 void load_captured_stdout(const std::string &, const std::string &, const MetadataKeyType, const std::string &) const;
                 void load_captured_stderr(const std::string &, const std::string &, const MetadataKeyType, const std::string &) const;
                 void load_dependencies(const std::string &, const std::string &, const std::string &) const;
-                void load_build_depend(const std::string &, const std::string &, const std::string &,
+                void load_build_depend_target(const std::string &, const std::string &, const std::string &,
+                        const bool rewritten) const;
+                void load_build_depend_host(const std::string &, const std::string &, const std::string &,
                         const bool rewritten) const;
                 void load_run_depend(const std::string &, const std::string &, const std::string &,
                         const bool rewritten) const;

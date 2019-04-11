@@ -530,7 +530,7 @@ TEST(ERepository, SubSlots)
                                     &env, { })), nullptr, { }))]->last());
             ASSERT_TRUE(bool(id));
             EXPECT_EQ("5", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-            EXPECT_EQ("cat/subslots:= cat/subslots:foo=", id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+            EXPECT_EQ("cat/subslots:= cat/subslots:foo=", id->build_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
             id->perform_action(install_action);
         }
 
@@ -542,7 +542,7 @@ TEST(ERepository, SubSlots)
                                     &env, { })), nullptr, { }))]->last());
             ASSERT_TRUE(bool(id));
             EXPECT_EQ("5", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-            EXPECT_EQ("cat/subslots:foo/bar= cat/subslots:foo/bar=", id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+            EXPECT_EQ("cat/subslots:foo/bar= cat/subslots:foo/bar=", id->build_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
         }
     }
 }

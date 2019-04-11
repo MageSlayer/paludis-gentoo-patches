@@ -115,9 +115,14 @@ void expose_package_id()
                 "to determine whether a package is unused."
             )
 
-        .def("build_dependencies_key", &PackageID::build_dependencies_key,
-                "The build_dependencies_key, if not None, indicates a package's\n"
-                "build-time dependencies."
+        .def("build_dependencies_target_key", &PackageID::build_dependencies_target_key,
+                "The build_dependencies_target_key, if not None, indicates a package's\n"
+                "build-time dependencies in target architecture."
+            )
+
+        .def("build_dependencies_host_key", &PackageID::build_dependencies_host_key,
+                "The build_dependencies_host_key, if not None, indicates a package's\n"
+                "build-time dependencies in host architecture."
             )
 
         .def("run_dependencies_key", &PackageID::run_dependencies_key,

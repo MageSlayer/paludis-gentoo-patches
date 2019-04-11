@@ -52,7 +52,8 @@ namespace paludis
         typedef Name<struct name_bracket_merged_variables_annotatable> bracket_merged_variables_annotatable;
         typedef Name<struct name_bracket_merged_variables_annotation> bracket_merged_variables_annotation;
         typedef Name<struct name_bugs_to> bugs_to;
-        typedef Name<struct name_build_depend> build_depend;
+        typedef Name<struct name_build_depend> build_depend_target;
+        typedef Name<struct name_build_depend> build_depend_host;
         typedef Name<struct name_can_be_pbin> can_be_pbin;
         typedef Name<struct name_choices_options> choices_options;
         typedef Name<struct name_defined_phases> defined_phases;
@@ -386,7 +387,8 @@ namespace paludis
         struct EAPIEbuildMetadataVariables
         {
             NamedValue<n::bugs_to, std::shared_ptr<const EAPIMetadataVariable> > bugs_to;
-            NamedValue<n::build_depend, std::shared_ptr<const EAPIMetadataVariable> > build_depend;
+            NamedValue<n::build_depend_target, std::shared_ptr<const EAPIMetadataVariable> > build_depend_target;
+            NamedValue<n::build_depend_host, std::shared_ptr<const EAPIMetadataVariable> > build_depend_host;
             NamedValue<n::defined_phases, std::shared_ptr<const EAPIMetadataVariable> > defined_phases;
             NamedValue<n::dependencies, std::shared_ptr<const EAPIMetadataVariable> > dependencies;
             NamedValue<n::eapi, std::shared_ptr<const EAPIMetadataVariable> > eapi;

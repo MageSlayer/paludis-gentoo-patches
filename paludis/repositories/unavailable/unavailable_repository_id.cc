@@ -333,7 +333,13 @@ UnavailableRepositoryID::dependencies_key() const
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-UnavailableRepositoryID::build_dependencies_key() const
+UnavailableRepositoryID::build_dependencies_target_key() const
+{
+    return _imp->dependencies_key;
+}
+
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+UnavailableRepositoryID::build_dependencies_host_key() const
 {
     return _imp->dependencies_key;
 }

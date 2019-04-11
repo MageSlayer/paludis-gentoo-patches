@@ -282,7 +282,7 @@ module Paludis
         end
 
         def test_composites
-            spec = env[Selection::RequireExactlyOne.new(Generator::Package.new("foo/bar"))].last.build_dependencies_key.parse_value
+            spec = env[Selection::RequireExactlyOne.new(Generator::Package.new("foo/bar"))].last.build_dependencies_target_key.parse_value
             assert_kind_of AllDepSpec, spec
 
             assert_equal 2, spec.to_a.length
