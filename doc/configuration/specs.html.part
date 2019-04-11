@@ -39,7 +39,7 @@ the following order:</p>
 
     <li><code>[.key?]</code>: Match only if the specified metadata key exists. <code>key</code> may be a key's raw
     name (e.g. <code>DESCRIPTION</code>, <code>DEPEND</code>) or a role prefixed with a dollar sign (e.g.
-    <code>$short_description</code>, <code>$build_dependencies</code>). If the key's name is prefixed with
+    <code>$short_description</code>, <code>$build_dependencies_target</code>). If the key's name is prefixed with
     <code>::</code>, metadata from the repository rather than the package ID is checked. If the key is in
     <code>(parens)</code>, matches masks by role, token or associated key (and <code>(*)</code> matches any mask).</li>
 
