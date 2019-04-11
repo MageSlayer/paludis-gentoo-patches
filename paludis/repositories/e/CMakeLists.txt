@@ -132,6 +132,7 @@ foreach(test
           e_repository_TEST_symlink_rewriting
           exndbam_repository
           depend_rdepend
+          depend_bdepend
           e_repository_sets
           ebuild_flat_metadata_cache
           fetch_visitor
