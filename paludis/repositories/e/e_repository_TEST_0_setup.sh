@@ -709,6 +709,34 @@ pkg_pretend() {
     einfo "This is my pkg_pretend. There are many like it, but this one is mine."
 }
 END
+mkdir -p "cat/output"
+cat <<"END" > cat/output/output-0.ebuild || exit 1
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="enabled-weasel broccoli"
+LICENSE="GPL-2"
+KEYWORDS="test"
+EAPI="0"
+
+src_unpack() {
+    local OUT=$(einfon "einfon output.")
+    [ -z "$OUT" ] || die "einfon failed"
+
+    OUT=$(einfo "einfo output.")
+    [ -z "$OUT" ] || die "einfo failed"
+
+    OUT=$(elog "elog output.")
+    [ -z "$OUT" ] || die "elog failed"
+
+    OUT=$(ewarn "ewarn output.")
+    [ -z "$OUT" ] || die "ewarn failed"
+
+    OUT=$(eerror "eerror output.")
+    [ -z "$OUT" ] || die "eerror failed"
+}
+END
 mkdir -p "cat/pkg_pretend-failure"
 cat <<"END" > cat/pkg_pretend-failure/pkg_pretend-failure-3.ebuild || exit 1
 DESCRIPTION="The Description"
