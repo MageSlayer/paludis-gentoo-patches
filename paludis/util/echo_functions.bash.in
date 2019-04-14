@@ -57,7 +57,7 @@ paludis_ecmd()
 
     # don't try to avoid a newline for einfon. it gets horrible when logging
     # things, and einfon is abused more than it is used correctly.
-    echo -e "${prefix}${message}"
+    echo -e "${prefix}${message}" >&2
 
     if type perform_hook &>/dev/null ; then
         if [[ -n "${hook}" ]] ; then
@@ -117,7 +117,7 @@ ewarn()
         "ewarn" \
         "ewarn" \
         "`echo -ne " ${COLOUR_WARN}*${COLOUR_NORMAL} "`" \
-        "$*" >&2
+        "$*"
 }
 
 eerror()
@@ -126,7 +126,7 @@ eerror()
         "eerror" \
         "eerror" \
         "`echo -ne " ${COLOUR_BAD}*${COLOUR_NORMAL} "`" \
-        "$*" >&2
+        "$*"
 }
 
 ebegin()

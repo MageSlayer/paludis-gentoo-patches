@@ -345,5 +345,12 @@ TEST(ERepository, InstallEAPI0)
         ASSERT_TRUE(bool(id));
         id->perform_action(action);
     }
-}
 
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/output-0",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        id->perform_action(action);
+    }
+}
