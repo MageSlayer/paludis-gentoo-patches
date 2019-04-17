@@ -24,7 +24,7 @@
 source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
 source "${PALUDIS_EBUILD_DIR}"/0/list_functions.bash
 
-if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
+if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR%/}/ ]]; then
     paludis_die_or_error "\${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting"
 fi
 
@@ -68,11 +68,11 @@ for x in "$@"; do
 
     if [[ ${mandir} =~ ${match} ]]; then
         if [[ -s ${x} ]]; then
-            if [[ ! -d "${!PALUDIS_IMAGE_DIR_VAR}${BASE}/man/${mandir}" ]]; then
-                install -d "${!PALUDIS_IMAGE_DIR_VAR}${BASE}/man/${mandir}"
+            if [[ ! -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${BASE#/}/man/${mandir}" ]]; then
+                install -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${BASE#/}/man/${mandir}"
             fi
 
-            install -m0644 "${x}" "${!PALUDIS_IMAGE_DIR_VAR}${BASE}/man/${mandir}/${name}" || ret=2
+            install -m0644 "${x}" "${!PALUDIS_IMAGE_DIR_VAR%/}/${BASE#/}/man/${mandir}/${name}" || ret=2
         elif [[ ! -e ${x} ]]; then
             echo "${0}: ${x} does not exist" >&2
             ret=2

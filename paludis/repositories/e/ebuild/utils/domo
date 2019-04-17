@@ -23,7 +23,7 @@
 
 source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
 
-if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
+if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR%/}/ ]]; then
     paludis_die_or_error "\${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting"
 fi
 
@@ -31,8 +31,8 @@ if [[ ${#} -lt 1 ]]; then
     paludis_die_or_error "at least one argument needed"
 fi
 
-if [[ ! -d "${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/share/locale" ]]; then
-    install -d "${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/share/locale" || paludis_die_or_error "could not create ${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/share/locale"
+if [[ ! -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}/share/locale" ]]; then
+    install -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}/share/locale" || paludis_die_or_error "could not create ${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}/share/locale"
 fi
 
 ret=0
@@ -40,7 +40,7 @@ ret=0
 for x in "$@"; do
     if [[ -e ${x} ]]; then
         mytiny="$(basename "${x}")"
-        mydir="${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/share/locale/${mytiny%.*}/LC_MESSAGES"
+        mydir="${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}/share/locale/${mytiny%.*}/LC_MESSAGES"
         if [[ ! -d ${mydir} ]]; then
             install -d "${mydir}"
         fi

@@ -23,4 +23,4 @@
 
 source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
 
-chmod "${@/#\//${!PALUDIS_IMAGE_DIR_VAR}/}" || paludis_die_or_error "chmod returned error $?"
+chmod "${@/#\//${!PALUDIS_IMAGE_DIR_VAR%/}\/}" || paludis_die_or_error "chmod returned error $?"

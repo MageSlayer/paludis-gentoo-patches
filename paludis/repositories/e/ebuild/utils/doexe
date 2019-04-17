@@ -23,7 +23,7 @@
 
 source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
 
-if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
+if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR%/}/ ]]; then
     paludis_die_or_error "\${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting"
 fi
 
@@ -35,9 +35,9 @@ if [[ ${#} -lt 1 ]]; then
     paludis_die_or_error "at least one argument needed"
 fi
 
-if [[ ! -d "${!PALUDIS_IMAGE_DIR_VAR}${EXEDESTTREE}" ]]; then
-    if ! install -d "${!PALUDIS_IMAGE_DIR_VAR}${EXEDESTTREE}" ; then
-        paludis_die_or_error "could not create ${!PALUDIS_IMAGE_DIR_VAR}${EXEDESTTREE}"
+if [[ ! -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${EXEDESTTREE#/}" ]]; then
+    if ! install -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${EXEDESTTREE#/}" ; then
+        paludis_die_or_error "could not create ${!PALUDIS_IMAGE_DIR_VAR%/}/${EXEDESTTREE#/}"
     fi
 fi
 
@@ -53,7 +53,7 @@ for x in "$@"; do
     else
         mysrc="${x}"
     fi
-    install ${EXEOPTIONS} "${mysrc}" "${!PALUDIS_IMAGE_DIR_VAR}${EXEDESTTREE}" || ret=2
+    install ${EXEOPTIONS} "${mysrc}" "${!PALUDIS_IMAGE_DIR_VAR%/}/${EXEDESTTREE#/}" || ret=2
 done
 
 [[ 0 != "${ret}" ]] && paludis_die_or_error "doexe returned error ${ret}"

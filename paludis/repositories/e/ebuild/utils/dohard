@@ -21,7 +21,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
+if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR%/}/ ]]; then
     echo "${0}: \${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting" >&2
     exit 247
 fi
@@ -31,4 +31,4 @@ if [[ ${#} -ne 2 ]]; then
     exit 1
 fi
 
-ln -f "${!PALUDIS_IMAGE_DIR_VAR}${1}" "${!PALUDIS_IMAGE_DIR_VAR}${2}"
+ln -f "${!PALUDIS_IMAGE_DIR_VAR%/}/${1#/}" "${!PALUDIS_IMAGE_DIR_VAR%/}/${2#/}"
