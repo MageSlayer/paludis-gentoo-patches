@@ -9,3 +9,10 @@ Same as original Paludis - GPLv2
 
 #### Official Exherbo site:
     http://paludis.exherbo.org/
+
+### Incompatible Changes
+
+  - Users of the scripting bindings will need to update their usage of
+    `build_dependencies_key` to `build_dependencies_target_key` (the direct
+    equivalent) and may want also to take `build_dependencies_host_key` into
+    account.
