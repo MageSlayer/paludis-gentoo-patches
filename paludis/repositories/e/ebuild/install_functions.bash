@@ -26,7 +26,7 @@ into()
         export DESTTREE=
     else
         export DESTTREE="${1}"
-        [[ -d "${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}" ]] || install -d "${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}"
+        [[ -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}" ]] || install -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}"
     fi
 }
 
@@ -36,7 +36,7 @@ insinto()
         export INSDESTTREE=
     else
         export INSDESTTREE="${1}"
-        [[ -d "${!PALUDIS_IMAGE_DIR_VAR}${INSDESTTREE}" ]] || install -d "${!PALUDIS_IMAGE_DIR_VAR}${INSDESTTREE}"
+        [[ -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${INSDESTTREE#/}" ]] || install -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${INSDESTTREE#/}"
     fi
 }
 
@@ -46,7 +46,7 @@ exeinto()
         export EXEDESTTREE=
     else
         export EXEDESTTREE="${1}"
-        [[ -d "${!PALUDIS_IMAGE_DIR_VAR}${EXEDESTTREE}" ]] || install -d "${!PALUDIS_IMAGE_DIR_VAR}${EXEDESTTREE}"
+        [[ -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${EXEDESTTREE#/}" ]] || install -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${EXEDESTTREE#/}"
     fi
 }
 
@@ -56,8 +56,8 @@ docinto()
         export DOCDESTTREE=
     else
         export DOCDESTTREE="${1}"
-        [[ -d "${!PALUDIS_IMAGE_DIR_VAR}usr/share/doc/${!PALUDIS_NAME_VERSION_REVISION_VAR}/${DOCDESTTREE}" ]] || \
-            install -d "${!PALUDIS_IMAGE_DIR_VAR}usr/share/doc/${!PALUDIS_NAME_VERSION_REVISION_VAR}/${DOCDESTTREE}"
+        [[ -d "${!PALUDIS_IMAGE_DIR_VAR%/}/usr/share/doc/${!PALUDIS_NAME_VERSION_REVISION_VAR}/${DOCDESTTREE#/}" ]] || \
+            install -d "${!PALUDIS_IMAGE_DIR_VAR%/}/usr/share/doc/${!PALUDIS_NAME_VERSION_REVISION_VAR}/${DOCDESTTREE#/}"
     fi
 }
 
