@@ -1320,9 +1320,12 @@ VDBRepository::perform_updates()
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                     i != i_end ; ++i)
             {
-                if ((*i)->build_dependencies_key())
-                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->build_dependencies_key()->raw_name(),
-                            (*i)->build_dependencies_key(), dep_rewrites);
+                if ((*i)->build_dependencies_target_key())
+                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->build_dependencies_target_key()->raw_name(),
+                            (*i)->build_dependencies_target_key(), dep_rewrites);
+                if ((*i)->build_dependencies_host_key())
+                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->build_dependencies_host_key()->raw_name(),
+                            (*i)->build_dependencies_host_key(), dep_rewrites);
                 if ((*i)->run_dependencies_key())
                     rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->run_dependencies_key()->raw_name(),
                             (*i)->run_dependencies_key(), dep_rewrites);

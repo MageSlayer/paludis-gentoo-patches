@@ -53,7 +53,8 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<std::string> > name_key;
         std::shared_ptr<const MetadataValueKey<std::string> > slot_key;
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
-        std::shared_ptr<const MetadataValueKey<std::string> > build_dependencies_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > build_dependencies_target_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > build_dependencies_host_key;
         std::shared_ptr<const MetadataValueKey<std::string> > run_dependencies_key;
         std::shared_ptr<const MetadataValueKey<std::string> > description_key;
 
@@ -61,7 +62,7 @@ namespace paludis
                 const UnpackagedRepositoryParams & p) :
             params(p),
             id(std::make_shared<UnpackagedID>(params.environment(), params.name(), params.version(), params.slot(), n, params.location(),
-                        params.build_dependencies(), params.run_dependencies(), params.description(), params.strip(), params.preserve_work())),
+                        params.build_dependencies_target(), params.build_dependencies_host(), params.run_dependencies(), params.description(), params.strip(), params.preserve_work())),
             ids(std::make_shared<PackageIDSequence>()),
             package_names(std::make_shared<QualifiedPackageNameSet>()),
             category_names(std::make_shared<CategoryNamePartSet>()),
@@ -77,8 +78,10 @@ namespace paludis
                         mkt_normal, stringify(params.slot()))),
             format_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "format", "format", mkt_significant, "unpackaged")),
-            build_dependencies_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
-                        "build_dependencies", "build_dependencies", mkt_normal, params.build_dependencies())),
+            build_dependencies_target_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
+                        "build_dependencies_target", "build_dependencies_target", mkt_normal, params.build_dependencies_target())),
+            build_dependencies_host_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
+                        "build_dependencies_host", "build_dependencies_host", mkt_normal, params.build_dependencies_host())),
             run_dependencies_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "run_dependencies", "run_dependencies", mkt_normal, params.run_dependencies())),
             description_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
@@ -115,7 +118,8 @@ UnpackagedRepository::_add_metadata_keys() const
     add_metadata_key(_imp->name_key);
     add_metadata_key(_imp->slot_key);
     add_metadata_key(_imp->format_key);
-    add_metadata_key(_imp->build_dependencies_key);
+    add_metadata_key(_imp->build_dependencies_target_key);
+    add_metadata_key(_imp->build_dependencies_host_key);
     add_metadata_key(_imp->run_dependencies_key);
     add_metadata_key(_imp->description_key);
 }
@@ -231,7 +235,8 @@ UnpackagedRepository::repository_factory_create(
     if (slot.empty())
         throw unpackaged_repositories::RepositoryConfigurationError("Key 'slot' not specified or empty");
 
-    std::string build_dependencies(f("build_dependencies"));
+    std::string build_dependencies_target(f("build_dependencies_target"));
+    std::string build_dependencies_host(f("build_dependencies_host"));
     std::string run_dependencies(f("run_dependencies"));
     std::string description(f("description"));
 
@@ -252,7 +257,8 @@ UnpackagedRepository::repository_factory_create(
 
     return std::make_shared<UnpackagedRepository>(RepositoryName("unpackaged"),
                 make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                    n::build_dependencies() = build_dependencies,
+                    n::build_dependencies_target() = build_dependencies_target,
+                    n::build_dependencies_host() = build_dependencies_host,
                     n::description() = description,
                     n::environment() = env,
                     n::install_under() = install_under,

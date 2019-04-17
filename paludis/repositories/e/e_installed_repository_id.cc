@@ -81,7 +81,8 @@ namespace
         std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices;
         std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license;
         std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies;
-        std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
+        std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_target;
+        std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_host;
         std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
         std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
         std::shared_ptr<const MetadataSpecTreeKey<PlainTextSpecTree> > restrictions;
@@ -118,20 +119,23 @@ namespace
         Singleton<EInstalledRepositoryIDData>
     {
         std::shared_ptr<DependenciesLabelSequence> raw_dependencies_labels;
-        std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> build_dependencies_target_labels;
+        std::shared_ptr<DependenciesLabelSequence> build_dependencies_host_labels;
         std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
         std::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
 
         EInstalledRepositoryIDData() :
             raw_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
-            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            build_dependencies_target_labels(std::make_shared<DependenciesLabelSequence>()),
+            build_dependencies_host_labels(std::make_shared<DependenciesLabelSequence>()),
             run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
             post_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
         {
             raw_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build"));
             raw_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run"));
 
-            build_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("DEPEND"));
+            build_dependencies_target_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("DEPEND"));
+            build_dependencies_host_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("BDEPEND"));
             run_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("RDEPEND"));
             post_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesPostLabelTag> >("PDEPEND"));
         }
@@ -337,23 +341,36 @@ EInstalledRepositoryID::need_keys_added() const
             {
                 _imp->keys->dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->dependencies()->name(),
                             vars->dependencies()->description(), v,
-                            EInstalledRepositoryIDData::get_instance()->build_dependencies_labels, mkt_dependencies);
+                            EInstalledRepositoryIDData::get_instance()->build_dependencies_target_labels, mkt_dependencies);
                 add_metadata_key(_imp->keys->dependencies);
             }
         }
     }
     else
     {
-        if (! vars->build_depend()->name().empty())
-            if ((_imp->dir / vars->build_depend()->name()).stat().exists())
+        if (! vars->build_depend_target()->name().empty())
+            if ((_imp->dir / vars->build_depend_target()->name()).stat().exists())
             {
-                std::string v(file_contents(_imp->dir / vars->build_depend()->name()));
+                std::string v(file_contents(_imp->dir / vars->build_depend_target()->name()));
                 if (! strip_leading(v, " \t\r\n").empty())
                 {
-                    _imp->keys->build_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->build_depend()->name(),
-                                vars->build_depend()->description(), v,
-                                EInstalledRepositoryIDData::get_instance()->build_dependencies_labels, mkt_dependencies);
-                    add_metadata_key(_imp->keys->build_dependencies);
+                    _imp->keys->build_dependencies_target = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->build_depend_target()->name(),
+                                vars->build_depend_target()->description(), v,
+                                EInstalledRepositoryIDData::get_instance()->build_dependencies_target_labels, mkt_dependencies);
+                    add_metadata_key(_imp->keys->build_dependencies_target);
+                }
+            }
+
+        if (! vars->build_depend_host()->name().empty())
+            if ((_imp->dir / vars->build_depend_host()->name()).stat().exists())
+            {
+                std::string v(file_contents(_imp->dir / vars->build_depend_host()->name()));
+                if (! strip_leading(v, " \t\r\n").empty())
+                {
+                    _imp->keys->build_dependencies_host = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), vars->build_depend_host()->name(),
+                                vars->build_depend_host()->description(), v,
+                                EInstalledRepositoryIDData::get_instance()->build_dependencies_host_labels, mkt_dependencies);
+                    add_metadata_key(_imp->keys->build_dependencies_host);
                 }
             }
 
@@ -785,10 +802,17 @@ EInstalledRepositoryID::dependencies_key() const
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-EInstalledRepositoryID::build_dependencies_key() const
+EInstalledRepositoryID::build_dependencies_target_key() const
 {
     need_keys_added();
-    return _imp->keys->build_dependencies;
+    return _imp->keys->build_dependencies_target;
+}
+
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+EInstalledRepositoryID::build_dependencies_host_key() const
+{
+    need_keys_added();
+    return _imp->keys->build_dependencies_host;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >

@@ -29,7 +29,8 @@ namespace paludis
 {
     namespace n
     {
-        typedef Name<struct name_build_dependencies> build_dependencies;
+        typedef Name<struct name_build_dependencies_target> build_dependencies_target;
+        typedef Name<struct name_build_dependencies_host> build_dependencies_host;
         typedef Name<struct name_description> description;
         typedef Name<struct name_environment> environment;
         typedef Name<struct name_install_under> install_under;
@@ -47,7 +48,8 @@ namespace paludis
     {
         struct UnpackagedRepositoryParams
         {
-            NamedValue<n::build_dependencies, std::string> build_dependencies;
+            NamedValue<n::build_dependencies_target, std::string> build_dependencies_target;
+            NamedValue<n::build_dependencies_host, std::string> build_dependencies_host;
             NamedValue<n::description, std::string> description;
             NamedValue<n::environment, Environment *> environment;
             NamedValue<n::install_under, FSPath> install_under;

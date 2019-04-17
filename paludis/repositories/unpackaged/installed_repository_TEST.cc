@@ -343,7 +343,8 @@ TEST(InstalledRepository, MultipleOps)
         std::shared_ptr<Repository> source_repo(std::make_shared<UnpackagedRepository>(
                     RepositoryName("unpackaged"),
                     make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                        n::build_dependencies() = "",
+                        n::build_dependencies_target() = "",
+                        n::build_dependencies_host() = "",
                         n::description() = "",
                         n::environment() = &env,
                         n::install_under() = FSPath("/"),
@@ -401,7 +402,8 @@ TEST(InstalledRepository, MultipleOps)
         std::shared_ptr<Repository> source_repo(std::make_shared<UnpackagedRepository>(
                     RepositoryName("unpackaged"),
                     make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                        n::build_dependencies() = "",
+                        n::build_dependencies_target() = "",
+                        n::build_dependencies_host() = "",
                         n::description() = "",
                         n::environment() = &env,
                         n::install_under() = FSPath("/"),
@@ -461,7 +463,8 @@ TEST(InstalledRepository, MultipleOps)
         std::shared_ptr<Repository> source_repo(std::make_shared<UnpackagedRepository>(
                     RepositoryName("unpackaged"),
                     make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                        n::build_dependencies() = "",
+                        n::build_dependencies_target() = "",
+                        n::build_dependencies_host() = "",
                         n::description() = "",
                         n::environment() = &env,
                         n::install_under() = FSPath("/"),

@@ -84,7 +84,8 @@ namespace
 
         args::ArgsGroup g_metadata_options;
         args::StringArg a_description;
-        args::StringSetArg a_build_dependency;
+        args::StringSetArg a_build_dependency_target;
+        args::StringSetArg a_build_dependency_host;
         args::StringSetArg a_run_dependency;
         args::SwitchArg a_preserve_metadata;
 
@@ -119,8 +120,10 @@ namespace
                     "Options specifying metadata for the package being installed"),
             a_description(&g_metadata_options, "description", 'D',
                     "Specify a description for the package"),
-            a_build_dependency(&g_metadata_options, "build-dependency", 'B',
-                    "Specify a build dependency. May be specified multiple times."),
+            a_build_dependency_target(&g_metadata_options, "build-dependency-target", 'B',
+                    "Specify a target-system build dependency. May be specified multiple times."),
+            a_build_dependency_host(&g_metadata_options, "build-dependency-host", 'b',
+                    "Specify a host-system build dependency. May be specified multiple times."),
             a_run_dependency(&g_metadata_options, "run-dependency", 'R',
                     "Specify a run dependency. May be specified multiple times."),
             a_preserve_metadata(&g_metadata_options, "preserve-metadata", 'P',
@@ -214,7 +217,7 @@ ImportCommand::run(
              next(cmdline.begin_parameters(), 2) != cmdline.end_parameters()) ?
             *next(cmdline.begin_parameters(), 2) : "0");
 
-    std::string build_dependencies, run_dependencies, description;
+    std::string build_dependencies_target, build_dependencies_host, run_dependencies, description;
 
     if (cmdline.a_preserve_metadata.specified())
     {
@@ -238,18 +241,24 @@ ImportCommand::run(
 
         if (old_id->short_description_key())
             description = old_id->short_description_key()->parse_value();
-        if (old_id->build_dependencies_key())
-            build_dependencies = old_id->build_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { });
+        if (old_id->build_dependencies_target_key())
+            build_dependencies_target = old_id->build_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { });
+        if (old_id->build_dependencies_host_key())
+            build_dependencies_host = old_id->build_dependencies_host_key()->pretty_print_value(UnformattedPrettyPrinter(), { });
         if (old_id->run_dependencies_key())
             run_dependencies = old_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { });
     }
 
     if (cmdline.a_description.specified())
         description = cmdline.a_description.argument();
-    if (cmdline.a_build_dependency.specified())
-        build_dependencies = join(
-                cmdline.a_build_dependency.begin_args(),
-                cmdline.a_build_dependency.end_args(), ", ");
+    if (cmdline.a_build_dependency_target.specified())
+        build_dependencies_target = join(
+                cmdline.a_build_dependency_target.begin_args(),
+                cmdline.a_build_dependency_target.end_args(), ", ");
+    if (cmdline.a_build_dependency_host.specified())
+        build_dependencies_host = join(
+                cmdline.a_build_dependency_host.begin_args(),
+                cmdline.a_build_dependency_host.end_args(), ", ");
     if (cmdline.a_run_dependency.specified())
         run_dependencies = join(
                 cmdline.a_run_dependency.begin_args(),
@@ -284,7 +293,8 @@ ImportCommand::run(
     keys->insert("version", stringify(version));
     keys->insert("slot", stringify(slot));
     keys->insert("description", description);
-    keys->insert("build_dependencies", build_dependencies);
+    keys->insert("build_dependencies_target", build_dependencies_target);
+    keys->insert("build_dependencies_host", build_dependencies_host);
     keys->insert("run_dependencies", run_dependencies);
     keys->insert("strip", strip);
     keys->insert("preserve_work", preserve_work);

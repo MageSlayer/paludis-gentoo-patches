@@ -68,7 +68,8 @@ TEST(UnpackagedRepository, Members)
     std::shared_ptr<Repository> repo(std::make_shared<UnpackagedRepository>(
                 RepositoryName("unpackaged"),
                 make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                    n::build_dependencies() = "",
+                    n::build_dependencies_target() = "",
+                    n::build_dependencies_host() = "",
                     n::description() = "",
                     n::environment() = &env,
                     n::install_under() = FSPath("/"),
@@ -94,7 +95,8 @@ TEST(UnpackagedRepository, Metadata)
     std::shared_ptr<Repository> repo(std::make_shared<UnpackagedRepository>(
                 RepositoryName("unpackaged"),
                 make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                    n::build_dependencies() = "",
+                    n::build_dependencies_target() = "",
+                    n::build_dependencies_host() = "",
                     n::description() = "",
                     n::environment() = &env,
                     n::install_under() = FSPath("/"),
@@ -126,7 +128,8 @@ TEST(UnpackagedRepository, Masks)
     std::shared_ptr<Repository> repo(std::make_shared<UnpackagedRepository>(
                 RepositoryName("unpackaged"),
                 make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                    n::build_dependencies() = "",
+                    n::build_dependencies_target() = "",
+                    n::build_dependencies_host() = "",
                     n::description() = "",
                     n::environment() = &env,
                     n::install_under() = FSPath("/"),
@@ -153,7 +156,8 @@ TEST(UnpackagedRepository, Actions)
     std::shared_ptr<Repository> repo(std::make_shared<UnpackagedRepository>(
                 RepositoryName("unpackaged"),
                 make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                    n::build_dependencies() = "",
+                    n::build_dependencies_target() = "",
+                    n::build_dependencies_host() = "",
                     n::description() = "",
                     n::environment() = &env,
                     n::install_under() = FSPath("/"),
@@ -191,7 +195,8 @@ TEST(UnpackagedRepository, Install)
     std::shared_ptr<Repository> repo(std::make_shared<UnpackagedRepository>(
                 RepositoryName("unpackaged"),
                 make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                    n::build_dependencies() = "",
+                    n::build_dependencies_target() = "",
+                    n::build_dependencies_host() = "",
                     n::description() = "",
                     n::environment() = &env,
                     n::install_under() = FSPath("/"),
@@ -239,7 +244,8 @@ TEST(UnpackagedRepository, InstallUnder)
     std::shared_ptr<Repository> repo(std::make_shared<UnpackagedRepository>(
                 RepositoryName("unpackaged"),
                 make_named_values<unpackaged_repositories::UnpackagedRepositoryParams>(
-                    n::build_dependencies() = "",
+                    n::build_dependencies_target() = "",
+                    n::build_dependencies_host() = "",
                     n::description() = "",
                     n::environment() = &env,
                     n::install_under() = FSPath("/magic/pixie"),

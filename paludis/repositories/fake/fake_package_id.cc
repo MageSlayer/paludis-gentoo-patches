@@ -600,16 +600,19 @@ namespace
     struct FakePackageIDData :
         Singleton<FakePackageIDData>
     {
-        std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> build_dependencies_target_labels;
+        std::shared_ptr<DependenciesLabelSequence> build_dependencies_host_labels;
         std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
         std::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
 
         FakePackageIDData() :
-            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            build_dependencies_target_labels(std::make_shared<DependenciesLabelSequence>()),
+            build_dependencies_host_labels(std::make_shared<DependenciesLabelSequence>()),
             run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
             post_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
         {
-            build_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("DEPEND"));
+            build_dependencies_target_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("DEPEND"));
+            build_dependencies_host_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("BDEPEND"));
             run_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("RDEPEND"));
             post_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesPostLabelTag> >("PDEPEND"));
         }
@@ -633,7 +636,8 @@ namespace paludis
         mutable std::shared_ptr<LiteralMetadataValueKey<Slot> > slot;
         mutable std::shared_ptr<FakeMetadataKeywordSetKey> keywords;
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<LicenseSpecTree> > license;
-        mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies;
+        mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies_target;
+        mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > build_dependencies_host;
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > run_dependencies;
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> > post_dependencies;
         mutable std::shared_ptr<FakeMetadataSpecTreeKey<PlainTextSpecTree> > restrictions;
@@ -740,10 +744,17 @@ FakePackageID::license_key() const
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-FakePackageID::build_dependencies_key() const
+FakePackageID::build_dependencies_target_key() const
 {
     need_keys_added();
-    return _imp->build_dependencies;
+    return _imp->build_dependencies_target;
+}
+
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+FakePackageID::build_dependencies_host_key() const
+{
+    need_keys_added();
+    return _imp->build_dependencies_host;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -768,10 +779,17 @@ FakePackageID::keywords_key()
 }
 
 const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> >
-FakePackageID::build_dependencies_key()
+FakePackageID::build_dependencies_target_key()
 {
     need_keys_added();
-    return _imp->build_dependencies;
+    return _imp->build_dependencies_target;
+}
+
+const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> >
+FakePackageID::build_dependencies_host_key()
+{
+    need_keys_added();
+    return _imp->build_dependencies_host;
 }
 
 const std::shared_ptr<FakeMetadataSpecTreeKey<DependencySpecTree> >
@@ -879,13 +897,17 @@ FakePackageID::need_keys_added() const
 {
     std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
 
-    if (! _imp->build_dependencies)
+    if (! _imp->build_dependencies_target)
     {
         using namespace std::placeholders;
 
-        _imp->build_dependencies = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("DEPEND", "Build dependencies",
+        _imp->build_dependencies_target = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("DEPEND", "Build dependencies (target)",
                     "", std::bind(&parse_depend, _1, _imp->env),
-                    FakePackageIDData::get_instance()->build_dependencies_labels, mkt_dependencies);
+                    FakePackageIDData::get_instance()->build_dependencies_target_labels, mkt_dependencies);
+
+        _imp->build_dependencies_host = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("BDEPEND", "Build dependencies (host)",
+                    "", std::bind(&parse_depend, _1, _imp->env),
+                    FakePackageIDData::get_instance()->build_dependencies_host_labels, mkt_dependencies);
 
         _imp->run_dependencies = std::make_shared<FakeMetadataSpecTreeKey<DependencySpecTree>>("RDEPEND", "Run dependencies",
                     "", std::bind(&parse_depend, _1, _imp->env),
@@ -915,7 +937,8 @@ FakePackageID::need_keys_added() const
         _imp->keywords = std::make_shared<FakeMetadataKeywordSetKey>("KEYWORDS", "Keywords", "test", mkt_normal, shared_from_this(), _imp->env);
 
         add_metadata_key(_imp->slot);
-        add_metadata_key(_imp->build_dependencies);
+        add_metadata_key(_imp->build_dependencies_target);
+        add_metadata_key(_imp->build_dependencies_host);
         add_metadata_key(_imp->run_dependencies);
         add_metadata_key(_imp->post_dependencies);
         add_metadata_key(_imp->src_uri);

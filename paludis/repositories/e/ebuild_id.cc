@@ -87,7 +87,8 @@ namespace
         std::shared_ptr<LiteralMetadataStringSetKey> pbin_behaviours_key;
 
         std::shared_ptr<DependenciesLabelSequence> raw_dependencies_labels;
-        std::shared_ptr<DependenciesLabelSequence> build_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> build_dependencies_target_labels;
+        std::shared_ptr<DependenciesLabelSequence> build_dependencies_host_labels;
         std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
         std::shared_ptr<DependenciesLabelSequence> post_dependencies_labels;
 
@@ -95,7 +96,8 @@ namespace
             pbin_behaviours_value(std::make_shared<Set<std::string>>()),
             pbin_behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, pbin_behaviours_value)),
             raw_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
-            build_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
+            build_dependencies_target_labels(std::make_shared<DependenciesLabelSequence>()),
+            build_dependencies_host_labels(std::make_shared<DependenciesLabelSequence>()),
             run_dependencies_labels(std::make_shared<DependenciesLabelSequence>()),
             post_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
         {
@@ -105,7 +107,8 @@ namespace
             raw_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build"));
             raw_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run"));
 
-            build_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("DEPEND"));
+            build_dependencies_target_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("DEPEND"));
+            build_dependencies_host_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("BDEPEND"));
             run_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("RDEPEND"));
             post_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesPostLabelTag> >("PDEPEND"));
         }
@@ -156,7 +159,8 @@ namespace paludis
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > captured_stdout_key;
         mutable std::shared_ptr<const LiteralMetadataValueKey<std::string> > captured_stderr_key;
         mutable std::shared_ptr<const EDependenciesKey> dependencies;
-        mutable std::shared_ptr<const EDependenciesKey> build_dependencies;
+        mutable std::shared_ptr<const EDependenciesKey> build_dependencies_target;
+        mutable std::shared_ptr<const EDependenciesKey> build_dependencies_host;
         mutable std::shared_ptr<const EDependenciesKey> run_dependencies;
         mutable std::shared_ptr<const EDependenciesKey> post_dependencies;
         mutable std::shared_ptr<const EPlainTextSpecKey> restrictions;
@@ -867,10 +871,17 @@ EbuildID::dependencies_key() const
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-EbuildID::build_dependencies_key() const
+EbuildID::build_dependencies_target_key() const
 {
     need_non_xml_keys_added();
-    return _imp->build_dependencies;
+    return _imp->build_dependencies_target;
+}
+
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+EbuildID::build_dependencies_host_key() const
+{
+    need_non_xml_keys_added();
+    return _imp->build_dependencies_host;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -1035,15 +1046,28 @@ EbuildID::load_dependencies(const std::string & r, const std::string & h, const 
 }
 
 void
-EbuildID::load_build_depend(const std::string & r, const std::string & h, const std::string & v,
+EbuildID::load_build_depend_target(const std::string & r, const std::string & h, const std::string & v,
         bool rewritten) const
 {
     if (! strip_leading(v, " \t\r\n").empty())
     {
         std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
-        _imp->build_dependencies = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
-                    EbuildIDData::get_instance()->build_dependencies_labels, rewritten ? mkt_internal : mkt_dependencies);
-        add_metadata_key(_imp->build_dependencies);
+        _imp->build_dependencies_target = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
+                    EbuildIDData::get_instance()->build_dependencies_target_labels, rewritten ? mkt_internal : mkt_dependencies);
+        add_metadata_key(_imp->build_dependencies_target);
+    }
+}
+
+void
+EbuildID::load_build_depend_host(const std::string & r, const std::string & h, const std::string & v,
+        bool rewritten) const
+{
+    if (! strip_leading(v, " \t\r\n").empty())
+    {
+        std::unique_lock<std::recursive_mutex> lock(_imp->mutex);
+        _imp->build_dependencies_host = std::make_shared<EDependenciesKey>(_imp->environment, shared_from_this(), r, h, v,
+                    EbuildIDData::get_instance()->build_dependencies_host_labels, rewritten ? mkt_internal : mkt_dependencies);
+        add_metadata_key(_imp->build_dependencies_host);
     }
 }
 

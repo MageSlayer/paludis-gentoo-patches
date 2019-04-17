@@ -49,7 +49,7 @@ namespace
 TEST_F(ResolverSubslotsTestCase, SubslotChange)
 {
     data->install("subslot", "dependency", "1")->set_slot(SlotName("0"), SlotName("1"));
-    data->install("subslot", "uses-library", "1")->build_dependencies_key()->set_from_string("=subslot/dependency-1:=0/1");
+    data->install("subslot", "uses-library", "1")->build_dependencies_target_key()->set_from_string("=subslot/dependency-1:=0/1");
 
     data->remove_if_dependent_helper.add_remove_if_dependent_spec(make_package_dep_spec({ }));
     data->get_constraints_for_dependent_helper.add_less_restrictive_remove_blockers_spec(make_package_dep_spec({ }));
@@ -78,7 +78,7 @@ TEST_F(ResolverSubslotsTestCase, SubslotChange)
 TEST_F(ResolverSubslotsTestCase, SubslotNoChange)
 {
     data->install("subslot", "dependency", "1")->set_slot(SlotName("0"), SlotName("1"));
-    data->install("subslot", "uses-library", "1")->build_dependencies_key()->set_from_string("=subslot/dependency-1:=0/1");
+    data->install("subslot", "uses-library", "1")->build_dependencies_target_key()->set_from_string("=subslot/dependency-1:=0/1");
 
     data->remove_if_dependent_helper.add_remove_if_dependent_spec(make_package_dep_spec({ }));
     data->get_constraints_for_dependent_helper.add_less_restrictive_remove_blockers_spec(make_package_dep_spec({ }));
@@ -108,7 +108,7 @@ TEST_F(ResolverSubslotsTestCase, SubslotNoChange)
 TEST_F(ResolverSubslotsTestCase, SubslotIrrelevant)
 {
     data->install("subslot", "dependency", "1")->set_slot(SlotName("0"), SlotName("1"));
-    data->install("subslot", "uses-tool", "1")->build_dependencies_key()->set_from_string("=subslot/dependency-1:*");
+    data->install("subslot", "uses-tool", "1")->build_dependencies_target_key()->set_from_string("=subslot/dependency-1:*");
 
     data->remove_if_dependent_helper.add_remove_if_dependent_spec(make_package_dep_spec({ }));
     data->get_constraints_for_dependent_helper.add_less_restrictive_remove_blockers_spec(make_package_dep_spec({ }));
