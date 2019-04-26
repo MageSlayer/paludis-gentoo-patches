@@ -10,15 +10,13 @@ stages:
     - mkdir -pv build-obj && cd build-obj
     - ../ci/configure-paludis.sh .. ${DISTRIBUTION} ${COMPILER}
     - ninja -j$(nproc) all
-  cache: &build_artifact_cache
-    key: build-${DISTRIBUTION}-${COMPILER}-${VERSION}
+  artifacts:
     paths:
       - build-obj/
 
 .test-template: &test-template
   stage: test
   image: paludis/${DISTRIBUTION}-${COMPILER}:${VERSION}
-  cache: *build_artifact_cache
   script:
     - cd build-obj
     - ctest -V
