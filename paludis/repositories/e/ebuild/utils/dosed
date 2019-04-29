@@ -21,7 +21,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR} ]]; then
+if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR%/} ]]; then
     echo "${0}: \${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting" >&2
     exit 247
 fi
@@ -31,12 +31,12 @@ if [[ ${#} -lt 1 ]]; then
     exit 1
 fi
 
-mysed="s:${!PALUDIS_IMAGE_DIR_VAR}::g"
+mysed="s:${!PALUDIS_IMAGE_DIR_VAR%/}/::g"
 
 ret=0
 
 for x in "$@"; do
-    y="${!PALUDIS_IMAGE_DIR_VAR}${x}"
+    y="${!PALUDIS_IMAGE_DIR_VAR%/}/${x#/}"
     if [[ -e ${y} ]]; then
         if [[ -f "${y}" ]]; then
             sed -i -e "${mysed}" "${y}" || ret=2

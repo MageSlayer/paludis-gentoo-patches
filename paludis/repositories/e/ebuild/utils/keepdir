@@ -27,5 +27,5 @@ dodir "$@" || exit ${?}
 
 keepfile_name=.keep_${CATEGORY}_${PN}-${SLOT%/*}
 for f in "$@" ; do
-    touch "${!PALUDIS_IMAGE_DIR_VAR}/${f}/${keepfile_name}" || paludis_die_or_error "Couldn't touch ${keepfile_name} in ${f}" || exit 247
+    touch "${!PALUDIS_IMAGE_DIR_VAR%/}/${f#/}/${keepfile_name}" || paludis_die_or_error "Couldn't touch ${keepfile_name} in ${f}" || exit 247
 done
