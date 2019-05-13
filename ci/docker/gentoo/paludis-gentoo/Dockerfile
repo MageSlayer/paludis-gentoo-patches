@@ -9,7 +9,11 @@ COPY ./config/package.mask /etc/portage/
 COPY ./config/package.accept_keywords /etc/portage/
 COPY ./config/sets/paludis-deps /etc/portage/sets/
 
-RUN emerge --update --newuse --deep -v @world \
+RUN sed -e '/--no-cmake-config/d' \
+        -i /var/db/repos/gentoo/dev-libs/boost/boost-1.71.0.ebuild \
+    && cd /var/db/repos/gentoo/dev-libs/boost \
+    && ebuild --force boost-1.71.0.ebuild manifest \
+    && emerge --update --newuse --deep -v @world \
     && emerge --update --newuse --deep -v @paludis-deps \
     && rm -rf /var/db/repos/*
 

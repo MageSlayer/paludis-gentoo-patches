@@ -7,8 +7,6 @@
 # required by @world (argument)
 =dev-libs/openssl-1.0.2o-r6 ~amd64
 
-# required by dev-libs/boost-1.66.0::gentoo
-# required by =dev-libs/boost-1.66.0 (argument)
-=dev-util/boost-build-1.66.0 **
-# required by =dev-libs/boost-1.66.0 (argument)
-=dev-libs/boost-1.66.0 **
+=dev-util/boost-build-1.71.0 **
+=dev-libs/boost-1.71.0 **
+=dev-util/cmake-3.15.3 **
