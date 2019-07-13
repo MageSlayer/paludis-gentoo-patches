@@ -19,8 +19,7 @@ RUN chgrp tty /dev/tty \
             paludis-deps
 RUN eclectic c++ set clang \
     && eclectic cc set clang \
-    && eclectic cpp set clang \
-    && eclectic python3 set 3.6
+    && eclectic cpp set clang
 
 # Clean up
 RUN rm -fr \
