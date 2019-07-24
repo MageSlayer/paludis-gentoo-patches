@@ -56,6 +56,7 @@
 #include <list>
 #include <algorithm>
 #include <set>
+#include <map>
 #include <vector>
 #include <mutex>
 
@@ -75,6 +76,9 @@ namespace
 
     typedef std::unordered_map<ChoiceNameWithPrefix, bool, Hash<ChoiceNameWithPrefix> > FlagStatusMap;
     typedef std::list<std::pair<std::shared_ptr<const PackageDepSpec>, FlagStatusMap> > PackageFlagStatusMapList;
+
+    typedef std::pair<ChoicePrefixName, UnprefixedChoiceName> FlagId;
+    typedef std::map<FlagId, bool> FlagIdStatusMap;  // "bool" to support negative flags...
 
     struct StackedValues
     {
@@ -118,7 +122,7 @@ namespace paludis
 
         std::shared_ptr<SetSpecTree> system_packages;
 
-        std::set<std::pair<ChoicePrefixName, UnprefixedChoiceName> > use;
+        FlagIdStatusMap use;
         std::shared_ptr<Set<std::string> > use_expand;
         std::shared_ptr<Set<std::string> > use_expand_hidden;
         std::shared_ptr<Set<std::string> > use_expand_unprefixed;
@@ -171,10 +175,11 @@ namespace
 
     void load_special_make_defaults_vars(
             Pimp<TraditionalProfile> & _imp,
-            const FSPath & dir);
+            std::shared_ptr<const paludis::erepository::EAPI> eapi);
 
     void add_use_expand_to_use(
-            Pimp<TraditionalProfile> & _imp);
+            Pimp<TraditionalProfile> & _imp,
+            std::shared_ptr<const paludis::erepository::EAPI> eapi);
 
     void fish_out_use_expand_names(
             Pimp<TraditionalProfile> & _imp);
@@ -195,6 +200,24 @@ namespace
 
 namespace
 {
+    void insert_use_flag_from_str(bool profile_negative_use, FlagIdStatusMap &m, std::string prefix_name, const std::string &str) {
+        // store positive / negative use flag into map
+
+        if (str.empty()) {
+            // do not expect empty strings here...
+            throw InternalError(PALUDIS_HERE, "Use flag is empty");
+        }
+
+        bool positive_flag = ('-' != str.at(0));
+        if (!profile_negative_use && !positive_flag) {
+            throw ERepositoryConfigurationError("Repository does not support negative use flags");
+        }
+
+        auto name = positive_flag ? str : str.substr(1);
+        auto id = std::make_pair( ChoicePrefixName(prefix_name), UnprefixedChoiceName(name) );
+        m.insert( std::make_pair(id, positive_flag) );
+    }
+
     void load_environment(Pimp<TraditionalProfile> & _imp)
     {
         _imp->environment_variables["CONFIG_PROTECT"] = getenv_with_default("CONFIG_PROTECT", "/etc");
@@ -355,13 +378,9 @@ namespace
 
     void load_special_make_defaults_vars(
             Pimp<TraditionalProfile> & _imp,
-            const FSPath & dir)
+            std::shared_ptr<const paludis::erepository::EAPI> eapi)
     {
-        auto eapi(EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(dir / "make.defaults")));
-        if (! eapi->supported())
-            throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
-                    "' because it uses an unsupported EAPI");
-
+        bool profile_negative_use = eapi->supported()->choices_options()->profile_negative_use();
         std::string use_var(eapi->supported()->ebuild_environment_variables()->env_use());
         try
         {
@@ -372,7 +391,7 @@ namespace
                 tokenise_whitespace(_imp->environment_variables[use_var], std::back_inserter(tokens));
                 for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
                         t != t_end ; ++t)
-                    _imp->use.insert(std::make_pair(ChoicePrefixName(""), UnprefixedChoiceName(*t)));
+                    insert_use_flag_from_str( profile_negative_use, _imp->use, "", *t );
             }
         }
         catch (const InternalError &)
@@ -421,11 +440,11 @@ namespace
         }
     }
 
-    void add_use_expand_to_use(
-            Pimp<TraditionalProfile> & _imp)
+    void add_use_expand_to_use( Pimp<TraditionalProfile> & _imp, std::shared_ptr<const paludis::erepository::EAPI> eapi)
     {
         Context context("When adding USE_EXPAND to USE:");
 
+        bool profile_negative_use = eapi->supported()->choices_options()->profile_negative_use();
         _imp->stacked_values_list.push_back(StackedValues("use_expand special values"));
 
         for (Set<std::string>::ConstIterator x(_imp->use_expand->begin()), x_end(_imp->use_expand->end()) ;
@@ -435,8 +454,9 @@ namespace
             std::list<std::string> uses;
             tokenise_whitespace(_imp->environment_variables[stringify(*x)], std::back_inserter(uses));
             for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
-                    u != u_end ; ++u)
-                _imp->use.insert(std::make_pair(ChoicePrefixName(lower_x), UnprefixedChoiceName(*u)));
+                 u != u_end ; ++u) {
+                insert_use_flag_from_str( profile_negative_use, _imp->use, lower_x, *u );
+            }
         }
     }
 
@@ -449,15 +469,15 @@ namespace
                 x != x_end ; ++x)
             _imp->known_choice_value_names.insert(std::make_pair(tolower(*x), std::make_shared<Set<UnprefixedChoiceName>>()));
 
-        for (std::set<std::pair<ChoicePrefixName, UnprefixedChoiceName> >::const_iterator u(_imp->use.begin()), u_end(_imp->use.end()) ;
+        for (FlagIdStatusMap::const_iterator u(_imp->use.begin()), u_end(_imp->use.end()) ;
                 u != u_end ; ++u)
         {
-            if (! stringify(u->first).empty())
+            if (! stringify(u->first.first).empty())
             {
-                KnownMap::iterator i(_imp->known_choice_value_names.find(stringify(u->first)));
+                KnownMap::iterator i(_imp->known_choice_value_names.find(stringify(u->first.first)));
                 if (i == _imp->known_choice_value_names.end())
-                    throw InternalError(PALUDIS_HERE, stringify(u->first));
-                i->second->insert(u->second);
+                    throw InternalError(PALUDIS_HERE, stringify(u->first.first));
+                i->second->insert(u->first.second);
             }
         }
     }
@@ -477,7 +497,7 @@ namespace
         {
             std::string arch(arch_s);
 
-            _imp->use.insert(std::make_pair(ChoicePrefixName(""), UnprefixedChoiceName(arch)));
+            _imp->use.insert(std::make_pair(std::make_pair(ChoicePrefixName(""), UnprefixedChoiceName(arch)), true));
             _imp->stacked_values_list.back().use_force[ChoiceNameWithPrefix(arch)] = true;
         }
         catch (const InternalError &)
@@ -783,8 +803,16 @@ TraditionalProfile::TraditionalProfile(
     }
 
     make_vars_from_file_vars(_imp);
-    load_special_make_defaults_vars(_imp, *dirs.begin());
-    add_use_expand_to_use(_imp);
+
+    auto dir = *dirs.begin();
+    auto eapi(EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(dir / "make.defaults")));
+    if (! eapi->supported()) {
+        throw ERepositoryConfigurationError("Can't use profile directory '" + stringify(dir) +
+                                            "' because it uses an unsupported EAPI");
+    }
+
+    load_special_make_defaults_vars(_imp, eapi);
+    add_use_expand_to_use(_imp, eapi);
     fish_out_use_expand_names(_imp);
     if (! arch_var_if_special.empty())
         handle_profile_arch_var(_imp, arch_var_if_special);
@@ -916,7 +944,8 @@ TraditionalProfile::use_state_ignoring_masks(
         ) const
 {
     std::pair<ChoicePrefixName, UnprefixedChoiceName> prefix_value(choice->prefix(), value_unprefixed);
-    Tribool result(_imp->use.end() != _imp->use.find(prefix_value) ? Tribool(true) : Tribool(indeterminate));
+    auto u = _imp->use.find(prefix_value);
+    Tribool result(_imp->use.end() != u ? Tribool(u->second) : Tribool(indeterminate));
 
     for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
             i_end(_imp->stacked_values_list.end()) ; i != i_end ; ++i)
@@ -1075,4 +1104,3 @@ TraditionalProfile::iuse_implicit() const
 {
     return _imp->iuse_implicit;
 }
-

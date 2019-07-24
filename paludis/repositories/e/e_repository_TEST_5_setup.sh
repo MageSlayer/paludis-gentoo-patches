@@ -26,12 +26,17 @@ KERNEL="linux"
 LIBC="glibc"
 CHOST="i286-badger-linux-gnu"
 LINGUAS="enabled_en enabled_en_GB enabled_en_GB@UTF-8"
-USE_EXPAND="LINGUAS USERLAND"
+USE_EXPAND="LINGUAS USERLAND RUBY_TARGETS"
 USE_EXPAND_UNPREFIXED="ARCH"
 USE_EXPAND_IMPLICIT="USERLAND ARCH"
 USE_EXPAND_VALUES_USERLAND="GNU"
 USE_EXPAND_VALUES_ARCH="cheese otherarch"
 IUSE_IMPLICIT="build"
+RUBY_TARGETS="ruby24 -ruby25"
+END
+
+cat <<END > profiles/profile/eapi
+5
 END
 
 mkdir -p "cat/required-use-at-most-one-none" || exit 1
@@ -169,6 +174,25 @@ S="${WORKDIR}"
 pkg_setup() {
     use enabled || die "enabled not enabled"
     use spork && die "sporks are bad"
+}
+END
+
+mkdir -p "cat/negative-use" || exit 1
+cat << 'END' > cat/negative-use/negative-use-5.ebuild || exit 1
+EAPI="5"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="ruby_targets_ruby24 ruby_targets_ruby25"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+pkg_setup() {
+    use ruby_targets_ruby24 || die "ruby24 not enabled"
+    use ruby_targets_ruby25 && die "ruby25 enabled"
 }
 END
 

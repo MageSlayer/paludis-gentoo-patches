@@ -300,7 +300,8 @@ namespace
                         n::has_optional_tests() = destringify_key<bool>(k, "has_optional_tests"),
                         n::has_recommended_tests() = destringify_key<bool>(k, "has_recommended_tests"),
                         n::profile_iuse_injection() = destringify_key<bool>(k, "profile_iuse_injection"),
-                        n::use_expand_separator() = destringify_key<char>(k, "use_expand_separator")
+                        n::use_expand_separator() = destringify_key<char>(k, "use_expand_separator"),
+                        n::profile_negative_use() = destringify_key<bool>(k, "profile_negative_use")
                         ));
     }
 
