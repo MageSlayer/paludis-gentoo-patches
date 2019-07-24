@@ -225,13 +225,14 @@ if(ENABLE_PYTHON)
                                -DPYTHONINSTALLDIR="${PALUDIS_PYTHON_INSTALL_DIR}")
   target_include_directories(libpaludispythonhooks
                              PRIVATE
+                               ${Boost_INCLUDE_DIRS}
                                ${PYTHON_INCLUDE_DIRS})
   target_link_libraries(libpaludispythonhooks
                         PRIVATE
                           libpaludis
                           libpaludisutil
-                          ${Boost_PYTHON_LIBRARY}
-                          ${PYTHON_LIBRARY})
+                          ${Boost_LIBRARIES}
+                          ${PYTHON_LIBRARIES})
 endif()
 
 if(ENABLE_PBINS)

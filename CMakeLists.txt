@@ -1,6 +1,6 @@
 # vim: set et fdm=marker fmr={{{,}}} sw=2 sts=2 ts=8:
 
-cmake_minimum_required(VERSION 3.3.0)
+cmake_minimum_required(VERSION 3.14.0)
 cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0051 NEW)
 cmake_policy(SET CMP0057 NEW)
@@ -304,11 +304,14 @@ if(ENABLE_PBINS)
 endif()
 
 if(ENABLE_PYTHON)
-  set(Python_ADDITIONAL_VERSIONS 2.7 2.6 2.5)
-  find_package(PythonInterp)
-  if(NOT PYTHONINTERP_FOUND)
-    message(SEND_ERROR "python is required for python support")
-  endif()
+  # Gentoo stable Boost 1.65 contains a bug causing not exporting Python module init
+  # let's apply a workaround...
+  add_definitions(-DBOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY)
+
+  set(Python_ADDITIONAL_VERSIONS 2.7)
+  find_package(PythonLibs REQUIRED)
+  find_package(PythonInterp REQUIRED)
+
   execute_process(COMMAND
                     "${PYTHON_EXECUTABLE}" -c "from distutils import sysconfig; print sysconfig.get_python_lib(1)"
                   OUTPUT_VARIABLE
@@ -317,13 +320,9 @@ if(ENABLE_PYTHON)
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
   get_filename_component(PALUDIS_PYEXECDIR ${PALUDIS_PYEXECDIR} REALPATH)
 
-  find_package(PythonLibs)
-
-  # looks like cmake (latest tested - 3.11.4) does not support cleaner way of 
-  # searching for Boost-Python under Gentoo
   find_package(Boost REQUIRED
                COMPONENTS
-               "python-${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
+               python27)
 endif()
 
 set(PALUDIS_PYTHON_INSTALL_DIR "${PALUDIS_PYEXECDIR}" CACHE PATH
