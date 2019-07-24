@@ -183,6 +183,7 @@ namespace paludis
         typedef Name<struct name_permitted_directories> permitted_directories;
         typedef Name<struct name_pipe_commands> pipe_commands;
         typedef Name<struct name_profile_iuse_injection> profile_iuse_injection;
+        typedef Name<struct name_profile_negative_use> profile_negative_use;
         typedef Name<struct name_profile_options> profile_options;
         typedef Name<struct name_properties> properties;
         typedef Name<struct name_rdepend_defaults_to_depend> rdepend_defaults_to_depend;
@@ -338,6 +339,7 @@ namespace paludis
             NamedValue<n::has_recommended_tests, bool> has_recommended_tests;
             NamedValue<n::profile_iuse_injection, bool> profile_iuse_injection;
             NamedValue<n::use_expand_separator, char> use_expand_separator;
+            NamedValue<n::profile_negative_use, bool> profile_negative_use;
         };
 
         struct EAPIEbuildEnvironmentVariables
