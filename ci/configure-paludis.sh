@@ -73,6 +73,7 @@ cmake \
     -DCMAKE_C_IMPLICIT_INCLUDE_DIRECTORIES:PATH='/usr/x86_64-pc-linux-gnu/include;/usr/host/include' \
     -DCMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES:PATH='/usr/x86_64-pc-linux-gnu/include;/usr/host/include' \
     -DCMAKE_INSTALL_PREFIX:PATH=/usr/x86_64-pc-linux-gnu \
+    -DCMAKE_FIND_ROOT_PATH:PATH=/usr/x86_64-pc-linux-gnu \
     -DCMAKE_SYSTEM_PREFIX_PATH:PATH=/usr/x86_64-pc-linux-gnu \
     -DCMAKE_INSTALL_LIBDIR:STRING=lib \
     -DCMAKE_INSTALL_DATAROOTDIR:PATH=/usr/share/ \
