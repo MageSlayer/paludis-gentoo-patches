@@ -320,6 +320,7 @@ if(ENABLE_PYTHON)
 
   find_package(PythonLibs)
 
+  set(Boost_PYTHON_VERSION ${PYTHON_VERSION})
   find_package(Boost REQUIRED
                COMPONENTS
                  python)
