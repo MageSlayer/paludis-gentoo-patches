@@ -106,11 +106,12 @@ __cave_resolve_options="-h --help
         -K --keep-targets
         -k --keep
         -R --reinstall-scm
+        -D --reinstall-dependents-of
         -w --with
         -W --without
         -S --target-slots
         -s --slots
-        -D --follow-installed-build-dependencies --no-follow-installed-build-dependencies
+        -B --follow-installed-build-dependencies --no-follow-installed-build-dependencies
         -n --no-follow-installed-dependencies --no-no-follow-installed-dependencies
         -0 --no-dependencies-from
         -! --no-blockers-from
@@ -124,7 +125,6 @@ __cave_resolve_options="-h --help
         -A --avoid
         -p --preset
         -b --create-binaries
-        -B --no-binaries-for
         -/ --install-to-root --no-install-to-root
         -2 --chroot-path
         -4 --cross-host
