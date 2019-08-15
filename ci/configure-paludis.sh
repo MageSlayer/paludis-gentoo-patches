@@ -12,6 +12,7 @@ if [[ ${DISTRIBUTION} == "exherbo" ]]; then
         -DCONFIG_FRAMEWORK=eclectic
 
         -DRUBY_VERSION:STRING="2.4"
+        -DPYTHON_VERSION:STRING="${PYTHON_VERSION}"
     )
 elif [[ ${DISTRIBUTION} == "gentoo" ]]; then
     myconf+=(
@@ -21,6 +22,7 @@ elif [[ ${DISTRIBUTION} == "gentoo" ]]; then
         -DCONFIG_FRAMEWORK=eselect
 
         -DRUBY_VERSION:STRING="2.4"
+        -DPYTHON_VERSION:STRING="${PYTHON_VERSION}"
     )
 fi
 

@@ -8,7 +8,7 @@ stages:
   image: paludis/${DISTRIBUTION}-${COMPILER}:${VERSION}
   script:
     - mkdir -pv build-obj && cd build-obj
-    - ../ci/configure-paludis.sh .. ${DISTRIBUTION} ${COMPILER}
+    - PYTHON_VERSION=${PYTHON_VERSION} ../ci/configure-paludis.sh .. ${DISTRIBUTION} ${COMPILER}
     - ninja -j$(nproc) all
   artifacts:
     paths:
@@ -26,6 +26,7 @@ build:exherbo:
     DISTRIBUTION: "exherbo"
     COMPILER: "gcc"
     VERSION: "latest"
+    PYTHON_VERSION: "3.7"
   <<: *build-template
 
 test:exherbo:
@@ -42,6 +43,7 @@ build:exherbo-testing:
     DISTRIBUTION: "exherbo"
     COMPILER: "gcc"
     VERSION: "next"
+    PYTHON_VERSION: "3.7"
   allow_failure: true
   <<: *build-template
 
@@ -60,6 +62,7 @@ build:exherbo-clang:
     DISTRIBUTION: "exherbo"
     COMPILER: "clang"
     VERSION: "latest"
+    PYTHON_VERSION: "3.7"
   <<: *build-template
 
 test:exherbo-clang:
@@ -77,6 +80,7 @@ build:gentoo:
     DISTRIBUTION: "gentoo"
     COMPILER: "gcc"
     VERSION: "latest"
+    PYTHON_VERSION: "3.6"
   <<: *build-template
 
 test:gentoo:
