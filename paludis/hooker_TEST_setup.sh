@@ -226,7 +226,7 @@ done
 ln -s ${TOP_BUILDDIR}/paludis/libpaludissohooks_TEST_${PALUDIS_PC_SLOT}.so.${SO_SUFFIX} ordering
 cat <<"END" > ordering/py_hook.py
 def hook_run_ordering(env, hook_env):
-    file("hooker_TEST_dir/ordering.out", "a").write("py_hook\n")
+    open("hooker_TEST_dir/ordering.out", "a").write("py_hook\n")
 def hook_depend_ordering(hook_env):
     return ["f"]
 END
