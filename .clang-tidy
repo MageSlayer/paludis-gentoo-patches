@@ -21,9 +21,13 @@ WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
 FormatStyle:     none
-CheckOptions:    
+CheckOptions:
   - key:             cert-dcl16-c.NewSuffixes
     value:           'L;LL;LU;LLU'
+  - key:             cert-oop54-cpp.WarnOnlyIfThisHasSuspiciousField
+    value:           '0'
+  - key:             cppcoreguidelines-explicit-virtual-functions.IgnoreDestructors
+    value:           '1'
   - key:             cppcoreguidelines-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
     value:           '1'
   - key:             google-readability-braces-around-statements.ShortStatementLines
@@ -40,11 +44,35 @@ CheckOptions:
     value:           reasonable
   - key:             modernize-loop-convert.NamingStyle
     value:           CamelCase
+  - key:             modernize-make-shared.IgnoreMacros
+    value:           '1'
+  - key:             modernize-make-shared.IncludeStyle
+    value:           '0'
+  - key:             modernize-make-shared.MakeSmartPtrFunction
+    value:           'std::make_shared'
+  - key:             modernize-make-shared.MakeSmartPtrFunctionHeader
+    value:           memory
+  - key:             modernize-make-unique.IgnoreMacros
+    value:           '1'
+  - key:             modernize-make-unique.IncludeStyle
+    value:           '0'
+  - key:             modernize-make-unique.MakeSmartPtrFunction
+    value:           'std::make_unique'
+  - key:             modernize-make-unique.MakeSmartPtrFunctionHeader
+    value:           memory
   - key:             modernize-pass-by-value.IncludeStyle
     value:           llvm
   - key:             modernize-replace-auto-ptr.IncludeStyle
     value:           llvm
+  - key:             modernize-use-nodiscard.ReplacementString
+    value:           '[[nodiscard]]'
+  - key:             modernize-use-noexcept.ReplacementString
+    value:           ''
+  - key:             modernize-use-noexcept.UseNoexceptFalse
+    value:           '1'
   - key:             modernize-use-nullptr.NullMacros
     value:           'NULL'
+  - key:             modernize-use-transparent-functors.SafeMode
+    value:           '0'
 ...
 
