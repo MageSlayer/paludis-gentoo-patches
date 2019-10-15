@@ -17,6 +17,7 @@ modernize-*,\
 -modernize-replace-random-shuffle,\
 -modernize-use-equals-default,\
 -modernize-use-trailing-return-type,\
+-modernize-make-unique,\
 -modernize-return-braced-init-list"
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*'
