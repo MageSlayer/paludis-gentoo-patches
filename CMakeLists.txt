@@ -329,10 +329,9 @@ if(ENABLE_PYTHON)
 
   find_package(PythonLibs ${PYTHON_VERSION})
 
-  set(Boost_PYTHON_VERSION ${PYTHON_VERSION})
-  find_package(Boost REQUIRED
+  find_package(Boost 1.67.0 REQUIRED
                COMPONENTS
-                 python)
+                 python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR})
 
   set(PALUDIS_PYTHON_INSTALL_DIR "${PALUDIS_PYEXECDIR}" CACHE PATH
       "python installation dir")
