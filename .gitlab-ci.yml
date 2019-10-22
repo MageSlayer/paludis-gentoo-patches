@@ -43,7 +43,7 @@ build:exherbo-testing:
     DISTRIBUTION: "exherbo"
     COMPILER: "gcc"
     VERSION: "next"
-    PYTHON_VERSION: "3.7"
+    PYTHON_VERSION: "3.8"
   allow_failure: true
   <<: *build-template
 
