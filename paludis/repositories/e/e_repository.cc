@@ -116,8 +116,6 @@
 
 #include "config.h"
 
-#define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
-
 /** \file
  * Imp of ERepository.
  *
