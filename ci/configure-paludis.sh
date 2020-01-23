@@ -11,7 +11,7 @@ if [[ ${DISTRIBUTION} == "exherbo" ]]; then
         -DPALUDIS_DEFAULT_DISTRIBUTION=exherbo
         -DCONFIG_FRAMEWORK=eclectic
 
-        -DRUBY_VERSION:STRING="2.4"
+        -DRUBY_VERSION:STRING="2.7"
         -DPYTHON_VERSION:STRING="${PYTHON_VERSION}"
     )
 elif [[ ${DISTRIBUTION} == "gentoo" ]]; then
@@ -21,7 +21,7 @@ elif [[ ${DISTRIBUTION} == "gentoo" ]]; then
         -DPALUDIS_DEFAULT_DISTRIBUTION=gentoo
         -DCONFIG_FRAMEWORK=eselect
 
-        -DRUBY_VERSION:STRING="2.4"
+        -DRUBY_VERSION:STRING="2.7"
         -DPYTHON_VERSION:STRING="${PYTHON_VERSION}"
     )
 fi
