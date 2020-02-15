@@ -177,8 +177,8 @@ ERepositoryNews::update_news() const
                                 generator::Matches(PackageDepSpec(parse_elike_package_dep_spec(*i,
                                             eapi.supported()->package_dep_spec_parse_options() |
                                                ((vers == 2) ?
-                                                  ELikePackageDepSpecOptions() + epdso_allow_slot_deps :
-                                                  ELikePackageDepSpecOptions()),
+                                                ELikePackageDepSpecOptions() + epdso_allow_slot_deps + epdso_allow_use_deps_portage
+                                                : ELikePackageDepSpecOptions()),
                                             eapi.supported()->version_spec_options())), nullptr, { }) |
                                 filter::InstalledAtRoot(_imp->environment->preferred_root_key()->parse_value()))]->empty())
                         local_show = true;
