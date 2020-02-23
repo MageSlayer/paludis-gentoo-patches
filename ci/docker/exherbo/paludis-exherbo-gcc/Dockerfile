@@ -23,7 +23,7 @@ RUN chgrp tty /dev/tty \
             --lazy \
             --keep-targets if-same \
             --keep if-same \
-            --permit-old-version dev-python/sphinxcontrib-websupport \
+            --permit-old-version "*/*" \
             --recommendations ignore \
             --suggestions ignore \
             paludis-deps
