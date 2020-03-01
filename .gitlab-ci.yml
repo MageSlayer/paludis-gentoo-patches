@@ -1,7 +1,24 @@
 stages:
+  - docker-images
   - build
   - test
   - clang-tidy
+
+.dockerimage-template: &dockerimage-template
+  stage: docker-images
+  image: exherbo/exherbo_did
+  tags:
+    - did
+  only:
+    refs:
+      - schedules
+      - web
+  script:
+    - cd ci/docker/${DISTRIBUTION}/paludis-${DISTRIBUTION}-${COMPILER}
+    - dockerd >/dev/null 2>&1 &
+    - docker login -u ${DOCKER_USER} -p ${DOCKER_PASSWORD}
+    - ./build.sh ${VERSION}
+    - docker push paludis/${DISTRIBUTION}-${COMPILER}:${VERSION}
 
 .build-template: &build-template
   stage: build
@@ -20,6 +37,34 @@ stages:
   script:
     - cd build-obj
     - ctest -V
+
+docker-images:exherbo-gcc:
+  variables:
+    DISTRIBUTION: "exherbo"
+    COMPILER: "gcc"
+    VERSION: "latest"
+  <<: *dockerimage-template
+
+docker-images:exherbo-gcc-testing:
+  variables:
+    DISTRIBUTION: "exherbo"
+    COMPILER: "gcc"
+    VERSION: "next"
+  <<: *dockerimage-template
+
+docker-images:exherbo-clang:
+  variables:
+    DISTRIBUTION: "exherbo"
+    COMPILER: "clang"
+    VERSION: "latest"
+  <<: *dockerimage-template
+
+docker-images:gentoo-gcc:
+  variables:
+    DISTRIBUTION: "gentoo"
+    COMPILER: "gcc"
+    VERSION: "latest"
+  <<: *dockerimage-template
 
 build:exherbo:
   variables:
