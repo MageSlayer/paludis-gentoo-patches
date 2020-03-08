@@ -17,8 +17,13 @@ RUN chgrp tty /dev/tty \
     && eclectic env update \
     && source /etc/profile \
     && cave resolve -1z repository/{media,pyro,python,scientific,x11} -x \
-    && cave resolve -1z -Ks -ks -x \
-            -o dev-python/sphinxcontrib-websupport \
+    && cave resolve \
+            --execute \
+            --preserve-world \
+            --lazy \
+            --keep-targets if-same \
+            --keep if-same \
+            --permit-old-version dev-python/sphinxcontrib-websupport \
             --recommendations ignore \
             --suggestions ignore \
             paludis-deps
