@@ -5,10 +5,13 @@
 # next = all testing versions unmasked
 IMAGE_VERSION=${1:-latest}
 
+PYTHON_ABI=3.7
+
 if [[ ${IMAGE_VERSION} == "latest" ]]; then
     DEPENDENCY_VERSIONS="stable"
 elif [[ ${IMAGE_VERSION} == "next" ]]; then
     DEPENDENCY_VERSIONS="testing broken"
+    PYTHON_ABI=3.8
 else
     echo "Unknown image version, use 'latest' or 'next'"
     exit 1
@@ -19,5 +22,6 @@ docker build \
     --rm \
     --pull \
     --build-arg DEPENDENCY_VERSIONS="${DEPENDENCY_VERSIONS}" \
+    --build-arg PYTHON_ABI="${PYTHON_ABI}" \
     --tag paludis/exherbo-gcc:${IMAGE_VERSION} \
     .

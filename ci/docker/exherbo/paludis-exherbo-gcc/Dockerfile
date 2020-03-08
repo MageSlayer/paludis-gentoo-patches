@@ -5,13 +5,17 @@ MAINTAINER Marvin Schmidt <marv@exherbo.org>
 ARG DEPENDENCY_VERSIONS
 ENV DEPENDENCY_VERSIONS ${DEPENDENCY_VERSIONS:-stable}
 
+ARG PYTHON_ABI
+ENV PYTHON_ABI ${PYTHON_ABI}
+
 # Switch to option.conf.d layout
 RUN rm /etc/paludis/options.conf \
     && mkdir /etc/paludis/options.conf.d
 
 COPY ./config/options/* /etc/paludis/options.conf.d/
 COPY ./config/sets/paludis-deps.conf /etc/paludis/sets/
-RUN echo "*/* ${DEPENDENCY_VERSIONS}" >> /etc/paludis/package_unmask.conf
+RUN echo "*/* ${DEPENDENCY_VERSIONS}" >> /etc/paludis/package_unmask.conf \
+    && echo "*/* PYTHON_ABIS: -* ${PYTHON_ABI}" >> /etc/paludis/options.conf.d/python-abis.conf
 
 RUN chgrp tty /dev/tty \
     && eclectic env update \
@@ -20,7 +24,7 @@ RUN chgrp tty /dev/tty \
     && cave resolve \
             --execute \
             --preserve-world \
-            --lazy \
+            --complete \
             --keep-targets if-same \
             --keep if-same \
             --permit-old-version "*/*" \
