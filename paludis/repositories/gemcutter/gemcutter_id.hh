@@ -59,42 +59,42 @@ namespace paludis
                 GemcutterID(const GemcutterIDParams &);
                 ~GemcutterID();
 
-                 const std::string canonical_form(const PackageIDCanonicalForm) const;
-                 const QualifiedPackageName name() const;
-                 const VersionSpec version() const;
-                 const RepositoryName repository_name() const;
-                 virtual PackageDepSpec uniquely_identifying_spec() const;
+                const std::string canonical_form(const PackageIDCanonicalForm) const;
+                const QualifiedPackageName name() const;
+                const VersionSpec version() const;
+                const RepositoryName repository_name() const;
+                virtual PackageDepSpec uniquely_identifying_spec() const;
 
-                 const std::shared_ptr<const MetadataValueKey<Slot> > slot_key() const;
-                 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
-                 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-                     dependencies_key() const;
-                 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-                     build_dependencies_key() const;
-                 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-                     run_dependencies_key() const;
-                 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-                     post_dependencies_key() const;
-                 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const;
-                 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const;
-                 const std::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const;
-                 const std::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const;
-                 const std::shared_ptr<const MetadataTimeKey> installed_time_key() const;
-                 const std::shared_ptr<const MetadataValueKey<FSPath> > fs_location_key() const;
-                 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
-                 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
-                 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices_key() const;
+                const std::shared_ptr<const MetadataValueKey<Slot> > slot_key() const;
+                const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
+                const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+                    dependencies_key() const;
+                const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+                    build_dependencies_key() const;
+                const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+                    run_dependencies_key() const;
+                const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+                    post_dependencies_key() const;
+                const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const;
+                const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const;
+                const std::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const;
+                const std::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const;
+                const std::shared_ptr<const MetadataTimeKey> installed_time_key() const;
+                const std::shared_ptr<const MetadataValueKey<FSPath> > fs_location_key() const;
+                const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
+                const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
+                const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices_key() const;
 
-                 bool supports_action(const SupportsActionTestBase &) const
-                     PALUDIS_ATTRIBUTE((warn_unused_result));
-                 void perform_action(Action &) const PALUDIS_ATTRIBUTE((noreturn));
-
-                 bool arbitrary_less_than_comparison(const PackageID &) const
+                bool supports_action(const SupportsActionTestBase &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
-                 std::size_t extra_hash_value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                void perform_action(Action &) const PALUDIS_ATTRIBUTE((noreturn));
 
-                 virtual const std::shared_ptr<const Contents> contents() const;
+                bool arbitrary_less_than_comparison(const PackageID &) const
+                   PALUDIS_ATTRIBUTE((warn_unused_result));
+                std::size_t extra_hash_value() const
+                   PALUDIS_ATTRIBUTE((warn_unused_result));
+
+                virtual const std::shared_ptr<const Contents> contents() const;
         };
 
     }
