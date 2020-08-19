@@ -8,7 +8,7 @@ dev-ruby/syntax
 dev-cpp/gtest
 
 dev-libs/boost
-dev-lang/ruby:2.4
+dev-lang/ruby:2.5
 
 app-arch/libarchive
 
