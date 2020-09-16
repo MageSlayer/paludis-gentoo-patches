@@ -283,7 +283,7 @@ ebuild_scrub_environment()
     done )
 
     (
-        ebuild_safe_source --rewrite-for-declare "${1}" PATH PALUDIS_SOURCE_MERGED_VARIABLES \
+        ebuild_safe_source "${1}" PATH PALUDIS_SOURCE_MERGED_VARIABLES \
             PALUDIS_BRACKET_MERGED_VARIABLES LD_LIBRARY_PATH paludis_declared_functions || exit 1
 
         unset -v $(
@@ -333,8 +333,8 @@ ebuild_scrub_environment()
             done
         )
 
-        set >"${1}"
-        print_exports >>"${1}"
+        declare -p >"${1}"
+        declare -pf >>"${1}"
     )
 }
 
