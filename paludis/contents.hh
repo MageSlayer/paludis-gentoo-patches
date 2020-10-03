@@ -93,8 +93,6 @@ namespace paludis
             const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
 
             ///\}
-
-            ///\}
     };
 
     /**
