@@ -154,7 +154,7 @@ TEST_P(ReplacingTest, Works)
     id->perform_action(action);
 }
 
-INSTANTIATE_TEST_CASE_P(Works, ReplacingTest, testing::Values(
+INSTANTIATE_TEST_SUITE_P(Works, ReplacingTest, testing::Values(
             TestInfo{"exheres-0", "repo1", "replace-none", "cat/none", "pkg"},
             TestInfo{"exheres-0", "repo1", "replace-one", "=cat/pkg-1", "pkg"},
             TestInfo{"exheres-0", "repo1", "replace-many", "cat/pkg", "pkg"},
