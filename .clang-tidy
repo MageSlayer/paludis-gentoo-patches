@@ -91,7 +91,6 @@ Checks: >
     -bugprone-unused-raii,
     -clang-analyzer-core.uninitialized.UndefReturn,
     -clang-analyzer-cplusplus.NewDeleteLeaks,
-    -clang-analyzer-deadcode.DeadStores,
     -clang-analyzer-optin.performance.Padding,
     -clang-analyzer-optin.cplusplus.UninitializedObject,
     -clang-analyzer-optin.cplusplus.VirtualCall,
