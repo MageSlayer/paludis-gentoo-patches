@@ -72,7 +72,7 @@ namespace
     from_colon_string(const std::function<std::string (const std::string &)> & source,
                 const std::string & varname, std::vector<T_> & vec)
     {
-        std::string str(source.operator() (varname)); /* silly 4.3 ICE */
+        std::string str(source(varname));
         if (! str.empty())
         {
             Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
@@ -86,7 +86,7 @@ namespace
     from_string(const std::function<std::string (const std::string &)> & source,
                 const std::string & varname, std::vector<T_> & vec)
     {
-        std::string str(source.operator() (varname)); /* silly 4.3 ICE */
+        std::string str(source(varname));
         if (! str.empty())
         {
             Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
