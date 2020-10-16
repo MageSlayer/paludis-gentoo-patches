@@ -1183,8 +1183,6 @@ Process::run()
         }
 
         _imp->command.exec(err_fd);
-
-        _exit(1);
     }
     else
     {
