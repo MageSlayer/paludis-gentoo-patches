@@ -27,7 +27,6 @@
 
 using namespace paludis;
 using namespace paludis::python;
-namespace bp = boost::python;
 
 namespace paludis
 {
