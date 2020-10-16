@@ -115,7 +115,6 @@ Checks: >
     -misc-no-recursion,
     -misc-non-private-member-variables-in-classes,
     -misc-redundant-expression,
-    -misc-unused-using-decls,
     -modernize-loop-convert,
     -modernize-make-unique,
     -modernize-pass-by-value,
