@@ -47,6 +47,8 @@ namespace paludis
         >::Type>
     {
         public:
+            virtual ~CreateOutputManagerInfo() = default;
+
             static const std::shared_ptr<CreateOutputManagerInfo> deserialise(
                     Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -88,7 +90,7 @@ namespace paludis
                     const OutputExclusivity output_exclusivity,
                     const ClientOutputFeatures & output_features);
 
-            ~CreateOutputManagerForPackageIDActionInfo();
+            ~CreateOutputManagerForPackageIDActionInfo() override;
 
             const std::shared_ptr<const PackageID> package_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -139,7 +141,7 @@ namespace paludis
                     const OutputExclusivity,
                     const ClientOutputFeatures &);
 
-            ~CreateOutputManagerForRepositorySyncInfo();
+            ~CreateOutputManagerForRepositorySyncInfo() override;
 
             /**
              * \since 0.44
