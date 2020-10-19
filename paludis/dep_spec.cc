@@ -641,8 +641,8 @@ PackageDepSpec::data() const
 
 namespace paludis
 {
-    template class PALUDIS_VISIBLE LabelsDepSpec<URILabel>;
-    template class PALUDIS_VISIBLE LabelsDepSpec<DependenciesLabel>;
+    template class LabelsDepSpec<URILabel>;
+    template class LabelsDepSpec<DependenciesLabel>;
 
     template class Cloneable<DepSpec>;
     template class Pimp<ConditionalDepSpec>;

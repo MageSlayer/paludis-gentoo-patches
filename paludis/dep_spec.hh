@@ -710,6 +710,9 @@ namespace paludis
             const std::string label() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
+    extern template class PALUDIS_VISIBLE LabelsDepSpec<URILabel>;
+    extern template class PALUDIS_VISIBLE LabelsDepSpec<DependenciesLabel>;
+
     extern template class PALUDIS_VISIBLE WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag,
            const std::shared_ptr<const DependenciesLabel> >;
     extern template class PALUDIS_VISIBLE WrappedForwardIterator<URILabelsDepSpec::ConstIteratorTag,
