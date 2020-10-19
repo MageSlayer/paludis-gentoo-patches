@@ -36,6 +36,8 @@ namespace paludis
                 MaskedConfirmation, ChangedChoicesConfirmation, UninstallConfirmation>::Type>
         {
             public:
+                virtual ~RequiredConfirmation() = default;
+
                 virtual void serialise(Serialiser &) const = 0;
 
                 static const std::shared_ptr<RequiredConfirmation> deserialise(
