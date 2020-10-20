@@ -41,11 +41,11 @@ fi
 
 if [[ ${BUILD_TYPE} == "release" ]]; then
     CMAKE_BUILD_TYPE="Release"
-    CXXFLAGS="-pipe -O2"
+    CXXFLAGS="${CXXFLAGS} -pipe -O2"
     LDFLAGS=""
 elif [[ ${BUILD_TYPE} == "debug" ]]; then
     CMAKE_BUILD_TYPE="Debug"
-    CXXFLAGS="-pipe -O0 -pedantic -g3"
+    CXXFLAGS="${CXXFLAGS} -pipe -O0 -pedantic -g3"
     LDFLAGS=""
 elif [[ ${3} == "coverage" ]]; then
     CMAKE_BUILD_TYPE="Debug"
