@@ -73,6 +73,9 @@ append_if(CXX_SUPPORTS_FVISIBILITY_HIDDEN "-fvisibility=hidden" CMAKE_CXX_FLAGS)
 check_cxx_compiler_flag("-Werror -fvisibility-inlines-hidden" CXX_SUPPORTS_FVISIBILITY_INLINES_HIDDEN)
 append_if(CXX_SUPPORTS_FVISIBILITY_INLINES_HIDDEN "-fvisibility-inlines-hidden" CMAKE_CXX_FLAGS)
 
+check_cxx_compiler_flag("-Werror -Wno-return-type-c-linkage" CXX_SUPPORTS_WNO_RETURN_TYPE_C_LINKAGE)
+append_if(CXX_SUPPORTS_WNO_RETURN_TYPE_C_LINKAGE "-Wno-return-type-c-linkage" CMAKE_CXX_FLAGS)
+
 check_cxx_compiler_flag("-Werror -fno-strict-aliasing" CXX_SUPPORTS_FNO_STRICT_ALIASING)
 check_cxx_compiler_flag("-Werror -g0" CXX_SUPPORTS_G0)
 
