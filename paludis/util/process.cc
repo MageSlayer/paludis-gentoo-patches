@@ -429,6 +429,7 @@ ProcessCommand::exec_prepare()
 
 namespace
 {
+    PALUDIS_ATTRIBUTE((noreturn))
     void
     send_error(int err_fd, const ExecError & e)
     {
