@@ -20,6 +20,7 @@
 
 #include <paludis_ruby.hh>
 #include <paludis/action.hh>
+#include <paludis/util/attributes.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/standard_output_manager.hh>
 #include <ruby.h>
@@ -646,6 +647,7 @@ namespace
         }
     };
 
+    PALUDIS_ATTRIBUTE((noreturn))
     void cannot_perform_uninstall(const std::shared_ptr<const PackageID> & id, const UninstallActionOptions &)
     {
         throw InternalError(PALUDIS_HERE, "Can't uninstall '" + stringify(*id) + "'");
