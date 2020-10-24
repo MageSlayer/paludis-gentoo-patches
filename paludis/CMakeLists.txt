@@ -242,7 +242,8 @@ if(ENABLE_PBINS)
                         PRIVATE
                           libpaludis
                           libpaludisutil
-                          ${LibArchive_LIBRARIES})
+                          LibArchive::LibArchive
+                       )
 endif()
 
 if(ENABLE_STRIPPER)
