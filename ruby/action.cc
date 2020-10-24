@@ -73,7 +73,7 @@ namespace
     struct BoxedActionTraits<InfoAction>
     {
         using OptionsClass = InfoActionOptions;
-        static constexpr const char *ActionClassName = "InfoAction";
+        PALUDIS_ATTRIBUTE((unused)) static constexpr const char *ActionClassName = "InfoAction";
         static VALUE BoxedType() { return c_info_action; }
     };
 
@@ -89,7 +89,7 @@ namespace
     struct BoxedActionTraits<ConfigAction>
     {
         using OptionsClass = ConfigActionOptions;
-        static constexpr const char *ActionClassName = "ConfigAction";
+        PALUDIS_ATTRIBUTE((unused)) static constexpr const char *ActionClassName = "ConfigAction";
         static VALUE BoxedType() { return c_config_action; }
     };
 
@@ -105,7 +105,7 @@ namespace
     struct BoxedActionTraits<FetchAction>
     {
         using OptionsClass = FetchActionOptions;
-        static constexpr const char *ActionClassName = "FetchAction";
+        PALUDIS_ATTRIBUTE((unused)) static constexpr const char *ActionClassName = "FetchAction";
         static VALUE BoxedType() { return c_fetch_action; }
     };
 
@@ -121,7 +121,7 @@ namespace
     struct BoxedActionTraits<InstallAction>
     {
         using OptionsClass = InstallActionOptions;
-        static constexpr const char *ActionClassName = "InstallAction";
+        PALUDIS_ATTRIBUTE((unused)) static constexpr const char *ActionClassName = "InstallAction";
         static VALUE BoxedType() { return c_install_action; }
     };
 
@@ -137,7 +137,7 @@ namespace
     struct BoxedActionTraits<PretendAction>
     {
         using OptionsClass = PretendActionOptions;
-        static constexpr const char *ActionClassName = "PretendAction";
+        PALUDIS_ATTRIBUTE((unused)) static constexpr const char *ActionClassName = "PretendAction";
         static VALUE BoxedType() { return c_pretend_action; }
     };
 
@@ -153,7 +153,7 @@ namespace
     struct BoxedActionTraits<UninstallAction>
     {
         using OptionsClass = UninstallActionOptions;
-        static constexpr const char *OptionClassName = "UninstallAction";
+        PALUDIS_ATTRIBUTE((unused)) static constexpr const char *OptionClassName = "UninstallAction";
         static VALUE BoxedType() { return c_uninstall_action; }
     };
 
