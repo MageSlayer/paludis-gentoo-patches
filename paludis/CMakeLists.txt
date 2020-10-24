@@ -223,15 +223,12 @@ if(ENABLE_PYTHON)
   target_compile_definitions(libpaludispythonhooks
                              PRIVATE
                                -DPYTHONINSTALLDIR="${PALUDIS_PYTHON_INSTALL_DIR}")
-  target_include_directories(libpaludispythonhooks
-                             PRIVATE
-                               ${PYTHON_INCLUDE_DIRS})
   target_link_libraries(libpaludispythonhooks
                         PRIVATE
                           libpaludis
                           libpaludisutil
                           Boost::python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}
-                          ${PYTHON_LIBRARY})
+                          Python::Python)
 endif()
 
 if(ENABLE_PBINS)

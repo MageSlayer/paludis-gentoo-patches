@@ -39,12 +39,11 @@ if(ENABLE_PYTHON)
   endif()
   target_include_directories(libpaludispython
                              PRIVATE
-                               ${PYTHON_INCLUDE_DIRS}
                                ${Boost_INCLUDE_DIRS})
   target_link_libraries(libpaludispython
                         PRIVATE
                           ${Boost_LIBRARIES}
-                          ${PYTHON_LIBRARIES}
+                          Python::Python
                           libpaludis
                           libpaludisutil)
 
@@ -52,12 +51,11 @@ if(ENABLE_PYTHON)
                         "${CMAKE_CURRENT_SOURCE_DIR}/paludis_python_so.cc")
   target_include_directories(paludis
                              PRIVATE
-                               ${PYTHON_INCLUDE_DIRS}
                                ${Boost_INCLUDE_DIRS})
   target_link_libraries(paludis
                         PRIVATE
                           ${Boost_LIBRARIES}
-                          ${PYTHON_LIBRARIES}
+                          Python::Python
                           libpaludispython)
   set_target_properties(paludis PROPERTIES
                         OUTPUT_NAME
@@ -69,12 +67,11 @@ if(ENABLE_PYTHON)
                         "${CMAKE_CURRENT_SOURCE_DIR}/additional_tests.cc")
   target_include_directories(libadditionaltests
                              PRIVATE
-                               ${PYTHON_INCLUDE_DIRS}
                                ${Boost_INCLUDE_DIRS})
   target_link_libraries(libadditionaltests
                         PRIVATE
                           ${Boost_LIBRARIES}
-                          ${PYTHON_LIBRARIES}
+                          Python::Python
                           libpaludis
                           libpaludisutil
                           libpaludispython)
@@ -83,12 +80,11 @@ if(ENABLE_PYTHON)
                         "${CMAKE_CURRENT_SOURCE_DIR}/additional_tests_so.cc")
   target_include_directories(additional_tests
                              PRIVATE
-                               ${PYTHON_INCLUDE_DIRS}
                                ${Boost_INCLUDE_DIRS})
   target_link_libraries(additional_tests
                         PRIVATE
                           ${Boost_PYTHON_LIBRARY}
-                          ${PYTHON_LIBRARIES}
+                          Python::Python
                           libadditionaltests)
   set_target_properties(additional_tests PROPERTIES
                         OUTPUT_NAME

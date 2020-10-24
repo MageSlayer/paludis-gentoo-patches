@@ -89,7 +89,7 @@ function(paludis_add_test test_name)
                     PALUDIS_PYTHON_DIR=${PROJECT_SOURCE_DIR}/python
                     PALUDIS_SUFFIXES_FILE=${PROJECT_SOURCE_DIR}/paludis/repositories/e/ebuild_entries_suffixes.conf
                     PALUDIS_TMPDIR=${CMAKE_CURRENT_BINARY_DIR}
-                    PYTHON=${PYTHON_EXECUTABLE}
+                    PYTHON=${Python_EXECUTABLE}
                     PYTHONPATH=${CMAKE_BINARY_DIR}/python
                     RUBY=${RUBY_EXECUTABLE}
                     RUBYLIB=${CMAKE_BINARY_DIR}/ruby
