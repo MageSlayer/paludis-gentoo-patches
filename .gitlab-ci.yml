@@ -117,7 +117,6 @@ test:exherbo-clang:
     VERSION: "latest"
   dependencies:
     - build:exherbo-clang
-  allow_failure: true
   <<: *test-template
 
 build:gentoo:
