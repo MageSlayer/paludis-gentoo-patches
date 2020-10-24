@@ -102,7 +102,7 @@ paludis_add_library(libpaludiserepository
                       "${CMAKE_CURRENT_SOURCE_DIR}/dep_parser.se"
                       "${CMAKE_CURRENT_SOURCE_DIR}/iuse.se"
                       "${CMAKE_CURRENT_SOURCE_DIR}/e_repository_params.se")
-add_dependencies(libpaludiserepository libpaludisutil_SE)
+add_dependencies(libpaludiserepository libpaludis_SE libpaludisutil_SE)
 
 foreach(test
           aa_visitor

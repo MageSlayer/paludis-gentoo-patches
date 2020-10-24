@@ -9,7 +9,7 @@ paludis_add_library(libpaludisgemcutterrepository
                       "${CMAKE_CURRENT_SOURCE_DIR}/json_common.cc"
                       "${CMAKE_CURRENT_SOURCE_DIR}/json_things_handle.cc"
                       "${CMAKE_CURRENT_SOURCE_DIR}/registration.cc")
-add_dependencies(libpaludisgemcutterrepository libpaludisutil_SE)
+add_dependencies(libpaludisgemcutterrepository libpaludis_SE libpaludisutil_SE)
 
 paludis_add_library(libpaludisgemcutterrepositoryjsonthings
                       json_things.cc)

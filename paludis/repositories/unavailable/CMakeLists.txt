@@ -9,7 +9,7 @@ paludis_add_library(libpaludisunavailablerepository
                       "${CMAKE_CURRENT_SOURCE_DIR}/unavailable_repository_store.cc"
                       "${CMAKE_CURRENT_SOURCE_DIR}/unavailable_repository_file.cc"
                       "${CMAKE_CURRENT_SOURCE_DIR}/registration.cc")
-add_dependencies(libpaludisunavailablerepository libpaludisutil_SE)
+add_dependencies(libpaludisunavailablerepository libpaludis_SE libpaludisutil_SE)
 
 paludis_add_test(unavailable_repository GTEST)
 
