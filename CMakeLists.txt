@@ -337,10 +337,6 @@ if(ENABLE_PYTHON)
 endif()
 
 if(ENABLE_PYTHON_DOCS)
-  if(NOT ENABLE_PYTHON)
-    message(SEND_ERROR "python docs requires python to build")
-  endif()
-
   find_package(Sphinx REQUIRED)
 
   execute_process(COMMAND
@@ -368,10 +364,6 @@ set(PALUDIS_RUBY_INSTALL_DIR "${RUBY_SITEARCH_DIR}" CACHE PATH
     "ruby installation directory")
 
 if(ENABLE_RUBY_DOCS)
-  if(NOT ENABLE_RUBY)
-    message(SEND_ERROR "ruby docs requires ruby to build")
-  endif()
-
   execute_process(COMMAND
                     "${RUBY_EXECUTABLE}" -rubygems -e "require 'syntax/convertors/html'"
                   OUTPUT_VARIABLE
