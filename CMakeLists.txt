@@ -352,16 +352,15 @@ endif()
 
 if(ENABLE_RUBY)
   list(FIND RUBY_SUPPORTED_VERSIONS "${RUBY_VERSION}" _ruby_version_index)
-
   if(_ruby_version_index EQUAL -1)
     message(SEND_ERROR "invalid ruby version specified (${RUBY_VERSION})")
   endif()
 
   find_package(Ruby ${RUBY_VERSION} REQUIRED)
-endif()
 
-set(PALUDIS_RUBY_INSTALL_DIR "${RUBY_SITEARCH_DIR}" CACHE PATH
-    "ruby installation directory")
+  set(PALUDIS_RUBY_INSTALL_DIR "${RUBY_SITEARCH_DIR}" CACHE PATH
+      "ruby installation directory")
+endif()
 
 if(ENABLE_RUBY_DOCS)
   execute_process(COMMAND
