@@ -97,7 +97,10 @@ if(ENABLE_GTEST)
                         "${CMAKE_CURRENT_SOURCE_DIR}/resolver_test.cc")
   # TODO(compnerd) create an object library for the SE_SOURCES that we can depend
   # on instead
-  add_dependencies(libpaludisresolvertest libpaludisresolver_SE libpaludisutil_SE)
+  add_dependencies(libpaludisresolvertest
+      libpaludisfakerepository
+      libpaludisresolver_SE
+      libpaludisutil_SE)
 
   foreach(test
             any
