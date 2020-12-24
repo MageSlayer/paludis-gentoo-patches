@@ -19,8 +19,6 @@ if(ENABLE_PBINS)
                        )
 endif()
 
-add_executable(print_exports
-                 "${CMAKE_CURRENT_SOURCE_DIR}/print_exports.cc")
 add_executable(locked_pipe_command
                  "${CMAKE_CURRENT_SOURCE_DIR}/locked_pipe_command.cc")
 add_executable(strip_tar_corruption
@@ -85,7 +83,6 @@ install(PROGRAMS
         DESTINATION
           "${CMAKE_INSTALL_FULL_LIBEXECDIR}/paludis/utils")
 install(TARGETS
-          print_exports
           locked_pipe_command
           strip_tar_corruption
         DESTINATION
