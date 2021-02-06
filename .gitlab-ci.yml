@@ -1,7 +1,6 @@
 stages:
   - docker-images
   - build
-  - test
   - clang-tidy
 
 .dockerimage-template: &dockerimage-template
@@ -20,22 +19,16 @@ stages:
     - ./build.sh ${VERSION}
     - docker push paludis/${DISTRIBUTION}-${COMPILER}:${VERSION}
 
+.build-script: &build-script
+  - mkdir -pv build-obj && cd build-obj
+  - PYTHON_VERSION=${PYTHON_VERSION} ../ci/configure-paludis.sh .. ${DISTRIBUTION} ${COMPILER}
+  - ninja -j$(nproc) all
+
 .build-template: &build-template
   stage: build
   image: paludis/${DISTRIBUTION}-${COMPILER}:${VERSION}
   script:
-    - mkdir -pv build-obj && cd build-obj
-    - PYTHON_VERSION=${PYTHON_VERSION} ../ci/configure-paludis.sh .. ${DISTRIBUTION} ${COMPILER}
-    - ninja -j$(nproc) all
-  artifacts:
-    paths:
-      - build-obj/
-
-.test-template: &test-template
-  stage: test
-  image: paludis/${DISTRIBUTION}-${COMPILER}:${VERSION}
-  script:
-    - cd build-obj
+    - *build-script
     - ctest -V
 
 docker-images:exherbo-gcc:
@@ -66,7 +59,7 @@ docker-images:gentoo-gcc:
     VERSION: "latest"
   <<: *dockerimage-template
 
-build:exherbo:
+Exherbo GCC:
   variables:
     DISTRIBUTION: "exherbo"
     COMPILER: "gcc"
@@ -74,16 +67,7 @@ build:exherbo:
     PYTHON_VERSION: "3.7"
   <<: *build-template
 
-test:exherbo:
-  variables:
-    DISTRIBUTION: "exherbo"
-    COMPILER: "gcc"
-    VERSION: "latest"
-  dependencies:
-    - build:exherbo
-  <<: *test-template
-
-build:exherbo-testing:
+Exherbo GCC testing:
   variables:
     DISTRIBUTION: "exherbo"
     COMPILER: "gcc"
@@ -92,17 +76,7 @@ build:exherbo-testing:
   allow_failure: true
   <<: *build-template
 
-test:exherbo-testing:
-  variables:
-    DISTRIBUTION: "exherbo"
-    COMPILER: "gcc"
-    VERSION: "next"
-  dependencies:
-    - build:exherbo-testing
-  allow_failure: true
-  <<: *test-template
-
-build:exherbo-clang:
+Exherbo clang:
   variables:
     DISTRIBUTION: "exherbo"
     COMPILER: "clang"
@@ -110,16 +84,7 @@ build:exherbo-clang:
     PYTHON_VERSION: "3.7"
   <<: *build-template
 
-test:exherbo-clang:
-  variables:
-    DISTRIBUTION: "exherbo"
-    COMPILER: "clang"
-    VERSION: "latest"
-  dependencies:
-    - build:exherbo-clang
-  <<: *test-template
-
-build:gentoo:
+Gentoo GCC:
   variables:
     DISTRIBUTION: "gentoo"
     COMPILER: "gcc"
@@ -127,21 +92,16 @@ build:gentoo:
     PYTHON_VERSION: "3.6"
   <<: *build-template
 
-test:gentoo:
-  variables:
-    DISTRIBUTION: "gentoo"
-    COMPILER: "gcc"
-    VERSION: "latest"
-  dependencies:
-    - build:gentoo
-  <<: *test-template
-
 clang-tidy:
   stage: clang-tidy
-  dependencies:
-    - build:exherbo-clang
-  image: paludis/exherbo-clang
+  extends: .build-template
+  variables:
+    DISTRIBUTION: "exherbo"
+    COMPILER: "clang"
+    VERSION: "latest"
+    PYTHON_VERSION: "3.7"
   script:
+    - *build-script
     - export PATH="${PATH}:$(llvm-config --prefix)/share/clang"
-    - run-clang-tidy.py -j$(nproc) -p build-obj/ -header-filter="${PWD}/.*"
+    - run-clang-tidy.py -j$(nproc) -header-filter="${PWD}/.*"
 
