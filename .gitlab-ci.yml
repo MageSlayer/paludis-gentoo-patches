@@ -52,13 +52,6 @@ docker-images:exherbo-clang:
     VERSION: "latest"
   <<: *dockerimage-template
 
-docker-images:gentoo-gcc:
-  variables:
-    DISTRIBUTION: "gentoo"
-    COMPILER: "gcc"
-    VERSION: "latest"
-  <<: *dockerimage-template
-
 Exherbo GCC:
   variables:
     DISTRIBUTION: "exherbo"
@@ -82,14 +75,6 @@ Exherbo clang:
     COMPILER: "clang"
     VERSION: "latest"
     PYTHON_VERSION: "3.7"
-  <<: *build-template
-
-Gentoo GCC:
-  variables:
-    DISTRIBUTION: "gentoo"
-    COMPILER: "gcc"
-    VERSION: "latest"
-    PYTHON_VERSION: "3.6"
   <<: *build-template
 
 clang-tidy:
