@@ -29,12 +29,6 @@ fi
 if [[ ${COMPILER} == gcc ]]; then
     CC=gcc
     CXX=g++
-elif [[ ${COMPILER} == gcc8 ]]; then
-    CC=gcc-8
-    CXX=g++-8
-elif [[ ${COMPILER} == gcc7 ]]; then
-    CC=gcc-7
-    CXX=g++-7
 elif [[ ${COMPILER} == clang ]]; then
     CC=clang
     CXX="clang++"
