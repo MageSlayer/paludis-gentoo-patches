@@ -76,3 +76,5 @@ append_if(CXX_SUPPORTS_FVISIBILITY_INLINES_HIDDEN "-fvisibility-inlines-hidden" 
 check_cxx_compiler_flag("-Werror -fno-strict-aliasing" CXX_SUPPORTS_FNO_STRICT_ALIASING)
 check_cxx_compiler_flag("-Werror -g0" CXX_SUPPORTS_G0)
 
+check_cxx_compiler_flag("-Werror -fdeclspec" CXX_SUPPORTS_FDECLSPEC)
+
