@@ -3,6 +3,8 @@ DISTRIBUTION=${2}
 COMPILER=${3}
 BUILD_TYPE=${4:-debug}
 
+[[ -z ${RUBY_VERSION} ]] && RUBY_VERSION=2.7
+
 myconf=()
 if [[ ${DISTRIBUTION} == "exherbo" ]]; then
     myconf+=(
@@ -11,7 +13,7 @@ if [[ ${DISTRIBUTION} == "exherbo" ]]; then
         -DPALUDIS_DEFAULT_DISTRIBUTION=exherbo
         -DCONFIG_FRAMEWORK=eclectic
 
-        -DRUBY_VERSION:STRING="2.7"
+        -DRUBY_VERSION:STRING="${RUBY_VERSION}"
         -DPYTHON_VERSION:STRING="${PYTHON_VERSION}"
     )
 elif [[ ${DISTRIBUTION} == "gentoo" ]]; then
@@ -21,7 +23,7 @@ elif [[ ${DISTRIBUTION} == "gentoo" ]]; then
         -DPALUDIS_DEFAULT_DISTRIBUTION=gentoo
         -DCONFIG_FRAMEWORK=eselect
 
-        -DRUBY_VERSION:STRING="2.7"
+        -DRUBY_VERSION:STRING="${RUBY_VERSION}"
         -DPYTHON_VERSION:STRING="${PYTHON_VERSION}"
     )
 fi
