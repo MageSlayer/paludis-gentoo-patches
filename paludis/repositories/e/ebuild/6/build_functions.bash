@@ -128,7 +128,8 @@ einstalldocs()
         for d in README* ChangeLog AUTHORS NEWS TODO CHANGES \
             THANKS BUGS FAQ CREDITS CHANGELOG ; do
             if [[ -s "${d}" ]] ; then
-                dodoc "${d}" || return $?
+                # "dodoc -r ..." - looks like another silent EAPI6 change in Portage
+                dodoc -r "${d}" || return $?
             fi
         done
     elif declare -p DOCS | grep -q '^declare -a ' ; then
