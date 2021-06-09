@@ -11,7 +11,7 @@ COPY ./config/sets/paludis-deps.conf /etc/paludis/sets/
 RUN chgrp tty /dev/tty \
     && eclectic env update \
     && source /etc/profile \
-    && cave resolve -1z repository/{media,pyro,scientific} -x \
+    && cave resolve -1z repository/{media,net,pyro,rust,scientific} -x \
     && cave resolve \
             --execute \
             --preserve-world \

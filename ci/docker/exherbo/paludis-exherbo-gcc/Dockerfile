@@ -20,7 +20,7 @@ RUN echo "*/* ${DEPENDENCY_VERSIONS}" >> /etc/paludis/package_unmask.conf \
 RUN chgrp tty /dev/tty \
     && eclectic env update \
     && source /etc/profile \
-    && cave resolve -1z repository/{media,pyro,python,scientific,x11} -x \
+    && cave resolve -1z repository/{media,net,pyro,python,rust,scientific,x11} -x \
     && cave resolve \
             --execute \
             --preserve-world \
