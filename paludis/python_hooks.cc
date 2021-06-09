@@ -34,6 +34,15 @@ namespace
         private:
             static std::mutex _mutex;
 
+            struct Initializer
+            {
+                Initializer()
+                {
+                    Py_Initialize();
+                }
+            };
+
+            static Initializer pyinit;
             static bp::dict _local_namespace_base;
             static bp::dict _output_wrapper_namespace;
             static bp::object _format_exception;
@@ -79,6 +88,7 @@ namespace
     };
 
     std::mutex PyHookFile::_mutex;
+    PyHookFile::Initializer PyHookFile::pyinit;
     bp::dict PyHookFile::_output_wrapper_namespace;
     bp::dict PyHookFile::_local_namespace_base;
     bp::object PyHookFile::_format_exception;
@@ -99,8 +109,6 @@ PyHookFile::PyHookFile(const FSPath & f, const bool r, const Environment * const
         initialized = true;
         try
         {
-            Py_Initialize();
-
             bp::object main = bp::import("__main__");
             bp::object global_namespace = main.attr("__dict__");
 
