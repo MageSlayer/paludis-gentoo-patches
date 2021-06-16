@@ -5,7 +5,7 @@
 <ul>
     <li>We use <a href="http://paludis.exherbo.org/trac/">Trac</a> for bug reports, feature requests etc.</li>
     <li>You are encouraged to use the <a href="http://lists.exherbo.org/mailman/listinfo/paludis-user">paludis-user</a>
-        mailing list, or the <code>#paludis</code> IRC channel on <code>irc.freenode.net</code>.</li>
+        mailing list, or the <code>#paludis</code> IRC channel on <code>irc.libera.chat</code>.</li>
     <li>The current version is ###PALUDIS_VERSION###. See <a href="news.html">the release notes</a> and <a
         href="changelog.html">changelog</a>.</li>
     <li>You should generally install Paludis using your distribution's package manager, rather than by hand. However, if
