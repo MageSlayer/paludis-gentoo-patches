@@ -28,7 +28,7 @@
 
         <tr>
             <td>
-                <a href="http://paludis.exherbo.org/trac/">Bugs, Requests, Support</a>
+                <a href="https://gitlab.exherbo.org/paludis/paludis/-/issues">Bugs, Requests, Support</a>
             </td>
 
             <td class="currentpage">

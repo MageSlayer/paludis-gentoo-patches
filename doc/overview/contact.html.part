@@ -19,6 +19,6 @@
 
 <h2>Bug Reports</h2>
 
-<p>We use <a href="http://paludis.exherbo.org/trac/">Trac</a> for bug reports, feature requests and
-so on.</p>
+<p>We use <a href="https://gitlab.exherbo.org/paludis/paludis/-/issues">Gitlab</a> for bug reports, feature requests
+and so on.</p>
 
