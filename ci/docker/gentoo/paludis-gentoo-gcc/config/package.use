@@ -1,0 +1,9 @@
+# required by dev-python/sqlalchemy-1.2.7::gentoo[python_targets_python3_5]
+# required by dev-python/sphinxcontrib-websupport-1.0.1-r1::gentoo
+# required by dev-python/sphinx-1.6.5::gentoo[-test]
+# required by dev-python/sphinx (argument)
+dev-lang/python sqlite
+
+dev-libs/boost python
+
+*/* -ruby_targets_ruby23 ruby_targets_ruby24

@@ -1,0 +1,17 @@
+app-doc/doxygen
+app-text/asciidoc
+app-text/htmltidy
+app-text/xmlto
+dev-python/sphinx
+dev-ruby/syntax
+
+dev-cpp/gtest
+
+dev-libs/boost
+dev-lang/ruby:2.5
+
+app-arch/libarchive
+
+dev-db/sqlite:3
+
+dev-util/ninja
