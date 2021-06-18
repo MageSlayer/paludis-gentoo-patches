@@ -2,7 +2,7 @@
 
 <h1>suggestions.conf</h1>
 
-###PALUDISENVIRONMENTONLY###
+@PALUDISENVIRONMENTONLY@
 
 <p>The <code>suggestions.conf</code> file allows suggested dependencies to be automatically taken or ignored. It is a
 standard configuration file which may be a bash file (<code>suggestions.bash</code>) and which may use the

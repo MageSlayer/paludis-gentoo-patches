@@ -2,7 +2,7 @@
 
 <h1>keywords.conf / platforms.conf</h1>
 
-###PALUDISENVIRONMENTONLY###
+@PALUDISENVIRONMENTONLY@
 
 <p>The <code>keywords.conf</code> (Gentoo and derived distributions) or <code>platforms.conf</code> (Exherbo) file
 controls which keywords are and are not accepted. It is a standard configuration file which may be a bash file

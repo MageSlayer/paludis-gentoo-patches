@@ -1,6 +1,4 @@
 
-include(CMakeParseArguments)
-
 function(paludis_cat destination)
   set(options)
   set(single_value_args)
@@ -39,35 +37,20 @@ function(paludis_sed)
 endfunction()
 
 function(paludis_generate_toplinks relative)
-  paludis_sed(INPUT
-                "${CMAKE_CURRENT_SOURCE_DIR}/${relative}/toplinks.html.part.in"
-              OUTPUT
-                "${CMAKE_CURRENT_BINARY_DIR}/toplinks.html.part"
-              EXPRESSIONS
-                "s,###TOPURI###,${relative}/,g")
+  set(TOPURI "${relative}/")
+  configure_file(${relative}/toplinks.html.part.in toplinks.html.part @ONLY)
 endfunction()
+
 function(paludis_generate_header relative)
-  paludis_sed(INPUT
-                "${CMAKE_CURRENT_SOURCE_DIR}/${relative}/header.html.part.in"
-              OUTPUT
-                "${CMAKE_CURRENT_BINARY_DIR}/header.html.part"
-              DEPENDS
-                "${CMAKE_CURRENT_BINARY_DIR}/toplinks.html.part"
-              EXPRESSIONS
-                "s,###TOPURI###,${relative}/,g"
-                "/###TOPLINKS###/r ${CMAKE_CURRENT_SOURCE_DIR}/toplinks.html.part"
-                "s,###TOPLINKS###,,g")
+  set(TOPURI "${relative}/")
+  file(READ ${CMAKE_CURRENT_BINARY_DIR}/toplinks.html.part TOPLINKS)
+  configure_file(${relative}/header.html.part.in header.html.part @ONLY)
 endfunction()
+
 function(paludis_generate_footer relative)
-  paludis_sed(INPUT
-                "${CMAKE_CURRENT_SOURCE_DIR}/${relative}/footer.html.part.in"
-              OUTPUT
-                "${CMAKE_CURRENT_BINARY_DIR}/footer.html.part"
-              DEPENDS
-                "${CMAKE_CURRENT_BINARY_DIR}/toplinks.html.part"
-              EXPRESSIONS
-                "s,###TOPURI###,${relative}/,g")
+  file(COPY ${relative}/footer.html.part DESTINATION .)
 endfunction()
+
 function(paludis_generate_page page location)
   paludis_cat("${CMAKE_CURRENT_BINARY_DIR}/${page}.html"
                 "${CMAKE_CURRENT_BINARY_DIR}/header.html.part"
@@ -79,12 +62,7 @@ paludis_generate_toplinks(".")
 paludis_generate_header(".")
 paludis_generate_footer(".")
 
-paludis_sed(INPUT
-              "${CMAKE_CURRENT_SOURCE_DIR}/index.html.part.in"
-            OUTPUT
-              "${CMAKE_CURRENT_BINARY_DIR}/index.html.part"
-            EXPRESSIONS
-              "s,###PALUDIS_VERSION###,${PROJECT_VERSION},g")
+configure_file(index.html.part.in index.html.part @ONLY)
 paludis_generate_page(index "${CMAKE_CURRENT_BINARY_DIR}")
 paludis_sed(INPUT
               "${PROJECT_SOURCE_DIR}/NEWS"
@@ -101,7 +79,7 @@ paludis_sed(INPUT
             DEPENDS
               "${CMAKE_CURRENT_BINARY_DIR}/news.subst"
             EXPRESSIONS
-              "/###NEWS###/r ${CMAKE_CURRENT_BINARY_DIR}/news.subst"
+              "/###NEWS###/r${CMAKE_CURRENT_BINARY_DIR}/news.subst"
               "s,###NEWS###,,")
 paludis_generate_page(news "${CMAKE_CURRENT_BINARY_DIR}")
 execute_process(COMMAND
@@ -123,7 +101,7 @@ paludis_sed(INPUT
             DEPENDS
               "${CMAKE_CURRENT_BINARY_DIR}/changelog.subst"
             EXPRESSIONS
-              "/###CHANGELOG###/r ${CMAKE_CURRENT_BINARY_DIR}/changelog.subst"
+              "/###CHANGELOG###/r${CMAKE_CURRENT_BINARY_DIR}/changelog.subst"
               "s,###CHANGELOG###,,")
 paludis_generate_page(changelog "${CMAKE_CURRENT_BINARY_DIR}")
 

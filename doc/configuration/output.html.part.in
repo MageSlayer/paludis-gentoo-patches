@@ -2,7 +2,7 @@
 
 <h1>output.conf</h1>
 
-###PALUDISENVIRONMENTONLY###
+@PALUDISENVIRONMENTONLY@
 
 <p><strong>Usually you do not need an <code>output.conf</code> at all.</strong> The defaults are generally fine.</p>
 

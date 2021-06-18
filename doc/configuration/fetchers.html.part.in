@@ -13,7 +13,7 @@ fetchers can be replaced (for example, if you want to use something other than <
 <p>Paludis ships with the following fetcher protocols:</p>
 
 <ul>
-###FETCHERS###
+@FETCHERS@
 </ul>
 
 <h2>User Defined Fetchers</h2>

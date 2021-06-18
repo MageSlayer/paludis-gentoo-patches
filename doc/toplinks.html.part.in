@@ -4,17 +4,17 @@
     <table border="0" cellspacing="0" summary="Navigation links">
         <tr>
             <td rowspan="7" class="logotab">
-                <a href="###TOPURI###index.html" class="noarrow"><img style="border: 0px; padding-right: 50px;"
-                    src="###TOPURI###paludis_270.png" alt="Paludis Logo"
+                <a href="@TOPURI@index.html" class="noarrow"><img style="border: 0px; padding-right: 50px;"
+                    src="@TOPURI@paludis_270.png" alt="Paludis Logo"
                     /></a>
             </td>
 
             <td class="currenttab">
-                <a href="###TOPURI###index.html">Introduction</a>
+                <a href="@TOPURI@index.html">Introduction</a>
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###index.html">Main page</a>
+                <a href="@TOPURI@index.html">Main page</a>
             </td>
         </tr>
 
@@ -24,33 +24,23 @@
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###news.html">Release Notes</a>
+                <a href="@TOPURI@news.html">Release Notes</a>
             </td>
         </tr>
 
         <tr>
             <td>
-                <a href="###TOPURI###overview/index.html">Overview</a>
+                <a href="@TOPURI@overview/index.html">Overview</a>
             </td>
 
             <td class="currentpage">
-                <a href="###TOPURI###changelog.html">ChangeLog</a>
+                <a href="@TOPURI@changelog.html">ChangeLog</a>
             </td>
         </tr>
 
         <tr>
             <td>
-                <a href="###TOPURI###faq/index.html">FAQ</a>
-            </td>
-
-            <td class="currentpage">
-                &nbsp;
-            </td>
-        </tr>
-
-        <tr>
-            <td>
-                <a href="###TOPURI###clients/index.html">Clients</a>
+                <a href="@TOPURI@faq/index.html">FAQ</a>
             </td>
 
             <td class="currentpage">
@@ -60,7 +50,7 @@
 
         <tr>
             <td>
-                <a href="###TOPURI###configuration/index.html">Configuration</a>
+                <a href="@TOPURI@clients/index.html">Clients</a>
             </td>
 
             <td class="currentpage">
@@ -70,7 +60,17 @@
 
         <tr>
             <td>
-                <a href="###TOPURI###api/index.html">API</a>
+                <a href="@TOPURI@configuration/index.html">Configuration</a>
+            </td>
+
+            <td class="currentpage">
+                &nbsp;
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <a href="@TOPURI@api/index.html">API</a>
             </td>
 
             <td class="currentpage">

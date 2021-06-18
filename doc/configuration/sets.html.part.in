@@ -37,7 +37,7 @@ parts of the set defined by each individual repository can be accessed using <co
 
 <h2>User Defined Sets</h2>
 
-###PALUDISENVIRONMENTONLY###
+@PALUDISENVIRONMENTONLY@
 
 <p>When using the Paludis environment, the user can create their own sets. A set named <code>foo</code> is defined in
 the file <code>foo.conf</code>, which is a standard configuration file, or in the file <code>foo.bash</code>,

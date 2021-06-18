@@ -4,12 +4,12 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Paludis, the Other Package Mangler</title>
-<link rel="stylesheet" href="###TOPURI###paludis.css" type="text/css" />
+<link rel="stylesheet" href="@TOPURI@paludis.css" type="text/css" />
 </head>
 <body>
 
     <div class="topnav">
-        ###TOPLINKS###
+        @TOPLINKS@
     </div>
 
     <div class="main">

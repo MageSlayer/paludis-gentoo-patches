@@ -2,7 +2,7 @@
 
 <h1>bashrc</h1>
 
-###PALUDISENVIRONMENTONLY###
+@PALUDISENVIRONMENTONLY@
 
 <p>The <code>bashrc</code> file is sourced by Paludis when executing most bash scripts (for example, ebuilds and
 syncers). It can be used to set build-related options (e.g. <code>CFLAGS</code>), but <strong>not</strong> any

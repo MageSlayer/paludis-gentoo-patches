@@ -31,26 +31,15 @@ paludis_generate_toplinks("..")
 paludis_generate_header("..")
 paludis_generate_footer("..")
 
-paludis_sed(INPUT
-              "${CMAKE_CURRENT_SOURCE_DIR}/fetchers.html.part.in"
-            OUTPUT
-              "${CMAKE_CURRENT_BINARY_DIR}/fetchers.html.part"
-            DEPENDS
-              "${CMAKE_CURRENT_BINARY_DIR}/fetchlist"
-            EXPRESSIONS
-              "/###FETCHERS###/r ${CMAKE_CURRENT_BINARY_DIR}/fetchlist")
+file(READ ${CMAKE_CURRENT_BINARY_DIR}/fetchlist FETCHERS)
+configure_file(fetchers.html.part.in fetchers.html.part @ONLY)
 paludis_generate_page(fetchers "${CMAKE_CURRENT_BINARY_DIR}")
 
-paludis_sed(INPUT
-              "${CMAKE_CURRENT_SOURCE_DIR}/syncers.html.part.in"
-            OUTPUT
-              "${CMAKE_CURRENT_BINARY_DIR}/syncers.html.part"
-            DEPENDS
-              "${CMAKE_CURRENT_BINARY_DIR}/synclist"
-            EXPRESSIONS
-              "/###SYNCERS###/r ${CMAKE_CURRENT_BINARY_DIR}/synclist")
+file(READ ${CMAKE_CURRENT_BINARY_DIR}/synclist SYNCERS)
+configure_file(syncers.html.part.in syncers.html.part @ONLY)
 paludis_generate_page(syncers "${CMAKE_CURRENT_BINARY_DIR}")
 
+file(READ paludisenvironmentonly.html.part PALUDISENVIRONMENTONLY)
 foreach(page
           bashrc
           general
@@ -63,15 +52,7 @@ foreach(page
           specpath
           suggestions
           use)
-  paludis_sed(INPUT
-                "${CMAKE_CURRENT_SOURCE_DIR}/${page}.html.part.in"
-              OUTPUT
-                "${CMAKE_CURRENT_BINARY_DIR}/${page}.html.part"
-              DEPENDS
-                "${CMAKE_CURRENT_SOURCE_DIR}/paludisenvironmentonly.html.part"
-              EXPRESSIONS
-                "/###PALUDISENVIRONMENTONLY###/r ${CMAKE_CURRENT_SOURCE_DIR}/paludisenvironmentonly.html.part"
-                "s,###PALUDISENVIRONMENTONLY####,,g")
+  configure_file(${page}.html.part.in ${page}.html.part @ONLY)
   paludis_generate_page(${page} "${CMAKE_CURRENT_BINARY_DIR}")
 endforeach()
 

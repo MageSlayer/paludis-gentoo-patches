@@ -2,7 +2,7 @@
 
 <h1>specpath.conf</h1>
 
-###PALUDISENVIRONMENTONLY###
+@PALUDISENVIRONMENTONLY@
 
 <h2>Configuration File Locations</h2>
 

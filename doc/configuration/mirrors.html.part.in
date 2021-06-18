@@ -2,7 +2,7 @@
 
 <h1>mirrors.conf</h1>
 
-###PALUDISENVIRONMENTONLY###
+@PALUDISENVIRONMENTONLY@
 
 <p>The <code>mirrors.conf</code> file controls where Paludis looks when downloading files. It is a standard
 configuration file which may be a bash file (<code>mirrors.bash</code>) and which may use the

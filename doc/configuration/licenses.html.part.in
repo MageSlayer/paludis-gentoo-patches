@@ -2,7 +2,7 @@
 
 <h1>licenses.conf / licences.conf</h1>
 
-###PALUDISENVIRONMENTONLY###
+@PALUDISENVIRONMENTONLY@
 
 <div class="note">
     <p>We apologise for misspelling 'licence' as 'license' throughout. This is done to match the ebuild variable

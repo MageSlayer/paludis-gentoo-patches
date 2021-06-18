@@ -11,7 +11,7 @@ srcdir = ARGV.shift
 topuri = '../../'
 toplinks = File.read(srcdir + '/../toplinks.html.part.in')
 header = File.read(srcdir + '/../../header.html.part.in')
-footer = File.read(srcdir + '/../../footer.html.part.in')
+footer = File.read(srcdir + '/../../footer.html.part')
 css = '<link rel="stylesheet" href="ruby_syntax.css" type="text/css" />'
 header.gsub!('###TOPLINKS###', toplinks)
 header.gsub!('###TOPURI###', topuri)

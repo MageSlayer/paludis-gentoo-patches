@@ -2,7 +2,7 @@
 
 <h1>use.conf / options.conf</h1>
 
-###PALUDISENVIRONMENTONLY###
+@PALUDISENVIRONMENTONLY@
 
 <p>On Gentoo and derived distributions, the <code>use.conf</code> file controls which use flags are and are not enabled.
 It is a standard configuration file which may be a bash file (<code>use.bash</code>) and which may use the

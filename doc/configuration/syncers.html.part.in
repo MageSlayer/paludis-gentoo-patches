@@ -23,7 +23,7 @@ list yourself). Note that many of these syncers depend upon external programs th
 Paludis.</p>
 
 <pre>
-###SYNCERS###
+@SYNCERS@
 </pre>
 
 <h2>User Defined Syncers</h2>

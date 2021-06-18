@@ -2,7 +2,7 @@
 
 <h1>package_mask.conf and package_unmask.conf</h1>
 
-###PALUDISENVIRONMENTONLY###
+@PALUDISENVIRONMENTONLY@
 
 <p>The <code>package_mask.conf</code> file allows a package to be explicitly masked. The
 <code>package_unmask.conf</code> file allows repository and profile masked packages to be unmasked. Both are standard
