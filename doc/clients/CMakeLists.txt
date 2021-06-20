@@ -104,7 +104,7 @@ paludis_sed(INPUT
             OUTPUT
               "${CMAKE_CURRENT_BINARY_DIR}/cave.html.part"
             EXPRESSIONS
-              "/<h2>SEE ALSO<.h2>/,/<.div>/s#<span class=\"strong\"><strong>\\(.*\\)</strong></span>(1)#<a href=\"\\1.html\">\\1</a>#"
+              "/<h2>SEE ALSO<.h2>/,/<.div>/s#<span class=\\\"strong\\\"><strong>\\(.*\\)</strong></span>(1)#<a href=\\\"\\1.html\\\">\\1</a>#"
               "/<h2>CORE COMMANDS<.h2>/,/<h2>ENVIRONMENT<.h2>/s,^\\([a-z-]\\+\\)$$,<a href=\"cave-\\1.html\">\\1</a>,")
 paludis_cat("${CMAKE_CURRENT_BINARY_DIR}/cave.html"
               "${CMAKE_CURRENT_BINARY_DIR}/header.html.part"

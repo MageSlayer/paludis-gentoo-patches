@@ -83,13 +83,13 @@ paludis_sed(INPUT
               "s,###NEWS###,,")
 paludis_generate_page(news "${CMAKE_CURRENT_BINARY_DIR}")
 execute_process(COMMAND
-                  "${GIT_EXECUTABLE}" --git-dir="${PROJECT_SOURCE_DIR}/.git" log
+                  ${GIT_EXECUTABLE} --git-dir=${PROJECT_SOURCE_DIR}/.git log
                 COMMAND
-                  "${SED_EXECUTABLE}" -e "'s,&,\&amp;,g'"
-                                      -e "'s,<,\&lt;,g'"
-                                      -e "'s,>,\&gt;,g'"
-                                      -e "'s,\\([[:blank:][:punct:]]\\)\\?\\([0-9a-f]\\{40\\}\\)\\([[:blank:][:punct:]]\)\\?,\\1<a href=\"http://git.exherbo.org/paludis/paludis.git/commit/?id=\\2\">\\2</a>,g'"
-                                      -e "'s,ticket:\\([0-9]\\+\\),<a href=\"http://paludis.exherbo.org/trac/ticket/\\1\">ticket:\\1</a>,g'"
+                  ${SED_EXECUTABLE} -e "s,&,\&amp;,g"
+                                    -e "s,<,\&lt;,g"
+                                    -e "s,>,\&gt;,g"
+                                    -e "s,\\([[:blank:]][[:punct:]]\\)\\?\\([0-9a-f]\\{40\\}\\)\\([[:blank:]][[:punct:]]\\)\\?,\\1<a href=\"http://git.exherbo.org/paludis/paludis.git/commit/?id=\\2\">\\2</a>,g"
+                                    -e "s,ticket:\\([0-9]\\+\\),<a href=\"http://paludis.exherbo.org/trac/ticket/\\1\">ticket:\\1</a>,g"
                 OUTPUT_FILE
                   "${CMAKE_CURRENT_BINARY_DIR}/changelog.subst"
                 ERROR_QUIET
