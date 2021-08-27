@@ -20,6 +20,7 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
+typeset -ix _paludis_eclass_level='0'
 EXPORT_FUNCTIONS()
 {
     [[ -z "${ECLASS}" ]] && die "EXPORT_FUNCTIONS called but ECLASS undefined"
@@ -29,13 +30,18 @@ EXPORT_FUNCTIONS()
         if [[ ${!PALUDIS_EBUILD_PHASE_VAR} != metadata ]] && { [[ "${e}" == builtin_* ]] || ! has "${e}" ${PALUDIS_EBUILD_FUNCTIONS}; }; then
             ebuild_notice "qa" "$e should not be in EXPORT_FUNCTIONS for ${ECLASS}"
         fi
-        eval "${e}() { ${ECLASS}_${e} \"\$@\" ; }"
+        eval '_paludis_func_export_'"${_paludis_eclass_level}"'+=("${e}")'
     done
 }
 
 inherit()
 {
     [[ -n "${PALUDIS_SKIP_INHERIT}" ]] && return
+
+    _paludis_eclass_level="$((++_paludis_eclass_level))"
+
+    # Reset/initialize functions export variable for the current level.
+    eval 'typeset -a _paludis_func_export_'"${_paludis_eclass_level}"'=()'
 
     local e ee location v v_qa
     for e in "$@" ; do
@@ -93,7 +99,19 @@ inherit()
             fi
         done
 
+        eval '
+        if [[ '"'"'0'"'"' -ne "${#_paludis_func_export_'"${_paludis_eclass_level}"'[@]}" ]]; then
+            for func in "${_paludis_func_export_'"${_paludis_eclass_level}"'[@]}"; do
+                # Check if function we want to call is actually available, like portage does.
+                declare -F "${ECLASS}_${func}" >/dev/null || die "${ECLASS}_${func} not defined, but override requested"
+                eval "${func}() { ${ECLASS}_${func} \"\$@\"; }" > /dev/null
+            done
+        fi
+        unset '"'"'_paludis_func_export_'"${_paludis_eclass_level}'"
+
         export ECLASS="${old_ECLASS}"
     done
+
+    _paludis_eclass_level="$((--_paludis_eclass_level))"
 }
 
