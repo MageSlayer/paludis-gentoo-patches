@@ -33,8 +33,12 @@ die()
 
 assert()
 {
-    local _pipestatus="${PIPESTATUS[*]}"
-    [[ -z "${_pipestatus//[ 0]/}" ]] || die "$@: $_pipestatus"
+    local _paludis_pipestatus=("${PIPESTATUS[@]}")
+    local _oldIFS="${IFS}"
+    IFS=$' \t\n'
+    local _paludis_pipestatus_expansion="${_paludis_pipestatus[*]}"
+    [[ -z "${_paludis_pipestatus_expansion//[ 0]/}" ]] || die "$@: $_paludis_pipestatus_expansion"
+    IFS="${_oldIFS}"
 }
 
 unpack_tar() {
