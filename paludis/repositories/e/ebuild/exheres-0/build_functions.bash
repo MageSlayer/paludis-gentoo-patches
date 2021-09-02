@@ -24,7 +24,7 @@
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
 alias die_unless_nonfatal='paludis_die_unless_nonfatal_func "$FUNCNAME" "$LINENO"'
-alias assert_unless_nonfatal='_pipestatus="${PIPESTATUS[*]}"; [[ -z "${_pipestatus//[ 0]/}" ]] || paludis_die_unless_nonfatal_func "$FUNCNAME" "$LINENO" "$_pipestatus"'
+alias assert_unless_nonfatal='_paludis_pipestatus=("${PIPESTATUS[@]}"); _paludis_oldIFS="${IFS}"; IFS=$'"'"' \t\n'"'"'; _paludis_pipestatus_expansion="${_paludis_pipestatus[*]}"; [[ -z "${_paludis_pipestatus_expansion//[ 0]/}" ]] && IFS="${_paludis_oldIFS}" || paludis_die_unless_nonfatal_func "$FUNCNAME" "$LINENO" "$_paludis_pipestatus_expansion"'
 
 nonfatal()
 {
