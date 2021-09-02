@@ -308,6 +308,7 @@ if(ENABLE_PYTHON)
   # let's apply a workaround...
   add_definitions(-DBOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY)
 
+  set(Python_ADDITIONAL_VERSIONS 3.7 3.8 3.9)
   find_package(PythonLibs 3 REQUIRED)
   find_package(PythonInterp 3 REQUIRED)
 
