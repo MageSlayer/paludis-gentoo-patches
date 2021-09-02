@@ -308,21 +308,24 @@ if(ENABLE_PYTHON)
   # let's apply a workaround...
   add_definitions(-DBOOST_PYTHON_USE_GCC_SYMBOL_VISIBILITY)
 
-  set(Python_ADDITIONAL_VERSIONS 2.7)
-  find_package(PythonLibs REQUIRED)
-  find_package(PythonInterp REQUIRED)
+  find_package(PythonLibs 3 REQUIRED)
+  find_package(PythonInterp 3 REQUIRED)
 
   execute_process(COMMAND
-                    "${PYTHON_EXECUTABLE}" -c "from distutils import sysconfig; print sysconfig.get_python_lib(1)"
+                    "${PYTHON_EXECUTABLE}" -c "from distutils import sysconfig; print(sysconfig.get_python_lib(1))"
                   OUTPUT_VARIABLE
                     PALUDIS_PYEXECDIR
                   ERROR_QUIET
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
   get_filename_component(PALUDIS_PYEXECDIR ${PALUDIS_PYEXECDIR} REALPATH)
 
-  find_package(Boost REQUIRED
+  string(REPLACE "." ";" VERSION_LIST ${PYTHONLIBS_VERSION_STRING})
+  list(GET VERSION_LIST 0 PYTHONLIBS_VERSION_MAJOR)
+  list(GET VERSION_LIST 1 PYTHONLIBS_VERSION_MINOR)
+
+  find_package(Boost 1.75.0 REQUIRED
                COMPONENTS
-               python27)
+               python${PYTHONLIBS_VERSION_MAJOR}${PYTHONLIBS_VERSION_MINOR} REQUIRED)
 endif()
 
 set(PALUDIS_PYTHON_INSTALL_DIR "${PALUDIS_PYEXECDIR}" CACHE PATH
