@@ -23,57 +23,73 @@ HeaderFilterRegex: '.*'
 AnalyzeTemporaryDtors: false
 FormatStyle:     none
 CheckOptions:
-  - key:             cert-dcl16-c.NewSuffixes
-    value:           'L;LL;LU;LLU'
-  - key:             cert-oop54-cpp.WarnOnlyIfThisHasSuspiciousField
-    value:           '0'
-  - key:             cppcoreguidelines-explicit-virtual-functions.IgnoreDestructors
-    value:           '1'
-  - key:             cppcoreguidelines-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
-    value:           '1'
-  - key:             google-readability-braces-around-statements.ShortStatementLines
-    value:           '1'
-  - key:             google-readability-function-size.StatementThreshold
-    value:           '800'
-  - key:             google-readability-namespace-comments.ShortNamespaceLines
-    value:           '10'
-  - key:             google-readability-namespace-comments.SpacesBeforeComments
-    value:           '2'
-  - key:             modernize-loop-convert.MaxCopySize
-    value:           '16'
-  - key:             modernize-loop-convert.MinConfidence
-    value:           reasonable
-  - key:             modernize-loop-convert.NamingStyle
-    value:           CamelCase
-  - key:             modernize-make-shared.IgnoreMacros
-    value:           '1'
-  - key:             modernize-make-shared.IncludeStyle
-    value:           '0'
-  - key:             modernize-make-shared.MakeSmartPtrFunction
-    value:           'std::make_shared'
-  - key:             modernize-make-shared.MakeSmartPtrFunctionHeader
-    value:           memory
-  - key:             modernize-make-unique.IgnoreMacros
-    value:           '1'
-  - key:             modernize-make-unique.IncludeStyle
-    value:           '0'
-  - key:             modernize-make-unique.MakeSmartPtrFunction
-    value:           'std::make_unique'
-  - key:             modernize-make-unique.MakeSmartPtrFunctionHeader
-    value:           memory
-  - key:             modernize-pass-by-value.IncludeStyle
-    value:           llvm
-  - key:             modernize-replace-auto-ptr.IncludeStyle
-    value:           llvm
   - key:             modernize-use-nodiscard.ReplacementString
     value:           '[[nodiscard]]'
+  - key:             modernize-loop-convert.MinConfidence
+    value:           reasonable
+  - key:             modernize-replace-auto-ptr.IncludeStyle
+    value:           llvm
+  - key:             modernize-use-bool-literals.IgnoreMacros
+    value:           'true'
+  - key:             modernize-use-noexcept.UseNoexceptFalse
+    value:           'true'
+  - key:             google-readability-namespace-comments.ShortNamespaceLines
+    value:           '10'
+  - key:             cert-oop54-cpp.WarnOnlyIfThisHasSuspiciousField
+    value:           '0'
+  - key:             cppcoreguidelines-non-private-member-variables-in-classes.IgnoreClassesWithAllMemberVariablesBeingPublic
+    value:           '1'
+  - key:             cert-dcl16-c.NewSuffixes
+    value:           'L;LL;LU;LLU'
+  - key:             modernize-use-override.IgnoreDestructors
+    value:           'false'
+  - key:             modernize-loop-convert.MaxCopySize
+    value:           '16'
+  - key:             google-readability-namespace-comments.SpacesBeforeComments
+    value:           '2'
+  - key:             modernize-make-shared.MakeSmartPtrFunction
+    value:           'std::make_shared'
+  - key:             modernize-avoid-bind.PermissiveParameterList
+    value:           'false'
+  - key:             modernize-use-override.FinalSpelling
+    value:           final
+  - key:             cppcoreguidelines-explicit-virtual-functions.IgnoreDestructors
+    value:           '1'
+  - key:             modernize-make-shared.MakeSmartPtrFunctionHeader
+    value:           memory
   - key:             modernize-use-noexcept.ReplacementString
     value:           ''
-  - key:             modernize-use-noexcept.UseNoexceptFalse
+  - key:             llvm-qualified-auto.AddConstToQualified
+    value:           '0'
+  - key:             modernize-loop-convert.NamingStyle
+    value:           CamelCase
+  - key:             modernize-use-override.AllowOverrideAndFinal
+    value:           'false'
+  - key:             google-readability-function-size.StatementThreshold
+    value:           '800'
+  - key:             llvm-else-after-return.WarnOnConditionVariables
+    value:           '0'
+  - key:             modernize-use-override.OverrideSpelling
+    value:           override
+  - key:             cert-str34-c.DiagnoseSignedUnsignedCharComparisons
+    value:           '0'
+  - key:             modernize-pass-by-value.IncludeStyle
+    value:           llvm
+  - key:             google-readability-braces-around-statements.ShortStatementLines
     value:           '1'
   - key:             modernize-use-nullptr.NullMacros
     value:           'NULL'
+  - key:             modernize-make-shared.IgnoreMacros
+    value:           'true'
   - key:             modernize-use-transparent-functors.SafeMode
+    value:           'false'
+  - key:             modernize-make-shared.IgnoreDefaultInitialization
+    value:           'true'
+  - key:             modernize-replace-disallow-copy-and-assign-macro.MacroName
+    value:           DISALLOW_COPY_AND_ASSIGN
+  - key:             llvm-else-after-return.WarnOnUnfixable
     value:           '0'
+  - key:             modernize-make-shared.IncludeStyle
+    value:           llvm
 ...
 
