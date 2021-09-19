@@ -409,7 +409,7 @@ endif()
 
 enable_testing()
 if(ENABLE_GTEST)
-  find_package(GTest REQUIRED)
+  find_package(GTest 1.10 REQUIRED)
 endif()
 
 find_program(BASH_EXECUTABLE bash)
