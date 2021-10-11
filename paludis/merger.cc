@@ -143,8 +143,16 @@ Merger::do_dir_recursive(bool is_check, const FSPath & src, const FSPath & dst)
     Context context("When " + stringify(is_check ? "checking" : "performing") + " merge from '" +
             stringify(src) + "' to '" + stringify(dst) + "':");
 
-    if (! src.stat().is_directory())
-        throw MergerError("Source directory '" + stringify(src) + "' is not a directory");
+    if (_imp->params.options()[mo_resolve_symlink])
+    {
+        if (! src.stat().is_directory())
+            throw MergerError("Source directory '" + stringify(src) + "' is not a directory");
+    }
+    else
+    {
+        if (! src.stat().is_directory_or_symlink_to_directory())
+            throw MergerError("Source directory '" + stringify(src) + "' is not a directory or symlink to a directory");
+    }
 
     on_enter_dir(is_check, src);
 
@@ -181,8 +189,10 @@ Merger::do_dir_recursive(bool is_check, const FSPath & src, const FSPath & dst)
                 if (_imp->result)
                 {
                     if (! _imp->skip_dir)
+                    {
                         do_dir_recursive(is_check, *d,
-                                is_check ? (dst / d->basename()) : canonicalise_root_path(dst / d->basename()));
+                                ( is_check || ! _imp->params.options()[mo_resolve_symlink] ) ? (dst / d->basename()) : canonicalise_root_path(dst / d->basename()));
+                    }
                     else
                         _imp->skip_dir = false;
                 }

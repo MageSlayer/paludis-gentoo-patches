@@ -110,6 +110,14 @@ touch -d '3 years ago' mtimes_fix/image/dodgy_file
 touch -d '3 years ago' mtimes_fix/image/dir/dodgy_file
 > mtimes_fix/root/existing_file
 
+for s in On Off; do
+  mkdir -p VDBSymlinkRecord_${s}/{image,root}
+  mkdir -p VDBSymlinkRecord_${s}/image/lib
+  > VDBSymlinkRecord_${s}/image/lib/file
+  mkdir -p VDBSymlinkRecord_${s}/root/lib64
+  ln -s lib64 VDBSymlinkRecord_${s}/root/lib
+done
+
 mkdir hooks
 cd hooks
 mkdir \

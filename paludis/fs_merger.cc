@@ -1066,8 +1066,16 @@ FSMerger::do_dir_recursive(bool is_check, const FSPath & src, const FSPath & dst
 {
     FSStat dst_stat(dst);
 
-    if ((! is_check) && (! dst_stat.is_directory()))
-        throw MergerError("Destination directory '" + stringify(dst) + "' is not a directory");
+    if(_imp->params.options()[mo_resolve_symlink])
+    {
+        if ((! is_check) && (! dst_stat.is_directory()))
+            throw MergerError("Destination directory '" + stringify(dst) + "' is not a directory");
+    }
+    else
+    {
+        if ((! is_check) && (! dst_stat.is_directory_or_symlink_to_directory()))
+            throw MergerError("Destination directory '" + stringify(dst) + "' is not a directory or symlink to a directory");
+    }
 
     Merger::do_dir_recursive(is_check, src, dst);
 }

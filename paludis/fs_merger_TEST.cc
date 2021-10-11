@@ -511,3 +511,32 @@ TEST(Merger, MtimesFixes)
     ASSERT_TRUE(timestamps_nearly_equal((data->root_dir / "dir" / "dodgy_file").stat().mtim(), FSPath("fs_merger_TEST_dir/reference").stat().mtim()));
 }
 
+TEST(Merger, VDBSymlinkRecord_On)
+{
+  auto data(make_merger("VDBSymlinkRecord_On", { mo_resolve_symlink }));
+  ASSERT_TRUE((data->root_dir / "lib").stat().is_symlink());
+  ASSERT_TRUE((data->root_dir / "lib").realpath().stat().is_directory());
+  ASSERT_TRUE(! (data->root_dir / "lib" / "file").stat().exists());
+
+  ASSERT_TRUE(data->merger.check());
+  data->merger.merge();
+
+  ASSERT_TRUE((data->root_dir / "lib").stat().is_symlink());
+  ASSERT_TRUE((data->root_dir / "lib").realpath().stat().is_directory());
+  ASSERT_TRUE((data->root_dir / "lib" / "file").stat().is_regular_file());
+}
+
+TEST(Merger, VDBSymlinkRecord_Off)
+{
+  auto data(make_merger("VDBSymlinkRecord_Off", { }));
+  ASSERT_TRUE((data->root_dir / "lib").stat().is_symlink());
+  ASSERT_TRUE((data->root_dir / "lib").realpath().stat().is_directory());
+  ASSERT_TRUE(! (data->root_dir / "lib" / "file").stat().exists());
+
+  ASSERT_TRUE(data->merger.check());
+  data->merger.merge();
+
+  ASSERT_TRUE((data->root_dir / "lib").stat().is_symlink());
+  ASSERT_TRUE((data->root_dir / "lib").realpath().stat().is_directory());
+  ASSERT_TRUE((data->root_dir / "lib" / "file").stat().is_regular_file());
+}
