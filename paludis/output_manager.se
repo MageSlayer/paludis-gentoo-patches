@@ -8,6 +8,7 @@ make_enum_MessageType()
     key mt_debug                        "A message only to be kept when debugging"
     key mt_info                         "An informational message"
     key mt_warn                         "A warning message"
+    key mt_qawarn                       "A QA warning message"
     key mt_error                        "An error message"
     key mt_log                          "A message explicitly marked for logging"
     key mt_status                       "A status message, such as starting a new build phase"

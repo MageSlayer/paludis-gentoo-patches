@@ -161,7 +161,7 @@ foreach(phase
   execute_process(COMMAND
                     "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_LIBDIR}/paludis/hooks/${phase}/.keep")
 endforeach()
-foreach(level einfo;ewarn;eerror;elog)
+foreach(level einfo;ewarn;eqawarn;eerror;elog)
   execute_process(COMMAND
                     "${CMAKE_COMMAND}" -E touch "$ENV{DESTDIR}${CMAKE_INSTALL_FULL_DATADIR}/paludis/hooks/${level}/.keep")
   execute_process(COMMAND

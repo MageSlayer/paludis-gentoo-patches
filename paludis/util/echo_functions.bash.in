@@ -120,6 +120,15 @@ ewarn()
         "$*"
 }
 
+eqawarn()
+{
+    paludis_ecmd \
+        "eqawarn" \
+        "eqawarn" \
+        "`echo -ne " ${COLOUR_WARN}*${COLOUR_NORMAL} "`" \
+        "$*"
+}
+
 eerror()
 {
     paludis_ecmd \

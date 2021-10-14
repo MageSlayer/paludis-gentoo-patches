@@ -38,6 +38,7 @@ namespace paludis
         const std::string format_debug;
         const std::string format_info;
         const std::string format_warn;
+        const std::string format_qawarn;
         const std::string format_error;
         const std::string format_log;
         const std::string format_status;
@@ -49,6 +50,7 @@ namespace paludis
                 const std::string & d,
                 const std::string & i,
                 const std::string & w,
+                const std::string & qaw,
                 const std::string & e,
                 const std::string & l,
                 const std::string & s,
@@ -58,6 +60,7 @@ namespace paludis
             format_debug(d),
             format_info(i),
             format_warn(w),
+            format_qawarn(qaw),
             format_error(e),
             format_log(l),
             format_status(s),
@@ -72,10 +75,11 @@ FormatMessagesOutputManager::FormatMessagesOutputManager(
         const std::string & format_debug,
         const std::string & format_info,
         const std::string & format_warn,
+        const std::string & format_qawarn,
         const std::string & format_error,
         const std::string & format_log,
         const FormatMessagesOutputManagerFormatFunction & f) :
-    _imp(child, format_debug, format_info, format_warn, format_error, format_log, "", f)
+    _imp(child, format_debug, format_info, format_warn, format_qawarn, format_error, format_log, "", f)
 {
 }
 
@@ -84,11 +88,12 @@ FormatMessagesOutputManager::FormatMessagesOutputManager(
         const std::string & format_debug,
         const std::string & format_info,
         const std::string & format_warn,
+        const std::string & format_qawarn,
         const std::string & format_error,
         const std::string & format_log,
         const std::string & format_status,
         const FormatMessagesOutputManagerFormatFunction & f) :
-    _imp(child, format_debug, format_info, format_warn, format_error, format_log, format_status, f)
+    _imp(child, format_debug, format_info, format_warn, format_qawarn, format_error, format_log, format_status, f)
 {
 }
 
@@ -120,6 +125,9 @@ FormatMessagesOutputManager::message(const MessageType t, const std::string & s)
             break;
         case mt_warn:
             f = _imp->format_warn;
+            break;
+        case mt_qawarn:
+            f = _imp->format_qawarn;
             break;
         case mt_error:
             f = _imp->format_error;
@@ -205,6 +213,7 @@ FormatMessagesOutputManager::factory_create(
     std::string format_debug_s(key_func("format_debug"));
     std::string format_info_s(key_func("format_info"));
     std::string format_warn_s(key_func("format_warn"));
+    std::string format_qawarn_s(key_func("format_qawarn"));
     std::string format_error_s(key_func("format_error"));
     std::string format_log_s(key_func("format_log"));
     std::string format_status_s(key_func("format_status"));
@@ -212,7 +221,7 @@ FormatMessagesOutputManager::factory_create(
     std::shared_ptr<OutputManager> child(create_child_function(child_s));
 
     return std::make_shared<FormatMessagesOutputManager>(
-            child, format_debug_s, format_info_s, format_warn_s, format_error_s, format_log_s, format_status_s, FormatMessage{replace_vars_func});
+            child, format_debug_s, format_info_s, format_warn_s, format_qawarn_s, format_error_s, format_log_s, format_status_s, FormatMessage{replace_vars_func});
 }
 
 namespace paludis
