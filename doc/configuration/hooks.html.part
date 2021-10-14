@@ -20,7 +20,7 @@ that is executed when a particular well defined action occurs.</p>
     See <a href="#ebuild-phase-hooks">Ebuild Phase Hooks</a>.</li>
 
     <li>Ebuild message hooks. These are special hooks that are called for
-    <code>einfo</code>, <code>ewarn</code> etc.
+    <code>einfo</code>, <code>ewarn</code>, <code>eqawarn</code> etc.
     See <a href="#ebuild-message-hooks">Ebuild Message Hooks</a>.</li>
 
     <li>Merger / Unmerger hooks. These are used when installing and uninstalling
@@ -274,6 +274,7 @@ define the function in question.</p>
 <ul>
     <li><code>einfo</code></li>
     <li><code>ewarn</code></li>
+    <li><code>eqawarn</code></li>
     <li><code>eerror</code></li>
     <li><code>elog</code></li>
 </ul>

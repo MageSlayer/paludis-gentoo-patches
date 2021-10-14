@@ -292,6 +292,8 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     m = mt_info;
                 else if (tokens[2] == "ewarn")
                     m = mt_warn;
+                else if (tokens[2] == "eqawarn")
+                  m = mt_qawarn;
                 else if (tokens[2] == "eerror")
                     m = mt_error;
                 else if (tokens[2] == "elog")

@@ -733,6 +733,9 @@ src_unpack() {
     OUT=$(ewarn "ewarn output.")
     [ -z "$OUT" ] || die "ewarn failed"
 
+    OUT=$(eqawarn "eqawarn output.")
+    [ -z "$OUT" ] || die "eqawarn failed"
+
     OUT=$(eerror "eerror output.")
     [ -z "$OUT" ] || die "eerror failed"
 }
