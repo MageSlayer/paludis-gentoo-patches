@@ -7,14 +7,12 @@ if(ENABLE_XML)
 
   paludis_add_library(libpaludiserepositoryxmlthings
                         "${CMAKE_CURRENT_SOURCE_DIR}/xml_things.cc")
-  target_include_directories(libpaludiserepositoryxmlthings
-                             PRIVATE
-                               ${LIBXML2_INCLUDE_DIR})
   target_link_libraries(libpaludiserepositoryxmlthings
                         PRIVATE
                           libpaludis
                           libpaludisutil
-                          ${LIBXML2_LIBRARIES})
+                          LibXml2::LibXml2
+                       )
 endif()
 
 paludis_add_library(libpaludiserepository
