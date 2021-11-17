@@ -103,7 +103,8 @@ if(ENABLE_SEARCH_INDEX)
   target_link_libraries(libcavesearchextras
                         PRIVATE
                           libpaludisutil
-                          ${SQLite3_LIBRARIES})
+                          SQLite::SQLite3
+                       )
 endif()
 
 add_executable(cave

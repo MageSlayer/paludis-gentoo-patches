@@ -1,6 +1,6 @@
 # vim: set et fdm=marker fmr={{{,}}} sw=2 sts=2 ts=8:
 
-cmake_minimum_required(VERSION 3.5.0)
+cmake_minimum_required(VERSION 3.14.0)
 cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0051 NEW)
 cmake_policy(SET CMP0057 NEW)
