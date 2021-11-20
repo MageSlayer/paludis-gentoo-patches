@@ -343,6 +343,16 @@ if(ENABLE_PYTHON_DOCS)
   endif()
 
   find_package(Sphinx REQUIRED)
+
+  execute_process(COMMAND
+                    "${PYTHON_EXECUTABLE}" "${SPHINX_EXECUTABLE}" --help
+                  RESULT_VARIABLE
+                    exit_code
+                  OUTPUT_QUIET
+                  ERROR_QUIET)
+  if(NOT ${exit_code} EQUAL 0)
+    message(SEND_ERROR "Sphinx is not compatible with selected Python version")
+  endif()
 endif()
 
 if(ENABLE_RUBY)
