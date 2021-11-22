@@ -227,7 +227,7 @@ if(ENABLE_PYTHON)
                         PRIVATE
                           libpaludis
                           libpaludisutil
-                          Boost::python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}
+                          Boost::python
                           Python::Python)
 endif()
 

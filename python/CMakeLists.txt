@@ -37,24 +37,18 @@ if(ENABLE_PYTHON)
                            PRIVATE
                              -g0)
   endif()
-  target_include_directories(libpaludispython
-                             PRIVATE
-                               ${Boost_INCLUDE_DIRS})
   target_link_libraries(libpaludispython
                         PRIVATE
-                          ${Boost_LIBRARIES}
+                          Boost::python
                           Python::Python
                           libpaludis
                           libpaludisutil)
 
   paludis_add_library(paludis UNVERSIONED SHARED_LIBRARY
                         "${CMAKE_CURRENT_SOURCE_DIR}/paludis_python_so.cc")
-  target_include_directories(paludis
-                             PRIVATE
-                               ${Boost_INCLUDE_DIRS})
   target_link_libraries(paludis
                         PRIVATE
-                          ${Boost_LIBRARIES}
+                          Boost::python
                           Python::Python
                           libpaludispython)
   set_target_properties(paludis PROPERTIES
@@ -65,12 +59,9 @@ if(ENABLE_PYTHON)
 
   paludis_add_library(libadditionaltests
                         "${CMAKE_CURRENT_SOURCE_DIR}/additional_tests.cc")
-  target_include_directories(libadditionaltests
-                             PRIVATE
-                               ${Boost_INCLUDE_DIRS})
   target_link_libraries(libadditionaltests
                         PRIVATE
-                          ${Boost_LIBRARIES}
+                          Boost::python
                           Python::Python
                           libpaludis
                           libpaludisutil
@@ -78,12 +69,9 @@ if(ENABLE_PYTHON)
 
   paludis_add_library(additional_tests UNVERSIONED SHARED_LIBRARY
                         "${CMAKE_CURRENT_SOURCE_DIR}/additional_tests_so.cc")
-  target_include_directories(additional_tests
-                             PRIVATE
-                               ${Boost_INCLUDE_DIRS})
   target_link_libraries(additional_tests
                         PRIVATE
-                          ${Boost_PYTHON_LIBRARY}
+                          Boost::python
                           Python::Python
                           libadditionaltests)
   set_target_properties(additional_tests PROPERTIES
