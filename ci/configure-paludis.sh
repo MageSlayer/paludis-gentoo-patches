@@ -39,6 +39,8 @@ else
     exit 1
 fi
 
+CXXFLAGS="${CXXFLAGS} -Werror"
+
 if [[ ${BUILD_TYPE} == "release" ]]; then
     CMAKE_BUILD_TYPE="Release"
     CXXFLAGS="${CXXFLAGS} -pipe -O2"
