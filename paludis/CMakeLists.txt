@@ -46,7 +46,7 @@ execute_process(COMMAND
                   BUILDHOST
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
 execute_process(COMMAND
-                  date +%&-%m-%dT%H:%M:%S%z
+                  date +%Y-%m-%dT%H:%M:%S%z
                 OUTPUT_VARIABLE
                   BUILDDATE
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
