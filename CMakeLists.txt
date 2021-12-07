@@ -51,7 +51,7 @@ set(PALUDIS_VIM_INSTALL_DIR "${CMAKE_INSTALL_FULL_DATADIR}/vim/vimfiles" CACHE P
     "vim installation directory")
 
 set(PYTHON_SUPPORTED_VERSIONS 2.7 3.6 3.7 3.8 3.9 3.10)
-set(PYTHON_VERSION "2.7" CACHE STRING
+set(PYTHON_VERSION "3.10" CACHE STRING
   "Python version (${PYTHON_SUPPORTED_VERSIONS}) (requires corresponding Boost.Python as well)")
 
 set(RUBY_SUPPORTED_VERSIONS 2.6 2.7 3.0 3.1)
