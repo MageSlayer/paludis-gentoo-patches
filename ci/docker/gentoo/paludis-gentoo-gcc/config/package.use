@@ -6,4 +6,4 @@ dev-lang/python sqlite
 
 dev-libs/boost python
 
-*/* ruby_targets_ruby26
+*/* ruby_targets_ruby27

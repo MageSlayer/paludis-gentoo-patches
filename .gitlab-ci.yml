@@ -90,7 +90,7 @@ Gentoo GCC:
     COMPILER: "gcc"
     VERSION: "latest"
     PYTHON_VERSION: "3.9"
-    RUBY_VERSION: "2.6"
+    RUBY_VERSION: "2.7"
   <<: *build-template
 
 clang-tidy:
