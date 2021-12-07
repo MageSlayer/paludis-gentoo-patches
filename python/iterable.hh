@@ -128,14 +128,8 @@ namespace paludis
                         V_ * ptr = boost::python::extract<V_ *>(o);
                         s->push_back(*ptr);
                     }
-                    else if (
-                        IsConvertible<std::string, V_>::value
-#if PY_MAJOR_VERSION < 3
-                     && PyString_Check(o.ptr())
-#else
-                     && PyUnicode_Check(o.ptr())
-#endif
-                      )
+                    else if (IsConvertible<std::string, V_>::value
+                            && PyUnicode_Check(o.ptr()))
                     {
                         ConditionalAdd<V_, std::string, Sequence<V_>,
                             IsConvertible<std::string, V_>::value>::add(*s, o.ptr());
@@ -205,14 +199,8 @@ namespace paludis
                         V_ * ptr = boost::python::extract<V_ *>(o);
                         s->insert(*ptr);
                     }
-                    else if (
-                        IsConvertible<std::string, V_>::value
-#if PY_MAJOR_VERSION < 3
-                     && PyString_Check(o.ptr())
-#else
-                     && PyUnicode_Check(o.ptr())
-#endif
-                      )
+                    else if (IsConvertible<std::string, V_>::value
+                            && PyUnicode_Check(o.ptr()))
                     {
                         ConditionalAdd<V_, std::string, Set<V_>,
                                 IsConvertible<std::string, V_>::value>::add(*s, o.ptr());
