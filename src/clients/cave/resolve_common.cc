@@ -1125,6 +1125,7 @@ paludis::cave::resolve_common(
                                     }
                                 }
 
+                        // NOLINTNEXTLINE(clang-analyzer-deadcode.DeadStores)
                         first = false;
                     }
 
