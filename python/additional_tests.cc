@@ -123,7 +123,7 @@ namespace metadata_key
     {
         m.raw_name();
         m.human_name();
-        MetadataKeyType foo(m.type());
+        MetadataKeyType PALUDIS_ATTRIBUTE((unused)) foo(m.type());
     }
 
     void test_metadata_package_id_key(const MetadataValueKey<std::shared_ptr<const PackageID> > & m)
