@@ -115,15 +115,14 @@ namespace
     {
         auto eapi(EAPIData::get_instance()->eapi_from_string(e));
         if (eapi->supported())
-            return std::make_shared<LiteralMetadataValueKey<FSPath> >(
-                eapi->supported()->ebuild_options()->fs_location_name(),
-                eapi->supported()->ebuild_options()->fs_location_description(),
-                mkt_internal, p);
-        else
-            return std::make_shared<LiteralMetadataValueKey<FSPath> >(
-                "FS_LOCATION",
-                "FS Location",
-                mkt_internal, p);
+            return std::make_shared<LiteralMetadataValueKey<FSPath>>(
+                    eapi->supported()->ebuild_options()->fs_location_name(),
+                    eapi->supported()->ebuild_options()->fs_location_description(),
+                    mkt_internal,
+                    p);
+
+        return std::make_shared<LiteralMetadataValueKey<FSPath>>(
+                "FS_LOCATION", "FS Location", mkt_internal, p);
     }
 }
 
