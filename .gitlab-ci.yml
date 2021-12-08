@@ -1,7 +1,7 @@
 stages:
   - docker-images
-  - build
   - clang-tidy
+  - build
 
 .dockerimage-template: &dockerimage-template
   stage: docker-images
