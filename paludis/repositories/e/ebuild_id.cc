@@ -1760,16 +1760,14 @@ EbuildID::set_scm_revision(const std::string & s) const
             eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name().empty() ||
             _imp->scm_revision)
         throw CannotChangeSCMRevision(stringify(*this), s);
-    else
-    {
-        _imp->scm_revision = std::make_shared<LiteralMetadataValueKey<std::string> >(
-                eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name(),
-                eapi()->supported()->ebuild_metadata_variables()->scm_revision()->description(),
-                mkt_normal,
-                s);
 
-        add_metadata_key(_imp->scm_revision);
-    }
+    _imp->scm_revision = std::make_shared<LiteralMetadataValueKey<std::string>>(
+            eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name(),
+            eapi()->supported()->ebuild_metadata_variables()->scm_revision()->description(),
+            mkt_normal,
+            s);
+
+    add_metadata_key(_imp->scm_revision);
 }
 
 const std::shared_ptr<const Contents>
