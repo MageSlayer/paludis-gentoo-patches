@@ -415,8 +415,8 @@ IPCInputManager::_copy_thread()
         if (FD_ISSET(_imp->stdout_pipe.read_fd(), &read_fds))
         {
             got_output = true;
-            int r;
-            if (((r = read(_imp->stdout_pipe.read_fd(), buf, 1024))) > 0)
+            int r = read(_imp->stdout_pipe.read_fd(), buf, 1024);
+            if (r > 0)
                 _imp->output_manager->stdout_stream() <<  std::string(buf, r);
         }
 
@@ -433,8 +433,8 @@ IPCInputManager::_copy_thread()
 
         if (FD_ISSET(_imp->finished_pipe.read_fd(), &read_fds))
         {
-            int r;
-            if (((r = read(_imp->finished_pipe.read_fd(), buf, 1024))) > 0)
+            int r = read(_imp->finished_pipe.read_fd(), buf, 1024);
+            if (r > 0)
                 done = true;
         }
     }
