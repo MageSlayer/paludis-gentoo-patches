@@ -356,7 +356,8 @@ paludis::elike_remove_trailing_slot_if_exists(std::string & s, PartiallyMadePack
                 && (options[epdso_allow_slot_equal_deps] || options[epdso_allow_slot_equal_deps_portage])
                 && std::string::npos != q)
         {
-            std::string left_text(text.substr(0, q)), right_text(text.substr(q + 1));
+            std::string left_text(text.substr(0, q));
+            std::string right_text(text.substr(q + 1));
             auto p(right_text.find('/'));
             if (std::string::npos != p)
             {
@@ -476,7 +477,8 @@ paludis::elike_get_remove_trailing_version(std::string & s, const VersionSpecOpt
     /* find the last place a version spec could start (that is, a hyphen
      * followed by a digit, or a hyphen followed by 'scm'). if it's the scm
      * thing, find the second last place instead, if it exists. */
-    std::string::size_type hyphen_pos(s.rfind('-')), last_hyphen_pos(std::string::npos);
+    std::string::size_type hyphen_pos(s.rfind('-'));
+    std::string::size_type last_hyphen_pos(std::string::npos);
     while (true)
     {
         if (std::string::npos == hyphen_pos || 0 == hyphen_pos)
@@ -574,7 +576,8 @@ paludis::partial_parse_elike_package_dep_spec(
 
     Context context("When parsing elike package dep spec '" + ss + "':");
 
-    bool had_bracket_version_requirements(false), had_use_requirements(false);
+    bool had_bracket_version_requirements(false);
+    bool had_use_requirements(false);
 
     PartiallyMadePackageDepSpecOptions o;
     if (options[epdso_disallow_nonranged_deps])

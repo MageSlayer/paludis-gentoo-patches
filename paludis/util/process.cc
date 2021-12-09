@@ -540,8 +540,11 @@ namespace paludis
 void
 RunningProcessThread::thread_func()
 {
-    bool prefix_stdout_buffer_has_newline(false), prefix_stderr_buffer_has_newline(false), want_to_finish(true);
-    bool done_extra_newlines_stdout(false), done_extra_newlines_stderr(false);
+    bool prefix_stdout_buffer_has_newline(false);
+    bool prefix_stderr_buffer_has_newline(false);
+    bool want_to_finish(true);
+    bool done_extra_newlines_stdout(false);
+    bool done_extra_newlines_stderr(false);
     std::string input_stream_pending;
 
     if (as_main_process && send_input_to_fd)
@@ -550,7 +553,8 @@ RunningProcessThread::thread_func()
     bool done(false);
     while (! done)
     {
-        fd_set read_fds, write_fds;
+        fd_set read_fds;
+        fd_set write_fds;
         int max_fd(0);
         FD_ZERO(&read_fds);
         FD_ZERO(&write_fds);
@@ -886,7 +890,8 @@ Process::run()
         _imp->command.echo_command_to(*_imp->echo_command_to);
 
     bool set_tty_size_envvars(false);
-    unsigned short columns(80), lines(24);
+    unsigned short columns(80);
+    unsigned short lines(24);
 
     std::unique_ptr<RunningProcessThread> thread;
     if (_imp->need_thread)

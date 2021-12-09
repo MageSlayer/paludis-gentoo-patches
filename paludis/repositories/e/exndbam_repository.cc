@@ -362,7 +362,8 @@ ExndbamRepository::merge(const MergeParams & m)
     if (! is_suitable_destination_for(m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
-    std::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
+    std::shared_ptr<const PackageID> if_overwritten_id;
+    std::shared_ptr<const PackageID> if_same_name_id;
     {
         std::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id()->name(), { }));
         for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
@@ -400,7 +401,8 @@ ExndbamRepository::merge(const MergeParams & m)
     if (! m.check())
         target_ver_dir.mkdir(0755, { });
 
-    std::string config_protect, config_protect_mask;
+    std::string config_protect;
+    std::string config_protect_mask;
     if (! m.check())
     {
         WriteVDBEntryCommand write_vdb_entry_command(
@@ -607,7 +609,8 @@ ExndbamRepository::perform_uninstall(
         if (phase->option("unmerge"))
         {
             /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb, supplement with env */
-            std::string config_protect, config_protect_mask;
+            std::string config_protect;
+            std::string config_protect_mask;
 
             try
             {

@@ -241,8 +241,10 @@ ResolverTestCase::check_resolved_one(
         const std::shared_ptr<Decisions_> & decisions,
         const std::shared_ptr<const DecisionChecks> & decision_checks)
 {
-    DecisionChecks::List::const_iterator decision_check(decision_checks->checks.begin()), decision_check_end(decision_checks->checks.end());
-    typename Decisions_::ConstIterator decision(decisions->begin()), decision_end(decisions->end());
+    DecisionChecks::List::const_iterator decision_check(decision_checks->checks.begin());
+    DecisionChecks::List::const_iterator decision_check_end(decision_checks->checks.end());
+    typename Decisions_::ConstIterator decision(decisions->begin());
+    typename Decisions_::ConstIterator decision_end(decisions->end());
 
     while (true)
     {

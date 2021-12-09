@@ -59,7 +59,8 @@ DefaultSyncer::DefaultSyncer(const SyncerParams & params) :
     _revision(params.revision()),
     _environment(params.environment())
 {
-    std::string::size_type p(_remote.find("://")), q(_remote.find(':'));
+    std::string::size_type p(_remote.find("://"));
+    std::string::size_type q(_remote.find(':'));
     if (std::string::npos == p)
         throw NoSuchSyncerError(_remote);
 

@@ -564,7 +564,8 @@ namespace
         if (old_id && old_id->choices_key())
             old_choices = old_id->choices_key()->parse_value();
 
-        std::pair<std::string, bool> changed_s_prefix("", false), unchanged_s_prefix("", false);
+        std::pair<std::string, bool> changed_s_prefix("", false);
+        std::pair<std::string, bool> unchanged_s_prefix("", false);
         auto choices(id->choices_key()->parse_value());
         for (Choices::ConstIterator k(choices->begin()), k_end(choices->end()) ;
                 k != k_end ; ++k)
@@ -589,11 +590,13 @@ namespace
                                  }))
                     continue;
 
-            bool shown_prefix_changed(false), shown_prefix_unchanged(false);
+            bool shown_prefix_changed(false);
+            bool shown_prefix_unchanged(false);
             for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
                     i != i_end ; ++i)
             {
-                bool changed(false), added(false);
+                bool changed(false);
+                bool added(false);
                 if ((*k)->consider_added_or_changed())
                 {
                     if (old_choices)
@@ -714,7 +717,9 @@ namespace
             const bool more_annotations
             )
     {
-        std::set<std::string> reasons, special_reasons, changes_reasons;
+        std::set<std::string> reasons;
+        std::set<std::string> special_reasons;
+        std::set<std::string> changes_reasons;
 
         if (maybe_changed_choices)
             for (auto c(maybe_changed_choices->reasons()->begin()), c_end(maybe_changed_choices->reasons()->end()) ;
@@ -1131,7 +1136,8 @@ namespace
             ChoicesToExplain & choices_to_explain,
             const std::shared_ptr<Totals> & maybe_totals)
     {
-        std::string x("X"), c;
+        std::string x("X");
+        std::string c;
         if (! decision.best())
             x = "-" + x;
 
@@ -1665,7 +1671,8 @@ namespace
             if (c == totals->installs_ct_count.end())
                 continue;
 
-            std::string comma, kind;
+            std::string comma;
+            std::string kind;
             if (need_comma)
                 comma = ", ";
             need_comma = true;

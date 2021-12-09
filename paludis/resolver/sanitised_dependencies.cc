@@ -355,7 +355,8 @@ namespace
 
         std::shared_ptr<SanitisedDependency> maybe_make_sanitised(const PackageOrBlockDepSpec & spec)
         {
-            std::stringstream adl, acs;
+            std::stringstream adl;
+            std::stringstream acs;
             auto classifier_builder(std::make_shared<LabelsClassifierBuilder>(env, our_id));
             for (DependenciesLabelSequence::ConstIterator i((*labels_stack.begin())->begin()),
                     i_end((*labels_stack.begin())->end()) ;

@@ -47,8 +47,8 @@ int main(int argc, char * argv[])
 
         /* Fetch the 'system' and 'world' sets. Ordinarily we should check for
          * zero pointers here, but these two sets will always exist. */
-        std::shared_ptr<const SetSpecTree> system(env->set(SetName("system"))),
-            world(env->set(SetName("world")));
+        std::shared_ptr<const SetSpecTree> system(env->set(SetName("system")));
+        std::shared_ptr<const SetSpecTree> world(env->set(SetName("world")));
 
         /* For each ID: */
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;

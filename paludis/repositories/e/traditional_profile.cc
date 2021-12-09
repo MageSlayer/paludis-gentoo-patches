@@ -253,7 +253,8 @@ namespace
 
         LineConfigFile file(dir / "parent", { lcfo_disallow_continuations });
 
-        LineConfigFile::ConstIterator i(file.begin()), i_end(file.end());
+        LineConfigFile::ConstIterator i(file.begin());
+        LineConfigFile::ConstIterator i_end(file.end());
         bool once(false);
         if (i == i_end)
             Log::get_instance()->message("e.profile.parent.empty", ll_warning, lc_context) << "parent file is empty";
@@ -527,7 +528,8 @@ namespace
         {
             if (is_incremental(*eapi, k->first))
             {
-                std::list<std::string> val, val_add;
+                std::list<std::string> val;
+                std::list<std::string> val_add;
                 tokenise_whitespace(_imp->environment_variables[k->first], std::back_inserter(val));
                 tokenise_whitespace(k->second, std::back_inserter(val_add));
 

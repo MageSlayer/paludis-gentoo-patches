@@ -271,8 +271,12 @@ NewsFile::NewsFile(const FSPath & our_filename) :
 {
     Context context("When parsing GLEP 42 news file '" + stringify(our_filename) + "':");
 
-    bool seen_content_type(false), seen_title(false), seen_author(false), seen_news_item_format(false), seen_posted(false),
-         seen_revision(false);
+    bool seen_content_type(false);
+    bool seen_title(false);
+    bool seen_author(false);
+    bool seen_news_item_format(false);
+    bool seen_posted(false);
+    bool seen_revision(false);
 
     LineConfigFile line_file(our_filename, { lcfo_disallow_continuations, lcfo_no_skip_blank_lines, lcfo_disallow_comments });
     for (LineConfigFile::ConstIterator line(line_file.begin()), line_end(line_file.end()) ;

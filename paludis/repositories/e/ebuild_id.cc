@@ -1486,7 +1486,9 @@ EbuildID::make_choice_value(
     }
     ChoiceNameWithPrefix name_with_prefix(name_with_prefix_s);
 
-    bool locked(false), enabled(false), enabled_by_default(false);
+    bool locked(false);
+    bool enabled(false);
+    bool enabled_by_default(false);
     if (raw_use_key())
     {
         locked = true;
@@ -1593,7 +1595,8 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
                         )));
         choices->add(build_options);
 
-        bool mask_tests(false), mask_expensive_tests(false);
+        bool mask_tests(false);
+        bool mask_expensive_tests(false);
         if (! eapi()->supported()->is_pbin())
         {
             bool may_be_unrestricted_strip(true);

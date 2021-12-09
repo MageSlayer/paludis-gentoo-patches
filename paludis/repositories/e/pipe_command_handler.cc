@@ -125,7 +125,8 @@ namespace
 
         void do_annotations(const DepSpec & p, const std::string & desc_from)
         {
-            bool seen_description(false), done_brackets(false);
+            bool seen_description(false);
+            bool done_brackets(false);
 
             if (p.maybe_annotations())
                 for (auto m(p.maybe_annotations()->begin()), m_end(p.maybe_annotations()->end()) ;
@@ -482,7 +483,10 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 if (! package_id->choices_key())
                     return "EEXPECTING_TESTS ID " + stringify(*package_id) + " has no choices";
 
-                bool expensive(true), recommended(true), optional(true), any(true);
+                bool expensive(true);
+                bool recommended(true);
+                bool optional(true);
+                bool any(true);
                 if (tokens[2].empty() || tokens[2] == "--any")
                 {
                 }
@@ -761,8 +765,8 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     return "Ebad EVER AT_LEAST command {'" + join(tokens.begin(), tokens.end(), "', '") + "'}";
                 }
 
-                VersionSpec v1(tokens[3], eapi->supported()->version_spec_options()),
-                            v2(tokens[4], eapi->supported()->version_spec_options());
+                VersionSpec v1(tokens[3], eapi->supported()->version_spec_options());
+                VersionSpec v2(tokens[4], eapi->supported()->version_spec_options());
                 return v2 >= v1 ? "O0;" : "O1;";
             }
             else if (tokens[2] == "IS_SCM")
@@ -833,7 +837,8 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 std::string range_s(tokens[3]);
                 std::string::size_type hyphen_pos(range_s.find('-'));
-                int range_start, range_end;
+                int range_start;
+                int range_end;
 
                 if (std::string::npos == hyphen_pos)
                     range_start = range_end = destringify<int>(range_s);

@@ -1140,8 +1140,12 @@ namespace
             std::ostream & rest_out
             )
     {
-        std::shared_ptr<const PackageID> best_installable, best_weak_masked_installable, best_masked_installable, best_not_installed;
-        std::shared_ptr<PackageIDSequence> all_installed(std::make_shared<PackageIDSequence>()), all_not_installed(std::make_shared<PackageIDSequence>());
+        std::shared_ptr<const PackageID> best_installable;
+        std::shared_ptr<const PackageID> best_weak_masked_installable;
+        std::shared_ptr<const PackageID> best_masked_installable;
+        std::shared_ptr<const PackageID> best_not_installed;
+        std::shared_ptr<PackageIDSequence> all_installed(std::make_shared<PackageIDSequence>());
+        std::shared_ptr<PackageIDSequence> all_not_installed(std::make_shared<PackageIDSequence>());
         std::set<RepositoryName> repos;
         for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                 i != i_end ; ++i)

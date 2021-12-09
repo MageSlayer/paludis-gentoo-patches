@@ -35,7 +35,8 @@ paludis::erepository::make_archives_strings(
         const Environment * const env,
         const std::shared_ptr<const ERepositoryID> & id)
 {
-    std::string archives, all_archives;
+    std::string archives;
+    std::string all_archives;
     std::set<std::string> already_in_archives;
 
     std::shared_ptr<const FetchableURISpecTree> fetches;

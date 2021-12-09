@@ -201,7 +201,8 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
 
         while (true)
         {
-            std::string suffix_str, number_str;
+            std::string suffix_str;
+            std::string number_str;
             VersionSpecComponentType k(vsct_empty);
             if (parser.consume(make_dash_parse_expression("_", "alpha", options[vso_ignore_case], options[vso_flexible_dashes]) >> suffix_str))
                 k = vsct_alpha;
@@ -359,8 +360,10 @@ namespace
             std::pair<R_, bool> (*comparator)(const VersionSpecComponent &, Parts::const_iterator, Parts::const_iterator,
                     const VersionSpecComponent &, Parts::const_iterator, Parts::const_iterator, int))
     {
-        std::vector<VersionSpecComponent>::const_iterator
-            v1(a.begin()), v1_end(a.end()), v2(b.begin()), v2_end(b.end());
+        std::vector<VersionSpecComponent>::const_iterator v1(a.begin());
+        std::vector<VersionSpecComponent>::const_iterator v1_end(a.end());
+        std::vector<VersionSpecComponent>::const_iterator v2(b.begin());
+        std::vector<VersionSpecComponent>::const_iterator v2_end(b.end());
 
         VersionSpecComponent end_part(make_named_values<VersionSpecComponent>(
                     n::number_value() = "",
@@ -408,7 +411,8 @@ namespace
 
             else
             {
-                std::string p1s((*p1).number_value()), p2s((*p2).number_value());
+                std::string p1s((*p1).number_value());
+                std::string p2s((*p2).number_value());
                 if ((*p1).type() == vsct_floatlike)
                 {
                     p1s = strip_trailing(p1s, "0");
@@ -713,8 +717,8 @@ VersionSpec::bump() const
         number_parts.pop_back();
 
     /* ++string */
-    std::string::reverse_iterator i(number_parts.back().number_value().rbegin()),
-        i_end(number_parts.back().number_value().rend());
+    std::string::reverse_iterator i(number_parts.back().number_value().rbegin());
+    std::string::reverse_iterator i_end(number_parts.back().number_value().rend());
     bool add1(true);
     while (i != i_end && add1)
     {

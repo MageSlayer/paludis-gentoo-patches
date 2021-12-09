@@ -532,7 +532,8 @@ Orderer::resolve()
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Nodifying Decisions"));
 
-    ResolventsSet ignore_dependencies_from_resolvents, ignore_edges_from_resolvents;
+    ResolventsSet ignore_dependencies_from_resolvents;
+    ResolventsSet ignore_edges_from_resolvents;
     for (ResolutionsByResolvent::ConstIterator r(_imp->resolved->resolutions_by_resolvent()->begin()),
             r_end(_imp->resolved->resolutions_by_resolvent()->end()) ;
             r != r_end ; ++r)
@@ -867,7 +868,9 @@ Orderer::_check_self_deps_and_schedule(
         const std::shared_ptr<OrdererNotes> & n)
 {
     /* do we dep directly upon ourself? */
-    bool direct_self_dep(false), self_dep_is_met(true), self_dep_is_not_build(true);
+    bool direct_self_dep(false);
+    bool self_dep_is_met(true);
+    bool self_dep_is_not_build(true);
     for (NAG::EdgesFromConstIterator e(_imp->resolved->nag()->begin_edges_from(index)),
             e_end(_imp->resolved->nag()->end_edges_from(index)) ;
             e != e_end ; ++e)

@@ -730,7 +730,10 @@ namespace
             const ExecuteResolutionCommandLine & cmdline)
     {
         bool failed(false);
-        int x(0), y(lists->pretend_job_list()->length()), f(0), s(0);
+        int x(0);
+        int y(lists->pretend_job_list()->length());
+        int f(0);
+        int s(0);
         std::string string_to_backspace("");
 
         if (0 != env->perform_hook(Hook("pretend_all_pre")
@@ -846,7 +849,8 @@ namespace
 
         int visit(InstallJob & install_item)
         {
-            std::string destination_string, action_string;
+            std::string destination_string;
+            std::string action_string;
             switch (install_item.destination_type())
             {
                 case dt_install_to_slash:

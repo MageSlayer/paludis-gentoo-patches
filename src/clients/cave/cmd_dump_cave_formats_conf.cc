@@ -224,7 +224,8 @@ DumpCaveFormatsConfCommand::run(
         std::string::size_type p(storer.first.find("/"));
         if (std::string::npos == p)
             throw InternalError(PALUDIS_HERE, "weird key " + storer.first);
-        std::string section(storer.first.substr(0, p)), key(storer.first.substr(p + 1));
+        std::string section(storer.first.substr(0, p));
+        std::string key(storer.first.substr(p + 1));
 
         if (current_section != section)
         {

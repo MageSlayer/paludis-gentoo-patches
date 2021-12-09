@@ -111,7 +111,11 @@ namespace
 void
 SHA1::process_block(uint32_t * w)
 {
-    uint32_t a(h0), b(h1), c(h2), d(h3), e(h4);
+    uint32_t a(h0);
+    uint32_t b(h1);
+    uint32_t c(h2);
+    uint32_t d(h3);
+    uint32_t e(h4);
 
     std::transform(&w[0], &w[16], &w[0], from_bigendian<uint32_t>);
 

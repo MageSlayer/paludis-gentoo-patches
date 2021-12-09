@@ -82,7 +82,9 @@ namespace
         static const uint8_t E[]  = { 1, 0xB, 9, 0xC, 0xD, 6, 0xF, 3, 0xE, 8, 7, 4, 0xA, 2, 5, 0 };
         static const uint8_t E1[] = { 0xF, 0, 0xD, 7, 0xB, 0xE, 5, 0xA, 9, 2, 0xC, 1, 3, 4, 8, 6 };
         static const uint8_t R[]  = { 7, 0xC, 0xB, 0xD, 0xE, 4, 9, 0xF, 6, 3, 8, 0xA, 2, 5, 1, 0 };
-        uint8_t e(E[u >> 4]), e1(E1[u & 0xF]), r(R[e ^ e1]);
+        uint8_t e(E[u >> 4]);
+        uint8_t e1(E1[u & 0xF]);
+        uint8_t r(R[e ^ e1]);
         return (E[e ^ r] << 4) | E1[r ^ e1];
     }
 
@@ -400,7 +402,10 @@ Whirlpool::Whirlpool(std::istream & s)
     std::fill(&H[0], &H[8], 0);
 
     std::streambuf * buf(s.rdbuf());
-    uint64_t size_1(0), size_2(0), size_3(0), size_4(0);
+    uint64_t size_1(0);
+    uint64_t size_2(0);
+    uint64_t size_3(0);
+    uint64_t size_4(0);
 
     union mu
     {

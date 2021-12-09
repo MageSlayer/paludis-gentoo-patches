@@ -258,7 +258,8 @@ InterestInSpecHelper::operator() (const std::shared_ptr<const Resolution> & reso
 
     if (resolution->decision()->accept_returning<bool>(v))
     {
-        bool suggestion(is_suggestion(_imp->env, id, dep)), recommendation(is_recommendation(_imp->env, id, dep));
+        bool suggestion(is_suggestion(_imp->env, id, dep));
+        bool recommendation(is_recommendation(_imp->env, id, dep));
 
         if (! (suggestion || recommendation))
             return si_take;

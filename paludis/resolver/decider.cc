@@ -556,7 +556,8 @@ Decider::_make_constraints_from_blocker(
 {
     const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
-    bool nothing_is_fine_too(true), force_unable(false);
+    bool nothing_is_fine_too(true);
+    bool force_unable(false);
     switch (find_blocker_role_in_annotations(spec.maybe_annotations()))
     {
         case dsar_blocker_weak:
@@ -1637,7 +1638,8 @@ Decider::_allowed_to_remove(
         return false;
 
     if (with_confirmation) {
-        bool all = true, any = false;
+        bool all = true;
+        bool any = false;
         for (auto & c : *resolution->constraints()) {
             any = true;
             if (! c->reason()->make_accept_returning(

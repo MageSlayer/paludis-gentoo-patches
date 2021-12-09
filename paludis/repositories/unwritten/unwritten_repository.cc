@@ -223,7 +223,8 @@ UnwrittenRepository::sync(
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
-    std::string sync_uri, sync_options;
+    std::string sync_uri;
+    std::string sync_options;
     if (_imp->params.sync()->end() != _imp->params.sync()->find(source))
         sync_uri = _imp->params.sync()->find(source)->second;
     if (sync_uri.empty())

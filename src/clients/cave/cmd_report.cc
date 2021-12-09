@@ -184,7 +184,8 @@ ReportCommand::run(
     for (auto i(ids->begin()), i_end(ids->end()) ;
             i != i_end ; ++i)
     {
-        bool done_heading(false), done_heading_origin(false);
+        bool done_heading(false);
+        bool done_heading_origin(false);
 
         auto origin(find_origin_for(env, *i));
         if (! origin)

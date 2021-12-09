@@ -90,7 +90,8 @@ EnvironmentFactory::create(const std::string & s) const
 {
     Context context("When making environment from specification '" + s + "':");
 
-    std::string key, suffix;
+    std::string key;
+    std::string suffix;
     std::string::size_type p(s.find(':'));
 
     if (std::string::npos == p)

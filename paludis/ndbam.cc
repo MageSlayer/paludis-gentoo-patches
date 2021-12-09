@@ -468,7 +468,8 @@ NDBAM::parse_contents(const PackageID & id,
                 continue;
             }
 
-            std::string key(line->substr(p, q - p)), value;
+            std::string key(line->substr(p, q - p));
+            std::string value;
             p = q + 1;
             while (p < line->length() && std::string::npos != p)
             {

@@ -184,7 +184,8 @@ namespace
                     return revisit(*r.reason_for_set());
                 },
                 [&] (const DependencyReason & dep) {
-                    DestinationTypes extras, slash;
+                    DestinationTypes extras;
+                    DestinationTypes slash;
 
                     switch (target_destination_type)
                     {

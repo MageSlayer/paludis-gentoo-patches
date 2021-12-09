@@ -437,7 +437,8 @@ VDBRepository::perform_uninstall(
         if (phase->option("unmerge"))
         {
             /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb, supplement with env */
-            std::string config_protect, config_protect_mask;
+            std::string config_protect;
+            std::string config_protect_mask;
 
             try
             {
@@ -617,7 +618,8 @@ VDBRepository::merge(const MergeParams & m)
 
     std::shared_ptr<const ERepositoryID> is_replace(package_id_if_exists(m.package_id()->name(), m.package_id()->version()));
 
-    std::string config_protect, config_protect_mask;
+    std::string config_protect;
+    std::string config_protect_mask;
 
     FSPath tmp_vdb_dir(_imp->params.location());
     tmp_vdb_dir /= stringify(m.package_id()->name().category());
@@ -889,7 +891,8 @@ VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const Versio
 
     using namespace std::placeholders;
 
-    PackageIDSequence::ConstIterator i(_imp->ids[q]->begin()), i_end(_imp->ids[q]->end());
+    PackageIDSequence::ConstIterator i(_imp->ids[q]->begin());
+    PackageIDSequence::ConstIterator i_end(_imp->ids[q]->end());
     for ( ; i != i_end ; ++i)
         if (v == (*i)->version())
             return std::static_pointer_cast<const ERepositoryID>(*i);
@@ -1164,7 +1167,8 @@ VDBRepository::perform_updates()
                     {
                         if (3 == tokens.size())
                         {
-                            QualifiedPackageName old_q(tokens.at(1)), new_q(tokens.at(2));
+                            QualifiedPackageName old_q(tokens.at(1));
+                            QualifiedPackageName new_q(tokens.at(2));
 
                             /* we want to rewrite deps to avoid a mess. we do
                              * this even if we don't have an installed thing
@@ -1193,7 +1197,8 @@ VDBRepository::perform_updates()
                         {
                             PackageDepSpec old_spec(parse_user_package_dep_spec(tokens.at(1), _imp->params.environment(),
                                         { }));
-                            SlotName old_slot(tokens.at(2)), new_slot(tokens.at(3));
+                            SlotName old_slot(tokens.at(2));
+                            SlotName new_slot(tokens.at(3));
 
                             const std::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
                                         (generator::Matches(old_spec, nullptr, { }) & generator::InRepository(name())) |

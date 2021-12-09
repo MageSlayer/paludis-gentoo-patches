@@ -726,7 +726,8 @@ ERepository::sync(
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
-    std::string sync_uri, sync_options;
+    std::string sync_uri;
+    std::string sync_options;
     if (_imp->params.sync()->end() != _imp->params.sync()->find(source))
         sync_uri = _imp->params.sync()->find(source)->second;
     if (sync_uri.empty())
@@ -1214,7 +1215,8 @@ ERepository::repository_factory_create(
     }
 
     std::shared_ptr<FSPathSequence> profiles(std::make_shared<FSPathSequence>());
-    bool profiles_explicitly_set(false), auto_profiles(false);
+    bool profiles_explicitly_set(false);
+    bool auto_profiles(false);
     tokenise_whitespace(f("profiles"), create_inserter<FSPath>(std::back_inserter(*profiles)));
     if (profiles->empty())
     {

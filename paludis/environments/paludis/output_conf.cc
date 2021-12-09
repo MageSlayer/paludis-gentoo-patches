@@ -300,7 +300,8 @@ namespace
         const std::shared_ptr<const Map<std::string, std::string> > & override_vars,
         const std::shared_ptr<const Map<std::string, std::string> > & file_vars)
     {
-        std::string result, token;
+        std::string result;
+        std::string token;
         SimpleParser parser(s);
         while (! parser.eof())
         {
@@ -345,7 +346,8 @@ OutputConf::add(const FSPath & filename, const FSPath & root)
     if (! f)
         return;
 
-    Managers local_managers, local_rules;
+    Managers local_managers;
+    Managers local_rules;
 
     for (KeyValueConfigFile::ConstIterator k(f->begin()), k_end(f->end()) ;
             k != k_end ; ++k)

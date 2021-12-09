@@ -90,7 +90,8 @@ UnavailableRepositoryFile::_load(const FSPath & f)
         if (line.empty())
             break;
 
-        std::string key, value;
+        std::string key;
+        std::string value;
         SimpleParser line_parser(line);
         if (line_parser.consume(
                     (+simple_parser::any_except(" \t") >> key) &
@@ -136,7 +137,8 @@ UnavailableRepositoryFile::_load(const FSPath & f)
 
     CategoryNamePart category("x");
     PackageNamePart package("x");
-    SlotName slot("x"), subslot("x");
+    SlotName slot("x");
+    SlotName subslot("x");
     while (std::getline(file, line))
     {
         SimpleParser line_parser(line);

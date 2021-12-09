@@ -148,7 +148,8 @@ namespace
             if (slot_requirement_ptr())
                 s << stringify(*slot_requirement_ptr());
 
-            std::string left, right;
+            std::string left;
+            std::string right;
             bool need_arrow(false);
 
             if (from_repository_ptr())

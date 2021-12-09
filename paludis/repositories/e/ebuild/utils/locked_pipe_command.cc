@@ -32,7 +32,8 @@ main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
-    int write_fd(std::atoi(argv[1])), read_fd(std::atoi(argv[2]));
+    int write_fd(std::atoi(argv[1]));
+    int read_fd(std::atoi(argv[2]));
     if (0 != ::lockf(write_fd, F_LOCK, 0))
     {
         std::cerr << "Error: " << argv[0] << ": lockf failed with " << ::strerror(errno) << std::endl;
@@ -41,7 +42,8 @@ main(int argc, char *argv[])
 
     /* copy stdin to the pipe read buffer */
     char buf[1024];
-    int c, w;
+    int c;
+    int w;
     while (((c = read(0, buf, 1024))) > 0)
     {
         char * buf_p(buf);

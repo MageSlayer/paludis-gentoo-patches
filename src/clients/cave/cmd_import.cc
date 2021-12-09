@@ -213,7 +213,9 @@ ImportCommand::run(
              next(cmdline.begin_parameters(), 2) != cmdline.end_parameters()) ?
             *next(cmdline.begin_parameters(), 2) : "0");
 
-    std::string build_dependencies, run_dependencies, description;
+    std::string build_dependencies;
+    std::string run_dependencies;
+    std::string description;
 
     if (cmdline.a_preserve_metadata.specified())
     {

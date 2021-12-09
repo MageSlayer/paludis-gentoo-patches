@@ -164,7 +164,8 @@ namespace paludis
 
             static VALUE compare(VALUE left, VALUE right)
             {
-                T_ * left_ptr, * right_ptr;
+                T_ * left_ptr;
+                T_ * right_ptr;
                 Data_Get_Struct(left, T_, left_ptr);
                 Data_Get_Struct(right, T_, right_ptr);
                 if (*left_ptr < *right_ptr)
@@ -176,7 +177,8 @@ namespace paludis
 
             static VALUE equal(VALUE left, VALUE right)
             {
-                T_ * left_ptr, * right_ptr;
+                T_ * left_ptr;
+                T_ * right_ptr;
                 Data_Get_Struct(left, T_, left_ptr);
                 Data_Get_Struct(right, T_, right_ptr);
                 return (*left_ptr == *right_ptr) ? Qtrue : Qfalse;
@@ -184,7 +186,8 @@ namespace paludis
 
             static VALUE equal_via_ptr(VALUE left, VALUE right)
             {
-                T_ * left_ptr, * right_ptr;
+                T_ * left_ptr;
+                T_ * right_ptr;
                 Data_Get_Struct(left, T_, left_ptr);
                 Data_Get_Struct(right, T_, right_ptr);
                 return (**left_ptr == **right_ptr) ? Qtrue : Qfalse;
