@@ -31,7 +31,6 @@ using std::endl;
 using std::left;
 using std::setw;
 using std::hex;
-using std::boolalpha;
 
 int main(int argc, char * argv[])
 {
