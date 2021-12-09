@@ -260,7 +260,8 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         rewrite_ids_over_to_root = kk->parse_value();
     }
 
-    std::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
+    std::shared_ptr<const PackageID> if_overwritten_id;
+    std::shared_ptr<const PackageID> if_same_name_id;
     {
         std::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id()->name(), { }));
         for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;

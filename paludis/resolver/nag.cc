@@ -298,7 +298,9 @@ NAG::sorted_strongly_connected_components(
         throw InternalError(PALUDIS_HERE, "mismatch");
 
     /* build edges between SCCs */
-    PlainEdges all_scc_edges, scc_edges, scc_edges_backwards;
+    PlainEdges all_scc_edges;
+    PlainEdges scc_edges;
+    PlainEdges scc_edges_backwards;
     for (const auto & edge : _imp->edges)
     {
         RepresentativeNodes::const_iterator from(representative_nodes.find(edge.first));
@@ -320,7 +322,8 @@ NAG::sorted_strongly_connected_components(
 
     typedef std::set<std::pair<int, NAGIndex> > OrderableNow;
     OrderableNow orderable_now;
-    Nodes done, pending_fetches;
+    Nodes done;
+    Nodes pending_fetches;
 
     for (StronglyConnectedComponentsByRepresentative::const_iterator c(sccs.begin()), c_end(sccs.end()) ;
             c != c_end ; ++c)

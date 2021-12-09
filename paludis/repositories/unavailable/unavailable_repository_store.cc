@@ -113,8 +113,10 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
         return;
     }
 
-    std::shared_ptr<MetadataValueKey<std::string> > repository_homepage, repository_description,
-        repository_format, repository_sync;
+    std::shared_ptr<MetadataValueKey<std::string> > repository_homepage;
+    std::shared_ptr<MetadataValueKey<std::string> > repository_description;
+    std::shared_ptr<MetadataValueKey<std::string> > repository_format;
+    std::shared_ptr<MetadataValueKey<std::string> > repository_sync;
     if (! file.homepage().empty())
         repository_homepage = std::make_shared<LiteralMetadataValueKey<std::string>>(
                 "REPOSITORY_HOMEPAGE", "Repository homepage", mkt_normal, file.homepage());

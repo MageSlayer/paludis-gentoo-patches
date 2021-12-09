@@ -79,9 +79,11 @@ Manifest2Reader::Manifest2Reader(const FSPath & f) :
     {
         std::list<std::string> tokens;
         tokenise_whitespace((*l), create_inserter<std::string>(std::back_inserter(tokens)));
-        std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end());
+        std::list<std::string>::const_iterator t(tokens.begin());
+        std::list<std::string>::const_iterator t_end(tokens.end());
 
-        std::string type, name;
+        std::string type;
+        std::string name;
         off_t size;
         std::shared_ptr<Map<std::string, std::string> > hashes(std::make_shared<Map<std::string, std::string> >());
 

@@ -61,25 +61,23 @@ TEST(FixLockedDependencies, Works)
     std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"));
 
     std::shared_ptr<const DependencySpecTree> bb(parse_depend(
-                "|| ( foo/bar ( bar/baz oink/squeak ) ) blah/blah", &env, *eapi, false)),
-        aa(fix_locked_dependencies(&env, *eapi, id, bb));
+                "|| ( foo/bar ( bar/baz oink/squeak ) ) blah/blah", &env, *eapi, false));
+    std::shared_ptr<const DependencySpecTree> aa(fix_locked_dependencies(&env, *eapi, id, bb));
 
     UnformattedPrettyPrinter ff;
-    SpecTreePrettyPrinter
-        a(ff, { }),
-        b(ff, { });
+    SpecTreePrettyPrinter a(ff, {});
+    SpecTreePrettyPrinter b(ff, {});
     aa->top()->accept(a);
     bb->top()->accept(b);
 
     EXPECT_EQ(stringify(b), stringify(a));
 
     std::shared_ptr<const DependencySpecTree> cc(parse_depend(
-                "foo/bar:= cat/installed:= >=cat/installed-1.2:= <=cat/installed-1.2:=", &env, *eapi, false)),
-        dd(fix_locked_dependencies(&env, *eapi, id, cc));
+                "foo/bar:= cat/installed:= >=cat/installed-1.2:= <=cat/installed-1.2:=", &env, *eapi, false));
+    std::shared_ptr<const DependencySpecTree> dd(fix_locked_dependencies(&env, *eapi, id, cc));
 
-    SpecTreePrettyPrinter
-        c(ff, { }),
-        d(ff, { });
+    SpecTreePrettyPrinter c(ff, {});
+    SpecTreePrettyPrinter d(ff, {});
     cc->top()->accept(c);
     dd->top()->accept(d);
 

@@ -234,7 +234,9 @@ LineConfigFile::LineConfigFile(const Source & sr, const LineConfigFileOptions & 
         }
 
         /* normal line, or lines with continuation */
-        std::string line, word, space;
+        std::string line;
+        std::string word;
+        std::string space;
         bool need_single_space_unless_eol(false);
         while (true)
         {
@@ -676,7 +678,8 @@ KeyValueConfigFile::KeyValueConfigFile(
         /* is it a section? */
         if (_imp->options[kvcfo_allow_sections] && parser.consume(simple_parser::exact("[")))
         {
-            std::string sec_t, sec_s;
+            std::string sec_t;
+            std::string sec_s;
             if (! parser.consume(+simple_parser::any_except(" \t\n$#\"'=\\]") >> sec_t))
                 throw ConfigFileError(sr.filename(), "Expected section name on line " + stringify(parser.current_line_number()));
 
@@ -722,7 +725,8 @@ KeyValueConfigFile::KeyValueConfigFile(
         }
 
         /* is it superman? */
-        std::string key, value;
+        std::string key;
+        std::string value;
 
         if (! parser.consume(+simple_parser::any_except(" \t\n$#\"'=\\?") >> key))
             throw ConfigFileError(sr.filename(), "Couldn't find a key in line " + stringify(parser.current_line_number()));

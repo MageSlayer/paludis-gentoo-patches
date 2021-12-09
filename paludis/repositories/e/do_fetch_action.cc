@@ -62,7 +62,8 @@ paludis::erepository::do_fetch_action(
 
     Context context("When fetching '" + stringify(*id) + "':");
 
-    bool fetch_restrict(false), userpriv_restrict(false);
+    bool fetch_restrict(false);
+    bool userpriv_restrict(false);
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env, id);
         if (id->restrict_key())
@@ -84,7 +85,8 @@ paludis::erepository::do_fetch_action(
             check_userpriv(FSPath(repo->params().distdir()), env,
                 id->eapi()->supported()->userpriv_cannot_use_root()));
 
-    std::string archives, all_archives;
+    std::string archives;
+    std::string all_archives;
     std::tie(archives, all_archives) = make_archives_strings(env, id);
 
     /* Strip trailing space. Some ebuilds rely upon this. From kde-meta.eclass:

@@ -203,7 +203,8 @@ PackageIDComparator::operator() (const std::shared_ptr<const PackageID> & a,
         return false;
 
     std::unordered_map<RepositoryName, unsigned, Hash<RepositoryName> >::const_iterator
-        ma(_imp->m.find(a->repository_name())),
+        ma(_imp->m.find(a->repository_name()));
+    std::unordered_map<RepositoryName, unsigned, Hash<RepositoryName> >::const_iterator
         mb(_imp->m.find(b->repository_name()));
 
     if (ma == _imp->m.end() || mb == _imp->m.end())

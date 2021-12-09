@@ -201,7 +201,8 @@ ArgsHandler::run(
 
     args.insert(args.end(), argseq->begin(), argseq->end());
 
-    ArgsIterator argit(args.begin()), arge(args.end());
+    ArgsIterator argit(args.begin());
+    ArgsIterator arge(args.end());
 
     for ( ; argit != arge; ++argit )
     {

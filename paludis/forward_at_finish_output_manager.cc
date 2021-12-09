@@ -147,7 +147,9 @@ ForwardAtFinishOutputManager::factory_create(
         const OutputManagerFactory::CreateChildFunction & create_child_function,
         const OutputManagerFactory::ReplaceVarsFunc &)
 {
-    std::string child_s(key_func("child")), if_success_s(key_func("if_success")), if_failure_s(key_func("if_failure"));
+    std::string child_s(key_func("child"));
+    std::string if_success_s(key_func("if_success"));
+    std::string if_failure_s(key_func("if_failure"));
 
     if (child_s.empty())
         throw ConfigurationError("Key 'child' not specified when creating a forward_on_failure output manager");

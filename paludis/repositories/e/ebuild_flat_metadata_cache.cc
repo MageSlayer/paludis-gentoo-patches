@@ -373,7 +373,8 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
             std::vector<std::string> inherited;
 
             {
-                bool ok(true), is_md5(false);
+                bool ok(true);
+                bool is_md5(false);
 
                 std::map<std::string, std::string>::const_iterator md5_it(keys.find("_md5_"));
                 if (keys.end() != md5_it)
@@ -446,7 +447,8 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
 
                         else if (is_md5)
                         {
-                            std::string cache_md5(*it), actual_md5(_imp->eclass_mtimes->md5(eclass->first));
+                            std::string cache_md5(*it);
+                            std::string actual_md5(_imp->eclass_mtimes->md5(eclass->first));
                             if (actual_md5 != cache_md5)
                             {
                                 Log::get_instance()->message("e.cache.flat_hash.eclass.wrong_md5", ll_debug, lc_context)

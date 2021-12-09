@@ -161,8 +161,8 @@ NDBAMMerger::record_install_file(const FSPath & src, const FSPath & dst_dir, con
     const auto file(dst_dir / src.basename());
     const auto renamed_file(dst_dir / dst_name);
 
-    const std::string tidy(stringify(renamed_file.strip_leading(_imp->realroot))),
-                      tidy_real(stringify(file.strip_leading(_imp->realroot)));
+    const std::string tidy(stringify(renamed_file.strip_leading(_imp->realroot)));
+    const std::string tidy_real(stringify(file.strip_leading(_imp->realroot)));
 
     FSStat dst_dir_name_stat(renamed_file);
 

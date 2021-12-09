@@ -135,7 +135,9 @@ paludis::erepository::do_install_action(
 
     std::shared_ptr<OutputManager> output_manager(install_action.options.make_output_manager()(install_action));
 
-    bool userpriv_restrict, test_restrict, strip_restrict;
+    bool userpriv_restrict;
+    bool test_restrict;
+    bool strip_restrict;
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env, id);
         if (id->restrict_key())
@@ -158,7 +160,9 @@ paludis::erepository::do_install_action(
                     std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nostrip"));
     }
 
-    std::string archives, all_archives, accept_license;
+    std::string archives;
+    std::string all_archives;
+    std::string accept_license;
     std::tie(archives, all_archives) = make_archives_strings(env, id);
 
     /* make ACCEPT_LICENSE */

@@ -73,7 +73,8 @@ int main(int argc, char * argv[])
         show_name<QualifiedPackageName>("QualifiedPackageName", "cat/pkg");
         show_name<QualifiedPackageName>("QualifiedPackageName", "not-valid");
 
-        QualifiedPackageName q1("cat/pkg"), q2(CategoryNamePart("cat") + PackageNamePart("pkg"));
+        QualifiedPackageName q1("cat/pkg");
+        QualifiedPackageName q2(CategoryNamePart("cat") + PackageNamePart("pkg"));
         cout << q1 << " " << (q1 == q2 ? "==" : "!=") << " " << q2 << endl;
         cout << q1 << " has category '" << q1.category() << "' and package part '" << q1.package() << "'" << endl;
     }

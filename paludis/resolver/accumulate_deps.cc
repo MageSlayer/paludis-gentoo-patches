@@ -36,7 +36,8 @@ paludis::resolver::accumulate_deps(
         const bool recurse,
         const std::function<void ()> & step)
 {
-    const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>()), done(std::make_shared<PackageIDSet>());
+    const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
+    const std::shared_ptr<PackageIDSet> done(std::make_shared<PackageIDSet>());
     std::copy(start->begin(), start->end(), result->inserter());
 
     while (result->size() > done->size())

@@ -58,7 +58,8 @@ namespace paludis
                     std::string::size_type p(line->find(" - "));
                     if (std::string::npos == p)
                         continue;
-                    std::string lhs(line->substr(0, p)), rhs(line->substr(p + 3));
+                    std::string lhs(line->substr(0, p));
+                    std::string rhs(line->substr(p + 3));
 
                     std::string::size_type q(lhs.find(':'));
                     if (std::string::npos == q)

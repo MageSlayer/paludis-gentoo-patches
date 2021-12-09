@@ -154,7 +154,8 @@ paludis::resolver::get_sameness(
             installable_choices = installable_id->choices_key()->parse_value();
             existing_choices = existing_id->choices_key()->parse_value();
 
-            std::set<ChoiceNameWithPrefix> i_common, u_common;
+            std::set<ChoiceNameWithPrefix> i_common;
+            std::set<ChoiceNameWithPrefix> u_common;
             for (const auto & c : *installable_choices)
             {
                 if (! c->consider_added_or_changed())

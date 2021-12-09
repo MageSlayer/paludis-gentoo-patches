@@ -459,7 +459,8 @@ MatchCommand::run_hosted(
         (*i)->accept(m);
     }
 
-    bool any(false), all(true);
+    bool any(false);
+    bool all(true);
     for (auto p(patterns->begin()), p_end(patterns->end()) ;
             p != p_end ; ++p)
     {

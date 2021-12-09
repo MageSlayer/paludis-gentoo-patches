@@ -85,7 +85,13 @@ namespace
 void
 MD5::_update(const uint8_t * const block)
 {
-    uint32_t a(_r[0]), b(_r[1]), c(_r[2]), d(_r[3]), f, g, t;
+    uint32_t a(_r[0]);
+    uint32_t b(_r[1]);
+    uint32_t c(_r[2]);
+    uint32_t d(_r[3]);
+    uint32_t f;
+    uint32_t g;
+    uint32_t t;
 
     for (int i(0) ; i < 16 ; ++i)
     {
@@ -151,7 +157,8 @@ MD5::MD5(std::istream & stream) :
     _r[3] = 0x10325476;
 
     uint8_t buffer[64];
-    int c, s(0);
+    int c;
+    int s(0);
     while (-1 != ((c = _get(stream))))
     {
         buffer[s++] = c;

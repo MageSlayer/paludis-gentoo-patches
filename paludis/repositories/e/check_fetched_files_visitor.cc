@@ -211,7 +211,8 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSPath & distfile)
     if (manifest_ignore == _imp->use_manifest)
         return true;
 
-    bool found(false), hashed(false);
+    bool found(false);
+    bool hashed(false);
 
     for (Manifest2Reader::ConstIterator m(_imp->m2r->begin()), m_end(_imp->m2r->end()) ;
         m != m_end ; ++m)

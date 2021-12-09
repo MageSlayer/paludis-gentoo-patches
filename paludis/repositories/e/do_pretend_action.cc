@@ -57,7 +57,8 @@ paludis::erepository::do_pretend_action(
     if (! id->eapi()->supported())
         return false;
 
-    bool result(true), can_pretend(true);
+    bool result(true);
+    bool can_pretend(true);
 
     if ((! id->raw_myoptions_key()) && (! id->required_use_key()))
         if (id->eapi()->supported()->ebuild_phases()->ebuild_pretend().empty())

@@ -147,7 +147,8 @@ VDBUnmerger::config_protected(const FSPath & f) const
 std::string
 VDBUnmerger::make_tidy(const FSPath & f) const
 {
-    std::string root_str(stringify(_imp->options.root())), f_str(stringify(f));
+    std::string root_str(stringify(_imp->options.root()));
+    std::string f_str(stringify(f));
     if (root_str == "/")
         root_str.clear();
     if (0 != f_str.compare(0, root_str.length(), root_str))

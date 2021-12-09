@@ -176,7 +176,8 @@ paludis::erepository::parse_dependency_label(const Environment * const,
 
     for (const auto & label : labels)
     {
-        std::string c(e.supported()->dependency_labels()->class_for_label(label)), cc;
+        std::string c(e.supported()->dependency_labels()->class_for_label(label));
+        std::string cc;
         if (c.empty())
             throw EDepParseError(s, "Unknown label '" + label + "'");
 

@@ -172,7 +172,8 @@ namespace
                         i != i_end ; ++i)
                     biggest.insert(std::make_pair(i->second, i->first));
 
-                int t(0), n(0);
+                int t(0);
+                int n(0);
                 std::string ss;
                 for (std::multimap<int, std::string>::const_reverse_iterator i(biggest.rbegin()), i_end(biggest.rend()) ;
                         i != i_end ; ++i)

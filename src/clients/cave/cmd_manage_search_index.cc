@@ -116,7 +116,8 @@ namespace
                         i != i_end ; ++i)
                     biggest.insert(std::make_pair(i->second, i->first));
 
-                int t(0), n(0);
+                int t(0);
+                int n(0);
                 std::string ss;
                 for (std::multimap<int, std::string>::const_reverse_iterator i(biggest.rbegin()), i_end(biggest.rend()) ;
                         i != i_end ; ++i)
@@ -264,14 +265,17 @@ ManageSearchIndexCommand::run(
 
         SearchExtrasHandle::get_instance()->starting_adds_function(db);
 
-        bool is_best(false), had_best_visible(false);
+        bool is_best(false);
+        bool had_best_visible(false);
         std::string old_name;
         for (auto i(ids->rbegin()), i_end(ids->rend()) ;
                 i != i_end ; ++i)
         {
             display_callback(ManageStep{"Writing"});
 
-            std::string name(stringify((*i)->name())), short_desc, long_desc;
+            std::string name(stringify((*i)->name()));
+            std::string short_desc;
+            std::string long_desc;
             if ((*i)->short_description_key())
                 short_desc = (*i)->short_description_key()->parse_value();
             if ((*i)->long_description_key())

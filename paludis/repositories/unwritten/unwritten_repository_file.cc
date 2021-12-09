@@ -174,7 +174,8 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
         if (line.empty())
             break;
 
-        std::string key, value;
+        std::string key;
+        std::string value;
         SimpleParser line_parser(line);
         if (line_parser.consume(
                     (+simple_parser::any_except(" \t") >> key) &
@@ -208,7 +209,8 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
     {
         SimpleParser line_parser(line);
 
-        std::string token, token2;
+        std::string token;
+        std::string token2;
         if (line.empty())
         {
         }

@@ -399,7 +399,9 @@ PyHookFile::_get_traceback() const
 
     Context c("When getting traceback");
 
-    PyObject * ptype, * pvalue, * ptraceback;
+    PyObject * ptype;
+    PyObject * pvalue;
+    PyObject * ptraceback;
     PyErr_Fetch(&ptype, &pvalue, &ptraceback);
     PyErr_NormalizeException(&ptype, &pvalue, &ptraceback);
 

@@ -109,7 +109,8 @@ IPCOutputManager::IPCOutputManager(const int r, const int w, const CreateOutputM
     Log::get_instance()->message("ipc_output_manager.making_streams", ll_debug, lc_context)
         << "Creating streams";
 
-    int stdout_fd(destringify<int>(tokens[2])), stderr_fd(destringify<int>(tokens[3]));
+    int stdout_fd(destringify<int>(tokens[2]));
+    int stderr_fd(destringify<int>(tokens[3]));
     _imp->stdout_stream = std::make_shared<SafeOFStream>(stdout_fd, false);
     _imp->stderr_stream = std::make_shared<SafeOFStream>(stderr_fd, false);
 

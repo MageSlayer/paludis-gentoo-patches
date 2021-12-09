@@ -133,7 +133,8 @@ namespace
             throw args::DoHelp("Must specify at least one target");
 
         const std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
-        bool seen_sets(false), seen_packages(false);
+        bool seen_sets(false);
+        bool seen_packages(false);
         for (const auto & target : *targets)
         {
             if (target.first.empty())

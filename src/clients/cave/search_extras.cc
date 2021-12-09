@@ -154,7 +154,8 @@ cave_search_extras_find_candidates(CaveSearchExtrasDB * const data,
     else
         s = "is_best";
 
-    std::string h, p1;
+    std::string h;
+    std::string p1;
     if (! name_description_substring_hint.empty())
     {
         h = " and ( name like ?1 escape '\\' or short_desc like ?1 escape '\\' or long_desc like ?1 escape '\\' )";

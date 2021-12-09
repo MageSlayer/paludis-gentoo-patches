@@ -133,7 +133,8 @@ namespace
 
         bool operator() (const FSPath & parent)
         {
-            std::string child_str(stringify(_child)), parent_str(stringify(parent));
+            std::string child_str(stringify(_child));
+            std::string parent_str(stringify(parent));
             return 0 == child_str.compare(0, parent_str.length(), parent_str) &&
                 (parent_str.length() == child_str.length() || '/' == child_str[parent_str.length()]);
         }
@@ -151,7 +152,8 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::sha
     if (libraries->empty())
         _imp->checkers.push_back(std::make_shared<LibtoolLinkageChecker>(env->preferred_root_key()->parse_value()));
 
-    std::vector<FSPath> search_dirs_nosyms, search_dirs_pruned;
+    std::vector<FSPath> search_dirs_nosyms;
+    std::vector<FSPath> search_dirs_pruned;
     std::transform(_imp->config.begin_search_dirs(), _imp->config.end_search_dirs(),
                    std::back_inserter(search_dirs_nosyms),
                    std::bind(realpath_with_current_and_root, _1, FSPath("/"), env->preferred_root_key()->parse_value()));

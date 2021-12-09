@@ -230,7 +230,8 @@ namespace
                     if (std::string::npos == p)
                         throw args::DoHelp("--" + cmdline.a_version_requirement.long_name() + " arguments should be in the form =1.23");
 
-                    std::string op(a->substr(0, p)), ver(a->substr(p));
+                    std::string op(a->substr(0, p));
+                    std::string ver(a->substr(p));
 
                     s.version_requirement(make_named_values<VersionRequirement>(
                                 n::version_operator() = VersionOperator(op),
