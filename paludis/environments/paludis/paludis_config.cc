@@ -383,7 +383,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
     if (! suffix.empty())
     {
-        const std::string::size_type delim(suffix.find(":"));
+        const std::string::size_type delim(suffix.find(':'));
 
         if (std::string::npos != delim)
         {

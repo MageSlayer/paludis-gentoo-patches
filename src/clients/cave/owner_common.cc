@@ -94,7 +94,7 @@ paludis::cave::owner_common(
     {
         if (! query.empty() && '/' == query.at(0))
             handler = handle_full;
-        else if (std::string::npos != query.find("/"))
+        else if (std::string::npos != query.find('/'))
             handler = handle_partial;
         else
             handler = handle_basename;
