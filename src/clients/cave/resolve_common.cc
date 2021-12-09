@@ -118,9 +118,6 @@ using namespace paludis;
 using namespace paludis::resolver;
 using namespace cave;
 
-using std::cout;
-using std::endl;
-
 namespace
 {
     const std::shared_ptr<const Sequence<std::string> > add_resolver_targets(

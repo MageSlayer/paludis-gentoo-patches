@@ -38,7 +38,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {

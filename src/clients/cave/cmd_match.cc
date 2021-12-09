@@ -58,7 +58,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 #define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
 
