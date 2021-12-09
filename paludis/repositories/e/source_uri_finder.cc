@@ -190,7 +190,7 @@ SourceURIFinder::add_listed()
     if (0 == _imp->url.compare(0, 9, "mirror://"))
     {
         std::string mirror(_imp->url.substr(9));
-        std::string::size_type p(mirror.find("/"));
+        std::string::size_type p(mirror.find('/'));
         if (std::string::npos == p)
             throw ActionFailedError("Broken URI component '" + _imp->url + "'");
         std::string original_name(mirror.substr(p + 1));

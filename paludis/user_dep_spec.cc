@@ -481,13 +481,13 @@ namespace paludis
                 op_size = 2;
                 op = ukro_not_equal;
             }
-            else if (std::string::npos != (p = s.find("=")))
+            else if (std::string::npos != (p = s.find('=')))
                 op = ukro_equal;
-            else if (std::string::npos != (p = s.find(">")))
+            else if (std::string::npos != (p = s.find('>')))
                 op = ukro_greater;
-            else if (std::string::npos != (p = s.find("<")))
+            else if (std::string::npos != (p = s.find('<')))
                 op = ukro_less_or_subset;
-            else if (std::string::npos != (p = s.find("?")))
+            else if (std::string::npos != (p = s.find('?')))
                 op = ukro_exists;
             else
                 throw PackageDepSpecError("Expected an =, an !=, a <, a > or a ? inside '[." + s + "]'");
