@@ -124,7 +124,6 @@ Checks: >
     -modernize-return-braced-init-list,
     -modernize-use-default-member-init,
     -modernize-use-using,
-    -performance-faster-string-find,
     -performance-inefficient-string-concatenation,
     -performance-no-automatic-move,
     -performance-no-int-to-ptr,
@@ -394,6 +393,8 @@ CheckOptions:
     value:           '0'
   - key:             bugprone-sizeof-expression.WarnOnSizeOfIntegerExpression
     value:           'false'
+  - key:             performance-faster-string-find.StringLikeClasses
+    value:           '::std::basic_string;::std::basic_string_view'
   - key:             bugprone-assert-side-effect.CheckFunctionCalls
     value:           'false'
   - key:             readability-function-size.BranchThreshold
