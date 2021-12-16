@@ -41,17 +41,17 @@ namespace paludis
                     const std::shared_ptr<const PackageID> &, const Environment * const);
 
         public:
-            ~FakeMetadataCollectionKey();
+            ~FakeMetadataCollectionKey() override;
 
-            virtual const std::shared_ptr<const C_> parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const C_> parse_value() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string pretty_print_value(
+            const std::string pretty_print_value(
                     const PrettyPrinter &,
-                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const PrettyPrintOptions &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE FakeMetadataKeywordSetKey :
@@ -63,9 +63,9 @@ namespace paludis
 
             void set_from_string(const std::string &);
 
-            virtual const std::string pretty_print_value(
+            const std::string pretty_print_value(
                     const PrettyPrinter &,
-                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const PrettyPrintOptions &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     template <typename C_>
@@ -78,20 +78,20 @@ namespace paludis
         public:
             FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
                     const std::function<const std::shared_ptr<const C_> (const std::string &)> &, const MetadataKeyType);
-            ~FakeMetadataSpecTreeKey();
+            ~FakeMetadataSpecTreeKey() override;
 
-            virtual const std::shared_ptr<const C_> parse_value() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const C_> parse_value() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void set_from_string(const std::string &);
 
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string pretty_print_value(
+            const std::string pretty_print_value(
                     const PrettyPrinter &,
-                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const PrettyPrintOptions &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     template <>
@@ -105,23 +105,23 @@ namespace paludis
             FakeMetadataSpecTreeKey(const std::string &, const std::string &, const std::string &,
                     const std::function<const std::shared_ptr<const FetchableURISpecTree> (const std::string &)> &,
                     const MetadataKeyType);
-            ~FakeMetadataSpecTreeKey();
+            ~FakeMetadataSpecTreeKey() override;
 
-            virtual const std::shared_ptr<const FetchableURISpecTree> parse_value() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const FetchableURISpecTree> parse_value() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void set_from_string(const std::string &);
 
-            virtual const std::shared_ptr<const URILabel> initial_label() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const URILabel> initial_label() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string pretty_print_value(
+            const std::string pretty_print_value(
                     const PrettyPrinter &,
-                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const PrettyPrintOptions &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     template <>
@@ -136,23 +136,23 @@ namespace paludis
                     const std::function<const std::shared_ptr<const DependencySpecTree> (const std::string &)> &,
                     const std::shared_ptr<const DependenciesLabelSequence> &,
                     const MetadataKeyType);
-            ~FakeMetadataSpecTreeKey();
+            ~FakeMetadataSpecTreeKey() override;
 
-            virtual const std::shared_ptr<const DependencySpecTree> parse_value() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const DependencySpecTree> parse_value() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             void set_from_string(const std::string &);
 
-            virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string pretty_print_value(
+            const std::string pretty_print_value(
                     const PrettyPrinter &,
-                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const PrettyPrintOptions &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE FakeMetadataChoicesKey :
@@ -165,14 +165,14 @@ namespace paludis
             FakeMetadataChoicesKey(
                     const Environment * const,
                     const std::shared_ptr<const PackageID> &);
-            ~FakeMetadataChoicesKey();
+            ~FakeMetadataChoicesKey() override;
 
             void add(const std::string &, const std::string &);
-            const std::shared_ptr<const Choices> parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const Choices> parse_value() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE FakeUnacceptedMask :
@@ -183,11 +183,11 @@ namespace paludis
 
         public:
             FakeUnacceptedMask(const char, const std::string &, const std::string &);
-            ~FakeUnacceptedMask();
+            ~FakeUnacceptedMask() override;
 
-            char key() const;
-            const std::string description() const;
-            const std::string unaccepted_key_name() const;
+            char key() const override;
+            const std::string description() const override;
+            const std::string unaccepted_key_name() const override;
     };
 
     class PALUDIS_VISIBLE FakeUnsupportedMask :
@@ -195,11 +195,11 @@ namespace paludis
     {
         public:
             FakeUnsupportedMask();
-            ~FakeUnsupportedMask();
+            ~FakeUnsupportedMask() override;
 
-            char key() const;
-            const std::string description() const;
-            const std::string explanation() const;
+            char key() const override;
+            const std::string description() const override;
+            const std::string explanation() const override;
     };
 
     /**
@@ -218,8 +218,8 @@ namespace paludis
             Pimp<FakePackageID> _imp;
 
         protected:
-            virtual void need_keys_added() const;
-            virtual void need_masks_added() const;
+            void need_keys_added() const override;
+            void need_masks_added() const override;
 
         public:
             ///\name Basic operations
@@ -228,35 +228,35 @@ namespace paludis
             FakePackageID(const Environment * const e,
                     const RepositoryName &,
                     const QualifiedPackageName &, const VersionSpec &);
-            ~FakePackageID();
+            ~FakePackageID() override;
 
             ///\}
 
-            virtual const std::string canonical_form(const PackageIDCanonicalForm) const;
+            const std::string canonical_form(const PackageIDCanonicalForm) const override;
 
-            virtual const QualifiedPackageName name() const;
-            virtual const VersionSpec version() const;
-            virtual const RepositoryName repository_name() const;
-            virtual PackageDepSpec uniquely_identifying_spec() const;
+            const QualifiedPackageName name() const override;
+            const VersionSpec version() const override;
+            const RepositoryName repository_name() const override;
+            PackageDepSpec uniquely_identifying_spec() const override;
 
-            virtual const std::shared_ptr<const MetadataValueKey<Slot> > slot_key() const;
-            virtual const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
-            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const;
-            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_target_key() const;
-            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_host_key() const;
-            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const;
-            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const;
-            virtual const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const;
-            virtual const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const;
-            virtual const std::shared_ptr<const MetadataTimeKey> installed_time_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > fs_location_key() const;
+            const std::shared_ptr<const MetadataValueKey<Slot> > slot_key() const override;
+            const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const override;
+            const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const override;
+            const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_target_key() const override;
+            const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_host_key() const override;
+            const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const override;
+            const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const override;
+            const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const override;
+            const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const override;
+            const std::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const override;
+            const std::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const override;
+            const std::shared_ptr<const MetadataTimeKey> installed_time_key() const override;
+            const std::shared_ptr<const MetadataValueKey<FSPath> > fs_location_key() const override;
             virtual const std::shared_ptr<const MetadataValueKey<long> > size_of_download_required_key() const;
             virtual const std::shared_ptr<const MetadataValueKey<long> > size_of_all_distfiles_key() const;
-            virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
-            virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices_key() const;
+            const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const override;
+            const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const override;
+            const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices_key() const override;
 
             const std::shared_ptr<const MetadataSpecTreeKey<LicenseSpecTree> > license_key() const;
 
@@ -281,13 +281,13 @@ namespace paludis
 
             char use_expand_separator() const;
 
-            virtual bool arbitrary_less_than_comparison(const PackageID &) const;
-            virtual std::size_t extra_hash_value() const;
+            bool arbitrary_less_than_comparison(const PackageID &) const override;
+            std::size_t extra_hash_value() const override;
 
-            virtual bool supports_action(const SupportsActionTestBase &) const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual void perform_action(Action &) const;
+            bool supports_action(const SupportsActionTestBase &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            void perform_action(Action &) const override;
 
-            virtual const std::shared_ptr<const Contents> contents() const;
+            const std::shared_ptr<const Contents> contents() const override;
 
     };
 }

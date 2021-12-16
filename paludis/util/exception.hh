@@ -96,7 +96,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            virtual ~Exception();
+            ~Exception() override;
 
             ///\}
 
@@ -118,7 +118,7 @@ namespace paludis
             /**
              * A better what, if possible.
              */
-            const char * what() const noexcept;
+            const char * what() const noexcept override;
     };
 
     /**

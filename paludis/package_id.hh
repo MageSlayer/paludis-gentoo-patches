@@ -124,7 +124,7 @@ namespace paludis
             ///\{
 
             PackageID();
-            virtual ~PackageID() = 0;
+            ~PackageID() override = 0;
 
             std::size_t hash() const PALUDIS_ATTRIBUTE((warn_unused_result));
 

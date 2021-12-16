@@ -75,10 +75,11 @@ namespace paludis
             Pimp<TarMerger> _imp;
 
         protected:
-            virtual FSPath canonicalise_root_path(const FSPath & f);
+            FSPath canonicalise_root_path(const FSPath & f) override;
 
             virtual void add_file(const FSPath &, const FSPath &);
 
+            virtual void track_install_dir(const FSPath &, const FSPath &) = 0;
             virtual void track_install_file(const FSPath &, const FSPath &) = 0;
             virtual void track_install_sym(const FSPath &, const FSPath &) = 0;
 
@@ -86,13 +87,13 @@ namespace paludis
             TarMerger(const TarMergerParams &);
             ~TarMerger();
 
-            virtual void on_file_main(bool is_check, const FSPath &, const FSPath &);
-            virtual void on_dir_main(bool is_check, const FSPath &, const FSPath &);
-            virtual void on_sym_main(bool is_check, const FSPath &, const FSPath &);
+            void on_dir_main(bool is_check, const FSPath &, const FSPath &) override;
+            void on_file_main(bool is_check, const FSPath &, const FSPath &) override;
+            void on_sym_main(bool is_check, const FSPath &, const FSPath &) override;
 
-            virtual void prepare_install_under();
+            void prepare_install_under() override;
 
-            virtual void merge();
+            void merge() override;
     };
 }
 

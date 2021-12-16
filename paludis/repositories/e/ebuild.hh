@@ -447,13 +447,13 @@ namespace paludis
                 const std::string _var;
 
             protected:
-                virtual std::string commands() const;
+                std::string commands() const override;
 
-                virtual void extend_command(Process &);
+                void extend_command(Process &) override;
 
-                virtual bool do_run_command(Process &);
+                bool do_run_command(Process &) override;
 
-                virtual bool failure();
+                bool failure() override;
 
             public:
                 /**
@@ -483,11 +483,11 @@ namespace paludis
                 /// Parameters for fetch.
                 const EbuildNoFetchCommandParams fetch_params;
 
-                virtual std::string commands() const;
+                std::string commands() const override;
 
-                virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
+                bool failure() override PALUDIS_ATTRIBUTE((noreturn));
 
-                virtual void extend_command(Process &);
+                void extend_command(Process &) override;
 
             public:
                 /**
@@ -509,11 +509,11 @@ namespace paludis
                 /// Parameters for install.
                 const EbuildInstallCommandParams install_params;
 
-                virtual std::string commands() const;
+                std::string commands() const override;
 
-                virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
+                bool failure() override PALUDIS_ATTRIBUTE((noreturn));
 
-                virtual void extend_command(Process &);
+                void extend_command(Process &) override;
 
             public:
                 /**
@@ -535,11 +535,11 @@ namespace paludis
                 /// Parameters for install.
                 const EbuildFetchExtraCommandParams fetch_extra_params;
 
-                virtual std::string commands() const;
+                std::string commands() const override;
 
-                virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
+                bool failure() override PALUDIS_ATTRIBUTE((noreturn));
 
-                virtual void extend_command(Process &);
+                void extend_command(Process &) override;
 
             public:
                 /**
@@ -560,13 +560,13 @@ namespace paludis
                 /// Parameters for uninstall.
                 const EbuildUninstallCommandParams uninstall_params;
 
-                virtual std::string commands() const;
+                std::string commands() const override;
 
-                virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
+                bool failure() override PALUDIS_ATTRIBUTE((noreturn));
 
-                virtual void extend_command(Process &);
+                void extend_command(Process &) override;
 
-                virtual std::string ebuild_file() const;
+                std::string ebuild_file() const override;
 
             public:
                 /**
@@ -587,13 +587,13 @@ namespace paludis
                 /// Parameters for config.
                 const EbuildConfigCommandParams config_params;
 
-                virtual std::string commands() const;
+                std::string commands() const override;
 
-                virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
+                bool failure() override PALUDIS_ATTRIBUTE((noreturn));
 
-                virtual void extend_command(Process &);
+                void extend_command(Process &) override;
 
-                virtual std::string ebuild_file() const;
+                std::string ebuild_file() const override;
 
             public:
                 /**
@@ -614,11 +614,11 @@ namespace paludis
                 /// Parameters for config.
                 const EbuildPretendCommandParams pretend_params;
 
-                virtual std::string commands() const;
+                std::string commands() const override;
 
-                virtual bool failure();
+                bool failure() override;
 
-                virtual void extend_command(Process &);
+                void extend_command(Process &) override;
 
             public:
                 /**
@@ -640,11 +640,11 @@ namespace paludis
                 /// Parameters for config.
                 const EbuildBadOptionsCommandParams bad_options_params;
 
-                virtual std::string commands() const;
+                std::string commands() const override;
 
-                virtual bool failure();
+                bool failure() override;
 
-                virtual void extend_command(Process &);
+                void extend_command(Process &) override;
 
             public:
                 /**
@@ -665,13 +665,13 @@ namespace paludis
                 /// Parameters for config.
                 const EbuildInfoCommandParams info_params;
 
-                virtual std::string commands() const;
+                std::string commands() const override;
 
-                virtual bool failure() PALUDIS_ATTRIBUTE((noreturn));
+                bool failure() override PALUDIS_ATTRIBUTE((noreturn));
 
-                virtual void extend_command(Process &);
+                void extend_command(Process &) override;
 
-                virtual std::string ebuild_file() const;
+                std::string ebuild_file() const override;
 
             public:
                 /**
@@ -774,17 +774,17 @@ namespace paludis
             public:
                 EbuildMetadataCommand(const EbuildCommandParams &);
 
-                ~EbuildMetadataCommand();
+                ~EbuildMetadataCommand() override;
 
-                std::string commands() const;
+                std::string commands() const override;
 
-                bool failure();
+                bool failure() override;
 
-                bool do_run_command(Process &);
+                bool do_run_command(Process &) override;
 
-                virtual bool in_metadata_generation() const;
+                bool in_metadata_generation() const override;
 
-                virtual void extend_command(Process &);
+                void extend_command(Process &) override;
 
                 void load(const std::shared_ptr<const EbuildID> &);
         };

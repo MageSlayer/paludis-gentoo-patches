@@ -1,0 +1,12 @@
+# required by app-crypt/rhash-1.3.5::gentoo[ssl,-libressl]
+# required by dev-util/cmake-3.9.6::gentoo
+# required by media-libs/openjpeg-2.3.0::gentoo
+# required by app-text/ghostscript-gpl-9.21::gentoo
+# required by app-doc/doxygen-1.8.14-r1::gentoo
+# required by @selected
+# required by @world (argument)
+=dev-libs/openssl-1.0.2o-r6 ~amd64
+
+=dev-util/boost-build-1.71.0 **
+=dev-libs/boost-1.71.0 **
+=dev-util/cmake-3.15.3 **

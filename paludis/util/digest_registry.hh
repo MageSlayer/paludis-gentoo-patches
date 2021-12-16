@@ -25,7 +25,7 @@
 #include <paludis/util/attributes.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/singleton.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 #include <functional>
 #include <utility>
 
@@ -78,6 +78,10 @@ namespace paludis
                 return digest.hexsum();
             }
     };
+
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<
+            DigestRegistry::AlgorithmsConstIteratorTag,
+            const std::pair<const std::string, DigestRegistry::Function> >;
 }
 
 #endif

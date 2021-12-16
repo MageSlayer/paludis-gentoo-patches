@@ -98,7 +98,7 @@ namespace paludis
             argv_ptrs.clear();
         }
     };
-};
+}
 
 namespace
 {
@@ -429,6 +429,7 @@ ProcessCommand::exec_prepare()
 
 namespace
 {
+    PALUDIS_ATTRIBUTE((noreturn))
     void
     send_error(int err_fd, const ExecError & e)
     {
@@ -863,6 +864,21 @@ Process::Process(ProcessCommand && c) :
 
 Process::~Process() = default;
 
+namespace
+{
+    pid_t
+    waitpid_noeintr(pid_t pid, int *wstatus, int options)
+    {
+        while (true)
+        {
+            pid_t ret = ::waitpid(pid, wstatus, options);
+            if (ret == -1 && errno == EINTR) // waitpid was interrupted by a signal, retry
+                continue;
+            return ret;
+        }
+    }
+}
+
 RunningProcessHandle
 Process::run()
 {
@@ -1168,8 +1184,6 @@ Process::run()
         }
 
         _imp->command.exec(err_fd);
-
-        _exit(1);
     }
     else
     {
@@ -1202,7 +1216,7 @@ Process::run()
         ExecError error(error_pipe.read_fd());
         if (error)
         {
-            if (-1 == ::waitpid(child, nullptr, 0))
+            if (-1 == ::waitpid_noeintr(child, nullptr, 0))
                 throw ProcessError("waitpid() returned -1");
 
             throw ProcessError(error);
@@ -1440,7 +1454,7 @@ RunningProcessHandle::wait()
 
     int status(0);
     if (actually_wait)
-        if (-1 == ::waitpid(_imp->pid, &status, 0))
+        if (-1 == ::waitpid_noeintr(_imp->pid, &status, 0))
             throw ProcessError("waitpid() returned -1");
     _imp->pid = -1;
 

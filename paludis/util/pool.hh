@@ -95,11 +95,11 @@ namespace paludis
         public:
             explicit ConcretePoolKey(const T_ &);
 
-            virtual ~ConcretePoolKey();
+            ~ConcretePoolKey() override;
 
-            virtual std::size_t hash() const;
+            std::size_t hash() const override;
 
-            bool same_value(const PoolKey &) const;
+            bool same_value(const PoolKey &) const override;
     };
 
     class PALUDIS_VISIBLE PoolKeys

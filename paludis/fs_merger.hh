@@ -166,7 +166,7 @@ namespace paludis
 
             ///\}
 
-            virtual Hook extend_hook(const Hook &);
+            Hook extend_hook(const Hook &) override;
 
             ///\name Track and record merges
             ///\{
@@ -181,7 +181,7 @@ namespace paludis
             ///\name Handle filesystem entry things
             ///\{
 
-            virtual void on_file_main(bool is_check, const FSPath & src, const FSPath & dst);
+            void on_file_main(bool is_check, const FSPath & src, const FSPath & dst) override;
             virtual void on_file_over_nothing(bool is_check, const FSPath &, const FSPath &);
             virtual void on_file_over_file(bool is_check, const FSPath &, const FSPath &);
             virtual void on_file_over_dir(bool is_check, const FSPath &, const FSPath &);
@@ -192,9 +192,9 @@ namespace paludis
             virtual void unlink_file(FSPath);
             virtual void record_install_file(const FSPath &, const FSPath &, const std::string &, const FSMergerStatusFlags &) = 0;
 
-            virtual void on_enter_dir(bool is_check, const FSPath);
+            void on_enter_dir(bool is_check, const FSPath) override;
 
-            virtual void on_dir_main(bool is_check, const FSPath & src, const FSPath & dst);
+            void on_dir_main(bool is_check, const FSPath & src, const FSPath & dst) override;
             virtual void on_dir_over_nothing(bool is_check, const FSPath &, const FSPath &);
             virtual void on_dir_over_file(bool is_check, const FSPath &, const FSPath &);
             virtual void on_dir_over_dir(bool is_check, const FSPath &, const FSPath &);
@@ -206,7 +206,7 @@ namespace paludis
             virtual void record_install_dir(const FSPath &, const FSPath &, const FSMergerStatusFlags &) = 0;
             virtual void record_install_under_dir(const FSPath &, const FSMergerStatusFlags &) = 0;
 
-            virtual void on_sym_main(bool is_check, const FSPath & src, const FSPath & dst);
+            void on_sym_main(bool is_check, const FSPath & src, const FSPath & dst) override;
             virtual void on_sym_over_nothing(bool is_check, const FSPath &, const FSPath &);
             virtual void on_sym_over_file(bool is_check, const FSPath &, const FSPath &);
             virtual void on_sym_over_dir(bool is_check, const FSPath &, const FSPath &);
@@ -219,11 +219,11 @@ namespace paludis
 
             virtual void unlink_misc(FSPath);
 
-            virtual void prepare_install_under();
+            void prepare_install_under() override;
 
-            virtual FSPath canonicalise_root_path(const FSPath & f);
+            FSPath canonicalise_root_path(const FSPath & f) override;
 
-            virtual void do_dir_recursive(bool is_check, const FSPath &, const FSPath &);
+            void do_dir_recursive(bool is_check, const FSPath &, const FSPath &) override;
 
             ///\}
 
@@ -251,7 +251,7 @@ namespace paludis
 
             ///\}
 
-            virtual void merge();
+            void merge() override;
     };
 
 }

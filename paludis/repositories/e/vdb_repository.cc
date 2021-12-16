@@ -1036,7 +1036,7 @@ namespace
         }
     };
 
-    bool rewrite_dependencies(
+    void rewrite_dependencies(
             const FSPath & f,
             const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > & key,
             const DepRewrites & rewrites)
@@ -1049,8 +1049,6 @@ namespace
             SafeOFStream ff(f, -1, true);
             ff << v.str.str() << std::endl;
         }
-
-        return v.changed;
     }
 }
 
@@ -1314,23 +1312,22 @@ VDBRepository::perform_updates()
         {
             std::cout << std::endl << "Updating installed package dependencies" << std::endl;
 
-            bool rewrite_done(false);
             const std::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
                         generator::InRepository(name()))]);
             for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                     i != i_end ; ++i)
             {
                 if ((*i)->build_dependencies_target_key())
-                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->build_dependencies_target_key()->raw_name(),
+                    rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->build_dependencies_target_key()->raw_name(),
                             (*i)->build_dependencies_target_key(), dep_rewrites);
                 if ((*i)->build_dependencies_host_key())
-                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->build_dependencies_host_key()->raw_name(),
+                    rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->build_dependencies_host_key()->raw_name(),
                             (*i)->build_dependencies_host_key(), dep_rewrites);
                 if ((*i)->run_dependencies_key())
-                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->run_dependencies_key()->raw_name(),
+                    rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->run_dependencies_key()->raw_name(),
                             (*i)->run_dependencies_key(), dep_rewrites);
                 if ((*i)->post_dependencies_key())
-                    rewrite_done |= rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->post_dependencies_key()->raw_name(),
+                    rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->post_dependencies_key()->raw_name(),
                             (*i)->post_dependencies_key(), dep_rewrites);
             }
 

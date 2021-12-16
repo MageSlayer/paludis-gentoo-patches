@@ -119,16 +119,16 @@ InstalledAccountsID::need_keys_added() const
         /* depend upon our primary group */
         {
             struct passwd pwd;
-            struct passwd *result;
-            std::vector<char> buffer;
+            struct passwd *result_pwd;
+            std::vector<char> buffer_pwd;
 
-            if (0 == getpwnam_r_s(stringify(name().package()).c_str(), buffer, pwd, result) || result == nullptr)
+            if (0 == getpwnam_r_s(stringify(name().package()).c_str(), buffer_pwd, pwd, result_pwd) || result_pwd == nullptr)
             {
                 struct group grp;
-                struct group *result;
-                std::vector<char> buffer;
+                struct group *result_grp;
+                std::vector<char> buffer_grp;
 
-                if (0 == getgrgid_r_s(pwd.pw_gid, buffer, grp, result) && nullptr != result)
+                if (0 == getgrgid_r_s(pwd.pw_gid, buffer_grp, grp, result_grp) && nullptr != result_grp)
                 {
                     /* really we should only do this if the group in question is managed by accounts. Users
                      * might have accounts installed by hand with a group that's unmanaged. */

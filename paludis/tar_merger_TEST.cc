@@ -72,6 +72,10 @@ namespace
         {
         }
 
+        void track_install_dir(const FSPath &, const FSPath &) override
+        {
+        }
+
         void track_install_file(const FSPath &, const FSPath &) override
         {
         }
@@ -114,7 +118,7 @@ TEST(TarMerger, Works)
     ASSERT_TRUE(output.stat().is_regular_file());
     EXPECT_TRUE(output.stat().file_size() > 100);
 
-    Process untar_process(ProcessCommand({"sh", "-c", "tar xf ../simple.tar 2>&1"}));
+    Process untar_process(ProcessCommand({"sh", "-c", "tar xpf ../simple.tar 2>&1"}));
     untar_process.chdir(FSPath("tar_merger_TEST_dir/simple_extract"));
     ASSERT_EQ(0, untar_process.run().wait());
 
@@ -126,6 +130,9 @@ TEST(TarMerger, Works)
 
     EXPECT_TRUE((FSPath("tar_merger_TEST_dir") / "simple_extract" / "subdir" / "subsubdir" / "script").stat().is_regular_file());
     EXPECT_TRUE(0 != ((FSPath("tar_merger_TEST_dir") / "simple_extract" / "subdir" / "subsubdir" / "script").stat().permissions() & S_IXUSR));
+
+    EXPECT_TRUE((FSPath("tar_merger_TEST_dir") / "simple_extract" / "subdir" / "subsubdir").stat().is_directory());
+    EXPECT_EQ((FSPath("tar_merger_TEST_dir") / "simple_extract" / "subdir" / "subsubdir").stat().permissions() & 0xFFF, S_IRWXU | S_IRWXG | S_IRWXO);
 
     EXPECT_TRUE((FSPath("tar_merger_TEST_dir") / "simple_extract" / "goodsym").stat().is_symlink());
     EXPECT_EQ("file", (FSPath("tar_merger_TEST_dir") / "simple_extract" / "goodsym").readlink());

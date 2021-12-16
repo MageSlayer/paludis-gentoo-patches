@@ -164,7 +164,7 @@ namespace paludis
 
             LineConfigFile(const Source &, const LineConfigFileOptions &);
 
-            ~LineConfigFile();
+            ~LineConfigFile() override;
 
             ///\}
 
@@ -230,7 +230,7 @@ namespace paludis
                     const TransformationFunction &
                     );
 
-            ~KeyValueConfigFile();
+            ~KeyValueConfigFile() override;
 
             ///\}
 

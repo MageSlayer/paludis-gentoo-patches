@@ -54,63 +54,63 @@ namespace paludis
             void _add_metadata_keys() const;
 
         protected:
-            virtual void need_keys_added() const;
+            void need_keys_added() const override;
 
         public:
             InstalledUnpackagedRepository(
                     const RepositoryName &,
                     const unpackaged_repositories::InstalledUnpackagedRepositoryParams &);
 
-            ~InstalledUnpackagedRepository();
+            ~InstalledUnpackagedRepository() override;
 
-            virtual void invalidate();
+            void invalidate() override;
 
-            virtual bool is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool want_pre_post_phases() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool want_pre_post_phases() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void merge(const MergeParams &);
+            void merge(const MergeParams &) override;
 
             void deindex(const QualifiedPackageName &) const;
 
-            virtual std::shared_ptr<const PackageIDSequence> package_ids(
+            std::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &, const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const QualifiedPackageNameSet> package_names(
+            std::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &, const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const CategoryNamePartSet> category_names(const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<const CategoryNamePartSet> category_names(const RepositoryContentMayExcludes &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+            std::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
                     const PackageNamePart &, const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool has_package_named(const QualifiedPackageName &, const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool has_package_named(const QualifiedPackageName &, const RepositoryContentMayExcludes &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool has_category_named(const CategoryNamePart &, const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool has_category_named(const CategoryNamePart &, const RepositoryContentMayExcludes &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+            bool some_ids_might_support_action(const SupportsActionTestBase &) const override;
 
-            virtual bool some_ids_might_not_be_masked() const;
+            bool some_ids_might_not_be_masked() const override;
 
-            virtual const bool is_unimportant() const;
+            const bool is_unimportant() const override;
 
-            virtual const std::shared_ptr<const Set<std::string> > maybe_expand_licence_nonrecursively(
-                    const std::string &) const;
+            const std::shared_ptr<const Set<std::string> > maybe_expand_licence_nonrecursively(
+                    const std::string &) const override;
 
             /* Keys */
 
-            virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
-            virtual const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const;
+            const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const override;
+            const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const override;
+            const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const override;
+            const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const override;
 
             ///\name RepositoryFactory functions
             ///\{
@@ -132,14 +132,14 @@ namespace paludis
             ///\name Set methods
             ///\{
 
-            virtual void populate_sets() const;
+            void populate_sets() const override;
 
             ///\}
 
-            virtual HookResult perform_hook(const Hook & hook, const std::shared_ptr<OutputManager> &)
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            HookResult perform_hook(const Hook & hook, const std::shared_ptr<OutputManager> &)
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool sync(const std::string &, const std::string &, const std::shared_ptr<OutputManager> &) const;
+            bool sync(const std::string &, const std::string &, const std::shared_ptr<OutputManager> &) const override;
     };
 }
 

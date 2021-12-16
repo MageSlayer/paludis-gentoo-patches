@@ -76,8 +76,6 @@ paludis::resolver::operator== (const Resolvent & a, const Resolvent & b)
     return true;
 }
 
-Resolvent::Resolvent(const Resolvent &) = default;
-
 Resolvent::Resolvent(
         const PackageDepSpec & spec,
         const SlotName & s,

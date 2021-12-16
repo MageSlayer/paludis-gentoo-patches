@@ -194,7 +194,7 @@ TEST_P(DependRdependTest, Works)
     }
 }
 
-INSTANTIATE_TEST_CASE_P(DependRdepend, DependRdependTest, testing::Values(
+INSTANTIATE_TEST_SUITE_P(DependRdepend, DependRdependTest, testing::Values(
             TestParams{"0", true},
             TestParams{"1", true},
             TestParams{"2", true},

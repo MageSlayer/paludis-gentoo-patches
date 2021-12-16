@@ -30,27 +30,27 @@ namespace paludis
             public UnsupportedMask
         {
             public:
-                virtual const std::string explanation() const;
-                virtual char key() const;
-                virtual const std::string description() const;
+                const std::string explanation() const override;
+                char key() const override;
+                const std::string description() const override;
         };
 
         class NoConfigurationInformationMask :
             public UnsupportedMask
         {
             public:
-                virtual const std::string explanation() const;
-                virtual char key() const;
-                virtual const std::string description() const;
+                const std::string explanation() const override;
+                char key() const override;
+                const std::string description() const override;
         };
 
         class AlreadyConfiguredMask :
             public UnsupportedMask
         {
             public:
-                virtual const std::string explanation() const;
-                virtual char key() const;
-                virtual const std::string description() const;
+                const std::string explanation() const override;
+                char key() const override;
+                const std::string description() const override;
         };
     }
 }

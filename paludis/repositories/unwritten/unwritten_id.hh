@@ -76,51 +76,51 @@ namespace paludis
                 Pimp<UnwrittenID> _imp;
 
             protected:
-                void need_keys_added() const;
-                void need_masks_added() const;
+                void need_keys_added() const override;
+                void need_masks_added() const override;
 
             public:
                 UnwrittenID(const UnwrittenIDParams &);
-                ~UnwrittenID();
+                ~UnwrittenID() override;
 
-                 const std::string canonical_form(const PackageIDCanonicalForm) const;
-                 const QualifiedPackageName name() const;
-                 const VersionSpec version() const;
-                 const RepositoryName repository_name() const;
-                 virtual PackageDepSpec uniquely_identifying_spec() const;
+                 const std::string canonical_form(const PackageIDCanonicalForm) const override;
+                 const QualifiedPackageName name() const override;
+                 const VersionSpec version() const override;
+                 const RepositoryName repository_name() const override;
+                 PackageDepSpec uniquely_identifying_spec() const override;
 
-                 const std::shared_ptr<const MetadataValueKey<Slot> > slot_key() const;
-                 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const;
+                 const std::shared_ptr<const MetadataValueKey<Slot> > slot_key() const override;
+                 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const override;
                  const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-                     dependencies_key() const;
+                     dependencies_key() const override;
                  const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-                     build_dependencies_target_key() const;
+                     build_dependencies_target_key() const override;
                  const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-                     build_dependencies_host_key() const;
+                     build_dependencies_host_key() const override;
                  const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-                     run_dependencies_key() const;
+                     run_dependencies_key() const override;
                  const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-                     post_dependencies_key() const;
-                 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const;
-                 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const;
-                 const std::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const;
-                 const std::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const;
-                 const std::shared_ptr<const MetadataTimeKey> installed_time_key() const;
-                 const std::shared_ptr<const MetadataValueKey<FSPath> > fs_location_key() const;
-                 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const;
-                 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const;
-                 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices_key() const;
+                     post_dependencies_key() const override;
+                 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const override;
+                 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const override;
+                 const std::shared_ptr<const MetadataValueKey<std::string> > short_description_key() const override;
+                 const std::shared_ptr<const MetadataValueKey<std::string> > long_description_key() const override;
+                 const std::shared_ptr<const MetadataTimeKey> installed_time_key() const override;
+                 const std::shared_ptr<const MetadataValueKey<FSPath> > fs_location_key() const override;
+                 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > behaviours_key() const override;
+                 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > from_repositories_key() const override;
+                 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > > choices_key() const override;
 
                  bool supports_action(const SupportsActionTestBase &) const
-                     PALUDIS_ATTRIBUTE((warn_unused_result));
-                 void perform_action(Action &) const PALUDIS_ATTRIBUTE((noreturn));
+                     override PALUDIS_ATTRIBUTE((warn_unused_result));
+                 void perform_action(Action &) const override PALUDIS_ATTRIBUTE((noreturn));
 
                  bool arbitrary_less_than_comparison(const PackageID &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
                  std::size_t extra_hash_value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                 virtual const std::shared_ptr<const Contents> contents() const;
+                 const std::shared_ptr<const Contents> contents() const override;
         };
     }
 }

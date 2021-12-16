@@ -174,6 +174,12 @@ PbinMerger::on_done_merge()
 }
 
 void
+PbinMerger::track_install_dir(const FSPath &, const FSPath & dst)
+{
+    display_override(">>> [dir] " + stringify(dst));
+}
+
+void
 PbinMerger::track_install_file(const FSPath &, const FSPath & dst)
 {
     display_override(">>> [obj] " + stringify(dst));

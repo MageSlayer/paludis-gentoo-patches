@@ -7,14 +7,12 @@ if(ENABLE_XML)
 
   paludis_add_library(libpaludiserepositoryxmlthings
                         "${CMAKE_CURRENT_SOURCE_DIR}/xml_things.cc")
-  target_include_directories(libpaludiserepositoryxmlthings
-                             PRIVATE
-                               ${LIBXML2_INCLUDE_DIR})
   target_link_libraries(libpaludiserepositoryxmlthings
                         PRIVATE
                           libpaludis
                           libpaludisutil
-                          ${LIBXML2_LIBRARIES})
+                          LibXml2::LibXml2
+                       )
 endif()
 
 paludis_add_library(libpaludiserepository
@@ -102,7 +100,7 @@ paludis_add_library(libpaludiserepository
                       "${CMAKE_CURRENT_SOURCE_DIR}/dep_parser.se"
                       "${CMAKE_CURRENT_SOURCE_DIR}/iuse.se"
                       "${CMAKE_CURRENT_SOURCE_DIR}/e_repository_params.se")
-add_dependencies(libpaludiserepository libpaludisutil_SE)
+add_dependencies(libpaludiserepository libpaludis_SE libpaludisutil_SE)
 
 foreach(test
           aa_visitor

@@ -7,7 +7,7 @@ paludis_add_library(libpaludisfakerepository
                       "${CMAKE_CURRENT_SOURCE_DIR}/fake_installed_repository.cc"
                       "${CMAKE_CURRENT_SOURCE_DIR}/fake_package_id.cc"
                       "${CMAKE_CURRENT_SOURCE_DIR}/registration.cc")
-add_dependencies(libpaludisfakerepository libpaludisutil_SE)
+add_dependencies(libpaludisfakerepository libpaludis_SE libpaludisutil_SE)
 
 paludis_add_test(fake_repository GTEST)
 paludis_add_test(fake_installed_repository GTEST)

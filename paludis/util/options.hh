@@ -130,6 +130,7 @@ namespace paludis
         public:
             Options() = default;
             Options(const Options &) = default;
+            Options & operator= (const Options &) = default;
 
             Options(std::initializer_list<E_> e)
             {

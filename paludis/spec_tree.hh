@@ -34,6 +34,8 @@ namespace paludis
         class PALUDIS_VISIBLE BasicNode :
             public virtual DeclareAbstractAcceptMethods<BasicNode<Tree_>, typename Tree_::VisitableTypeList>
         {
+            public:
+                virtual ~BasicNode() = default;
         };
 
         template <typename Tree_, typename Item_>

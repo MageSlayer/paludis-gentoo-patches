@@ -51,7 +51,7 @@ namespace paludis
 
             protected:
                 EInstalledRepository(const EInstalledRepositoryParams &, const RepositoryName &, const RepositoryCapabilities &);
-                ~EInstalledRepository();
+                ~EInstalledRepository() override;
 
                 std::string snoop_variable_from_environment_file(
                         const FSPath &,
@@ -61,42 +61,42 @@ namespace paludis
             public:
                 /* RepositoryEnvironmentVariableInterface */
 
-                virtual std::string get_environment_variable(
+                std::string get_environment_variable(
                         const std::shared_ptr<const PackageID> & for_package,
                         const std::string & var) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 /* RepositoryDestinationInterface */
 
-                virtual bool is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual bool want_pre_post_phases() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool want_pre_post_phases() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 /* Repository */
 
-                virtual std::shared_ptr<const CategoryNamePartSet> unimportant_category_names(
-                        const RepositoryContentMayExcludes &) const;
+                std::shared_ptr<const CategoryNamePartSet> unimportant_category_names(
+                        const RepositoryContentMayExcludes &) const override;
 
-                virtual const bool is_unimportant() const;
+                const bool is_unimportant() const override;
 
-                virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+                bool some_ids_might_support_action(const SupportsActionTestBase &) const override;
 
-                virtual bool some_ids_might_not_be_masked() const;
+                bool some_ids_might_not_be_masked() const override;
 
                 HookResult perform_hook(
                         const Hook & hook,
                         const std::shared_ptr<OutputManager> &)
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual bool sync(
+                bool sync(
                         const std::string &,
                         const std::string &,
-                        const std::shared_ptr<OutputManager> &) const;
+                        const std::shared_ptr<OutputManager> &) const override;
 
-                virtual const std::shared_ptr<const Set<std::string> > maybe_expand_licence_nonrecursively(
-                        const std::string &) const;
+                const std::shared_ptr<const Set<std::string> > maybe_expand_licence_nonrecursively(
+                        const std::string &) const override;
 
                 ///\name For use by EInstalledRepositoryID
                 ///\{
@@ -118,7 +118,7 @@ namespace paludis
                 ///\name Set methods
                 ///\{
 
-                virtual void populate_sets() const;
+                void populate_sets() const override;
 
                 ///\}
 

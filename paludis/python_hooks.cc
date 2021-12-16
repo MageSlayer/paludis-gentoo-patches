@@ -34,6 +34,15 @@ namespace
         private:
             static std::mutex _mutex;
 
+            struct Initializer
+            {
+                Initializer()
+                {
+                    Py_Initialize();
+                }
+            };
+
+            static Initializer pyinit;
             static bp::dict _local_namespace_base;
             static bp::dict _output_wrapper_namespace;
             static bp::object _format_exception;
@@ -63,22 +72,23 @@ namespace
         public:
             PyHookFile(const FSPath &, const bool, const Environment * const);
 
-            virtual HookResult run(const Hook &, const std::shared_ptr<OutputManager> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            HookResult run(const Hook &, const std::shared_ptr<OutputManager> &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const FSPath file_name() const
+            const FSPath file_name() const override
             {
                 return _file_name;
             }
 
-            virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &);
+            void add_dependencies(const Hook &, DirectedGraph<std::string, int> &) override;
 
-            virtual const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const
+            const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const override
             {
                 return std::make_shared<Sequence<std::string>>();
             }
     };
 
     std::mutex PyHookFile::_mutex;
+    PyHookFile::Initializer PyHookFile::pyinit;
     bp::dict PyHookFile::_output_wrapper_namespace;
     bp::dict PyHookFile::_local_namespace_base;
     bp::object PyHookFile::_format_exception;
@@ -99,8 +109,6 @@ PyHookFile::PyHookFile(const FSPath & f, const bool r, const Environment * const
         initialized = true;
         try
         {
-            Py_Initialize();
-
             bp::object main = bp::import("__main__");
             bp::object global_namespace = main.attr("__dict__");
 
@@ -393,6 +401,7 @@ PyHookFile::_get_traceback() const
 
     PyObject * ptype, * pvalue, * ptraceback;
     PyErr_Fetch(&ptype, &pvalue, &ptraceback);
+    PyErr_NormalizeException(&ptype, &pvalue, &ptraceback);
 
     if (ptype == NULL)
         ptype = Py_None;

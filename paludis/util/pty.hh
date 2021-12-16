@@ -72,7 +72,7 @@ namespace paludis
             explicit Pty(const bool close_exec);
             explicit Pty(const bool close_exec, const unsigned short columns, const unsigned short lines);
 
-            virtual ~Pty() = default;
+            ~Pty() override = default;
 
             ///\}
 

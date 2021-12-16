@@ -104,7 +104,7 @@ TEST_P(FilterTestCaseBase, Works)
     EXPECT_EQ("", join(indirect_iterator(got_none->begin()), indirect_iterator(got_none->end()), ", "));
 }
 
-INSTANTIATE_TEST_CASE_P(FilterTest, FilterTestCaseBase, testing::Values(
+INSTANTIATE_TEST_SUITE_P(FilterTest, FilterTestCaseBase, testing::Values(
             TestInfo{ std::make_shared<filter::All>(), std::string(
                 "cat/a-1:0::inst_repo1, "
                 "cat/a-1:0::repo1, "
