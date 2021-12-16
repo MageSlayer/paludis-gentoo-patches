@@ -51,13 +51,13 @@ TEST(EnvironmentImplementation, Repositories)
                     n::name() = RepositoryName("repo2")
                     )));
 
-    EXPECT_THROW(e.fetch_repository(RepositoryName("repo1")), NoSuchRepositoryError);
-    EXPECT_THROW(e.fetch_repository(RepositoryName("repo2")), NoSuchRepositoryError);
+    EXPECT_THROW(auto repo = e.fetch_repository(RepositoryName("repo1")), NoSuchRepositoryError);
+    EXPECT_THROW(auto repo = e.fetch_repository(RepositoryName("repo2")), NoSuchRepositoryError);
 
     e.add_repository(10, r1);
     ASSERT_TRUE(bool(e.fetch_repository(RepositoryName("repo1"))));
     EXPECT_EQ(RepositoryName("repo1"), e.fetch_repository(RepositoryName("repo1"))->name());
-    EXPECT_THROW(e.fetch_repository(RepositoryName("repo2")), NoSuchRepositoryError);
+    EXPECT_THROW(auto repo = e.fetch_repository(RepositoryName("repo2")), NoSuchRepositoryError);
 
     EXPECT_THROW(e.add_repository(10, r1), DuplicateRepositoryError);
 
@@ -164,20 +164,20 @@ TEST(EnvironmentImplementation, Disambiguation)
     EXPECT_EQ("good-cat1/pkg-important", stringify(e.fetch_unique_qualified_package_name(PackageNamePart("pkg-important"))));
     EXPECT_EQ("good-cat1/pkg-installed", stringify(e.fetch_unique_qualified_package_name(PackageNamePart("pkg-installed"))));
 
-    EXPECT_THROW(e.fetch_unique_qualified_package_name(PackageNamePart("pkg-two")), AmbiguousPackageNameError);
-    EXPECT_THROW(e.fetch_unique_qualified_package_name(PackageNamePart("pkg-three")), AmbiguousPackageNameError);
+    EXPECT_THROW(auto pkg = e.fetch_unique_qualified_package_name(PackageNamePart("pkg-two")), AmbiguousPackageNameError);
+    EXPECT_THROW(auto pkg = e.fetch_unique_qualified_package_name(PackageNamePart("pkg-three")), AmbiguousPackageNameError);
 
-    EXPECT_THROW(e.fetch_unique_qualified_package_name(PackageNamePart("pkg-fail1")), AmbiguousPackageNameError);
-    EXPECT_THROW(e.fetch_unique_qualified_package_name(PackageNamePart("pkg-fail2")), AmbiguousPackageNameError);
-    EXPECT_THROW(e.fetch_unique_qualified_package_name(PackageNamePart("pkg-fail3")), AmbiguousPackageNameError);
-    EXPECT_THROW(e.fetch_unique_qualified_package_name(PackageNamePart("pkg-fail4")), AmbiguousPackageNameError);
+    EXPECT_THROW(auto pkg = e.fetch_unique_qualified_package_name(PackageNamePart("pkg-fail1")), AmbiguousPackageNameError);
+    EXPECT_THROW(auto pkg = e.fetch_unique_qualified_package_name(PackageNamePart("pkg-fail2")), AmbiguousPackageNameError);
+    EXPECT_THROW(auto pkg = e.fetch_unique_qualified_package_name(PackageNamePart("pkg-fail3")), AmbiguousPackageNameError);
+    EXPECT_THROW(auto pkg = e.fetch_unique_qualified_package_name(PackageNamePart("pkg-fail4")), AmbiguousPackageNameError);
 
-    EXPECT_THROW(e.fetch_unique_qualified_package_name(PackageNamePart("pkg-five")), NoSuchPackageError);
+    EXPECT_THROW(auto pkg = e.fetch_unique_qualified_package_name(PackageNamePart("pkg-five")), NoSuchPackageError);
 
-    EXPECT_THROW(e.fetch_unique_qualified_package_name(PackageNamePart("pkg-one"),
+    EXPECT_THROW(auto pkg = e.fetch_unique_qualified_package_name(PackageNamePart("pkg-one"),
                 filter::SupportsAction<ConfigAction>()), NoSuchPackageError);
     EXPECT_EQ("inst-cat/pkg-foo", stringify(e.fetch_unique_qualified_package_name(PackageNamePart("pkg-foo"))));
     EXPECT_EQ("avail-cat/pkg-foo", stringify(e.fetch_unique_qualified_package_name(PackageNamePart("pkg-foo"), filter::SupportsAction<InstallAction>())));
-    EXPECT_THROW(e.fetch_unique_qualified_package_name(PackageNamePart("pkg-foo"), filter::All(), false), AmbiguousPackageNameError);
+    EXPECT_THROW(auto pkg = e.fetch_unique_qualified_package_name(PackageNamePart("pkg-foo"), filter::All(), false), AmbiguousPackageNameError);
 }
 

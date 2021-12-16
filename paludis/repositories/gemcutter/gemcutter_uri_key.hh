@@ -40,19 +40,19 @@ namespace paludis
                         const MetadataKeyType,
                         const std::string &);
 
-                ~GemcutterURIKey();
+                ~GemcutterURIKey() override;
 
                 ///\}
 
-                virtual const std::shared_ptr<const SimpleURISpecTree> parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const SimpleURISpecTree> parse_value() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::string pretty_print_value(
+                const std::string pretty_print_value(
                         const PrettyPrinter &,
-                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                        const PrettyPrintOptions &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

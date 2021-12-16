@@ -65,72 +65,72 @@ namespace paludis
             ///\{
 
             EnvironmentImplementation();
-            virtual ~EnvironmentImplementation() = 0;
+            ~EnvironmentImplementation() override = 0;
 
             ///\}
 
-            virtual std::shared_ptr<const FSPathSequence> bashrc_files() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<const FSPathSequence> bashrc_files() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const FSPathSequence> syncers_dirs() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<const FSPathSequence> syncers_dirs() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const FSPathSequence> fetchers_dirs() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<const FSPathSequence> fetchers_dirs() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::string distribution() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::string distribution() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool is_paludis_package(const QualifiedPackageName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool is_paludis_package(const QualifiedPackageName &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<PackageIDSequence> operator[] (const Selection &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<PackageIDSequence> operator[] (const Selection &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual NotifierCallbackID add_notifier_callback(const NotifierCallbackFunction &);
+            NotifierCallbackID add_notifier_callback(const NotifierCallbackFunction &) override;
 
-            virtual void remove_notifier_callback(const NotifierCallbackID);
+            void remove_notifier_callback(const NotifierCallbackID) override;
 
-            virtual void trigger_notifier_callback(const NotifierCallbackEvent &) const;
+            void trigger_notifier_callback(const NotifierCallbackEvent &) const override;
 
-            virtual void add_set(
+            void add_set(
                     const SetName &,
                     const SetName &,
                     const std::function<std::shared_ptr<const SetSpecTree> ()> &,
-                    const bool combine) const;
+                    const bool combine) const override;
 
-            virtual std::shared_ptr<const SetNameSet> set_names() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<const SetNameSet> set_names() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::shared_ptr<const SetSpecTree> set(const SetName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const SetSpecTree> set(const SetName &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void add_repository(int importance, const std::shared_ptr<Repository> &);
+            void add_repository(int importance, const std::shared_ptr<Repository> &) override;
 
-            virtual const std::shared_ptr<const Repository> fetch_repository(const RepositoryName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const Repository> fetch_repository(const RepositoryName &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::shared_ptr<Repository> fetch_repository(const RepositoryName &)
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<Repository> fetch_repository(const RepositoryName &)
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool has_repository_named(const RepositoryName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool has_repository_named(const RepositoryName &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual QualifiedPackageName fetch_unique_qualified_package_name(
+            QualifiedPackageName fetch_unique_qualified_package_name(
                     const PackageNamePart &, const Filter & = all_filter(), const bool disambiguate = true) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool more_important_than(const RepositoryName &, const RepositoryName &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool more_important_than(const RepositoryName &, const RepositoryName &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual RepositoryConstIterator begin_repositories() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            RepositoryConstIterator begin_repositories() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual RepositoryConstIterator end_repositories() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            RepositoryConstIterator end_repositories() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::shared_ptr<const Set<std::string> > expand_licence(
-                    const std::string &) const;
+            const std::shared_ptr<const Set<std::string> > expand_licence(
+                    const std::string &) const override;
     };
 
     class PALUDIS_VISIBLE DuplicateSetError :

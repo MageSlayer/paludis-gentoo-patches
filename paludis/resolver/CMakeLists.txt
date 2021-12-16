@@ -86,7 +86,7 @@ paludis_add_library(libpaludisresolver
                       "${CMAKE_CURRENT_SOURCE_DIR}/promote_binaries.se"
                       "${CMAKE_CURRENT_SOURCE_DIR}/resolver_functions.se"
                       "${CMAKE_CURRENT_SOURCE_DIR}/use_existing.se")
-add_dependencies(libpaludisresolver libpaludisutil_SE)
+add_dependencies(libpaludisresolver libpaludis_SE libpaludisutil_SE)
 target_link_libraries(libpaludisresolver
                       INTERFACE
                         Threads::Threads)
@@ -97,7 +97,10 @@ if(ENABLE_GTEST)
                         "${CMAKE_CURRENT_SOURCE_DIR}/resolver_test.cc")
   # TODO(compnerd) create an object library for the SE_SOURCES that we can depend
   # on instead
-  add_dependencies(libpaludisresolvertest libpaludisresolver_SE libpaludisutil_SE)
+  add_dependencies(libpaludisresolvertest
+      libpaludisfakerepository
+      libpaludisresolver_SE
+      libpaludisutil_SE)
 
   foreach(test
             any

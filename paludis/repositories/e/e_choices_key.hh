@@ -53,13 +53,13 @@ namespace paludis
                         const std::shared_ptr<const ERepository> & maybe_profile,
                         const std::function<std::shared_ptr<const Map<ChoiceNameWithPrefix, std::string> > ()> & maybe_descriptions_fn);
 
-                ~EChoicesKey();
+                ~EChoicesKey() override;
 
-                const std::shared_ptr<const Choices> parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Choices> parse_value() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

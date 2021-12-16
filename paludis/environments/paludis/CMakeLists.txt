@@ -17,7 +17,7 @@ paludis_add_library(libpaludispaludisenvironment
 target_compile_definitions(libpaludispaludisenvironment
                            PRIVATE
                              -DSHAREDIR="${CMAKE_INSTALL_FULL_DATAROOTDIR}")
-add_dependencies(libpaludispaludisenvironment libpaludisutil_SE)
+add_dependencies(libpaludispaludisenvironment libpaludis_SE libpaludisutil_SE)
 
 paludis_add_test(paludis_environment GTEST)
 paludis_add_test(world GTEST)

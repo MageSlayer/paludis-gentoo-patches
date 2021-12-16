@@ -30,36 +30,36 @@ namespace paludis
         public:
             UnformattedPrettyPrinter();
 
-            virtual const std::string indentify(const int) const;
-            virtual const std::string newline() const;
+            const std::string indentify(const int) const override;
+            const std::string newline() const override;
 
-            virtual const std::string prettify(const PackageDepSpec &) const;
-            virtual const std::string prettify(const BlockDepSpec &) const;
-            virtual const std::string prettify(const ConditionalDepSpec &) const;
-            virtual const std::string prettify(const NamedSetDepSpec &) const;
-            virtual const std::string prettify(const SimpleURIDepSpec &) const;
-            virtual const std::string prettify(const PlainTextDepSpec &) const;
-            virtual const std::string prettify(const LicenseDepSpec &) const;
-            virtual const std::string prettify(const FetchableURIDepSpec &) const;
-            virtual const std::string prettify(const URILabelsDepSpec &) const;
-            virtual const std::string prettify(const DependenciesLabelsDepSpec &) const;
-            virtual const std::string prettify(const PlainTextLabelDepSpec &) const;
+            const std::string prettify(const PackageDepSpec &) const override;
+            const std::string prettify(const BlockDepSpec &) const override;
+            const std::string prettify(const ConditionalDepSpec &) const override;
+            const std::string prettify(const NamedSetDepSpec &) const override;
+            const std::string prettify(const SimpleURIDepSpec &) const override;
+            const std::string prettify(const PlainTextDepSpec &) const override;
+            const std::string prettify(const LicenseDepSpec &) const override;
+            const std::string prettify(const FetchableURIDepSpec &) const override;
+            const std::string prettify(const URILabelsDepSpec &) const override;
+            const std::string prettify(const DependenciesLabelsDepSpec &) const override;
+            const std::string prettify(const PlainTextLabelDepSpec &) const override;
 
-            virtual const std::string prettify(const std::shared_ptr<const PackageID> &) const;
+            const std::string prettify(const std::shared_ptr<const PackageID> &) const override;
 
-            virtual const std::string prettify(const bool) const;
+            const std::string prettify(const bool) const override;
 
-            virtual const std::string prettify(const long) const;
+            const std::string prettify(const long) const override;
 
-            virtual const std::string prettify(const std::string &) const;
+            const std::string prettify(const std::string &) const override;
 
-            virtual const std::string prettify(const std::pair<const std::string, std::string> &) const;
+            const std::string prettify(const std::pair<const std::string, std::string> &) const override;
 
-            virtual const std::string prettify(const FSPath &) const;
+            const std::string prettify(const FSPath &) const override;
 
-            virtual const std::string prettify(const KeywordName &) const;
+            const std::string prettify(const KeywordName &) const override;
 
-            virtual const std::string prettify(const Maintainer &) const;
+            const std::string prettify(const Maintainer &) const override;
     };
 }
 

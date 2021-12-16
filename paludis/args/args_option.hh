@@ -218,12 +218,12 @@ namespace paludis
                 SwitchArg(ArgsGroup * const group, const std::string & long_name, char short_name,
                         const std::string & description, const bool can_be_negated);
 
-                ~SwitchArg() = default;
+                ~SwitchArg() override = default;
 
-                virtual bool can_be_negated() const;
+                bool can_be_negated() const override;
 
-                virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string forwardable_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<Sequence<std::string> > forwardable_args() const override PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -266,10 +266,10 @@ namespace paludis
                  */
                 void set_argument(const std::string & arg);
 
-                virtual bool can_be_negated() const;
+                bool can_be_negated() const override;
 
-                virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string forwardable_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<Sequence<std::string> > forwardable_args() const override PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -340,7 +340,7 @@ namespace paludis
                         const StringSetArgOptions & options,
                         void (* validator) (const std::string &));
 
-                ~StringSetArg();
+                ~StringSetArg() override;
 
                 ///\}
 
@@ -374,10 +374,10 @@ namespace paludis
 
                 ///\}
 
-                virtual bool can_be_negated() const;
+                bool can_be_negated() const override;
 
-                virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string forwardable_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<Sequence<std::string> > forwardable_args() const override PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -401,7 +401,7 @@ namespace paludis
                 StringSequenceArg(ArgsGroup * const, const std::string & long_name,
                         const char short_name, const std::string & description);
 
-                ~StringSequenceArg();
+                ~StringSequenceArg() override;
 
                 ///\}
 
@@ -422,10 +422,10 @@ namespace paludis
                  */
                 void add_argument(const std::string & arg);
 
-                virtual bool can_be_negated() const;
+                bool can_be_negated() const override;
 
-                virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string forwardable_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<Sequence<std::string> > forwardable_args() const override PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
 
@@ -448,17 +448,17 @@ namespace paludis
                  */
                 AliasArg(ArgsOption * const other, const std::string & new_long_name, bool is_hidden = false);
 
-                virtual bool specified() const
+                bool specified() const override
                 {
                     return _other->specified();
                 }
 
-                virtual bool explicitly_specified() const
+                bool explicitly_specified() const override
                 {
                     return _other->explicitly_specified();
                 }
 
-                virtual void set_specified(const ArgsOptionSpecifiedness value)
+                void set_specified(const ArgsOptionSpecifiedness value) override
                 {
                     _other->set_specified(value);
                 }
@@ -481,10 +481,10 @@ namespace paludis
                     return _other;
                 }
 
-                virtual bool can_be_negated() const;
+                bool can_be_negated() const override;
 
-                virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string forwardable_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<Sequence<std::string> > forwardable_args() const override PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -515,10 +515,10 @@ namespace paludis
                  */
                 void set_argument(const int arg) { _argument = arg; }
 
-                virtual bool can_be_negated() const;
+                bool can_be_negated() const override;
 
-                virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string forwardable_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<Sequence<std::string> > forwardable_args() const override PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         /**
@@ -604,7 +604,7 @@ namespace paludis
                         const char short_name, const std::string & description,
                         const EnumArgOptions & opts, const std::string & default_arg);
 
-                ~EnumArg();
+                ~EnumArg() override;
 
                 /**
                  * Fetch the argument that was given to this option.
@@ -648,10 +648,10 @@ namespace paludis
 
                 ///\}
 
-                virtual bool can_be_negated() const;
+                bool can_be_negated() const override;
 
-                virtual const std::string forwardable_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::shared_ptr<Sequence<std::string> > forwardable_args() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string forwardable_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<Sequence<std::string> > forwardable_args() const override PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

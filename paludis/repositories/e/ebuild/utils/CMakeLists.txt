@@ -14,7 +14,8 @@ if(ENABLE_PBINS)
                    "${CMAKE_CURRENT_SOURCE_DIR}/unpaxinate.cc")
   target_link_libraries(unpaxinate
                         PRIVATE
-                          ${LibArchive_LIBRARIES})
+                          LibArchive::LibArchive
+                       )
 endif()
 
 add_executable(print_exports

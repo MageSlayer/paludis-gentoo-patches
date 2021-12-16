@@ -202,7 +202,7 @@ TEST_P(PhasesTest, Works)
     }
 }
 
-INSTANTIATE_TEST_CASE_P(Works, PhasesTest, testing::Values(
+INSTANTIATE_TEST_SUITE_P(Works, PhasesTest, testing::Values(
             std::string("0"),
             std::string("1"),
             std::string("2"),
@@ -329,7 +329,7 @@ TEST_P(VarsTest, Works)
     }
 }
 
-INSTANTIATE_TEST_CASE_P(Works, VarsTest, testing::Values(
+INSTANTIATE_TEST_SUITE_P(Works, VarsTest, testing::Values(
             std::string("0"),
             std::string("1"),
             std::string("2"),

@@ -46,7 +46,7 @@ execute_process(COMMAND
                   BUILDHOST
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
 execute_process(COMMAND
-                  date +%&-%m-%dT%H:%M:%S%z
+                  date +%Y-%m-%dT%H:%M:%S%z
                 OUTPUT_VARIABLE
                   BUILDDATE
                 OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -223,16 +223,12 @@ if(ENABLE_PYTHON)
   target_compile_definitions(libpaludispythonhooks
                              PRIVATE
                                -DPYTHONINSTALLDIR="${PALUDIS_PYTHON_INSTALL_DIR}")
-  target_include_directories(libpaludispythonhooks
-                             PRIVATE
-                               ${Boost_INCLUDE_DIRS}
-                               ${PYTHON_INCLUDE_DIRS})
   target_link_libraries(libpaludispythonhooks
                         PRIVATE
                           libpaludis
                           libpaludisutil
-                          ${Boost_LIBRARIES}
-                          ${PYTHON_LIBRARIES})
+                          Boost::python
+                          Python::Python)
 endif()
 
 if(ENABLE_PBINS)
@@ -243,7 +239,8 @@ if(ENABLE_PBINS)
                         PRIVATE
                           libpaludis
                           libpaludisutil
-                          ${LibArchive_LIBRARIES})
+                          LibArchive::LibArchive
+                       )
 endif()
 
 if(ENABLE_STRIPPER)

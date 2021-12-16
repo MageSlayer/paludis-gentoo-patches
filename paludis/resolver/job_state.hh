@@ -48,7 +48,7 @@ namespace paludis
             public ImplementAcceptMethods<JobState, JobPendingState>
         {
             public:
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
                 static const std::shared_ptr<JobPendingState> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -61,7 +61,7 @@ namespace paludis
 
             public:
                 JobActiveState();
-                ~JobActiveState();
+                ~JobActiveState() override;
 
                 void set_output_manager(const std::shared_ptr<OutputManager> &);
                 const std::shared_ptr<JobSucceededState> succeeded() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -69,7 +69,7 @@ namespace paludis
 
                 const std::shared_ptr<OutputManager> output_manager() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
                 static const std::shared_ptr<JobActiveState> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -82,11 +82,11 @@ namespace paludis
 
             public:
                 JobSucceededState(const std::shared_ptr<OutputManager> &);
-                ~JobSucceededState();
+                ~JobSucceededState() override;
 
                 const std::shared_ptr<OutputManager> output_manager() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
                 static const std::shared_ptr<JobSucceededState> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -99,11 +99,11 @@ namespace paludis
 
             public:
                 JobFailedState(const std::shared_ptr<OutputManager> &);
-                ~JobFailedState();
+                ~JobFailedState() override;
 
                 const std::shared_ptr<OutputManager> output_manager() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
                 static const std::shared_ptr<JobFailedState> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
@@ -112,7 +112,7 @@ namespace paludis
             public ImplementAcceptMethods<JobState, JobSkippedState>
         {
             public:
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
                 static const std::shared_ptr<JobSkippedState> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }

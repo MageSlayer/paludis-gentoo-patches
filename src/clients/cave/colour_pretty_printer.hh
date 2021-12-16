@@ -34,12 +34,12 @@ namespace paludis
                 int _initial_indent;
 
             protected:
-                virtual const std::string format_enabled(const std::string &) const;
-                virtual const std::string format_disabled(const std::string &) const;
-                virtual const std::string format_installed(const std::string &) const;
-                virtual const std::string format_installable(const std::string &) const;
-                virtual const std::string format_masked(const std::string &) const;
-                virtual const std::string format_plain(const std::string &) const;
+                const std::string format_enabled(const std::string &) const override;
+                const std::string format_disabled(const std::string &) const override;
+                const std::string format_installed(const std::string &) const override;
+                const std::string format_installable(const std::string &) const override;
+                const std::string format_masked(const std::string &) const override;
+                const std::string format_plain(const std::string &) const override;
 
             public:
                 ColourPrettyPrinter(
@@ -47,8 +47,8 @@ namespace paludis
                         const std::shared_ptr<const PackageID> & id,
                         const int initial_indent);
 
-                virtual const std::string indentify(const int) const;
-                virtual const std::string newline() const;
+                const std::string indentify(const int) const override;
+                const std::string newline() const override;
 
                 const std::string prettify_choice_value_forced(const std::shared_ptr<const ChoiceValue> &) const;
                 const std::string prettify_choice_value_enabled(const std::shared_ptr<const ChoiceValue> &) const;

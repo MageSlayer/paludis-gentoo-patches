@@ -30,9 +30,9 @@ namespace paludis
             public UnsupportedMask
         {
             public:
-                virtual char key() const;
-                virtual const std::string description() const;
-                virtual const std::string explanation() const;
+                char key() const override;
+                const std::string description() const override;
+                const std::string explanation() const override;
         };
     }
 }

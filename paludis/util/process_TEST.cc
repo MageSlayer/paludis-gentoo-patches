@@ -345,6 +345,6 @@ TEST(Process, SendFDFixed)
 TEST(Process, ExecError)
 {
     Process process(ProcessCommand({"paludis-nonexisting-command"}));
-    EXPECT_THROW({ process.run(); }, ProcessError);
+    EXPECT_THROW({ auto ph = process.run(); }, ProcessError);
 }
 
