@@ -278,7 +278,8 @@ namespace
                         n::unpack_suffixes() = k.get("unpack_suffixes"),
                         n::unpack_unrecognised_is_fatal() = destringify_key<bool>(k, "unpack_unrecognised_is_fatal"),
                         n::use_env_unset() = destringify_key<bool>(k, "use_env_unset"),
-                        n::use_with_enable_empty_third_argument() = destringify_key<bool>(k, "use_with_enable_empty_third_argument")
+                        n::use_with_enable_empty_third_argument() = destringify_key<bool>(k, "use_with_enable_empty_third_argument"),
+                        n::usev_output_arg() = destringify_key<bool>(k, "usev_output_arg")
                         ));
     }
 

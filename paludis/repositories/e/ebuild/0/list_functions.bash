@@ -2,6 +2,7 @@
 # vim: set sw=4 sts=4 et :
 
 # Copyright (c) 2006, 2009, 2012 Ciaran McCreesh
+# Copyright (c) 2021 Mihai Moldovan
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -27,8 +28,23 @@ use()
 
 usev()
 {
+    typeset -i max_args='1'
+    typeset args_desc='argument'
+    if [[ -n "${PALUDIS_USEV_OUTPUT_ARG}" ]]; then
+        ((++max_args))
+        args_desc='arguments'
+    fi
+
+    if [[ "${#}" -gt "${max_args}" ]]; then
+        die "More than ${max_args} ${args_desc} passed to usev"
+    fi
+
     if useq "${1}" ; then
-        echo "${1#!}"
+        if [[ -n "${2}" ]]; then
+            echo "${2}"
+        else
+            echo "${1#!}"
+        fi
         return 0
     else
         return 1

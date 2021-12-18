@@ -243,6 +243,7 @@ namespace paludis
         typedef Name<struct name_use_stable_mask_force> use_stable_mask_force;
         typedef Name<struct name_use_with_enable_empty_third_argument> use_with_enable_empty_third_argument;
         typedef Name<struct name_userpriv_cannot_use_root> userpriv_cannot_use_root;
+        typedef Name<struct name_usev_output_arg> usev_output_arg;
         typedef Name<struct name_utility_path_suffixes> utility_path_suffixes;
         typedef Name<struct name_vdb_from_env_unless_empty_variables> vdb_from_env_unless_empty_variables;
         typedef Name<struct name_vdb_from_env_variables> vdb_from_env_variables;
@@ -538,6 +539,7 @@ namespace paludis
             NamedValue<n::unpack_unrecognised_is_fatal, bool> unpack_unrecognised_is_fatal;
             NamedValue<n::use_env_unset, bool> use_env_unset;
             NamedValue<n::use_with_enable_empty_third_argument, bool> use_with_enable_empty_third_argument;
+            NamedValue<n::usev_output_arg, bool> usev_output_arg;
         };
 
         struct EAPIPipeCommands
