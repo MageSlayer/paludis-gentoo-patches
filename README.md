@@ -16,3 +16,13 @@ Same as original Paludis - GPLv2
     `build_dependencies_key` to `build_dependencies_target_key` (the direct
     equivalent) and may want also to take `build_dependencies_host_key` into
     account.
+
+### EAPI=8 Branch
+
+**Do not use this branch**.
+
+It is **not** feature-complete.
+It **will** break your system if you try to use it in the current state.
+You **will** miss dependencies.
+
+**Do not use this branch.**
