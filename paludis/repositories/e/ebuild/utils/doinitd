@@ -28,4 +28,10 @@ if [[ ${#} -lt 1 ]]; then
 fi
 
 EXEDESTTREE=/etc/init.d
+
+if [[ -z "${PALUDIS_EXEOPTS_INFLUENCES_DOINITD}" ]]; then
+    export EXEOPTIONS='-m0755'
+    export DIROPTIONS=''
+fi
+
 doexe "$@"

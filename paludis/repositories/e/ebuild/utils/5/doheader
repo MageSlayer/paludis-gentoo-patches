@@ -2,6 +2,7 @@
 # vim: set sw=4 sts=4 et :
 
 # Copyright (c) 2006 Stephen Bennett
+# Copyright (c) 2021 Mihai Moldovan
 #
 # Based in part upon doenvd from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -32,4 +33,10 @@ if [[ ${#} -lt 1 ]]; then
 fi
 
 typeset -gx "${PALUDIS_INSDESTTREE_VAR}=/usr/include/"
+
+if [[ -z "${PALUDIS_INSOPTS_INFLUENCES_DOHEADER}" ]]; then
+    export INSOPTIONS='-m0644'
+    export DIROPTIONS=''
+fi
+
 doins "$@"
