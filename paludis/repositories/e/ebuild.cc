@@ -265,6 +265,7 @@ EbuildCommand::operator() ()
                 tools->insopts_influences_doheader() ? "yes" : "")
         .setenv("PALUDIS_EXEOPTS_INFLUENCES_DOINITD",
                 tools->exeopts_influences_doinitd() ? "yes" : "")
+        .setenv("PALUDIS_DOSYM_R", tools->dosym_r() ? "yes" : "")
         .setenv("PALUDIS_FAILURE_IS_FATAL", tools->failure_is_fatal() ? "yes" : "")
         .setenv("PALUDIS_LOG_TO_STDOUT", tools->log_to_stdout() ? "yes" : "")
         .setenv("PALUDIS_DOMO_RESPECTS_INTO", tools->domo_respects_into() ? "yes" : "")

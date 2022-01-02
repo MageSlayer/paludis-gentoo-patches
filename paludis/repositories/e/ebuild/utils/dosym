@@ -2,6 +2,7 @@
 # vim: set sw=4 sts=4 et :
 
 # Copyright (c) 2006 Stephen Bennett
+# Copyright (c) 2021 Mihai Moldovan
 #
 # Based in part upon dosym from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -25,21 +26,171 @@ source ${PALUDIS_EBUILD_DIR}/die_functions.bash
 source ${PALUDIS_EBUILD_DIR}/pipe_functions.bash
 source ${PALUDIS_EBUILD_DIR}/output_functions.bash
 
+# Canonicalizes a path, without the need of any component to actually exist.
+# This essentially means:
+#   - multiple consecutive slashes are dropped
+#   - references to the current directory (".") are dropped
+#   - references to the parent directory (".." are dropped and handled by
+#     removing the appropriate amount of components.
+canonical_path() {
+    typeset path="${1}"
+    typeset ret=''
+    typeset -i absolute='0'
+
+    # Check if we're working with a relative or an absolute path.
+    if [[ "${path}" != "${path#/}" ]]; then
+        absolute='1'
+    fi
+
+    # Move through components.
+    typeset -i up_level='0'
+    typeset cur_component=''
+    typeset tmp=''
+    while [[ '.' != "${path}" ]] && [[ '/' != "${path}" ]]; do
+        cur_component="$(basename "${path}")"
+
+        # Skip references to the current directory.
+        if [[ '.' != "${cur_component}" ]]; then
+            if [[ '..' = "${cur_component}" ]]; then
+                # If the current component is a reference to the parent
+                # directory, record that and do nothing else.
+                ((++up_level))
+            else
+                # Otherwise, it's a component we may need to process.
+                if [[ '0' -ne "${up_level}" ]]; then
+                    # We have to skip levels, so ignore the component and
+                    # decrement the skipping counter.
+                    ((--up_level))
+                else
+                    # Okay, we shall handle the component. Prepend it to our
+                    # return value.
+                    # For good measure, leave don't append a slash for the
+                    # last component.
+                    tmp="${ret}"
+                    ret="${cur_component}"
+                    if [[ -n "${tmp}" ]]; then
+                        ret="${ret}/${tmp}"
+                    fi
+                fi
+            fi
+        fi
+
+        # Drop the component and re-enter loop.
+        path="$(dirname "${path}")"
+    done
+
+    if [[ '1' -eq "${absolute}" ]]; then
+        # Lastly, prepend a slash for absolute paths.
+        ret="/${ret}"
+    else
+        # For relative paths, prepend the remaining up levels.
+        while [[ '0' -ne "${up_level}" ]]; do
+            tmp="${ret}"
+            ret=".."
+            if [[ -n "${tmp}" ]]; then
+                ret="${ret}/${tmp}"
+            fi
+
+            ((--up_level))
+        done
+
+        if [[ -z "${ret}" ]]; then
+            # Make sure that the "return value" is not empty.
+            # Note that this is trivially true for absolute paths.
+            ret='.'
+        fi
+    fi
+
+    printf '%s\n' "${ret}"
+}
+
 if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR%/}/ ]]; then
     paludis_die_or_error "\${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting"
+fi
+
+typeset relative='false'
+
+if [[ -n "${PALUDIS_DOSYM_R}" ]] ; then
+    if [[ "${1}" == '-r' ]] ; then
+        shift
+        relative='true'
+    fi
 fi
 
 if [[ ${#} -ne 2 ]]; then
     paludis_die_or_error "exactly two arguments needed."
 fi
 
-if [[ ! -d $(dirname "${!PALUDIS_IMAGE_DIR_VAR%/}/${2#/}") ]]; then
+typeset from="${1}"
+typeset to="${2}"
+
+if [[ 'true' = "${relative}" ]]; then
+    # Relative mode only supports absolute paths.
+    if [[ "${from#/}" = "${from}" ]]; then
+        paludis_die_or_error "relative mode only works with absolute paths, but given path was relative: ${from}"
+    fi
+
+    from="$(canonical_path "${from}")"
+fi
+
+if [[ ! -d $(dirname "${!PALUDIS_IMAGE_DIR_VAR%/}/${to#/}") ]]; then
     if [[ -n "${PALUDIS_DOSYM_NO_MKDIR}" ]] ; then
-        die "error: target directory $(dirname "${!PALUDIS_IMAGE_DIR_VAR%/}/${2#/}" ) does not exist"
+        die "error: target directory $(dirname "${!PALUDIS_IMAGE_DIR_VAR%/}/${to#/}" ) does not exist"
     else
-        ebuild_notice "qa" "$0: target directory $(dirname "${!PALUDIS_IMAGE_DIR_VAR%/}/${2#/}") does not exist; creating. Please fix the ebuild to create it explicitly."
-        dodir $(dirname $2)
+        ebuild_notice "qa" "$0: target directory $(dirname "${!PALUDIS_IMAGE_DIR_VAR%/}/${to#/}") does not exist; creating. Please fix the ebuild to create it explicitly."
+        dodir "$(dirname "${to}")"
     fi
 fi
 
-ln -snf "${1}" "${!PALUDIS_IMAGE_DIR_VAR%/}/${2#/}" || paludis_die_or_error "creation of symlink ${!PALUDIS_IMAGE_DIR_VAR%/}/${2#/} failed"
+if [[ 'true' = "${relative}" ]]; then
+    # Make sure that the to location is an absolute path and drop the last
+    # component, which must be a file name.
+    typeset to_full="$(dirname "$(canonical_path "/${to#/}")")"
+
+    # Find longest matching prefix.
+    typeset to_work="${to_full}"
+    typeset from_work="${from}"
+    typeset to_comp=''
+    typeset from_comp=''
+    while [[ "${to_comp}" = "${from_comp}" ]]; do
+        # Drop current component - we know that it matches.
+        to_work="${to_work#*/}"
+        from_work="${from_work#*/}"
+
+        # Extract new components.
+        to_comp="${to_work%%/*}"
+        from_comp="${from_work%%/*}"
+    done
+
+    # Now that we removed the longest matching prefix, we only have to
+    # "convert" the remaining directory components in the "to" working
+    # path to dir up references.
+    while [[ -n "${to_comp}" ]]; do
+        # Add new up level.
+        from_work="../${from_work}"
+
+        # Drop current component.
+        typeset to_work_new="${to_work#*/}"
+
+        # If nothing was dropped, it means that we can drop all, since it's
+        # already a single component.
+        if [[ "${to_work}" = "${to_work_new}" ]]; then
+            to_work=''
+        else
+            to_work="${to_work_new}"
+        fi
+
+        # Extract new component.
+        to_comp="${to_work%%/*}"
+    done
+
+    # Finally, make sure that the modified path is not empty.
+    if [[ -z "${from_work}" ]]; then
+        from_work='.'
+    fi
+
+    # The modified path will be our new from value.
+    from="${from_work}"
+fi
+
+ln -snf "${from}" "${!PALUDIS_IMAGE_DIR_VAR%/}/${to#/}" || paludis_die_or_error "creation of symlink ${!PALUDIS_IMAGE_DIR_VAR%/}/${to#/} failed"
