@@ -275,22 +275,48 @@ EFetchableURIKey::initial_label() const
     if (_imp->id->restrict_key())
         _imp->id->restrict_key()->parse_value()->top()->accept(f);
 
+    enum strictness_enum {
+        lenient = 0,
+        strict,
+        strictest
+    };
+    strictness_enum strictness { };
     for (const auto & item : f)
     {
         if (_imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->end() !=
                 std::find(_imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->begin(),
                     _imp->id->eapi()->supported()->ebuild_options()->restrict_fetch()->end(), item->text()))
+        {
             result = *parse_uri_label("default-restrict-fetch:", *_imp->id->eapi())->begin();
+            strictness = strictest;
+        }
 
         else if (_imp->id->eapi()->supported()->ebuild_options()->restrict_mirror()->end() !=
                 std::find(_imp->id->eapi()->supported()->ebuild_options()->restrict_mirror()->begin(),
                     _imp->id->eapi()->supported()->ebuild_options()->restrict_mirror()->end(), item->text()))
+        {
             result = *parse_uri_label("default-restrict-mirror:", *_imp->id->eapi())->begin();
+            strictness = strict;
+        }
 
+        /*
+         * Ignore "primaryuri" if we're already on "mirror", since "mirror"
+         * essentially implies "primaryuri" in a more restrictive way. "fetch"
+         * implies "mirror", but does not need special handling since we stop
+         * searching for other matches if "fetch" has been provided.
+         */
+        else if (lenient != strictness)
+        {
+        }
         else if (_imp->id->eapi()->supported()->ebuild_options()->restrict_primaryuri()->end() !=
                 std::find(_imp->id->eapi()->supported()->ebuild_options()->restrict_primaryuri()->begin(),
                     _imp->id->eapi()->supported()->ebuild_options()->restrict_primaryuri()->end(), item->text()))
             result = *parse_uri_label("default-restrict-primaryuri:", *_imp->id->eapi())->begin();
+
+        /* No need to continue if we're already restricted to the strictest value. */
+        if ((result) && (strictest == strictness)) {
+            break;
+        }
     }
 
     if (! result)
