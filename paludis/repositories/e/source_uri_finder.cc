@@ -18,6 +18,7 @@
  */
 
 #include <paludis/repositories/e/source_uri_finder.hh>
+#include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/log.hh>
 #include <paludis/util/stringify.hh>
 #include <paludis/util/strip.hh>
@@ -27,9 +28,11 @@
 
 #include <paludis/util/wrapped_forward_iterator-impl.hh>
 #include <paludis/util/sequence-impl.hh>
+#include <paludis/util/set-impl.hh>
 #include <paludis/util/pimp-impl.hh>
 
 #include <list>
+#include <algorithm>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -43,6 +46,7 @@ namespace paludis
     {
         const Environment * const env;
         const Repository * const repo;
+        const EAPI & eapi;
         const std::string url;
         const std::string filename;
         const std::string mirrors_name;
@@ -50,10 +54,11 @@ namespace paludis
 
         Items items;
 
-        Imp(const Environment * const e, const Repository * const r, const std::string & u, const std::string & f,
+        Imp(const Environment * const e, const Repository * const r, const EAPI & p,  const std::string & u, const std::string & f,
                 const std::string & m, const GetMirrorsFunction & g) :
             env(e),
             repo(r),
+            eapi(p),
             url(u),
             filename(f),
             mirrors_name(m),
@@ -69,9 +74,9 @@ namespace paludis
     };
 }
 
-SourceURIFinder::SourceURIFinder(const Environment * const e, const Repository * const repo,
+SourceURIFinder::SourceURIFinder(const Environment * const e, const Repository * const repo, const EAPI & p,
         const std::string & u, const std::string & f, const std::string & m, const GetMirrorsFunction & g) :
-    _imp(e, repo, u, f, m, g)
+    _imp(e, repo, p, u, f, m, g)
 {
 }
 
@@ -87,6 +92,14 @@ SourceURIFinder::ConstIterator
 SourceURIFinder::end() const
 {
     return ConstIterator(_imp->items.end());
+}
+
+namespace
+{
+    bool uri_start_with_override(const std::string & overridestr, const std::string & uri)
+    {
+        return (0 == uri.rfind(overridestr, 0));
+    }
 }
 
 void
@@ -116,16 +129,41 @@ SourceURIFinder::visit(const URIMirrorsOnlyLabel &)
 }
 
 void
-SourceURIFinder::visit(const URIListedOnlyLabel &)
+SourceURIFinder::visit(const URIListedOnlyLabel &label)
 {
     Context context("When using URIListedOnlyLabel:");
-    add_local_mirrors();
-    add_listed();
+
+    /* Check for overrides. */
+    if (_imp->eapi.supported()->ebuild_options()->restrict_mirror_override()->end() !=
+            std::find_if(_imp->eapi.supported()->ebuild_options()->restrict_mirror_override()->begin(),
+                _imp->eapi.supported()->ebuild_options()->restrict_mirror_override()->end(),
+                std::bind(&uri_start_with_override, std::placeholders::_1, _imp->url))) {
+        visit(URIMirrorsThenListedLabel(label.text()));
+    }
+    else {
+        add_local_mirrors();
+        add_listed();
+    }
 }
 
 void
-SourceURIFinder::visit(const URIManualOnlyLabel &)
+SourceURIFinder::visit(const URIManualOnlyLabel &label)
 {
+    Context context("When using URIManualOnlyLabel:");
+
+    /* Check for overrides. */
+    if (_imp->eapi.supported()->ebuild_options()->restrict_mirror_override()->end() !=
+            std::find_if(_imp->eapi.supported()->ebuild_options()->restrict_mirror_override()->begin(),
+                _imp->eapi.supported()->ebuild_options()->restrict_mirror_override()->end(),
+                std::bind(&uri_start_with_override, std::placeholders::_1, _imp->url))) {
+        visit(URIMirrorsThenListedLabel(label.text()));
+    }
+    else if (_imp->eapi.supported()->ebuild_options()->restrict_fetch_override()->end() !=
+            std::find_if(_imp->eapi.supported()->ebuild_options()->restrict_fetch_override()->begin(),
+                _imp->eapi.supported()->ebuild_options()->restrict_fetch_override()->end(),
+                std::bind(&uri_start_with_override, std::placeholders::_1, _imp->url))) {
+        visit(URIListedOnlyLabel(label.text()));
+    }
 }
 
 void

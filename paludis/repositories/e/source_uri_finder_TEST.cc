@@ -18,6 +18,7 @@
  */
 
 #include <paludis/repositories/e/source_uri_finder.hh>
+#include <paludis/repositories/e/eapi.hh>
 
 #include <paludis/environments/test/test_environment.hh>
 
@@ -54,8 +55,9 @@ TEST(SourceURIFinder, Works)
                     n::name() = RepositoryName("repo")
                     )));
     env.add_repository(1, repo);
+    const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"));
 
-    SourceURIFinder f(&env, repo.get(), "http://example.com/path/input", "output", "monkey",
+    SourceURIFinder f(&env, repo.get(), *eapi, "http://example.com/path/input", "output", "monkey",
             get_mirrors_fn);
     URIMirrorsThenListedLabel label("mirrors-then-listed");
     label.accept(f);
@@ -79,8 +81,9 @@ TEST(SourceURIFinder, Mirrors)
                     n::name() = RepositoryName("repo")
                     )));
     env.add_repository(1, repo);
+    const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"));
 
-    SourceURIFinder f(&env, repo.get(), "mirror://example/path/input", "output", "repo", get_mirrors_fn);
+    SourceURIFinder f(&env, repo.get(), *eapi, "mirror://example/path/input", "output", "repo", get_mirrors_fn);
     URIMirrorsThenListedLabel label("mirrors-then-listed");
     label.accept(f);
 

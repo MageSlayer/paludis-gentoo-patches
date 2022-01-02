@@ -26,6 +26,7 @@
 #include <paludis/dep_label.hh>
 #include <paludis/environment-fwd.hh>
 #include <paludis/repository-fwd.hh>
+#include <paludis/repositories/e/eapi-fwd.hh>
 #include <functional>
 
 namespace paludis
@@ -46,6 +47,7 @@ namespace paludis
             public:
                 SourceURIFinder(const Environment * const env,
                         const Repository * const repo,
+                        const EAPI & eapi,
                         const std::string & url,
                         const std::string & filename,
                         const std::string & mirrors_name,

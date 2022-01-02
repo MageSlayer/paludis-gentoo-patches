@@ -201,6 +201,8 @@ namespace
                         n::restrict_fetch() = make_set(check_get(k, "restrict_fetch")),
                         n::restrict_mirror() = make_set(check_get(k, "restrict_mirror")),
                         n::restrict_primaryuri() = make_set(check_get(k, "restrict_primaryuri")),
+                        n::restrict_fetch_override() = make_set(check_get(k, "restrict_fetch_override")),
+                        n::restrict_mirror_override() = make_set(check_get(k, "restrict_mirror_override")),
                         n::save_base_variables() = check_get(k, "save_base_variables"),
                         n::save_unmodifiable_variables() = check_get(k, "save_unmodifiable_variables"),
                         n::save_variables() = check_get(k, "save_variables"),
