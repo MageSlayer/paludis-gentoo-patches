@@ -158,7 +158,7 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
         throw ActionFailedError("No fetch action label available");
 
     auto repo(_imp->env->fetch_repository(_imp->id->repository_name()));
-    SourceURIFinder source_uri_finder(_imp->env, repo.get(),
+    SourceURIFinder source_uri_finder(_imp->env, repo.get(), _imp->eapi,
             node.spec()->original_url(), node.spec()->filename(), _imp->mirrors_name, _imp->get_mirrors_fn);
     (*_imp->labels.begin())->accept(source_uri_finder);
     for (const auto & uri_to_filename : source_uri_finder)

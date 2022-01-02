@@ -204,6 +204,8 @@ namespace paludis
         typedef Name<struct name_restrict_fetch> restrict_fetch;
         typedef Name<struct name_restrict_mirror> restrict_mirror;
         typedef Name<struct name_restrict_primaryuri> restrict_primaryuri;
+        typedef Name<struct name_restrict_fetch_override> restrict_fetch_override;
+        typedef Name<struct name_restrict_mirror_override> restrict_mirror_override;
         typedef Name<struct name_restrictions> restrictions;
         typedef Name<struct name_run_depend> run_depend;
         typedef Name<struct name_save_base_variables> save_base_variables;
@@ -471,6 +473,8 @@ namespace paludis
             NamedValue<n::restrict_fetch, std::shared_ptr<Set<std::string> > > restrict_fetch;
             NamedValue<n::restrict_mirror, std::shared_ptr<Set<std::string> > > restrict_mirror;
             NamedValue<n::restrict_primaryuri, std::shared_ptr<Set<std::string> > > restrict_primaryuri;
+            NamedValue<n::restrict_fetch_override, std::shared_ptr<Set<std::string> > > restrict_fetch_override;
+            NamedValue<n::restrict_mirror_override, std::shared_ptr<Set<std::string> > > restrict_mirror_override;
             NamedValue<n::save_base_variables, std::string> save_base_variables;
             NamedValue<n::save_unmodifiable_variables, std::string> save_unmodifiable_variables;
             NamedValue<n::save_variables, std::string> save_variables;
