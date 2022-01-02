@@ -257,6 +257,14 @@ EbuildCommand::operator() ()
         .setenv("PALUDIS_NEW_STDIN", tools->new_stdin() ? "yes" : "")
         .setenv("PALUDIS_USE_WITH_ENABLE_EMPTY_THIRD_ARGUMENT",
                 tools->use_with_enable_empty_third_argument() ? "yes" : "")
+        .setenv("PALUDIS_INSOPTS_INFLUENCES_DOCONFD",
+                tools->insopts_influences_doconfd() ? "yes" : "")
+        .setenv("PALUDIS_INSOPTS_INFLUENCES_DOENVD",
+                tools->insopts_influences_doenvd() ? "yes" : "")
+        .setenv("PALUDIS_INSOPTS_INFLUENCES_DOHEADER",
+                tools->insopts_influences_doheader() ? "yes" : "")
+        .setenv("PALUDIS_EXEOPTS_INFLUENCES_DOINITD",
+                tools->exeopts_influences_doinitd() ? "yes" : "")
         .setenv("PALUDIS_FAILURE_IS_FATAL", tools->failure_is_fatal() ? "yes" : "")
         .setenv("PALUDIS_LOG_TO_STDOUT", tools->log_to_stdout() ? "yes" : "")
         .setenv("PALUDIS_DOMO_RESPECTS_INTO", tools->domo_respects_into() ? "yes" : "")

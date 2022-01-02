@@ -128,6 +128,7 @@ namespace paludis
         typedef Name<struct name_env_use_expand_implicit> env_use_expand_implicit;
         typedef Name<struct name_env_use_expand_unprefixed> env_use_expand_unprefixed;
         typedef Name<struct name_env_use_expand_values_part> env_use_expand_values_part;
+        typedef Name<struct name_exeopts_influences_doinitd> exeopts_influences_doinitd;
         typedef Name<struct name_exported_name> exported_name;
         typedef Name<struct name_f_function_prefix> f_function_prefix;
         typedef Name<struct name_failure_is_fatal> failure_is_fatal;
@@ -155,6 +156,9 @@ namespace paludis
         typedef Name<struct name_ignore_pivot_env_functions> ignore_pivot_env_functions;
         typedef Name<struct name_ignore_pivot_env_variables> ignore_pivot_env_variables;
         typedef Name<struct name_inherited> inherited;
+        typedef Name<struct name_insopts_influences_doconfd> insopts_influences_doconfd;
+        typedef Name<struct name_insopts_influences_doenvd> insopts_influences_doenvd;
+        typedef Name<struct name_insopts_influences_doheader> insopts_influences_doheader;
         typedef Name<struct name_is_pbin> is_pbin;
         typedef Name<struct name_iuse> iuse;
         typedef Name<struct name_iuse_effective> iuse_effective;
@@ -514,7 +518,11 @@ namespace paludis
             NamedValue<n::dosym_mkdir, bool> dosym_mkdir;
             NamedValue<n::econf_extra_options, std::string> econf_extra_options;
             NamedValue<n::econf_extra_options_help_dependent, std::string> econf_extra_options_help_dependent;
+            NamedValue<n::exeopts_influences_doinitd, bool> exeopts_influences_doinitd;
             NamedValue<n::failure_is_fatal, bool> failure_is_fatal;
+            NamedValue<n::insopts_influences_doconfd, bool> insopts_influences_doconfd;
+            NamedValue<n::insopts_influences_doenvd, bool> insopts_influences_doenvd;
+            NamedValue<n::insopts_influences_doheader, bool> insopts_influences_doheader;
             NamedValue<n::log_to_stdout, bool> log_to_stdout;
             NamedValue<n::new_stdin, bool> new_stdin;
             NamedValue<n::unpack_any_path, bool> unpack_any_path;
