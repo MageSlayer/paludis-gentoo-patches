@@ -68,20 +68,23 @@ namespace
 
         std::shared_ptr<DependenciesLabelSequence> build_dependencies_target_labels;
         std::shared_ptr<DependenciesLabelSequence> build_dependencies_host_labels;
-        std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> run_dependencies_target_labels;
+        std::shared_ptr<DependenciesLabelSequence> run_dependencies_host_labels;
 
         InstalledUnpackagedIDData() :
             behaviours_value(std::make_shared<Set<std::string>>()),
             behaviours_key(std::make_shared<LiteralMetadataStringSetKey>("behaviours", "behaviours", mkt_internal, behaviours_value)),
             build_dependencies_target_labels(std::make_shared<DependenciesLabelSequence>()),
             build_dependencies_host_labels(std::make_shared<DependenciesLabelSequence>()),
-            run_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
+            run_dependencies_target_labels(std::make_shared<DependenciesLabelSequence>()),
+            run_dependencies_host_labels(std::make_shared<DependenciesLabelSequence>())
         {
             behaviours_value->insert("transient");
 
             build_dependencies_target_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build_dependencies_target"));
             build_dependencies_host_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build_dependencies_host"));
-            run_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run_dependencies"));
+            run_dependencies_target_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run_dependencies_target"));
+            run_dependencies_host_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run_dependencies_host"));
         }
     };
 
@@ -357,7 +360,8 @@ namespace paludis
         std::shared_ptr<InstalledUnpackagedStringKey> description_key;
         std::shared_ptr<InstalledUnpackagedDependencyKey> build_dependencies_target_key;
         std::shared_ptr<InstalledUnpackagedDependencyKey> build_dependencies_host_key;
-        std::shared_ptr<InstalledUnpackagedDependencyKey> run_dependencies_key;
+        std::shared_ptr<InstalledUnpackagedDependencyKey> run_dependencies_target_key;
+        std::shared_ptr<InstalledUnpackagedDependencyKey> run_dependencies_host_key;
         std::shared_ptr<LiteralMetadataStringSetKey> behaviours_key;
 
         Imp(
@@ -406,10 +410,15 @@ namespace paludis
                             "build_dependencies_host", "Build dependencies_host", l / "build_dependencies_host",
                             InstalledUnpackagedIDData::get_instance()->build_dependencies_host_labels, mkt_dependencies);
 
-            if ((l / "run_dependencies").stat().exists())
-                run_dependencies_key = std::make_shared<InstalledUnpackagedDependencyKey>(env,
-                            "run_dependencies", "Run dependencies", l / "run_dependencies",
-                            InstalledUnpackagedIDData::get_instance()->run_dependencies_labels, mkt_dependencies);
+            if ((l / "run_dependencies_target").stat().exists())
+                run_dependencies_target_key = std::make_shared<InstalledUnpackagedDependencyKey>(env,
+                            "run_dependencies_target", "Run dependencies (target)", l / "run_dependencies_target",
+                            InstalledUnpackagedIDData::get_instance()->run_dependencies_target_labels, mkt_dependencies);
+
+            if ((l / "run_dependencies_host").stat().exists())
+                run_dependencies_host_key = std::make_shared<InstalledUnpackagedDependencyKey>(env,
+                            "run_dependencies_host", "Run dependencies (host)", l / "run_dependencies_host",
+                            InstalledUnpackagedIDData::get_instance()->run_dependencies_host_labels, mkt_dependencies);
         }
     };
 }
@@ -431,8 +440,10 @@ InstalledUnpackagedID::InstalledUnpackagedID(const Environment * const e, const 
         add_metadata_key(_imp->build_dependencies_target_key);
     if (_imp->build_dependencies_host_key)
         add_metadata_key(_imp->build_dependencies_host_key);
-    if (_imp->run_dependencies_key)
-        add_metadata_key(_imp->run_dependencies_key);
+    if (_imp->run_dependencies_target_key)
+        add_metadata_key(_imp->run_dependencies_target_key);
+    if (_imp->run_dependencies_host_key)
+        add_metadata_key(_imp->run_dependencies_host_key);
     add_metadata_key(_imp->behaviours_key);
 }
 
@@ -526,9 +537,15 @@ InstalledUnpackagedID::build_dependencies_host_key() const
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-InstalledUnpackagedID::run_dependencies_key() const
+InstalledUnpackagedID::run_dependencies_target_key() const
 {
-    return _imp->run_dependencies_key;
+    return _imp->run_dependencies_target_key;
+}
+
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+InstalledUnpackagedID::run_dependencies_host_key() const
+{
+    return _imp->run_dependencies_host_key;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >

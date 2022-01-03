@@ -330,7 +330,14 @@ AccountsID::build_dependencies_host_key() const
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-AccountsID::run_dependencies_key() const
+AccountsID::run_dependencies_target_key() const
+{
+    _need_file_keys();
+    return _imp->dependencies_key;
+}
+
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+AccountsID::run_dependencies_host_key() const
 {
     _need_file_keys();
     return _imp->dependencies_key;

@@ -78,7 +78,7 @@ namespace
     {
         void common_test_code()
         {
-            data->install("breaking", "dep", "1")->run_dependencies_key()->set_from_string("breaking/target");
+            data->install("breaking", "dep", "1")->run_dependencies_target_key()->set_from_string("breaking/target");
             data->install("breaking", "target", "1");
 
             data->allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec("breaking/target", &data->env, UserPackageDepSpecOptions()));

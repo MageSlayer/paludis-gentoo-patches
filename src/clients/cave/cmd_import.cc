@@ -85,7 +85,8 @@ namespace
         args::StringArg a_description;
         args::StringSetArg a_build_dependency_target;
         args::StringSetArg a_build_dependency_host;
-        args::StringSetArg a_run_dependency;
+        args::StringSetArg a_run_dependency_target;
+        args::StringSetArg a_run_dependency_host;
         args::SwitchArg a_preserve_metadata;
 
         ImportCommandLine() :
@@ -123,8 +124,10 @@ namespace
                     "Specify a target-system build dependency. May be specified multiple times."),
             a_build_dependency_host(&g_metadata_options, "build-dependency-host", 'b',
                     "Specify a host-system build dependency. May be specified multiple times."),
-            a_run_dependency(&g_metadata_options, "run-dependency", 'R',
-                    "Specify a run dependency. May be specified multiple times."),
+            a_run_dependency_target(&g_metadata_options, "run-dependency-target", 'R',
+                    "Specify a target-system run dependency. May be specified multiple times."),
+            a_run_dependency_host(&g_metadata_options, "run-dependency-host", 'I',
+                    "Specify a host-system run dependency. May be specified multiple times."),
             a_preserve_metadata(&g_metadata_options, "preserve-metadata", 'P',
                     "If replacing a package previously installed using this command, copy its description "
                     "and dependencies", true)
@@ -215,7 +218,8 @@ ImportCommand::run(
 
     std::string build_dependencies_target;
     std::string build_dependencies_host;
-    std::string run_dependencies;
+    std::string run_dependencies_target;
+    std::string run_dependencies_host;
     std::string description;
 
     if (cmdline.a_preserve_metadata.specified())
@@ -243,8 +247,10 @@ ImportCommand::run(
             build_dependencies_target = old_id->build_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { });
         if (old_id->build_dependencies_host_key())
             build_dependencies_host = old_id->build_dependencies_host_key()->pretty_print_value(UnformattedPrettyPrinter(), { });
-        if (old_id->run_dependencies_key())
-            run_dependencies = old_id->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { });
+        if (old_id->run_dependencies_target_key())
+            run_dependencies_target = old_id->run_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { });
+        if (old_id->run_dependencies_host_key())
+            run_dependencies_host = old_id->run_dependencies_host_key()->pretty_print_value(UnformattedPrettyPrinter(), { });
     }
 
     if (cmdline.a_description.specified())
@@ -257,10 +263,14 @@ ImportCommand::run(
         build_dependencies_host = join(
                 cmdline.a_build_dependency_host.begin_args(),
                 cmdline.a_build_dependency_host.end_args(), ", ");
-    if (cmdline.a_run_dependency.specified())
-        run_dependencies = join(
-                cmdline.a_run_dependency.begin_args(),
-                cmdline.a_run_dependency.end_args(), ", ");
+    if (cmdline.a_run_dependency_target.specified())
+        run_dependencies_target = join(
+                cmdline.a_run_dependency_target.begin_args(),
+                cmdline.a_run_dependency_target.end_args(), ", ");
+    if (cmdline.a_run_dependency_host.specified())
+        run_dependencies_host = join(
+                cmdline.a_run_dependency_host.begin_args(),
+                cmdline.a_run_dependency_host.end_args(), ", ");
 
     std::string strip;
     if (cmdline.a_strip.argument() == "never")
@@ -293,7 +303,8 @@ ImportCommand::run(
     keys->insert("description", description);
     keys->insert("build_dependencies_target", build_dependencies_target);
     keys->insert("build_dependencies_host", build_dependencies_host);
-    keys->insert("run_dependencies", run_dependencies);
+    keys->insert("run_dependencies_target", run_dependencies_target);
+    keys->insert("run_dependencies_host", run_dependencies_host);
     keys->insert("strip", strip);
     keys->insert("preserve_work", preserve_work);
     std::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env.get(),

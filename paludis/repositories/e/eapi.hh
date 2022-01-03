@@ -207,7 +207,8 @@ namespace paludis
         typedef Name<struct name_restrict_fetch_override> restrict_fetch_override;
         typedef Name<struct name_restrict_mirror_override> restrict_mirror_override;
         typedef Name<struct name_restrictions> restrictions;
-        typedef Name<struct name_run_depend> run_depend;
+        typedef Name<struct name_run_depend_target> run_depend_target;
+        typedef Name<struct name_run_depend_host> run_depend_host;
         typedef Name<struct name_save_base_variables> save_base_variables;
         typedef Name<struct name_save_unmodifiable_variables> save_unmodifiable_variables;
         typedef Name<struct name_save_variables> save_variables;
@@ -429,7 +430,8 @@ namespace paludis
             NamedValue<n::remote_ids, std::shared_ptr<const EAPIMetadataVariable> > remote_ids;
             NamedValue<n::required_use, std::shared_ptr<const EAPIMetadataVariable> > required_use;
             NamedValue<n::restrictions, std::shared_ptr<const EAPIMetadataVariable> > restrictions;
-            NamedValue<n::run_depend, std::shared_ptr<const EAPIMetadataVariable> > run_depend;
+            NamedValue<n::run_depend_target, std::shared_ptr<const EAPIMetadataVariable> > run_depend_target;
+            NamedValue<n::run_depend_host, std::shared_ptr<const EAPIMetadataVariable> > run_depend_host;
             NamedValue<n::scm_revision, std::shared_ptr<const EAPIMetadataVariable> > scm_revision;
             NamedValue<n::short_description, std::shared_ptr<const EAPIMetadataVariable> > short_description;
             NamedValue<n::slot, std::shared_ptr<const EAPIMetadataVariable> > slot;

@@ -66,7 +66,7 @@ foo/bar
 END
 
 cat <<"END" > foo/bar/bar-1.0.ebuild || exit 1
-EAPI="7"
+EAPI="8"
 DESCRIPTION="Test package"
 HOMEPAGE="http://paludis.exherbo.org/"
 SRC_URI="http://example.com/${P}.tar.bz2"
@@ -76,8 +76,9 @@ LICENSE="GPL-2"
 KEYWORDS="~test"
 RESTRICT="monkey"
 DEPEND="foo/bar"
-RDEPEND=""
 BDEPEND="foo/bar"
+RDEPEND="foo/bar"
+IDEPEND="foo/bar"
 PROVIDE="virtual/monkey"
 END
 

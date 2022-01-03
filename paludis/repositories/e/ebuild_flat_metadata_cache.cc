@@ -191,8 +191,11 @@ namespace
             if (-1 != m.build_depend_host()->flat_list_index() && ! m.build_depend_host()->name().empty())
                 id->load_build_depend_host(m.build_depend_host()->name(), m.build_depend_host()->description(), lines.at(m.build_depend_host()->flat_list_index()), false);
 
-            if (-1 != m.run_depend()->flat_list_index() && ! m.run_depend()->name().empty())
-                id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), lines.at(m.run_depend()->flat_list_index()), false);
+            if (-1 != m.run_depend_target()->flat_list_index() && ! m.run_depend_target()->name().empty())
+                id->load_run_depend_target(m.run_depend_target()->name(), m.run_depend_target()->description(), lines.at(m.run_depend_target()->flat_list_index()), false);
+
+            if (-1 != m.run_depend_host()->flat_list_index() && ! m.run_depend_host()->name().empty())
+                id->load_run_depend_host(m.run_depend_host()->name(), m.run_depend_host()->description(), lines.at(m.run_depend_host()->flat_list_index()), false);
 
             id->load_slot(m.slot(), lines.at(m.slot()->flat_list_index()));
 
@@ -577,8 +580,11 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
             if (! m.build_depend_host()->name().empty())
                 id->load_build_depend_host(m.build_depend_host()->name(), m.build_depend_host()->description(), keys[m.build_depend_host()->name()], false);
 
-            if (! m.run_depend()->name().empty())
-                id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(), keys[m.run_depend()->name()], false);
+            if (! m.run_depend_target()->name().empty())
+                id->load_run_depend_target(m.run_depend_target()->name(), m.run_depend_target()->description(), keys[m.run_depend_target()->name()], false);
+
+            if (! m.run_depend_host()->name().empty())
+                id->load_run_depend_host(m.run_depend_host()->name(), m.run_depend_host()->description(), keys[m.run_depend_host()->name()], false);
 
             id->load_slot(m.slot(), keys[m.slot()->name()]);
 
@@ -831,8 +837,10 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
                     s.append(flatten(id->build_dependencies_target_key()->parse_value()) + " ");
                 if (id->build_dependencies_host_key())
                     s.append(flatten(id->build_dependencies_host_key()->parse_value()) + " ");
-                if (id->run_dependencies_key())
-                    s.append(flatten(id->run_dependencies_key()->parse_value()) + " ");
+                if (id->run_dependencies_target_key())
+                    s.append(flatten(id->run_dependencies_target_key()->parse_value()) + " ");
+                if (id->run_dependencies_host_key())
+                    s.append(flatten(id->run_dependencies_host_key()->parse_value()) + " ");
                 if (id->post_dependencies_key())
                     s.append(flatten(id->post_dependencies_key()->parse_value()) + " ");
             }
@@ -852,8 +860,11 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
         if (! m.build_depend_host()->name().empty() && id->build_dependencies_host_key())
             write_kv(cache, m.build_depend_host()->name(), flatten(id->build_dependencies_host_key()->parse_value()));
 
-        if (! m.run_depend()->name().empty() && id->run_dependencies_key())
-            write_kv(cache, m.run_depend()->name(), flatten(id->run_dependencies_key()->parse_value()));
+        if (! m.run_depend_target()->name().empty() && id->run_dependencies_target_key())
+            write_kv(cache, m.run_depend_target()->name(), flatten(id->run_dependencies_target_key()->parse_value()));
+
+        if (! m.run_depend_host()->name().empty() && id->run_dependencies_host_key())
+            write_kv(cache, m.run_depend_host()->name(), flatten(id->run_dependencies_host_key()->parse_value()));
 
         if (! m.slot()->name().empty() && id->slot_key())
             write_kv(cache, m.slot()->name(), normalise(id->slot_key()->parse_value().raw_value()));

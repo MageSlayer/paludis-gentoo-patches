@@ -76,7 +76,8 @@ namespace paludis
                 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const override;
                 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_target_key() const override;
                 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_host_key() const override;
-                const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const override;
+                const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_target_key() const override;
+                const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_host_key() const override;
                 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const override;
                 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > dependencies_key() const override;
                 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const override;
@@ -131,7 +132,9 @@ namespace paludis
                         const bool rewritten) const;
                 void load_build_depend_host(const std::string &, const std::string &, const std::string &,
                         const bool rewritten) const;
-                void load_run_depend(const std::string &, const std::string &, const std::string &,
+                void load_run_depend_target(const std::string &, const std::string &, const std::string &,
+                        const bool rewritten) const;
+                void load_run_depend_host(const std::string &, const std::string &, const std::string &,
                         const bool rewritten) const;
                 void load_post_depend(const std::string &, const std::string &, const std::string &,
                         const bool rewritten) const;

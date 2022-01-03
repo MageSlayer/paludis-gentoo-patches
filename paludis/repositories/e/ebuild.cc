@@ -582,21 +582,24 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
         if (! m.build_depend_host()->name().empty())
             id->load_build_depend_host(m.build_depend_host()->name(), m.build_depend_host()->description(), get(keys, m.build_depend_host()->name()), false);
 
-        if (! m.run_depend()->name().empty())
+        if (! m.run_depend_target()->name().empty())
         {
             if (id->eapi()->supported()->ebuild_options()->rdepend_defaults_to_depend())
             {
                 if (! get(keys, "PALUDIS_EBUILD_RDEPEND_WAS_SET").empty())
-                    id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(),
-                            get(keys, m.run_depend()->name()), false);
+                    id->load_run_depend_target(m.run_depend_target()->name(), m.run_depend_target()->description(),
+                            get(keys, m.run_depend_target()->name()), false);
                 else
-                    id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(),
-                            get(keys, "PALUDIS_EBUILD_DEPEND") + " " + get(keys, m.run_depend()->name()), false);
+                    id->load_run_depend_target(m.run_depend_target()->name(), m.run_depend_target()->description(),
+                            get(keys, "PALUDIS_EBUILD_DEPEND") + " " + get(keys, m.run_depend_target()->name()), false);
             }
             else
-                id->load_run_depend(m.run_depend()->name(), m.run_depend()->description(),
-                        get(keys, m.run_depend()->name()), false);
+                id->load_run_depend_target(m.run_depend_target()->name(), m.run_depend_target()->description(),
+                        get(keys, m.run_depend_target()->name()), false);
         }
+
+        if (! m.run_depend_host()->name().empty())
+            id->load_run_depend_host(m.run_depend_host()->name(), m.run_depend_host()->description(), get(keys, m.run_depend_host()->name()), false);
 
         if (! m.pdepend()->name().empty())
             id->load_post_depend(m.pdepend()->name(), m.pdepend()->description(), get(keys, m.pdepend()->name()), false);
