@@ -200,7 +200,8 @@ namespace paludis
              * dependencies.
              *
              * If dependencies_key is used, the client should ignore
-             * build_dependencies_target_key, build_dependencies_host_key, run_dependencies_key and post_dependencies_key.
+             * build_dependencies_target_key, build_dependencies_host_key, run_dependencies_target_key,
+             * run_dependencies_host_key and post_dependencies_key.
              *
              * Repositories that support this key must also provide the old
              * split out keys.
@@ -222,10 +223,16 @@ namespace paludis
             virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_host_key() const = 0;
 
             /**
-             * The run_dependencies_key, if non-zero, indicates a package's
-             * run-time dependencies.
+             * The run_dependencies_target_key, if non-zero, indicates a package's
+             * run-time dependencies in target architecture.
              */
-            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const = 0;
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_target_key() const = 0;
+
+            /**
+             * The run_dependencies_host_key, if non-zero, indicates a package's
+             * run-time dependencies in host architecture.
+             */
+            virtual const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_host_key() const = 0;
 
             /**
              * The post_dependencies_key, if non-zero, indicates a package's

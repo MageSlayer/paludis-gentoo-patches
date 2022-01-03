@@ -233,7 +233,13 @@ UnwrittenID::build_dependencies_host_key() const
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-UnwrittenID::run_dependencies_key() const
+UnwrittenID::run_dependencies_target_key() const
+{
+    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+}
+
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+UnwrittenID::run_dependencies_host_key() const
 {
     return nullptr;
 }

@@ -329,10 +329,16 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
             build_dependencies_host_file << m.package_id()->build_dependencies_host_key()->pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
         }
 
-        if (m.package_id()->run_dependencies_key())
+        if (m.package_id()->run_dependencies_target_key())
         {
-            SafeOFStream run_dependencies_file(target_ver_dir / "run_dependencies", -1, true);
-            run_dependencies_file << m.package_id()->run_dependencies_key()->pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
+            SafeOFStream run_dependencies_target_file(target_ver_dir / "run_dependencies_target", -1, true);
+            run_dependencies_target_file << m.package_id()->run_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
+        }
+
+        if (m.package_id()->run_dependencies_host_key())
+        {
+            SafeOFStream run_dependencies_host_file(target_ver_dir / "run_dependencies_host", -1, true);
+            run_dependencies_host_file << m.package_id()->run_dependencies_host_key()->pretty_print_value(UnformattedPrettyPrinter(), { }) << std::endl;
         }
     }
 

@@ -56,16 +56,19 @@ namespace
     {
         std::shared_ptr<DependenciesLabelSequence> build_dependencies_target_labels;
         std::shared_ptr<DependenciesLabelSequence> build_dependencies_host_labels;
-        std::shared_ptr<DependenciesLabelSequence> run_dependencies_labels;
+        std::shared_ptr<DependenciesLabelSequence> run_dependencies_target_labels;
+        std::shared_ptr<DependenciesLabelSequence> run_dependencies_host_labels;
 
         UnpackagedIDData() :
             build_dependencies_target_labels(std::make_shared<DependenciesLabelSequence>()),
             build_dependencies_host_labels(std::make_shared<DependenciesLabelSequence>()),
-            run_dependencies_labels(std::make_shared<DependenciesLabelSequence>())
+            run_dependencies_target_labels(std::make_shared<DependenciesLabelSequence>()),
+            run_dependencies_host_labels(std::make_shared<DependenciesLabelSequence>())
         {
             build_dependencies_target_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build_dependencies_target"));
             build_dependencies_host_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag> >("build_dependencies_host"));
-            run_dependencies_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run_dependencies"));
+            run_dependencies_target_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run_dependencies_target"));
+            run_dependencies_host_labels->push_back(std::make_shared<AlwaysEnabledDependencyLabel<DependenciesRunLabelTag> >("run_dependencies_host"));
         }
     };
 }
@@ -84,7 +87,8 @@ namespace paludis
         const std::shared_ptr<LiteralMetadataValueKey<FSPath> > fs_location_key;
         const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_target_key;
         const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_host_key;
-        const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key;
+        const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_target_key;
+        const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_host_key;
         const std::shared_ptr<const MetadataValueKey<std::string> > description_key;
         const std::shared_ptr<const UnpackagedChoicesKey> choices_key;
         const std::shared_ptr<LiteralMetadataValueKey<bool> > strip_key;
@@ -98,7 +102,8 @@ namespace paludis
                 const FSPath & l,
                 const std::string & bt,
                 const std::string & bh,
-                const std::string & r,
+                const std::string & rt,
+                const std::string & rh,
                 const std::string & d,
                 const Tribool ds,
                 const Tribool dw,
@@ -116,8 +121,10 @@ namespace paludis
                         UnpackagedIDData::get_instance()->build_dependencies_target_labels, bt)),
             build_dependencies_host_key(std::make_shared<UnpackagedDependencyKey>(env, "build_dependencies_host", "Build dependencies", mkt_dependencies,
                         UnpackagedIDData::get_instance()->build_dependencies_host_labels, bh)),
-            run_dependencies_key(std::make_shared<UnpackagedDependencyKey>(env, "run_dependencies", "Run dependencies", mkt_dependencies,
-                        UnpackagedIDData::get_instance()->run_dependencies_labels, r)),
+            run_dependencies_target_key(std::make_shared<UnpackagedDependencyKey>(env, "run_dependencies_target", "Run dependencies (target)", mkt_dependencies,
+                        UnpackagedIDData::get_instance()->run_dependencies_target_labels, rt)),
+            run_dependencies_host_key(std::make_shared<UnpackagedDependencyKey>(env, "run_dependencies_host", "Run dependencies (host)", mkt_dependencies,
+                        UnpackagedIDData::get_instance()->run_dependencies_host_labels, rh)),
             description_key(std::make_shared<LiteralMetadataValueKey<std::string> >("description", "Description", mkt_significant, d)),
             choices_key(std::make_shared<UnpackagedChoicesKey>(env, "choices", "Choices", mkt_normal, id)),
             strip_key(ds.is_indeterminate() ? nullptr :
@@ -131,14 +138,16 @@ namespace paludis
 
 UnpackagedID::UnpackagedID(const Environment * const e, const QualifiedPackageName & q,
         const VersionSpec & v, const SlotName & s, const RepositoryName & n, const FSPath & l,
-        const std::string & bt, const std::string & bh, const std::string & r, const std::string & d, const Tribool ds, const Tribool dw) :
-    _imp(e, q, v, s, n, l, bt, bh, r, d, ds, dw, this)
+        const std::string & bt, const std::string & bh, const std::string & rt, const std::string & rh,
+        const std::string & d, const Tribool ds, const Tribool dw) :
+    _imp(e, q, v, s, n, l, bt, bh, rt, rh, d, ds, dw, this)
 {
     add_metadata_key(_imp->slot_key);
     add_metadata_key(_imp->fs_location_key);
     add_metadata_key(_imp->build_dependencies_target_key);
     add_metadata_key(_imp->build_dependencies_host_key);
-    add_metadata_key(_imp->run_dependencies_key);
+    add_metadata_key(_imp->run_dependencies_target_key);
+    add_metadata_key(_imp->run_dependencies_host_key);
     add_metadata_key(_imp->description_key);
     add_metadata_key(_imp->choices_key);
     if (_imp->strip_key)
@@ -237,9 +246,15 @@ UnpackagedID::build_dependencies_host_key() const
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-UnpackagedID::run_dependencies_key() const
+UnpackagedID::run_dependencies_target_key() const
 {
-    return _imp->run_dependencies_key;
+    return _imp->run_dependencies_target_key;
+}
+
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+UnpackagedID::run_dependencies_host_key() const
+{
+    return _imp->run_dependencies_host_key;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >

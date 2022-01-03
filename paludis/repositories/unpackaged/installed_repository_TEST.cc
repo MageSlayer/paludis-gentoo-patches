@@ -368,7 +368,8 @@ TEST(InstalledRepository, MultipleOps)
                         n::name() = QualifiedPackageName("cat/pkg4a"),
                         n::preserve_work() = indeterminate,
                         n::rewrite_ids_over_to_root() = -1,
-                        n::run_dependencies() = "",
+                        n::run_dependencies_target() = "",
+                        n::run_dependencies_host() = "",
                         n::slot() = SlotName("foo"),
                         n::strip() = indeterminate,
                         n::version() = VersionSpec("1.0", { })
@@ -429,7 +430,8 @@ TEST(InstalledRepository, MultipleOps)
                         n::name() = QualifiedPackageName("cat/pkg4b"),
                         n::preserve_work() = indeterminate,
                         n::rewrite_ids_over_to_root() = -1,
-                        n::run_dependencies() = "",
+                        n::run_dependencies_target() = "",
+                        n::run_dependencies_host() = "",
                         n::slot() = SlotName("foo"),
                         n::strip() = indeterminate,
                         n::version() = VersionSpec("1.0", { })
@@ -492,7 +494,8 @@ TEST(InstalledRepository, MultipleOps)
                         n::name() = QualifiedPackageName("cat/pkg4b"),
                         n::preserve_work() = indeterminate,
                         n::rewrite_ids_over_to_root() = -1,
-                        n::run_dependencies() = "",
+                        n::run_dependencies_target() = "",
+                        n::run_dependencies_host() = "",
                         n::slot() = SlotName("foo"),
                         n::strip() = indeterminate,
                         n::version() = VersionSpec("1.0", { })

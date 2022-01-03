@@ -237,7 +237,9 @@ paludis::resolver::dependent_upon(
     }
     else
     {
-        for (auto& fn : { &PackageID::build_dependencies_target_key, &PackageID::build_dependencies_host_key, &PackageID::run_dependencies_key, &PackageID::post_dependencies_key })
+        for (auto& fn : { &PackageID::build_dependencies_target_key, &PackageID::build_dependencies_host_key,
+                          &PackageID::run_dependencies_target_key, &PackageID::run_dependencies_host_key,
+                          &PackageID::post_dependencies_key })
         {
             auto key(((*id).*fn)());
             if (key)
@@ -268,8 +270,10 @@ paludis::resolver::collect_depped_upon(
             id->build_dependencies_target_key()->parse_value()->top()->accept(c);
         if (id->build_dependencies_host_key())
             id->build_dependencies_host_key()->parse_value()->top()->accept(c);
-        if (id->run_dependencies_key())
-            id->run_dependencies_key()->parse_value()->top()->accept(c);
+        if (id->run_dependencies_target_key())
+            id->run_dependencies_target_key()->parse_value()->top()->accept(c);
+        if (id->run_dependencies_host_key())
+            id->run_dependencies_host_key()->parse_value()->top()->accept(c);
         if (id->post_dependencies_key())
             id->post_dependencies_key()->parse_value()->top()->accept(c);
     }
@@ -303,8 +307,10 @@ paludis::resolver::collect_dependents(
                 id->build_dependencies_target_key()->parse_value()->top()->accept(c);
             if (id->build_dependencies_host_key())
                 id->build_dependencies_host_key()->parse_value()->top()->accept(c);
-            if (id->run_dependencies_key())
-                id->run_dependencies_key()->parse_value()->top()->accept(c);
+            if (id->run_dependencies_target_key())
+                id->run_dependencies_target_key()->parse_value()->top()->accept(c);
+            if (id->run_dependencies_host_key())
+                id->run_dependencies_host_key()->parse_value()->top()->accept(c);
             if (id->post_dependencies_key())
                 id->post_dependencies_key()->parse_value()->top()->accept(c);
         }

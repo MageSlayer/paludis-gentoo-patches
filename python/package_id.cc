@@ -125,9 +125,14 @@ void expose_package_id()
                 "build-time dependencies in host architecture."
             )
 
-        .def("run_dependencies_key", &PackageID::run_dependencies_key,
+        .def("run_dependencies_target_key", &PackageID::run_dependencies_target_key,
+                "The run_dependencies_target_key, if not None, indicates a package's\n"
+                "run-time dependencies in target architecture."
+            )
+
+        .def("run_dependencies_host_key", &PackageID::run_dependencies_host_key,
                 "The run_dependencies_key, if not None, indicates a package's\n"
-                "run-time dependencies."
+                "run-time dependencies in host architecture."
             )
 
         .def("post_dependencies_key", &PackageID::post_dependencies_key,

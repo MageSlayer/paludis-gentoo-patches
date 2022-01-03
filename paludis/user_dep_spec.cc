@@ -1044,8 +1044,10 @@ UserKeyRequirement::requirement_met(
             key_requirement = id->long_description_key().get();
         else if (_imp->key == "$post_dependencies")
             key_requirement = id->post_dependencies_key().get();
-        else if (_imp->key == "$run_dependencies")
-            key_requirement = id->run_dependencies_key().get();
+        else if (_imp->key == "$run_dependencies_target")
+            key_requirement = id->run_dependencies_target_key().get();
+        else if (_imp->key == "$run_dependencies_host")
+            key_requirement = id->run_dependencies_host_key().get();
         else if (_imp->key == "$short_description")
             key_requirement = id->short_description_key().get();
         else if (_imp->key == "$slot")

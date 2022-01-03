@@ -138,9 +138,13 @@ class TestCase_01_PackageID(unittest.TestCase):
         )
         self.assertEqual(self.ipid.build_dependencies_host_key(), None)
 
-    def test_19_run_dependencies_key(self):
-        self.assertEqual(self.pid.run_dependencies_key(), None)
-        self.assertEqual(self.ipid.run_dependencies_key(), None)
+    def test_19_0_run_dependencies_target_key(self):
+        self.assertEqual(self.pid.run_dependencies_target_key(), None)
+        self.assertEqual(self.ipid.run_dependencies_target_key(), None)
+
+    def test_19_1_run_dependencies_host_key(self):
+        self.assertEqual(self.pid.run_dependencies_host_key(), None)
+        self.assertEqual(self.ipid.run_dependencies_host_key(), None)
 
     def test_20_post_dependencies_key(self):
         self.assertEqual(self.pid.post_dependencies_key(), None)

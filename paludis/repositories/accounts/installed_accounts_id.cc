@@ -231,7 +231,14 @@ InstalledAccountsID::build_dependencies_host_key() const
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
-InstalledAccountsID::run_dependencies_key() const
+InstalledAccountsID::run_dependencies_target_key() const
+{
+    need_keys_added();
+    return _imp->dependencies_key;
+}
+
+const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
+InstalledAccountsID::run_dependencies_host_key() const
 {
     need_keys_added();
     return _imp->dependencies_key;

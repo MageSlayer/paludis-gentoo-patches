@@ -698,7 +698,8 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
             if ((var == eapi->supported()->ebuild_metadata_variables()->build_depend_target()->name()) ||
                     (var == eapi->supported()->ebuild_metadata_variables()->build_depend_host()->name()) ||
-                    (var == eapi->supported()->ebuild_metadata_variables()->run_depend()->name()) ||
+                    (var == eapi->supported()->ebuild_metadata_variables()->run_depend_target()->name()) ||
+                    (var == eapi->supported()->ebuild_metadata_variables()->run_depend_host()->name()) ||
                     (var == eapi->supported()->ebuild_metadata_variables()->pdepend()->name()) ||
                     (var == eapi->supported()->ebuild_metadata_variables()->dependencies()->name()))
             {
