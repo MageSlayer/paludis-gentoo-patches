@@ -24,10 +24,21 @@ https://github.com/MageSlayer/paludis-gentoo-overlay
 
 ### EAPI=8 Branch
 
-**Do not use this branch**.
+**It is not safe to use this branch.**
 
-It is **not** feature-complete.
-It **will** break your system if you try to use it in the current state.
-You **will** miss dependencies.
+The current implementation should be about feature-complete, with the exception
+that IDEPEND dependencies are merged into RDEPEND and the
+architecture-sensitive part is not implemented. This follows the EAPI=7 BDEPEND
+implementation.
 
-**Do not use this branch.**
+It is **not** well tested.
+
+It **may** break your system if you try to use it in the current state.
+
+More test cases are required.
+
+While the current test suite executes successfully, most of the new features
+are not hooked up into the testing system yet, so EAPI=8 ebuilds **may** show
+undesired behavior.
+
+**It is not safe to use this branch.**
