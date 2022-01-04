@@ -19,6 +19,8 @@ https://github.com/MageSlayer/paludis-gentoo-overlay
     `build_dependencies_key` to `build_dependencies_target_key` (the direct
     equivalent) and may want also to take `build_dependencies_host_key` into
     account.
+  - Likewise, `run_dependencies_key` was split into
+    `run_dependencies_target_key` and `run_dependencies_host_key`.
 
 ### EAPI=8 Branch
 
