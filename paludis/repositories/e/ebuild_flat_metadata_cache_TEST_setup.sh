@@ -54,6 +54,11 @@ the/pdepend
 0
 the-properties
 
+
+
+
+
+
 END
 
 mkdir cat/flat_list-stale
@@ -84,6 +89,11 @@ the/pdepend
 
 0
 the-properties
+
+
+
+
+
 
 END
 TZ=UTC touch -t 199901010101 metadata/cache/cat/flat_list-stale-1 || exit 2
@@ -117,6 +127,11 @@ the/pdepend
 0
 the-properties
 
+
+
+
+
+
 END
 
 mkdir cat/flat_list-eclass
@@ -139,6 +154,11 @@ the/pdepend
 
 0
 the-properties
+
+
+
+
+
 
 END
 
@@ -170,6 +190,11 @@ the/pdepend
 
 0
 the-properties
+
+
+
+
+
 
 END
 TZ=UTC touch -t 197001010001 cat/flat_list-eclass-stale/flat_list-eclass-stale-1.ebuild || exit 2
@@ -204,6 +229,11 @@ the/pdepend
 0
 the-properties
 
+
+
+
+
+
 END
 
 mkdir cat/flat_list-eclass-gone
@@ -235,6 +265,11 @@ the/pdepend
 0
 the-properties
 
+
+
+
+
+
 END
 
 mkdir cat/flat_list-detection
@@ -257,6 +292,11 @@ the/pdepend
 
 0
 the-properties
+
+
+
+
+
 
 END
 
