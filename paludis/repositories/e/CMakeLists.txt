@@ -131,6 +131,7 @@ foreach(test
           exndbam_repository
           depend_rdepend
           depend_bdepend
+          depend_idepend
           e_repository_sets
           ebuild_flat_metadata_cache
           fetch_visitor
