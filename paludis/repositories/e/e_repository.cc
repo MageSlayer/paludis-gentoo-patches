@@ -1713,8 +1713,11 @@ ERepository::get_environment_variable(
 
     std::shared_ptr<const FSPathSequence> exlibsdirs(layout()->exlibsdirs(id->name()));
 
+    const FSPath package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
+            stringify(id->name().package()) + "-" + stringify(id->version()) + "-variable"));
     EbuildVariableCommand cmd(make_named_values<EbuildCommandParams>(
             n::builddir() = _imp->params.builddir(),
+            n::emptydir() = package_builddir / "empty",
             n::clearenv() = phases.begin()->option("clearenv"),
             n::commands() = join(phases.begin()->begin_commands(), phases.begin()->end_commands(), " "),
             n::cross_compile_host() =
@@ -1729,7 +1732,7 @@ ERepository::get_environment_variable(
             n::exlibsdirs() = exlibsdirs,
             n::files_dir() = layout()->package_directory(id->name()) / "files",
             n::maybe_output_manager() = nullptr,
-            n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-variable"),
+            n::package_builddir() = package_builddir,
             n::package_id() = id,
             n::parts() = nullptr,
             n::permitted_directories() = nullptr,

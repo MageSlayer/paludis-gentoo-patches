@@ -30,6 +30,35 @@ ebuild_f_prerm()
     local old_sandbox_write="${SANDBOX_WRITE}"
     [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${ROOT%/}/"
 
+    # Try to use empty cwd opportunistically, since it doesn't hurt, but
+    # accept if it's impossible to do so if the EAPI doesn't explicitly
+    # require it.
+    local need_empty="${PALUDIS_PKG_PHASES_NEED_EMPTY_CWD}"
+    if [[ -n "${PALUDIS_EMPTYDIR}" ]]; then
+        # Check if it looks actually somewhat valid.
+        if [[ '/' != "${PALUDIS_EMPTYDIR}" ]]; then
+            if [[ -e "${PALUDIS_EMPTYDIR}" ]]; then
+                if ! rm -fr "${PALUDIS_EMPTYDIR}"; then
+                    [[ -n "${need_empty}" ]] && die "unable to remove \${PALUDIS_EMPTYDIR} (\"${PALUDIS_EMPTYDIR}\")"
+                fi
+            fi
+
+            if ! mkdir "${PALUDIS_EMPTYDIR}"; then
+                [[ -n "${need_empty}" ]] && die "unable to create \${PALUDIS_EMPTYDIR} (\"${PALUDIS_EMPTYDIR}\")"
+            fi
+
+            if ! cd "${PALUDIS_EMPTYDIR}"; then
+                [[ -n "${need_empty}" ]] && die "unable to change working directory to \${PALUDIS_EMPTYDIR} (\"${PALUDIS_EMPTYDIR}\")"
+            fi
+
+            [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]] && SANDBOX_WRITE="${SANDBOX_WRITE+${SANDBOX_WRITE}:}${PALUDIS_EMPTYDIR%/}/"
+        else
+            [[ -n "${need_empty}" ]] && die "\${PALUDIS_EMPTYDIR} (\"${PALUDIS_EMPTYDIR}\") is not valid"
+        fi
+    else
+        [[ -n "${need_empty}" ]] && die "\${PALUDIS_EMPTYDIR} (\"${PALUDIS_EMPTYDIR}\") is not defined"
+    fi
+
     if hasq "prerm" ${SKIP_FUNCTIONS} ; then
         ebuild_section "Skipping pkg_prerm (SKIP_FUNCTIONS)"
     else

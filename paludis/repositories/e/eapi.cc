@@ -197,6 +197,7 @@ namespace
                         n::must_not_set_vars_starting_with() = check_get(k, "must_not_set_vars_starting_with"),
                         n::no_s_workdir_fallback() = destringify_key<bool>(k, "no_s_workdir_fallback"),
                         n::non_empty_variables() = check_get(k, "non_empty_variables"),
+                        n::pkg_phases_need_empty_cwd() = destringify_key<bool>(k, "pkg_phases_need_empty_cwd"),
                         n::rdepend_defaults_to_depend() = destringify_key<bool>(k, "rdepend_defaults_to_depend"),
                         n::require_use_expand_in_iuse() = destringify_key<bool>(k, "require_use_expand_in_iuse"),
                         n::restrict_fetch() = make_set(check_get(k, "restrict_fetch")),

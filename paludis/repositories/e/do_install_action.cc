@@ -197,7 +197,7 @@ paludis::erepository::do_install_action(
             check_userpriv(FSPath(repo->params().distdir()),  env, id->eapi()->supported()->userpriv_cannot_use_root()) &&
             check_userpriv(FSPath(repo->params().builddir()), env, id->eapi()->supported()->userpriv_cannot_use_root()));
 
-    FSPath package_builddir(repo->params().builddir() / (stringify(id->name().category()) + "-" +
+    const FSPath package_builddir(repo->params().builddir() / (stringify(id->name().category()) + "-" +
             stringify(id->name().package()) + "-" + stringify(id->version())));
 
     std::string used_config_protect;
@@ -394,6 +394,7 @@ paludis::erepository::do_install_action(
 
             EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                     n::builddir() = params.builddir(),
+                    n::emptydir() = package_builddir / "empty",
                     n::clearenv() = phase.option("clearenv"),
                     n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                     n::cross_compile_host() =
@@ -473,6 +474,7 @@ paludis::erepository::do_install_action(
 
                         EbuildCommandParams tidyup_command_params(make_named_values<EbuildCommandParams>(
                                     n::builddir() = params.builddir(),
+                                    n::emptydir() = package_builddir / "empty",
                                     n::clearenv() = tidyup_phase.option("clearenv"),
                                     n::commands() = join(tidyup_phase.begin_commands(), tidyup_phase.end_commands(), " "),
                                     n::cross_compile_host() =

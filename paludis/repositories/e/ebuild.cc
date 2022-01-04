@@ -182,6 +182,7 @@ EbuildCommand::operator() ()
                 (std::string(PALUDIS_GIT_HEAD).empty() ?
                  std::string("") : "-git-" + std::string(PALUDIS_GIT_HEAD)))
         .setenv("PALUDIS_TMPDIR", stringify(params.builddir()))
+        .setenv("PALUDIS_EMPTYDIR", stringify(params.emptydir()))
         .setenv("PALUDIS_PACKAGE_BUILDDIR", stringify(params.package_builddir()))
         .setenv("PALUDIS_CONFIG_DIR", SYSCONFDIR "/paludis/")
         .setenv("PALUDIS_BASHRC_FILES", join(bashrc_files->begin(), bashrc_files->end(), " "))
@@ -232,6 +233,8 @@ EbuildCommand::operator() ()
         .setenv("PALUDIS_EBUILD_FUNCTIONS", options->ebuild_functions())
         .setenv("PALUDIS_NO_S_WORKDIR_FALLBACK",
                 options->no_s_workdir_fallback() ? "yes" : "")
+        .setenv("PALUDIS_PKG_PHASES_NEED_EMPTY_CWD",
+                options->pkg_phases_need_empty_cwd() ? "yes" : "")
         .setenv("PALUDIS_BINARY_DISTDIR_VARIABLE", environment_variables->env_distdir())
         .setenv("PALUDIS_ECONF_EXTRA_OPTIONS", tools->econf_extra_options())
         .setenv("PALUDIS_ECONF_EXTRA_OPTIONS_HELP_DEPENDENT",

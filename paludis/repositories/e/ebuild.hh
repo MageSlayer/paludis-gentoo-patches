@@ -61,6 +61,7 @@ namespace paludis
         typedef Name<struct name_binary_keywords> binary_keywords;
         typedef Name<struct name_binary_uri_extension> binary_uri_extension;
         typedef Name<struct name_builddir> builddir;
+        typedef Name<struct name_emptydir> emptydir;
         typedef Name<struct name_clearenv> clearenv;
         typedef Name<struct name_commands> commands;
         typedef Name<struct name_config_protect> config_protect;
@@ -125,6 +126,7 @@ namespace paludis
         struct EbuildCommandParams
         {
             NamedValue<n::builddir, FSPath> builddir;
+            NamedValue<n::emptydir, FSPath> emptydir;
             NamedValue<n::clearenv, bool> clearenv;
             NamedValue<n::commands, std::string> commands;
             NamedValue<n::cross_compile_host, std::string> cross_compile_host;
