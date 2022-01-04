@@ -88,8 +88,11 @@ paludis::erepository::do_info_action(
         const auto params = repo->params();
         const auto profile = repo->profile();
 
+        const FSPath package_builddir(params.builddir() / (stringify(id->name().category()) + "-" +
+                        stringify(id->name().package()) + "-" + stringify(id->version()) + "-info"));
         EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                 n::builddir() = params.builddir(),
+                n::emptydir() = package_builddir / "empty",
                 n::clearenv() = phase.option("clearenv"),
                 n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                 n::distdir() = params.distdir(),
@@ -100,7 +103,7 @@ paludis::erepository::do_info_action(
                 n::exlibsdirs() = exlibsdirs,
                 n::files_dir() = repo->layout()->package_directory(id->name()) / "files",
                 n::maybe_output_manager() = output_manager,
-                n::package_builddir() = params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-info"),
+                n::package_builddir() = package_builddir,
                 n::package_id() = id,
                 n::parts() = nullptr,
                 n::permitted_directories() = nullptr,

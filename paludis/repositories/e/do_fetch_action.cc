@@ -144,8 +144,8 @@ paludis::erepository::do_fetch_action(
         EAPIPhases fetch_extra_phases(id->eapi()->supported()->ebuild_phases()->ebuild_fetch_extra());
         if ((! fetch_action.options.ignore_unfetched()) && (fetch_extra_phases.begin() != fetch_extra_phases.end()))
         {
-            FSPath package_builddir(repo->params().builddir() / (stringify(id->name().category()) + "-" +
-                    stringify(id->name().package()) + "-" + stringify(id->version()) + "-fetch_extra"));
+            const FSPath package_builddir(repo->params().builddir() / (stringify(id->name().category()) + "-" +
+                            stringify(id->name().package()) + "-" + stringify(id->version()) + "-fetch_extra"));
 
             for (const auto & phase : fetch_extra_phases)
             {
@@ -182,6 +182,7 @@ paludis::erepository::do_fetch_action(
 
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                         n::builddir() = params.builddir(),
+                        n::emptydir() = package_builddir / "empty",
                         n::clearenv() = phase.option("clearenv"),
                         n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                         n::distdir() = params.distdir(),
@@ -231,8 +232,11 @@ paludis::erepository::do_fetch_action(
             EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_nofetch());
             for (const auto & phase : phases)
             {
+                const FSPath package_builddir(repo->params().builddir() / (stringify(id->name().category()) + "-" +
+                                stringify(id->name().package()) + "-" + stringify(id->version()) + "-nofetch"));
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                         n::builddir() = repo->params().builddir(),
+                        n::emptydir() = package_builddir / "empty",
                         n::clearenv() = phase.option("clearenv"),
                         n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                         n::distdir() = repo->params().distdir(),
@@ -243,7 +247,7 @@ paludis::erepository::do_fetch_action(
                         n::exlibsdirs() = exlibsdirs,
                         n::files_dir() = repo->layout()->package_directory(id->name()) / "files",
                         n::maybe_output_manager() = output_manager,
-                        n::package_builddir() = repo->params().builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-nofetch"),
+                        n::package_builddir() = package_builddir,
                         n::package_id() = id,
                         n::parts() = nullptr,
                         n::permitted_directories() = nullptr,

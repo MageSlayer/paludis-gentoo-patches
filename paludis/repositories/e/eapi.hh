@@ -193,6 +193,7 @@ namespace paludis
         typedef Name<struct name_pdepend> pdepend;
         typedef Name<struct name_permitted_directories> permitted_directories;
         typedef Name<struct name_pipe_commands> pipe_commands;
+        typedef Name<struct name_pkg_phases_need_empty_cwd> pkg_phases_need_empty_cwd;
         typedef Name<struct name_profile_iuse_injection> profile_iuse_injection;
         typedef Name<struct name_profile_negative_use> profile_negative_use;
         typedef Name<struct name_profile_options> profile_options;
@@ -470,6 +471,7 @@ namespace paludis
             NamedValue<n::must_not_set_vars_starting_with, std::string> must_not_set_vars_starting_with;
             NamedValue<n::no_s_workdir_fallback, bool> no_s_workdir_fallback;
             NamedValue<n::non_empty_variables, std::string> non_empty_variables;
+            NamedValue<n::pkg_phases_need_empty_cwd, bool> pkg_phases_need_empty_cwd;
             NamedValue<n::rdepend_defaults_to_depend, bool> rdepend_defaults_to_depend;
             NamedValue<n::require_use_expand_in_iuse, bool> require_use_expand_in_iuse;
             NamedValue<n::restrict_fetch, std::shared_ptr<Set<std::string> > > restrict_fetch;

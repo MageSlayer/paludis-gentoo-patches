@@ -214,8 +214,11 @@ EInstalledRepository::perform_config(
 
     for (const auto & phase : phases)
     {
+        const FSPath package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
+                        stringify(id->name().package()) + "-" + stringify(id->version()) + "-config"));
         EbuildConfigCommand config_cmd(make_named_values<EbuildCommandParams>(
                     n::builddir() = _imp->params.builddir(),
+                    n::emptydir() = package_builddir / "empty",
                     n::clearenv() = phase.option("clearenv"),
                     n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                     n::distdir() = ver_dir,
@@ -226,7 +229,7 @@ EInstalledRepository::perform_config(
                     n::exlibsdirs() = std::make_shared<FSPathSequence>(),
                     n::files_dir() = ver_dir,
                     n::maybe_output_manager() = output_manager,
-                    n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-config"),
+                    n::package_builddir() = package_builddir,
                     n::package_id() = id,
                     n::parts() = nullptr,
                     n::permitted_directories() = nullptr,
@@ -320,8 +323,11 @@ EInstalledRepository::perform_info(
             }
         }
 
+        const FSPath package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
+                        stringify(id->name().package()) + "-" + stringify(id->version()) + "-info"));
         EbuildInfoCommand info_cmd(make_named_values<EbuildCommandParams>(
                     n::builddir() = _imp->params.builddir(),
+                    n::emptydir() = package_builddir / "empty",
                     n::clearenv() = phase.option("clearenv"),
                     n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                     n::distdir() = ver_dir,
@@ -332,7 +338,7 @@ EInstalledRepository::perform_info(
                     n::exlibsdirs() = std::make_shared<FSPathSequence>(),
                     n::files_dir() = ver_dir,
                     n::maybe_output_manager() = output_manager,
-                    n::package_builddir() = _imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-info"),
+                    n::package_builddir() = package_builddir,
                     n::package_id() = id,
                     n::parts() = nullptr,
                     n::permitted_directories() = nullptr,

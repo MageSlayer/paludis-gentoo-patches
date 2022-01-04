@@ -487,9 +487,11 @@ VDBRepository::perform_uninstall(
         }
         else
         {
-            FSPath package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-uninstall"));
+            const FSPath package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" +
+                            stringify(id->name().package()) + "-" + stringify(id->version()) + "-uninstall"));
             EbuildCommandParams params(make_named_values<EbuildCommandParams>(
                     n::builddir() = _imp->params.builddir(),
+                    n::emptydir() = package_builddir / "empty",
                     n::clearenv() = phase.option("clearenv"),
                     n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                     n::distdir() = pkg_dir,

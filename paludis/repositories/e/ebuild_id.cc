@@ -306,8 +306,11 @@ EbuildID::need_non_xml_keys_added() const
                 throw EAPIConfigurationError("EAPI '" + _imp->eapi->name() + "' defines "
                         + (count == 0 ? "no" : stringify(count)) + " ebuild variable phases but expected exactly one");
 
+            const FSPath package_builddir(e_repo->params().builddir() / (stringify(name().category()) + "-" +
+                            stringify(name().package()) + "-" + stringify(version()) + "-metadata"));
             EbuildMetadataCommand cmd(make_named_values<EbuildCommandParams>(
                     n::builddir() = e_repo->params().builddir(),
+                    n::emptydir() = package_builddir / "empty",
                     n::clearenv() = phases.begin()->option("clearenv"),
                     n::commands() = join(phases.begin()->begin_commands(), phases.begin()->end_commands(), " "),
                     n::distdir() = e_repo->params().distdir(),
@@ -318,7 +321,7 @@ EbuildID::need_non_xml_keys_added() const
                     n::exlibsdirs() = e_repo->layout()->exlibsdirs(name()),
                     n::files_dir() = e_repo->layout()->package_directory(name()) / "files",
                     n::maybe_output_manager() = nullptr,
-                    n::package_builddir() = e_repo->params().builddir() / (stringify(name().category()) + "-" + stringify(name().package()) + "-" + stringify(version()) + "-metadata"),
+                    n::package_builddir() = package_builddir,
                     n::package_id() = shared_from_this(),
                     n::parts() = nullptr,
                     n::permitted_directories() = nullptr,
