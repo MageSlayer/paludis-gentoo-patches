@@ -139,9 +139,12 @@ paludis::erepository::do_install_action(
     bool test_restrict;
     bool strip_restrict;
     {
-        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env, id);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env, id),
+                                                              properties(env, id);
         if (id->restrict_key())
             id->restrict_key()->parse_value()->top()->accept(restricts);
+        if (id->properties_key())
+            id->properties_key()->parse_value()->top()->accept(properties);
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
@@ -150,8 +153,10 @@ paludis::erepository::do_install_action(
                     std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
 
         test_restrict =
-            indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "test"));
+            (indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "test"))) &&
+            (!(indirect_iterator(properties.end()) != std::find_if(indirect_iterator(properties.begin()), indirect_iterator(properties.end()),
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "test_network"))));
 
         strip_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
