@@ -679,6 +679,23 @@ paludis_phase_to_function_name() {
     die "Usage error: Unknown phase '${1}'"
 }
 
+check_word_in_string() {
+    local word="${1}"
+    local string="${2}"
+    local ret='1'
+
+    [[ -z "${word}" ]] && die 'Usage error: illogical to search for empty word in a string'
+
+    if [[ -n "${string}" ]]; then
+        case "${string}" in
+            ("${word} "*|*" ${word}"|*" ${word} "*|"${word}")
+                ret='0'
+        esac
+    fi
+
+    return "${ret}"
+}
+
 ebuild_main()
 {
     if ! [[ -e /proc/self ]] && [[ "$(uname -s)" == Linux ]] ; then
@@ -748,8 +765,10 @@ ebuild_main()
 
         # Restrict network access if running under sandbox
         if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
-            if esandbox check 2>/dev/null; then
-                esandbox enable_net || ebuild_notice "warning" "esandbox enable_net returned failure"
+            if [[ 'test' != "${action}" ]] || ! check_word_in_string 'test_network' "${PROPERTIES}"; then
+                if esandbox check 2>/dev/null; then
+                    esandbox enable_net || ebuild_notice "warning" "esandbox enable_net returned failure"
+                fi
             fi
         fi
 
@@ -757,8 +776,10 @@ ebuild_main()
         local paludis_ebuild_phase_status="${?}"
 
         if [[ $action != unpack ]] && [[ $action != fetch_extra ]] ; then
-            if esandbox check 2>/dev/null; then
-                esandbox disable_net || ebuild_notice "warning" "esandbox disable_net returned failure"
+            if [[ 'test' != "${action}" ]] || ! check_word_in_string 'test_network' "${PROPERTIES}"; then
+                if esandbox check 2>/dev/null; then
+                    esandbox disable_net || ebuild_notice "warning" "esandbox disable_net returned failure"
+                fi
             fi
         fi
 
