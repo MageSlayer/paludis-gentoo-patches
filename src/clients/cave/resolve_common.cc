@@ -767,7 +767,7 @@ paludis::cave::resolve_common(
 {
     int retcode(0);
 
-    AllowChoiceChangesHelper allow_choice_changes_helper(env.get());;
+    AllowChoiceChangesHelper allow_choice_changes_helper(env.get());
     allow_choice_changes_helper.set_allow_choice_changes(! resolution_options.a_no_override_flags.specified());
 
     AllowedToRemoveHelper allowed_to_remove_helper(env.get());
