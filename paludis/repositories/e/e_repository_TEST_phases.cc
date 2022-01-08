@@ -159,7 +159,7 @@ TEST_P(PhasesTest, Works)
         EXPECT_THROW(id->perform_action(action), ActionFailedError);
 }
 
-INSTANTIATE_TEST_CASE_P(Works, PhasesTest, testing::Values(
+INSTANTIATE_TEST_SUITE_P(Works, PhasesTest, testing::Values(
             TestInfo{"no-expensive-test", true, false, false},
             TestInfo{"expensive-test", true, true, false},
             TestInfo{"expensive-test-fail", true, true, false},

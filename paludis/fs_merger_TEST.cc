@@ -339,13 +339,13 @@ TEST(Merger, DirSym3)
 {
     auto data(make_merger(et_dir, et_sym, 3));
     ASSERT_TRUE((data->root_dir / "dir").stat().is_symlink());
-    EXPECT_THROW((data->root_dir / "dir").realpath(), FSError);
+    EXPECT_THROW(auto PALUDIS_ATTRIBUTE((unused)) x = (data->root_dir / "dir").realpath(), FSError);
 
     ASSERT_TRUE(! data->merger.check());
     EXPECT_THROW(data->merger.merge(), FSMergerError);
 
     ASSERT_TRUE((data->root_dir / "dir").stat().is_symlink());
-    EXPECT_THROW((data->root_dir / "dir").realpath(), FSError);
+    EXPECT_THROW(auto PALUDIS_ATTRIBUTE((unused)) x = (data->root_dir / "dir").realpath(), FSError);
 }
 
 TEST(Merger, FileNothing)

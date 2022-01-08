@@ -35,14 +35,14 @@ namespace paludis
             Pimp<StringListStreamBuf> _imp;
 
         protected:
-            virtual int_type underflow();
+            int_type underflow() override;
 
-            virtual int_type overflow(int_type c);
-            virtual std::streamsize xsputn(const char * s, std::streamsize num);
+            int_type overflow(int_type c) override;
+            std::streamsize xsputn(const char * s, std::streamsize num) override;
 
         public:
             StringListStreamBuf();
-            ~StringListStreamBuf();
+            ~StringListStreamBuf() override;
 
             void nothing_more_to_write();
     };
@@ -64,7 +64,7 @@ namespace paludis
     {
         public:
             StringListStream();
-            ~StringListStream() = default;
+            ~StringListStream() override = default;
 
             void nothing_more_to_write();
     };

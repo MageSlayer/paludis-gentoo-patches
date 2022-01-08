@@ -44,7 +44,7 @@ paludis::Pimp<C_>::Pimp(Pimp && other) :
 }
 
 template <typename C_>
-paludis::Pimp<C_>::~Pimp()
+paludis::Pimp<C_>::~Pimp<C_>()
 {
     delete _ptr;
 }

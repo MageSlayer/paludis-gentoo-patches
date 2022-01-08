@@ -46,6 +46,7 @@ VersionOperator::_decode(const std::string & v)
                 case '~':
                     return vo_tilde;
             }
+            break;
 
         case 2:
             if ('=' == v[1])

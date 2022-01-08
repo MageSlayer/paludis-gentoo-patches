@@ -747,7 +747,7 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 
 pkg_setup() {
-    [[ ${BASH_COMPAT} == 3.2 ]] || die BASH_COMPAT=${BASH_COMPAT}
+    [[ ${BASH_COMPAT} == 3.2 ]] || [[ ${BASH_COMPAT} == 32 ]] || die BASH_COMPAT=${BASH_COMPAT}
 }
 END
 

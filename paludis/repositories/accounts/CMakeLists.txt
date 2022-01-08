@@ -12,7 +12,7 @@ paludis_add_library(libpaludisaccountsrepository
                       "${CMAKE_CURRENT_SOURCE_DIR}/dummy_accounts_handler.cc"
                       "${CMAKE_CURRENT_SOURCE_DIR}/passwd_accounts_handler.cc"
                       "${CMAKE_CURRENT_SOURCE_DIR}/registration.cc")
-add_dependencies(libpaludisaccountsrepository libpaludisutil_SE)
+add_dependencies(libpaludisaccountsrepository libpaludis_SE libpaludisutil_SE)
 
 paludis_add_test(accounts_repository GTEST)
 

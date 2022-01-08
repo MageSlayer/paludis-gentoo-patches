@@ -56,18 +56,18 @@ namespace paludis
             Pimp<SafeOFStreamBuf> _imp;
 
         protected:
-            virtual int_type
-            overflow(int_type c);
+            int_type
+            overflow(int_type c) override;
 
-            virtual std::streamsize
-            xsputn(const char * s, std::streamsize num);
+            std::streamsize
+            xsputn(const char * s, std::streamsize num) override;
 
         public:
             ///\name Basic operations
             ///\{
 
             SafeOFStreamBuf(const int f, const bool buffer);
-            ~SafeOFStreamBuf();
+            ~SafeOFStreamBuf() override;
 
             ///\}
 

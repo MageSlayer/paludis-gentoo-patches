@@ -58,6 +58,7 @@ class TestCase_01_Environments(unittest.TestCase):
                 Filter.SupportsUninstallAction())
 
     def test_25_reduced(self):
+        self.assert_(self.e.reduced_username() != "")
         self.assert_(self.e.reduced_uid() >= 0)
         self.assert_(self.e.reduced_gid() >= 0)
 

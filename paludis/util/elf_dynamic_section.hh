@@ -59,7 +59,7 @@ namespace paludis
 
         public:
             DynamicEntry(const std::string &);
-            ~DynamicEntry();
+            ~DynamicEntry() override;
             virtual void initialize(typename ElfType_::Word, const typename ElfType_::DynamicEntry & entry);
 
             std::string tag_name() const
@@ -78,7 +78,7 @@ namespace paludis
     {
         public:
             DynamicEntryUnknown();
-            virtual ~DynamicEntryUnknown();
+            ~DynamicEntryUnknown() override;
     };
 
     template <typename ElfType_>
@@ -89,7 +89,7 @@ namespace paludis
     {
         public:
             DynamicEntryFlag(const std::string &);
-            ~DynamicEntryFlag();
+            ~DynamicEntryFlag() override;
     };
 
     template <typename ElfType_>
@@ -103,8 +103,8 @@ namespace paludis
 
         public:
             DynamicEntryValue(const std::string &);
-            virtual ~DynamicEntryValue();
-            virtual void initialize(typename ElfType_::Word, const typename ElfType_::DynamicEntry & entry);
+            ~DynamicEntryValue() override;
+            void initialize(typename ElfType_::Word, const typename ElfType_::DynamicEntry & entry) override;
 
             typename ElfType_::DynamicValue operator() () const
             {
@@ -123,8 +123,8 @@ namespace paludis
 
         public:
             DynamicEntryPointer(const std::string &);
-            virtual ~DynamicEntryPointer();
-            virtual void initialize(typename ElfType_::Word, const typename ElfType_::DynamicEntry &);
+            ~DynamicEntryPointer() override;
+            void initialize(typename ElfType_::Word, const typename ElfType_::DynamicEntry &) override;
 
             typename ElfType_::DynamicPointer operator() () const
             {
@@ -151,8 +151,8 @@ namespace paludis
 
         public:
             DynamicEntryString(const std::string &);
-            virtual ~DynamicEntryString();
-            virtual void initialize(typename ElfType_::Word, const typename ElfType_::DynamicEntry &);
+            ~DynamicEntryString() override;
+            void initialize(typename ElfType_::Word, const typename ElfType_::DynamicEntry &) override;
 
             std::string operator() () const
             {
@@ -204,9 +204,9 @@ namespace paludis
 
         public:
             DynamicSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &, std::istream &, bool);
-            virtual ~DynamicSection();
+            ~DynamicSection() override;
 
-            virtual std::string get_type() const;
+            std::string get_type() const override;
 
             void resolve_entry_names(Section<ElfType_> &);
 

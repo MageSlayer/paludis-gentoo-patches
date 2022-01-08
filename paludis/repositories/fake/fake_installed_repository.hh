@@ -58,13 +58,13 @@ namespace paludis
         protected:
             /* RepositoryDestinationInterface */
 
-            virtual bool is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool want_pre_post_phases() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool want_pre_post_phases() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void merge(const MergeParams &);
+            void merge(const MergeParams &) override;
 
         public:
             ///\name Basic operations
@@ -72,24 +72,24 @@ namespace paludis
 
             ///\since 0.42
             FakeInstalledRepository(const FakeInstalledRepositoryParams &);
-            ~FakeInstalledRepository();
+            ~FakeInstalledRepository() override;
 
             ///\}
 
-            virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+            bool some_ids_might_support_action(const SupportsActionTestBase &) const override;
 
-            virtual bool some_ids_might_not_be_masked() const;
+            bool some_ids_might_not_be_masked() const override;
 
-            virtual const bool is_unimportant() const;
+            const bool is_unimportant() const override;
 
             /* Keys */
-            virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
-            virtual const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const;
+            const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const override;
+            const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const override;
+            const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const override;
+            const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const override;
 
-            virtual const std::shared_ptr<const Set<std::string> > maybe_expand_licence_nonrecursively(
-                    const std::string &) const;
+            const std::shared_ptr<const Set<std::string> > maybe_expand_licence_nonrecursively(
+                    const std::string &) const override;
 
             ///\name RepositoryFactory functions
             ///\{

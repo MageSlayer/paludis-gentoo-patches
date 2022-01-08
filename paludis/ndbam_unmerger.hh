@@ -85,25 +85,25 @@ namespace paludis
             bool config_protected(const FSPath &) const;
             std::string make_tidy(const FSPath &) const;
 
-            void populate_unmerge_set();
+            void populate_unmerge_set() override;
 
-            void display(const std::string &) const;
+            void display(const std::string &) const override;
 
-            bool check_file(const std::shared_ptr<const ContentsEntry> &) const;
-            bool check_dir(const std::shared_ptr<const ContentsEntry> &) const;
-            bool check_sym(const std::shared_ptr<const ContentsEntry> &) const;
-            bool check_misc(const std::shared_ptr<const ContentsEntry> &) const;
+            bool check_file(const std::shared_ptr<const ContentsEntry> &) const override;
+            bool check_dir(const std::shared_ptr<const ContentsEntry> &) const override;
+            bool check_sym(const std::shared_ptr<const ContentsEntry> &) const override;
+            bool check_misc(const std::shared_ptr<const ContentsEntry> &) const override;
 
         public:
             ///\name Basic operations
             ///\{
 
             NDBAMUnmerger(const NDBAMUnmergerOptions &);
-            ~NDBAMUnmerger();
+            ~NDBAMUnmerger() override;
 
             ///\}
 
-            virtual Hook extend_hook(const Hook &) const;
+            Hook extend_hook(const Hook &) const override;
     };
 }
 

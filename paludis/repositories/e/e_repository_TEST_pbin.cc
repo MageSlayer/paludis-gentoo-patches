@@ -189,7 +189,7 @@ TEST_P(ERepositoryInstallEAPIPBinTest, Works)
     EXPECT_TRUE((root / "usr" / "share" / ("installed-" + base_eapi)).stat().exists());
 }
 
-INSTANTIATE_TEST_CASE_P(Works, ERepositoryInstallEAPIPBinTest, testing::Values(
+INSTANTIATE_TEST_SUITE_P(Works, ERepositoryInstallEAPIPBinTest, testing::Values(
             std::string("0"),
             std::string("1"),
             std::string("2"),

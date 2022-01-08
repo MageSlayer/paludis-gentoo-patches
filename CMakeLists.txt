@@ -1,6 +1,6 @@
 # vim: set et fdm=marker fmr={{{,}}} sw=2 sts=2 ts=8:
 
-cmake_minimum_required(VERSION 3.3.0)
+cmake_minimum_required(VERSION 3.17.0)
 cmake_policy(SET CMP0048 NEW)
 cmake_policy(SET CMP0051 NEW)
 cmake_policy(SET CMP0057 NEW)
@@ -49,7 +49,13 @@ endif()
 
 set(PALUDIS_VIM_INSTALL_DIR "${CMAKE_INSTALL_FULL_DATADIR}/vim/vimfiles" CACHE PATH
     "vim installation directory")
-set(RUBY_VERSION "2.3" CACHE STRING "Ruby Version (2.1;2.2;2.3)")
+
+set(PYTHON_SUPPORTED_VERSIONS 2.7 3.6 3.7 3.8 3.9 3.10)
+set(PYTHON_VERSION "2.7" CACHE STRING
+  "Python version (${PYTHON_SUPPORTED_VERSIONS}) (requires corresponding Boost.Python as well)")
+
+set(RUBY_SUPPORTED_VERSIONS 2.6 2.7 3.0)
+set(RUBY_VERSION "2.7" CACHE STRING "Ruby Version (${RUBY_SUPPORTED_VERSIONS})")
 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
 set(THREADS_PREFER_PTHREAD_FLAG TRUE)
@@ -304,28 +310,31 @@ if(ENABLE_PBINS)
 endif()
 
 if(ENABLE_PYTHON)
-  set(Python_ADDITIONAL_VERSIONS 2.7 2.6 2.5)
-  find_package(PythonInterp)
-  if(NOT PYTHONINTERP_FOUND)
+  list(FIND PYTHON_SUPPORTED_VERSIONS "${PYTHON_VERSION}" _python_version_index)
+  if(_python_version_index EQUAL -1)
+    message(SEND_ERROR "Invalid Python version specified (${PYTHON_VERSION})")
+  endif()
+
+  find_package(Python ${PYTHON_VERSION} EXACT COMPONENTS Interpreter Development)
+
+  if(NOT Python_Interpreter_FOUND)
     message(SEND_ERROR "python is required for python support")
   endif()
   execute_process(COMMAND
-                    "${PYTHON_EXECUTABLE}" -c "from distutils import sysconfig; print sysconfig.get_python_lib(1)"
+                    "${Python_EXECUTABLE}" -c "from distutils import sysconfig; print(sysconfig.get_python_lib(1))"
                   OUTPUT_VARIABLE
                     PALUDIS_PYEXECDIR
                   ERROR_QUIET
                   OUTPUT_STRIP_TRAILING_WHITESPACE)
   get_filename_component(PALUDIS_PYEXECDIR ${PALUDIS_PYEXECDIR} REALPATH)
 
-  find_package(PythonLibs)
-
-  find_package(Boost REQUIRED
+  find_package(Boost 1.67.0 REQUIRED
                COMPONENTS
-                 python)
-endif()
+                 python${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR})
 
-set(PALUDIS_PYTHON_INSTALL_DIR "${PALUDIS_PYEXECDIR}" CACHE PATH
-    "python installation dir")
+  set(PALUDIS_PYTHON_INSTALL_DIR "${PALUDIS_PYEXECDIR}" CACHE PATH
+      "python installation dir")
+endif()
 
 if(ENABLE_PYTHON_DOCS)
   if(NOT ENABLE_PYTHON)
@@ -333,15 +342,23 @@ if(ENABLE_PYTHON_DOCS)
   endif()
 
   find_package(Sphinx REQUIRED)
+
+  execute_process(COMMAND
+                    "${Python_EXECUTABLE}" "${SPHINX_EXECUTABLE}" --help
+                  RESULT_VARIABLE
+                    exit_code
+                  OUTPUT_QUIET
+                  ERROR_QUIET)
+  if(NOT ${exit_code} EQUAL 0)
+    message(SEND_ERROR "Sphinx is not compatible with selected Python version")
+  endif()
 endif()
 
 if(ENABLE_RUBY)
-  if(NOT "${RUBY_VERSION}" STREQUAL "2.1" AND
-     NOT "${RUBY_VERSION}" STREQUAL "2.2" AND
-     NOT "${RUBY_VERSION}" STREQUAL "2.3" AND
-     NOT "${RUBY_VERSION}" STREQUAL "2.4" AND
-     NOT "${RUBY_VERSION}" STREQUAL "2.5")
-   message(SEND_ERROR "invalid ruby version specified (${RUBY_VERSION})")
+  list(FIND RUBY_SUPPORTED_VERSIONS "${RUBY_VERSION}" _ruby_version_index)
+
+  if(_ruby_version_index EQUAL -1)
+    message(SEND_ERROR "invalid ruby version specified (${RUBY_VERSION})")
   endif()
 
   find_package(Ruby ${RUBY_VERSION} REQUIRED)
@@ -401,7 +418,7 @@ endif()
 
 enable_testing()
 if(ENABLE_GTEST)
-  find_package(GTest REQUIRED)
+  find_package(GTest 1.10 REQUIRED)
 endif()
 
 find_program(BASH_EXECUTABLE bash)

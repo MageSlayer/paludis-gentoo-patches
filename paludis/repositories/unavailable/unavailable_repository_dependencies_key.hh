@@ -38,20 +38,20 @@ namespace paludis
                         const Environment * const env,
                         const std::string & r, const std::string & h, const MetadataKeyType t,
                         const std::string & v);
-                ~UnavailableRepositoryDependenciesKey();
+                ~UnavailableRepositoryDependenciesKey() override;
 
-                const std::shared_ptr<const DependencySpecTree> parse_value() const;
+                const std::shared_ptr<const DependencySpecTree> parse_value() const override;
 
-                virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::string pretty_print_value(
+                const std::string pretty_print_value(
                         const PrettyPrinter &,
-                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                        const PrettyPrintOptions &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

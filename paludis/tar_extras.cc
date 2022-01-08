@@ -67,6 +67,29 @@ paludis_tar_extras_init(const std::string & f, const std::string & compress)
 
 extern "C"
 void
+paludis_tar_extras_add_dir(PaludisTarExtras * const extras, const std::string & from, const std::string & path)
+{
+    struct archive_entry * entry(archive_entry_new());
+    if (! entry)
+        throw MergerError("archive_entry_new returned null");
+
+    struct stat st;
+    if (0 != lstat(from.c_str(), &st))
+        throw MergerError("lstat failed");
+
+    archive_entry_copy_pathname(entry, path.c_str());
+    archive_entry_copy_stat(entry, &st);
+    if (ARCHIVE_OK != archive_write_header(extras->archive, entry))
+        throw MergerError("archive_write_header failed");
+
+    if (ARCHIVE_OK != archive_write_finish_entry(extras->archive))
+        throw MergerError("archive_write_finish_entry failed");
+
+    archive_entry_free(entry);
+}
+
+extern "C"
+void
 paludis_tar_extras_add_file(PaludisTarExtras * const extras, const std::string & from, const std::string & path)
 {
     struct archive * disk_archive(archive_read_disk_new());

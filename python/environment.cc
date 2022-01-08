@@ -54,7 +54,7 @@ class EnvironmentImplementationWrapper :
         {
         }
 
-        virtual void populate_sets() const
+        void populate_sets() const override
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -64,8 +64,8 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "populate_sets");
         }
 
-        virtual bool accept_license(const std::string & s, const std::shared_ptr<const PackageID> & p) const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
+        bool accept_license(const std::string & s, const std::shared_ptr<const PackageID> & p) const
+            override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -75,8 +75,8 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "accept_license");
         }
 
-        virtual bool accept_keywords(const std::shared_ptr<const KeywordNameSet> & k, const std::shared_ptr<const PackageID> & p) const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
+        bool accept_keywords(const std::shared_ptr<const KeywordNameSet> & k, const std::shared_ptr<const PackageID> & p) const
+            override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -86,8 +86,8 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "accept_keywords");
         }
 
-        virtual const std::shared_ptr<const Mask> mask_for_user(const std::shared_ptr<const PackageID> & p, const bool b) const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
+        const std::shared_ptr<const Mask> mask_for_user(const std::shared_ptr<const PackageID> & p, const bool b) const
+            override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -97,8 +97,8 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "mask_for_user");
         }
 
-        virtual bool unmasked_by_user(const std::shared_ptr<const PackageID> & p, const std::string & s) const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
+        bool unmasked_by_user(const std::shared_ptr<const PackageID> & p, const std::string & s) const
+            override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -108,8 +108,8 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "unmasked_by_user");
         }
 
-        virtual std::shared_ptr<const FSPathSequence> bashrc_files() const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
+        std::shared_ptr<const FSPathSequence> bashrc_files() const
+            override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -124,8 +124,8 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::bashrc_files();
         }
 
-        virtual std::shared_ptr<const FSPathSequence> syncers_dirs() const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
+        std::shared_ptr<const FSPathSequence> syncers_dirs() const
+            override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -140,8 +140,8 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::syncers_dirs();
         }
 
-        virtual std::shared_ptr<const FSPathSequence> fetchers_dirs() const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
+        std::shared_ptr<const FSPathSequence> fetchers_dirs() const
+            override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -156,8 +156,8 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::fetchers_dirs();
         }
 
-        virtual std::shared_ptr<const FSPathSequence> hook_dirs() const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
+        std::shared_ptr<const FSPathSequence> hook_dirs() const
+            override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -167,7 +167,17 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "hook_dirs");
         }
 
-        virtual uid_t reduced_uid() const
+        std::string reduced_username() const override
+        {
+            std::unique_lock<std::recursive_mutex> l(get_mutex());
+
+            if (bp::override f = get_override("reduced_username"))
+                return f();
+            else
+                throw PythonMethodNotImplemented("EnvironmentImplementation", "reduced_username");
+        }
+
+        uid_t reduced_uid() const override
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -177,7 +187,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "reduced_uid");
         }
 
-        virtual gid_t reduced_gid() const
+        gid_t reduced_gid() const override
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -188,8 +198,8 @@ class EnvironmentImplementationWrapper :
         }
 
 
-        virtual std::shared_ptr<const MirrorsSequence> mirrors(const std::string & s) const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
+        std::shared_ptr<const MirrorsSequence> mirrors(const std::string & s) const
+            override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -199,8 +209,8 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "mirrors");
         }
 
-        virtual std::shared_ptr<const SetNameSet> set_names() const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
+        std::shared_ptr<const SetNameSet> set_names() const
+            override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -215,8 +225,8 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::set_names();
         }
 
-        virtual const std::shared_ptr<const SetSpecTree> set(const SetName & s) const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
+        const std::shared_ptr<const SetSpecTree> set(const SetName & s) const
+            override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -232,14 +242,14 @@ class EnvironmentImplementationWrapper :
         }
 
         // FIXME - Hooks are not exposed
-        virtual HookResult perform_hook(const Hook &, const std::shared_ptr<OutputManager> &) const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
+        HookResult perform_hook(const Hook &, const std::shared_ptr<OutputManager> &) const
+            override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             return make_named_values<HookResult>(n::max_exit_status() = 0, n::output() = "");
         }
 
-        virtual std::string distribution() const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
+        std::string distribution() const
+            override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -254,7 +264,7 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::distribution();
         }
 
-        virtual bool add_to_world(const QualifiedPackageName & s) const
+        bool add_to_world(const QualifiedPackageName & s) const override
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
             if (bp::override f = get_override("add_to_world"))
@@ -263,7 +273,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "add_to_world");
         }
 
-        virtual bool add_to_world(const SetName & s) const
+        bool add_to_world(const SetName & s) const override
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
             if (bp::override f = get_override("add_to_world"))
@@ -272,7 +282,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "add_to_world");
         }
 
-        virtual bool remove_from_world(const QualifiedPackageName & s) const
+        bool remove_from_world(const QualifiedPackageName & s) const override
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
             if (bp::override f = get_override("remove_from_world"))
@@ -281,7 +291,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "remove_from_world");
         }
 
-        virtual bool remove_from_world(const SetName & s) const
+        bool remove_from_world(const SetName & s) const override
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
             if (bp::override f = get_override("remove_from_world"))
@@ -290,8 +300,8 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "remove_from_world");
         }
 
-        virtual std::shared_ptr<PackageIDSequence> operator[] (const Selection & fg) const
-            PALUDIS_ATTRIBUTE((warn_unused_result))
+        std::shared_ptr<PackageIDSequence> operator[] (const Selection & fg) const
+            override PALUDIS_ATTRIBUTE((warn_unused_result))
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -306,7 +316,7 @@ class EnvironmentImplementationWrapper :
             return EnvironmentImplementation::operator[] (fg);
         }
 
-        virtual void need_keys_added() const
+        void need_keys_added() const override
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -316,7 +326,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "need_keys_added");
         }
 
-        virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const
+        const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const override
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -326,7 +336,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "format_key");
         }
 
-        virtual const std::shared_ptr<const MetadataValueKey<FSPath> > config_location_key() const
+        const std::shared_ptr<const MetadataValueKey<FSPath> > config_location_key() const override
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -336,7 +346,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "config_location_key");
         }
 
-        virtual const std::shared_ptr<const MetadataValueKey<FSPath> > preferred_root_key() const
+        const std::shared_ptr<const MetadataValueKey<FSPath> > preferred_root_key() const override
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -346,7 +356,7 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "preferred_root_key");
         }
 
-        virtual const std::shared_ptr<const MetadataValueKey<FSPath> > system_root_key() const
+        const std::shared_ptr<const MetadataValueKey<FSPath> > system_root_key() const override
         {
             std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -356,59 +366,59 @@ class EnvironmentImplementationWrapper :
                 throw PythonMethodNotImplemented("EnvironmentImplementation", "system_root_key");
         }
 
-        virtual Tribool interest_in_suggestion(
+        Tribool interest_in_suggestion(
                 const std::shared_ptr<const PackageID> &,
-                const PackageDepSpec &) const
+                const PackageDepSpec &) const override
         {
             throw PythonMethodNotImplemented("EnvironmentImplementation", "interest_in_suggestion");
         }
 
-        virtual const Tribool want_choice_enabled(
+        const Tribool want_choice_enabled(
                 const std::shared_ptr<const PackageID> &,
                 const std::shared_ptr<const Choice> &,
                 const UnprefixedChoiceName &
-                ) const
+                ) const override
         {
             throw PythonMethodNotImplemented("EnvironmentImplementation", "want_choice_enabled");
         }
 
-        virtual const std::string value_for_choice_parameter(
+        const std::string value_for_choice_parameter(
                 const std::shared_ptr<const PackageID> &,
                 const std::shared_ptr<const Choice> &,
                 const UnprefixedChoiceName &
-                ) const
+                ) const override
         {
             throw PythonMethodNotImplemented("EnvironmentImplementation", "value_for_choice_parameter");
         }
 
-        virtual std::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
+        std::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
                 const std::shared_ptr<const PackageID> &,
                 const std::shared_ptr<const Choice> &
-                ) const
+                ) const override
         {
             throw PythonMethodNotImplemented("EnvironmentImplementation", "known_choice_value_names");
         }
 
-        virtual const std::shared_ptr<OutputManager> create_output_manager(
-                const CreateOutputManagerInfo &) const
+        const std::shared_ptr<OutputManager> create_output_manager(
+                const CreateOutputManagerInfo &) const override
         {
             return std::make_shared<StandardOutputManager>();
         }
 
-        virtual const std::shared_ptr<Repository> repository_from_new_config_file(
-                const FSPath &)
+        const std::shared_ptr<Repository> repository_from_new_config_file(
+                const FSPath &) override
         {
             throw PythonMethodNotImplemented("EnvironmentImplementation", "repository_from_new_config_file");
         }
 
-        virtual void update_config_files_for_package_move(
-                const PackageDepSpec &, const QualifiedPackageName &) const
+        void update_config_files_for_package_move(
+                const PackageDepSpec &, const QualifiedPackageName &) const override
         {
             throw PythonMethodNotImplemented("EnvironmentImplementation", "update_config_files_for_package_move");
         }
 
-        virtual QualifiedPackageName fetch_unique_qualified_package_name(
-                const PackageNamePart &, const Filter & = all_filter(), const bool /*disambiguate*/ = true) const
+        QualifiedPackageName fetch_unique_qualified_package_name(
+                const PackageNamePart &, const Filter & = all_filter(), const bool /*disambiguate*/ = true) const override
         {
             throw PythonMethodNotImplemented("EnvironmentImplementation", "fetch_unique_qualified_package_name");
         }
@@ -504,6 +514,11 @@ void expose_environment()
                 "Return true if the first repository is more important than the second."
             )
 
+        .def("reduced_username", &Environment::reduced_username,
+                "reduced_username() -> str\n"
+                "User name to use when reduced privs are permissible."
+            )
+
         .def("reduced_uid", &Environment::reduced_uid,
                 "reduced_uid() -> int\n"
                 "User id to use when reduced privs are permissible."
@@ -581,6 +596,11 @@ void expose_environment()
         .def("hook_dirs", bp::pure_virtual(&EnvImp::hook_dirs),
                 "hook_dirs() -> list of paths\n"
                 "Return directories to search for hooks."
+            )
+
+        .def("reduced_username", bp::pure_virtual(&EnvImp::reduced_username),
+                "reduced_username() -> str\n"
+                "User name to use when reduced privs are permissible."
             )
 
         .def("reduced_uid", bp::pure_virtual(&EnvImp::reduced_uid),

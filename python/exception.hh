@@ -54,7 +54,7 @@ namespace paludis
                 void translator(const Ex_ & x) const;
 
                 PyObject *
-                get_py_exception() const
+                get_py_exception() const override
                 {
                     return _e;
                 }

@@ -34,12 +34,12 @@ namespace paludis
             public Command
         {
             public:
-                virtual CommandImportance importance() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                CommandImportance importance() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 int run(
                         const std::shared_ptr<Environment> &,
                         const std::shared_ptr<const Sequence<std::string > > & args
-                        );
+                        ) override;
 
                 int run_hosted(
                         const std::shared_ptr<Environment> &,
@@ -50,7 +50,7 @@ namespace paludis
                         const std::function<void (const PackageDepSpec &)> &,
                         const std::function<void (const std::string &)> &) PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                std::shared_ptr<args::ArgsHandler> make_doc_cmdline();
+                std::shared_ptr<args::ArgsHandler> make_doc_cmdline() override;
         };
     }
 }

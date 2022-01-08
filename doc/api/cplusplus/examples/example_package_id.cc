@@ -107,11 +107,11 @@ int main(int argc, char * argv[])
                 if ((*i)->supports_action(config_action))
                     actions.insert("config");
 
-                SupportsActionTest<UninstallAction> fetch_action;
+                SupportsActionTest<FetchAction> fetch_action;
                 if ((*i)->supports_action(fetch_action))
                     actions.insert("fetch");
 
-                SupportsActionTest<UninstallAction> info_action;
+                SupportsActionTest<InfoAction> info_action;
                 if ((*i)->supports_action(info_action))
                     actions.insert("info");
             }

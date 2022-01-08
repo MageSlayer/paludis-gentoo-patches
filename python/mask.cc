@@ -82,7 +82,7 @@ struct MaskWrapper :
     Mask,
     bp::wrapper<Mask>
 {
-    virtual char key() const
+    char key() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -92,7 +92,7 @@ struct MaskWrapper :
             throw PythonMethodNotImplemented("Mask", "key");
     }
 
-    virtual const std::string description() const
+    const std::string description() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -107,7 +107,7 @@ struct UserMaskWrapper :
     UserMask,
     bp::wrapper<UserMask>
 {
-    virtual char key() const
+    char key() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -117,7 +117,7 @@ struct UserMaskWrapper :
             throw PythonMethodNotImplemented("UserMask", "key");
     }
 
-    virtual const std::string description() const
+    const std::string description() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -132,7 +132,7 @@ struct UnacceptedMaskWrapper :
     UnacceptedMask,
     bp::wrapper<UnacceptedMask>
 {
-    virtual const std::string unaccepted_key_name() const
+    const std::string unaccepted_key_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -142,7 +142,7 @@ struct UnacceptedMaskWrapper :
             throw PythonMethodNotImplemented("UnacceptedMask", "unaccepted_key_name");
     }
 
-    virtual char key() const
+    char key() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -152,7 +152,7 @@ struct UnacceptedMaskWrapper :
             throw PythonMethodNotImplemented("UnacceptedMask", "key");
     }
 
-    virtual const std::string description() const
+    const std::string description() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -177,7 +177,7 @@ struct RepositoryMaskWrapper :
             throw PythonMethodNotImplemented("RepositoryMask", "mask_key_name");
     }
 
-    virtual char key() const
+    char key() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -187,7 +187,7 @@ struct RepositoryMaskWrapper :
             throw PythonMethodNotImplemented("RepositoryMask", "key");
     }
 
-    virtual const std::string description() const
+    const std::string description() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -197,7 +197,7 @@ struct RepositoryMaskWrapper :
             throw PythonMethodNotImplemented("RepositoryMask", "description");
     }
 
-    virtual const std::string comment() const
+    const std::string comment() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -207,7 +207,7 @@ struct RepositoryMaskWrapper :
             throw PythonMethodNotImplemented("RepositoryMask", "comment");
     }
 
-    virtual const std::string token() const
+    const std::string token() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -217,7 +217,7 @@ struct RepositoryMaskWrapper :
             throw PythonMethodNotImplemented("RepositoryMask", "token");
     }
 
-    virtual const FSPath mask_file() const
+    const FSPath mask_file() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -232,7 +232,7 @@ struct UnsupportedMaskWrapper :
     UnsupportedMask,
     bp::wrapper<UnsupportedMask>
 {
-    virtual const std::string explanation() const
+    const std::string explanation() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -242,7 +242,7 @@ struct UnsupportedMaskWrapper :
             throw PythonMethodNotImplemented("UnsupportedMask", "explanation");
     }
 
-    virtual char key() const
+    char key() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -252,7 +252,7 @@ struct UnsupportedMaskWrapper :
             throw PythonMethodNotImplemented("UnsupportedMask", "key");
     }
 
-    virtual const std::string description() const
+    const std::string description() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
