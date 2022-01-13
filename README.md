@@ -41,4 +41,11 @@ While the current test suite executes successfully, most of the new features
 are not hooked up into the testing system yet, so EAPI=8 ebuilds **may** show
 undesired behavior.
 
+Packages known to fail:
+
+| Package | Reason | State | Has Workaround |
+| ------- | ------ | ----- | -------------- |
+| games-emulation/dolphin | variable in global scope | ❌ | declare -g |
+| media-libs/alsa-ucm-conf | doins -r | ❌ | - |
+
 **It is not safe to use this branch.**
