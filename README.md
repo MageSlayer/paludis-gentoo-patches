@@ -43,9 +43,9 @@ rebased without notice.
 
 Packages known to fail:
 
-| Package | Reason | State | Has Workaround |
-| ------- | ------ | ----- | -------------- |
-| games-emulation/dolphin | variable in global scope | ❌ | declare -g |
-| media-libs/alsa-ucm-conf | doins -r | ❌ | - |
+| Package | Reason | State | Related to EAPI=8 | Has Workaround |
+| ------- | ------ | ----- | ----------------- | -------------- |
+| games-emulation/dolphin | variable in global scope | ❌ | ❌ | declare -g |
+| media-libs/alsa-ucm-conf | doins -r | ❌ | ❌ | - |
 
 **It is not safe to use this branch.**
