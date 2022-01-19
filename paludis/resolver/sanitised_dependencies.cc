@@ -219,22 +219,22 @@ namespace
         {
             AnyDepSpecChildHandler h(env, decider, our_resolution, our_id, changed_choices, parent_make_sanitised);
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(h));
-            std::list<SanitisedDependency> l;
+            std::list<SanitisedDependency> sanitised_deps;
             h.commit(
                     parent_make_sanitised,
-                    std::bind(&list_push_back<SanitisedDependency>, &l, std::placeholders::_1)
+                    std::bind(&list_push_back<SanitisedDependency>, &sanitised_deps, std::placeholders::_1)
                     );
 
             if (active_sublist)
             {
-                for (const auto & i : l)
+                for (const auto & i : sanitised_deps)
                     visit_package_or_block_spec(i.spec());
             }
             else
             {
                 Save<std::list<PackageOrBlockDepSpec> *> save_active_sublist(&active_sublist, nullptr);
                 active_sublist = &*child_groups.insert(child_groups.end(), std::list<PackageOrBlockDepSpec>());
-                for (const auto & i : l)
+                for (const auto & i : sanitised_deps)
                     visit_package_or_block_spec(i.spec());
             }
         }
