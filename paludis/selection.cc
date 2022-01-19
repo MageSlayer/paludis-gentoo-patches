@@ -165,8 +165,6 @@ namespace
 
             std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
-                using namespace std::placeholders;
-
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
                 RepositoryContentMayExcludes may_excludes(_fg.filter().may_excludes());
 
@@ -211,8 +209,6 @@ namespace
 
             std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
-                using namespace std::placeholders;
-
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
                 RepositoryContentMayExcludes may_excludes(_fg.filter().may_excludes());
 
@@ -252,8 +248,6 @@ namespace
 
             std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
-                using namespace std::placeholders;
-
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
                 RepositoryContentMayExcludes may_excludes(_fg.filter().may_excludes());
 
@@ -292,8 +286,6 @@ namespace
 
             std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
-                using namespace std::placeholders;
-
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
                 RepositoryContentMayExcludes may_excludes(_fg.filter().may_excludes());
 
@@ -358,8 +350,6 @@ namespace
 
             std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
-                using namespace std::placeholders;
-
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
                 RepositoryContentMayExcludes may_excludes(_fg.filter().may_excludes());
 
@@ -424,8 +414,6 @@ namespace
 
             std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
-                using namespace std::placeholders;
-
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
                 RepositoryContentMayExcludes may_excludes(_fg.filter().may_excludes());
 
