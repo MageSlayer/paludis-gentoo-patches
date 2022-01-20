@@ -300,10 +300,10 @@ Imp<BrokenLinkageFinder>::add_breakage(const FSPath & file, const std::string & 
 
         Context ctx("When building map from files to packages:");
 
-        std::shared_ptr<const PackageIDSequence> pkgs((*env)[selection::AllVersionsUnsorted(
+        std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
                     generator::All() | filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
 
-        std::for_each(pkgs->begin(), pkgs->end(),
+        std::for_each(ids->begin(), ids->end(),
                 std::bind(&Imp<BrokenLinkageFinder>::gather_package, this, _1));
     }
 

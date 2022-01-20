@@ -528,11 +528,11 @@ EnvironmentImplementation::fetch_unique_qualified_package_name(const PackageName
     std::shared_ptr<QPNIMap> result(new QPNIMap);
     std::set<std::pair<CategoryNamePart, RepositoryName>, CategoryRepositoryNamePairComparator> checked;
 
-    std::shared_ptr<const PackageIDSequence> pkgs((*this)[selection::AllVersionsUnsorted(
+    std::shared_ptr<const PackageIDSequence> ids((*this)[selection::AllVersionsUnsorted(
                 generator::Matches(make_package_dep_spec({ }).package_name_part(p), nullptr, { }) | f)]);
 
-    for (IndirectIterator<PackageIDSequence::ConstIterator> it(pkgs->begin()),
-             it_end(pkgs->end()); it_end != it; ++it)
+    for (IndirectIterator<PackageIDSequence::ConstIterator> it(ids->begin()),
+             it_end(ids->end()); it_end != it; ++it)
     {
         Context local_context("When checking category '" + stringify(it->name().category()) + "' in repository '" +
                 stringify(it->repository_name()) + "':");
