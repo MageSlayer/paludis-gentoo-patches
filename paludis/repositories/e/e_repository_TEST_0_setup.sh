@@ -878,6 +878,16 @@ src_unpack() {
     echo foo > foo
     ln -s foo bar
 
+    cd ..
+
+    mkdir 'c c'
+    cd 'c c'
+    echo tre > tre
+    echo 'ty ui' > 'ty ui'
+    ln -s tre iioo
+    ln -s tre 'oo pp'
+    ln -s 'ty ui' jjkk
+    ln -s 'ty ui' 'kk ll'
 }
 
 src_install() {
@@ -887,6 +897,8 @@ src_install() {
     newins a/adfs asdf
     cd b
     doins -r .
+    cd ..
+    doins -r 'c c'
 }
 
 pkg_preinst() {
@@ -898,6 +910,16 @@ pkg_preinst() {
     [[ -f ${D}/foo/foo ]] || die foo
     [[ -L ${D}/foo/bar ]] || die bar
     [[ $(readlink ${D}/foo/bar ) == foo ]] || die sym
+    [[ -f "${D}/foo/c c/tre" ]] || die tre
+    [[ -L "${D}/foo/c c/iioo" ]] || die sym
+    [[ $(readlink "${D}/foo/c c/iioo" ) == tre ]] || die sym
+    [[ -L "${D}/foo/c c/oo pp" ]] || die sym
+    [[ $(readlink "${D}/foo/c c/oo pp" ) == tre ]] || die sym
+    [[ -f "${D}/foo/c c/ty ui" ]] || die 'ty ui'
+    [[ -L "${D}/foo/c c/jjkk" ]] || die sym
+    [[ $(readlink "${D}/foo/c c/jjkk" ) == 'ty ui' ]] || die sym
+    [[ -L "${D}/foo/c c/kk ll" ]] || die sym
+    [[ $(readlink "${D}/foo/c c/kk ll" ) == 'ty ui' ]] || die sym
 }
 END
 mkdir -p "cat/banned-functions"
