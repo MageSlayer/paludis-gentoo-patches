@@ -57,7 +57,7 @@ not for end user use.</p>
     exit status.</li>
 </ul>
 
-<p>Many syncers use <code>source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"</code> early on to get access to
+<p>Many syncers use <code>source "${PALUDIS_ECHO_FUNCTIONS_DIR:-${PALUDIS_EBUILD_DIR}}/echo_functions.bash"</code> early on to get access to
 <code>ewarn</code> and friends.</p>
 
 <p>For examples, consult the built-in syncers, which can be found in <code>LIBEXECDIR/paludis/syncers/</code>.</p>

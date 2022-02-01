@@ -25,7 +25,7 @@ check_for_config_updates()
     shopt -s extglob
 
     export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
-    source ${PALUDIS_ECHO_FUNCTIONS_DIR:-${PALUDIS_EBUILD_DIR}}/echo_functions.bash
+    source "${PALUDIS_ECHO_FUNCTIONS_DIR:-${PALUDIS_EBUILD_DIR}}/echo_functions.bash"
 
     if [[ -n "${PALUDIS_NO_LIVE_DESTINATION}" ]] ; then
         einfo_unhooked "No need to search for configuration files requiring action"
@@ -64,7 +64,7 @@ check_for_config_updates()
 stale_hook()
 {
     export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
-    source ${PALUDIS_ECHO_FUNCTIONS_DIR:-${PALUDIS_EBUILD_DIR}}/echo_functions.bash
+    source "${PALUDIS_ECHO_FUNCTIONS_DIR:-${PALUDIS_EBUILD_DIR}}/echo_functions.bash"
 
     echo
     ewarn "find_config_updates hook should not be run in phase '${HOOK}'"
