@@ -234,9 +234,9 @@ KEYWORDS="test"
 S="${WORKDIR}"
 
 pkg_pretend() {
-    [[ -n "$(declare -F hasq)" ]]  && die 'hasq is banned'
-    [[ -n "$(declare -F hasv)" ]]  && die 'hasv is banned'
-    [[ -n "$(declare -F useq)" ]]  && die 'useq is banned'
+    [[ -n "$(declare -F hasq)" ]] && die 'hasq is banned'
+    [[ -n "$(declare -F hasv)" ]] && die 'hasv is banned'
+    [[ -n "$(declare -F useq)" ]] && die 'useq is banned'
 }
 END
 
@@ -253,9 +253,9 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 
 pkg_pretend() {
-for var in IDEPEND; do
-  [ -z "${!var+x}" ] && echo "${var} has been added and should be set"
-done
+    for var in IDEPEND; do
+        [ -z "${!var+x}" ] && echo "${var} has been added and should be set"
+    done
 }
 END
 
@@ -368,7 +368,6 @@ src_unpack() {
         nonfatal unpack test.${format} 2> /dev/null > /dev/null
         [[ '0' -eq "$?" ]] && die "${format} should not be unpacked"
     done
-
 }
 END
 
