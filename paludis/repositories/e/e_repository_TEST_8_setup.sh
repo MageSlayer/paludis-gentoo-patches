@@ -91,23 +91,41 @@ src_prepare(){
     cat <<'EOF' > configure
 #!/bin/sh
 
-if echo "$@" | grep -q 'help' ; then
-    echo --datarootdir
-    echo --disable-static
-    exit 0
+param=''
+for param in "${@}"; do
+    if [ '--help' = "${param}" ]; then
+        printf '%s\n' '--datarootdir'
+        printf '%s\n' '--disable-static'
+        exit 0
+    fi
+done
+
+param=''
+datarootdir='0'
+disablestatic='0'
+for param in "${@}"; do
+    if [ "--datarootdir=${EPREFIX}/usr/share" = "${param}" ]; then
+        datarootdir='1'
+    fi
+
+    if [ '--disable-static' = "${param}" ]; then
+        disablestatic='1'
+    fi
+
+    if [ '1' = "${datarootdir}" ] && [ '1' = "${disablestatic}" ]; then
+        exit '0'
+    fi
+done
+
+if [ '0' = "${datarootdir}" ]; then
+    printf '%s missing\n' '--datarootdir'
 fi
 
-if ! echo "$@" | grep -q datarootdir="${EPREFIX}"/usr/share ; then
-    echo --datarootdir missing
-    exit 1
+if [ '0' = "${disablestatic}" ]; then
+    printf '%s missing\n' '--disable-static'
 fi
 
-if ! echo "$@" | grep -q 'disable-static' ; then
-    echo --disable-static missing
-    exit 1
-fi
-
-exit 0
+exit '1'
 EOF
 
     chmod +x configure
