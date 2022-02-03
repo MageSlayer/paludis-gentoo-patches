@@ -201,13 +201,14 @@ END
 
 # fetch+ SRC_URI prefix to override fetch restriction
 # mirror+ SRC_URI prefix to override mirror restriction
-# TODO
+# TODO: this seems to fail currently, revisit and fix the implementation,
+#       since the test looks fine.
 mkdir -p "cat/fetch-restrictions"
 cat <<'END' > cat/fetch-restrictions/fetch-restrictions-8.ebuild
 EAPI="8"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
-SRC_URI="fetch+test.7z mirror+test.rar"
+SRC_URI="fetch+test.tgz mirror+test.tbz2"
 SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
