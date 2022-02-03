@@ -174,11 +174,28 @@ KEYWORDS="test"
 
 S="${WORKDIR}"
 
+dosym_relative_path_pms() {
+    # Stricly speaking, this function requires realpath and dirname from
+    # GNU coreutils 8.32 exactly, but it's difficult to provide that for
+    # arbitary input.
+    local link=$(realpath -m -s "/${2#/}")
+    local linkdir=$(dirname "${link}")
+    realpath -m -s --relative-to="${linkdir}" "$1"
+}
+
 src_install() {
-    echo bar > bar
-    dobin bar
-    dosym ${D}/usr/bin/bar /usr/bin/foo
-    [[ "$(readlink "${D}/usr/bin/bar")" == "foo" ]] || die 'link wrong'
+    echo foo > foo
+    dobin foo
+    dosym "${EPREFIX}/usr/bin/foo" '/usr/bin/bar'
+    dosym -r "${EPREFIX}/usr/bin/foo" '/usr/bin/baz'
+
+    real_target="$(readlink "${D}/usr/bin/bar")"
+    expected_target="${EPREFIX}/usr/bin/foo"
+    [ "${expected_target}" = "${real_target}" ] || die "absolute link wrong; is: '${real_target}', should have been: '${expected_target}'"
+
+    real_target="$(readlink "${D}/usr/bin/baz")"
+    expected_target="foo"
+    [ "${expected_target}" = "${real_target}" ] || die "relative link wrong; is: '${real_target}', should have been: '${expected_target}'"
 }
 END
 
