@@ -67,7 +67,7 @@ KEYWORDS="test"
 S="${WORKDIR}"
 
 pkg_pretend() {
-    echo "${PALUDIS_BASH_COMPAT}"
+    [[ "${BASH_COMPAT}" == '5.0' ]] || [[ "${BASH_COMPAT}" == '50' ]] || die "BASH_COMPAT=${BASH_COMPAT}"
 }
 END
 
