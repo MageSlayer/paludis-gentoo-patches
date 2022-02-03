@@ -369,13 +369,25 @@ IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="test"
 
-pkg_config() { [[ "$(find . | wc -l)" -gt '1' ]] && die "$(pwd) not empty"; }
-pkg_info() { [[ "$(find . | wc -l)" -gt '1' ]] && die "$(pwd) not empty"; }
-pkg_nofetch() { [[ "$(find . | wc -l)" -gt '1' ]] && die "$(pwd) not empty"; }
-pkg_postinst() { [[ "$(find . | wc -l)" -gt '1' ]] && die "$(pwd) not empty"; }
-pkg_postrm() { [[ "$(find . | wc -l)" -gt '1' ]] && die "$(pwd) not empty"; }
-pkg_preinst() { [[ "$(find . | wc -l)" -gt '1' ]] && die "$(pwd) not empty"; }
-pkg_prerm() { [[ "$(find . | wc -l)" -gt '1' ]] && die "$(pwd) not empty"; }
-pkg_setup() { [[ "$(find . | wc -l)" -gt '1' ]] && die "$(pwd) not empty"; }
-pkg_pretend() { [[ "$(find . | wc -l)" -gt '1' ]] && die "$(pwd) not empty"; }
+test_impl() {
+    if [[ "$(find . | wc -l)" -gt '1' ]]; then
+        die "$(pwd) not empty"
+    fi
+
+    # Try to make the cwd dirty to check if subsequent pkg_* phases find it
+    # empty again.
+    # However, while the directory must be empty, it need not be writable, so
+    # accept failures.
+    touch 'force-non-empty' || :
+}
+
+pkg_config() { test_impl; }
+pkg_info() { test_impl; }
+pkg_nofetch() { test_impl; }
+pkg_postinst() { test_impl; }
+pkg_postrm() { test_impl; }
+pkg_preinst() { test_impl; }
+pkg_prerm() { test_impl; }
+pkg_setup() { test_impl; }
+pkg_pretend() { test_impl; }
 END
