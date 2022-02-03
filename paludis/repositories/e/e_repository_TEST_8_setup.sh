@@ -218,10 +218,8 @@ RESTRICT="fetch mirror"
 END
 
 # hasq banned
-# hasv banned
-# useq banned
-mkdir -p "cat/banned-functions"
-cat <<'END' > cat/banned-functions/banned-functions-8.ebuild
+mkdir -p "cat/banned-functions-hasq"
+cat <<'END' > cat/banned-functions-hasq/banned-functions-hasq-8.ebuild
 EAPI="8"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
@@ -234,9 +232,45 @@ KEYWORDS="test"
 S="${WORKDIR}"
 
 pkg_pretend() {
-    [[ -n "$(declare -F hasq)" ]] && die 'hasq is banned'
-    [[ -n "$(declare -F hasv)" ]] && die 'hasv is banned'
-    [[ -n "$(declare -F useq)" ]] && die 'useq is banned'
+    hasq 'a' 'a'
+}
+END
+
+# hasv banned
+mkdir -p "cat/banned-functions-hasv"
+cat <<'END' > cat/banned-functions-hasv/banned-functions-hasv-8.ebuild
+EAPI="8"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+pkg_pretend() {
+    hasv 'a' 'a'
+}
+END
+
+# useq banned
+mkdir -p "cat/banned-functions-useq"
+cat <<'END' > cat/banned-functions-useq/banned-functions-useq-8.ebuild
+EAPI="8"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+S="${WORKDIR}"
+
+pkg_pretend() {
+    useq '!spork'
 }
 END
 

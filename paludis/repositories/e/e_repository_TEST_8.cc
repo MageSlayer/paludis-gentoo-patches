@@ -191,12 +191,32 @@ TEST(ERepository, InstallEAPI8)
 
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                        PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions-8",
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions-hasq-8",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
-        ASSERT_TRUE(! pretend_action.failed());
+        ASSERT_TRUE(pretend_action.failed());
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions-hasv-8",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(pretend_action);
+        ASSERT_TRUE(pretend_action.failed());
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions-useq-8",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(pretend_action);
+        ASSERT_TRUE(pretend_action.failed());
     }
 
     {
