@@ -169,8 +169,13 @@ KEYWORDS="test"
 
 S="${WORKDIR}"
 
+src_unpack() {
+    echo 'libfoo.a' > libfoo.a
+    echo 'foo.o' > foo.o
+}
+
 src_install() {
-    [[ -n "$(declare -F dolib)" ]] && die "dolib is banned in ${EAPI}"
+    dolib libfoo.a foo.o
 }
 END
 
