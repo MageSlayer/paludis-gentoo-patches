@@ -353,11 +353,16 @@ IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="test"
 
+PROPERTIES="BAZ"
+RESTRICT="BAZ"
+
 pkg_pretend() {
     [[ "${PROPERTIES}" == *FOO* ]] || die 'failed to accumulate PROPERTIES'
     [[ "${PROPERTIES}" == *BAR* ]] || die 'failed to accumulate PROPERTIES'
+    [[ "${PROPERTIES}" == *BAZ* ]] || die 'failed to accumulate PROPERTIES'
     [[ "${RESTRICT}" == *FOO* ]] || die 'failed to accumulate RESTRICT'
     [[ "${RESTRICT}" == *BAR* ]] || die 'failed to accumulate RESTRICT'
+    [[ "${RESTRICT}" == *BAZ* ]] || die 'failed to accumulate RESTRICT'
 }
 END
 
