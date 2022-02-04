@@ -144,8 +144,14 @@ KEYWORDS="test"
 
 S="${WORKDIR}"
 
+src_prepare() {
+    mkdir foo
+    touch foo/a.txt
+    touch foo/b.txt
+}
+
 src_install() {
-    [[ -n "$(declare -F dohtml)" ]] && die "dohtml is banned in ${EAPI}"
+    dohtml -A txt -r foo/.
 }
 END
 
