@@ -94,6 +94,8 @@ namespace
 
 TEST(ERepository, InstallEAPI7)
 {
+    FSPath cwd(FSPath::cwd());
+    FSPath test_dir(cwd / (std::string(::testing::UnitTest::GetInstance()->current_test_case()->name()) + '.' + std::string(::testing::UnitTest::GetInstance()->current_test_info()->name()) +"_dir"));
     TestEnvironment env;
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
@@ -135,47 +137,186 @@ TEST(ERepository, InstallEAPI7)
 
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                        PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions-7",
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/assert-in-subshell-7",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+        id->perform_action(pretend_action);
+        ASSERT_TRUE(! pretend_action.failed());
+    }
+
+    {
+        auto repos = env.repositories();
+        auto installed_repos = std::dynamic_pointer_cast<FakeInstalledRepository>(*std::find_if(repos.begin(), repos.end(), [](auto repo){return (repo->name().value()=="installed");})); // >= C++11
+        installed_repos->add_version("cat", "pretend-installed", "0");
+        installed_repos->add_version("cat", "pretend-installed", "1");
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/best-version-7",
+                                &env, { })),nullptr,{ }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(pretend_action);
+        ASSERT_TRUE(! pretend_action.failed());
     }
 
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                        PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions2-7",
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/die-in-subshell-7",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+        ASSERT_THROW(id->perform_action(action), ActionFailedError);
     }
 
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                        PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions3-7",
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/banned-dohtml-7",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        id->perform_action(action);
+        ASSERT_NO_THROW(id->perform_action(action));
     }
 
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                        PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions4-7",
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/banned-dolib-7",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        EXPECT_THROW(id->perform_action(action), ActionFailedError);
+        ASSERT_NO_THROW(id->perform_action(action));
     }
 
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                        PackageDepSpec(parse_user_package_dep_spec("=cat/banned-functions5-7",
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/banned-dolib-rep-7",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        id->perform_action(action);
+        ASSERT_NO_THROW(id->perform_action(action));
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/changed-domo-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        ASSERT_NO_THROW(id->perform_action(action));
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/added-dostrip-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        ASSERT_NO_THROW(id->perform_action(action));
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/eapply-git-diff-support-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        ASSERT_NO_THROW(id->perform_action(action));
+    }
+
+    {
+        setenv("PALUDIS_USER_PATCHES", (test_dir/ "e_repository_TEST_7_dir/root/var/paludis/user_patches").c_str() , 1);
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/eapply-user-git-diff-support-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        ASSERT_NO_THROW(id->perform_action(action));
+        unsetenv("PALUDIS_USER_PATCHES");
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/ebegin-not-to-stdout-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(pretend_action);
+        ASSERT_TRUE(! pretend_action.failed());
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                      PackageDepSpec(parse_user_package_dep_spec("=cat/econf-added-options-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        ASSERT_NO_THROW(id->perform_action(action));
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                      PackageDepSpec(parse_user_package_dep_spec("=cat/eend-not-to-stdout-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(pretend_action);
+        ASSERT_TRUE(! pretend_action.failed());
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                      PackageDepSpec(parse_user_package_dep_spec("=cat/eqawarn-not-to-stdout-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(pretend_action);
+        ASSERT_TRUE(! pretend_action.failed());
+    }
+
+    {
+        auto repos = env.repositories();
+        auto installed_repos = std::dynamic_pointer_cast<FakeInstalledRepository>(*std::find_if(repos.begin(), repos.end(), [](auto repo){return (repo->name().value()=="installed");})); // >= C++11
+        installed_repos->add_version("cat", "pretend-installed", "0");
+        installed_repos->add_version("cat", "pretend-installed", "1");
+
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/has-version-7",
+                                &env,{ })),nullptr,{ }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(pretend_action);
+        ASSERT_TRUE(! pretend_action.failed());
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/banned-libopts-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(pretend_action);
+        ASSERT_TRUE(! pretend_action.failed());
+    }
+
+    {
+        auto env_copy = env;
+        env_copy.set_want_choice_enabled(ChoicePrefixName("build_options"), UnprefixedChoiceName("optional_tests"), true);
+
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/nonfatal-external-and-function-7",
+                                &env_copy, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_TRUE(!!id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("build_options:optional_tests")));
+        ASSERT_NO_THROW(id->perform_action(action));
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/removed-eclassdir-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        ASSERT_NO_THROW(id->perform_action(action));
     }
 
     {
@@ -185,6 +326,7 @@ TEST(ERepository, InstallEAPI7)
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(action);
+        ASSERT_TRUE(! pretend_action.failed());
     }
 
     {
@@ -193,6 +335,73 @@ TEST(ERepository, InstallEAPI7)
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        id->perform_action(action);
+        ASSERT_NO_THROW(id->perform_action(action));
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/prefix-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        ASSERT_NO_THROW(id->perform_action(action));
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/changed-vars-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        ASSERT_NO_THROW(id->perform_action(action));
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-dep-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(pretend_action);
+        ASSERT_TRUE(! pretend_action.failed());
+    }
+
+    {
+        auto env_copy = env;
+        env_copy.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
+        env_copy.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
+        env_copy.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), true);
+        env_copy.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), true);
+        const std::shared_ptr<const PackageID> id(*env_copy[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-or-7",
+                                &env_copy, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_FALSE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("a"))->enabled());
+        EXPECT_FALSE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("b"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("foo"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("bar"))->enabled());
+        id->perform_action(pretend_action);
+        ASSERT_TRUE(! pretend_action.failed());
+    }
+
+    {
+        auto env_copy = env;
+        env_copy.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
+        env_copy.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
+        env_copy.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), true);
+        env_copy.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), true);
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-xor-7",
+                                &env_copy, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_FALSE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("a"))->enabled());
+        EXPECT_FALSE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("b"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("foo"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("bar"))->enabled());
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        id->perform_action(pretend_action);
+        ASSERT_TRUE(! pretend_action.failed());
     }
 }
