@@ -256,12 +256,11 @@ KEYWORDS="test"
 S="${WORKDIR}"
 
 src_prepare() {
-    [[ -n "$(declare -F dostrip)" ]] || die 'dostrip not defined'
     echo "int main(){}" > test.cpp
 }
 
 src_compile() {
-    ${CXX:-g++} test.cpp -o test
+    ${CXX:-g++} -g3 test.cpp -o test
 }
 
 src_install() {
