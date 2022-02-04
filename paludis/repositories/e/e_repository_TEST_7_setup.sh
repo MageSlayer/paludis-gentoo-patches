@@ -66,14 +66,14 @@ S="${WORKDIR}"
 
 pkg_setup() {
     (
-        test
+        test_func
     )
 }
 
-test() {
+test_func() {
     (
         true | false | true
-        assert test
+        assert 'test_func'
     )
 }
 END
