@@ -173,7 +173,7 @@ TEST(ERepository, InstallEAPI7)
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        ASSERT_NO_THROW(id->perform_action(action));
+        ASSERT_THROW(id->perform_action(action), ActionFailedError);
     }
 
     {
