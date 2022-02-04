@@ -288,14 +288,16 @@ KEYWORDS="test"
 S=${WORKDIR}
 
 src_unpack() {
-    echo first >file || die
+    echo first >file || die 'normal setup'
+    echo 'thank you' >rename_me || die 'rename setup'
 }
 
 src_prepare() {
-    [[ -n "$(declare -F eapply)" ]] || die 'not defined'
+    eapply "${FILESDIR}"/first || die 'eapply normal'
+    [[ "$(< file)" == 'second' ]] || die 'file normal'
 
-    eapply "${FILESDIR}"/first || die 'eapply'
-    [[ "$(< file)" == 'second' ]] || die 'file'
+    eapply "${FILESDIR}"/rename || die 'eapply rename'
+    [[ "$(< renamed_you)" == 'thank you' ]] || die 'file rename'
 }
 END
 cat << 'END' > cat/eapply-git-diff-support/files/first
@@ -306,6 +308,12 @@ index 9c59e24..e019be0 100644
 @@ -1 +1 @@
 -first
 +second
+END
+cat << 'END' > cat/eapply-git-diff-support/files/rename
+diff --git a/rename_me b/renamed_you
+similarity index 100%
+rename from rename_me
+rename to renamed_you
 END
 
 # eapply_user GNU patch 2.7 guaranteed, git patches supported
