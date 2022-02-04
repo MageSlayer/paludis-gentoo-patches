@@ -377,6 +377,7 @@ SLOT="0"
 IUSE="flag"
 LICENSE="GPL-2"
 KEYWORDS="test"
+RESTRICT='test'
 PROPERTIES="test_network"
 
 pkg_pretend() {
