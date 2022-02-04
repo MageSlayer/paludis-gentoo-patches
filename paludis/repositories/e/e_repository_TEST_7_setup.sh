@@ -331,16 +331,14 @@ KEYWORDS="test"
 S=${WORKDIR}
 
 src_unpack() {
-    echo "${PALUDIS_USER_PATCHES}"
-    echo first >file || die
+    echo first >file || die 'normal setup'
+    echo 'thank you' >rename_me || die 'rename setup'
 }
 
 src_prepare() {
-    [[ -n "$(declare -F eapply_user)" ]] || die 'not defined'
-
     eapply_user || die 'eapply_user'
-    cat file
-    [[ "$(< file)" == 'second' ]] || die 'patch failed'
+    [[ "$(< file)" == 'second' ]] || die 'patch failed normal'
+    [[ "$(< renamed_you)" == 'thank you' ]] || die 'patch failed rename'
 }
 END
 mkdir -p "../root/var/paludis/user_patches/cat/eapply-user-git-diff-support-7"
@@ -352,6 +350,10 @@ index 9c59e24..e019be0 100644
 @@ -1 +1 @@
 -first
 +second
+diff --git a/rename_me b/renamed_you
+similarity index 100%
+rename from rename_me
+rename to renamed_you
 END
 
 # ebegin no longer outputs to stdout
