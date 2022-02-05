@@ -568,9 +568,13 @@ KEYWORDS="test"
 
 S="${WORKDIR}"
 
-pkg_pretend() {
-    declare -F libopts
-    [[ -n "$(declare -F libopts)" ]]  && die 'libopts is banned'
+src_unpack() {
+    echo 'libfoo.a' > libfoo.a
+}
+
+src_install() {
+    libopts -m0755
+    dolib.a libfoo.a
 }
 END
 
