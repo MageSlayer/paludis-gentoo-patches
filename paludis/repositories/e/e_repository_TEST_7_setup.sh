@@ -522,8 +522,7 @@ KEYWORDS="test"
 S="${WORKDIR}"
 
 pkg_pretend() {
-    [[ -n "$(declare -F eqawarn)" ]] || die 'eqawarn not defined'
-    eqawarn "foo" > stdout 2> stderr
+    eqawarn "foo" > stdout 2> stderr || die 'eqawarn failed, maybe undefined?'
     [[ -s stdout ]] && die 'eqawarn wrote to stdout'
 }
 END
