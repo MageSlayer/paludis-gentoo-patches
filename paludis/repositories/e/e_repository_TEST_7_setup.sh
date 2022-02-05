@@ -385,7 +385,8 @@ HOMEPAGE="http://example.com/"
 SRC_URI=""
 SLOT="0"
 IUSE="spork"
-CTARGET="i386-badger-linux-gnu"
+CBUILD="i286-banana-linux-gnu"
+CTARGET="i386-kiwi-linux-gnu"
 LICENSE="GPL-2"
 KEYWORDS="test"
 
@@ -395,29 +396,51 @@ src_prepare(){
     cat <<'EOF' > configure
 #!/bin/sh
 
-if echo "$@" | grep -q 'help' ; then
-    echo --build
-    echo --target
-    echo --with-sysroot
-    exit 0
+param=''
+for param in "${@}"; do
+    if [ '--help' = "${param}" ]; then
+        printf '%s\n' '--build'
+        printf '%s\n' '--target'
+        printf '%s\n' '--with-sysroot'
+        exit 0
+    fi
+done
+
+param=''
+build='0'
+target='0'
+withsysroot='0'
+for param in "${@}"; do
+    if [ "--build=${CBUILD}" = "${param}" ]; then
+        build='1'
+    fi
+
+    if [ "--target=${CTARGET}" = "${param}" ]; then
+        target='1'
+    fi
+
+    if [ '--with-sysroot=${ESYSROOT:-/}' = "${param}" ]; then
+        withsysroot='1'
+    fi
+
+    if [ '1' = "${build}" ] && [ '1' = "${target}" ] && [ '1' = "${withsysroot}" ]; then
+        exit '0'
+    fi
+done
+
+if [ '0' = "${build}" ]; then
+    printf '%s missing\n' '--build'
 fi
 
-if ! echo "$@" | grep -q 'build' ; then
-    echo --build missing
-    exit 1
+if [ '0' = "${target}" ]; then
+    printf '%s missing\n' '--target'
 fi
 
-if ! echo "$@" | grep -q 'target' ; then
-    echo --target missing
-    exit 1
+if [ '0' = "${withsysroot}" ]; then
+    printf '%s missing\n' '--with-sysroot'
 fi
 
-if ! echo "$@" | grep -q 'with-sysroot' ; then
-    echo --with-sysroot missing
-    exit 1
-fi
-
-exit 0
+exit '1'
 EOF
 
     chmod +x configure
