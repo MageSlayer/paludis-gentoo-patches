@@ -775,7 +775,7 @@ pkg_setup() {
     for var in DESTTREE ECLASSDIR INSDESTTREE PORTDIR; do
         [ -z "${!var+x}" ] || die "${var} has been removed and should not be set"
     done
-    for var in ENV_UNSET  BDEPEND BROOT ESYSROOT SYSROOT; do
+    for var in ENV_UNSET BDEPEND BROOT ESYSROOT SYSROOT; do
         [ -z "${!var+x}" ] && die "${var} has been added and should be set"
     done
 }
