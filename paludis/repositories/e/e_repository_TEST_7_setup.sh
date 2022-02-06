@@ -597,24 +597,11 @@ try_other_tests() {
     emake check-2
 }
 
-src_test_optional() {
-    true
-}
-
 src_test() {
     # Works in EAPI 4 and newer
     nonfatal emake check
+    # Requires EAPI 7: try_other_tests is a shell function
     nonfatal try_other_tests
-#     if ! nonfatal emake check; then
-#         eerror 'Tests failed, please attach blah blah blah.'
-#         die 'Tests failed'
-#     fi
-#
-#     # Requires EAPI 7: try_other_tests is a shell function
-#     if ! nonfatal try_other_tests; then
-#         eerror 'Other tests failed, please attach blah blah blah.'
-#         die 'Other tests failed'
-#     fi
 }
 
 src_install() {
