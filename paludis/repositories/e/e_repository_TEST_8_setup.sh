@@ -218,6 +218,9 @@ DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI="file://${MIRROR}/test1.tar.xz"
 SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
 RESTRICT=""
 
 pkg_nofetch() {
@@ -242,6 +245,9 @@ DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI="file://${MIRROR}/test1.tar.xz fetch+file://${MIRROR}/test2.tar.xz mirror+file://${MIRROR}/test3.tar.xz"
 SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
 RESTRICT="mirror"
 
 pkg_nofetch() {
@@ -265,6 +271,9 @@ DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI="file://${MIRROR}/test1.tar.xz file+file://${MIRROR}/test2.tar.xz mirror+file://${MIRROR}/test3.tar.xz"
 SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
 RESTRICT="fetch"
 
 pkg_nofetch() {
