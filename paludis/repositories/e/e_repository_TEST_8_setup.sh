@@ -496,7 +496,6 @@ pkg_pretend() {
 END
 
 # working directory pkg_* phases now start in an empty directory
-# TODO
 mkdir -p "cat/pkg-empty-dir"
 cat <<'END' > cat/pkg-empty-dir/pkg-empty-dir-8.ebuild
 EAPI="8"
@@ -520,13 +519,13 @@ test_impl() {
     touch 'force-non-empty' || :
 }
 
-pkg_config() { test_impl; }
-pkg_info() { test_impl; }
-pkg_nofetch() { test_impl; }
+pkg_config()   { test_impl; }
+pkg_info()     { test_impl; }
+pkg_nofetch()  { test_impl; }
 pkg_postinst() { test_impl; }
-pkg_postrm() { test_impl; }
-pkg_preinst() { test_impl; }
-pkg_prerm() { test_impl; }
-pkg_setup() { test_impl; }
-pkg_pretend() { test_impl; }
+pkg_postrm()   { test_impl; }
+pkg_preinst()  { test_impl; }
+pkg_prerm()    { test_impl; }
+pkg_setup()    { test_impl; }
+pkg_pretend()  { test_impl; }
 END
