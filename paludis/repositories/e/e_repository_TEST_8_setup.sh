@@ -222,18 +222,6 @@ IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
 RESTRICT=""
-
-pkg_nofetch() {
-    env|sort
-    [[ -z \${A} ]] && return
-
-    elog "The following files cannot be fetched for \${PN}:"
-    local x
-    for x in \${A}; do
-        elog "   \${x}"
-    done
-    die failed to fetch
-}
 END
 
 # mirror | (none) / fetch+ |  allowed | prohibited
@@ -249,16 +237,6 @@ IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
 RESTRICT="mirror"
-
-pkg_nofetch() {
-    [[ -z \${A} ]] && return
-
-    elog "The following files cannot be fetched for \${PN}:"
-    local x
-    for x in \${A}; do
-        elog "   \${x}"
-    done
-}
 END
 
 # fetch | (none) | prohibited | prohibited
@@ -275,16 +253,6 @@ IUSE="spork"
 LICENSE="GPL-2"
 KEYWORDS="test"
 RESTRICT="fetch"
-
-pkg_nofetch() {
-    [[ -z \${A} ]] && return
-
-    elog "The following files cannot be fetched for \${PN}:"
-    local x
-    for x in \${A}; do
-        elog "   \${x}"
-    done
-}
 END
 
 # hasq banned
