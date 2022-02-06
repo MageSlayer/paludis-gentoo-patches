@@ -372,7 +372,7 @@ PATCHES=( -p0 "${FILESDIR}"/${P}-foo.patch )
 S="${WORKDIR}"
 
 src_unpack() {
-    echo first >file || die
+    echo first > file || die
 }
 
 src_compile() {
