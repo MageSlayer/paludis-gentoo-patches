@@ -453,7 +453,6 @@ src_install() {
 END
 
 # unpack no longer supports 7-Zip, LHA and RAR formats
-# TODO
 mkdir -p "cat/unpack-formats-removed"
 cat <<'END' > cat/unpack-formats-removed/unpack-formats-removed-8.ebuild
 EAPI="8"
@@ -464,6 +463,7 @@ SLOT="0"
 IUSE="flag"
 LICENSE="GPL-2"
 KEYWORDS="test"
+
 S="${WORKDIR}"
 
 src_unpack() {
