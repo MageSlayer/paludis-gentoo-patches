@@ -182,11 +182,29 @@ TEST(ERepository, InstallEAPI8)
 
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
-                        PackageDepSpec(parse_user_package_dep_spec("=cat/fetch-restrictions-8",
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/restrict-none-8",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        EXPECT_NO_THROW(id->perform_action(fetch_action));
+        ASSERT_NO_THROW(id->perform_action(fetch_action));
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/restrict-mirror-8",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        ASSERT_NO_THROW(id->perform_action(fetch_action));
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/restrict-fetch-8",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        ASSERT_NO_THROW(id->perform_action(fetch_action));
     }
 
     {
