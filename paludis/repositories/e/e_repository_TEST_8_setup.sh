@@ -247,7 +247,7 @@ cat <<END > cat/restrict-fetch/restrict-fetch-8.ebuild
 EAPI="8"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
-SRC_URI="file://${MIRROR}/test1.tar.xz file+file://${MIRROR}/test2.tar.xz mirror+file://${MIRROR}/test3.tar.xz"
+SRC_URI="file://${MIRROR}/test1.tar.xz fetch+file://${MIRROR}/test2.tar.xz mirror+file://${MIRROR}/test3.tar.xz"
 SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
