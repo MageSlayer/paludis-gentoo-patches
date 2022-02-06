@@ -150,7 +150,7 @@ TEST(ERepository, InstallEAPI8)
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
-        ASSERT_TRUE(! pretend_action.failed());
+        EXPECT_TRUE(! pretend_action.failed());
     }
 
     {
@@ -159,7 +159,7 @@ TEST(ERepository, InstallEAPI8)
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        ASSERT_NO_THROW(id->perform_action(install_action));
+        EXPECT_NO_THROW(id->perform_action(install_action));
     }
 
     {
@@ -168,7 +168,7 @@ TEST(ERepository, InstallEAPI8)
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        ASSERT_NO_THROW(id->perform_action(install_action));
+        EXPECT_NO_THROW(id->perform_action(install_action));
     }
 
     {
@@ -177,7 +177,7 @@ TEST(ERepository, InstallEAPI8)
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        ASSERT_NO_THROW(id->perform_action(install_action));
+        EXPECT_NO_THROW(id->perform_action(install_action));
     }
 
     {
@@ -186,7 +186,7 @@ TEST(ERepository, InstallEAPI8)
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        ASSERT_NO_THROW(id->perform_action(fetch_action));
+        EXPECT_NO_THROW(id->perform_action(fetch_action));
     }
 
     {
@@ -195,7 +195,7 @@ TEST(ERepository, InstallEAPI8)
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        ASSERT_NO_THROW(id->perform_action(fetch_action));
+        EXPECT_NO_THROW(id->perform_action(fetch_action));
     }
 
     {
@@ -204,7 +204,7 @@ TEST(ERepository, InstallEAPI8)
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        ASSERT_NO_THROW(id->perform_action(fetch_action));
+        EXPECT_NO_THROW(id->perform_action(fetch_action));
     }
 
     {
@@ -214,7 +214,7 @@ TEST(ERepository, InstallEAPI8)
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
-        ASSERT_TRUE(pretend_action.failed());
+        EXPECT_TRUE(pretend_action.failed());
     }
 
     {
@@ -224,7 +224,7 @@ TEST(ERepository, InstallEAPI8)
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
-        ASSERT_TRUE(pretend_action.failed());
+        EXPECT_TRUE(pretend_action.failed());
     }
 
     {
@@ -234,7 +234,7 @@ TEST(ERepository, InstallEAPI8)
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
-        ASSERT_TRUE(pretend_action.failed());
+        EXPECT_TRUE(pretend_action.failed());
     }
 
     {
@@ -244,7 +244,7 @@ TEST(ERepository, InstallEAPI8)
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
-        ASSERT_TRUE(! pretend_action.failed());
+        EXPECT_TRUE(! pretend_action.failed());
     }
 
     {
@@ -253,7 +253,7 @@ TEST(ERepository, InstallEAPI8)
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        ASSERT_THROW(id->perform_action(install_action), ActionFailedError);
+        EXPECT_THROW(id->perform_action(install_action), ActionFailedError);
     }
 
     {
@@ -263,7 +263,7 @@ TEST(ERepository, InstallEAPI8)
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
-        ASSERT_TRUE(! pretend_action.failed());
+        EXPECT_TRUE(! pretend_action.failed());
     }
 
     {
@@ -275,7 +275,7 @@ TEST(ERepository, InstallEAPI8)
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         EXPECT_TRUE(!!id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("build_options:optional_tests")));
-        ASSERT_NO_THROW(id->perform_action(install_action));
+        EXPECT_NO_THROW(id->perform_action(install_action));
     }
 
     {
@@ -284,7 +284,7 @@ TEST(ERepository, InstallEAPI8)
                                   &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
-        ASSERT_NO_THROW(id->perform_action(install_action));
+        EXPECT_NO_THROW(id->perform_action(install_action));
     }
 
     {
@@ -296,7 +296,7 @@ TEST(ERepository, InstallEAPI8)
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
-        ASSERT_TRUE(! pretend_action.failed());
+        EXPECT_TRUE(! pretend_action.failed());
     }
 
     {
@@ -306,7 +306,7 @@ TEST(ERepository, InstallEAPI8)
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
-        ASSERT_TRUE(! pretend_action.failed());
-        ASSERT_NO_THROW(id->perform_action(install_action));
+        EXPECT_TRUE(! pretend_action.failed());
+        EXPECT_NO_THROW(id->perform_action(install_action));
     }
 }
