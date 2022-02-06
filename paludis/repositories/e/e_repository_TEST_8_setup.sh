@@ -440,12 +440,15 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 RESTRICT='test'
 PROPERTIES="test_network"
+S="${WORKDIR}"
 
-pkg_pretend() {
-    die 'not implemented'
+src_test() {
+    ping -c1 example.invalid
+    export RAN_TEST="true"
 }
-src_prepare() {
-    die 'not implemented'
+
+src_install() {
+    [[ -z "${RAN_TEST}" ]] && die "didn't run network tests"
 }
 END
 
