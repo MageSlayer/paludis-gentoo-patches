@@ -95,7 +95,7 @@ namespace
 TEST(ERepository, InstallEAPI7)
 {
     FSPath cwd(FSPath::cwd());
-    FSPath test_dir(cwd / (std::string(::testing::UnitTest::GetInstance()->current_test_case()->name()) + '.' + std::string(::testing::UnitTest::GetInstance()->current_test_info()->name()) +"_dir"));
+    // FSPath test_dir(cwd / (std::string(::testing::UnitTest::GetInstance()->current_test_case()->name()) + '.' + std::string(::testing::UnitTest::GetInstance()->current_test_info()->name()) +"_dir"));
     TestEnvironment env;
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
@@ -222,7 +222,8 @@ TEST(ERepository, InstallEAPI7)
     }
 
     {
-        setenv("PALUDIS_USER_PATCHES", (test_dir/ "e_repository_TEST_7_dir/root/var/paludis/user_patches").c_str() , 1);
+        setenv("PALUDIS_USER_PATCHES", stringify(cwd / "e_repository_TEST_7_dir" /
+                                                 "root" / "var" / "paludis" / "user_patches").c_str() , 1);
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/eapply-user-git-diff-support-7",
                                 &env, { })), nullptr, { }))]->last());
