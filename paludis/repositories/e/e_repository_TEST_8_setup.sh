@@ -346,6 +346,7 @@ SLOT="0"
 IUSE=""
 LICENSE="GPL-2"
 KEYWORDS="test"
+IDEPEND="foo"
 
 pkg_pretend() {
     for var in IDEPEND; do
