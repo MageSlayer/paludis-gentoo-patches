@@ -201,20 +201,81 @@ END
 
 # fetch+ SRC_URI prefix to override fetch restriction
 # mirror+ SRC_URI prefix to override mirror restriction
-# TODO: this seems to fail currently, revisit and fix the implementation,
-#       since the test looks fine.
-mkdir -p "cat/fetch-restrictions"
-cat <<'END' > cat/fetch-restrictions/fetch-restrictions-8.ebuild
+mkdir -p mirror
+cd mirror
+for i in {1..3}; do
+    touch "test${i}"
+    tar cJvf "test${i}.tar.xz" "test${i}" > /dev/null
+done
+cd ..
+MIRROR="$(realpath mirror)"
+# RESTRICT | "URI prefix" | Fetching | Mirroring
+# (none) | (any) |  allowed  | allowed
+mkdir -p "cat/restrict-none"
+cat <<END > cat/restrict-none/restrict-none-8.ebuild
 EAPI="8"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
-SRC_URI="fetch+test.tgz mirror+test.tbz2"
+SRC_URI="file://${MIRROR}/test1.tar.xz"
 SLOT="0"
-IUSE="spork"
-LICENSE="GPL-2"
-KEYWORDS="test"
-RESTRICT="fetch mirror"
+RESTRICT=""
 
+pkg_nofetch() {
+    env|sort
+    [[ -z \${A} ]] && return
+
+    elog "The following files cannot be fetched for \${PN}:"
+    local x
+    for x in \${A}; do
+        elog "   \${x}"
+    done
+    die failed to fetch
+}
+END
+
+# mirror | (none) / fetch+ |  allowed | prohibited
+# mirror | mirror+ | allowed | allowed
+mkdir -p "cat/restrict-mirror"
+cat <<END > cat/restrict-mirror/restrict-mirror-8.ebuild
+EAPI="8"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="file://${MIRROR}/test1.tar.xz fetch+file://${MIRROR}/test2.tar.xz mirror+file://${MIRROR}/test3.tar.xz"
+SLOT="0"
+RESTRICT="mirror"
+
+pkg_nofetch() {
+    [[ -z \${A} ]] && return
+
+    elog "The following files cannot be fetched for \${PN}:"
+    local x
+    for x in \${A}; do
+        elog "   \${x}"
+    done
+}
+END
+
+# fetch | (none) | prohibited | prohibited
+# fetch | fetch+  | allowed | prohibited
+# fetch | mirror+ | allowed | allowed
+mkdir -p "cat/restrict-fetch"
+cat <<END > cat/restrict-fetch/restrict-fetch-8.ebuild
+EAPI="8"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="file://${MIRROR}/test1.tar.xz file+file://${MIRROR}/test2.tar.xz mirror+file://${MIRROR}/test3.tar.xz"
+SLOT="0"
+RESTRICT="fetch"
+
+pkg_nofetch() {
+    [[ -z \${A} ]] && return
+
+    elog "The following files cannot be fetched for \${PN}:"
+    local x
+    for x in \${A}; do
+        elog "   \${x}"
+    done
+}
 END
 
 # hasq banned
