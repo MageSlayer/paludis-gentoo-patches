@@ -393,7 +393,6 @@ END
 
 # PROPERTIES now accumulated across eclasses
 # RESTRICT now accumulated across eclasses
-# TODO
 cat <<'END' > eclass/foo.eclass
 PROPERTIES="FOO"
 RESTRICT="FOO"
