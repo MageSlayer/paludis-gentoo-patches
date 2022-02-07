@@ -150,6 +150,7 @@ TEST(ERepository, InstallEAPI7)
         auto installed_repos = std::dynamic_pointer_cast<FakeInstalledRepository>(*std::find_if(repos.begin(), repos.end(), [](std::shared_ptr<Repository> cur_repo){return (cur_repo->name().value()=="installed");})); // >= C++11
         installed_repos->add_version("cat", "pretend-installed", "0");
         installed_repos->add_version("cat", "pretend-installed", "1");
+
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/best-version-7",
                                 &env, { })),nullptr,{ }))]->last());
@@ -274,10 +275,21 @@ TEST(ERepository, InstallEAPI7)
     }
 
     {
+        /*
+         * Adding the packages again will lead to an internal exception.
+         * Thus, don't do this here.
+         *
+         * Note that we want to only skip this for the "old-style" testing
+         * layout, where test cases re-use data from previous ones.
+         * If the environment/repository metadata was clean, we'd have to
+         * actually add the fake packages.
+         */
+        /*
         auto repos = env.repositories();
         auto installed_repos = std::dynamic_pointer_cast<FakeInstalledRepository>(*std::find_if(repos.begin(), repos.end(), [](std::shared_ptr<Repository> cur_repo){return (cur_repo->name().value()=="installed");})); // >= C++11
         installed_repos->add_version("cat", "pretend-installed", "0");
         installed_repos->add_version("cat", "pretend-installed", "1");
+        */
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/has-version-7",
