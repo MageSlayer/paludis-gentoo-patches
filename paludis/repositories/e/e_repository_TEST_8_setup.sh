@@ -211,6 +211,7 @@ cd ..
 MIRROR="$(realpath mirror)"
 # RESTRICT | "URI prefix" | Fetching | Mirroring
 # (none) | (any) |  allowed  | allowed
+mkdir '../distdir-restrict-none'
 mkdir -p "cat/restrict-none"
 cat <<END > cat/restrict-none/restrict-none-8.ebuild
 EAPI="8"
@@ -226,6 +227,7 @@ END
 
 # mirror | (none) / fetch+ |  allowed | prohibited
 # mirror | mirror+ | allowed | allowed
+mkdir '../distdir-restrict-mirror'
 mkdir -p "cat/restrict-mirror"
 cat <<END > cat/restrict-mirror/restrict-mirror-8.ebuild
 EAPI="8"
@@ -243,6 +245,7 @@ END
 # fetch | fetch+  | allowed | prohibited
 # fetch | mirror+ | allowed | allowed
 # The following test should fail.
+mkdir '../distdir-restrict-fetch-nolabels'
 mkdir -p "cat/restrict-fetch-nolabels"
 cat <<END > cat/restrict-fetch-nolabels/restrict-fetch-nolabels-8.ebuild
 EAPI="8"
@@ -257,6 +260,7 @@ RESTRICT="fetch"
 END
 # This one should fail, too, because the first distfile should never be
 # fetchable.
+mkdir '../distdir-restrict-fetch-nolabel-alllabels'
 mkdir -p "cat/restrict-fetch-nolabel-alllabels"
 cat <<END > cat/restrict-fetch-nolabel-alllabels/restrict-fetch-nolabel-alllabels-8.ebuild
 EAPI="8"
@@ -271,6 +275,7 @@ RESTRICT="fetch"
 END
 # This one should work, since it contains no unprefixed distfile and any
 # prefix is able to override the restriction.
+mkdir '../distdir-restrict-fetch-alllabels'
 mkdir -p "cat/restrict-fetch-alllabels"
 cat <<END > cat/restrict-fetch-alllabels/restrict-fetch-alllabels-8.ebuild
 EAPI="8"

@@ -181,48 +181,63 @@ TEST(ERepository, InstallEAPI8)
     }
 
     {
+        setenv("DISTDIR", stringify(cwd / "e_repository_TEST_8_dir" /
+                                    "distdir-restrict-none").c_str() , 1);
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/restrict-none-8",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         EXPECT_NO_THROW(id->perform_action(fetch_action));
+        unsetenv("DISTDIR");
     }
 
     {
+        setenv("DISTDIR", stringify(cwd / "e_repository_TEST_8_dir" /
+                                    "distdir-restrict-mirror").c_str() , 1);
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/restrict-mirror-8",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         EXPECT_NO_THROW(id->perform_action(fetch_action));
+        unsetenv("DISTDIR");
     }
 
     {
+        setenv("DISTDIR", stringify(cwd / "e_repository_TEST_8_dir" /
+                                    "distdir-restrict-fetch-nolabels").c_str() , 1);
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/restrict-fetch-nolabels-8",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         EXPECT_THROW(id->perform_action(fetch_action), ActionFailedError);
+        unsetenv("DISTDIR");
     }
 
     {
+        setenv("DISTDIR", stringify(cwd / "e_repository_TEST_8_dir" /
+                                    "distdir-restrict-fetch-nolabel-alllabels").c_str() , 1);
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/restrict-fetch-nolabel-alllabels-8",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         EXPECT_THROW(id->perform_action(fetch_action), ActionFailedError);
+        unsetenv("DISTDIR");
     }
 
     {
+        setenv("DISTDIR", stringify(cwd / "e_repository_TEST_8_dir" /
+                                    "distdir-restrict-fetch-alllabels").c_str() , 1);
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/restrict-fetch-alllabels-8",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("8", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         EXPECT_NO_THROW(id->perform_action(fetch_action));
+        unsetenv("DISTDIR");
     }
 
     {
