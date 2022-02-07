@@ -242,12 +242,41 @@ END
 # fetch | (none) | prohibited | prohibited
 # fetch | fetch+  | allowed | prohibited
 # fetch | mirror+ | allowed | allowed
-mkdir -p "cat/restrict-fetch"
-cat <<END > cat/restrict-fetch/restrict-fetch-8.ebuild
+# The following test should fail.
+mkdir -p "cat/restrict-fetch-nolabels"
+cat <<END > cat/restrict-fetch-nolabels/restrict-fetch-nolabels-8.ebuild
+EAPI="8"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="file://${MIRROR}/test1.tar.xz"
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+RESTRICT="fetch"
+END
+# This one should fail, too, because the first distfile should never be
+# fetchable.
+mkdir -p "cat/restrict-fetch-nolabel-alllabels"
+cat <<END > cat/restrict-fetch-nolabel-alllabels/restrict-fetch-nolabel-alllabels-8.ebuild
 EAPI="8"
 DESCRIPTION="The Description"
 HOMEPAGE="http://example.com/"
 SRC_URI="file://${MIRROR}/test1.tar.xz fetch+file://${MIRROR}/test2.tar.xz mirror+file://${MIRROR}/test3.tar.xz"
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+RESTRICT="fetch"
+END
+# This one should work, since it contains no unprefixed distfile and any
+# prefix is able to override the restriction.
+mkdir -p "cat/restrict-fetch-alllabels"
+cat <<END > cat/restrict-fetch-alllabels/restrict-fetch-alllabels-8.ebuild
+EAPI="8"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI="fetch+file://${MIRROR}/test2.tar.xz mirror+file://${MIRROR}/test3.tar.xz"
 SLOT="0"
 IUSE="spork"
 LICENSE="GPL-2"
