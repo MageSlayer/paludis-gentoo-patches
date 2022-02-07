@@ -56,6 +56,7 @@
 #include <functional>
 #include <set>
 #include <string>
+#include <algorithm>
 
 #include "config.h"
 
@@ -146,7 +147,7 @@ TEST(ERepository, InstallEAPI7)
 
     {
         auto repos = env.repositories();
-        auto installed_repos = std::dynamic_pointer_cast<FakeInstalledRepository>(*std::find_if(repos.begin(), repos.end(), [](auto repo){return (repo->name().value()=="installed");})); // >= C++11
+        auto installed_repos = std::dynamic_pointer_cast<FakeInstalledRepository>(*std::find_if(repos.begin(), repos.end(), [](std::shared_ptr<Repository> cur_repo){return (cur_repo->name().value()=="installed");})); // >= C++11
         installed_repos->add_version("cat", "pretend-installed", "0");
         installed_repos->add_version("cat", "pretend-installed", "1");
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
@@ -274,7 +275,7 @@ TEST(ERepository, InstallEAPI7)
 
     {
         auto repos = env.repositories();
-        auto installed_repos = std::dynamic_pointer_cast<FakeInstalledRepository>(*std::find_if(repos.begin(), repos.end(), [](auto repo){return (repo->name().value()=="installed");})); // >= C++11
+        auto installed_repos = std::dynamic_pointer_cast<FakeInstalledRepository>(*std::find_if(repos.begin(), repos.end(), [](std::shared_ptr<Repository> cur_repo){return (cur_repo->name().value()=="installed");})); // >= C++11
         installed_repos->add_version("cat", "pretend-installed", "0");
         installed_repos->add_version("cat", "pretend-installed", "1");
 
