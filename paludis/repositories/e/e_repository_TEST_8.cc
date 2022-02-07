@@ -92,7 +92,7 @@ TEST(ERepository, InstallEAPI8)
 {
     TestEnvironment env;
     FSPath cwd(FSPath::cwd());
-    FSPath test_dir(cwd / (std::string(::testing::UnitTest::GetInstance()->current_test_case()->name()) + '.' + std::string(::testing::UnitTest::GetInstance()->current_test_info()->name()) +"_dir"));
+    // FSPath test_dir(cwd / (std::string(::testing::UnitTest::GetInstance()->current_test_case()->name()) + '.' + std::string(::testing::UnitTest::GetInstance()->current_test_info()->name()) +"_dir"));
 
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
