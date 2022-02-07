@@ -86,7 +86,7 @@ namespace
     {
         return wp_yes;
     }
-
+}
 
 TEST(ERepository, InstallEAPI8)
 {
