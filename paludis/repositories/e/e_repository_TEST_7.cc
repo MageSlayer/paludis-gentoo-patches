@@ -395,7 +395,151 @@ TEST(ERepository, InstallEAPI7)
         EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("foo"))->enabled());
         EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("bar"))->enabled());
         id->perform_action(pretend_action);
+        EXPECT_TRUE(pretend_action.failed());
+
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
+    }
+
+    {
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), true);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), true);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), true);
+
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-or-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("a"))->enabled());
+        EXPECT_FALSE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("b"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("foo"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("bar"))->enabled());
+        id->perform_action(pretend_action);
         EXPECT_TRUE(! pretend_action.failed());
+
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
+    }
+
+    {
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), true);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), true);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), true);
+
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-or-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_FALSE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("a"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("b"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("foo"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("bar"))->enabled());
+        id->perform_action(pretend_action);
+        EXPECT_TRUE(! pretend_action.failed());
+
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
+    }
+
+    {
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), true);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), true);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), true);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), true);
+
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-or-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("a"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("b"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("foo"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("bar"))->enabled());
+        id->perform_action(pretend_action);
+        EXPECT_TRUE(! pretend_action.failed());
+
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
+    }
+
+    {
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), true);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), true);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
+
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-or-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_FALSE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("a"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("b"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("foo"))->enabled());
+        EXPECT_FALSE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("bar"))->enabled());
+        id->perform_action(pretend_action);
+        EXPECT_TRUE(pretend_action.failed());
+
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
+    }
+
+    {
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), true);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), true);
+
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-or-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("a"))->enabled());
+        EXPECT_FALSE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("b"))->enabled());
+        EXPECT_FALSE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("foo"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("bar"))->enabled());
+        id->perform_action(pretend_action);
+        EXPECT_TRUE(pretend_action.failed());
+
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
+    }
+
+    {
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), true);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), true);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), false);
+        env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
+
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-or-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("a"))->enabled());
+        EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("b"))->enabled());
+        EXPECT_FALSE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("foo"))->enabled());
+        EXPECT_FALSE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("bar"))->enabled());
+        id->perform_action(pretend_action);
+        EXPECT_TRUE(pretend_action.failed());
 
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
