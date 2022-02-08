@@ -376,7 +376,7 @@ TEST(ERepository, InstallEAPI7)
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
-        EXPECT_TRUE(! pretend_action.failed());
+        EXPECT_TRUE(pretend_action.failed());
     }
 
     {
