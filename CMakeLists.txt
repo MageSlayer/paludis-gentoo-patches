@@ -364,8 +364,8 @@ endif()
 
 if(ENABLE_RUBY_DOCS)
   execute_process(COMMAND
-                    "${RUBY_EXECUTABLE}" -rubygems -e "require 'syntax/convertors/html'"
-                  OUTPUT_VARIABLE
+                    "${RUBY_EXECUTABLE}" -r rubygems -e "require 'syntax/convertors/html'"
+                  RESULT_VARIABLE
                     ruby_gem_syntax_available
                   OUTPUT_QUIET
                   ERROR_QUIET)
