@@ -392,7 +392,7 @@ KEYWORDS="test"
 
 S="${WORKDIR}"
 
-src_prepare(){
+src_prepare() {
     cat <<'EOF' > configure
 #!/bin/sh
 
@@ -419,7 +419,7 @@ for param in "${@}"; do
         target='1'
     fi
 
-    if [ '--with-sysroot=${ESYSROOT:-/}' = "${param}" ]; then
+    if [ "--with-sysroot=${ESYSROOT:-/}" = "${param}" ]; then
         withsysroot='1'
     fi
 
@@ -444,6 +444,16 @@ exit '1'
 EOF
 
     chmod +x configure
+}
+
+src_configure() {
+    # For some reason, CTARGET is defined as a variable in the current phase,
+    # but not exported to the environment.
+    # For this test to work, we need it available in the configure script, so
+    # just export it.
+    export CTARGET
+
+    default
 }
 END
 
