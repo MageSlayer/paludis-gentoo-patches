@@ -260,6 +260,7 @@ namespace
                         n::econf_extra_options() = k.get("econf_extra_options"),
                         n::econf_extra_options_help_dependent() = k.get("econf_extra_options_help_dependent"),
                         n::failure_is_fatal() = destringify_key<bool>(k, "failure_is_fatal"),
+                        n::log_to_stdout() = destringify_key<bool>(k, "log_to_stdout"),
                         n::new_stdin() = destringify_key<bool>(k, "new_stdin"),
                         n::unpack_any_path() = destringify_key<bool>(k, "unpack_any_path"),
                         n::unpack_case_insensitive() = destringify_key<bool>(k, "unpack_case_insensitive"),
