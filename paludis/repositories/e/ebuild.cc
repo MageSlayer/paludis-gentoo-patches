@@ -258,6 +258,7 @@ EbuildCommand::operator() ()
         .setenv("PALUDIS_USE_WITH_ENABLE_EMPTY_THIRD_ARGUMENT",
                 tools->use_with_enable_empty_third_argument() ? "yes" : "")
         .setenv("PALUDIS_FAILURE_IS_FATAL", tools->failure_is_fatal() ? "yes" : "")
+        .setenv("PALUDIS_LOG_TO_STDOUT", tools->log_to_stdout() ? "yes" : "")
         .setenv("PALUDIS_DIE_SUPPORTS_DASH_N",
                 tools->die_supports_dash_n() ? "yes" : "")
         .setenv("PALUDIS_UNPACK_FROM_VAR", environment_variables->env_distdir())
