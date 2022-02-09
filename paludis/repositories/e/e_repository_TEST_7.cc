@@ -826,7 +826,7 @@ TEST(ERepository, InstallEAPI7)
         EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("bar"))->enabled());
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
-        EXPECT_TRUE(pretend_action.failed());
+        EXPECT_TRUE(! pretend_action.failed());
 
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
