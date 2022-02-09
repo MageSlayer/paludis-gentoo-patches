@@ -409,6 +409,15 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), true);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), true);
 
+        /*
+         * We need to invalidate the repository to clear previous choices if
+         * we want to run the pretend action multiple times with different
+         * choice values.
+         *
+         * Nothing else should be affected. Hopefully.
+         */
+        repo->invalidate();
+
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-or-7",
                                 &env, { })), nullptr, { }))]->last());
@@ -433,6 +442,8 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), true);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), true);
 
+        repo->invalidate();
+
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-or-7",
                                 &env, { })), nullptr, { }))]->last());
@@ -456,6 +467,8 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), true);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), true);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), true);
+
+        repo->invalidate();
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-or-7",
@@ -481,6 +494,8 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), true);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
 
+        repo->invalidate();
+
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-or-7",
                                 &env, { })), nullptr, { }))]->last());
@@ -504,6 +519,8 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), true);
+
+        repo->invalidate();
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-or-7",
@@ -529,6 +546,8 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
 
+        repo->invalidate();
+
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-or-7",
                                 &env, { })), nullptr, { }))]->last());
@@ -578,6 +597,8 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
 
+        repo->invalidate();
+
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-xor-7",
                                 &env, { })), nullptr, { }))]->last());
@@ -603,6 +624,8 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
 
+        repo->invalidate();
+
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-xor-7",
                                 &env, { })), nullptr, { }))]->last());
@@ -627,6 +650,8 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), true);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
+
+        repo->invalidate();
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-xor-7",
@@ -653,6 +678,8 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), true);
 
+        repo->invalidate();
+
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-xor-7",
                                 &env, { })), nullptr, { }))]->last());
@@ -678,6 +705,8 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
 
+        repo->invalidate();
+
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-xor-7",
                                 &env, { })), nullptr, { }))]->last());
@@ -702,6 +731,8 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), true);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), true);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
+
+        repo->invalidate();
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-xor-7",
@@ -728,6 +759,8 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), true);
 
+        repo->invalidate();
+
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-xor-7",
                                 &env, { })), nullptr, { }))]->last());
@@ -752,6 +785,8 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), true);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), true);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), false);
+
+        repo->invalidate();
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-xor-7",
@@ -778,6 +813,8 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), true);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), true);
 
+        repo->invalidate();
+
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-xor-7",
                                 &env, { })), nullptr, { }))]->last());
@@ -802,6 +839,8 @@ TEST(ERepository, InstallEAPI7)
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), true);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("foo"), true);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("bar"), true);
+
+        repo->invalidate();
 
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/selectors-xor-7",
