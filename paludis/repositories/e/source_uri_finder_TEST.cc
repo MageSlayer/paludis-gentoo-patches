@@ -57,8 +57,8 @@ TEST(SourceURIFinder, Works)
     env.add_repository(1, repo);
     const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"));
 
-    SourceURIFinder f(&env, repo.get(), *eapi, "http://example.com/path/input", "output", "monkey",
-            get_mirrors_fn);
+    SourceURIFinder f(&env, repo.get(), *eapi, "output", "monkey",
+            get_mirrors_fn, "http://example.com/path/input");
     URIMirrorsThenListedLabel label("mirrors-then-listed");
     label.accept(f);
 
@@ -83,7 +83,7 @@ TEST(SourceURIFinder, Mirrors)
     env.add_repository(1, repo);
     const std::shared_ptr<const EAPI> eapi(EAPIData::get_instance()->eapi_from_string("paludis-1"));
 
-    SourceURIFinder f(&env, repo.get(), *eapi, "mirror://example/path/input", "output", "repo", get_mirrors_fn);
+    SourceURIFinder f(&env, repo.get(), *eapi, "output", "repo", get_mirrors_fn, "mirror://example/path/input");
     URIMirrorsThenListedLabel label("mirrors-then-listed");
     label.accept(f);
 
