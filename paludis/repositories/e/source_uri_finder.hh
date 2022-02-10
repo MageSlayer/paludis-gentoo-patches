@@ -44,14 +44,17 @@ namespace paludis
                 void add_mirrors();
                 void add_listed();
 
+                void uri_remove_prefix(const std::string & overridestr);
+                void uri_remove_prefixes();
+
             public:
                 SourceURIFinder(const Environment * const env,
                         const Repository * const repo,
                         const EAPI & eapi,
-                        const std::string & url,
                         const std::string & filename,
                         const std::string & mirrors_name,
-                        const GetMirrorsFunction & fn);
+                        const GetMirrorsFunction & fn,
+                        const std::string & url);
 
                 ~SourceURIFinder();
 
