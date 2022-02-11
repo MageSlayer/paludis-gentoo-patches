@@ -185,16 +185,25 @@ dosym_relative_path_pms() {
 
 src_install() {
     echo foo > foo
+    echo frob > frobnicate
     dobin foo
+    insinto "${EPREFIX}/usr/lib/frobnicate"
+    insopts -m0755
+    doins frobnicate
     dosym "${EPREFIX}/usr/bin/foo" '/usr/bin/bar'
     dosym -r "${EPREFIX}/usr/bin/foo" '/usr/bin/baz'
+    dosym -r "${EPREFIX}/usr/lib/frobnicate/frobnicate" '/usr/bin/frobnicate'
 
     real_target="$(readlink "${D}/usr/bin/bar")"
     expected_target="${EPREFIX}/usr/bin/foo"
     [ "${expected_target}" = "${real_target}" ] || die "absolute link wrong; is: '${real_target}', should have been: '${expected_target}'"
 
     real_target="$(readlink "${D}/usr/bin/baz")"
-    expected_target="foo"
+    expected_target='foo'
+    [ "${expected_target}" = "${real_target}" ] || die "relative link wrong; is: '${real_target}', should have been: '${expected_target}'"
+
+    real_target="$(readlink "${D}/usr/bin/frobnicate")"
+    expected_target='../lib/frobnicate/frobnicate'
     [ "${expected_target}" = "${real_target}" ] || die "relative link wrong; is: '${real_target}', should have been: '${expected_target}'"
 }
 END
