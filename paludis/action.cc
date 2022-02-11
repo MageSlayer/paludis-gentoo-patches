@@ -136,6 +136,12 @@ PretendAction::set_failed()
     _imp->failed = true;
 }
 
+void
+PretendAction::reset()
+{
+    _imp->failed = false;
+}
+
 namespace paludis
 {
     template <>
