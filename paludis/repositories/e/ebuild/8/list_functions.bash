@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 # vim: set sw=4 sts=4 et :
 
-# Copyright (c) 2018 Denis Golovan
+# Copyright (c) 2006, 2009, 2012 Ciaran McCreesh
 # Copyright (c) 2021 Mihai Moldovan
+#
+# Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
+# Gentoo Foundation and distributed under the terms of the GNU General
+# Public License v2.
 #
 # This file is part of the Paludis package manager. Paludis is free software;
 # you can redistribute it and/or modify it under the terms of the GNU General
-# Public License as published by the Free Software Foundation; either version
-# 2 of the License, or (at your option) any later version.
+# Public License, version 2, as published by the Free Software Foundation.
 #
 # Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
 # WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
@@ -18,11 +21,19 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-COLOUR_RED=$'\e[31;01m'
-COLOUR_NORMAL=$'\e[0m'
+ebuild_load_module --older list_functions
 
-echo "${COLOUR_RED}!!! Ebuild bug: '$(basename ${0} )' banned in EAPI 8${COLOUR_NORMAL}"
-echo "$(basename ${0} ): making ebuild PID ${EBUILD_KILL_PID} exit with error" 1>&2
-kill -s SIGUSR1 "${EBUILD_KILL_PID}"
+hasq()
+{
+    die "hasq is banned in EAPI 8"
+}
 
-exit 123
+hasv()
+{
+    die "hasv is banned in EAPI 8"
+}
+
+useq()
+{
+    die "useq is banned in EAPI 8"
+}
