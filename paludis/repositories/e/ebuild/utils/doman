@@ -47,7 +47,7 @@ for x in "$@"; do
 
     suffix=${x##*.}
 
-    if hasq ${suffix} Z gz bz2; then
+    if has ${suffix} Z gz bz2; then
         realname=${x%.*}
         suffix=${realname##*.}
     fi

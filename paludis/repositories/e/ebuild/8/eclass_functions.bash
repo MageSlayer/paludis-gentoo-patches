@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et :
+
+# Copyright (c) 2006, 2007, 2009 Ciaran McCreesh
+# Copyright (c) 2022 Mihai Moldovan
+#
+# Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
+# Gentoo Foundation and distributed under the terms of the GNU General
+# Public License v2.
+#
+# This file is part of the Paludis package manager. Paludis is free software;
+# you can redistribute it and/or modify it under the terms of the GNU General
+# Public License, version 2, as published by the Free Software Foundation.
+#
+# Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+# Place, Suite 330, Boston, MA  02111-1307  USA
+
+ebuild_load_module --older eclass_functions
+
+inherit()
+{
+    [[ -n "${PALUDIS_SKIP_INHERIT}" ]] && return
+
+    local e ee location v v_qa
+    for e in "$@" ; do
+        location=
+        local edirs=${ECLASSDIRS:-${ECLASSDIR}}
+        edirs=${edirs:-${PALUDIS_ECLASSDIRS}}
+        for ee in $edirs ; do
+            [[ -f "${ee}/${e}.eclass" ]] && location="${ee}/${e}.eclass"
+        done
+        local old_ECLASS="${ECLASS}"
+        export ECLASS="${e}"
+
+        for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
+            local c_v="current_${v}" u_v="unset_${v}"
+            local ${c_v}="${!v}"
+            local ${u_v}="${!v-unset}"
+            unset ${v}
+        done
+
+        for v_qa in ${PALUDIS_ECLASS_MUST_NOT_SET_VARIABLES} ; do
+            local v=${v_qa#qa:}
+            local c_v="current_${v}" u_v="unset_${v}"
+            export -n ${c_v}="${!v}"
+            export -n ${u_v}="${!v-unset}"
+        done
+
+        [[ -z "${location}" ]] && die "Error finding eclass ${e}"
+        source "${location}" || die "Error sourcing eclass ${e}"
+        has "${ECLASS}" ${INHERITED} || export INHERITED="${INHERITED} ${ECLASS}"
+
+        for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ; do
+            local e_v="E_${v}"
+            export -n ${e_v}="${!e_v} ${!v}"
+        done
+
+        for v in ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
+            local e_v="E_${v}"
+            export -n ${e_v}="${!e_v} ( ${!v} )"
+        done
+
+        for v in ${PALUDIS_SOURCE_MERGED_VARIABLES} ${PALUDIS_BRACKET_MERGED_VARIABLES} ; do
+            local c_v="current_${v}" u_v="unset_${v}"
+            [[ "unset" == ${!u_v} ]] && unset ${v} || export ${v}="${!c_v}"
+        done
+
+        for v_qa in ${PALUDIS_ECLASS_MUST_NOT_SET_VARIABLES} ; do
+            local v=${v_qa#qa:}
+            local c_v="current_${v}" u_v="unset_${v}"
+            if [[ ${!c_v} != ${!v} || ${!u_v} != ${!v-unset} ]]; then
+                if [[ ${v} == ${v_qa} ]] ; then
+                    die "Variable '${v}' illegally set by ${location}"
+                else
+                    ebuild_notice "qa" "Variable '${v}' should not be set by ${location}"
+                    export -n ${c_v}="${!v}"
+                    export -n ${u_v}="${!v-unset}"
+                fi
+            fi
+        done
+
+        export ECLASS="${old_ECLASS}"
+    done
+}
