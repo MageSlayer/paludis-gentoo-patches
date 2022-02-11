@@ -443,6 +443,9 @@ namespace paludis
             /// Mark the action as failed.
             void set_failed();
 
+            /// Mark the action as succeeded.
+            void reset();
+
             /**
              * \since 0.36
              */

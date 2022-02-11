@@ -1313,6 +1313,7 @@ namespace
         {
             auto repo(env->fetch_repository(id->repository_name()));
             auto e_repo(std::static_pointer_cast<const ERepository>(repo));
+            action.reset();
             if (! do_pretend_action(
                         env,
                         e_repo.get(),
