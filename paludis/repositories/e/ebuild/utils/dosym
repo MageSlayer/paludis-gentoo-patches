@@ -148,14 +148,32 @@ if [[ 'true' = "${relative}" ]]; then
     typeset to_full="$(dirname "$(canonical_path "/${to#/}")")"
 
     # Find longest matching prefix.
-    typeset to_work="${to_full}"
+    typeset to_work="${to_full}/"
     typeset from_work="${from}"
     typeset to_comp=''
     typeset from_comp=''
     while [[ "${to_comp}" = "${from_comp}" ]]; do
         # Drop current component - we know that it matches.
+        typeset to_work_old="${to_work}"
+        typeset from_work_old="${from_work}"
         to_work="${to_work#*/}"
         from_work="${from_work#*/}"
+
+        # If either component is unchanged, drop out, since we essentially
+        # dropped the last component.
+        # The same reasoning applies to empty work paths.
+        typeset -i stop_loop='0'
+        if [[ "${to_work}" = "${to_work_old}" ]] || [[ -z "${to_work}" ]]; then
+            to_comp=''
+            stop_loop='1'
+        fi
+        if [[ "${from_work}" = "${from_work_old}" ]] || [[ -z "${from_work}" ]]; then
+            from_comp=''
+            stop_loop='1'
+        fi
+        if [[ '0' -ne "${stop_loop}" ]]; then
+            break
+        fi
 
         # Extract new components.
         to_comp="${to_work%%/*}"
