@@ -377,6 +377,9 @@ TEST(ERepository, InstallEAPI7)
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         EXPECT_TRUE(pretend_action.failed());
+        // FIXME: doesn't fail, but should.
+        //        Reason is known: EAPI=8 behavior for empty OR groups not yet
+        //        implemented.
     }
 
     {
@@ -396,6 +399,8 @@ TEST(ERepository, InstallEAPI7)
         EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("bar"))->enabled());
         id->perform_action(pretend_action);
         EXPECT_TRUE(pretend_action.failed());
+        // FIXME: doesn't fail, but should.
+        //        Reason as above.
 
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
@@ -429,8 +434,6 @@ TEST(ERepository, InstallEAPI7)
         EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("bar"))->enabled());
         id->perform_action(pretend_action);
         EXPECT_TRUE(! pretend_action.failed());
-        // FIXME: fails, but should not. a? (foo) is true.
-        //        Additionally, can't reproduce the failure manually?!
 
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
@@ -457,8 +460,6 @@ TEST(ERepository, InstallEAPI7)
         EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("bar"))->enabled());
         id->perform_action(pretend_action);
         EXPECT_TRUE(! pretend_action.failed());
-        // FIXME: fails, but should not. b? (bar) is true.
-        //        Additionally, can't reproduce the failure manually?!
 
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
@@ -485,8 +486,6 @@ TEST(ERepository, InstallEAPI7)
         EXPECT_TRUE(id->choices_key()->parse_value()->find_by_name_with_prefix(ChoiceNameWithPrefix("bar"))->enabled());
         id->perform_action(pretend_action);
         EXPECT_TRUE(! pretend_action.failed());
-        // FIXME: fails, but should not. both a? (foo) and b? (bar) are true.
-        //        Additionally, can't reproduce the failure manually?!
 
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
@@ -590,6 +589,8 @@ TEST(ERepository, InstallEAPI7)
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         EXPECT_TRUE(pretend_action.failed());
+        // FIXME: doesn't fail, but should.
+        //        Reason: missing implementation of empty XOR groups for EAPI=8.
 
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
@@ -671,8 +672,6 @@ TEST(ERepository, InstallEAPI7)
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         EXPECT_TRUE(! pretend_action.failed());
-        // FIXME: fails, but should not. a? (foo) is true, b? (bar) is false.
-        //        Additionally, can't reproduce the failure manually?!
 
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
@@ -781,8 +780,6 @@ TEST(ERepository, InstallEAPI7)
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         EXPECT_TRUE(! pretend_action.failed());
-        // FIXME: fails, but should not. a? (foo) is false, b? (bar) is true.
-        //        Additionally, can't reproduce the failure manually?!
 
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
@@ -810,8 +807,6 @@ TEST(ERepository, InstallEAPI7)
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         EXPECT_TRUE(! pretend_action.failed());
-        // FIXME: fails, but should not. a? (foo) is true, b? (bar) is false.
-        //        Additionally, can't reproduce the failure manually?!
 
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
@@ -839,8 +834,6 @@ TEST(ERepository, InstallEAPI7)
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         id->perform_action(pretend_action);
         EXPECT_TRUE(! pretend_action.failed());
-        // FIXME: fails, but should not. a? (foo) is false, b? (bar) is true.
-        //        Additionally, can't reproduce the failure manually?!
 
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("a"), false);
         env.set_want_choice_enabled(ChoicePrefixName(""), UnprefixedChoiceName("b"), false);
