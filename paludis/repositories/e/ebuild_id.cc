@@ -50,6 +50,7 @@
 #include <paludis/notifier_callback.hh>
 #include <paludis/always_enabled_dependency_label.hh>
 #include <paludis/slot.hh>
+#include <paludis/dep_spec_flattener.hh>
 
 #include <paludis/util/fs_error.hh>
 #include <paludis/util/stringify.hh>
@@ -74,6 +75,8 @@
 #include <iterator>
 #include <algorithm>
 #include <ctime>
+#include <functional>
+#include <utility>
 
 using namespace paludis;
 using namespace paludis::erepository;
@@ -1663,6 +1666,8 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
          * However, some elements, like strip, might be restricted, but
          * can be overridden by other things, like the new controllable
          * strip feature.
+         * Likewise, PROPERTIES="test_network" can override a test
+         * restriction.
          * For such cases, apply overrides.
          */
         if (restrict_key())
@@ -1672,7 +1677,25 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
 
             bool strip_override = eapi()->supported()->tools_options()->controllable_strip();
 
-            mask_tests = f.s.end() != f.s.find("test");
+            /*
+             * Check for test override.
+             *
+             * Don't use the UnconditionalRestrictFinder here, since it's
+             * possible that the override is actually conditional.
+             */
+            const std::shared_ptr<const PackageID> package_id(shared_from_this());
+            DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> properties(_imp->environment, package_id);
+            if (properties_key())
+                properties_key()->parse_value()->top()->accept(properties);
+            bool test_override = indirect_iterator(properties.end())
+                                    != std::find_if(indirect_iterator(properties.begin()),
+                                        indirect_iterator(properties.end()),
+                                            std::bind(std::equal_to<>(),
+                                                std::bind(std::mem_fn(&StringDepSpec::text),
+                                                    std::placeholders::_1),
+                                                "test_network"));
+            mask_tests = (f.s.end() != f.s.find("test"))
+                            && (!test_override);
             may_be_unrestricted_strip = (f.s.end() == f.s.find("strip")) || strip_override;
         }
 
