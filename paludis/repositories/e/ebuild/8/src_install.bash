@@ -2,8 +2,8 @@
 # vim: set sw=4 sts=4 et :
 
 # Copyright (c) 2006, 2007, 2009 Ciaran McCreesh
-# Copyright (c) 2008, 2015 David Leverton
-# Copyright (c) 2021 Mihai Moldovan
+# Copyright (c) 2015 David Leverton
+# Copyright (c) 2022 Mihai Moldovan
 #
 # Based in part upon ebuild.sh from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -22,28 +22,9 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
-default_src_prepare()
-{
-    if ! declare -p PATCHES >/dev/null 2>&1 ; then
-        :
-    elif declare -p PATCHES | grep -q '^declare -a ' ; then
-        [[ ${#PATCHES[@]} -gt 0 ]] && eapply -- "${PATCHES[@]}"
-    else
-        [[ -n ${PATCHES} ]] && eapply -- ${PATCHES}
-    fi
-    eapply_user
-}
+ebuild_load_module --older src_install
 
-# It would be great to not just copy the following two functions without
-# actually modifying their code, but sadly, this doesn't seem to be possible,
-# since ebuild.bash will just error out due to not having the ebuild_f_
-# function defined.
-src_prepare()
-{
-    default_src_prepare
-}
-
-ebuild_f_prepare()
+ebuild_f_install()
 {
     if [[ -d "${S}" ]] ; then
         cd "${S}" || die "cd to \${S} (\"${S}\") failed"
@@ -53,23 +34,23 @@ ebuild_f_prepare()
         cd "${WORKDIR}" || die "cd to \${WORKDIR} (\"${WORKDIR}\") failed"
     fi
 
-    if has "prepare" ${SKIP_FUNCTIONS} ; then
-        ebuild_section "Skipping src_prepare (SKIP_FUNCTIONS)"
+    if has "install" ${SKIP_FUNCTIONS} ; then
+        ebuild_section "Skipping src_install (SKIP_FUNCTIONS)"
     else
-        if [[ $(type -t pre_src_prepare ) == "function" ]] ; then
-            ebuild_section "Starting pre_src_prepare"
-            pre_src_prepare
-            ebuild_section "Done pre_src_prepare"
+        if [[ $(type -t pre_src_install ) == "function" ]] ; then
+            ebuild_section "Starting pre_src_install"
+            pre_src_install
+            ebuild_section "Done pre_src_install"
         fi
 
-        ebuild_section "Starting src_prepare"
-        src_prepare
-        ebuild_section "Done src_prepare"
+        ebuild_section "Starting src_install"
+        src_install
+        ebuild_section "Done src_install"
 
-        if [[ $(type -t post_src_prepare ) == "function" ]] ; then
-            ebuild_section "Starting post_src_prepare"
-            post_src_prepare
-            ebuild_section "Done post_src_prepare"
+        if [[ $(type -t post_src_install ) == "function" ]] ; then
+            ebuild_section "Starting post_src_install"
+            post_src_install
+            ebuild_section "Done post_src_install"
         fi
     fi
 }
