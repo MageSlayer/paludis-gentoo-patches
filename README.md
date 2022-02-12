@@ -45,6 +45,6 @@ Packages known to fail:
 | Package | Reason | State | Related to EAPI=8 | Has Workaround |
 | ------- | ------ | ----- | ----------------- | -------------- |
 | games-emulation/dolphin | variable in global scope | ❌ | ❌ | declare -g |
-| media-libs/alsa-ucm-conf | doins -r | ❌ | ❌ | - |
+| dev-libs/mpfr | tries to apply all patches in `${DISTDIR}` -- portage creates a package-specific directory and copies all related distfiles to this directory, paludis just uses the global distdir | ❌ | ❌ | change `PATCHES+=( "${DISTDIR}"/ )` to `PATCHES+=( "${DISTDIR}/${MY_P}"*.patch )` |
 
 **It is not completely safe to use this branch.**
