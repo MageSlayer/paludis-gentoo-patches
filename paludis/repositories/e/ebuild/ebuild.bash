@@ -399,6 +399,7 @@ ebuild_load_ebuild()
         eval paludis_saved_${paludis_v}='${!paludis_v}'
     done
 
+    local old_BASH_COMPAT="${BASH_COMPAT}"
     local paludis_shopts=$(shopt -p)
     [[ -n ${PALUDIS_SHELL_OPTIONS_GLOBAL} ]] && shopt -s ${PALUDIS_SHELL_OPTIONS_GLOBAL}
 
@@ -409,6 +410,22 @@ ebuild_load_ebuild()
     source ${1} || die "Error sourcing ebuild '${1}'"
 
     eval "${paludis_shopts}"
+
+    # Some bash versions have a bug in which even unsetting a previously unset
+    # compat option resets ${BASH_COMPAT} to the default value for the running
+    # bash version, which typically is its current version.
+    # Reset this variable with the saved value if needed.
+    if [[ -n "${old_BASH_COMPAT}" ]]; then
+        # Note that the following comparison might be true even though the
+        # actual value does not differ, since bash likes to drop the dot from
+        # this variable.
+        # It's too complicated to check for that and just resetting the value,
+        # even if it's logically the same, doesn't cause issues, so we'll just
+        # do that.
+        if [[ "${old_BASH_COMPAT}" != "${BASH_COMPAT}" ]]; then
+            BASH_COMPAT="${old_BASH_COMPAT}"
+        fi
+    fi
 
     # we may or may not use this later
     PALUDIS_EBUILD_RDEPEND_WAS_SET=
