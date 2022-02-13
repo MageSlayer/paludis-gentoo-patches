@@ -2,6 +2,7 @@
 # vim: set sw=4 sts=4 et :
 
 # Copyright (c) 2006 Stephen Bennett
+# Copyright (c) 2022 Mihai Moldovan
 #
 # Based in part upon domo from Portage, which is Copyright 1995-2005
 # Gentoo Foundation and distributed under the terms of the GNU General
@@ -31,8 +32,16 @@ if [[ ${#} -lt 1 ]]; then
     paludis_die_or_error "at least one argument needed"
 fi
 
-if [[ ! -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}/share/locale" ]]; then
-    install -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}/share/locale" || paludis_die_or_error "could not create ${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}/share/locale"
+typeset base_location="${!PALUDIS_IMAGE_DIR_VAR%/}/"
+if [[ -n "${PALUDIS_DOMO_RESPECTS_INTO}" ]]; then
+    base_location="${base_location}${DESTTREE#/}"
+else
+    base_location="${base_location}usr"
+fi
+base_location="${base_location}/share/locale"
+
+if [[ ! -d "${base_location}" ]]; then
+    install -d "${base_location}" || paludis_die_or_error "could not create ${base_location}"
 fi
 
 ret=0
@@ -40,7 +49,7 @@ ret=0
 for x in "$@"; do
     if [[ -e "${x}" ]]; then
         mytiny="$(basename "${x}")"
-        mydir="${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}/share/locale/${mytiny%.*}/LC_MESSAGES"
+        mydir="${base_location}/${mytiny%.*}/LC_MESSAGES"
         if [[ ! -d "${mydir}" ]]; then
             install -d "${mydir}"
         fi
