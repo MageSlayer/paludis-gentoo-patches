@@ -237,7 +237,7 @@ src_install() {
     touch foo.mo
     into 'foo'
     domo foo.mo
-    [[ -d "${D}/foo" ]] && die 'domo used into'
+    [[ -f "${D}/usr/share/locale/foo/LC_MESSAGES/${PN}.mo" ]] || die 'domo used into'
 }
 END
 
