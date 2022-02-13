@@ -27,20 +27,24 @@ if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR%/}/ ]]; then
     paludis_die_or_error "\${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting" >&2
 fi
 
+if [[ -z "${PALUDIS_DESTTREE_VAR}" ]]; then
+    paludis_die_or_error "\${PALUDIS_DESTTREE_VAR} not valid; aborting" >&2
+fi
+
 if [[ ${#} -lt 1 ]]; then
     paludis_die_or_error "at least one argument needed" >&2
 fi
 
-if [[ ! -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}/bin" ]]; then
-    install -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}/bin" || paludis_die_or_error "${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}/bin is not a dir"
+if [[ ! -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${!PALUDIS_DESTTREE_VAR#/}/bin" ]]; then
+    install -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${!PALUDIS_DESTTREE_VAR#/}/bin" || paludis_die_or_error "${!PALUDIS_IMAGE_DIR_VAR%/}/${!PALUDIS_DESTTREE_VAR#/}/bin is not a dir"
 fi
 
 ret=0
 for x in "$@" ; do
     if [[ -n ${PALUDIS_NO_CHOWN} ]]; then
-        install -m0755 "${x}" "${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}/bin" || ret=2
+        install -m0755 "${x}" "${!PALUDIS_IMAGE_DIR_VAR%/}/${!PALUDIS_DESTTREE_VAR#/}/bin" || ret=2
     else
-        install -m0755 -o root -g 0 "${x}" "${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}/bin" || ret=2
+        install -m0755 -o root -g 0 "${x}" "${!PALUDIS_IMAGE_DIR_VAR%/}/${!PALUDIS_DESTTREE_VAR#/}/bin" || ret=2
     fi
 done
 

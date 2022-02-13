@@ -31,6 +31,10 @@ if [[ ! -d "${!PALUDIS_TEMP_DIR_VAR}" ]]; then
     paludis_die_or_error "\${${PALUDIS_TEMP_DIR_VAR}} not valid; aborting"
 fi
 
+if [[ -z "${PALUDIS_INSDESTTREE_VAR}" ]]; then
+    paludis_die_or_error "\${PALUDIS_INSDESTTREE_VAR} not valid; aborting" >&2
+fi
+
 if [[ "${#}" -lt '1' ]]; then
     paludis_die_or_error "at least one argument needed"
 fi
@@ -45,16 +49,16 @@ if [[ -z "${INSDEPTH}" ]]; then
     declare -i INSDEPTH='0'
 fi
 
-if [[ ${INSDESTTREE} == ${!PALUDIS_IMAGE_DIR_VAR}* ]]; then
+if [[ ${!PALUDIS_INSDESTTREE_VAR} == ${!PALUDIS_IMAGE_DIR_VAR}* ]]; then
     echo "-------------------------------------------------------" >&2
     echo "You should not use \${${PALUDIS_IMAGE_DIR_VAR}} with helpers." >&2
-    echo "  --> ${INSDESTTREE}" >&2
+    echo "  --> ${!PALUDIS_INSDESTTREE_VAR}" >&2
     echo "-------------------------------------------------------" >&2
     paludis_die_or_error
 fi
 
-if [[ ! -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${INSDESTTREE#/}" ]]; then
-    dodir "${INSDESTTREE}"
+if [[ ! -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${!PALUDIS_INSDESTTREE_VAR#/}" ]]; then
+    dodir "${!PALUDIS_INSDESTTREE_VAR}"
 fi
 
 ret='0'
@@ -62,7 +66,7 @@ ret='0'
 for x in "${@}"; do
     if [[ -L "${x}" ]]; then
         if [[ -n "${PALUDIS_DOINS_SYMLINK}" ]] ; then
-            ln -s "$(readlink "${x}")" "${!PALUDIS_IMAGE_DIR_VAR%/}/${INSDESTTREE#/}/$(basename "${x}")" || ret='2'
+            ln -s "$(readlink "${x}")" "${!PALUDIS_IMAGE_DIR_VAR%/}/${!PALUDIS_INSDESTTREE_VAR#/}/$(basename "${x}")" || ret='2'
             continue
         else
             cp "${x}" "${!PALUDIS_TEMP_DIR_VAR}"
@@ -73,10 +77,10 @@ for x in "${@}"; do
             continue
         fi
 
-        mydir="${INSDESTTREE#/}/$(basename "${x}")"
+        mydir="${!PALUDIS_INSDESTTREE_VAR#/}/$(basename "${x}")"
         find "${x}" -mindepth '1' -maxdepth '1' -exec \
             env \
-                INSDESTTREE="${mydir}" \
+                "${PALUDIS_INSDESTTREE_VAR}=${mydir}" \
                 INSDEPTH=$((INSDEPTH+1)) \
                 ${0} -r {} \;
         continue
@@ -84,7 +88,7 @@ for x in "${@}"; do
         mysrc="${x}"
     fi
 
-    install ${INSOPTIONS} "${mysrc}" "${!PALUDIS_IMAGE_DIR_VAR%/}/${INSDESTTREE#/}" || ret='2'
+    install ${INSOPTIONS} "${mysrc}" "${!PALUDIS_IMAGE_DIR_VAR%/}/${!PALUDIS_INSDESTTREE_VAR#/}" || ret='2'
 done
 
 [[ '0' != "${ret}" ]] && paludis_die_or_error "doins returned error ${ret}"

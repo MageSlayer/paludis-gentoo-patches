@@ -20,23 +20,37 @@
 # this program; if not, write to the Free Software Foundation, Inc., 59 Temple
 # Place, Suite 330, Boston, MA  02111-1307  USA
 
+umask 022
+
+typeset -gx "${PALUDIS_DESTTREE_VAR:-DESTTREE}=/usr"
+typeset -gx "${PALUDIS_INSDESTTREE_VAR:-INSDESTTREE}="
+export EXEDESTTREE=""
+export DOCDESTTREE=""
+export INSOPTIONS="-m0644"
+export EXEOPTIONS="-m0755"
+export LIBOPTIONS="-m0644"
+export DIROPTIONS="-m0755"
+export MOPREFIX="${PN}"
+
 into()
 {
+    declare desttree_var="${PALUDIS_DESTTREE_VAR:-DESTTREE}"
     if [[ "${1}" == "/" ]] ; then
-        export DESTTREE=
+        typeset -gx "${desttree_var}="
     else
-        export DESTTREE="${1}"
-        [[ -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}" ]] || install -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}"
+        typeset -gx "${desttree_var}=${1}"
+        [[ -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${!desttree_var#/}" ]] || install -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${!desttree_var#/}"
     fi
 }
 
 insinto()
 {
+    declare insdesttree_var="${PALUDIS_INSDESTTREE_VAR:-INSDESTTREE}"
     if [[ "${1}" == "/" ]] ; then
-        export INSDESTTREE=
+        typeset -gx "${insdesttree_var}="
     else
-        export INSDESTTREE="${1}"
-        [[ -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${INSDESTTREE#/}" ]] || install -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${INSDESTTREE#/}"
+        typeset -gx "${insdesttree_var}=${1}"
+        [[ -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${!insdesttree_var#/}" ]] || install -d "${!PALUDIS_IMAGE_DIR_VAR%/}/${!insdesttree_var#/}"
     fi
 }
 

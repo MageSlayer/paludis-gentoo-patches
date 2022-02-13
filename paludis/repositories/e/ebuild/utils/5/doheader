@@ -23,9 +23,13 @@
 
 source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
 
+if [[ -z "${PALUDIS_INSDESTTREE_VAR}" ]]; then
+    paludis_die_or_error "\${PALUDIS_INSDESTTREE_VAR} not valid; aborting" >&2
+fi
+
 if [[ ${#} -lt 1 ]]; then
     paludis_die_or_error "at least one argument needed"
 fi
 
-export INSDESTTREE=/usr/include/
+typeset -gx "${PALUDIS_INSDESTTREE_VAR}=/usr/include/"
 doins "$@"
