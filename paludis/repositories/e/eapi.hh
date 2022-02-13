@@ -99,6 +99,7 @@ namespace paludis
         typedef Name<struct name_env_accept_license> env_accept_license;
         typedef Name<struct name_env_arch> env_arch;
         typedef Name<struct name_env_d> env_d;
+        typedef Name<struct name_env_desttree> env_desttree;
         typedef Name<struct name_env_distdir> env_distdir;
         typedef Name<struct name_env_ebuild_phase> env_ebuild_phase;
         typedef Name<struct name_env_ebuild_phase_func> env_ebuild_phase_func;
@@ -106,6 +107,7 @@ namespace paludis
         typedef Name<struct name_env_eprefix> env_eprefix;
         typedef Name<struct name_env_eroot> env_eroot;
         typedef Name<struct name_env_filesdir> env_filesdir;
+        typedef Name<struct name_env_insdesttree> env_insdesttree;
         typedef Name<struct name_env_iuse_implicit> env_iuse_implicit;
         typedef Name<struct name_env_jobs> env_jobs;
         typedef Name<struct name_env_kv> env_kv;
@@ -354,6 +356,7 @@ namespace paludis
             NamedValue<n::env_accept_license, std::string> env_accept_license;
             NamedValue<n::env_arch, std::string> env_arch;
             NamedValue<n::env_d, std::string> env_d;
+            NamedValue<n::env_desttree, std::string> env_desttree;
             NamedValue<n::env_distdir, std::string> env_distdir;
             NamedValue<n::env_ebuild_phase, std::string> env_ebuild_phase;
             NamedValue<n::env_ebuild_phase_func, std::string> env_ebuild_phase_func;
@@ -361,6 +364,7 @@ namespace paludis
             NamedValue<n::env_eprefix, std::string> env_eprefix;
             NamedValue<n::env_eroot, std::string> env_eroot;
             NamedValue<n::env_filesdir, std::string> env_filesdir;
+            NamedValue<n::env_insdesttree, std::string> env_insdesttree;
             NamedValue<n::env_iuse_implicit, std::string> env_iuse_implicit;
             NamedValue<n::env_jobs, std::string> env_jobs;
             NamedValue<n::env_kv, std::string> env_kv;

@@ -31,7 +31,11 @@ if [[ ! -d ${PALUDIS_EBUILD_MODULES_DIR} ]]; then
     paludis_die_or_error "\${PALUDIS_EBUILD_MODULES_DIR} not valid; aborting"
 fi
 
-libdir="${!PALUDIS_IMAGE_DIR_VAR}${DESTTREE}/${LIBDIR:-lib}"
+if [[ -z "${PALUDIS_DESTTREE_VAR}" ]]; then
+    paludis_die_or_error "\${PALUDIS_DESTTREE_VAR} not valid; aborting" >&2
+fi
+
+libdir="${!PALUDIS_IMAGE_DIR_VAR}${!PALUDIS_DESTTREE_VAR}/${LIBDIR:-lib}"
 
 if [[ ${#} -lt 1 ]]; then
     paludis_die_or_error "at least one argument needed"

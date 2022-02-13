@@ -28,13 +28,17 @@ if [[ ! -d ${!PALUDIS_IMAGE_DIR_VAR%/}/ ]]; then
     paludis_die_or_error "\${${PALUDIS_IMAGE_DIR_VAR}} not valid; aborting"
 fi
 
+if [[ -z "${PALUDIS_DESTTREE_VAR}" ]]; then
+    paludis_die_or_error "\${PALUDIS_DESTTREE_VAR} not valid; aborting" >&2
+fi
+
 if [[ ${#} -lt 1 ]]; then
     paludis_die_or_error "at least one argument needed"
 fi
 
 typeset base_location="${!PALUDIS_IMAGE_DIR_VAR%/}/"
 if [[ -n "${PALUDIS_DOMO_RESPECTS_INTO}" ]]; then
-    base_location="${base_location}${DESTTREE#/}"
+    base_location="${base_location}${!PALUDIS_DESTTREE_VAR#/}"
 else
     base_location="${base_location}usr"
 fi
