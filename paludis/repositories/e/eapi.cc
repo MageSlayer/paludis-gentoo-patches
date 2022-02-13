@@ -256,6 +256,7 @@ namespace
                         n::doins_symlink() = destringify_key<bool>(k, "doins_symlink"),
                         n::doman_lang_filenames() = destringify_key<bool>(k, "doman_lang_filenames"),
                         n::doman_lang_filenames_overrides() = destringify_key<bool>(k, "doman_lang_filenames_overrides"),
+                        n::domo_respects_into() = destringify_key<bool>(k, "domo_respects_into"),
                         n::dosym_mkdir() = destringify_key<bool>(k, "dosym_mkdir"),
                         n::econf_extra_options() = k.get("econf_extra_options"),
                         n::econf_extra_options_help_dependent() = k.get("econf_extra_options_help_dependent"),
