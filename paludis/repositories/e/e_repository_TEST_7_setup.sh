@@ -265,7 +265,7 @@ src_compile() {
 
 src_install() {
     dobin test
-    dostrip -x test || die 'dostrip -x failed'
+    dostrip -x '/usr/bin/test' || die 'dostrip -x failed'
 }
 
 pkg_postinst() {
