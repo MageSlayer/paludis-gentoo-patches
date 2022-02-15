@@ -29,6 +29,7 @@
 #include <paludis/util/fs_stat.hh>
 #include <paludis/util/options.hh>
 #include <paludis/util/singleton-impl.hh>
+#include <paludis/util/safe_ifstream.hh>
 #include <functional>
 #include <sstream>
 #include <list>
@@ -121,14 +122,28 @@ namespace paludis
     template <>
     struct Imp<Stripper>
     {
+        bool potentially_need_strip;
         StripperOptions options;
-        StrippedSet stripped_ids;
+        StrippedSet stripped_ids,
+                    includes,
+                    excludes;
         PaludisStripperExtras * stripper_extras;
 
         Imp(const StripperOptions & o) :
             options(o),
             stripper_extras(nullptr)
         {
+            /* If stripping is disabled, there's nothing else to do. */
+            potentially_need_strip = o.strip_choice();
+
+            /*
+             * Otherwise, the ebuild (if it is one) might be strip-restricted,
+             * but we don't care about this if controllable strip is turned
+             * on.
+             */
+            potentially_need_strip &= o.controllable_strip()
+                                    | (! o.strip_restrict());
+
             try
             {
                 if (StripperHandle::get_instance()->handle)
@@ -162,14 +177,18 @@ Stripper::strip()
 {
     Context context("When stripping image '" + stringify(_imp->options.image_dir()) + "':");
 
-    if (! _imp->options.strip())
+    if (! _imp->potentially_need_strip)
         return;
 
-    do_dir_recursive(_imp->options.image_dir());
+    /* Build the two lists. */
+    populate_list(true);
+    populate_list(false);
+
+    do_dir_recursive(_imp->options.image_dir(), false);
 }
 
 void
-Stripper::do_dir_recursive(const FSPath & f)
+Stripper::do_dir_recursive(const FSPath & f, const bool parent_included)
 {
     Context context("When stripping inside '" + stringify(f) + "':");
 
@@ -177,6 +196,16 @@ Stripper::do_dir_recursive(const FSPath & f)
         return;
 
     on_enter_dir(f);
+
+    /*
+     * The current path is either:
+     *   - excluded if part of the excludes list
+     *   - automatically included if the parent is included
+     *   - included if part of the includes list
+     *   - otherwise excluded.
+     */
+    bool path_included = (!(part_of_list(f, false)))
+                       && (parent_included || part_of_list(f, true));
 
     for (FSIterator d(f, { fsio_include_dotfiles, fsio_inode_sort }), d_end ; d != d_end ; ++d)
     {
@@ -187,10 +216,15 @@ Stripper::do_dir_recursive(const FSPath & f)
         if (_imp->stripped_ids.end() != _imp->stripped_ids.find(d_stat.lowlevel_id()))
             continue;
 
-        if (d_stat.is_directory())
-            do_dir_recursive(*d);
+        /* Same logic as above. */
+        path_included = (!(part_of_list(*d, false)))
+                      && (path_included || part_of_list(*d, true));
 
-        else if (d_stat.is_regular_file())
+        if (d_stat.is_directory())
+        {
+            do_dir_recursive(*d, path_included);
+        }
+        else if (d_stat.is_regular_file() && path_included)
         {
             if ((0 != (d_stat.permissions() & (S_IXUSR | S_IXGRP | S_IXOTH))) ||
                     (std::string::npos != d->basename().find(".so.")) ||
@@ -325,3 +359,89 @@ Stripper::dwarf_compress_desc() const
     return "dwz";
 }
 
+void
+Stripper::populate_list(const bool include)
+{
+    Context context(std::string("When generating ") + (include ? std::string("include") : std::string("exclude")) + std::string(" list for stripper:"));
+
+    std::string file_name = "dostrip.";
+
+    auto list = &_imp->includes;
+    if (include)
+    {
+        file_name += "include";
+
+        /*
+         * Add the whole image dir to the include list if the package is not
+         * strip restricted.
+         */
+        if (!(_imp->options.strip_restrict()))
+        {
+            list->insert(_imp->options.image_dir().stat().lowlevel_id());
+        }
+    }
+    else
+    {
+        file_name += "exclude";
+
+        list = &_imp->excludes;
+    }
+
+    /* If controllable strip is not a thing, move out early. */
+    if (!(_imp->options.controllable_strip()))
+    {
+        return;
+    }
+
+    /* Otherwise, chug on and actually read and process the files. */
+    FSPath file(_imp->options.controllable_strip_dir());
+    file /= file_name;
+
+    if (!(file.stat().exists()))
+    {
+        /*
+         * File does not exist, which is fine, and probably means that dostrip
+         * was never called. Handle this gracefully.
+         */
+        return;
+    }
+
+    try
+    {
+        SafeIFStream file_stream(file);
+        std::string elem;
+        while (std::getline(file_stream, elem, '\0'))
+        {
+            FSStat stat(FSPath(elem).stat());
+
+            if (stat.exists())
+            {
+                list->insert(stat.lowlevel_id());
+            }
+        }
+    }
+    catch (const SafeIFStreamError & e)
+    {
+        Log::get_instance()->message("stripper.strip.populate_list", ll_warning, lc_context) << e.message();
+        throw InternalError(PALUDIS_HERE, "Unable to read from " + file_name);
+    }
+}
+
+bool
+Stripper::part_of_list(const FSPath &entry, const bool includes)
+{
+    bool ret = false;
+
+    auto list = &_imp->includes;
+
+    if (!(includes)) {
+        list = &_imp->excludes;
+    }
+
+    auto lowlevel_id = entry.stat().lowlevel_id();
+
+    /* Check if the current entry is part of the selected list. */
+    ret = (list->end() != list->find(lowlevel_id));
+
+    return ret;
+}
