@@ -33,22 +33,28 @@ namespace paludis
     namespace n
     {
         typedef Name<struct name_compress_splits> compress_splits;
+        typedef Name<struct name_controllable_strip> controllable_strip;
+        typedef Name<struct name_controllable_strip_dir> controllable_strip_dir;
         typedef Name<struct name_debug_dir> debug_dir;
         typedef Name<struct name_dwarf_compression> dwarf_compression;
         typedef Name<struct name_image_dir> image_dir;
         typedef Name<struct name_split> split;
-        typedef Name<struct name_strip> strip;
+        typedef Name<struct name_strip_choice> strip_choice;
+        typedef Name<struct name_strip_restrict> strip_restrict;
         typedef Name<struct name_tool_prefix> tool_prefix;
     }
 
     struct StripperOptions
     {
         NamedValue<n::compress_splits, bool> compress_splits;
+        NamedValue<n::controllable_strip, bool> controllable_strip;
+        NamedValue<n::controllable_strip_dir, FSPath> controllable_strip_dir;
         NamedValue<n::debug_dir, FSPath> debug_dir;
         NamedValue<n::dwarf_compression, bool> dwarf_compression;
         NamedValue<n::image_dir, FSPath> image_dir;
         NamedValue<n::split, bool> split;
-        NamedValue<n::strip, bool> strip;
+        NamedValue<n::strip_choice, bool> strip_choice;
+        NamedValue<n::strip_restrict, bool> strip_restrict;
         NamedValue<n::tool_prefix, std::string> tool_prefix;
     };
 
@@ -64,6 +70,9 @@ namespace paludis
         private:
             Pimp<Stripper> _imp;
 
+            void populate_list(const bool);
+            bool part_of_list(const FSPath &, const bool);
+
         protected:
             virtual void on_enter_dir(const FSPath &) = 0;
             virtual void on_leave_dir(const FSPath &) = 0;
@@ -73,7 +82,7 @@ namespace paludis
             virtual void on_dwarf_compress(const FSPath &) = 0;
             virtual void on_unknown(const FSPath &) = 0;
 
-            virtual void do_dir_recursive(const FSPath &);
+            virtual void do_dir_recursive(const FSPath &, const bool);
 
             virtual std::string file_type(const FSPath &);
 

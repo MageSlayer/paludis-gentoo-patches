@@ -18,9 +18,12 @@
  */
 
 #include <paludis/repositories/e/e_stripper.hh>
+#include <paludis/repositories/e/e_repository_id.hh>
+#include <paludis/repositories/e/eapi.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/make_named_values.hh>
 #include <paludis/output_manager.hh>
+#include <paludis/package_id.hh>
 #include <ostream>
 
 using namespace paludis;
@@ -43,11 +46,14 @@ namespace paludis
 EStripper::EStripper(const EStripperOptions & options) :
     Stripper(make_named_values<StripperOptions>(
                 n::compress_splits() = options.compress_splits(),
+                n::controllable_strip() = static_cast<const ERepositoryID &>(*options.package_id()).eapi()->supported()->tools_options()->controllable_strip(),
+                n::controllable_strip_dir() = options.controllable_strip_dir(),
                 n::debug_dir() = options.debug_dir(),
                 n::dwarf_compression() = options.dwarf_compression(),
                 n::image_dir() = options.image_dir(),
                 n::split() = options.split(),
-                n::strip() = options.strip(),
+                n::strip_choice() = options.strip_choice(),
+                n::strip_restrict() = options.strip_restrict(),
                 n::tool_prefix() = options.tool_prefix()
                 )),
     _imp(options)

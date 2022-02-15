@@ -30,6 +30,7 @@ namespace paludis
     namespace n
     {
         typedef Name<struct name_compress_splits> compress_splits;
+        typedef Name<struct name_controllable_strip_dir> controllable_strip_dir;
         typedef Name<struct name_debug_dir> debug_dir;
         typedef Name<struct name_dwarf_compression> dwarf_compression;
         typedef Name<struct name_image_dir> image_dir;
@@ -45,13 +46,15 @@ namespace paludis
         struct EStripperOptions
         {
             NamedValue<n::compress_splits, bool> compress_splits;
+            NamedValue<n::controllable_strip_dir, FSPath> controllable_strip_dir;
             NamedValue<n::debug_dir, FSPath> debug_dir;
             NamedValue<n::dwarf_compression, bool> dwarf_compression;
             NamedValue<n::image_dir, FSPath> image_dir;
             NamedValue<n::output_manager, std::shared_ptr<OutputManager> > output_manager;
             NamedValue<n::package_id, std::shared_ptr<const PackageID> > package_id;
             NamedValue<n::split, bool> split;
-            NamedValue<n::strip, bool> strip;
+            NamedValue<n::strip_choice, bool> strip_choice;
+            NamedValue<n::strip_restrict, bool> strip_restrict;
             NamedValue<n::tool_prefix, std::string> tool_prefix;
         };
 
