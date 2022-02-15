@@ -67,15 +67,6 @@ namespace paludis
 
 namespace
 {
-    struct IsGarbageFile : std::unary_function<const FSPath &, bool>
-    {
-        bool operator() (const FSPath & file)
-        {
-            std::string basename(file.basename());
-            return '#' == basename[0] || '~' == basename[basename.length() - 1];
-        }
-    };
-
     template <typename T_>
     void
     from_colon_string(const std::function<std::string (const std::string &)> & source,
@@ -246,11 +237,17 @@ Imp<BrokenLinkageConfiguration>::load_from_etc_revdep_rebuild(const FSPath & roo
     FSStat etc_revdep_rebuild_stat(etc_revdep_rebuild);
     Context ctx("When reading '" + stringify(etc_revdep_rebuild) + "':");
 
+    const auto is_garbage_file = [](const FSPath & file) {
+        std::string basename(file.basename());
+        return '#' == basename[0] || '~' == basename[basename.length() - 1];
+    };
+
     if (etc_revdep_rebuild_stat.is_directory_or_symlink_to_directory())
     {
         std::vector<FSPath> conf_files = std::vector<FSPath>(FSIterator(etc_revdep_rebuild, { }), FSIterator());
-        conf_files.erase(std::remove_if(conf_files.begin(), conf_files.end(), IsGarbageFile()),
-                         conf_files.end());
+        conf_files.erase(
+                std::remove_if(conf_files.begin(), conf_files.end(), is_garbage_file),
+                conf_files.end());
         std::sort(conf_files.begin(), conf_files.end(), FSPathComparator());
 
         KeyValueConfigFileOptions opts;
