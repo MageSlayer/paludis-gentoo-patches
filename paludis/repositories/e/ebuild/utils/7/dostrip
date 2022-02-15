@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+# vim: set sw=4 sts=4 et :
+
+# Copyright (c) 2009 Ciaran McCreesh
+# Copyright (c) 2022 Mihai Moldovan
+#
+# This file is part of the Paludis package manager. Paludis is free software;
+# you can redistribute it and/or modify it under the terms of the GNU General
+# Public License as published by the Free Software Foundation; either version
+# 2 of the License, or (at your option) any later version.
+#
+# Paludis is distributed in the hope that it will be useful, but WITHOUT ANY
+# WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+# details.
+#
+# You should have received a copy of the GNU General Public License along with
+# this program; if not, write to the Free Software Foundation, Inc., 59 Temple
+# Place, Suite 330, Boston, MA  02111-1307  USA
+
+source "${PALUDIS_EBUILD_DIR}"/die_functions.bash
+
+if [[ -z "${PALUDIS_CONTROLLABLE_STRIP}" ]]; then
+    typeset color_red=$'\e[31;01m'
+    typeset color_normal=$'\e[0m'
+    typeset my_name="$(basename "${0}")"
+
+    printf '%s!!! Ebuild bug: '%s' not supported in this EAPI%s\n' "${color_red}" "${my_name}" "${color_normal}"
+    printf '%s: making ebuild PID %s exit with error\n' "${my_name}" "${EBUILD_KILL_PID}" 1>&2
+    kill -s 'SIGUSR1' "${EBUILD_KILL_PID}"
+
+    exit '123'
+fi
+
+if [[ ! -d "${!PALUDIS_TEMP_DIR_VAR}" ]]; then
+    paludis_die_or_error "\${${PALUDIS_TEMP_DIR_VAR}} not valid; aborting" >&2
+fi
+
+if [[ '1' -gt "${#}" ]]; then
+    paludis_die_or_error 'at least one argument needed'
+fi
+
+typeset -i exclude='0'
+
+if [[ '-x' = "${1}" ]]; then
+    exclude='1'
+    shift
+fi
+
+typeset list_file="${!PALUDIS_TEMP_DIR_VAR}/dostrip."
+if [[ '0' -eq "${exclude}" ]]; then
+    list_file="${list_file}include"
+else
+    list_file="${list_file}exclude"
+fi
+
+typeset pathspec=''
+for pathspec in "${@}"; do
+    # If ${pathspec} is absolute (which it really should be), force it to be
+    # relative to avoid double slashes.
+    printf '%s\0' "${ED}/${pathspec#/}" >> "${list_file}"
+done
+
+exit '0'
