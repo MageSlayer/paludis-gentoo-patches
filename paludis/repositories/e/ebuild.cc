@@ -260,6 +260,7 @@ EbuildCommand::operator() ()
         .setenv("PALUDIS_FAILURE_IS_FATAL", tools->failure_is_fatal() ? "yes" : "")
         .setenv("PALUDIS_LOG_TO_STDOUT", tools->log_to_stdout() ? "yes" : "")
         .setenv("PALUDIS_DOMO_RESPECTS_INTO", tools->domo_respects_into() ? "yes" : "")
+        .setenv("PALUDIS_CONTROLLABLE_STRIP", tools->controllable_strip() ? "yes" : "")
         .setenv("PALUDIS_DIE_SUPPORTS_DASH_N",
                 tools->die_supports_dash_n() ? "yes" : "")
         .setenv("PALUDIS_UNPACK_FROM_VAR", environment_variables->env_distdir())

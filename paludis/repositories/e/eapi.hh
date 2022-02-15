@@ -57,6 +57,7 @@ namespace paludis
         typedef Name<struct name_build_depend> build_depend_host;
         typedef Name<struct name_can_be_pbin> can_be_pbin;
         typedef Name<struct name_choices_options> choices_options;
+        typedef Name<struct name_controllable_strip> controllable_strip;
         typedef Name<struct name_defined_phases> defined_phases;
         typedef Name<struct name_dependencies> dependencies;
         typedef Name<struct name_dependency_labels> dependency_labels;
@@ -504,6 +505,7 @@ namespace paludis
         struct EAPIToolsOptions
         {
             NamedValue<n::best_has_version_host_root, bool> best_has_version_host_root;
+            NamedValue<n::controllable_strip, bool> controllable_strip;
             NamedValue<n::die_supports_dash_n, bool> die_supports_dash_n;
             NamedValue<n::dodoc_r, bool> dodoc_r;
             NamedValue<n::doins_symlink, bool> doins_symlink;

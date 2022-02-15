@@ -253,6 +253,7 @@ namespace
     {
         return std::make_shared<EAPIToolsOptions>(make_named_values<EAPIToolsOptions>(
                         n::best_has_version_host_root() = destringify_key<bool>(k, "best_has_version_host_root"),
+                        n::controllable_strip() = destringify_key<bool>(k, "controllable_strip"),
                         n::die_supports_dash_n() = destringify_key<bool>(k, "die_supports_dash_n"),
                         n::dodoc_r() = destringify_key<bool>(k, "dodoc_r"),
                         n::doins_symlink() = destringify_key<bool>(k, "doins_symlink"),
