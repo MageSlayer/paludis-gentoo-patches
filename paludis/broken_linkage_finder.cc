@@ -122,7 +122,7 @@ namespace
     const std::map<FSPath, std::set<std::string>, FSPathComparator> no_files;
     const std::set<std::string> no_reqs;
 
-    struct ParentOf : std::unary_function<FSPath, bool>
+    struct ParentOf
     {
         const FSPath & _child;
 
