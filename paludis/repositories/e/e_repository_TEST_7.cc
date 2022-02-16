@@ -216,6 +216,15 @@ TEST(ERepository, InstallEAPI7)
 
     {
         const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/added-dostrip-strip-restrict-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_NO_THROW(id->perform_action(action));
+    }
+
+    {
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
                         PackageDepSpec(parse_user_package_dep_spec("=cat/eapply-git-diff-support-7",
                                 &env, { })), nullptr, { }))]->last());
         ASSERT_TRUE(bool(id));
