@@ -272,6 +272,37 @@ pkg_postinst() {
     file "${D}/usr/bin/test" | grep 'not stripped' || die 'dostrip -x has no effect'
 }
 END
+mkdir -p "cat/added-dostrip-strip-restrict"
+cat <<'END' > cat/added-dostrip-strip-restrict/added-dostrip-strip-restrict-7.ebuild
+EAPI="7"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE="spork"
+LICENSE="GPL-2"
+KEYWORDS="test"
+RESTRICT="strip"
+
+S="${WORKDIR}"
+
+src_prepare() {
+    echo "int main(){}" > test.cpp
+}
+
+src_compile() {
+    ${CXX:-g++} -g3 test.cpp -o test
+}
+
+src_install() {
+    dobin test
+    dostrip '/usr/bin/test' || die 'dostrip failed'
+}
+
+pkg_postinst() {
+    file "${D}/usr/bin/test" | grep -v 'not stripped' || die 'dostrip has no effect'
+}
+END
 
 # eapply GNU patch 2.7 guaranteed, git patches supported
 mkdir -p "cat/eapply-git-diff-support/files" || exit 1
