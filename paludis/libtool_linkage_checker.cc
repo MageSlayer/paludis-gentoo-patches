@@ -60,17 +60,6 @@ namespace paludis
     };
 }
 
-namespace
-{
-    struct IsNotAbsolutePath : std::unary_function<std::string, bool>
-    {
-        bool operator() (const std::string & str)
-        {
-            return str.empty() || '/' != str[0];
-        }
-    };
-}
-
 LibtoolLinkageChecker::LibtoolLinkageChecker(const FSPath & root) :
     _imp(root)
 {
@@ -109,7 +98,10 @@ LibtoolLinkageChecker::check_file(const FSPath & file)
         return true;
     }
 
-    deps.erase(std::remove_if(deps.begin(), deps.end(), IsNotAbsolutePath()), deps.end());
+    const auto is_not_absolute_path = [](const std::string & str) {
+        return str.empty() || '/' != str[0];
+    };
+    deps.erase(std::remove_if(deps.begin(), deps.end(), is_not_absolute_path), deps.end());
     if (deps.empty())
     {
         Log::get_instance()->message("broken_linkage_finder.no_libtool", ll_debug, lc_context)
@@ -164,4 +156,3 @@ LibtoolLinkageChecker::need_breakage_added(
     for (Breakage::const_iterator it(_imp->breakage.begin()), it_end(_imp->breakage.end()); it_end != it; ++it)
         callback(it->first, it->second);
 }
-
