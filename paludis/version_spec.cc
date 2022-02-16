@@ -696,8 +696,15 @@ VersionSpec
 VersionSpec::bump() const
 {
     std::vector<VersionSpecComponent> number_parts;
-    std::copy(_imp->parts.begin(),
-            std::find_if(_imp->parts.begin(), _imp->parts.end(), std::not1(IsEitherVersionSpecComponentType<vsct_number, vsct_floatlike>())),
+    std::copy(
+            _imp->parts.begin(),
+            std::find_if(
+                    _imp->parts.begin(),
+                    _imp->parts.end(),
+                    [](const VersionSpecComponent & component) {
+                        return ! IsEitherVersionSpecComponentType<vsct_number, vsct_floatlike>()(
+                                component);
+                    }),
             std::back_inserter(number_parts));
 
     if (number_parts.empty())
