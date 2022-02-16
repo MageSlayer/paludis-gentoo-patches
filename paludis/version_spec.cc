@@ -560,8 +560,7 @@ VersionSpec::hash() const
 namespace
 {
     template <VersionSpecComponentType p_>
-    struct IsVersionSpecComponentType :
-        std::unary_function<VersionSpecComponent, bool>
+    struct IsVersionSpecComponentType
     {
         bool operator() (const VersionSpecComponent & p) const
         {
@@ -570,8 +569,7 @@ namespace
     };
 
     template <VersionSpecComponentType p_, VersionSpecComponentType q_>
-    struct IsEitherVersionSpecComponentType :
-        std::unary_function<VersionSpecComponent, bool>
+    struct IsEitherVersionSpecComponentType
     {
         bool operator() (const VersionSpecComponent & p) const
         {
