@@ -71,6 +71,7 @@ namespace paludis
         typedef Name<struct name_ebuild_dir> ebuild_dir;
         typedef Name<struct name_ebuild_file> ebuild_file;
         typedef Name<struct name_eclassdirs> eclassdirs;
+        typedef Name<struct name_env_unset> env_unset;
         typedef Name<struct name_environment> environment;
         typedef Name<struct name_environment_file> environment_file;
         typedef Name<struct name_exlibsdirs> exlibsdirs;
