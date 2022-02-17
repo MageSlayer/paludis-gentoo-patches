@@ -128,6 +128,7 @@ namespace paludis
         std::shared_ptr<Set<std::string> > use_expand_unprefixed;
         std::shared_ptr<Set<std::string> > use_expand_implicit;
         std::shared_ptr<Set<std::string> > iuse_implicit;
+        std::shared_ptr<Set<std::string> > env_unset;
         std::unordered_map<std::string, std::shared_ptr<Set<std::string> > > use_expand_values;
         KnownMap known_choice_value_names;
         mutable std::mutex known_choice_value_names_for_separator_mutex;
@@ -152,7 +153,8 @@ namespace paludis
             use_expand_hidden(std::make_shared<Set<std::string>>()),
             use_expand_unprefixed(std::make_shared<Set<std::string>>()),
             use_expand_implicit(std::make_shared<Set<std::string>>()),
-            iuse_implicit(std::make_shared<Set<std::string>>())
+            iuse_implicit(std::make_shared<Set<std::string>>()),
+            env_unset(std::make_shared<Set<std::string>>())
         {
         }
     };
@@ -514,6 +516,7 @@ namespace
                 || (s == e.supported()->ebuild_environment_variables()->env_use_expand_unprefixed())
                 || (s == e.supported()->ebuild_environment_variables()->env_use_expand_implicit())
                 || (s == e.supported()->ebuild_environment_variables()->env_iuse_implicit())
+                || (s == e.supported()->ebuild_environment_variables()->env_env_unset())
                 || s == "CONFIG_PROTECT"
                 || s == "CONFIG_PROTECT_MASK");
     }
@@ -657,8 +660,26 @@ namespace
         }
         catch (const Exception & e)
         {
+            // FIXME: this should be use_expand_values_part_failure and referencing use_expand_values_part_var.
             Log::get_instance()->message("e.profile.make_defaults.iuse_implicit_failure", ll_warning, lc_context)
                 << "Loading '" << iuse_implicit_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
+        }
+
+        std::string env_unset_var(eapi->supported()->ebuild_environment_variables()->env_env_unset());
+        try
+        {
+            _imp->env_unset->clear();
+            if (! env_unset_var.empty())
+                tokenise_whitespace(_imp->environment_variables[env_unset_var], _imp->env_unset->inserter());
+        }
+        catch (const InternalError &)
+        {
+            throw;
+        }
+        catch (const Exception & e)
+        {
+            Log::get_instance()->message("e.profile.make_defaults.env_unset_failure", ll_warning, lc_context)
+                << "Loading '" << env_unset_var << "' failed due to exception: " << e.message() << " (" << e.what() << ")";
         }
     }
 
@@ -1083,4 +1104,10 @@ const std::shared_ptr<const Set<std::string> >
 TraditionalProfile::iuse_implicit() const
 {
     return _imp->iuse_implicit;
+}
+
+const std::shared_ptr<const Set<std::string> >
+TraditionalProfile::env_unset() const
+{
+    return _imp->env_unset;
 }

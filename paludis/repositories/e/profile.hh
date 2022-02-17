@@ -91,6 +91,8 @@ namespace paludis
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
                 virtual const std::shared_ptr<const Set<std::string> > iuse_implicit() const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
+                virtual const std::shared_ptr<const Set<std::string> > env_unset() const
+                    PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
                 virtual const std::shared_ptr<const Set<std::string> > use_expand_values(const std::string &) const
                     PALUDIS_ATTRIBUTE((warn_unused_result)) = 0;
 

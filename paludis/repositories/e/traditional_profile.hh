@@ -90,6 +90,8 @@ namespace paludis
                     override PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::shared_ptr<const Set<std::string> > iuse_implicit() const
                     override PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const Set<std::string> > env_unset() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::shared_ptr<const Set<std::string> > use_expand_values(const std::string &) const
                     override PALUDIS_ATTRIBUTE((warn_unused_result));
 

@@ -87,6 +87,7 @@ namespace paludis
         const std::shared_ptr<Set<std::string> > use_expand_unprefixed;
         const std::shared_ptr<Set<std::string> > use_expand_implicit;
         const std::shared_ptr<Set<std::string> > iuse_implicit;
+        const std::shared_ptr<Set<std::string> > env_unset;
         const std::shared_ptr<Set<std::string> > use_expand_values;
 
         const std::shared_ptr<SetSpecTree> system_packages;
@@ -110,6 +111,7 @@ namespace paludis
             use_expand_unprefixed(std::make_shared<Set<std::string>>()),
             use_expand_implicit(std::make_shared<Set<std::string>>()),
             iuse_implicit(std::make_shared<Set<std::string>>()),
+            env_unset(std::make_shared<Set<std::string>>()),
             use_expand_values(std::make_shared<Set<std::string>>()),
             system_packages(std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>()))
         {
@@ -300,6 +302,12 @@ const std::shared_ptr<const Set<std::string> >
 ExheresProfile::iuse_implicit() const
 {
     return _imp->iuse_implicit;
+}
+
+const std::shared_ptr<const Set<std::string> >
+ExheresProfile::env_unset() const
+{
+    return _imp->env_unset;
 }
 
 const std::shared_ptr<const Set<std::string> >
