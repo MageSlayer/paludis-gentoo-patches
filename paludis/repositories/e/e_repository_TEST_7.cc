@@ -102,7 +102,7 @@ TEST(ERepository, InstallEAPI7)
     keys->insert("format", "e");
     keys->insert("names_cache", "/var/empty");
     keys->insert("location", stringify(FSPath::cwd() / "e_repository_TEST_7_dir" / "repo"));
-    keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_7_dir" / "repo/profiles/profile"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "e_repository_TEST_7_dir" / "repo/profiles/profile/child_profile"));
     keys->insert("layout", "traditional");
     keys->insert("eapi_when_unknown", "0");
     keys->insert("eapi_when_unspecified", "0");
@@ -376,6 +376,21 @@ TEST(ERepository, InstallEAPI7)
         ASSERT_TRUE(bool(id));
         EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
         EXPECT_NO_THROW(id->perform_action(action));
+    }
+
+    {
+        setenv("PARENT_VAR_TO_UNSET", "foo", 1);
+        setenv("CHILD_VAR_TO_UNSET", "bar", 1);
+        setenv("PARENT_VAR_TO_VANISH", "baz", 1);
+        const std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Matches(
+                        PackageDepSpec(parse_user_package_dep_spec("=cat/env-unset-7",
+                                &env, { })), nullptr, { }))]->last());
+        ASSERT_TRUE(bool(id));
+        EXPECT_EQ("7", visitor_cast<const MetadataValueKey<std::string> >(**id->find_metadata("EAPI"))->parse_value());
+        EXPECT_NO_THROW(id->perform_action(action));
+        unsetenv("PARENT_VAR_TO_UNSET");
+        unsetenv("CHILD_VAR_TO_UNSET");
+        unsetenv("PARENT_VAR_TO_VANISH");
     }
 
     {

@@ -15,7 +15,7 @@ mkdir -p build
 
 mkdir -p distdir
 
-mkdir -p repo/{profiles/profile,metadata,eclass}
+mkdir -p repo/{profiles/profile/child_profile,metadata,eclass}
 cd repo
 echo "test-repo" >> profiles/repo_name
 cat <<END > profiles/arch.list
@@ -30,6 +30,7 @@ arm64-linux
 x86-linux
 END
 echo "cat" >> profiles/categories
+echo '..' > 'profiles/profile/child_profile/parent'
 cat <<END > profiles/profile/make.defaults
 ARCH="cheese"
 USERLAND="GNU"
@@ -43,6 +44,10 @@ USE_EXPAND_IMPLICIT="USERLAND ARCH"
 USE_EXPAND_VALUES_USERLAND="GNU"
 USE_EXPAND_VALUES_ARCH="cheese otherarch"
 IUSE_IMPLICIT="build"
+ENV_UNSET="PARENT_VAR_TO_VANISH PARENT_VAR_TO_UNSET"
+END
+cat <<'END' > profiles/profile/child_profile/make.defaults
+ENV_UNSET="-PARENT_VAR_TO_VANISH CHILD_VAR_TO_UNSET"
 END
 cat<<END > eclass/test.eclass
 gen_deps() {
@@ -805,6 +810,27 @@ pkg_setup() {
     done
     for var in ENV_UNSET BDEPEND BROOT ESYSROOT SYSROOT; do
         [ -z "${!var+x}" ] && die "${var} has been added and should be set"
+    done
+}
+END
+
+mkdir -p "cat/env-unset"
+cat <<'END' > cat/env-unset/env-unset-7.ebuild
+EAPI="7"
+DESCRIPTION="The Description"
+HOMEPAGE="http://example.com/"
+SRC_URI=""
+SLOT="0"
+IUSE=""
+LICENSE="GPL-2"
+KEYWORDS="test"
+
+pkg_setup() {
+    for var in PARENT_VAR_TO_UNSET CHILD_VAR_TO_UNSET; do
+        [ -z "${!var+x}" ] || die "${var} is part of ENV_UNSET and should not be set"
+    done
+    for var in PARENT_VAR_TO_VANISH; do
+        [ -z "${!var+x}" ] && die "${var} is overridden in child profile and should be set"
     done
 }
 END
