@@ -367,6 +367,7 @@ EInstalledRepository::perform_info(
                 ),
 
                 make_named_values<EbuildInfoCommandParams>(
+                    n::env_unset() = "",
                     n::expand_vars() = std::make_shared<Map<std::string, std::string> >(),
                     n::info_vars() = i ? i : std::make_shared<const Set<std::string> >(),
                     n::load_environment() = &load_env,
