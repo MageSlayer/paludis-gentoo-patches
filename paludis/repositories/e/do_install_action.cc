@@ -440,6 +440,7 @@ paludis::erepository::do_install_action(
                                     ? destination->cross_compile_host_key()->parse_value()
                                     : "",
                             n::destination() = destination,
+                            n::env_unset() = join(profile->env_unset()->begin(), profile->env_unset()->end(), " "),
                             n::expand_vars() = expand_vars,
                             n::is_from_pbin() = id->eapi()->supported()->is_pbin(),
                             n::loadsaveenv_dir() = package_builddir / "temp",
@@ -519,6 +520,7 @@ paludis::erepository::do_install_action(
                                             ? destination->cross_compile_host_key()->parse_value()
                                             : "",
                                     n::destination() = destination,
+                                    n::env_unset() = join(profile->env_unset()->begin(), profile->env_unset()->end(), " "),
                                     n::expand_vars() = expand_vars,
                                     n::is_from_pbin() = id->eapi()->supported()->is_pbin(),
                                     n::loadsaveenv_dir() = package_builddir / "temp",

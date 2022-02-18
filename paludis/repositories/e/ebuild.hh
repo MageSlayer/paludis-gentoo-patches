@@ -160,6 +160,7 @@ namespace paludis
         {
             NamedValue<n::a, std::string> a;
             NamedValue<n::aa, std::string> aa;
+            NamedValue<n::env_unset, std::string> env_unset;
             NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
             NamedValue<n::profiles, std::shared_ptr<const FSPathSequence> > profiles;
             NamedValue<n::profiles_with_parents, std::shared_ptr<const FSPathSequence> > profiles_with_parents;
@@ -179,6 +180,7 @@ namespace paludis
         {
             NamedValue<n::a, std::string> a;
             NamedValue<n::aa, std::string> aa;
+            NamedValue<n::env_unset, std::string> env_unset;
             NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
             NamedValue<n::loadsaveenv_dir, FSPath> loadsaveenv_dir;
             NamedValue<n::profiles, std::shared_ptr<const FSPathSequence> > profiles;
@@ -205,6 +207,7 @@ namespace paludis
             NamedValue<n::config_protect_mask, std::string> config_protect_mask;
             NamedValue<n::cross_compile_host, std::string> cross_compile_host;
             NamedValue<n::destination, std::shared_ptr<Repository> > destination;
+            NamedValue<n::env_unset, std::string> env_unset;
             NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
             NamedValue<n::is_from_pbin, bool> is_from_pbin;
             NamedValue<n::loadsaveenv_dir, FSPath> loadsaveenv_dir;
@@ -228,6 +231,7 @@ namespace paludis
         struct EbuildPretendCommandParams
         {
             NamedValue<n::destination, std::shared_ptr<Repository> > destination;
+            NamedValue<n::env_unset, std::string> env_unset;
             NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
             NamedValue<n::is_from_pbin, bool> is_from_pbin;
             NamedValue<n::profiles, std::shared_ptr<const FSPathSequence> > profiles;
@@ -247,6 +251,7 @@ namespace paludis
          */
         struct EbuildBadOptionsCommandParams
         {
+            NamedValue<n::env_unset, std::string> env_unset;
             NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
             NamedValue<n::profiles, std::shared_ptr<const FSPathSequence> > profiles;
             NamedValue<n::profiles_with_parents, std::shared_ptr<const FSPathSequence> > profiles_with_parents;
@@ -292,6 +297,7 @@ namespace paludis
          */
         struct EbuildInfoCommandParams
         {
+            NamedValue<n::env_unset, std::string> env_unset;
             NamedValue<n::expand_vars, std::shared_ptr<const Map<std::string, std::string> > > expand_vars;
             NamedValue<n::info_vars, std::shared_ptr<const Set<std::string> > > info_vars;
             NamedValue<n::load_environment, const FSPath *> load_environment;

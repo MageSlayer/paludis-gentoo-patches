@@ -212,6 +212,7 @@ paludis::erepository::do_fetch_action(
                 EbuildFetchExtraCommand fetch_extra_cmd(command_params, make_named_values<EbuildFetchExtraCommandParams>(
                             n::a() = archives,
                             n::aa() = all_archives,
+                            n::env_unset() = join(profile->env_unset()->begin(), profile->env_unset()->end(), " "),
                             n::expand_vars() = expand_vars,
                             n::loadsaveenv_dir() = package_builddir / "temp",
                             n::profiles() = params.profiles(),
@@ -263,6 +264,7 @@ paludis::erepository::do_fetch_action(
                         make_named_values<EbuildNoFetchCommandParams>(
                         n::a() = archives,
                         n::aa() = all_archives,
+                        n::env_unset() = join(repo->profile()->env_unset()->begin(), repo->profile()->env_unset()->end(), " "),
                         n::expand_vars() = expand_vars,
                         n::profiles() = repo->params().profiles(),
                         n::profiles_with_parents() = repo->profile()->profiles_with_parents(),

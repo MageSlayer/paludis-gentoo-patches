@@ -119,6 +119,7 @@ paludis::erepository::do_info_action(
 
         EbuildInfoCommandParams info_params(
                 make_named_values<EbuildInfoCommandParams>(
+                n::env_unset() = join(profile->env_unset()->begin(), profile->env_unset()->end(), " "),
                 n::expand_vars() = expand_vars,
                 n::info_vars() = repo->info_vars_key() ?
                     repo->info_vars_key()->parse_value() : std::make_shared<const Set<std::string>>(),
