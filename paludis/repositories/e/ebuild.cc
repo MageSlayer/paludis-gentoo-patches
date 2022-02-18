@@ -797,6 +797,7 @@ EbuildNoFetchCommand::extend_command(Process & process)
     const auto & package_id = params.package_id();
     const auto & eapi = package_id->eapi()->supported();
     const auto & environment_variables = eapi->ebuild_environment_variables();
+    const auto & tools = eapi->tools_options();
 
     process
         .setenv("PALUDIS_PROFILE_DIR", stringify(*fetch_params.profiles()->begin()))
@@ -819,6 +820,9 @@ EbuildNoFetchCommand::extend_command(Process & process)
     if (! environment_variables->env_use_expand_hidden().empty())
         process.setenv(environment_variables->env_use_expand_hidden(),
                 fetch_params.use_expand_hidden());
+
+    if (tools->use_env_unset() && (! environment_variables->env_env_unset().empty()))
+        process.setenv(environment_variables->env_env_unset(), fetch_params.env_unset());
 
     for (const auto & kv : *fetch_params.expand_vars())
         process.setenv(kv.first, kv.second);
@@ -849,6 +853,7 @@ EbuildInstallCommand::extend_command(Process & process)
     const auto & package_id = params.package_id();
     const auto & eapi = package_id->eapi()->supported();
     const auto & environment_variables = eapi->ebuild_environment_variables();
+    const auto & tools = eapi->tools_options();
 
     process
         .setenv("PALUDIS_LOADSAVEENV_DIR", stringify(install_params.loadsaveenv_dir()))
@@ -917,6 +922,9 @@ EbuildInstallCommand::extend_command(Process & process)
 
         process.setenv(environment_variables->env_merge_type(), s);
     }
+
+    if (tools->use_env_unset() && (! environment_variables->env_env_unset().empty()))
+        process.setenv(environment_variables->env_env_unset(), install_params.env_unset());
 
     for (const auto & kv : *install_params.expand_vars())
         process.setenv(kv.first, kv.second);
@@ -1147,6 +1155,7 @@ EbuildPretendCommand::extend_command(Process & process)
     const auto & package_id = params.package_id();
     const auto & eapi = package_id->eapi()->supported();
     const auto & environment_variables = eapi->ebuild_environment_variables();
+    const auto & tools = eapi->tools_options();
 
     process
         .extra_newlines_if_any_output_exists()
@@ -1189,6 +1198,9 @@ EbuildPretendCommand::extend_command(Process & process)
         process.setenv(environment_variables->env_replacing_versions(), s);
     }
 
+    if (tools->use_env_unset() && (! environment_variables->env_env_unset().empty()))
+        process.setenv(environment_variables->env_env_unset(), pretend_params.env_unset());
+
     for (const auto & kv : *pretend_params.expand_vars())
         process.setenv(kv.first, kv.second);
 
@@ -1229,6 +1241,7 @@ EbuildInfoCommand::extend_command(Process & process)
     const auto & package_id = params.package_id();
     const auto & eapi = package_id->eapi()->supported();
     const auto & environment_variables = eapi->ebuild_environment_variables();
+    const auto & tools = eapi->tools_options();
 
     std::string info_vars(join(info_params.info_vars()->begin(), info_params.info_vars()->end(), " "));
 
@@ -1249,6 +1262,9 @@ EbuildInfoCommand::extend_command(Process & process)
         process.setenv(environment_variables->env_use_expand(), info_params.use_expand());
     if (! environment_variables->env_use_expand_hidden().empty())
         process.setenv(environment_variables->env_use_expand_hidden(), info_params.use_expand_hidden());
+
+    if (tools->use_env_unset() && (! environment_variables->env_env_unset().empty()))
+        process.setenv(environment_variables->env_env_unset(), info_params.env_unset());
 
     for (const auto & kv : *info_params.expand_vars())
         process.setenv(kv.first, kv.second);
@@ -1374,6 +1390,7 @@ EbuildBadOptionsCommand::extend_command(Process & process)
     const auto & package_id = params.package_id();
     const auto & eapi = package_id->eapi()->supported();
     const auto & environment_variables = eapi->ebuild_environment_variables();
+    const auto & tools = eapi->tools_options();
 
     process
         .setenv("PALUDIS_EBUILD_QUIET", "yes")
@@ -1391,6 +1408,9 @@ EbuildBadOptionsCommand::extend_command(Process & process)
         process.setenv(environment_variables->env_use_expand(), bad_options_params.use_expand());
     if (! environment_variables->env_use_expand_hidden().empty())
         process.setenv(environment_variables->env_use_expand_hidden(), bad_options_params.use_expand_hidden());
+
+    if (tools->use_env_unset() && (! environment_variables->env_env_unset().empty()))
+        process.setenv(environment_variables->env_env_unset(), bad_options_params.env_unset());
 
     for (const auto & kv : *bad_options_params.expand_vars())
         process.setenv(kv.first, kv.second);
@@ -1423,6 +1443,7 @@ EbuildFetchExtraCommand::extend_command(Process & process)
     const auto & package_id = params.package_id();
     const auto & eapi = package_id->eapi()->supported();
     const auto & environment_variables = eapi->ebuild_environment_variables();
+    const auto & tools = eapi->tools_options();
 
     process
         .setenv("PALUDIS_LOADSAVEENV_DIR", stringify(fetch_extra_params.loadsaveenv_dir()))
@@ -1444,6 +1465,9 @@ EbuildFetchExtraCommand::extend_command(Process & process)
         process.setenv(environment_variables->env_use_expand(), fetch_extra_params.use_expand());
     if (! environment_variables->env_use_expand_hidden().empty())
         process.setenv(environment_variables->env_use_expand_hidden(), fetch_extra_params.use_expand_hidden());
+
+    if (tools->use_env_unset() && (! environment_variables->env_env_unset().empty()))
+        process.setenv(environment_variables->env_env_unset(), fetch_extra_params.env_unset());
 
     for (const auto & kv : *fetch_extra_params.expand_vars())
         process.setenv(kv.first, kv.second);
