@@ -68,6 +68,15 @@ ebuild_sanitise_envvars()
     unset LANG ${!LC_*}
     export LC_ALL=C
 
+    # Some EAPIs support a dynamic, profile-provided list of environment
+    # variables to unset, use that if sanctioned.
+    if [[ -n "${PALUDIS_USE_ENV_UNSET}" ]] && [[ -n "${PALUDIS_ENV_UNSET_VAR}" ]]; then
+        typeset var=''
+        for var in ${!PALUDIS_ENV_UNSET_VAR}; do
+            unset "${var}"
+        done
+    fi
+
     # pagers won't run with redirected output, but some naughty packages like
     # to use them.
     export PAGER=cat
