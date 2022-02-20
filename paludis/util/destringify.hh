@@ -155,7 +155,7 @@ namespace paludis
     Type_ destringify(const std::string & s)
     {
         if (s == "")
-            throw Exception_("");
+            throw Exception_("is empty");
 
         return destringify_internals::Destringifier<Type_, Exception_>::do_destringify(s);
     }
