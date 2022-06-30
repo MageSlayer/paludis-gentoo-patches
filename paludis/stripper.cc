@@ -142,7 +142,7 @@ namespace paludis
              * on.
              */
             potentially_need_strip &= o.controllable_strip()
-                                    | (! o.strip_restrict());
+                                    || (! o.strip_restrict());
 
             try
             {
