@@ -110,7 +110,6 @@ target_link_libraries(cave
                         libpaludisargs
                         libpaludisutil
                         libpaludisresolver
-                        liboutput
                         ${CMAKE_DL_LIBS})
 
 set(CAVE_SUBCOMMANDS

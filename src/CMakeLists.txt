@@ -5,6 +5,4 @@ else()
   add_definitions(-DPALUDIS_COLOUR_PINK=0)
 endif()
 
-add_subdirectory(output)
 add_subdirectory(clients)
-
