@@ -242,11 +242,20 @@ namespace
         {
             /* convenience, for everyone */
             m->insert("newline", "\n");
-            m->insert("red", "\033[1;31m");
-            m->insert("yellow", "\033[1;33m");
-            m->insert("green", "\033[1;32m");
-            m->insert("blue", "\033[1;34m");
-            m->insert("normal", "\033[0;0m");
+
+            m->insert("red",         "\033[0;31m");
+            m->insert("bold_red",    "\033[1;31m");
+            m->insert("green",       "\033[0;32m");
+            m->insert("bold_green",  "\033[1;32m");
+            m->insert("yellow",      "\033[0;33m");
+            m->insert("bold_yellow", "\033[1;33m");
+            m->insert("blue",        "\033[0;34m");
+            m->insert("bold_blue",   "\033[1;34m");
+            m->insert("pink",        "\033[0;35m");
+            m->insert("bold_pink",   "\033[1;35m");
+            m->insert("normal",      "\033[0;0m" );
+            m->insert("bold_normal", "\033[1m"   );
+
             m->insert("time", stringify(time(nullptr)));
             m->insert("pid", stringify(getpid()));
 
