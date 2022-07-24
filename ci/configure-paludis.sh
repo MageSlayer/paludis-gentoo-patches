@@ -3,7 +3,7 @@ DISTRIBUTION=${2}
 COMPILER=${3}
 BUILD_TYPE=${4:-debug}
 
-[[ -z ${RUBY_VERSION} ]] && RUBY_VERSION=3.0
+[[ -z ${RUBY_VERSION} ]] && RUBY_VERSION=3.1
 
 myconf=()
 if [[ ${DISTRIBUTION} == "exherbo" ]]; then
