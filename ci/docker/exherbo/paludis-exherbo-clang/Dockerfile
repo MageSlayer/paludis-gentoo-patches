@@ -1,4 +1,4 @@
-FROM marvins/exherbo-x86_64-pc-linux-gnu-gcc-with-clang:12
+FROM marvins/exherbo-x86_64-pc-linux-gnu-gcc-with-clang:13
 MAINTAINER Marvin Schmidt <marv@exherbo.org>
 
 # Switch to option.conf.d layout
