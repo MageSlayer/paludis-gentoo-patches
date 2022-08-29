@@ -104,5 +104,5 @@ clang-tidy:
   script:
     - *build-script
     - export PATH="${PATH}:$(llvm-config --prefix)/share/clang"
-    - run-clang-tidy.py -j$(nproc)
+    - run-clang-tidy -j$(nproc)
 
