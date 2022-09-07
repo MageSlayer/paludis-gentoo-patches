@@ -326,24 +326,24 @@ EChoicesKey::populate_myoptions() const
     if (_imp->id->raw_use_expand_key())
     {
         auto raw_use_expand(_imp->id->raw_use_expand_key()->parse_value());
-        for (const auto & u : *raw_use_expand)
+        for (const auto & use_expand : *raw_use_expand)
         {
-            Context local_local_context("When using raw_use_expand_key value '" + u + "' to populate choices:");
+            Context local_local_context("When using raw_use_expand_key value '" + use_expand + "' to populate choices:");
 
             bool hide_description = false;
             if (const auto & repo = _imp->maybe_e_repository)
                 if (const auto & undescribed = repo->profile()->use_expand_no_describe())
-                    hide_description = undescribed->find(u) != undescribed->end();
+                    hide_description = undescribed->find(use_expand) != undescribed->end();
 
-            std::string lower_u(tolower(u));
+            std::string lower_u(tolower(use_expand));
             std::shared_ptr<Choice> exp(std::make_shared<Choice>(make_named_values<ChoiceParams>(
                             n::consider_added_or_changed() = true,
                             n::contains_every_value() = false,
-                            n::hidden() = hidden ? hidden->end() != hidden->find(u) : false,
+                            n::hidden() = hidden ? hidden->end() != hidden->find(use_expand) : false,
                             n::hide_description() = hide_description,
                             n::human_name() = lower_u,
                             n::prefix() = ChoicePrefixName(lower_u),
-                            n::raw_name() = stringify(u),
+                            n::raw_name() = stringify(use_expand),
                             n::show_with_no_prefix() = false
                         )));
             _imp->value->add(exp);
@@ -351,8 +351,8 @@ EChoicesKey::populate_myoptions() const
             MyOptionsFinder::Prefixes::iterator p(myoptions.prefixes.find(ChoicePrefixName(lower_u)));
             if (myoptions.prefixes.end() != p)
             {
-                for (const auto & v : p->second)
-                    exp->add(make_myoption(_imp->id, exp, v.first, v.second.description, indeterminate, co_explicit, v.second.presumed));
+                for (const auto & info_by_choice : p->second)
+                    exp->add(make_myoption(_imp->id, exp, info_by_choice.first, info_by_choice.second.description, indeterminate, co_explicit, info_by_choice.second.presumed));
                 myoptions.prefixes.erase(p);
             }
         }
@@ -389,8 +389,8 @@ EChoicesKey::populate_myoptions() const
     if (myoptions.prefixes.end() != p)
     {
         Context local_local_context("When using empty prefix to populate choices:");
-        for (const auto & v : p->second)
-            options->add(make_myoption(_imp->id, options, v.first, v.second.description, indeterminate, co_explicit, v.second.presumed));
+        for (const auto & info_by_choice : p->second)
+            options->add(make_myoption(_imp->id, options, info_by_choice.first, info_by_choice.second.description, indeterminate, co_explicit, info_by_choice.second.presumed));
         myoptions.prefixes.erase(p);
     }
 
@@ -440,8 +440,8 @@ EChoicesKey::populate_iuse(const std::shared_ptr<const Map<ChoiceNameWithPrefix,
 
         std::map<std::string, bool> iuse_with_implicit;
         auto raw_iuse(_imp->id->raw_iuse_key()->parse_value());
-        for (const auto & u : *raw_iuse)
-            iuse_with_implicit.insert(std::make_pair(u, false));
+        for (const auto & iuse : *raw_iuse)
+            iuse_with_implicit.insert(std::make_pair(iuse, false));
 
         if (_imp->id->raw_iuse_effective_key())
         {
@@ -450,12 +450,12 @@ EChoicesKey::populate_iuse(const std::shared_ptr<const Map<ChoiceNameWithPrefix,
                 iuse_with_implicit.insert(std::make_pair(u, true));
         }
 
-        for (const auto & u : iuse_with_implicit)
+        for (const auto & iuse : iuse_with_implicit)
         {
-            std::pair<ChoiceNameWithPrefix, Tribool> flag(parse_iuse(_imp->id->eapi(), u.first));
+            std::pair<ChoiceNameWithPrefix, Tribool> flag(parse_iuse(_imp->id->eapi(), iuse.first));
             std::pair<ChoiceNameWithPrefix, ChoiceOptions> flag_with_options(flag.first, make_named_values<ChoiceOptions>(
                         n::default_value() = flag.second,
-                        n::implicit() = u.second
+                        n::implicit() = iuse.second
                         ));
 
             iuse_sanitised.insert(stringify(flag.first));

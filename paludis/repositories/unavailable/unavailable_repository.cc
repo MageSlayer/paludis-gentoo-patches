@@ -288,12 +288,12 @@ UnavailableRepository::sync(
     tokenise_whitespace(sync_uri, std::back_inserter(sync_list));
 
     bool ok(false);
-    for (const auto & s : sync_list)
+    for (const auto & remote : sync_list)
     {
         DefaultSyncer syncer(make_named_values<SyncerParams>(
                     n::environment() = _imp->params.environment(),
                     n::local() = stringify(_imp->params.location()),
-                    n::remote() = s,
+                    n::remote() = remote,
                     n::revision() = revision
                     ));
 
@@ -424,4 +424,3 @@ namespace paludis
 {
     template class Pimp<unavailable_repository::UnavailableRepository>;
 }
-

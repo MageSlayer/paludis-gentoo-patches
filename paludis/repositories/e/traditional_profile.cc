@@ -516,14 +516,14 @@ namespace
         KeyValueConfigFile file(dir / "make.defaults", { kvcfo_disallow_source, kvcfo_disallow_space_inside_unquoted_values, kvcfo_allow_inline_comments, kvcfo_allow_multiple_assigns_per_line },
                 &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
-        for (const auto & k : file)
+        for (const auto & kv : file)
         {
-            if (is_incremental(*eapi, k.first))
+            if (is_incremental(*eapi, kv.first))
             {
                 std::list<std::string> val;
                 std::list<std::string> val_add;
-                tokenise_whitespace(_imp->environment_variables[k.first], std::back_inserter(val));
-                tokenise_whitespace(k.second, std::back_inserter(val_add));
+                tokenise_whitespace(_imp->environment_variables[kv.first], std::back_inserter(val));
+                tokenise_whitespace(kv.second, std::back_inserter(val_add));
 
                 for (const auto & v : val_add)
                 {
@@ -537,10 +537,10 @@ namespace
                         val.push_back(v);
                 }
 
-                _imp->environment_variables[k.first] = join(val.begin(), val.end(), " ");
+                _imp->environment_variables[kv.first] = join(val.begin(), val.end(), " ");
             }
             else
-                _imp->environment_variables[k.first] = k.second;
+                _imp->environment_variables[kv.first] = kv.second;
         }
 
         std::string use_expand_var(eapi->supported()->ebuild_environment_variables()->env_use_expand());
@@ -1056,4 +1056,3 @@ TraditionalProfile::iuse_implicit() const
 {
     return _imp->iuse_implicit;
 }
-

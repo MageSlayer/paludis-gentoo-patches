@@ -122,17 +122,17 @@ ExheresLayout::ExheresLayout(const Environment * const e, const ERepository * co
 {
     if (master_repositories_locations())
     {
-        for (const auto & l : *master_repositories_locations())
+        for (const auto & location : *master_repositories_locations())
         {
             /* don't also follow our masters' masters. Otherwise things like masters = arbor x11 will
              * get weird... */
-            _imp->arch_list_files->push_back(l / "metadata" / "arch.conf");
-            _imp->repository_mask_files->push_back(l / "metadata" / "repository_mask.conf");
-            _imp->profiles_desc_files->push_back(l / "metadata" / "profiles_desc.conf");
-            _imp->mirror_files->push_back(l / "metadata" / "mirrors.conf");
-            _imp->info_variables_files->push_back(l / "metadata" / "info" / "variables.conf");
+            _imp->arch_list_files->push_back(location / "metadata" / "arch.conf");
+            _imp->repository_mask_files->push_back(location / "metadata" / "repository_mask.conf");
+            _imp->profiles_desc_files->push_back(location / "metadata" / "profiles_desc.conf");
+            _imp->mirror_files->push_back(location / "metadata" / "mirrors.conf");
+            _imp->info_variables_files->push_back(location / "metadata" / "info" / "variables.conf");
 
-            FSPath descs(l / "metadata" / "options" / "descriptions");
+            FSPath descs(location / "metadata" / "options" / "descriptions");
             if (descs.stat().is_directory_or_symlink_to_directory())
             {
                 for (FSIterator d(descs, { }), d_end ; d != d_end ; ++d)
@@ -206,16 +206,16 @@ ExheresLayout::need_category_names() const
 
         LineConfigFile cats(i, { });
 
-        for (const auto & cat : cats)
+        for (const auto & line : cats)
         {
             try
             {
-                _imp->category_names.insert(std::make_pair(CategoryNamePart(cat), false));
+                _imp->category_names.insert(std::make_pair(CategoryNamePart(line), false));
             }
             catch (const NameError & e)
             {
                 Log::get_instance()->message("e.exheres_layout.categories.skipping", ll_warning, lc_context)
-                    << "Skipping line '" << cat << "' in '" << i << "' due to exception '"
+                    << "Skipping line '" << line << "' in '" << i << "' due to exception '"
                     << e.message() << "' ('" << e.what() << ")";
             }
         }
@@ -542,9 +542,9 @@ ExheresLayout::exlibsdirs_package(const QualifiedPackageName & q) const
 
     if (_imp->repository->params().master_repositories())
     {
-        for (const auto & e : *_imp->repository->params().master_repositories())
+        for (const auto & erepository : *_imp->repository->params().master_repositories())
         {
-            std::shared_ptr<const FSPathSequence> master(e->layout()->exlibsdirs_package(q));
+            std::shared_ptr<const FSPathSequence> master(erepository->layout()->exlibsdirs_package(q));
             std::copy(master->begin(), master->end(), result->back_inserter());
         }
     }
@@ -664,4 +664,3 @@ ExheresLayout::repository_masks(const std::shared_ptr<const PackageID> & id) con
 {
     return _imp->repository_mask_store->query(id);
 }
-

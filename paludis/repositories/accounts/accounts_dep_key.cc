@@ -68,10 +68,10 @@ namespace paludis
             specs(std::make_shared<std::list<std::shared_ptr<PackageDepSpec> >>()),
             tree(std::make_shared<DependencySpecTree>(std::make_shared<AllDepSpec>()))
         {
-            for (const auto & i : *s)
+            for (const auto & group_name : *s)
             {
                 std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(make_package_dep_spec({ })
-                                .package(CategoryNamePart("group") + PackageNamePart(i))));
+                                .package(CategoryNamePart("group") + PackageNamePart(group_name))));
                 specs->push_back(spec);
                 tree->top()->append(spec);
             }
@@ -126,14 +126,13 @@ AccountsDepKey::pretty_print_value(
 {
     std::stringstream s;
 
-    for (const auto & i : *_imp->specs)
+    for (const auto & spec : *_imp->specs)
     {
         if (! s.str().empty())
             s << ", ";
 
-        s << pretty_printer.prettify(*i);
+        s << pretty_printer.prettify(*spec);
     }
 
     return s.str();
 }
-

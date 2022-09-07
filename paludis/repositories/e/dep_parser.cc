@@ -484,8 +484,8 @@ namespace
     {
         spec->set_annotations(parse_annotations(eapi, m));
 
-        for (const auto & a : *spec->maybe_annotations())
-            switch (a.kind())
+        for (const auto & annotation : *spec->maybe_annotations())
+            switch (annotation.kind())
             {
                 case dsak_synthetic:
                 case dsak_literal:
@@ -493,8 +493,8 @@ namespace
                     continue;
 
                 case dsak_expandable:
-                    for (const auto & c : children)
-                        add_expanded_annotation(eapi, c, a);
+                    for (const auto & child : children)
+                        add_expanded_annotation(eapi, child, annotation);
                     continue;
 
                 case last_dsak:
@@ -897,4 +897,3 @@ paludis::erepository::parse_required_use(const std::string & s, const Environmen
 
     return top;
 }
-

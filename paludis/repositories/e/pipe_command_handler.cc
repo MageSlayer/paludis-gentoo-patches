@@ -129,9 +129,9 @@ namespace
             bool done_brackets(false);
 
             if (p.maybe_annotations())
-                for (const auto & m : *p.maybe_annotations())
+                for (const auto & annotation : *p.maybe_annotations())
                 {
-                    switch (m.kind())
+                    switch (annotation.kind())
                     {
                         case dsak_literal:
                         case dsak_expandable:
@@ -151,9 +151,9 @@ namespace
                         done_brackets = true;
                     }
 
-                    str << m.key() << " = [" << (m.value().empty() ? " " : " " + m.value() + " ") << "] ";
+                    str << annotation.key() << " = [" << (annotation.value().empty() ? " " : " " + annotation.value() + " ") << "] ";
 
-                    if (m.role() == dsar_general_description)
+                    if (annotation.role() == dsar_general_description)
                         seen_description = true;
                 }
 

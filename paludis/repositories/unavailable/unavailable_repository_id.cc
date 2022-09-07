@@ -274,9 +274,9 @@ UnavailableRepositoryID::perform_action(Action & action) const
             throw InternalError(PALUDIS_HERE, "bad WantPhase");
     }
 
-    for (const auto & i : *install_action->options.replacing())
+    for (const auto & replaced_id : *install_action->options.replacing())
     {
-        Context local_context("When cleaning '" + stringify(*i) + "':");
+        Context local_context("When cleaning '" + stringify(*replaced_id) + "':");
 
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                     n::config_protect() = used_config_protect,
@@ -288,7 +288,7 @@ UnavailableRepositoryID::perform_action(Action & action) const
                     n::override_contents() = nullptr,
                     n::want_phase() = install_action->options.want_phase()
                     ));
-        install_action->options.perform_uninstall()(i, uo);
+        install_action->options.perform_uninstall()(replaced_id, uo);
     }
 
     output_manager->succeeded();
@@ -406,4 +406,3 @@ namespace paludis
 {
     template class Pimp<UnavailableRepositoryID>;
 }
-

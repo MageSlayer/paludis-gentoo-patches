@@ -945,9 +945,9 @@ namespace
             if (p.maybe_annotations())
             {
                 bool done_open(false);
-                for (const auto & m : *p.maybe_annotations())
+                for (const auto & annotation : *p.maybe_annotations())
                 {
-                    switch (m.kind())
+                    switch (annotation.kind())
                     {
                         case dsak_literal:
                         case dsak_expandable:
@@ -965,7 +965,7 @@ namespace
                         str << " [[ ";
                     done_open = true;
 
-                    str << m.key() << " = [" << (m.value().empty() ? " " : " " + m.value() + " ") << "] ";
+                    str << annotation.key() << " = [" << (annotation.value().empty() ? " " : " " + annotation.value() + " ") << "] ";
                 }
 
                 if (done_open)
@@ -1173,8 +1173,8 @@ VDBRepository::perform_updates()
                                         )]);
                             if (! ids->empty())
                             {
-                                for (const auto & i : *ids)
-                                    moves.push_back(std::make_pair(i, new_q));
+                                for (const auto & id : *ids)
+                                    moves.push_back(std::make_pair(id, new_q));
                             }
                         }
                         else
@@ -1196,8 +1196,8 @@ VDBRepository::perform_updates()
                                         )]);
                             if (! ids->empty())
                             {
-                                for (const auto & i : *ids)
-                                    slot_moves.push_back(std::make_pair(i, new_slot));
+                                for (const auto & id : *ids)
+                                    slot_moves.push_back(std::make_pair(id, new_slot));
                             }
                         }
                         else
@@ -1306,17 +1306,17 @@ VDBRepository::perform_updates()
 
             const std::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
                         generator::InRepository(name()))]);
-            for (const auto & i : *ids)
+            for (const auto & id : *ids)
             {
-                if (i->build_dependencies_key())
-                    rewrite_dependencies(i->fs_location_key()->parse_value() / i->build_dependencies_key()->raw_name(),
-                            i->build_dependencies_key(), dep_rewrites);
-                if (i->run_dependencies_key())
-                    rewrite_dependencies(i->fs_location_key()->parse_value() / i->run_dependencies_key()->raw_name(),
-                            i->run_dependencies_key(), dep_rewrites);
-                if (i->post_dependencies_key())
-                    rewrite_dependencies(i->fs_location_key()->parse_value() / i->post_dependencies_key()->raw_name(),
-                            i->post_dependencies_key(), dep_rewrites);
+                if (id->build_dependencies_key())
+                    rewrite_dependencies(id->fs_location_key()->parse_value() / id->build_dependencies_key()->raw_name(),
+                            id->build_dependencies_key(), dep_rewrites);
+                if (id->run_dependencies_key())
+                    rewrite_dependencies(id->fs_location_key()->parse_value() / id->run_dependencies_key()->raw_name(),
+                            id->run_dependencies_key(), dep_rewrites);
+                if (id->post_dependencies_key())
+                    rewrite_dependencies(id->fs_location_key()->parse_value() / id->post_dependencies_key()->raw_name(),
+                            id->post_dependencies_key(), dep_rewrites);
             }
 
             std::cout << std::endl << "Updating configuration files" << std::endl;

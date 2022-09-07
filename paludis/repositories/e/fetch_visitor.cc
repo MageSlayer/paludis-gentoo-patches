@@ -161,9 +161,9 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
     SourceURIFinder source_uri_finder(_imp->env, repo.get(),
             node.spec()->original_url(), node.spec()->filename(), _imp->mirrors_name, _imp->get_mirrors_fn);
     (*_imp->labels.begin())->accept(source_uri_finder);
-    for (const auto & i : source_uri_finder)
+    for (const auto & uri_to_filename : source_uri_finder)
     {
-        Context local_context("When fetching URI '" + stringify(i.first) + "' to '" + stringify(i.second) + ":");
+        Context local_context("When fetching URI '" + stringify(uri_to_filename.first) + "' to '" + stringify(uri_to_filename.second) + ":");
 
         FSPath destination(_imp->distdir / node.spec()->filename());
 
@@ -176,27 +176,27 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
                 return;
         }
 
-        std::string::size_type protocol_pos(i.first.find("://"));
+        std::string::size_type protocol_pos(uri_to_filename.first.find("://"));
         if (std::string::npos == protocol_pos)
             continue;
 
-        std::string protocol(i.first.substr(0, protocol_pos));
+        std::string protocol(uri_to_filename.first.substr(0, protocol_pos));
         if (protocol.empty())
         {
             Log::get_instance()->message("e.fetch_visitor.no_protocol", ll_warning, lc_context)
-                << "URI part '" << i.first << "' has empty protocol";
+                << "URI part '" << uri_to_filename.first << "' has empty protocol";
             continue;
         }
 
         const std::shared_ptr<const FSPathSequence> fetch_dirs(_imp->env->fetchers_dirs());
         bool found(false);
-        for (const auto & d : *fetch_dirs)
-            if (make_fetcher(d, protocol).stat().exists())
+        for (const auto & dir : *fetch_dirs)
+            if (make_fetcher(dir, protocol).stat().exists())
             {
                 found = true;
 
-                Process fetch_process(ProcessCommand({ stringify(make_fetcher(d, protocol)),
-                            i.first, stringify(_imp->distdir / i.second) }));
+                Process fetch_process(ProcessCommand({ stringify(make_fetcher(dir, protocol)),
+                            uri_to_filename.first, stringify(_imp->distdir / uri_to_filename.second) }));
                 if (_imp->userpriv)
                     fetch_process.setuid_setgid(_imp->env->reduced_uid(), _imp->env->reduced_gid());
 
@@ -246,8 +246,8 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
                     .capture_stderr(_imp->output_manager->stdout_stream())
                     .use_ptys();
 
-                _imp->output_manager->stdout_stream() << "Trying to fetch '" << i.first << "' to '" <<
-                    i.second << "'..." << std::endl;
+                _imp->output_manager->stdout_stream() << "Trying to fetch '" << uri_to_filename.first << "' to '" <<
+                    uri_to_filename.second << "'..." << std::endl;
 
                 if (0 != fetch_process.run().wait())
                     destination.unlink();
@@ -256,8 +256,7 @@ FetchVisitor::visit(const FetchableURISpecTree::NodeType<FetchableURIDepSpec>::T
 
         if (! found)
             Log::get_instance()->message("e.fetch_visitor.unknown_protocol", ll_warning, lc_context)
-                << "URI part '" << i.first << "' uses unknown protocol '"
+                << "URI part '" << uri_to_filename.first << "' uses unknown protocol '"
                 << protocol << "'";
     }
 }
-
