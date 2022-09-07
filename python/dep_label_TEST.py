@@ -21,6 +21,7 @@
 from paludis import *
 import unittest
 
+
 class TestCase_01_URILabels(unittest.TestCase):
     def setUp(self):
         self.list = []
@@ -45,6 +46,7 @@ class TestCase_01_URILabels(unittest.TestCase):
     def test_04_str(self):
         for l in self.list:
             self.assert_(str(l), "foo")
+
 
 class TestCase_02_DependenciesLabels(unittest.TestCase):
     def setUp(self):

@@ -25,6 +25,7 @@ import unittest
 
 Log.instance.log_level = LogLevel.WARNING
 
+
 class TestCase_01_Filter(unittest.TestCase):
     def test_01_get(self):
         pass
@@ -35,4 +36,3 @@ class TestCase_01_Filter(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
