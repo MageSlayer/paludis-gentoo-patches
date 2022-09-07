@@ -654,19 +654,6 @@ ERepository::arch_flags() const
     return _imp->arch_flags;
 }
 
-namespace
-{
-    struct Randomator
-    {
-        std::mt19937 & rand;
-
-        int operator() (int n)
-        {
-            return rand() % n;
-        }
-    };
-}
-
 void
 ERepository::need_mirrors() const
 {
@@ -689,9 +676,9 @@ ERepository::need_mirrors() const
                     if (! ee.empty())
                     {
                         /* pick up to five random mirrors only */
-                        std::mt19937 random(std::time(nullptr));
-                        Randomator randomator{random};
-                        std::random_shuffle(next(ee.begin()), ee.end(), randomator);
+                        std::random_device rd;
+                        std::mt19937 random(rd());
+                        std::shuffle(next(ee.begin()), ee.end(), random);
                         if (ee.size() > 6)
                             ee.resize(6);
 
