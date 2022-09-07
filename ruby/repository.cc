@@ -143,14 +143,14 @@ namespace
             if (rb_block_given_p())
             {
                 std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names({ }));
-                for (const auto & i : *c)
-                    rb_yield(rb_str_new2(stringify(i).c_str()));
+                for (const auto & category_name : *c)
+                    rb_yield(rb_str_new2(stringify(category_name).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
             std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names({ }));
-            for (const auto & i : *c)
-                rb_ary_push(result, rb_str_new2(stringify(i).c_str()));
+            for (const auto & category_name : *c)
+                rb_ary_push(result, rb_str_new2(stringify(category_name).c_str()));
             return result;
         }
         catch (const std::exception & e)
@@ -179,14 +179,14 @@ namespace
             if (rb_block_given_p())
             {
                 std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package, { }));
-                for (const auto & i : *c)
-                    rb_yield(rb_str_new2(stringify(i).c_str()));
+                for (const auto & category_name : *c)
+                    rb_yield(rb_str_new2(stringify(category_name).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
             std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package, { }));
-            for (const auto & i : *c)
-                rb_ary_push(result, rb_str_new2(stringify(i).c_str()));
+            for (const auto & category_name : *c)
+                rb_ary_push(result, rb_str_new2(stringify(category_name).c_str()));
             return result;
         }
         catch (const std::exception & e)
@@ -215,14 +215,14 @@ namespace
             if (rb_block_given_p())
             {
                 std::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category, { }));
-                for (const auto & i : *c)
-                    rb_yield(qualified_package_name_to_value(i));
+                for (const auto & qpn : *c)
+                    rb_yield(qualified_package_name_to_value(qpn));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
             std::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category, { }));
-            for (const auto & i : *c)
-                rb_ary_push(result, qualified_package_name_to_value(i));
+            for (const auto & qpn : *c)
+                rb_ary_push(result, qualified_package_name_to_value(qpn));
             return result;
         }
         catch (const std::exception & e)
@@ -252,14 +252,14 @@ namespace
             if (rb_block_given_p())
             {
                 std::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q, { }));
-                for (const auto & i : *c)
-                    rb_yield(package_id_to_value(i));
+                for (const auto & id : *c)
+                    rb_yield(package_id_to_value(id));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
             std::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q, { }));
-            for (const auto & i : *c)
-                rb_ary_push(result, package_id_to_value(i));
+            for (const auto & id : *c)
+                rb_ary_push(result, package_id_to_value(id));
             return result;
         }
         catch (const std::exception & e)

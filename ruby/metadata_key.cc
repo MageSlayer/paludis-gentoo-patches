@@ -475,8 +475,8 @@ namespace
                 std::shared_ptr<const PackageIDSequence> c = std::static_pointer_cast<const MetadataCollectionKey<PackageIDSequence> >(
                         *self_ptr)->parse_value();
                 VALUE result (rb_ary_new());
-                for (const auto & i : *c)
-                    rb_ary_push(result, package_id_to_value(i));
+                for (const auto & id : *c)
+                    rb_ary_push(result, package_id_to_value(id));
                 return result;
             }
             catch (const std::exception & e)
@@ -553,8 +553,8 @@ namespace
 
             VALUE result(rb_ary_new());
 
-            for (const auto & it : *real_self->initial_labels())
-                rb_ary_push(result, dependencies_label_to_value(it));
+            for (const auto & label : *real_self->initial_labels())
+                rb_ary_push(result, dependencies_label_to_value(label));
 
             return result;
         }
