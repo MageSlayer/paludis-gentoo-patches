@@ -48,8 +48,8 @@ class TestCase_01_Repository(unittest.TestCase):
         self.assertRaises(Exception, Repository)
 
     def test_03_name(self):
-        self.assertEquals(str(repo.name), "testrepo")
-        self.assertEquals(str(irepo.name), "installed")
+        self.assertEqual(str(repo.name), "testrepo")
+        self.assertEqual(str(irepo.name), "installed")
 
     def test_05_has_category_named(self):
         self.assert_(repo.has_category_named("foo", []))
@@ -64,25 +64,25 @@ class TestCase_01_Repository(unittest.TestCase):
         y = list(x.version for x in repo.package_ids("foo/bar", []))
         y.sort()
         z = [VersionSpec("1.0"), VersionSpec("2.0")]
-        self.assertEquals(y, z)
-        self.assertEquals(len(list(repo.package_ids("bar/baz", []))), 0)
+        self.assertEqual(y, z)
+        self.assertEqual(len(list(repo.package_ids("bar/baz", []))), 0)
 
     def test_08_category_names(self):
-        self.assertEquals(
+        self.assertEqual(
             [str(x) for x in repo.category_names([])],
             ["foo", "foo1", "foo2", "foo3", "foo4"],
         )
 
     def test_09_category_names_containing_package(self):
-        self.assertEquals(
+        self.assertEqual(
             [str(x) for x in repo.category_names_containing_package("bar", [])],
             ["foo", "foo1", "foo2", "foo3", "foo4"],
         )
 
     def test_10_package_names(self):
         for (i, qpn) in enumerate(repo.package_names("bar", [])):
-            self.assertEquals(i, 0)
-            self.assertEquals(str(qpn), "foo/bar")
+            self.assertEqual(i, 0)
+            self.assertEqual(str(qpn), "foo/bar")
 
     def test_11_some_ids_might_support_action(self):
         self.assert_(repo.some_ids_might_support_action(SupportsFetchActionTest()))
@@ -104,9 +104,9 @@ class TestCase_01_Repository(unittest.TestCase):
 
     def test_12_keys(self):
         self.assert_(repo.location_key())
-        self.assertEquals(repo.location_key().parse_value(), repo_path)
+        self.assertEqual(repo.location_key().parse_value(), repo_path)
         self.assert_(repo.find_metadata("format"))
-        self.assertEquals(repo.find_metadata("format").parse_value(), "e")
+        self.assertEqual(repo.find_metadata("format").parse_value(), "e")
         self.assert_(not repo.find_metadata("asdf"))
 
 
@@ -134,23 +134,21 @@ class TestCase_03_FakeRepository(unittest.TestCase):
 
     def test_01_init(self):
         pass
-        self.assertEquals(str(f.name), "fake")
+        self.assertEqual(str(f.name), "fake")
 
     def test_02_init_bad(self):
         self.assertRaises(Exception, FakeRepository, e)
         self.assertRaises(Exception, FakeRepository, "foo", "foo")
 
     def test_03_add_category(self):
-        self.assertEquals(list(f.category_names([])), [])
+        self.assertEqual(list(f.category_names([])), [])
 
         f.add_category("cat-foo")
-        self.assertEquals([str(x) for x in f.category_names([])], ["cat-foo"])
+        self.assertEqual([str(x) for x in f.category_names([])], ["cat-foo"])
         f.add_category("cat-foo")
-        self.assertEquals([str(x) for x in f.category_names([])], ["cat-foo"])
+        self.assertEqual([str(x) for x in f.category_names([])], ["cat-foo"])
         f.add_category("cat-bar")
-        self.assertEquals(
-            [str(x) for x in f.category_names([])], ["cat-bar", "cat-foo"]
-        )
+        self.assertEqual([str(x) for x in f.category_names([])], ["cat-bar", "cat-foo"])
 
     def test_04_add_category_bad(self):
         self.assertRaises(Exception, f.add_category, 1)
@@ -162,18 +160,18 @@ class TestCase_03_FakeRepository(unittest.TestCase):
         bar_1 = QualifiedPackageName("cat-bar/pkg1")
 
         f.add_category("cat-foo")
-        self.assertEquals(list(f.package_names("cat-foo", [])), [])
+        self.assertEqual(list(f.package_names("cat-foo", [])), [])
 
         f.add_package(foo_1)
-        self.assertEquals(list(f.package_names("cat-foo", [])), [foo_1])
+        self.assertEqual(list(f.package_names("cat-foo", [])), [foo_1])
         f.add_package(foo_1)
-        self.assertEquals(list(f.package_names("cat-foo", [])), [foo_1])
+        self.assertEqual(list(f.package_names("cat-foo", [])), [foo_1])
 
         f.add_package(foo_2)
-        self.assertEquals(list(f.package_names("cat-foo", [])), [foo_1, foo_2])
+        self.assertEqual(list(f.package_names("cat-foo", [])), [foo_1, foo_2])
 
         f.add_package(bar_1)
-        self.assertEquals(list(f.package_names("cat-bar", [])), [bar_1])
+        self.assertEqual(list(f.package_names("cat-bar", [])), [bar_1])
 
     def test_06_add_package_bad(self):
         self.assertRaises(Exception, f.add_category, 1)
@@ -181,22 +179,20 @@ class TestCase_03_FakeRepository(unittest.TestCase):
 
     def test_07_add_version(self):
         f.add_package("cat-foo/pkg")
-        self.assertEquals(list(f.package_ids("cat-foo/pkg", [])), [])
+        self.assertEqual(list(f.package_ids("cat-foo/pkg", [])), [])
 
         pkg = f.add_version("cat-foo/pkg", VersionSpec("1"))
-        self.assertEquals(list(f.package_ids("cat-foo/pkg", [])), [pkg])
-        self.assertEquals(pkg.version, VersionSpec("1"))
+        self.assertEqual(list(f.package_ids("cat-foo/pkg", [])), [pkg])
+        self.assertEqual(pkg.version, VersionSpec("1"))
 
         pkg2 = f.add_version("cat-foo/pkg", VersionSpec("2"))
-        self.assertEquals(list(f.package_ids("cat-foo/pkg", [])), [pkg, pkg2])
-        self.assertEquals(pkg2.version, VersionSpec("2"))
+        self.assertEqual(list(f.package_ids("cat-foo/pkg", [])), [pkg, pkg2])
+        self.assertEqual(pkg2.version, VersionSpec("2"))
 
         pkg3 = f.add_version("cat-bar/pkg", VersionSpec("0"))
-        self.assertEquals(list(f.package_ids("cat-bar/pkg", [])), [pkg3])
+        self.assertEqual(list(f.package_ids("cat-bar/pkg", [])), [pkg3])
 
-        self.assertEquals(
-            [str(x) for x in f.category_names([])], ["cat-bar", "cat-foo"]
-        )
+        self.assertEqual([str(x) for x in f.category_names([])], ["cat-bar", "cat-foo"])
 
     def test_08_add_version_bad(self):
         self.assertRaises(Exception, f.add_version, 1)

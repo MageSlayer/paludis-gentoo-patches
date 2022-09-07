@@ -31,7 +31,7 @@ class TestCase_01_FilteredGenerator(unittest.TestCase):
         pass
 
     def test_02_str(self):
-        self.assertEquals(
+        self.assertEqual(
             str(FilteredGenerator(Generator.All(), Filter.All())),
             "all packages with filter all matches",
         )

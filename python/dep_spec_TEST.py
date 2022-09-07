@@ -108,15 +108,15 @@ class TestCase_1_DepSpecs(unittest.TestCase):
         self.get_depspecs()
         vrc = self.pds.version_requirements
 
-        self.assertEquals(len(list(vrc)), 1)
-        self.assertEquals(next(iter(vrc)).version_spec, VersionSpec("1"))
-        self.assertEquals(
+        self.assertEqual(len(list(vrc)), 1)
+        self.assertEqual(next(iter(vrc)).version_spec, VersionSpec("1"))
+        self.assertEqual(
             next(iter(vrc)).version_operator.value, VersionOperator(">=").value
         )
 
     def test_08_version_requirements_mode(self):
         self.get_depspecs()
-        self.assertEquals(
+        self.assertEqual(
             self.pds.version_requirements_mode, VersionRequirementsMode.AND
         )
 
@@ -144,17 +144,17 @@ class TestCase_1_DepSpecs(unittest.TestCase):
     #             for j, subspec2 in enumerate(subspec1):
     #                 if j == 0:
     #                     self.assert_(isinstance(subspec2, PackageDepSpec))
-    #                     self.assertEquals(str(subspec2), "foo/bar")
+    #                     self.assertEqual(str(subspec2), "foo/bar")
     #                 elif j == 1:
     #                     self.assert_(isinstance(subspec2, PackageDepSpec))
-    #                     self.assertEquals(str(subspec2), "foo/baz")
+    #                     self.assertEqual(str(subspec2), "foo/baz")
     #                 else:
-    #                     self.assertEquals("Too many items", "OK")
+    #                     self.assertEqual("Too many items", "OK")
     #         elif i == 1:
     #             self.assert_(isinstance(subspec1, PackageDepSpec))
-    #             self.assertEquals(str(subspec1), "foo/monkey")
+    #             self.assertEqual(str(subspec1), "foo/monkey")
     #         else:
-    #             self.assertEquals("Too many items", "OK")
+    #             self.assertEqual("Too many items", "OK")
 
 
 if __name__ == "__main__":

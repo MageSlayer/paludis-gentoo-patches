@@ -37,13 +37,13 @@ class TestCase_01_InstallActionOptions(unittest.TestCase):
     def test_02_data_members(self):
         iao = InstallActionOptions(repo1)
 
-        self.assertEquals(str(iao.destination.name), "1")
+        self.assertEqual(str(iao.destination.name), "1")
 
         iao.no_config_protect = False
         iao.destination = repo2
 
-        self.assertEquals(iao.no_config_protect, False)
-        self.assertEquals(str(iao.destination.name), "2")
+        self.assertEqual(iao.no_config_protect, False)
+        self.assertEqual(str(iao.destination.name), "2")
 
 
 class TestCase_02_FetchActionOptions(unittest.TestCase):
@@ -53,14 +53,14 @@ class TestCase_02_FetchActionOptions(unittest.TestCase):
     def test_02_data_members(self):
         fao = FetchActionOptions(True, True, True)
 
-        self.assertEquals(fao.exclude_unmirrorable, True)
-        self.assertEquals(fao.safe_resume, True)
+        self.assertEqual(fao.exclude_unmirrorable, True)
+        self.assertEqual(fao.safe_resume, True)
 
         fao.exclude_unmirrorable = False
         fao.safe_resume = False
 
-        self.assertEquals(fao.exclude_unmirrorable, False)
-        self.assertEquals(fao.safe_resume, False)
+        self.assertEqual(fao.exclude_unmirrorable, False)
+        self.assertEqual(fao.safe_resume, False)
 
 
 class TestCase_04_InstallAction(unittest.TestCase):

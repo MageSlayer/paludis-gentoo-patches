@@ -31,7 +31,7 @@ class TestCase_01_Sekection(unittest.TestCase):
         pass
 
     def test_02_str(self):
-        self.assertEquals(
+        self.assertEqual(
             str(
                 Selection.SomeArbitraryVersion(
                     FilteredGenerator(Generator.All(), Filter.All())

@@ -46,8 +46,8 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assert_(isinstance(m, Mask))
         self.assert_(isinstance(m, UserMask))
 
-        self.assertEquals(m.key(), "U")
-        self.assertEquals(m.description(), "user")
+        self.assertEqual(m.key(), "U")
+        self.assertEqual(m.description(), "user")
 
     def test_02_unaccepted_mask(self):
         q = Selection.RequireExactlyOne(
@@ -61,9 +61,9 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assert_(isinstance(m, Mask))
         self.assert_(isinstance(m, UnacceptedMask))
 
-        self.assertEquals(m.key(), "K")
-        self.assertEquals(m.description(), "keyword")
-        self.assertEquals(m.unaccepted_key_name(), "KEYWORDS")
+        self.assertEqual(m.key(), "K")
+        self.assertEqual(m.description(), "keyword")
+        self.assertEqual(m.unaccepted_key_name(), "KEYWORDS")
 
     def test_03_repository_mask(self):
         q = Selection.RequireExactlyOne(
@@ -77,8 +77,8 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assert_(isinstance(m, Mask))
         self.assert_(isinstance(m, RepositoryMask))
 
-        self.assertEquals(m.key(), "R")
-        self.assertEquals(m.description(), "repository")
+        self.assertEqual(m.key(), "R")
+        self.assertEqual(m.description(), "repository")
 
         package_mask_path = os.path.realpath(
             os.path.join(os.getcwd(), "mask_TEST_dir/testrepo/profiles/package.mask")
@@ -96,9 +96,9 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assert_(isinstance(m, Mask))
         self.assert_(isinstance(m, UnsupportedMask))
 
-        self.assertEquals(m.key(), "E")
-        self.assertEquals(m.description(), "eapi")
-        self.assertEquals(m.explanation(), "Unsupported EAPI 'unsupported'")
+        self.assertEqual(m.key(), "E")
+        self.assertEqual(m.description(), "eapi")
+        self.assertEqual(m.explanation(), "Unsupported EAPI 'unsupported'")
 
 
 class TestCase_02_Masks_subclassing(unittest.TestCase):
