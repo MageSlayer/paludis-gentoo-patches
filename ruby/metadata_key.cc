@@ -416,8 +416,8 @@ namespace
                 Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
                 std::shared_ptr<const T_> c = std::static_pointer_cast<const MetadataCollectionKey<T_> >(*self_ptr)->parse_value();
                 VALUE result (rb_ary_new());
-                for (typename T_::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                        rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
+                for (const auto & item : *c)
+                    rb_ary_push(result, rb_str_new2(stringify(item).c_str()));
                 return result;
             }
             catch (const std::exception & e)
@@ -445,8 +445,8 @@ namespace
                 Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
                 std::shared_ptr<const T_> c = std::static_pointer_cast<const MetadataCollectionKey<T_> >(*self_ptr)->parse_value();
                 VALUE result (rb_hash_new());
-                for (typename T_::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                        rb_hash_aset(result, rb_str_new2(stringify(i->first).c_str()), rb_str_new2(stringify(i->second).c_str()));
+                for (const auto & item : *c)
+                    rb_hash_aset(result, rb_str_new2(stringify(item.first).c_str()), rb_str_new2(stringify(item.second).c_str()));
                 return result;
             }
             catch (const std::exception & e)
