@@ -31,7 +31,7 @@ class TestCase_01_Filter(unittest.TestCase):
         pass
 
     def test_02_str(self):
-        self.assertEquals(str(Filter.All()), "all matches")
+        self.assertEqual(str(Filter.All()), "all matches")
 
 
 if __name__ == "__main__":

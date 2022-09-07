@@ -34,12 +34,12 @@ class TestCase_01_Generator(unittest.TestCase):
         env = TestEnvironment()
         spec = parse_user_package_dep_spec("foo/bar", env, [])
 
-        self.assertEquals(str(Generator.All()), "all packages")
-        self.assertEquals(
+        self.assertEqual(str(Generator.All()), "all packages")
+        self.assertEqual(
             str(Generator.Matches(spec, MatchPackageOptions())),
             "packages matching foo/bar",
         )
-        self.assertEquals(
+        self.assertEqual(
             str(
                 Generator.Matches(
                     spec, [MatchPackageOption.IGNORE_ADDITIONAL_REQUIREMENTS]

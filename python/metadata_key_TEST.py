@@ -46,13 +46,13 @@ class TestCase_01_MetadataKeys(unittest.TestCase):
         )
 
     def test_02_installed_time(self):
-        self.assertEquals(self.pid.find_metadata("INSTALLED_TIME"), None)
+        self.assertEqual(self.pid.find_metadata("INSTALLED_TIME"), None)
         self.assert_(
             isinstance(self.ipid.find_metadata("INSTALLED_TIME"), MetadataTimeKey)
         )
 
     def test_03_repository(self):
-        self.assertEquals(self.pid.find_metadata("REPOSITORIES"), None)
+        self.assertEqual(self.pid.find_metadata("REPOSITORIES"), None)
         self.assert_(
             isinstance(
                 self.ipid.find_metadata("REPOSITORIES"), MetadataStringIterableKey
@@ -65,7 +65,7 @@ class TestCase_01_MetadataKeys(unittest.TestCase):
                 self.pid.find_metadata("KEYWORDS"), MetadataKeywordNameIterableKey
             )
         )
-        self.assertEquals(self.ipid.find_metadata("KEYWORDS"), None)
+        self.assertEqual(self.ipid.find_metadata("KEYWORDS"), None)
 
     def test_07_inherited(self):
         self.assert_(
@@ -79,7 +79,7 @@ class TestCase_01_MetadataKeys(unittest.TestCase):
         self.assert_(
             isinstance(self.pid.find_metadata("DEPEND"), MetadataDependencySpecTreeKey)
         )
-        self.assertEquals(self.ipid.find_metadata("DEPEND"), None)
+        self.assertEqual(self.ipid.find_metadata("DEPEND"), None)
 
     def test_011_choices(self):
         self.assert_(
