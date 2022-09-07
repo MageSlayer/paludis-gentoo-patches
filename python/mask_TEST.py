@@ -43,8 +43,8 @@ class TestCase_01_Masks(unittest.TestCase):
         pid = next(iter(self.e[q]))
         m = next(iter(pid.masks))
 
-        self.assert_(isinstance(m, Mask))
-        self.assert_(isinstance(m, UserMask))
+        self.assertTrue(isinstance(m, Mask))
+        self.assertTrue(isinstance(m, UserMask))
 
         self.assertEqual(m.key(), "U")
         self.assertEqual(m.description(), "user")
@@ -58,8 +58,8 @@ class TestCase_01_Masks(unittest.TestCase):
         pid = next(iter(self.e[q]))
         m = next(iter(pid.masks))
 
-        self.assert_(isinstance(m, Mask))
-        self.assert_(isinstance(m, UnacceptedMask))
+        self.assertTrue(isinstance(m, Mask))
+        self.assertTrue(isinstance(m, UnacceptedMask))
 
         self.assertEqual(m.key(), "K")
         self.assertEqual(m.description(), "keyword")
@@ -74,8 +74,8 @@ class TestCase_01_Masks(unittest.TestCase):
         pid = next(iter(self.e[q]))
         m = next(iter(pid.masks))
 
-        self.assert_(isinstance(m, Mask))
-        self.assert_(isinstance(m, RepositoryMask))
+        self.assertTrue(isinstance(m, Mask))
+        self.assertTrue(isinstance(m, RepositoryMask))
 
         self.assertEqual(m.key(), "R")
         self.assertEqual(m.description(), "repository")
@@ -93,8 +93,8 @@ class TestCase_01_Masks(unittest.TestCase):
         pid = next(iter(self.e[q]))
         m = next(iter(pid.masks))
 
-        self.assert_(isinstance(m, Mask))
-        self.assert_(isinstance(m, UnsupportedMask))
+        self.assertTrue(isinstance(m, Mask))
+        self.assertTrue(isinstance(m, UnsupportedMask))
 
         self.assertEqual(m.key(), "E")
         self.assertEqual(m.description(), "eapi")

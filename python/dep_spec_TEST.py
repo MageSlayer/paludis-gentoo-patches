@@ -86,12 +86,16 @@ class TestCase_1_DepSpecs(unittest.TestCase):
 
     def test_04_slot(self):
         self.get_depspecs()
-        self.assert_(isinstance(self.pds.slot_requirement, SlotExactPartialRequirement))
+        self.assertTrue(
+            isinstance(self.pds.slot_requirement, SlotExactPartialRequirement)
+        )
         self.assertEqual(str(self.pds.slot_requirement.slot), "100")
 
         self.assertEqual(self.pds2.slot_requirement, None)
 
-        self.assert_(isinstance(self.pds5.slot_requirement, SlotExactFullRequirement))
+        self.assertTrue(
+            isinstance(self.pds5.slot_requirement, SlotExactFullRequirement)
+        )
         self.assertEqual(str(self.pds5.slot_requirement.slots[0]), "3")
         self.assertEqual(str(self.pds5.slot_requirement.slots[1]), "4")
 
@@ -123,7 +127,7 @@ class TestCase_1_DepSpecs(unittest.TestCase):
     # def test_09_additional_requirements(self):
     #     spec = parse_user_package_dep_spec("foo/monkey[foo]", UserPackageDepSpecOptions())
     #     ur = next(iter(spec.additional_requirements))
-    #     self.assert_(isinstance(ur, EnabledUseRequirement))
+    #     self.assertTrue(isinstance(ur, EnabledUseRequirement))
 
     def test_11_name(self):
         self.get_depspecs()
@@ -133,25 +137,25 @@ class TestCase_1_DepSpecs(unittest.TestCase):
     #     eapi = EAPIData.instance.eapi_from_string("0")
     #     spec = PortageDepParser.parse_depend("|| ( foo/bar foo/baz ) foo/monkey", eapi)
     #
-    #     self.assert_(isinstance(spec, CompositeDepSpec))
-    #     self.assert_(isinstance(spec, AllDepSpec))
+    #     self.assertTrue(isinstance(spec, CompositeDepSpec))
+    #     self.assertTrue(isinstance(spec, AllDepSpec))
     #
     #     self.assertEqual(len(list(spec)), 2)
     #
     #     for i, subspec1 in enumerate(spec):
     #         if i == 0:
-    #             self.assert_(isinstance(subspec1, AnyDepSpec))
+    #             self.assertTrue(isinstance(subspec1, AnyDepSpec))
     #             for j, subspec2 in enumerate(subspec1):
     #                 if j == 0:
-    #                     self.assert_(isinstance(subspec2, PackageDepSpec))
+    #                     self.assertTrue(isinstance(subspec2, PackageDepSpec))
     #                     self.assertEqual(str(subspec2), "foo/bar")
     #                 elif j == 1:
-    #                     self.assert_(isinstance(subspec2, PackageDepSpec))
+    #                     self.assertTrue(isinstance(subspec2, PackageDepSpec))
     #                     self.assertEqual(str(subspec2), "foo/baz")
     #                 else:
     #                     self.assertEqual("Too many items", "OK")
     #         elif i == 1:
-    #             self.assert_(isinstance(subspec1, PackageDepSpec))
+    #             self.assertTrue(isinstance(subspec1, PackageDepSpec))
     #             self.assertEqual(str(subspec1), "foo/monkey")
     #         else:
     #             self.assertEqual("Too many items", "OK")

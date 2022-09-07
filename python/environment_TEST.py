@@ -41,11 +41,11 @@ class TestCase_01_Environments(unittest.TestCase):
         self.assertRaises(Exception, Environment)
 
     def test_07_sets(self):
-        self.assert_(isinstance(self.e.set("everything"), AllDepSpec))
-        self.assert_(isinstance(self.e.set_names, SetNameIterable))
+        self.assertTrue(isinstance(self.e.set("everything"), AllDepSpec))
+        self.assertTrue(isinstance(self.e.set_names, SetNameIterable))
 
     def test_12_config_dir(self):
-        self.assert_(isinstance(self.e.config_dir, str))
+        self.assertTrue(isinstance(self.e.config_dir, str))
 
     def test_23_fetch_unique_qpn(self):
         self.assertEqual(
@@ -76,9 +76,9 @@ class TestCase_01_Environments(unittest.TestCase):
         )
 
     def test_25_reduced(self):
-        self.assert_(self.e.reduced_username() != "")
-        self.assert_(self.e.reduced_uid() >= 0)
-        self.assert_(self.e.reduced_gid() >= 0)
+        self.assertTrue(self.e.reduced_username() != "")
+        self.assertTrue(self.e.reduced_uid() >= 0)
+        self.assertTrue(self.e.reduced_gid() >= 0)
 
 
 class TestCase_03_TestEnvironment(unittest.TestCase):

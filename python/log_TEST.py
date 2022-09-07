@@ -33,8 +33,8 @@ class TestCase_Log(unittest.TestCase):
         ll = Log.instance.log_level
 
         self.assertEqual(ll, LogLevel.QA)
-        self.assert_(ll >= LogLevel.DEBUG)
-        self.assert_(ll <= LogLevel.SILENT)
+        self.assertTrue(ll >= LogLevel.DEBUG)
+        self.assertTrue(ll <= LogLevel.SILENT)
 
         ll = LogLevel.WARNING
         self.assertEqual(ll, LogLevel.WARNING)

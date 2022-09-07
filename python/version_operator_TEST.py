@@ -35,13 +35,13 @@ class TestCase_VersionOperator(unittest.TestCase):
         self.assertEqual("<", str(VersionOperator(VersionOperatorValue.LESS)))
 
     def test_04_compare(self):
-        self.assert_(
+        self.assertTrue(
             VersionOperator("<").compare(VersionSpec("1.0"), VersionSpec("2.0"))
         )
-        self.assert_(
+        self.assertTrue(
             VersionOperator(">").compare(VersionSpec("3.0"), VersionSpec("2.0"))
         )
-        self.assert_(
+        self.assertTrue(
             VersionOperator(VersionOperatorValue.EQUAL_STAR).compare(
                 VersionSpec("2.0.1-r1"), VersionSpec("2.0")
             )

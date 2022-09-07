@@ -37,15 +37,15 @@ class TestCase_01_URILabels(unittest.TestCase):
 
     def test_02_inheritance(self):
         for l in self.list:
-            self.assert_(isinstance(l, URILabel))
+            self.assertTrue(isinstance(l, URILabel))
 
     def test_03_text(self):
         for l in self.list:
-            self.assert_(l.text, "foo")
+            self.assertTrue(l.text, "foo")
 
     def test_04_str(self):
         for l in self.list:
-            self.assert_(str(l), "foo")
+            self.assertTrue(str(l), "foo")
 
 
 class TestCase_02_DependenciesLabels(unittest.TestCase):
@@ -65,16 +65,16 @@ class TestCase_02_DependenciesLabels(unittest.TestCase):
 
     def test_02_inheritance(self):
         for t in self.list:
-            self.assert_(isinstance(t[0], DependenciesLabel))
-            self.assert_(isinstance(t[0], t[1]))
+            self.assertTrue(isinstance(t[0], DependenciesLabel))
+            self.assertTrue(isinstance(t[0], t[1]))
 
     def test_03_text(self):
         for t in self.list:
-            self.assert_(t[0].text, "foo")
+            self.assertTrue(t[0].text, "foo")
 
     def test_04_str(self):
         for t in self.list:
-            self.assert_(str(t[0]), "foo")
+            self.assertTrue(str(t[0]), "foo")
 
 
 if __name__ == "__main__":

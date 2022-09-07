@@ -99,35 +99,35 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEqual(str(self.ipid), "cat-one/pkg-one-1:test_slot::installed")
 
     def test_09_find_metadata(self):
-        self.assert_(
+        self.assertTrue(
             isinstance(self.pid.find_metadata("DEPEND"), MetadataDependencySpecTreeKey)
         )
 
     def test_11_supports_action(self):
-        self.assert_(self.pid.supports_action(SupportsFetchActionTest()))
-        self.assert_(self.pid.supports_action(SupportsInstallActionTest()))
-        self.assert_(self.pid.supports_action(SupportsFetchActionTest()))
-        self.assert_(not self.pid.supports_action(SupportsUninstallActionTest()))
-        self.assert_(self.pid.supports_action(SupportsPretendActionTest()))
-        self.assert_(not self.pid.supports_action(SupportsConfigActionTest()))
+        self.assertTrue(self.pid.supports_action(SupportsFetchActionTest()))
+        self.assertTrue(self.pid.supports_action(SupportsInstallActionTest()))
+        self.assertTrue(self.pid.supports_action(SupportsFetchActionTest()))
+        self.assertTrue(not self.pid.supports_action(SupportsUninstallActionTest()))
+        self.assertTrue(self.pid.supports_action(SupportsPretendActionTest()))
+        self.assertTrue(not self.pid.supports_action(SupportsConfigActionTest()))
 
-        self.assert_(not self.ipid.supports_action(SupportsFetchActionTest()))
-        self.assert_(not self.ipid.supports_action(SupportsInstallActionTest()))
-        self.assert_(not self.ipid.supports_action(SupportsFetchActionTest()))
-        self.assert_(self.ipid.supports_action(SupportsUninstallActionTest()))
-        self.assert_(not self.ipid.supports_action(SupportsPretendActionTest()))
-        self.assert_(self.ipid.supports_action(SupportsConfigActionTest()))
+        self.assertTrue(not self.ipid.supports_action(SupportsFetchActionTest()))
+        self.assertTrue(not self.ipid.supports_action(SupportsInstallActionTest()))
+        self.assertTrue(not self.ipid.supports_action(SupportsFetchActionTest()))
+        self.assertTrue(self.ipid.supports_action(SupportsUninstallActionTest()))
+        self.assertTrue(not self.ipid.supports_action(SupportsPretendActionTest()))
+        self.assertTrue(self.ipid.supports_action(SupportsConfigActionTest()))
 
     def test_12_masked(self):
-        self.assert_(not self.pid.masked)
-        self.assert_(self.mpid.masked)
+        self.assertTrue(not self.pid.masked)
+        self.assertTrue(self.mpid.masked)
 
     def test_13_masks(self):
         mask = next(iter(self.mpid.masks))
-        self.assert_(isinstance(mask, UnacceptedMask))
+        self.assertTrue(isinstance(mask, UnacceptedMask))
 
     def test_18_build_dependencies_key(self):
-        self.assert_(
+        self.assertTrue(
             isinstance(self.pid.build_dependencies_key(), MetadataDependencySpecTreeKey)
         )
         self.assertEqual(self.ipid.build_dependencies_key(), None)
@@ -141,13 +141,15 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEqual(self.ipid.post_dependencies_key(), None)
 
     def test_22_fetches_key(self):
-        self.assert_(
+        self.assertTrue(
             isinstance(self.pid.fetches_key(), MetadataFetchableURISpecTreeKey)
         )
         self.assertEqual(self.ipid.fetches_key(), None)
 
     def test_23_homepage_key(self):
-        self.assert_(isinstance(self.pid.homepage_key(), MetadataSimpleURISpecTreeKey))
+        self.assertTrue(
+            isinstance(self.pid.homepage_key(), MetadataSimpleURISpecTreeKey)
+        )
         self.assertEqual(self.ipid.homepage_key(), None)
 
     def test_24_short_description_key(self):
@@ -162,7 +164,7 @@ class TestCase_01_PackageID(unittest.TestCase):
 
     def test_27_installed_time_key(self):
         self.assertEqual(self.pid.installed_time_key(), None)
-        self.assert_(isinstance(self.ipid.installed_time_key(), MetadataTimeKey))
+        self.assertTrue(isinstance(self.ipid.installed_time_key(), MetadataTimeKey))
 
     def test_28_from_repositories_key(self):
         self.assertEqual(self.pid.from_repositories_key(), None)
@@ -171,14 +173,16 @@ class TestCase_01_PackageID(unittest.TestCase):
         )
 
     def test_30_fs_location_key(self):
-        self.assert_(isinstance(self.ipid.fs_location_key(), MetadataFSPathKey))
-        self.assert_(isinstance(self.ipid.fs_location_key(), MetadataFSPathKey))
+        self.assertTrue(isinstance(self.ipid.fs_location_key(), MetadataFSPathKey))
+        self.assertTrue(isinstance(self.ipid.fs_location_key(), MetadataFSPathKey))
 
     def test_31_choices_key(self):
-        self.assert_(isinstance(self.pid.choices_key().parse_value(), Choices))
+        self.assertTrue(isinstance(self.pid.choices_key().parse_value(), Choices))
 
     def test_32_uniquely_identifying_spec(self):
-        self.assert_(isinstance(self.pid.uniquely_identifying_spec(), PackageDepSpec))
+        self.assertTrue(
+            isinstance(self.pid.uniquely_identifying_spec(), PackageDepSpec)
+        )
 
 
 if __name__ == "__main__":

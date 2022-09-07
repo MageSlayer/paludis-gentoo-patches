@@ -54,7 +54,7 @@ class TestCase_Names(unittest.TestCase):
             self.assertEqual(str(v), k)
 
     def test_4_operators(self):
-        self.assert_(
+        self.assertTrue(
             CategoryNamePart("cat-foo") + PackageNamePart("pkg")
             == QualifiedPackageName("cat-foo/pkg")
         )
