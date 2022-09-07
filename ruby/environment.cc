@@ -155,8 +155,8 @@ namespace
         {
             VALUE result(rb_ary_new());
             std::shared_ptr<const MirrorsSequence> m(value_to_environment(self)->mirrors(StringValuePtr(mirror_name)));
-            for (MirrorsSequence::ConstIterator i(m->begin()), i_end(m->end()) ; i != i_end ; i++)
-                rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
+            for (const auto & mirror : *m)
+                rb_ary_push(result, rb_str_new2(stringify(mirror).c_str()));
             return result;
         }
         catch (const std::exception & e)
