@@ -156,13 +156,13 @@ ExheresMaskStore::_populate()
             DepSpecFlattener<SetSpecTree, PackageDepSpec> flat_specs(_imp->env, nullptr);
             specs->top()->accept(flat_specs);
 
-            for (const auto & flat_spec : flat_specs)
+            for (const auto & spec : flat_specs)
             {
-                if (flat_spec->package_ptr())
-                    _imp->repo_mask[*flat_spec->package_ptr()].push_back(std::make_pair(*flat_spec, make_mask_info(*flat_spec, f)));
+                if (spec->package_ptr())
+                    _imp->repo_mask[*spec->package_ptr()].push_back(std::make_pair(*spec, make_mask_info(*spec, f)));
                 else
                     Log::get_instance()->message("e.package_mask.bad_spec", ll_warning, lc_context)
-                        << "Loading package mask spec '" << *flat_spec << "' failed because specification does not restrict to a "
+                        << "Loading package mask spec '" << *spec << "' failed because specification does not restrict to a "
                         "unique package";
             }
         }
@@ -191,4 +191,3 @@ ExheresMaskStore::query(const std::shared_ptr<const PackageID> & id) const
 
     return result;
 }
-

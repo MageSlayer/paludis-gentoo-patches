@@ -462,10 +462,10 @@ UnpackagedID::perform_action(Action & action) const
             throw InternalError(PALUDIS_HERE, "bad WantPhase");
     }
 
-    for (const auto & i : *install_action->options.replacing())
+    for (const auto & replaced_id : *install_action->options.replacing())
     {
-        Context local_context("When cleaning '" + stringify(*i) + "':");
-        if (i->name() == name() && i->version() == version() && parallel_slot_is_same(i, this))
+        Context local_context("When cleaning '" + stringify(*replaced_id) + "':");
+        if (replaced_id->name() == name() && replaced_id->version() == version() && parallel_slot_is_same(replaced_id, this))
             continue;
 
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
@@ -477,7 +477,7 @@ UnpackagedID::perform_action(Action & action) const
                     n::override_contents() = nullptr,
                     n::want_phase() = install_action->options.want_phase()
                     ));
-        install_action->options.perform_uninstall()(i, uo);
+        install_action->options.perform_uninstall()(replaced_id, uo);
     }
 
     output_manager->succeeded();
@@ -506,4 +506,3 @@ UnpackagedID::contents() const
 {
     return nullptr;
 }
-

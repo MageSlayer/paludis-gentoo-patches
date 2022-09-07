@@ -142,43 +142,43 @@ UnavailableRepositoryStore::_populate_one(const Environment * const env, const F
         QualifiedPackageName old_name("x/x");
         std::shared_ptr<QualifiedPackageNameSet> pkgs;
         std::shared_ptr<PackageIDSequence> ids;
-        for (const auto & i : file)
+        for (const auto & entry : file)
         {
-            if (old_name.category() != i.name().category())
+            if (old_name.category() != entry.name().category())
             {
-                _imp->categories->insert(i.name().category());
-                PackageNames::iterator p(_imp->package_names.find(i.name().category()));
+                _imp->categories->insert(entry.name().category());
+                PackageNames::iterator p(_imp->package_names.find(entry.name().category()));
                 if (_imp->package_names.end() == p)
-                    p = _imp->package_names.insert(std::make_pair(i.name().category(),
+                    p = _imp->package_names.insert(std::make_pair(entry.name().category(),
                                 std::make_shared<QualifiedPackageNameSet>())).first;
                 pkgs = p->second;
             }
 
-            if (old_name != i.name())
+            if (old_name != entry.name())
             {
-                pkgs->insert(i.name());
-                IDs::iterator p(_imp->ids.find(i.name()));
+                pkgs->insert(entry.name());
+                IDs::iterator p(_imp->ids.find(entry.name()));
                 if (_imp->ids.end() == p)
-                    p = _imp->ids.insert(std::make_pair(i.name(),
+                    p = _imp->ids.insert(std::make_pair(entry.name(),
                                 std::make_shared<PackageIDSequence>())).first;
 
                 ids = p->second;
             }
 
             ids->push_back(std::make_shared<UnavailablePackageID>(make_named_values<UnavailablePackageIDParams>(
-                                n::description() = i.description(),
+                                n::description() = entry.description(),
                                 n::environment() = env,
                                 n::from_repositories() = from_repositories,
                                 n::mask() = mask,
-                                n::name() = i.name(),
+                                n::name() = entry.name(),
                                 n::repository() = _imp->repo->name(),
                                 n::repository_description() = repository_description,
                                 n::repository_homepage() = repository_homepage,
-                                n::slot() = i.slot(),
-                                n::version() = i.version()
+                                n::slot() = entry.slot(),
+                                n::version() = entry.version()
                             )));
 
-            old_name = i.name();
+            old_name = entry.name();
         }
     }
 

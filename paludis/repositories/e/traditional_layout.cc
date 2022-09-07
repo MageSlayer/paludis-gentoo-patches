@@ -128,17 +128,17 @@ TraditionalLayout::TraditionalLayout(
 {
     if (master_repositories_locations())
     {
-        for (const auto & l : *master_repositories_locations())
+        for (const auto & location : *master_repositories_locations())
         {
-            _imp->arch_list_files->push_back(l / "profiles" / "arch.list");
-            _imp->repository_mask_files->push_back(l / "profiles" / "package.mask");
-            _imp->profiles_desc_files->push_back(l / "profiles" / "profiles.desc");
-            _imp->mirror_files->push_back(l / "profiles" / "thirdpartymirrors");
-            _imp->info_variables_files->push_back(l / "profiles" / "info_vars");
+            _imp->arch_list_files->push_back(location / "profiles" / "arch.list");
+            _imp->repository_mask_files->push_back(location / "profiles" / "package.mask");
+            _imp->profiles_desc_files->push_back(location / "profiles" / "profiles.desc");
+            _imp->mirror_files->push_back(location / "profiles" / "thirdpartymirrors");
+            _imp->info_variables_files->push_back(location / "profiles" / "info_vars");
 
-            _imp->use_desc_files->push_back(std::make_pair(l / "profiles" / "use.desc", ChoicePrefixName("")));
-            _imp->use_desc_files->push_back(std::make_pair(l / "profiles" / "use.local.desc", ChoicePrefixName("")));
-            FSPath descs(l / "profiles" / "desc");
+            _imp->use_desc_files->push_back(std::make_pair(location / "profiles" / "use.desc", ChoicePrefixName("")));
+            _imp->use_desc_files->push_back(std::make_pair(location / "profiles" / "use.local.desc", ChoicePrefixName("")));
+            FSPath descs(location / "profiles" / "desc");
             if (descs.stat().is_directory_or_symlink_to_directory())
             {
                 for (FSIterator d(descs, { }), d_end ; d != d_end ; ++d)
@@ -196,8 +196,8 @@ TraditionalLayout::need_category_names() const
 
     std::list<FSPath> cats_list;
     if (_imp->repository->params().master_repositories())
-        for (const auto & e : *_imp->repository->params().master_repositories())
-            cats_list.push_back(e->layout()->categories_file());
+        for (const auto & repository : *_imp->repository->params().master_repositories())
+            cats_list.push_back(repository->layout()->categories_file());
     cats_list.push_back(categories_file());
 
     for (const auto & i : cats_list)
@@ -207,16 +207,16 @@ TraditionalLayout::need_category_names() const
 
         LineConfigFile cats(i, { lcfo_disallow_continuations });
 
-        for (const auto & cat : cats)
+        for (const auto & line : cats)
         {
             try
             {
-                _imp->category_names.insert(std::make_pair(CategoryNamePart(cat), false));
+                _imp->category_names.insert(std::make_pair(CategoryNamePart(line), false));
             }
             catch (const NameError & e)
             {
                 Log::get_instance()->message("e.traditional_layout.categories.failure", ll_warning, lc_context)
-                    << "Skipping line '" << cat << "' in '" << i << "' due to exception '"
+                    << "Skipping line '" << line << "' in '" << i << "' due to exception '"
                     << e.message() << "' ('" << e.what() << ")";
             }
         }
@@ -522,9 +522,9 @@ TraditionalLayout::exlibsdirs_global() const
 
     if (_imp->repository->params().master_repositories())
     {
-        for (const auto & e : *_imp->repository->params().master_repositories())
+        for (const auto & repository : *_imp->repository->params().master_repositories())
         {
-            std::shared_ptr<const FSPathSequence> master(e->layout()->exlibsdirs_global());
+            std::shared_ptr<const FSPathSequence> master(repository->layout()->exlibsdirs_global());
             std::copy(master->begin(), master->end(), result->back_inserter());
         }
     }
@@ -540,9 +540,9 @@ TraditionalLayout::exlibsdirs_category(const CategoryNamePart & c) const
 
     if (_imp->repository->params().master_repositories())
     {
-        for (const auto & e : *_imp->repository->params().master_repositories())
+        for (const auto & repository : *_imp->repository->params().master_repositories())
         {
-            std::shared_ptr<const FSPathSequence> master(e->layout()->exlibsdirs_category(c));
+            std::shared_ptr<const FSPathSequence> master(repository->layout()->exlibsdirs_category(c));
             std::copy(master->begin(), master->end(), result->back_inserter());
         }
     }
@@ -558,9 +558,9 @@ TraditionalLayout::exlibsdirs_package(const QualifiedPackageName & q) const
 
     if (_imp->repository->params().master_repositories())
     {
-        for (const auto & e : *_imp->repository->params().master_repositories())
+        for (const auto & repository : *_imp->repository->params().master_repositories())
         {
-            std::shared_ptr<const FSPathSequence> master(e->layout()->exlibsdirs_package(q));
+            std::shared_ptr<const FSPathSequence> master(repository->layout()->exlibsdirs_package(q));
             std::copy(master->begin(), master->end(), result->back_inserter());
         }
     }
@@ -576,9 +576,9 @@ TraditionalLayout::licenses_dirs() const
 
     if (_imp->repository->params().master_repositories())
     {
-        for (const auto & e : *_imp->repository->params().master_repositories())
+        for (const auto & repository : *_imp->repository->params().master_repositories())
         {
-            std::shared_ptr<const FSPathSequence> master(e->layout()->licenses_dirs());
+            std::shared_ptr<const FSPathSequence> master(repository->layout()->licenses_dirs());
            std::copy(master->begin(), master->end(), result->back_inserter());
         }
     }
@@ -685,5 +685,3 @@ TraditionalLayout::repository_masks(const std::shared_ptr<const PackageID> & id)
 {
     return _imp->repository_mask_store->query(id);
 }
-
-

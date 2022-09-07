@@ -968,10 +968,10 @@ namespace
                 local_ok = true;
             else
             {
-                for (const auto & c : node)
+                for (const auto & child : node)
                 {
                     Save<bool> save_ok(&ok, true);
-                    c->accept(*this);
+                    child->accept(*this);
                     local_ok |= ok;
                 }
             }

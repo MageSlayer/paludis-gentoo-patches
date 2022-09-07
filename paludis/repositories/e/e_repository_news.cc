@@ -198,10 +198,10 @@ ERepositoryNews::update_news() const
 
                 bool local_show(false);
                 std::shared_ptr<const FSPathSequence> c(_imp->params.profiles());
-                for (const auto & p : *c)
+                for (const auto & profile_path : *c)
                 {
                     std::string profile(strip_leading_string(strip_trailing_string(
-                                strip_leading_string(stringify(p.realpath()),
+                                strip_leading_string(stringify(profile_path.realpath()),
                                     stringify(_imp->e_repository->location_key()->parse_value().realpath() / "profiles")), "/"), "/"));
                     Log::get_instance()->message("e.news.profile_path", ll_debug, lc_no_context) <<
                         "Profile path is '" << profile << "'";

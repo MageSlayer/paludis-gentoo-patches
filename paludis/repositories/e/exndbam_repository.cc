@@ -209,13 +209,13 @@ ExndbamRepository::package_ids(const QualifiedPackageName & q,
     std::shared_ptr<NDBAMEntrySequence> entries(_imp->ndbam.entries(q));
     std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
-    for (auto & e : *entries)
+    for (auto & entry : *entries)
     {
-        std::unique_lock<std::mutex> l(*e->mutex());
-        if (! e->package_id())
-            e->package_id() = std::make_shared<ExndbamID>(e->name(), e->version(), _imp->params.environment(),
-                        name(), e->fs_location(), &_imp->ndbam);
-        result->push_back(e->package_id());
+        std::unique_lock<std::mutex> l(*entry->mutex());
+        if (! entry->package_id())
+            entry->package_id() = std::make_shared<ExndbamID>(entry->name(), entry->version(), _imp->params.environment(),
+                        name(), entry->fs_location(), &_imp->ndbam);
+        result->push_back(entry->package_id());
     }
 
     return result;
@@ -365,12 +365,12 @@ ExndbamRepository::merge(const MergeParams & m)
     std::shared_ptr<const PackageID> if_same_name_id;
     {
         std::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id()->name(), { }));
-        for (const auto & v : *ids)
+        for (const auto & id : *ids)
         {
-            if_same_name_id = v;
-            if (v->version() == m.package_id()->version() && parallel_slot_is_same(v, m.package_id()))
+            if_same_name_id = id;
+            if (id->version() == m.package_id()->version() && parallel_slot_is_same(id, m.package_id()))
             {
-                if_overwritten_id = v;
+                if_overwritten_id = id;
                 break;
             }
         }

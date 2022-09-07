@@ -302,18 +302,18 @@ paludis::erepository::do_install_action(
                         ));
 
             if (volatile_files && phase->option("check_merge")) {
-                for (auto & v : *volatile_files) {
-                    auto vabs = (package_builddir / "image" / v);
+                for (auto & file : *volatile_files) {
+                    auto vabs = (package_builddir / "image" / file);
                     auto vstat = vabs.stat();
                     if (! vstat.is_regular_file_or_symlink_to_regular_file())
                         throw ActionFailedError("Can't install '" + stringify(*id)
                                 + "' to destination '" + stringify(destination->name())
-                                + "' because '" + stringify(v) + "' was marked using exvolatile, but it is not a regular "
+                                + "' because '" + stringify(file) + "' was marked using exvolatile, but it is not a regular "
                                 "file or a symlink to a regular file");
                     if (vstat.is_symlink() && 0 == vabs.readlink().compare(0, 1, "/", 0, 1))
                         throw ActionFailedError("Can't install '" + stringify(*id)
                                 + "' to destination '" + stringify(destination->name())
-                                + "' because '" + stringify(v) + "' was marked using exvolatile, but volatile symlinks"
+                                + "' because '" + stringify(file) + "' was marked using exvolatile, but volatile symlinks"
                                 "must not be absolute");
                 }
             }
@@ -513,14 +513,14 @@ paludis::erepository::do_install_action(
 
     /* replacing for pbins is done during the merge */
     if (destination->installed_root_key())
-        for (const auto & i : *install_action.options.replacing())
+        for (const auto & replaced_id : *install_action.options.replacing())
         {
-            Context local_context("When cleaning '" + stringify(*i) + "':");
-            if (i->name() == id->name() && i->version() == id->version())
+            Context local_context("When cleaning '" + stringify(*replaced_id) + "':");
+            if (replaced_id->name() == id->name() && replaced_id->version() == id->version())
                 continue;
 
             if (id->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
-                if (i->name() == id->name() && parallel_slot_is_same(i, id))
+                if (replaced_id->name() == id->name() && parallel_slot_is_same(replaced_id, id))
                     continue;
 
             UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
@@ -533,9 +533,8 @@ paludis::erepository::do_install_action(
                         n::override_contents() = nullptr,
                         n::want_phase() = install_action.options.want_phase()
                         ));
-            install_action.options.perform_uninstall()(i, uo);
+            install_action.options.perform_uninstall()(replaced_id, uo);
         }
 
     output_manager->succeeded();
 }
-

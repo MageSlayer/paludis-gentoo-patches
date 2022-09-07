@@ -443,4 +443,3 @@ namespace paludis
 {
     class RepositoryFactory;
 }
-
