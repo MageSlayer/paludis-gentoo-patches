@@ -448,8 +448,8 @@ namespace
 
         if (rb_block_given_p())
         {
-            for (const auto & it : *real_ptr)
-                rb_yield(uri_label_to_value(it));
+            for (const auto & label : *real_ptr)
+                rb_yield(uri_label_to_value(label));
 
             return Qnil;
         }
@@ -457,8 +457,8 @@ namespace
         {
             VALUE result(rb_ary_new());
 
-            for (const auto & it : *real_ptr)
-                rb_ary_push(result, uri_label_to_value(it));
+            for (const auto & label : *real_ptr)
+                rb_ary_push(result, uri_label_to_value(label));
 
             return result;
         }
@@ -473,8 +473,8 @@ namespace
 
         if (rb_block_given_p())
         {
-            for (const auto & it : *real_ptr)
-                rb_yield(dependencies_label_to_value(it));
+            for (const auto & label : *real_ptr)
+                rb_yield(dependencies_label_to_value(label));
 
             return Qnil;
         }
@@ -482,8 +482,8 @@ namespace
         {
             VALUE result(rb_ary_new());
 
-            for (const auto & it : *real_ptr)
-                rb_ary_push(result, dependencies_label_to_value(it));
+            for (const auto & label : *real_ptr)
+                rb_ary_push(result, dependencies_label_to_value(label));
 
             return result;
         }
