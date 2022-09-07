@@ -31,12 +31,17 @@ class TestCase_01_Generator(unittest.TestCase):
 
     def test_02_str(self):
         env = TestEnvironment()
+        spec = parse_user_package_dep_spec("foo/bar", env, [])
+
         self.assertEquals(str(Generator.All()), "all packages")
-        self.assertEquals(str(Generator.Matches(parse_user_package_dep_spec("foo/bar",
-            env, []), MatchPackageOptions())), "packages matching foo/bar")
-        self.assertEquals(str(Generator.Matches(parse_user_package_dep_spec("foo/bar",
-            env, []), [MatchPackageOption.IGNORE_ADDITIONAL_REQUIREMENTS])),
-            "packages matching foo/bar (ignoring additional requirements)")
+        self.assertEquals(
+                str(Generator.Matches(spec, MatchPackageOptions())),
+                "packages matching foo/bar")
+        self.assertEquals(
+                str(Generator.Matches(
+                        spec,
+                        [MatchPackageOption.IGNORE_ADDITIONAL_REQUIREMENTS])),
+                "packages matching foo/bar (ignoring additional requirements)")
 
 
 if __name__ == "__main__":
