@@ -661,10 +661,10 @@ ERepository::need_mirrors() const
             if (p.stat().exists())
             {
                 LineConfigFile mirrors(p, { lcfo_disallow_continuations });
-                for (LineConfigFile::ConstIterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
+                for (const auto & mirror : mirrors)
                 {
                     std::vector<std::string> ee;
-                    tokenise_whitespace(*line, std::back_inserter(ee));
+                    tokenise_whitespace(mirror, std::back_inserter(ee));
                     if (! ee.empty())
                     {
                         /* pick up to five random mirrors only */
@@ -969,12 +969,12 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
     if (! _imp->params.thin_manifests())
     {
-        for (auto f(files->begin()) ; f != files->end() ; ++f)
+        for (const auto & path_to_type : *files)
         {
-            FSPath file(f->first);
+            FSPath file(path_to_type.first);
             FSStat file_stat(file);
             std::string filename = file.basename();
-            std::string file_type(f->second);
+            std::string file_type(path_to_type.second);
 
             if ("AUX" == file_type)
             {
@@ -1003,17 +1003,18 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
     {
         if (! id->fetches_key())
             continue;
+
         AAVisitor aa;
         id->fetches_key()->parse_value()->top()->accept(aa);
 
-        for (AAVisitor::ConstIterator d(aa.begin()) ;
-                d != aa.end() ; ++d)
+        for (const auto & d : aa)
         {
-            if (done_files.count(*d))
+            if (done_files.count(d))
                 continue;
-            done_files.insert(*d);
 
-            FSPath f(params().distdir() / *d);
+            done_files.insert(d);
+
+            FSPath f(params().distdir() / d);
             FSStat f_stat(f);
 
             if (! f_stat.is_regular_file_or_symlink_to_regular_file())
