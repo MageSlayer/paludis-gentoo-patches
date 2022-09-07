@@ -21,6 +21,7 @@
 from paludis import *
 import unittest
 
+
 class TestCase_Log(unittest.TestCase):
     def test_01_get_instance(self):
         Log.instance

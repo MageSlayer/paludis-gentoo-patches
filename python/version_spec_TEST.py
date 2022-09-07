@@ -21,6 +21,7 @@
 from paludis import *
 import unittest
 
+
 class TestCase_VersionSpec(unittest.TestCase):
     def test_01_init(self):
         VersionSpec("0")

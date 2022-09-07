@@ -29,13 +29,17 @@ import unittest
 
 Log.instance.log_level = LogLevel.WARNING
 
+
 class TestCase_01_Masks(unittest.TestCase):
     def setUp(self):
         self.e = EnvironmentFactory.instance.create("")
 
     def test_01_user_mask(self):
-        q = Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=masked/user-1.0", self.e, []), []))
+        q = Selection.RequireExactlyOne(
+            Generator.Matches(
+                parse_user_package_dep_spec("=masked/user-1.0", self.e, []), []
+            )
+        )
         pid = next(iter(self.e[q]))
         m = next(iter(pid.masks))
 
@@ -46,8 +50,11 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assertEquals(m.description(), "user")
 
     def test_02_unaccepted_mask(self):
-        q = Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=masked/unaccepted-1.0", self.e, []), []))
+        q = Selection.RequireExactlyOne(
+            Generator.Matches(
+                parse_user_package_dep_spec("=masked/unaccepted-1.0", self.e, []), []
+            )
+        )
         pid = next(iter(self.e[q]))
         m = next(iter(pid.masks))
 
@@ -59,8 +66,11 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assertEquals(m.unaccepted_key_name(), "KEYWORDS")
 
     def test_03_repository_mask(self):
-        q = Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=masked/repo-1.0", self.e, []), []))
+        q = Selection.RequireExactlyOne(
+            Generator.Matches(
+                parse_user_package_dep_spec("=masked/repo-1.0", self.e, []), []
+            )
+        )
         pid = next(iter(self.e[q]))
         m = next(iter(pid.masks))
 
@@ -70,12 +80,16 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assertEquals(m.key(), "R")
         self.assertEquals(m.description(), "repository")
 
-        package_mask_path = os.path.realpath(os.path.join(os.getcwd(),
-            "mask_TEST_dir/testrepo/profiles/package.mask"))
+        package_mask_path = os.path.realpath(
+            os.path.join(os.getcwd(), "mask_TEST_dir/testrepo/profiles/package.mask")
+        )
 
     def test_04_unsupported_mask(self):
-        q = Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=masked/unsupported-1.0", self.e, []), []))
+        q = Selection.RequireExactlyOne(
+            Generator.Matches(
+                parse_user_package_dep_spec("=masked/unsupported-1.0", self.e, []), []
+            )
+        )
         pid = next(iter(self.e[q]))
         m = next(iter(pid.masks))
 
@@ -85,6 +99,7 @@ class TestCase_01_Masks(unittest.TestCase):
         self.assertEquals(m.key(), "E")
         self.assertEquals(m.description(), "eapi")
         self.assertEquals(m.explanation(), "Unsupported EAPI 'unsupported'")
+
 
 class TestCase_02_Masks_subclassing(unittest.TestCase):
     def test_01_user_mask(self):

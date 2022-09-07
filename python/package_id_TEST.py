@@ -30,12 +30,21 @@ import unittest
 
 Log.instance.log_level = LogLevel.WARNING
 
+
 class TestCase_01_PackageID(unittest.TestCase):
     def setUp(self):
         self.e = EnvironmentFactory.instance.create("")
-        self.pid = next(iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])))
-        self.ipid = next(iter(self.e.fetch_repository("installed").package_ids("cat-one/pkg-one", [])))
-        self.mpid = next(iter(self.e.fetch_repository("testrepo").package_ids("cat/masked", [])))
+        self.pid = next(
+            iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", []))
+        )
+        self.ipid = next(
+            iter(
+                self.e.fetch_repository("installed").package_ids("cat-one/pkg-one", [])
+            )
+        )
+        self.mpid = next(
+            iter(self.e.fetch_repository("testrepo").package_ids("cat/masked", []))
+        )
 
     def test_01_get(self):
         pass
@@ -49,7 +58,9 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(self.ipid.version, VersionSpec("1"))
 
     def test_04_slot(self):
-        self.assertEquals(str(self.ipid.slot_key().parse_value().raw_value), "test_slot")
+        self.assertEquals(
+            str(self.ipid.slot_key().parse_value().raw_value), "test_slot"
+        )
         self.assertEquals(str(self.pid.slot_key().parse_value().raw_value), "0")
 
     def test_05_repository(self):
@@ -61,15 +72,27 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.pid.slot_key().parse_value
         self.ipid.slot_key().parse_value
 
-        self.assertEquals(self.pid.canonical_form(PackageIDCanonicalForm.FULL), "foo/bar-1.0:0::testrepo")
-        self.assertEquals(self.pid.canonical_form(PackageIDCanonicalForm.VERSION), "1.0")
-        self.assertEquals(self.pid.canonical_form(PackageIDCanonicalForm.NO_VERSION), "foo/bar:0::testrepo")
+        self.assertEquals(
+            self.pid.canonical_form(PackageIDCanonicalForm.FULL),
+            "foo/bar-1.0:0::testrepo",
+        )
+        self.assertEquals(
+            self.pid.canonical_form(PackageIDCanonicalForm.VERSION), "1.0"
+        )
+        self.assertEquals(
+            self.pid.canonical_form(PackageIDCanonicalForm.NO_VERSION),
+            "foo/bar:0::testrepo",
+        )
 
-        self.assertEquals(self.ipid.canonical_form(PackageIDCanonicalForm.FULL),
-                "cat-one/pkg-one-1:test_slot::installed")
+        self.assertEquals(
+            self.ipid.canonical_form(PackageIDCanonicalForm.FULL),
+            "cat-one/pkg-one-1:test_slot::installed",
+        )
         self.assertEquals(self.ipid.canonical_form(PackageIDCanonicalForm.VERSION), "1")
-        self.assertEquals(self.ipid.canonical_form(PackageIDCanonicalForm.NO_VERSION),
-                "cat-one/pkg-one:test_slot::installed")
+        self.assertEquals(
+            self.ipid.canonical_form(PackageIDCanonicalForm.NO_VERSION),
+            "cat-one/pkg-one:test_slot::installed",
+        )
 
     def test_08_str(self):
         # Load the metadata
@@ -80,7 +103,9 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(str(self.ipid), "cat-one/pkg-one-1:test_slot::installed")
 
     def test_09_find_metadata(self):
-        self.assert_(isinstance(self.pid.find_metadata("DEPEND"), MetadataDependencySpecTreeKey))
+        self.assert_(
+            isinstance(self.pid.find_metadata("DEPEND"), MetadataDependencySpecTreeKey)
+        )
 
     def test_11_supports_action(self):
         self.assert_(self.pid.supports_action(SupportsFetchActionTest()))
@@ -106,7 +131,9 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assert_(isinstance(mask, UnacceptedMask))
 
     def test_18_build_dependencies_key(self):
-        self.assert_(isinstance(self.pid.build_dependencies_key(), MetadataDependencySpecTreeKey))
+        self.assert_(
+            isinstance(self.pid.build_dependencies_key(), MetadataDependencySpecTreeKey)
+        )
         self.assertEquals(self.ipid.build_dependencies_key(), None)
 
     def test_19_run_dependencies_key(self):
@@ -118,7 +145,9 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(self.ipid.post_dependencies_key(), None)
 
     def test_22_fetches_key(self):
-        self.assert_(isinstance(self.pid.fetches_key(), MetadataFetchableURISpecTreeKey))
+        self.assert_(
+            isinstance(self.pid.fetches_key(), MetadataFetchableURISpecTreeKey)
+        )
         self.assertEquals(self.ipid.fetches_key(), None)
 
     def test_23_homepage_key(self):
@@ -126,8 +155,12 @@ class TestCase_01_PackageID(unittest.TestCase):
         self.assertEquals(self.ipid.homepage_key(), None)
 
     def test_24_short_description_key(self):
-        self.assertEquals(self.pid.short_description_key().parse_value(), "Test package")
-        self.assertEquals(self.ipid.short_description_key().parse_value(), "a description")
+        self.assertEquals(
+            self.pid.short_description_key().parse_value(), "Test package"
+        )
+        self.assertEquals(
+            self.ipid.short_description_key().parse_value(), "a description"
+        )
 
     def test_25_long_description_key(self):
         self.assertEquals(self.pid.long_description_key(), None)
@@ -139,7 +172,9 @@ class TestCase_01_PackageID(unittest.TestCase):
 
     def test_28_from_repositories_key(self):
         self.assertEquals(self.pid.from_repositories_key(), None)
-        self.assertEquals(next(iter(self.ipid.from_repositories_key().parse_value())), "origin_test")
+        self.assertEquals(
+            next(iter(self.ipid.from_repositories_key().parse_value())), "origin_test"
+        )
 
     def test_30_fs_location_key(self):
         self.assert_(isinstance(self.ipid.fs_location_key(), MetadataFSPathKey))

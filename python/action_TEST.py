@@ -23,6 +23,7 @@ import unittest
 
 Log.instance.log_level = LogLevel.WARNING
 
+
 class TestCase_01_InstallActionOptions(unittest.TestCase):
     def setUp(self):
         global repo1, repo2
@@ -44,6 +45,7 @@ class TestCase_01_InstallActionOptions(unittest.TestCase):
         self.assertEquals(iao.no_config_protect, False)
         self.assertEquals(str(iao.destination.name), "2")
 
+
 class TestCase_02_FetchActionOptions(unittest.TestCase):
     def test_01_create(self):
         FetchActionOptions(True, True, True)
@@ -60,6 +62,7 @@ class TestCase_02_FetchActionOptions(unittest.TestCase):
         self.assertEquals(fao.exclude_unmirrorable, False)
         self.assertEquals(fao.safe_resume, False)
 
+
 class TestCase_04_InstallAction(unittest.TestCase):
     def test_01_create(self):
         env = TestEnvironment()
@@ -67,13 +70,16 @@ class TestCase_04_InstallAction(unittest.TestCase):
         iao = InstallActionOptions(repo1)
         InstallAction(iao)
 
+
 class TestCase_05_FetchAction(unittest.TestCase):
     def test_01_create(self):
         FetchAction(FetchActionOptions(False, True, True))
 
+
 class TestCase_06_UninstallAction(unittest.TestCase):
     def test_01_create(self):
         UninstallAction(UninstallActionOptions("monkey"))
+
 
 class TestCase_08_PretendAction(unittest.TestCase):
     def test_01_create(self):
@@ -82,13 +88,16 @@ class TestCase_08_PretendAction(unittest.TestCase):
         pao = PretendActionOptions(repo1)
         PretendAction(pao)
 
+
 class TestCase_09_ConfigAction(unittest.TestCase):
     def test_01_create(self):
         ConfigAction(ConfigActionOptions())
 
+
 class TestCase_10_InfoAction(unittest.TestCase):
     def test_01_create(self):
         InfoAction(InfoActionOptions())
+
 
 class TestCase_10_SupportsActionTests(unittest.TestCase):
     def test_01_create(self):

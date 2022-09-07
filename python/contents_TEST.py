@@ -21,6 +21,7 @@
 from paludis import *
 import unittest
 
+
 class TestCase_Contents(unittest.TestCase):
     def test_01_contents_entry(self):
         self.assertRaises(Exception, ContentsEntry)
@@ -64,14 +65,23 @@ class TestCase_Contents(unittest.TestCase):
             c.add(entry)
 
         for (i, entry) in enumerate(c):
-            self.assertEquals(entry.location_key().parse_value(), entries[i].location_key().parse_value())
+            self.assertEquals(
+                entry.location_key().parse_value(),
+                entries[i].location_key().parse_value(),
+            )
             self.assertEquals(type(entry), type(entries[i]))
-            if i==0:
-                self.assertEquals(entry.target_key().parse_value(), entries[i].target_key().parse_value())
-            if i==0 or i==1:
-                self.assertEquals(entry.part_key().parse_value(), entries[i].part_key().parse_value())
-            if i>3:
+            if i == 0:
+                self.assertEquals(
+                    entry.target_key().parse_value(),
+                    entries[i].target_key().parse_value(),
+                )
+            if i == 0 or i == 1:
+                self.assertEquals(
+                    entry.part_key().parse_value(), entries[i].part_key().parse_value()
+                )
+            if i > 3:
                 self.assertEquals("TOO MANY ENTRIES", "OK")
+
 
 if __name__ == "__main__":
     unittest.main()

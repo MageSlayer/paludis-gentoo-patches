@@ -32,6 +32,7 @@ import unittest
 
 Log.instance.log_level = LogLevel.WARNING
 
+
 class TestCase_01_Repository(unittest.TestCase):
     def setUp(self):
         global e, repo, irepo
@@ -60,18 +61,23 @@ class TestCase_01_Repository(unittest.TestCase):
         self.assert_(not repo.has_package_named("bar/foo", []))
 
     def test_07_package_ids(self):
-        y = list(x.version for x in repo.package_ids("foo/bar", []));
+        y = list(x.version for x in repo.package_ids("foo/bar", []))
         y.sort()
         z = [VersionSpec("1.0"), VersionSpec("2.0")]
         self.assertEquals(y, z)
         self.assertEquals(len(list(repo.package_ids("bar/baz", []))), 0)
 
     def test_08_category_names(self):
-        self.assertEquals([str(x) for x in repo.category_names([])], ["foo", "foo1", "foo2", "foo3", "foo4"])
+        self.assertEquals(
+            [str(x) for x in repo.category_names([])],
+            ["foo", "foo1", "foo2", "foo3", "foo4"],
+        )
 
     def test_09_category_names_containing_package(self):
-        self.assertEquals([str(x) for x in repo.category_names_containing_package("bar", [])],
-                ["foo", "foo1", "foo2", "foo3", "foo4"])
+        self.assertEquals(
+            [str(x) for x in repo.category_names_containing_package("bar", [])],
+            ["foo", "foo1", "foo2", "foo3", "foo4"],
+        )
 
     def test_10_package_names(self):
         for (i, qpn) in enumerate(repo.package_names("bar", [])):
@@ -82,11 +88,17 @@ class TestCase_01_Repository(unittest.TestCase):
         self.assert_(repo.some_ids_might_support_action(SupportsFetchActionTest()))
         self.assert_(not irepo.some_ids_might_support_action(SupportsFetchActionTest()))
         self.assert_(repo.some_ids_might_support_action(SupportsInstallActionTest()))
-        self.assert_(not irepo.some_ids_might_support_action(SupportsInstallActionTest()))
-        self.assert_(not repo.some_ids_might_support_action(SupportsUninstallActionTest()))
+        self.assert_(
+            not irepo.some_ids_might_support_action(SupportsInstallActionTest())
+        )
+        self.assert_(
+            not repo.some_ids_might_support_action(SupportsUninstallActionTest())
+        )
         self.assert_(irepo.some_ids_might_support_action(SupportsUninstallActionTest()))
         self.assert_(repo.some_ids_might_support_action(SupportsPretendActionTest()))
-        self.assert_(not irepo.some_ids_might_support_action(SupportsPretendActionTest()))
+        self.assert_(
+            not irepo.some_ids_might_support_action(SupportsPretendActionTest())
+        )
         self.assert_(not repo.some_ids_might_support_action(SupportsConfigActionTest()))
         self.assert_(irepo.some_ids_might_support_action(SupportsConfigActionTest()))
 
@@ -96,6 +108,7 @@ class TestCase_01_Repository(unittest.TestCase):
         self.assert_(repo.find_metadata("format"))
         self.assertEquals(repo.find_metadata("format").parse_value(), "e")
         self.assert_(not repo.find_metadata("asdf"))
+
 
 class TestCase_02_RepositoryInterfaces(unittest.TestCase):
     def setUp(self):
@@ -111,6 +124,7 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
     def test_10_destination_interface(self):
         di = irepo.destination_interface
         self.assert_(isinstance(di, RepositoryDestinationInterface))
+
 
 class TestCase_03_FakeRepository(unittest.TestCase):
     def setUp(self):
@@ -134,7 +148,9 @@ class TestCase_03_FakeRepository(unittest.TestCase):
         f.add_category("cat-foo")
         self.assertEquals([str(x) for x in f.category_names([])], ["cat-foo"])
         f.add_category("cat-bar")
-        self.assertEquals([str(x) for x in f.category_names([])], ["cat-bar", "cat-foo"])
+        self.assertEquals(
+            [str(x) for x in f.category_names([])], ["cat-bar", "cat-foo"]
+        )
 
     def test_04_add_category_bad(self):
         self.assertRaises(Exception, f.add_category, 1)
@@ -178,7 +194,9 @@ class TestCase_03_FakeRepository(unittest.TestCase):
         pkg3 = f.add_version("cat-bar/pkg", VersionSpec("0"))
         self.assertEquals(list(f.package_ids("cat-bar/pkg", [])), [pkg3])
 
-        self.assertEquals([str(x) for x in f.category_names([])], ["cat-bar", "cat-foo"])
+        self.assertEquals(
+            [str(x) for x in f.category_names([])], ["cat-bar", "cat-foo"]
+        )
 
     def test_08_add_version_bad(self):
         self.assertRaises(Exception, f.add_version, 1)
@@ -187,4 +205,3 @@ class TestCase_03_FakeRepository(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-
