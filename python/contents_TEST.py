@@ -29,26 +29,26 @@ class TestCase_Contents(unittest.TestCase):
     def test_02_file_entry(self):
         e = ContentsFileEntry("/foo", "bar")
 
-        self.assert_(isinstance(e, ContentsEntry))
+        self.assertTrue(isinstance(e, ContentsEntry))
         self.assertEqual(e.location_key().parse_value(), "/foo")
         self.assertEqual(e.part_key().parse_value(), "bar")
 
     def test_03_dir_entry(self):
         e = ContentsDirEntry("/foo")
 
-        self.assert_(isinstance(e, ContentsEntry))
+        self.assertTrue(isinstance(e, ContentsEntry))
         self.assertEqual(e.location_key().parse_value(), "/foo")
 
     def test_04_other_entry(self):
         e = ContentsOtherEntry("/foo")
 
-        self.assert_(isinstance(e, ContentsEntry))
+        self.assertTrue(isinstance(e, ContentsEntry))
         self.assertEqual(e.location_key().parse_value(), "/foo")
 
     def test_07_sym_entry(self):
         e = ContentsSymEntry("/foo", "/blah", "baz")
 
-        self.assert_(isinstance(e, ContentsEntry))
+        self.assertTrue(isinstance(e, ContentsEntry))
         self.assertEqual(e.location_key().parse_value(), "/foo")
         self.assertEqual(e.target_key().parse_value(), "/blah")
         self.assertEqual(e.part_key().parse_value(), "baz")

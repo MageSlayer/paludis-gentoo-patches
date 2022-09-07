@@ -35,13 +35,13 @@ class TestCase_VersionSpec(unittest.TestCase):
         v2 = VersionSpec("1.0_beta3")
         v3 = VersionSpec("1.0")
 
-        self.assert_(v0 < v1)
-        self.assert_(v1 < v2)
-        self.assert_(v2 < v3)
+        self.assertTrue(v0 < v1)
+        self.assertTrue(v1 < v2)
+        self.assertTrue(v2 < v3)
 
-        self.assert_(v0 >= v0)
-        self.assert_(v1 >= v1)
-        self.assert_(v3 >= v2)
+        self.assertTrue(v0 >= v0)
+        self.assertTrue(v1 >= v1)
+        self.assertTrue(v3 >= v2)
 
     def test_04_str(self):
         self.assertEqual("0.1_beta2-r3", str(VersionSpec("0.1_beta2-r3")))
@@ -61,17 +61,17 @@ class TestCase_VersionSpec(unittest.TestCase):
         self.assertEqual(VersionSpec("scm"), VersionSpec("scm").bump())
 
     def test_08_is_scm(self):
-        self.assert_(VersionSpec("scm").is_scm)
-        self.assert_(VersionSpec("9999").is_scm)
-        self.assert_(not VersionSpec("1").is_scm)
+        self.assertTrue(VersionSpec("scm").is_scm)
+        self.assertTrue(VersionSpec("9999").is_scm)
+        self.assertTrue(not VersionSpec("1").is_scm)
 
     def test_09_has_scm_part(self):
-        self.assert_(VersionSpec("1-scm").has_scm_part)
-        self.assert_(not VersionSpec("1").has_scm_part)
+        self.assertTrue(VersionSpec("1-scm").has_scm_part)
+        self.assertTrue(not VersionSpec("1").has_scm_part)
 
     def test_09_has_scm_part(self):
-        self.assert_(VersionSpec("1-try").has_try_part)
-        self.assert_(not VersionSpec("1").has_try_part)
+        self.assertTrue(VersionSpec("1-try").has_try_part)
+        self.assertTrue(not VersionSpec("1").has_try_part)
 
 
 if __name__ == "__main__":

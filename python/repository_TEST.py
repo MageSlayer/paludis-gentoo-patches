@@ -41,8 +41,8 @@ class TestCase_01_Repository(unittest.TestCase):
         irepo = e.fetch_repository("installed")
 
     def test_01_fetch(self):
-        self.assert_(isinstance(repo, Repository))
-        self.assert_(isinstance(irepo, Repository))
+        self.assertTrue(isinstance(repo, Repository))
+        self.assertTrue(isinstance(irepo, Repository))
 
     def test_02_create_error(self):
         self.assertRaises(Exception, Repository)
@@ -52,13 +52,13 @@ class TestCase_01_Repository(unittest.TestCase):
         self.assertEqual(str(irepo.name), "installed")
 
     def test_05_has_category_named(self):
-        self.assert_(repo.has_category_named("foo", []))
-        self.assert_(not repo.has_category_named("bar", []))
+        self.assertTrue(repo.has_category_named("foo", []))
+        self.assertTrue(not repo.has_category_named("bar", []))
 
     def test_06_has_package_named(self):
-        self.assert_(repo.has_package_named("foo/bar", []))
-        self.assert_(not repo.has_package_named("foo/foo", []))
-        self.assert_(not repo.has_package_named("bar/foo", []))
+        self.assertTrue(repo.has_package_named("foo/bar", []))
+        self.assertTrue(not repo.has_package_named("foo/foo", []))
+        self.assertTrue(not repo.has_package_named("bar/foo", []))
 
     def test_07_package_ids(self):
         y = list(x.version for x in repo.package_ids("foo/bar", []))
@@ -85,29 +85,35 @@ class TestCase_01_Repository(unittest.TestCase):
             self.assertEqual(str(qpn), "foo/bar")
 
     def test_11_some_ids_might_support_action(self):
-        self.assert_(repo.some_ids_might_support_action(SupportsFetchActionTest()))
-        self.assert_(not irepo.some_ids_might_support_action(SupportsFetchActionTest()))
-        self.assert_(repo.some_ids_might_support_action(SupportsInstallActionTest()))
-        self.assert_(
+        self.assertTrue(repo.some_ids_might_support_action(SupportsFetchActionTest()))
+        self.assertTrue(
+            not irepo.some_ids_might_support_action(SupportsFetchActionTest())
+        )
+        self.assertTrue(repo.some_ids_might_support_action(SupportsInstallActionTest()))
+        self.assertTrue(
             not irepo.some_ids_might_support_action(SupportsInstallActionTest())
         )
-        self.assert_(
+        self.assertTrue(
             not repo.some_ids_might_support_action(SupportsUninstallActionTest())
         )
-        self.assert_(irepo.some_ids_might_support_action(SupportsUninstallActionTest()))
-        self.assert_(repo.some_ids_might_support_action(SupportsPretendActionTest()))
-        self.assert_(
+        self.assertTrue(
+            irepo.some_ids_might_support_action(SupportsUninstallActionTest())
+        )
+        self.assertTrue(repo.some_ids_might_support_action(SupportsPretendActionTest()))
+        self.assertTrue(
             not irepo.some_ids_might_support_action(SupportsPretendActionTest())
         )
-        self.assert_(not repo.some_ids_might_support_action(SupportsConfigActionTest()))
-        self.assert_(irepo.some_ids_might_support_action(SupportsConfigActionTest()))
+        self.assertTrue(
+            not repo.some_ids_might_support_action(SupportsConfigActionTest())
+        )
+        self.assertTrue(irepo.some_ids_might_support_action(SupportsConfigActionTest()))
 
     def test_12_keys(self):
-        self.assert_(repo.location_key())
+        self.assertTrue(repo.location_key())
         self.assertEqual(repo.location_key().parse_value(), repo_path)
-        self.assert_(repo.find_metadata("format"))
+        self.assertTrue(repo.find_metadata("format"))
         self.assertEqual(repo.find_metadata("format").parse_value(), "e")
-        self.assert_(not repo.find_metadata("asdf"))
+        self.assertTrue(not repo.find_metadata("asdf"))
 
 
 class TestCase_02_RepositoryInterfaces(unittest.TestCase):
@@ -119,11 +125,11 @@ class TestCase_02_RepositoryInterfaces(unittest.TestCase):
 
     def test_06_environment_variable_interface(self):
         evi = repo.environment_variable_interface
-        self.assert_(isinstance(evi, RepositoryEnvironmentVariableInterface))
+        self.assertTrue(isinstance(evi, RepositoryEnvironmentVariableInterface))
 
     def test_10_destination_interface(self):
         di = irepo.destination_interface
-        self.assert_(isinstance(di, RepositoryDestinationInterface))
+        self.assertTrue(isinstance(di, RepositoryDestinationInterface))
 
 
 class TestCase_03_FakeRepository(unittest.TestCase):
