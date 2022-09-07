@@ -996,14 +996,11 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
         }
     }
 
-    std::shared_ptr<const PackageIDSequence> versions;
-    versions = package_ids(qpn, { });
-
+    std::shared_ptr<const PackageIDSequence> ids = package_ids(qpn, { });
     std::set<std::string> done_files;
 
-    for (const auto & v : *versions)
+    for (const auto & id : *ids)
     {
-        std::shared_ptr<const PackageID> id = v;
         if (! id->fetches_key())
             continue;
         AAVisitor aa;
@@ -1888,4 +1885,3 @@ ERepository::maybe_expand_licence_nonrecursively(const std::string & s) const
 {
     return _imp->licence_groups->maybe_expand_licence_nonrecursively(s);
 }
-
