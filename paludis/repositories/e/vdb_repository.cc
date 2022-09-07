@@ -886,11 +886,9 @@ VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const Versio
 
     need_package_ids(q.category());
 
-    PackageIDSequence::ConstIterator i(_imp->ids[q]->begin());
-    PackageIDSequence::ConstIterator i_end(_imp->ids[q]->end());
-    for ( ; i != i_end ; ++i)
-        if (v == (*i)->version())
-            return std::static_pointer_cast<const ERepositoryID>(*i);
+    for (const auto & id : *_imp->ids[q])
+        if (v == id->version())
+            return std::static_pointer_cast<const ERepositoryID>(id);
 
     return nullptr;
 }
