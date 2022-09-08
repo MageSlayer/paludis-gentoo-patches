@@ -42,7 +42,7 @@ namespace paludis
                         const RepositoryName & name,
                         const EAPIForFileFunction & eapi_for_file,
                         const IsArchFlagFunction & is_arch_flag,
-                        const FSPathSequence & dirs,
+                        const FSPathSequence & locations,
                         const std::string & arch_var_if_special,
                         const bool profiles_explicitly_set,
                         const bool has_master_repositories,
