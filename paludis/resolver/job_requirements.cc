@@ -54,7 +54,7 @@ JobRequirement::serialise(Serialiser & s) const
 }
 
 bool
-JobRequirementComparator::operator() (const JobRequirement & a, const JobRequirement & b)
+JobRequirementComparator::operator() (const JobRequirement & a, const JobRequirement & b) const
 {
     if (a.job_number() < b.job_number())
         return true;
