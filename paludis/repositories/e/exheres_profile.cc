@@ -124,14 +124,14 @@ ExheresProfile::ExheresProfile(
         const RepositoryName &,
         const EAPIForFileFunction & eapi_for_file,
         const IsArchFlagFunction &,
-        const FSPathSequence & location,
+        const FSPathSequence & locations,
         const std::string &,
         const bool,
         const bool has_master_repositories,
         const bool) :
     _imp(env, eapi_for_file, has_master_repositories)
 {
-    for (FSPathSequence::ConstIterator l(location.begin()), l_end(location.end()) ;
+    for (FSPathSequence::ConstIterator l(locations.begin()), l_end(locations.end()) ;
             l != l_end ; ++l)
         _load_dir(*l);
 
