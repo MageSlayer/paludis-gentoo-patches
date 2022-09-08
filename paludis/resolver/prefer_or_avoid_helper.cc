@@ -92,11 +92,11 @@ PreferOrAvoidHelper::operator() (const PackageDepSpec & s, const std::shared_ptr
             return false;
     }
 
-    for (const auto & p : _imp->prefer_matching)
+    for (const auto & prefered_ids : _imp->prefer_matching)
     {
         bool all(true);
-        for (const auto & q : *p)
-            if (! match_package(*_imp->env, s, q, id, { }))
+        for (const auto & prefered_id : *prefered_ids)
+            if (! match_package(*_imp->env, s, prefered_id, id, { }))
             {
                 all = false;
                 break;
@@ -106,10 +106,10 @@ PreferOrAvoidHelper::operator() (const PackageDepSpec & s, const std::shared_ptr
             return true;
     }
 
-    for (const auto & p : _imp->avoid_matching)
+    for (const auto & avoid_ids : _imp->avoid_matching)
     {
-        for (const auto & q : *p)
-            if (match_package(*_imp->env, s, q, id, { }))
+        for (const auto & avoid_id : *avoid_ids)
+            if (match_package(*_imp->env, s, avoid_id, id, { }))
                 return false;
     }
 

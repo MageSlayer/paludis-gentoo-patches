@@ -105,8 +105,8 @@ namespace
             const QualifiedPackageName & name,
             const std::list<PackageDepSpec> & specs)
     {
-        for (const auto & l : specs)
-            if (match_qpns(*env, l, name))
+        for (const auto & spec : specs)
+            if (match_qpns(*env, spec, name))
                 return true;
         return false;
     }
@@ -153,8 +153,8 @@ namespace
                 return false;
             else
             {
-                for (const auto & i : *origin_ids)
-                    if ((*can)(i))
+                for (const auto & id : *origin_ids)
+                    if ((*can)(id))
                         return false;
 
                 return true;

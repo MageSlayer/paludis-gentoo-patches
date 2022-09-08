@@ -68,13 +68,13 @@ namespace
     {
         std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const override
+                const std::shared_ptr<const PackageIDSet> & ids) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (const auto & i : *id)
-                if (not_strongly_masked(i))
-                    result->insert(i);
+            for (const auto & id : *ids)
+                if (not_strongly_masked(id))
+                    result->insert(id);
 
             return result;
         }

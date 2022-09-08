@@ -338,8 +338,8 @@ void
 InstallJob::serialise(Serialiser & s) const
 {
     std::shared_ptr<Sequence<std::string> > replacing_specs_s(std::make_shared<Sequence<std::string>>());
-    for (const auto & r : *replacing_specs())
-        replacing_specs_s->push_back(stringify(r));
+    for (const auto & spec : *replacing_specs())
+        replacing_specs_s->push_back(stringify(spec));
 
     s.object("InstallJob")
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "requirements", requirements())
@@ -451,8 +451,8 @@ void
 UninstallJob::serialise(Serialiser & s) const
 {
     std::shared_ptr<Sequence<std::string> > ids_to_remove_specs_s(std::make_shared<Sequence<std::string>>());
-    for (const auto & r : *ids_to_remove_specs())
-        ids_to_remove_specs_s->push_back(stringify(r));
+    for (const auto & spec : *ids_to_remove_specs())
+        ids_to_remove_specs_s->push_back(stringify(spec));
 
     s.object("UninstallJob")
         .member(SerialiserFlags<serialise::container, serialise::might_be_null>(), "requirements", requirements())

@@ -302,12 +302,12 @@ namespace
             /* what sort of dep are we? */
             LabelsClassifierBuilder classifier_builder(env, r.from_id());
             std::string active_labels;
-            for (const auto & l : *r.sanitised_dependency().active_dependency_labels())
+            for (const auto & label : *r.sanitised_dependency().active_dependency_labels())
             {
-                l->accept(classifier_builder);
+                label->accept(classifier_builder);
                 if (! active_labels.empty())
                     active_labels.append(", ");
-                active_labels.append(stringify(*l));
+                active_labels.append(stringify(*label));
             }
 
             Context labels_context("With active labels '" + active_labels + "':");
@@ -476,10 +476,10 @@ namespace
 
         void visit(const WasUsedByReason & r)
         {
-            for (const auto & i : *r.ids_and_resolvents_being_removed())
+            for (const auto & id : *r.ids_and_resolvents_being_removed())
             {
                 NAGIndex to(make_named_values<NAGIndex>(
-                            n::resolvent() = i.resolvent(),
+                            n::resolvent() = id.resolvent(),
                             n::role() = nir_done
                             ));
 
@@ -504,8 +504,8 @@ namespace
             const Set<NAGIndex> & indices,
             const NAG & nag)
     {
-        for (const auto & indice : indices)
-            for (NAG::EdgesFromConstIterator e(nag.begin_edges_from(indice)), e_end(nag.end_edges_from(indice)) ;
+        for (const auto & index : indices)
+            for (NAG::EdgesFromConstIterator e(nag.begin_edges_from(index)), e_end(nag.end_edges_from(index)) ;
                     e != e_end ; ++e)
                 if (e->second.build())
                     return false;
@@ -529,7 +529,7 @@ Orderer::resolve()
 
     ResolventsSet ignore_dependencies_from_resolvents;
     ResolventsSet ignore_edges_from_resolvents;
-    for (const auto & r : *_imp->resolved->resolutions_by_resolvent())
+    for (const auto & resolution : *_imp->resolved->resolutions_by_resolvent())
     {
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
@@ -537,31 +537,36 @@ Orderer::resolve()
                 _imp->resolved,
                 ignore_dependencies_from_resolvents,
                 _imp->change_or_remove_indices,
-                r->resolvent(),
-                r->decision());
-        if (! r->decision()->accept_returning<bool>(decision_dispatcher))
-            ignore_edges_from_resolvents.insert(r->resolvent());
+                resolution->resolvent(),
+                resolution->decision());
+        if (! resolution->decision()->accept_returning<bool>(decision_dispatcher))
+            ignore_edges_from_resolvents.insert(resolution->resolvent());
     }
 
     _imp->env->trigger_notifier_callback(NotifierCallbackResolverStageEvent("Building NAG Edges"));
 
-    for (const auto & r : *_imp->resolved->resolutions_by_resolvent())
+    for (const auto & resolution : *_imp->resolved->resolutions_by_resolvent())
     {
-        Context subcontext("When ordering '" + stringify(r->resolvent()) + "':");
+        Context subcontext("When ordering '" + stringify(resolution->resolvent()) + "':");
 
         _imp->env->trigger_notifier_callback(NotifierCallbackResolverStepEvent());
 
-        if (ignore_edges_from_resolvents.end() != ignore_edges_from_resolvents.find(r->resolvent()))
+        if (ignore_edges_from_resolvents.end() != ignore_edges_from_resolvents.find(resolution->resolvent()))
             continue;
 
-        _add_binary_cleverness(r);
+        _add_binary_cleverness(resolution);
 
-        EdgesFromReasonVisitor edges_from_reason_visitor(_imp->env, _imp->resolved->nag(), ignore_dependencies_from_resolvents, r->resolvent(),
-                r->decision(), std::bind(&Orderer::_role_for_fetching, this, std::placeholders::_1));
-        for (const auto & c : *r->constraints())
+        EdgesFromReasonVisitor edges_from_reason_visitor(
+                _imp->env,
+                _imp->resolved->nag(),
+                ignore_dependencies_from_resolvents,
+                resolution->resolvent(),
+                resolution->decision(),
+                std::bind(&Orderer::_role_for_fetching, this, std::placeholders::_1));
+        for (const auto & constraint : *resolution->constraints())
         {
-            Context subsubcontext("When handling constraint '" + stringify(c->spec()) + "' with reason '" + stringify(*c->reason()) + "':");
-            c->reason()->accept(edges_from_reason_visitor);
+            Context subsubcontext("When handling constraint '" + stringify(constraint->spec()) + "' with reason '" + stringify(*constraint->reason()) + "':");
+            constraint->reason()->accept(edges_from_reason_visitor);
         }
     }
 
@@ -585,9 +590,9 @@ Orderer::resolve()
         typedef std::unordered_set<NAGIndex, Hash<NAGIndex> > ChangesInSCC;
         ChangesInSCC changes_in_scc;
 
-        for (const auto & r : *scc.nodes())
-            if (_imp->change_or_remove_indices.end() != _imp->change_or_remove_indices.find(r))
-                changes_in_scc.insert(r);
+        for (const auto & index : *scc.nodes())
+            if (_imp->change_or_remove_indices.end() != _imp->change_or_remove_indices.find(index))
+                changes_in_scc.insert(index);
 
         if (changes_in_scc.empty())
         {
@@ -724,9 +729,9 @@ Orderer::_order_sub_ssccs(
             /* what's that, timmy? we have directly codependent nodes?
              * well i'm jolly glad that's because they're run
              * dependency cycles which we can order however we like! */
-            for (const auto & r : *sub_scc.nodes())
-                _check_self_deps_and_schedule(r,
-                        _imp->change_or_remove_indices.find(r)->second,
+            for (const auto & index : *sub_scc.nodes())
+                _check_self_deps_and_schedule(index,
+                        _imp->change_or_remove_indices.find(index)->second,
                         make_shared_copy(make_named_values<OrdererNotes>(
                                 n::cycle_breaking() = "In run dependency cycle with: " + join(
                                     sub_scc.nodes()->begin(), sub_scc.nodes()->end(), ", ", nice_index) + (can_recurse ?
@@ -739,14 +744,14 @@ Orderer::_order_sub_ssccs(
              * this whole mess again, except without any edges for
              * dependencies that're already met */
             NAG scc_nag_without_met_deps;
-            for (const auto & r : *sub_scc.nodes())
+            for (const auto & index : *sub_scc.nodes())
             {
-                scc_nag_without_met_deps.add_node(r);
-                for (NAG::EdgesFromConstIterator e(scc_nag.begin_edges_from(r)), e_end(scc_nag.end_edges_from(r)) ;
+                scc_nag_without_met_deps.add_node(index);
+                for (NAG::EdgesFromConstIterator e(scc_nag.begin_edges_from(index)), e_end(scc_nag.end_edges_from(index)) ;
                         e != e_end ; ++e)
                     if (sub_scc.nodes()->end() != sub_scc.nodes()->find(e->first))
                         if ((! e->second.build_all_met()) || (! e->second.run_all_met()))
-                            scc_nag_without_met_deps.add_edge(r, e->first, make_named_values<NAGEdgeProperties>(
+                            scc_nag_without_met_deps.add_edge(index, e->first, make_named_values<NAGEdgeProperties>(
                                         n::always() = e->second.always(),
                                         n::build() = e->second.build() && ! e->second.build_all_met(),
                                         n::build_all_met() = e->second.build_all_met(),
@@ -763,17 +768,17 @@ Orderer::_order_sub_ssccs(
         }
         else
         {
-            for (const auto & r : *sub_scc.nodes())
+            for (const auto & index : *sub_scc.nodes())
             {
-                if (r.role() == nir_fetched && sub_scc.nodes()->end() != std::find(sub_scc.nodes()->begin(),
+                if (index.role() == nir_fetched && sub_scc.nodes()->end() != std::find(sub_scc.nodes()->begin(),
                             sub_scc.nodes()->end(), make_named_values<NAGIndex>(
-                                n::resolvent() = r.resolvent(),
+                                n::resolvent() = index.resolvent(),
                                 n::role() = nir_done
                                 )))
                     continue;
 
                 _imp->resolved->taken_unorderable_decisions()->push_back(
-                        _imp->change_or_remove_indices.find(r)->second,
+                        _imp->change_or_remove_indices.find(index)->second,
                         make_shared_copy(make_named_values<OrdererNotes>(
                                 n::cycle_breaking() = "In unsolvable cycle with " + join(
                                     top_scc.nodes()->begin(), top_scc.nodes()->end(), ", ", nice_index))));
@@ -908,8 +913,8 @@ namespace
         if (r->resolutions_by_resolvent()->end() == resolution)
             throw InternalError(PALUDIS_HERE, "couldn't find " + stringify(d.resolvent()));
 
-        for (const auto & c : *(*resolution)->constraints())
-            if (is_target(c->reason()))
+        for (const auto & constraint : *(*resolution)->constraints())
+            if (is_target(constraint->reason()))
                 return true;
 
         return false;
@@ -971,8 +976,8 @@ namespace
                         requirements = minimise_requirements(requirements);
 
                         const std::shared_ptr<Sequence<PackageDepSpec> > replacing(std::make_shared<Sequence<PackageDepSpec>>());
-                        for (const auto & i : *changes_to_make_decision.destination()->replacing())
-                            replacing->push_back(i->uniquely_identifying_spec());
+                        for (const auto & id : *changes_to_make_decision.destination()->replacing())
+                            replacing->push_back(id->uniquely_identifying_spec());
 
                         JobNumber install_job_n(resolved->job_lists()->execute_job_list()->append(std::make_shared<InstallJob>(
                                             requirements,
@@ -1023,8 +1028,8 @@ namespace
         void visit(const RemoveDecision & remove_decision) const
         {
             const std::shared_ptr<Sequence<PackageDepSpec> > removing(std::make_shared<Sequence<PackageDepSpec>>());
-            for (const auto & i : *remove_decision.ids())
-                removing->push_back(i->uniquely_identifying_spec());
+            for (const auto & id : *remove_decision.ids())
+                removing->push_back(id->uniquely_identifying_spec());
 
             std::shared_ptr<JobRequirements> requirements(std::make_shared<JobRequirements>());
             RecursedRequirements recursed;

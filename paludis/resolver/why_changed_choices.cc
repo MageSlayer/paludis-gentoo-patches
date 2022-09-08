@@ -36,8 +36,8 @@ WhyChangedChoices::serialise(Serialiser & s) const
     ss.member(SerialiserFlags<serialise::might_be_null>(), "changed_choices", changed_choices());
 
     int n(0);
-    for (const auto & o : *reasons())
-        ss.member(SerialiserFlags<>(), stringify(++n), *o);
+    for (const auto & reason : *reasons())
+        ss.member(SerialiserFlags<>(), stringify(++n), *reason);
     ss.member(SerialiserFlags<>(), "reasons_count", stringify(n));
 }
 
