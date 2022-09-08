@@ -78,12 +78,12 @@ paludis::resolver::minimise_requirements(const std::shared_ptr<const JobRequirem
     const std::shared_ptr<JobRequirements> result(std::make_shared<JobRequirements>());
     std::set<JobRequirement, JobRequirementComparator> duplicates;
 
-    for (const auto & r : *reqs)
+    for (const auto & requirement : *reqs)
     {
-        if (! duplicates.insert(r).second)
+        if (! duplicates.insert(requirement).second)
             continue;
 
-        result->push_back(r);
+        result->push_back(requirement);
     }
 
     return result;

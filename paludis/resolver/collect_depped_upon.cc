@@ -81,8 +81,8 @@ namespace
                 const std::shared_ptr<const DependenciesLabelSequence> & s)
         {
             std::stringstream adl;
-            for (const auto & l : *s)
-                adl << (adl.str().empty() ? "" : ", ") << stringify(*l);
+            for (const auto & label : *s)
+                adl << (adl.str().empty() ? "" : ", ") << stringify(*label);
 
             return make_named_values<DependentPackageID>(
                     n::active_dependency_labels_as_string() = adl.str(),
@@ -289,25 +289,25 @@ paludis::resolver::collect_dependents(
 
     auto result(std::make_shared<PackageIDSet>());
 
-    for (const auto & i : *installed_ids)
+    for (const auto & id : *installed_ids)
     {
-        DependentChecker<PackageIDSequence, PackageIDSequence> c(env, i, going_away_as_ids,
+        DependentChecker<PackageIDSequence, PackageIDSequence> c(env, id, going_away_as_ids,
                 std::make_shared<PackageIDSequence>(), std::make_shared<PackageIDSequence>());
 
-        if (i->dependencies_key())
-            i->dependencies_key()->parse_value()->top()->accept(c);
+        if (id->dependencies_key())
+            id->dependencies_key()->parse_value()->top()->accept(c);
         else
         {
-            if (i->build_dependencies_key())
-                i->build_dependencies_key()->parse_value()->top()->accept(c);
-            if (i->run_dependencies_key())
-                i->run_dependencies_key()->parse_value()->top()->accept(c);
-            if (i->post_dependencies_key())
-                i->post_dependencies_key()->parse_value()->top()->accept(c);
+            if (id->build_dependencies_key())
+                id->build_dependencies_key()->parse_value()->top()->accept(c);
+            if (id->run_dependencies_key())
+                id->run_dependencies_key()->parse_value()->top()->accept(c);
+            if (id->post_dependencies_key())
+                id->post_dependencies_key()->parse_value()->top()->accept(c);
         }
 
         if (! c.result->empty())
-            result->insert(i);
+            result->insert(id);
     }
 
     return result;

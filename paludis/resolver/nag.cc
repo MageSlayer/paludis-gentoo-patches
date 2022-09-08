@@ -254,9 +254,9 @@ namespace
     {
         int best_score(-1);
 
-        for (const auto & e : *scc.nodes())
+        for (const auto & index : *scc.nodes())
         {
-            int score(order_score_one(e, order_early_fn));
+            int score(order_score_one(index, order_early_fn));
             if (best_score == -1 || score < best_score)
                 best_score = score;
         }

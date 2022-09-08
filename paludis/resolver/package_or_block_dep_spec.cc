@@ -81,12 +81,12 @@ PackageOrBlockDepSpec::serialise(Serialiser & s) const
     else
     {
         int n(0);
-        for (const auto & m : *spec->maybe_annotations())
+        for (const auto & annotation : *spec->maybe_annotations())
         {
-            w.member(SerialiserFlags<>(), "annotations_k_" + stringify(n), m.key());
-            w.member(SerialiserFlags<>(), "annotations_v_" + stringify(n), m.value());
-            w.member(SerialiserFlags<>(), "annotations_n_" + stringify(n), stringify(m.kind()));
-            w.member(SerialiserFlags<>(), "annotations_r_" + stringify(n), stringify(m.role()));
+            w.member(SerialiserFlags<>(), "annotations_k_" + stringify(n), annotation.key());
+            w.member(SerialiserFlags<>(), "annotations_v_" + stringify(n), annotation.value());
+            w.member(SerialiserFlags<>(), "annotations_n_" + stringify(n), stringify(annotation.kind()));
+            w.member(SerialiserFlags<>(), "annotations_r_" + stringify(n), stringify(annotation.role()));
             ++n;
         }
 

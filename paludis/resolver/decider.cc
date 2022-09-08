@@ -1356,10 +1356,10 @@ Decider::_get_resolvents_for_blocker(const BlockDepSpec & spec,
         const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionInEachSlot(
                     generator::Package(*spec.blocking().package_ptr())
                     )]);
-        for (const auto & i : *ids)
+        for (const auto & id : *ids)
             for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
                 if (destination_types[*t])
-                    result->push_back(Resolvent(i, *t));
+                    result->push_back(Resolvent(id, *t));
     }
 
     return result;
