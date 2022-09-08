@@ -117,7 +117,6 @@ Checks: >
     -misc-non-private-member-variables-in-classes,
     -misc-redundant-expression,
     -modernize-avoid-bind,
-    -modernize-loop-convert,
     -modernize-pass-by-value,
     -modernize-raw-string-literal,
     -modernize-redundant-void-arg,
@@ -196,8 +195,8 @@ CheckOptions:
     value:           '4294967295'
   - key:             readability-suspicious-call-argument.Equality
     value:           'true'
-  - key:             hicpp-use-override.AllowOverrideAndFinal
-    value:           'false'
+  - key:             modernize-loop-convert.IncludeStyle
+    value:           llvm
   - key:             cert-str34-c.DiagnoseSignedUnsignedCharComparisons
     value:           'false'
   - key:             misc-uniqueptr-reset-release.IncludeStyle
@@ -205,6 +204,8 @@ CheckOptions:
   - key:             cert-err33-c.CheckedFunctions
     value:           '::aligned_alloc;::asctime_s;::at_quick_exit;::atexit;::bsearch;::bsearch_s;::btowc;::c16rtomb;::c32rtomb;::calloc;::clock;::cnd_broadcast;::cnd_init;::cnd_signal;::cnd_timedwait;::cnd_wait;::ctime_s;::fclose;::fflush;::fgetc;::fgetpos;::fgets;::fgetwc;::fopen;::fopen_s;::fprintf;::fprintf_s;::fputc;::fputs;::fputwc;::fputws;::fread;::freopen;::freopen_s;::fscanf;::fscanf_s;::fseek;::fsetpos;::ftell;::fwprintf;::fwprintf_s;::fwrite;::fwscanf;::fwscanf_s;::getc;::getchar;::getenv;::getenv_s;::gets_s;::getwc;::getwchar;::gmtime;::gmtime_s;::localtime;::localtime_s;::malloc;::mbrtoc16;::mbrtoc32;::mbsrtowcs;::mbsrtowcs_s;::mbstowcs;::mbstowcs_s;::memchr;::mktime;::mtx_init;::mtx_lock;::mtx_timedlock;::mtx_trylock;::mtx_unlock;::printf_s;::putc;::putwc;::raise;::realloc;::remove;::rename;::scanf;::scanf_s;::setlocale;::setvbuf;::signal;::snprintf;::snprintf_s;::sprintf;::sprintf_s;::sscanf;::sscanf_s;::strchr;::strerror_s;::strftime;::strpbrk;::strrchr;::strstr;::strtod;::strtof;::strtoimax;::strtok;::strtok_s;::strtol;::strtold;::strtoll;::strtoul;::strtoull;::strtoumax;::strxfrm;::swprintf;::swprintf_s;::swscanf;::swscanf_s;::thrd_create;::thrd_detach;::thrd_join;::thrd_sleep;::time;::timespec_get;::tmpfile;::tmpfile_s;::tmpnam;::tmpnam_s;::tss_create;::tss_get;::tss_set;::ungetc;::ungetwc;::vfprintf;::vfprintf_s;::vfscanf;::vfscanf_s;::vfwprintf;::vfwprintf_s;::vfwscanf;::vfwscanf_s;::vprintf_s;::vscanf;::vscanf_s;::vsnprintf;::vsnprintf_s;::vsprintf;::vsprintf_s;::vsscanf;::vsscanf_s;::vswprintf;::vswprintf_s;::vswscanf;::vswscanf_s;::vwprintf_s;::vwscanf;::vwscanf_s;::wcrtomb;::wcschr;::wcsftime;::wcspbrk;::wcsrchr;::wcsrtombs;::wcsrtombs_s;::wcsstr;::wcstod;::wcstof;::wcstoimax;::wcstok;::wcstok_s;::wcstol;::wcstold;::wcstoll;::wcstombs;::wcstombs_s;::wcstoul;::wcstoull;::wcstoumax;::wcsxfrm;::wctob;::wctrans;::wctype;::wmemchr;::wprintf_s;::wscanf;::wscanf_s;'
   - key:             cppcoreguidelines-explicit-virtual-functions.AllowOverrideAndFinal
+    value:           'false'
+  - key:             hicpp-use-override.AllowOverrideAndFinal
     value:           'false'
   - key:             bugprone-suspicious-string-compare.WarnOnLogicalNotComparison
     value:           'false'
@@ -218,6 +219,8 @@ CheckOptions:
     value:           '0'
   - key:             modernize-use-nodiscard.ReplacementString
     value:           '[[nodiscard]]'
+  - key:             modernize-loop-convert.MakeReverseRangeHeader
+    value:           ''
   - key:             modernize-use-bool-literals.IgnoreMacros
     value:           'true'
   - key:             google-readability-namespace-comments.ShortNamespaceLines
@@ -232,14 +235,16 @@ CheckOptions:
     value:           ''
   - key:             hicpp-use-override.OverrideSpelling
     value:           override
-  - key:             readability-suspicious-call-argument.SuffixSimilarAbove
-    value:           '30'
+  - key:             modernize-loop-convert.UseCxx20ReverseRanges
+    value:           'true'
   - key:             modernize-use-noexcept.ReplacementString
     value:           ''
   - key:             hicpp-function-size.VariableThreshold
     value:           '4294967295'
   - key:             hicpp-use-override.FinalSpelling
     value:           final
+  - key:             readability-suspicious-call-argument.SuffixSimilarAbove
+    value:           '30'
   - key:             performance-type-promotion-in-math-fn.IncludeStyle
     value:           llvm
   - key:             cppcoreguidelines-explicit-virtual-functions.FinalSpelling
@@ -250,6 +255,8 @@ CheckOptions:
     value:           final
   - key:             modernize-loop-convert.NamingStyle
     value:           CamelCase
+  - key:             modernize-loop-convert.MakeReverseRangeFunction
+    value:           ''
   - key:             bugprone-suspicious-missing-comma.SizeThreshold
     value:           '5'
   - key:             hicpp-function-size.StatementThreshold
@@ -332,8 +339,6 @@ CheckOptions:
     value:           'false'
   - key:             cppcoreguidelines-explicit-virtual-functions.IgnoreDestructors
     value:           'true'
-  - key:             modernize-make-unique.IgnoreMacros
-    value:           'true'
   - key:             performance-for-range-copy.AllowedTypes
     value:           ''
   - key:             modernize-make-shared.MakeSmartPtrFunctionHeader
@@ -342,46 +347,38 @@ CheckOptions:
     value:           '4294967295'
   - key:             bugprone-sizeof-expression.WarnOnSizeOfConstant
     value:           'true'
-  - key:             modernize-make-unique.IgnoreDefaultInitialization
-    value:           'true'
-  - key:             modernize-make-unique.IncludeStyle
-    value:           llvm
   - key:             bugprone-argument-comment.CommentBoolLiterals
-    value:           '0'
-  - key:             bugprone-argument-comment.CommentUserDefinedLiterals
     value:           '0'
   - key:             modernize-use-override.OverrideSpelling
     value:           override
+  - key:             bugprone-argument-comment.CommentUserDefinedLiterals
+    value:           '0'
   - key:             readability-suspicious-call-argument.LevenshteinDissimilarBelow
     value:           '50'
   - key:             bugprone-argument-comment.CommentStringLiterals
     value:           '0'
   - key:             google-readability-braces-around-statements.ShortStatementLines
     value:           '1'
-  - key:             modernize-make-unique.MakeSmartPtrFunction
-    value:           'std::make_unique'
   - key:             bugprone-reserved-identifier.AllowedIdentifiers
     value:           ''
   - key:             hicpp-function-size.ParameterThreshold
     value:           '4294967295'
   - key:             portability-restrict-system-includes.Includes
     value:           '*'
-  - key:             modernize-make-unique.MakeSmartPtrFunctionHeader
-    value:           '<memory>'
+  - key:             readability-suspicious-call-argument.SubstringSimilarAbove
+    value:           '50'
   - key:             bugprone-signal-handler.AsyncSafeFunctionSet
     value:           POSIX
   - key:             readability-suspicious-call-argument.Substring
     value:           'true'
-  - key:             readability-suspicious-call-argument.SubstringSimilarAbove
-    value:           '50'
   - key:             readability-suspicious-call-argument.Abbreviations
-    value:           'arr=array;cnt=count;idx=index;src=source;stmt=statement;cpy=copy;dest=destination;dist=distancedst=distance;ptr=pointer;wdth=width;str=string;ln=line;srv=server;attr=attribute;buf=buffer;col=column;vec=vector;nr=number;len=length;elem=element;val=value;ref=reference;i=index;var=variable;hght=height;cl=client;num=number;pos=position;lst=list;addr=address'
+    value:           'arr=array;cnt=count;idx=index;src=source;stmt=statement;cpy=copy;dest=destination;dist=distancedst=distance;ptr=pointer;wdth=width;str=string;ln=line;srv=server;attr=attribute;ref=reference;buf=buffer;len=length;nr=number;col=column;elem=element;val=value;vec=vector;i=index;var=variable;hght=height;cl=client;num=number;pos=position;lst=list;addr=address'
   - key:             bugprone-misplaced-widening-cast.CheckImplicitCasts
     value:           'false'
   - key:             bugprone-suspicious-missing-comma.RatioThreshold
     value:           '0.200000'
   - key:             modernize-loop-convert.MinConfidence
-    value:           reasonable
+    value:           risky
   - key:             readability-uniqueptr-delete-release.PreferResetCall
     value:           'false'
   - key:             modernize-use-noexcept.UseNoexceptFalse
@@ -400,22 +397,22 @@ CheckOptions:
     value:           'false'
   - key:             readability-function-size.BranchThreshold
     value:           '4294967295'
+  - key:             hicpp-function-size.LineThreshold
+    value:           '4294967295'
   - key:             bugprone-string-constructor.StringNames
     value:           '::std::basic_string;::std::basic_string_view'
   - key:             bugprone-assert-side-effect.AssertMacros
     value:           assert
   - key:             readability-function-size.StatementThreshold
     value:           '800'
-  - key:             hicpp-use-noexcept.ReplacementString
-    value:           ''
   - key:             llvm-qualified-auto.AddConstToQualified
     value:           'false'
   - key:             bugprone-signed-char-misuse.DiagnoseSignedUnsignedCharComparisons
     value:           'true'
+  - key:             hicpp-use-noexcept.ReplacementString
+    value:           ''
   - key:             readability-identifier-naming.IgnoreMainLikeFunctions
     value:           'false'
-  - key:             hicpp-function-size.LineThreshold
-    value:           '4294967295'
   - key:             google-readability-function-size.StatementThreshold
     value:           '800'
   - key:             llvm-else-after-return.WarnOnConditionVariables
