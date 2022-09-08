@@ -101,12 +101,11 @@ namespace
     {
         std::shared_ptr<const PackageID> result;
 
-        for (auto i(seq->begin()), i_end(seq->end()) ;
-                i != i_end ; ++i)
+        for (const auto & id : *seq)
         {
-            if ((! result) || dependent_checker_id(*i)->version() >= result->version())
-                if (match_package(*env, spec, dependent_checker_id(*i), from_id, { }))
-                    result = dependent_checker_id(*i);
+            if ((! result) || dependent_checker_id(id)->version() >= result->version())
+                if (match_package( *env, spec, dependent_checker_id(id), from_id, { }))
+                    result = dependent_checker_id(id);
         }
 
         return result;
