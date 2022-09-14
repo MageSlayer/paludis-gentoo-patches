@@ -109,8 +109,7 @@ namespace
             std::copy(WildcardExpander(stringify(path), root), WildcardExpander(),
                       std::back_inserter(scratch));
 
-        using std::swap;
-        swap(vec, scratch);
+        std::swap(vec, scratch);
     }
 
     template <typename T_, typename C_>
