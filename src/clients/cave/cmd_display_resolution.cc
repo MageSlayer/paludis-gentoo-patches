@@ -471,12 +471,10 @@ namespace
 
         cout << fuc(fs_explaining());
 
-        for (args::StringSetArg::ConstIterator i(cmdline.display_options.a_explain.begin_args()),
-                i_end(cmdline.display_options.a_explain.end_args()) ;
-                i != i_end ; ++i)
+        for (const auto & explain_spec : cmdline.display_options.a_explain.args())
         {
             bool any(false);
-            PackageDepSpec spec(parse_spec_with_nice_error(*i, env.get(), { updso_allow_wildcards }, filter::All()));
+            PackageDepSpec spec(parse_spec_with_nice_error(explain_spec, env.get(), { updso_allow_wildcards }, filter::All()));
             for (ResolutionsByResolvent::ConstIterator r(resolved->resolutions_by_resolvent()->begin()),
                     r_end(resolved->resolutions_by_resolvent()->end()) ;
                     r != r_end ; ++r)
@@ -493,7 +491,7 @@ namespace
             }
 
             if (! any)
-                throw args::DoHelp("There is nothing matching '" + *i + "' in the resolution set.");
+                throw args::DoHelp("There is nothing matching '" + explain_spec + "' in the resolution set.");
         }
     }
 

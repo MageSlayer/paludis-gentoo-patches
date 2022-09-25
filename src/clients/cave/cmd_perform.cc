@@ -428,14 +428,12 @@ PerformCommand::run(
         parts += fp_unneeded;
 
     const std::shared_ptr<PackageIDSequence> replacing(std::make_shared<PackageIDSequence>());
-    for (args::StringSetArg::ConstIterator p(cmdline.a_replacing.begin_args()),
-            p_end(cmdline.a_replacing.end_args()) ;
-            p != p_end ; ++p)
+    for (const auto & replacing_spec : cmdline.a_replacing.args())
     {
-        PackageDepSpec rspec(parse_spec_with_nice_error(*p, env.get(), { }, filter::All()));
+        PackageDepSpec rspec(parse_spec_with_nice_error(replacing_spec, env.get(), { }, filter::All()));
         const std::shared_ptr<const PackageIDSequence> rids((*env)[selection::AllVersionsUnsorted(generator::Matches(rspec, nullptr, { }))]);
         if (rids->empty())
-            nothing_matching_error(env.get(), *p, filter::All());
+            nothing_matching_error(env.get(), replacing_spec, filter::All());
         else if (1 != std::distance(rids->begin(), rids->end()))
             throw BeMoreSpecific(rspec, rids);
         else

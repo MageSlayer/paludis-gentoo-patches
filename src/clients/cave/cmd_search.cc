@@ -330,11 +330,10 @@ SearchCommand::run(
         show_args->push_back("--one-version");
 
     show_args->push_back("--significant-keys-only");
-    for (args::StringSetArg::ConstIterator k(cmdline.match_options.a_key.begin_args()), k_end(cmdline.match_options.a_key.end_args()) ;
-            k != k_end ; ++k)
+    for (const auto & key : cmdline.match_options.a_key.args())
     {
         show_args->push_back("--key");
-        show_args->push_back(*k);
+        show_args->push_back(key);
     }
 
     /* also in cmd_match.cc */

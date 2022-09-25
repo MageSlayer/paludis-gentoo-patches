@@ -180,10 +180,8 @@ FindCandidatesCommand::run_hosted(
             step("Checking indexed candidates");
 
             std::list<PackageDepSpec> matches;
-            for (args::StringSetArg::ConstIterator k(search_options.a_matching.begin_args()),
-                    k_end(search_options.a_matching.end_args()) ;
-                    k != k_end ; ++k)
-                matches.push_back(parse_user_package_dep_spec(*k, env.get(), { updso_allow_wildcards }));
+            for (const auto & matching_spec : search_options.a_matching.args())
+                matches.push_back(parse_user_package_dep_spec(matching_spec, env.get(), { updso_allow_wildcards }));
 
             if (! matches.empty())
             {
@@ -299,11 +297,9 @@ FindCandidatesCommand::run_hosted(
         else
             mask_filter = std::make_shared<filter::All>();
 
-        for (args::StringSetArg::ConstIterator k(search_options.a_matching.begin_args()),
-                k_end(search_options.a_matching.end_args()) ;
-                k != k_end ; ++k)
+        for (const auto & matching_spec : search_options.a_matching.args())
         {
-            generator::Matches m(parse_user_package_dep_spec(*k, env.get(), { updso_allow_wildcards }), nullptr, { });
+            generator::Matches m(parse_user_package_dep_spec(matching_spec, env.get(), { updso_allow_wildcards }), nullptr, { });
 
             if (match_generator)
                 match_generator = std::make_shared<generator::Union>(*match_generator, m);

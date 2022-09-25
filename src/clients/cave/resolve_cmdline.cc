@@ -458,14 +458,12 @@ ResolveCommandLineImportOptions::apply(const std::shared_ptr<Environment> & env)
         return;
 
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
-    for (args::StringSetArg::ConstIterator a(a_unpackaged_repository_params.begin_args()),
-            a_end(a_unpackaged_repository_params.end_args()) ;
-            a != a_end ; ++a)
+    for (const auto & param : a_unpackaged_repository_params.args())
     {
-        std::string::size_type p(a->find('='));
+        std::string::size_type p(param.find('='));
         if (std::string::npos == p)
-            throw InternalError(PALUDIS_HERE, "no = in '" + stringify(*a));
-        keys->insert(a->substr(0, p), a->substr(p + 1));
+            throw InternalError(PALUDIS_HERE, "no = in '" + stringify(param));
+        keys->insert(param.substr(0, p), param.substr(p + 1));
     }
 
     std::shared_ptr<Repository> repo(RepositoryFactory::get_instance()->create(env.get(),
