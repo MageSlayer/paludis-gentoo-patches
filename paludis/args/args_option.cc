@@ -559,6 +559,12 @@ StringSetArg::end_allowed_args() const
     return AllowedArgConstIterator(_imp->allowed_args.end());
 }
 
+IteratorRange<StringSetArg::AllowedArgConstIterator>
+StringSetArg::allowed_args() const
+{
+    return {_imp->allowed_args};
+}
+
 bool
 AliasArg::can_be_negated() const
 {
