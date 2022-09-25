@@ -412,8 +412,8 @@ namespace paludis
                 typedef WrappedForwardIterator<ConstIteratorTag, const std::string> ConstIterator;
 
                 ConstIterator begin_args() const;
-
                 ConstIterator end_args() const;
+                IteratorRange<ConstIterator> args() const;
 
                 ///\}
 

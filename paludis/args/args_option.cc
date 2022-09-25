@@ -305,6 +305,12 @@ StringSequenceArg::end_args() const
     return ConstIterator(_imp->args.end());
 }
 
+IteratorRange<StringSequenceArg::ConstIterator>
+StringSequenceArg::args() const
+{
+    return {_imp->args};
+}
+
 void
 StringSequenceArg::add_argument(const std::string & arg)
 {
@@ -328,11 +334,10 @@ StringSequenceArg::forwardable_args() const
     std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
     if (specified())
     {
-        for (ConstIterator i(begin_args()), i_end(end_args()) ;
-                i != i_end ; ++i)
+        for (const auto & arg : args())
         {
             result->push_back("--" + long_name());
-            result->push_back(*i);
+            result->push_back(arg);
         }
     }
     return result;
