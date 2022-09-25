@@ -127,7 +127,7 @@ CHECK_C_SOURCE_COMPILES("
   #include <dirent.h>
   int main(void) {
     struct dirent dent;
-    dent.d_type = DT_LINK;
+    dent.d_type = DT_LNK;
     return 0;
   }
 "
