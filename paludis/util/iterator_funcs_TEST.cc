@@ -27,36 +27,6 @@
 
 using namespace paludis;
 
-TEST(Iterator, Next)
-{
-    std::vector<int> v;
-    v.push_back(1);
-    v.push_back(2);
-    v.push_back(3);
-    std::vector<int>::iterator iter(v.begin());
-
-    ASSERT_TRUE(*(next(iter)) == 2);
-    ASSERT_TRUE(next(next(next(iter))) == v.end());
-    ASSERT_TRUE(next(iter, 3) == v.end());
-    iter = next(iter);
-    ASSERT_TRUE(*(next(iter, 1)) == 3);
-    iter = next(iter);
-    ASSERT_TRUE(++iter == v.end());
-}
-
-TEST(Iterator, Previous)
-{
-    std::vector<int> v;
-    v.push_back(1);
-    v.push_back(2);
-    std::vector<int>::iterator iter(v.end());
-
-    ASSERT_TRUE(*(prev(iter)) == 2);
-    ASSERT_TRUE(prev(prev(iter)) == v.begin());
-    iter = prev(iter);
-    ASSERT_TRUE(--iter == v.begin());
-}
-
 TEST(CappedDistance, Works)
 {
     std::list<int> v;
