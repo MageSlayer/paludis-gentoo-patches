@@ -115,18 +115,16 @@ paludis::match_package_with_maybe_changes(
         switch (spec.version_requirements_mode())
         {
             case vr_and:
-                for (VersionRequirements::ConstIterator r(spec.version_requirements_ptr()->begin()),
-                        r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
-                    if (! r->version_operator().as_version_spec_comparator()(id->version(), r->version_spec()))
+                for (const auto & r : *spec.version_requirements_ptr())
+                    if (! r.version_operator().as_version_spec_comparator()(id->version(), r.version_spec()))
                         return false;
                 break;
 
             case vr_or:
                 {
                     bool matched(false);
-                    for (VersionRequirements::ConstIterator r(spec.version_requirements_ptr()->begin()),
-                            r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
-                        if (r->version_operator().as_version_spec_comparator()(id->version(), r->version_spec()))
+                    for (const auto & r : *spec.version_requirements_ptr())
+                        if (r.version_operator().as_version_spec_comparator()(id->version(), r.version_spec()))
                         {
                             matched = true;
                             break;
@@ -220,9 +218,8 @@ paludis::match_package_with_maybe_changes(
     {
         if (spec.additional_requirements_ptr())
         {
-            for (AdditionalPackageDepSpecRequirements::ConstIterator u(spec.additional_requirements_ptr()->begin()),
-                    u_end(spec.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
-                if (! (*u)->requirement_met(&env, maybe_changes_to_owner, id, from_id, maybe_changes_to_target).first)
+            for (const auto & u : *spec.additional_requirements_ptr())
+                if (! u->requirement_met(&env, maybe_changes_to_owner, id, from_id, maybe_changes_to_target).first)
                     return false;
         }
     }

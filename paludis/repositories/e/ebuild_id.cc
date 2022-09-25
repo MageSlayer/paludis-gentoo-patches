@@ -377,26 +377,23 @@ EbuildID::need_non_xml_keys_added() const
             const std::shared_ptr<const Set<std::string> > use_expand_unprefixed(e_repo->profile()->use_expand_unprefixed());
             const std::string separator(stringify(supported_eapi->choices_options()->use_expand_separator()));
 
-            for (Set<std::string>::ConstIterator x(e_repo->profile()->use_expand_implicit()->begin()),
-                    x_end(e_repo->profile()->use_expand_implicit()->end()) ;
-                    x != x_end ; ++x)
+            for (const auto & x : *e_repo->profile()->use_expand_implicit())
             {
-                std::string lower_x(tolower(*x));
-                bool prefixed(use_expand->end() != use_expand->find(*x));
-                bool unprefixed(use_expand_unprefixed->end() != use_expand_unprefixed->find(*x));
+                std::string lower_x(tolower(x));
+                bool prefixed(use_expand->end() != use_expand->find(x));
+                bool unprefixed(use_expand_unprefixed->end() != use_expand_unprefixed->find(x));
 
                 if ((! unprefixed) && (! prefixed))
                     Log::get_instance()->message("e.ebuild.iuse_effective.neither", ll_qa, lc_context)
-                        << "USE_EXPAND_IMPLICIT value " << *x << " is not in either USE_EXPAND or USE_EXPAND_UNPREFIXED";
+                        << "USE_EXPAND_IMPLICIT value " << x << " is not in either USE_EXPAND or USE_EXPAND_UNPREFIXED";
 
-                const std::shared_ptr<const Set<std::string> > values(e_repo->profile()->use_expand_values(*x));
-                for (Set<std::string>::ConstIterator v(values->begin()), v_end(values->end()) ;
-                        v != v_end ; ++v)
+                const std::shared_ptr<const Set<std::string> > values(e_repo->profile()->use_expand_values(x));
+                for (const auto & v : *values)
                 {
                     if (prefixed)
-                        iuse_effective->insert(lower_x + separator + *v);
+                        iuse_effective->insert(lower_x + separator + v);
                     if (unprefixed)
-                        iuse_effective->insert(*v);
+                        iuse_effective->insert(v);
                 }
             }
 
@@ -575,11 +572,10 @@ namespace
                 local_ok = true;
             else
             {
-                for (LicenseSpecTree::NodeType<AnyDepSpec>::Type::ConstIterator c(node.begin()), c_end(node.end()) ;
-                        c != c_end ; ++c)
+                for (const auto & c : node)
                 {
                     Save<bool> save_ok(&ok, true);
-                    (*c)->accept(*this);
+                    c->accept(*this);
                     local_ok |= ok;
                 }
             }
@@ -667,32 +663,30 @@ EbuildID::need_masks_added() const
     {
         auto repo_masks(e_repo->layout()->repository_masks(shared_from_this()));
 
-        for (auto r(repo_masks->begin()), r_end(repo_masks->end()) ;
-                r != r_end ; ++r)
-            if (_imp->environment->unmasked_by_user(shared_from_this(), r->token()))
+        for (const auto & r : *repo_masks)
+            if (_imp->environment->unmasked_by_user(shared_from_this(), r.token()))
                 add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
                                 n::mask() = std::make_shared<ERepositoryMask>('r', "repository (overridden)",
-                                    r->comment(), r->token(), r->mask_file()),
+                                    r.comment(), r.token(), r.mask_file()),
                                 n::override_reason() = mro_overridden_by_user
                                 )));
             else
-                add_mask(std::make_shared<ERepositoryMask>('R', "repository", r->comment(), r->token(), r->mask_file())); 
+                add_mask(std::make_shared<ERepositoryMask>('R', "repository", r.comment(), r.token(), r.mask_file()));
     }
 
     {
         auto profile_masks(e_repo->profile()->profile_masks(shared_from_this()));
-        for (auto r(profile_masks->begin()), r_end(profile_masks->end()) ;
-                r != r_end ; ++r)
-            if (_imp->environment->unmasked_by_user(shared_from_this(), r->token()))
+        for (const auto & r : *profile_masks)
+            if (_imp->environment->unmasked_by_user(shared_from_this(), r.token()))
                 add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
                                 n::mask() = std::make_shared<ERepositoryMask>('p', "profile (overridden)",
-                                    r->comment(), r->token(), r->mask_file()),
+                                    r.comment(), r.token(), r.mask_file()),
                                 n::override_reason() = mro_overridden_by_user
                                 )));
             else
-                add_mask(std::make_shared<ERepositoryMask>('P', "profile", r->comment(), r->token(), r->mask_file()));
+                add_mask(std::make_shared<ERepositoryMask>('P', "profile", r.comment(), r.token(), r.mask_file()));
     }
 
     {

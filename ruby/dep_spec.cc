@@ -448,9 +448,8 @@ namespace
 
         if (rb_block_given_p())
         {
-            for (URILabelsDepSpec::ConstIterator it(real_ptr->begin()),
-                     it_end(real_ptr->end()); it_end != it; ++it)
-                rb_yield(uri_label_to_value(*it));
+            for (const auto & it : *real_ptr)
+                rb_yield(uri_label_to_value(it));
 
             return Qnil;
         }
@@ -458,9 +457,8 @@ namespace
         {
             VALUE result(rb_ary_new());
 
-            for (URILabelsDepSpec::ConstIterator it(real_ptr->begin()),
-                     it_end(real_ptr->end()); it_end != it; ++it)
-                rb_ary_push(result, uri_label_to_value(*it));
+            for (const auto & it : *real_ptr)
+                rb_ary_push(result, uri_label_to_value(it));
 
             return result;
         }
@@ -475,9 +473,8 @@ namespace
 
         if (rb_block_given_p())
         {
-            for (DependenciesLabelsDepSpec::ConstIterator it(real_ptr->begin()),
-                     it_end(real_ptr->end()); it_end != it; ++it)
-                rb_yield(dependencies_label_to_value(*it));
+            for (const auto & it : *real_ptr)
+                rb_yield(dependencies_label_to_value(it));
 
             return Qnil;
         }
@@ -485,9 +482,8 @@ namespace
         {
             VALUE result(rb_ary_new());
 
-            for (DependenciesLabelsDepSpec::ConstIterator it(real_ptr->begin()),
-                     it_end(real_ptr->end()); it_end != it; ++it)
-                rb_ary_push(result, dependencies_label_to_value(*it));
+            for (const auto & it : *real_ptr)
+                rb_ary_push(result, dependencies_label_to_value(it));
 
             return result;
         }

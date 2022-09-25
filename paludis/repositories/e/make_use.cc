@@ -46,16 +46,14 @@ paludis::erepository::make_use(const Environment * const,
     if (id.choices_key())
     {
         auto choices(id.choices_key()->parse_value());
-        for (Choices::ConstIterator k(choices->begin()), k_end(choices->end()) ;
-                k != k_end ; ++k)
+        for (const auto & k : *choices)
         {
-            if ((*k)->prefix() == canonical_build_options_prefix())
+            if (k->prefix() == canonical_build_options_prefix())
                 continue;
 
-            for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
-                    i != i_end ; ++i)
-                if ((*i)->enabled())
-                    use += stringify((*i)->name_with_prefix()) + " ";
+            for (const auto & i : *k)
+                if (i->enabled())
+                    use += stringify(i->name_with_prefix()) + " ";
         }
     }
 
@@ -84,23 +82,21 @@ paludis::erepository::make_expand(const Environment * const,
 
     auto choices(e.choices_key()->parse_value());
 
-    for (Set<std::string>::ConstIterator x(profile->use_expand()->begin()), x_end(profile->use_expand()->end()) ;
-            x != x_end ; ++x)
+    for (const auto & x : *profile->use_expand())
     {
-        expand_vars->insert(stringify(*x), "");
+        expand_vars->insert(stringify(x), "");
 
         Choices::ConstIterator k(std::find_if(choices->begin(), choices->end(),
-                    std::bind(std::equal_to<>(), *x,
+                    std::bind(std::equal_to<>(), x,
                         std::bind(std::mem_fn(&Choice::raw_name), std::placeholders::_1))));
         if (k == choices->end())
             continue;
 
-        for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
-                i != i_end ; ++i)
-            if ((*i)->enabled())
+        for (const auto & i : *(*k))
+            if (i->enabled())
             {
                 std::string value;
-                Map<std::string, std::string>::ConstIterator v(expand_vars->find(stringify(*x)));
+                Map<std::string, std::string>::ConstIterator v(expand_vars->find(stringify(x)));
                 if (expand_vars->end() != v)
                 {
                     value = v->second;
@@ -108,8 +104,8 @@ paludis::erepository::make_expand(const Environment * const,
                         value.append(" ");
                     expand_vars->erase(v);
                 }
-                value.append(stringify((*i)->unprefixed_name()));
-                expand_vars->insert(stringify(*x), value);
+                value.append(stringify(i->unprefixed_name()));
+                expand_vars->insert(stringify(x), value);
             }
     }
 

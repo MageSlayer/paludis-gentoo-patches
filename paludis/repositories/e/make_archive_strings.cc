@@ -48,9 +48,9 @@ paludis::erepository::make_archives_strings(
     if (fetches)
         fetches->top()->accept(f);
 
-    for (AFinder::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
+    for (const auto & i : f)
     {
-        const FetchableURIDepSpec * const spec = i->first;
+        const FetchableURIDepSpec * const spec = i.first;
         const std::string filename = spec->filename();
 
         if (already_in_archives.end() == already_in_archives.find(filename))
@@ -69,12 +69,12 @@ paludis::erepository::make_archives_strings(
             fetches->top()->accept(g);
         std::set<std::string> already_in_all_archives;
 
-        for (AAVisitor::ConstIterator gg(g.begin()), gg_end(g.end()) ; gg != gg_end ; ++gg)
+        for (const auto & gg : g)
         {
-            if (already_in_all_archives.end() == already_in_all_archives.find(*gg))
+            if (already_in_all_archives.end() == already_in_all_archives.find(gg))
             {
-                all_archives.append(*gg);
-                already_in_all_archives.insert(*gg);
+                all_archives.append(gg);
+                already_in_all_archives.insert(gg);
             }
             all_archives.append(" ");
         }

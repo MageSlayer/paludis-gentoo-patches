@@ -35,10 +35,9 @@ paludis::erepository::parse_annotations(
         const std::shared_ptr<const Map<std::string, std::string> > & m)
 {
     auto annotations(std::make_shared<DepSpecAnnotations>());
-    for (auto k(m->begin()), k_end(m->end()) ;
-            k != k_end ; ++k)
+    for (const auto & k : *m)
     {
-        std::string key(k->first);
+        std::string key(k.first);
 
         if (key.empty())
             throw EDepParseError(key, "Empty annotation key");
@@ -58,19 +57,19 @@ paludis::erepository::parse_annotations(
         /* blocks */
         if (key == eapi.supported()->annotations()->blocker_resolution())
         {
-            if (k->second.empty())
+            if (k.second.empty())
             {
             }
-            else if (k->second == eapi.supported()->annotations()->blocker_resolution_manual())
+            else if (k.second == eapi.supported()->annotations()->blocker_resolution_manual())
                 role = dsar_blocker_manual;
-            else if (k->second == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_after())
+            else if (k.second == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_after())
                 role = dsar_blocker_uninstall_blocked_after;
-            else if (k->second == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_before())
+            else if (k.second == eapi.supported()->annotations()->blocker_resolution_uninstall_blocked_before())
                 role = dsar_blocker_uninstall_blocked_before;
-            else if (k->second == eapi.supported()->annotations()->blocker_resolution_upgrade_blocked_before())
+            else if (k.second == eapi.supported()->annotations()->blocker_resolution_upgrade_blocked_before())
                 role = dsar_blocker_upgrade_blocked_before;
             else
-                throw EDepParseError(k->second, "Unknown value '" + k->second + "' for annotation '" + key + "'");
+                throw EDepParseError(k.second, "Unknown value '" + k.second + "' for annotation '" + key + "'");
         }
 
         /* myoptions number-selected */
@@ -78,17 +77,17 @@ paludis::erepository::parse_annotations(
         {
             if (key == eapi.supported()->annotations()->myoptions_number_selected())
             {
-                if (k->second.empty())
+                if (k.second.empty())
                 {
                 }
-                else if (k->second == eapi.supported()->annotations()->myoptions_number_selected_at_least_one())
+                else if (k.second == eapi.supported()->annotations()->myoptions_number_selected_at_least_one())
                     role = dsar_myoptions_n_at_least_one;
-                else if (k->second == eapi.supported()->annotations()->myoptions_number_selected_at_most_one())
+                else if (k.second == eapi.supported()->annotations()->myoptions_number_selected_at_most_one())
                     role = dsar_myoptions_n_at_most_one;
-                else if (k->second == eapi.supported()->annotations()->myoptions_number_selected_exactly_one())
+                else if (k.second == eapi.supported()->annotations()->myoptions_number_selected_exactly_one())
                     role = dsar_myoptions_n_exactly_one;
                 else
-                    throw EDepParseError(key, "Unknown value '" + k->second + "' for annotation '" + key + "'");
+                    throw EDepParseError(key, "Unknown value '" + k.second + "' for annotation '" + key + "'");
             }
         }
 
@@ -150,13 +149,13 @@ paludis::erepository::parse_annotations(
 
         if (dsar_none == role)
             Log::get_instance()->message("e.dep_parser.unknown_annotation", ll_qa, lc_context)
-                << "Unknown annotation '" << key << "' = '" << k->second << "'";
+                << "Unknown annotation '" << key << "' = '" << k.second << "'";
 
         annotations->add(make_named_values<DepSpecAnnotation>(
-                    n::key() = k->first, /* not key */
+                    n::key() = k.first, /* not key */
                     n::kind() = is_star ? dsak_expandable : dsak_literal,
                     n::role() = role,
-                    n::value() = k->second));
+                    n::value() = k.second));
     }
 
     return annotations;

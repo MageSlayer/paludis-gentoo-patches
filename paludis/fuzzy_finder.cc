@@ -159,9 +159,8 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
 
     std::shared_ptr<const PackageIDSequence> ids(e[selection::BestVersionOnly(g | FuzzyPackageName(package) | filter)]);
 
-    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end())
-            ; i != i_end ; ++i)
-        _imp->candidates.push_back((*i)->name());
+    for (const auto & i : *ids)
+        _imp->candidates.push_back(i->name());
 }
 
 FuzzyCandidatesFinder::~FuzzyCandidatesFinder() = default;

@@ -72,10 +72,9 @@ namespace
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                    i != i_end ; ++i)
-                if (not_strongly_masked(*i))
-                    result->insert(*i);
+            for (const auto & i : *id)
+                if (not_strongly_masked(i))
+                    result->insert(i);
 
             return result;
         }

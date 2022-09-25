@@ -37,10 +37,9 @@ paludis::resolver::collect_world(
     const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
     const std::shared_ptr<const SetSpecTree> set(env->set(SetName("world")));
 
-    for (auto i(from->begin()), i_end(from->end()) ;
-            i != i_end ; ++i)
-        if (match_package_in_set(*env, *set, *i, { }))
-            result->insert(*i);
+    for (const auto & i : *from)
+        if (match_package_in_set(*env, *set, i, { }))
+            result->insert(i);
 
     return result;
 }

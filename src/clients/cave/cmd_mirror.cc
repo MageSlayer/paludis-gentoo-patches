@@ -133,10 +133,9 @@ MirrorCommand::run(
 
     const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(g)]);
 
-    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-            i != i_end ; ++i)
+    for (const auto & i : *ids)
     {
-        Context i_context("When fetching ID '" + stringify(**i) + "':");
+        Context i_context("When fetching ID '" + stringify(*i) + "':");
 
         FetchAction a(make_named_values<FetchActionOptions>(
                     n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),
@@ -149,13 +148,13 @@ MirrorCommand::run(
                     n::want_phase() = &want_all_phases
                     ));
 
-        if ((*i)->supports_action(SupportsActionTest<FetchAction>()))
+        if (i->supports_action(SupportsActionTest<FetchAction>()))
         {
-            cout << "Fetching " << **i << "..." << endl;
-            (*i)->perform_action(a);
+            cout << "Fetching " << *i << "..." << endl;
+            i->perform_action(a);
         }
         else
-            cout << "No fetching supported for " << **i << endl;
+            cout << "No fetching supported for " << *i << endl;
 
         cout << endl;
     }

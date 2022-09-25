@@ -143,23 +143,21 @@ DisplayCallback::update() const
 
     if (! _imp->steps.empty())
     {
-        for (std::map<std::string, int>::const_iterator i(_imp->steps.begin()), i_end(_imp->steps.end()) ;
-                i != i_end ; ++i)
+        for (const auto & step : _imp->steps)
         {
             if (! first)
                 s.append(", ");
             first = false;
 
-            s.append(stringify(i->second) + " " + i->first);
+            s.append(stringify(step.second) + " " + step.first);
         }
     }
 
     if (! _imp->metadata.empty())
     {
         std::multimap<int, std::string> biggest;
-        for (std::map<std::string, int>::const_iterator i(_imp->metadata.begin()), i_end(_imp->metadata.end()) ;
-                i != i_end ; ++i)
-            biggest.insert(std::make_pair(i->second, i->first));
+        for (const auto & i : _imp->metadata)
+            biggest.insert(std::make_pair(i.second, i.first));
 
         int t(0);
         int n(0);

@@ -47,9 +47,8 @@ namespace
     void handle_annotations(std::string & s, const std::shared_ptr<const Map<std::string, std::string> > & m)
     {
         s.append("[");
-        for (Map<std::string, std::string>::ConstIterator i(m->begin()), i_end(m->end()) ;
-                i != i_end ; ++i)
-            s.append(i->first + ":" + i->second + ";");
+        for (const auto & i : *m)
+            s.append(i.first + ":" + i.second + ";");
         s.append("]");
     }
 }

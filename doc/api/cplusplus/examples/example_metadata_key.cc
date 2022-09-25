@@ -253,13 +253,12 @@ int main(int argc, char * argv[])
                     generator::Package(QualifiedPackageName("sys-apps/paludis")))]);
 
         /* For each ID: */
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
+        for (const auto & i : *ids)
         {
-            cout << **i << ":" << endl;
+            cout << *i << ":" << endl;
 
             /* For each metadata key: */
-            for (PackageID::MetadataConstIterator k((*i)->begin_metadata()), k_end((*i)->end_metadata()) ;
+            for (PackageID::MetadataConstIterator k(i->begin_metadata()), k_end(i->end_metadata()) ;
                     k != k_end ; ++k)
             {
                 /* Display it. Note that PackageID::MetadataConstIterator returns a std::shared_ptr

@@ -71,10 +71,9 @@ namespace
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                    i != i_end ; ++i)
-                if (! is_already_binary(*i))
-                    result->insert(*i);
+            for (const auto & i : *id)
+                if (! is_already_binary(i))
+                    result->insert(i);
 
             return result;
         }

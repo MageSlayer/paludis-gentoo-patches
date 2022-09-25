@@ -129,10 +129,9 @@ namespace
             bool done_brackets(false);
 
             if (p.maybe_annotations())
-                for (auto m(p.maybe_annotations()->begin()), m_end(p.maybe_annotations()->end()) ;
-                        m != m_end ; ++m)
+                for (const auto & m : *p.maybe_annotations())
                 {
-                    switch (m->kind())
+                    switch (m.kind())
                     {
                         case dsak_literal:
                         case dsak_expandable:
@@ -152,9 +151,9 @@ namespace
                         done_brackets = true;
                     }
 
-                    str << m->key() << " = [" << (m->value().empty() ? " " : " " + m->value() + " ") << "] ";
+                    str << m.key() << " = [" << (m.value().empty() ? " " : " " + m.value() + " ") << "] ";
 
-                    if (m->role() == dsar_general_description)
+                    if (m.role() == dsar_general_description)
                         seen_description = true;
                 }
 
@@ -793,35 +792,34 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 VersionSpec v(tokens[3], eapi->supported()->version_spec_options());
                 std::string result;
-                for (VersionSpec::ConstIterator c(v.begin()), c_end(v.end()) ;
-                        c != c_end ; ++c)
+                for (const auto & c : v)
                 {
-                    if (c->text().empty())
+                    if (c.text().empty())
                         continue;
 
                     if (! result.empty())
                         result.append(" ");
 
-                    switch (c->text().at(0))
+                    switch (c.text().at(0))
                     {
                         case '.':
                         case '-':
                         case '_':
                             {
                                 if (all)
-                                    result.append(c->text().substr(0, 1));
-                                if (c->text().length() > 1)
+                                    result.append(c.text().substr(0, 1));
+                                if (c.text().length() > 1)
                                 {
                                     if (all)
                                         result.append(" ");
-                                    result.append(c->text().substr(1));
+                                    result.append(c.text().substr(1));
                                 }
 
                             }
                             break;
 
                         default:
-                            result.append(c->text());
+                            result.append(c.text());
                             break;
                     }
                 }
@@ -863,8 +861,7 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
 
                 int current_pos(0);
                 std::string result;
-                for (VersionSpec::ConstIterator c(v.begin()), c_end(v.end()) ;
-                        c != c_end ; ++c)
+                for (const auto & c : v)
                 {
                     ++current_pos;
                     if (current_pos > range_end)
@@ -872,25 +869,25 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     if (current_pos < range_start)
                         continue;
 
-                    if (c->text().empty())
+                    if (c.text().empty())
                         continue;
 
-                    switch (c->text().at(0))
+                    switch (c.text().at(0))
                     {
                         case '.':
                         case '-':
                         case '_':
                             {
                                 if (! result.empty())
-                                    result.append(c->text().substr(0, 1));
-                                if (c->text().length() > 1)
-                                    result.append(c->text().substr(1));
+                                    result.append(c.text().substr(0, 1));
+                                if (c.text().length() > 1)
+                                    result.append(c.text().substr(1));
 
                             }
                             break;
 
                         default:
-                            result.append(c->text());
+                            result.append(c.text());
                             break;
                     }
                 }
@@ -919,19 +916,18 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                             bool replacing_done(false);
                             char replace_separator(tokens[3].at(0));
 
-                            for (VersionSpec::ConstIterator c(v.begin()), c_end(v.end()) ;
-                                    c != c_end ; ++c)
+                            for (const auto & c : v)
                             {
-                                if (c->text().empty())
+                                if (c.text().empty())
                                     continue;
 
-                                if (! replacing_done && replace_separator == c->text().at(0))
+                                if (! replacing_done && replace_separator == c.text().at(0))
                                 {
-                                    result.append(replacement + c->text().substr(1));
+                                    result.append(replacement + c.text().substr(1));
                                     replacing_done = true;
                                 }
                                 else
-                                    result.append(c->text());
+                                    result.append(c.text());
                             }
                         }
                         break;
@@ -939,27 +935,26 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                     default:
                         int replace_pos(destringify<int>(tokens[3]));
 
-                        for (VersionSpec::ConstIterator c(v.begin()), c_end(v.end()) ;
-                                c != c_end ; ++c)
+                        for (const auto & c : v)
                         {
-                            if (c->text().empty())
+                            if (c.text().empty())
                                 continue;
 
-                            switch (c->text().at(0))
+                            switch (c.text().at(0))
                             {
                                 case '.':
                                 case '-':
                                 case '_':
                                     {
                                         if (current_pos == replace_pos)
-                                            result.append(replacement + c->text().substr(1));
+                                            result.append(replacement + c.text().substr(1));
                                         else
-                                            result.append(c->text());
+                                            result.append(c.text());
                                     }
                                     break;
 
                                 default:
-                                    result.append(c->text());
+                                    result.append(c.text());
                                     break;
                             }
 
@@ -981,26 +976,25 @@ paludis::erepository::pipe_command_handler(const Environment * const environment
                 VersionSpec v(tokens[4], eapi->supported()->version_spec_options());
                 std::string replacement(tokens[3]);
                 std::string result;
-                for (VersionSpec::ConstIterator c(v.begin()), c_end(v.end()) ;
-                        c != c_end ; ++c)
+                for (const auto & c : v)
                 {
-                    if (c->text().empty())
+                    if (c.text().empty())
                         continue;
 
-                    switch (c->text().at(0))
+                    switch (c.text().at(0))
                     {
                         case '.':
                         case '-':
                         case '_':
                             {
                                 result.append(replacement);
-                                if (c->text().length() > 1)
-                                    result.append(c->text().substr(1));
+                                if (c.text().length() > 1)
+                                    result.append(c.text().substr(1));
                             }
                             break;
 
                         default:
-                            result.append(c->text());
+                            result.append(c.text());
                             break;
                     }
                 }

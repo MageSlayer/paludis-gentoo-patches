@@ -143,14 +143,14 @@ namespace
             if (rb_block_given_p())
             {
                 std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names({ }));
-                for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                    rb_yield(rb_str_new2(stringify(*i).c_str()));
+                for (const auto & i : *c)
+                    rb_yield(rb_str_new2(stringify(i).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
             std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names({ }));
-            for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
+            for (const auto & i : *c)
+                rb_ary_push(result, rb_str_new2(stringify(i).c_str()));
             return result;
         }
         catch (const std::exception & e)
@@ -179,14 +179,14 @@ namespace
             if (rb_block_given_p())
             {
                 std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package, { }));
-                for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                    rb_yield(rb_str_new2(stringify(*i).c_str()));
+                for (const auto & i : *c)
+                    rb_yield(rb_str_new2(stringify(i).c_str()));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
             std::shared_ptr<const CategoryNamePartSet> c((*self_ptr)->category_names_containing_package(package, { }));
-            for (CategoryNamePartSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
+            for (const auto & i : *c)
+                rb_ary_push(result, rb_str_new2(stringify(i).c_str()));
             return result;
         }
         catch (const std::exception & e)
@@ -215,14 +215,14 @@ namespace
             if (rb_block_given_p())
             {
                 std::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category, { }));
-                for (QualifiedPackageNameSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                    rb_yield(qualified_package_name_to_value(*i));
+                for (const auto & i : *c)
+                    rb_yield(qualified_package_name_to_value(i));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
             std::shared_ptr<const QualifiedPackageNameSet> c((*self_ptr)->package_names(category, { }));
-            for (QualifiedPackageNameSet::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                rb_ary_push(result, qualified_package_name_to_value(*i));
+            for (const auto & i : *c)
+                rb_ary_push(result, qualified_package_name_to_value(i));
             return result;
         }
         catch (const std::exception & e)
@@ -252,14 +252,14 @@ namespace
             if (rb_block_given_p())
             {
                 std::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q, { }));
-                for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                    rb_yield(package_id_to_value(*i));
+                for (const auto & i : *c)
+                    rb_yield(package_id_to_value(i));
                 return Qnil;
             }
             VALUE result(rb_ary_new());
             std::shared_ptr<const PackageIDSequence> c((*self_ptr)->package_ids(q, { }));
-            for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                rb_ary_push(result, package_id_to_value(*i));
+            for (const auto & i : *c)
+                rb_ary_push(result, package_id_to_value(i));
             return result;
         }
         catch (const std::exception & e)

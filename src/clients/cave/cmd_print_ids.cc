@@ -163,56 +163,55 @@ namespace
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (PackageIDSet::ConstIterator i(c->begin()), i_end(c->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & i : *c)
             {
                 if (mask_filter == "none")
                 {
-                    if (! (*i)->masked())
-                        result->insert(*i);
+                    if (! i->masked())
+                        result->insert(i);
                 }
                 else if (mask_filter == "any")
                 {
-                    if ((*i)->masked())
-                        result->insert(*i);
+                    if (i->masked())
+                        result->insert(i);
                 }
                 else if (mask_filter == "user")
                 {
-                    for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
+                    for (PackageID::MasksConstIterator m(i->begin_masks()), m_end(i->end_masks()) ;
                             m != m_end ; ++m)
                         if (visitor_cast<const UserMask>(**m))
                         {
-                            result->insert(*i);
+                            result->insert(i);
                             break;
                         }
                 }
                 else if (mask_filter == "unaccepted")
                 {
-                    for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
+                    for (PackageID::MasksConstIterator m(i->begin_masks()), m_end(i->end_masks()) ;
                             m != m_end ; ++m)
                         if (visitor_cast<const UnacceptedMask>(**m))
                         {
-                            result->insert(*i);
+                            result->insert(i);
                             break;
                         }
                 }
                 else if (mask_filter == "repository")
                 {
-                    for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
+                    for (PackageID::MasksConstIterator m(i->begin_masks()), m_end(i->end_masks()) ;
                             m != m_end ; ++m)
                         if (visitor_cast<const RepositoryMask>(**m))
                         {
-                            result->insert(*i);
+                            result->insert(i);
                             break;
                         }
                 }
                 else if (mask_filter == "unsupported")
                 {
-                    for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
+                    for (PackageID::MasksConstIterator m(i->begin_masks()), m_end(i->end_masks()) ;
                             m != m_end ; ++m)
                         if (visitor_cast<const UnsupportedMask>(**m))
                         {
-                            result->insert(*i);
+                            result->insert(i);
                             break;
                         }
                 }
@@ -296,9 +295,8 @@ PrintIDsCommand::run(
     }
 
     const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(fg)]);
-    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-            i != i_end ; ++i)
-        cout << format_package_id(*i, cmdline.a_format.argument());
+    for (const auto & i : *ids)
+        cout << format_package_id(i, cmdline.a_format.argument());
 
     return EXIT_SUCCESS;
 }

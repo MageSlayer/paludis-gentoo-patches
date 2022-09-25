@@ -153,9 +153,8 @@ namespace
                 return false;
             else
             {
-                for (auto i(origin_ids->begin()), i_end(origin_ids->end()) ;
-                        i != i_end ; ++i)
-                    if ((*can)(*i))
+                for (const auto & i : *origin_ids)
+                    if ((*can)(i))
                         return false;
 
                 return true;

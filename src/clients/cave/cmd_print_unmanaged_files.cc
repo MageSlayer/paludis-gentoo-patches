@@ -132,9 +132,8 @@ namespace
                 if (! contents)
                     return;
 
-                for (auto entry(contents->begin()), end(contents->end());
-                        entry != end; ++entry)
-                    _contents->insert((*entry)->location_key()->parse_value());
+                for (const auto & entry : *contents)
+                    _contents->insert(entry->location_key()->parse_value());
             }
 
         private:

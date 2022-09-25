@@ -82,9 +82,8 @@ namespace paludis
             unmasked_category_names(std::make_shared<CategoryNamePartSet>()),
             no_package_ids(std::make_shared<PackageIDSequence>())
         {
-            for (auto i(params.sync()->begin()), i_end(params.sync()->end()) ;
-                    i != i_end ; ++i)
-                sync_hosts->insert(i->first, extract_host_from_url(i->second));
+            for (const auto & i : *params.sync())
+                sync_hosts->insert(i.first, extract_host_from_url(i.second));
 
             unmasked_category_names->insert(CategoryNamePart("repository"));
         }
@@ -289,13 +288,12 @@ UnavailableRepository::sync(
     tokenise_whitespace(sync_uri, std::back_inserter(sync_list));
 
     bool ok(false);
-    for (std::list<std::string>::const_iterator s(sync_list.begin()),
-            s_end(sync_list.end()) ; s != s_end ; ++s)
+    for (const auto & s : sync_list)
     {
         DefaultSyncer syncer(make_named_values<SyncerParams>(
                     n::environment() = _imp->params.environment(),
                     n::local() = stringify(_imp->params.location()),
-                    n::remote() = *s,
+                    n::remote() = s,
                     n::revision() = revision
                     ));
 

@@ -138,14 +138,14 @@ namespace
         SetsType sets;
         tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(varstr, ":", "", std::back_inserter(sets));
 
-        for (SetsType::const_iterator it = sets.begin(), end = sets.end(); end != it; ++it)
+        for (const auto & set : sets)
         {
-            const std::string::size_type assign(it->find("="));
+            const std::string::size_type assign(set.find("="));
 
             if (std::string::npos != assign)
             {
-                const std::string var_name(it->substr(0, assign));
-                const std::string var_val(it->substr(assign + 1));
+                const std::string var_name(set.substr(0, assign));
+                const std::string var_val(set.substr(assign + 1));
 
                 if (! var_name.empty()  && ! var_val.empty())
                     varmap->insert(var_name,  var_val);
@@ -545,26 +545,24 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
 
         /* find repo config files */
         std::list<FSPath> repo_files;
-        for (std::list<FSPath>::const_iterator dir(dirs.begin()), dir_end(dirs.end()) ;
-                dir != dir_end ; ++dir)
+        for (const auto & dir : dirs)
         {
-            if (! dir->stat().exists())
+            if (! dir.stat().exists())
                 continue;
 
-            std::remove_copy_if(FSIterator(*dir, { }), FSIterator(), std::back_inserter(repo_files),
+            std::remove_copy_if(FSIterator(dir, { }), FSIterator(), std::back_inserter(repo_files),
                     std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
-            std::remove_copy_if(FSIterator(*dir, { }), FSIterator(), std::back_inserter(repo_files),
+            std::remove_copy_if(FSIterator(dir, { }), FSIterator(), std::back_inserter(repo_files),
                     std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         /* get a mapping from repository name to key function, so we can work out the order */
         std::unordered_map<RepositoryName, std::function<std::string (const std::string &)>, Hash<RepositoryName> > repo_configs;
-        for (std::list<FSPath>::const_iterator repo_file(repo_files.begin()), repo_file_end(repo_files.end()) ;
-                repo_file != repo_file_end ; ++repo_file)
+        for (const auto & repo_file : repo_files)
         {
-            Context local_context("When reading repository file '" + stringify(*repo_file) + "':");
+            Context local_context("When reading repository file '" + stringify(repo_file) + "':");
 
-            const std::function<std::string (const std::string &)> repo_func(repo_func_from_file(*repo_file));
+            const std::function<std::string (const std::string &)> repo_func(repo_func_from_file(repo_file));
             if (! repo_func)
                 continue;
 
@@ -572,7 +570,7 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             if (! repo_configs.insert(std::make_pair(name, repo_func)).second)
             {
                 Log::get_instance()->message("paludis_environment.repositories.duplicate", ll_warning, lc_context)
-                    << "Duplicate repository name '" << name << "' from config file '" << *repo_file << "', skipping";
+                    << "Duplicate repository name '" << name << "' from config file '" << repo_file << "', skipping";
                 continue;
             }
         }
@@ -582,28 +580,26 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         std::for_each(first_iterator(repo_configs.begin()), first_iterator(repo_configs.end()),
                 std::bind(std::mem_fn(&DirectedGraph<RepositoryName, bool>::add_node), &repository_deps, _1));
 
-        for (std::unordered_map<RepositoryName, std::function<std::string (const std::string &)>, Hash<RepositoryName> >::const_iterator
-                r(repo_configs.begin()), r_end(repo_configs.end()) ; r != r_end ; ++r)
+        for (const auto & repo_config : repo_configs)
         {
-            std::shared_ptr<const RepositoryNameSet> deps(RepositoryFactory::get_instance()->dependencies(_imp->env, r->second));
-            for (RepositoryNameSet::ConstIterator d(deps->begin()), d_end(deps->end()) ;
-                    d != d_end ; ++d)
+            std::shared_ptr<const RepositoryNameSet> deps(RepositoryFactory::get_instance()->dependencies(_imp->env, repo_config.second));
+            for (const auto & d : *deps)
             {
-                if (*d == r->first)
+                if (d == repo_config.first)
                 {
                     Log::get_instance()->message("paludis_environment.repositories.self_dependent", ll_warning, lc_context)
-                        << "Repository '" + stringify(r->first) + "' incorrectly requires itself";
+                        << "Repository '" + stringify(repo_config.first) + "' incorrectly requires itself";
                     continue;
                 }
 
                 try
                 {
-                    repository_deps.add_edge(r->first, *d, true);
+                    repository_deps.add_edge(repo_config.first, d, true);
                 }
                 catch (const NoSuchGraphNodeError &)
                 {
-                    throw ConfigurationError("Repository '" + stringify(r->first) + "' requires repository '" +
-                            stringify(*d) + "', which is not configured");
+                    throw ConfigurationError("Repository '" + stringify(repo_config.first) + "' requires repository '" +
+                            stringify(d) + "', which is not configured");
                 }
             }
         }
@@ -613,11 +609,10 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
             std::list<RepositoryName> ordered_repos;
             repository_deps.topological_sort(std::back_inserter(ordered_repos));
 
-            for (std::list<RepositoryName>::const_iterator o(ordered_repos.begin()), o_end(ordered_repos.end()) ;
-                    o != o_end ; ++o)
+            for (const auto & ordered_repo : ordered_repos)
             {
                 std::unordered_map<RepositoryName, std::function<std::string (const std::string &)>, Hash<RepositoryName> >::const_iterator
-                    c(repo_configs.find(*o));
+                    c(repo_configs.find(ordered_repo));
                 if (c == repo_configs.end())
                     throw InternalError(PALUDIS_HERE, "*o not in repo_configs");
 
@@ -647,15 +642,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
-        for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;
-                file != file_end ; ++file)
+        for (const auto & file : files)
         {
-            Context local_context("When reading keywords file '" + stringify(*file) + "':");
+            Context local_context("When reading keywords file '" + stringify(file) + "':");
 
-            if (! file->stat().exists())
+            if (! file.stat().exists())
                 continue;
 
-            _imp->keywords_conf->add(*file);
+            _imp->keywords_conf->add(file);
         }
     }
 
@@ -675,15 +669,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         }
 
         bool any(false);
-        for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;
-                file != file_end ; ++file)
+        for (const auto & file : files)
         {
-            Context local_context("When reading output file '" + stringify(*file) + "':");
+            Context local_context("When reading output file '" + stringify(file) + "':");
 
-            if (! file->stat().exists())
+            if (! file.stat().exists())
                 continue;
 
-            _imp->output_conf->add(*file, FSPath(_imp->root));
+            _imp->output_conf->add(file, FSPath(_imp->root));
             any = true;
         }
 
@@ -704,15 +697,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
-        for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;
-                file != file_end ; ++file)
+        for (const auto & file : files)
         {
-            Context local_context("When reading use file '" + stringify(*file) + "':");
+            Context local_context("When reading use file '" + stringify(file) + "':");
 
-            if (! file->stat().exists())
+            if (! file.stat().exists())
                 continue;
 
-            _imp->use_conf->add(*file);
+            _imp->use_conf->add(file);
         }
     }
 
@@ -729,15 +721,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
-        for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;
-                file != file_end ; ++file)
+        for (const auto & file : files)
         {
-            Context local_context("When reading licenses file '" + stringify(*file) + "':");
+            Context local_context("When reading licenses file '" + stringify(file) + "':");
 
-            if (! file->stat().exists())
+            if (! file.stat().exists())
                 continue;
 
-            _imp->licenses_conf->add(*file);
+            _imp->licenses_conf->add(file);
         }
     }
 
@@ -756,15 +747,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
-        for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;
-                file != file_end ; ++file)
+        for (const auto & file : files)
         {
-            Context local_context("When reading package_mask file '" + stringify(*file) + "':");
+            Context local_context("When reading package_mask file '" + stringify(file) + "':");
 
-            if (! file->stat().exists())
+            if (! file.stat().exists())
                 continue;
 
-            _imp->package_mask_conf->add(*file);
+            _imp->package_mask_conf->add(file);
         }
     }
 
@@ -783,15 +773,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
-        for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;
-                file != file_end ; ++file)
+        for (const auto & file : files)
         {
-            Context local_context("When reading package_unmask file '" + stringify(*file) + "':");
+            Context local_context("When reading package_unmask file '" + stringify(file) + "':");
 
-            if (! file->stat().exists())
+            if (! file.stat().exists())
                 continue;
 
-            _imp->package_unmask_conf->add(*file);
+            _imp->package_unmask_conf->add(file);
         }
     }
 
@@ -808,15 +797,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
-        for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;
-                file != file_end ; ++file)
+        for (const auto & file : files)
         {
-            Context local_context("When reading mirrors file '" + stringify(*file) + "':");
+            Context local_context("When reading mirrors file '" + stringify(file) + "':");
 
-            if (! file->stat().exists())
+            if (! file.stat().exists())
                 continue;
 
-            _imp->mirrors_conf->add(*file);
+            _imp->mirrors_conf->add(file);
         }
     }
 
@@ -833,15 +821,14 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                     std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
-        for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;
-                file != file_end ; ++file)
+        for (const auto & file : files)
         {
-            Context local_context("When reading suggestions file '" + stringify(*file) + "':");
+            Context local_context("When reading suggestions file '" + stringify(file) + "':");
 
-            if (! file->stat().exists())
+            if (! file.stat().exists())
                 continue;
 
-            _imp->suggestions_conf->add(*file);
+            _imp->suggestions_conf->add(file);
         }
     }
 

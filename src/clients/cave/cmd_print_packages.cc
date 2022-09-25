@@ -100,15 +100,14 @@ PrintPackagesCommand::run(
                 continue;
 
         std::shared_ptr<const CategoryNamePartSet> categories(repository->category_names({}));
-        for (CategoryNamePartSet::ConstIterator c(categories->begin()), c_end(categories->end());
-                c != c_end; ++c)
+        for (const auto & c : *categories)
         {
             if (cmdline.a_category.specified())
                 if (cmdline.a_category.end_args() == std::find(
-                            cmdline.a_category.begin_args(), cmdline.a_category.end_args(), stringify(*c)))
+                            cmdline.a_category.begin_args(), cmdline.a_category.end_args(), stringify(c)))
                     continue;
 
-            std::shared_ptr<const QualifiedPackageNameSet> packages(repository->package_names(*c, { }));
+            std::shared_ptr<const QualifiedPackageNameSet> packages(repository->package_names(c, { }));
             std::copy(packages->begin(), packages->end(), std::inserter(all_packages, all_packages.begin()));
         }
     }

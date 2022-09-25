@@ -62,10 +62,9 @@ namespace
 
             if (s.version_requirements_ptr())
             {
-                for (VersionRequirements::ConstIterator r(s.version_requirements_ptr()->begin()),
-                        r_end(s.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+                for (const auto & r : *s.version_requirements_ptr())
                     tokens.insert("version_requirement:" + stringify(s.version_requirements_mode()) +
-                            stringify(r->version_operator()) + stringify(r->version_spec()));
+                            stringify(r.version_operator()) + stringify(r.version_spec()));
             }
 
             if (s.slot_requirement_ptr())
@@ -102,9 +101,8 @@ namespace
 
             if (s.additional_requirements_ptr())
             {
-                for (AdditionalPackageDepSpecRequirements::ConstIterator u(s.additional_requirements_ptr()->begin()),
-                        u_end(s.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
-                    tokens.insert("additional_requirement:" + stringify(**u));
+                for (const auto & u : *s.additional_requirements_ptr())
+                    tokens.insert("additional_requirement:" + stringify(*u));
             }
 
             return "PackageDepSpec(" + join(tokens.begin(), tokens.end(), ";") + ")";

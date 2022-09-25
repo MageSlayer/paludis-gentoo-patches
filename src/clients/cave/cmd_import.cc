@@ -221,15 +221,14 @@ ImportCommand::run(
     {
         std::shared_ptr<const PackageIDSequence> old_ids((*env)[selection::AllVersionsSorted(generator::Package(package))]);
         std::shared_ptr<const PackageID> old_id;
-        for (PackageIDSequence::ConstIterator i(old_ids->begin()), i_end(old_ids->end()) ;
-                i != i_end ; ++i)
+        for (const auto & i : *old_ids)
         {
-            auto repo(env->fetch_repository((*i)->repository_name()));
+            auto repo(env->fetch_repository(i->repository_name()));
             if (! repo->format_key())
                 continue;
             if (repo->format_key()->parse_value() != "installed_unpackaged")
                 continue;
-            old_id = *i;
+            old_id = i;
             break;
         }
 

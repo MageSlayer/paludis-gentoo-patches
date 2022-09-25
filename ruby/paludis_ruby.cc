@@ -160,9 +160,8 @@ RegisterRubyClass::~RegisterRubyClass()
 void
 RegisterRubyClass::execute() const
 {
-    for (std::list<void (*)()>::const_iterator f(_imp->funcs.begin()), f_end(_imp->funcs.end()) ;
-            f != f_end ; ++f)
-        (*f)();
+    for (auto func : _imp->funcs)
+        func();
 }
 
 RegisterRubyClass::Register::Register(void (* f)())
@@ -230,17 +229,17 @@ paludis::ruby::value_case_to_RubyCase(const std::string & s)
 
     bool upper_next(true);
     std::string result;
-    for (std::string::size_type p(0), p_end(s.length()) ; p != p_end ; ++p)
+    for (char p : s)
     {
-        if ('_' == s[p] || ' ' == s[p])
+        if ('_' == p || ' ' == p)
             upper_next = true;
         else if (upper_next)
         {
-            result.append(std::string(1, toupper(s[p])));
+            result.append(std::string(1, toupper(p)));
             upper_next = false;
         }
         else
-            result.append(std::string(1, s[p]));
+            result.append(std::string(1, p));
     }
 
     return result;

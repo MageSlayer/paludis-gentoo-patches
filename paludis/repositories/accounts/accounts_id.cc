@@ -520,13 +520,12 @@ AccountsID::perform_action(Action & action) const
             throw InternalError(PALUDIS_HERE, "bad WantPhase");
     }
 
-    for (PackageIDSequence::ConstIterator i(install_action->options.replacing()->begin()), i_end(install_action->options.replacing()->end()) ;
-            i != i_end ; ++i)
+    for (const auto & i : *install_action->options.replacing())
     {
-        Context local_context("When cleaning '" + stringify(**i) + "':");
-        auto repo(_imp->env->fetch_repository((*i)->repository_name()));
+        Context local_context("When cleaning '" + stringify(*i) + "':");
+        auto repo(_imp->env->fetch_repository(i->repository_name()));
         if (repo->format_key() && repo->format_key()->parse_value() == "installed-accounts"
-                && (*i)->name() == name())
+                && i->name() == name())
             continue;
         else
         {
@@ -539,7 +538,7 @@ AccountsID::perform_action(Action & action) const
                         n::override_contents() = nullptr,
                         n::want_phase() = install_action->options.want_phase()
                         ));
-            install_action->options.perform_uninstall()(*i, uo);
+            install_action->options.perform_uninstall()(i, uo);
         }
     }
 

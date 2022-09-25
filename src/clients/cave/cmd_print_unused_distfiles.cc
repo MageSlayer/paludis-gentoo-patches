@@ -167,16 +167,15 @@ PrintUnusedDistfilesCommand::run(
     {
         auto ids((*env)[selection]);
 
-        for (PackageIDSequence::ConstIterator iter(ids->begin()), end(ids->end()) ;
-                iter != end ; ++iter)
+        for (const auto & iter : *ids)
         {
-            if (! already_done.insert(*iter).second)
+            if (! already_done.insert(iter).second)
                 continue;
 
-            if ((*iter)->fetches_key())
+            if (iter->fetches_key())
             {
-                DistfilesFilter filter(env.get(), *iter, used_distfiles);
-                (*iter)->fetches_key()->parse_value()->top()->accept(filter);
+                DistfilesFilter filter(env.get(), iter, used_distfiles);
+                iter->fetches_key()->parse_value()->top()->accept(filter);
             }
         }
     }

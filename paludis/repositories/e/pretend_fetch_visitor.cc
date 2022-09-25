@@ -115,9 +115,8 @@ PretendFetchVisitor::visit(const FetchableURISpecTree::NodeType<AllDepSpec>::Typ
 void
 PretendFetchVisitor::visit(const FetchableURISpecTree::NodeType<URILabelsDepSpec>::Type & node)
 {
-    for (URILabelsDepSpec::ConstIterator i(node.spec()->begin()), i_end(node.spec()->end()) ;
-            i != i_end ; ++i)
-        *_imp->labels.begin() = i->get();
+    for (const auto & i : *node.spec())
+        *_imp->labels.begin() = i.get();
 }
 
 void

@@ -268,9 +268,8 @@ namespace paludis
             tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(v.string_value(),
                     ",", "", std::back_inserter(tokens));
 
-            for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                    t != t_end ; ++t)
-                result += destringify<T_>(*t);
+            for (const auto & token : tokens)
+                result += destringify<T_>(token);
 
             return result;
         }

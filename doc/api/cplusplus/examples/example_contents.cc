@@ -77,18 +77,17 @@ int main(int argc, char * argv[])
                     filter::InstalledAtSlash())]);
 
         /* For each ID: */
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
+        for (const auto & i : *ids)
         {
             /* Do we have contents key?*/
-            auto contents((*i)->contents());
+            auto contents(i->contents());
             if (! contents)
             {
-                cout << "ID '" << **i << "' does not provide a contents key." << endl;
+                cout << "ID '" << *i << "' does not provide a contents key." << endl;
             }
             else
             {
-                cout << "ID '" << **i << "' provides contents key:" << endl;
+                cout << "ID '" << *i << "' provides contents key:" << endl;
 
                 /* Visit the contents key's value's entries with our visitor. We use
                  * indirect_iterator because choices->begin() and ->end() return

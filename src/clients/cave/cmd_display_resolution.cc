@@ -380,14 +380,13 @@ namespace
     void display_explanation_constraints(const Constraints & constraints)
     {
         std::map<std::string, std::set<std::string> > reasons_for_constraints;
-        for (Constraints::ConstIterator c(constraints.begin()), c_end(constraints.end()) ;
-                c != c_end ; ++c)
+        for (const auto & constraint : constraints)
         {
             auto & reasons(reasons_for_constraints.insert(std::make_pair(
-                            constraint_as_string(**c), std::set<std::string>())).first->second);
+                            constraint_as_string(*constraint), std::set<std::string>())).first->second);
 
             ReasonNameGetter g(true, true);
-            reasons.insert((*c)->reason()->accept_returning<std::pair<std::string, Tribool> >(g).first);
+            reasons.insert(constraint->reason()->accept_returning<std::pair<std::string, Tribool> >(g).first);
         }
 
         cout << fuc(fs_explanation_constraints_header());
@@ -417,9 +416,8 @@ namespace
                     else
                         cout << fuc(fs_explanation_decision_remove_untaken());
 
-                    for (PackageIDSequence::ConstIterator i(d.ids()->begin()), i_end(d.ids()->end()) ;
-                            i != i_end ; ++i)
-                        cout << fuc(fs_explanation_decision_remove_id(), fv<'i'>(stringify(**i)));
+                    for (const auto & i : *d.ids())
+                        cout << fuc(fs_explanation_decision_remove_id(), fv<'i'>(stringify(*i)));
                 },
 
                 [&] (const NothingNoChangeDecision &) {
@@ -438,9 +436,8 @@ namespace
                         cout << fuc(fs_explanation_decision_change_via(), fv<'r'>(stringify(*d.if_via_new_binary_in())));
                     cout << fuc(fs_explanation_decision_change_destination(), fv<'r'>(stringify(d.destination()->repository())));
 
-                    for (PackageIDSequence::ConstIterator i(d.destination()->replacing()->begin()), i_end(d.destination()->replacing()->end()) ;
-                            i != i_end ; ++i)
-                        cout << fuc(fs_explanation_decision_change_replacing(), fv<'i'>(stringify(**i)));
+                    for (const auto & i : *d.destination()->replacing())
+                        cout << fuc(fs_explanation_decision_change_replacing(), fv<'i'>(stringify(*i)));
                 },
 
                 [&] (const UnableToMakeDecision & d) {
@@ -475,19 +472,17 @@ namespace
         {
             bool any(false);
             PackageDepSpec spec(parse_spec_with_nice_error(explain_spec, env.get(), { updso_allow_wildcards }, filter::All()));
-            for (ResolutionsByResolvent::ConstIterator r(resolved->resolutions_by_resolvent()->begin()),
-                    r_end(resolved->resolutions_by_resolvent()->end()) ;
-                    r != r_end ; ++r)
+            for (const auto & r : *resolved->resolutions_by_resolvent())
             {
-                if (! decision_matches_spec(env, (*r)->resolvent(), *(*r)->decision(), spec))
+                if (! decision_matches_spec(env, r->resolvent(), *r->decision(), spec))
                     continue;
 
                 any = true;
 
-                cout << fuc(fs_explaining_resolvent(), fv<'r'>(stringify((*r)->resolvent())));
+                cout << fuc(fs_explaining_resolvent(), fv<'r'>(stringify(r->resolvent())));
 
-                display_explanation_constraints(*(*r)->constraints());
-                display_explanation_decision(*(*r)->decision());
+                display_explanation_constraints(*r->constraints());
+                display_explanation_decision(*r->decision());
             }
 
             if (! any)
@@ -565,14 +560,13 @@ namespace
         std::pair<std::string, bool> changed_s_prefix("", false);
         std::pair<std::string, bool> unchanged_s_prefix("", false);
         auto choices(id->choices_key()->parse_value());
-        for (Choices::ConstIterator k(choices->begin()), k_end(choices->end()) ;
-                k != k_end ; ++k)
+        for (const auto & k : *choices)
         {
-            if ((*k)->hidden() && (*k)->consider_added_or_changed() && old_choices)
+            if (k->hidden() && k->consider_added_or_changed() && old_choices)
             {
                 /* ignore the hide if anything has changed */
                 bool show_anyway(false);
-                for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
+                for (Choice::ConstIterator i(k->begin()), i_end(k->end()) ;
                         i != i_end && ! show_anyway ; ++i)
                     if (show_choice_value_even_if_hidden(*i, old_choices))
                         show_anyway = true;
@@ -581,8 +575,8 @@ namespace
                     continue;
             }
 
-            if ((*k)->hide_description())
-                if (std::none_of((*k)->begin(), (*k)->end(),
+            if (k->hide_description())
+                if (std::none_of(k->begin(), k->end(),
                                  [&old_choices](const std::shared_ptr<const ChoiceValue> & value) {
                                      return show_choice_value_even_if_hidden(value, old_choices);
                                  }))
@@ -590,31 +584,30 @@ namespace
 
             bool shown_prefix_changed(false);
             bool shown_prefix_unchanged(false);
-            for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & i : *k)
             {
                 bool changed(false);
                 bool added(false);
-                if ((*k)->consider_added_or_changed())
+                if (k->consider_added_or_changed())
                 {
                     if (old_choices)
                     {
                         std::shared_ptr<const ChoiceValue> old_choice(
-                                old_choices->find_by_name_with_prefix((*i)->name_with_prefix()));
+                                old_choices->find_by_name_with_prefix(i->name_with_prefix()));
                         if (! old_choice)
                             added = true;
-                        else if (old_choice->enabled() != (*i)->enabled())
+                        else if (old_choice->enabled() != i->enabled())
                             changed = true;
                     }
                     else
                         added = true;
                 }
 
-                if (co_implicit == (*i)->origin() || (*k)->hidden())
+                if (co_implicit == i->origin() || k->hidden())
                 {
                     if (added || changed)
                     {
-                        if (! show_choice_value_even_if_hidden(*i, old_choices))
+                        if (! show_choice_value_even_if_hidden(i, old_choices))
                             continue;
                     }
                     else
@@ -623,20 +616,20 @@ namespace
 
                 Tribool changed_state(indeterminate);
                 if (changed_choices)
-                    changed_state = changed_choices->changed_choices()->overridden_value((*i)->name_with_prefix());
+                    changed_state = changed_choices->changed_choices()->overridden_value(i->name_with_prefix());
 
                 auto & s_prefix(changed_state.is_indeterminate() ? unchanged_s_prefix : changed_s_prefix);
                 auto & shown_prefix(changed_state.is_indeterminate() ? shown_prefix_unchanged : shown_prefix_changed);
 
                 if (! shown_prefix)
                 {
-                    if (s_prefix.second || ! (*k)->show_with_no_prefix())
+                    if (s_prefix.second || ! k->show_with_no_prefix())
                     {
                         s_prefix.second = true;
                         shown_prefix = true;
                         if (! s_prefix.first.empty())
                             s_prefix.first.append(" ");
-                        s_prefix.first.append((*k)->raw_name() + ":");
+                        s_prefix.first.append(k->raw_name() + ":");
                     }
                 }
 
@@ -647,26 +640,26 @@ namespace
 
                 if (! changed_state.is_indeterminate())
                 {
-                    if ((*i)->enabled())
-                        t = t + printer.prettify_choice_value_enabled(*i);
+                    if (i->enabled())
+                        t = t + printer.prettify_choice_value_enabled(i);
                     else
-                        t = t + printer.prettify_choice_value_disabled(*i);
+                        t = t + printer.prettify_choice_value_disabled(i);
                     t = t + " -> ";
                 }
 
-                if ((changed_state.is_indeterminate() && (*i)->enabled()) || (changed_state.is_true()))
+                if ((changed_state.is_indeterminate() && i->enabled()) || (changed_state.is_true()))
                 {
-                    if ((*i)->locked())
-                        t = t + printer.prettify_choice_value_forced(*i);
+                    if (i->locked())
+                        t = t + printer.prettify_choice_value_forced(i);
                     else
-                        t = t + printer.prettify_choice_value_enabled(*i);
+                        t = t + printer.prettify_choice_value_enabled(i);
                 }
                 else
                 {
-                    if ((*i)->locked())
-                        t = t + printer.prettify_choice_value_masked(*i);
+                    if (i->locked())
+                        t = t + printer.prettify_choice_value_masked(i);
                     else
-                        t = t + printer.prettify_choice_value_disabled(*i);
+                        t = t + printer.prettify_choice_value_disabled(i);
                 }
 
                 if (changed)
@@ -694,9 +687,9 @@ namespace
                             + cmdline.display_options.a_show_option_descriptions.long_name() + "'");
 
                 if (show_description)
-                    choices_to_explain.insert(std::make_pair((*k)->human_name(),
+                    choices_to_explain.insert(std::make_pair(k->human_name(),
                                 ChoiceValuesToExplain())).first->second.insert(std::make_pair(
-                                (*i)->name_with_prefix(), std::make_shared<PackageIDSequence>())).first->second->push_back(id);
+                                i->name_with_prefix(), std::make_shared<PackageIDSequence>())).first->second->push_back(id);
             }
         }
 
@@ -720,22 +713,19 @@ namespace
         std::set<std::string> changes_reasons;
 
         if (maybe_changed_choices)
-            for (auto c(maybe_changed_choices->reasons()->begin()), c_end(maybe_changed_choices->reasons()->end()) ;
-                    c != c_end ; ++c)
+            for (const auto & c : *maybe_changed_choices->reasons())
             {
                 ReasonNameGetter g(false, more_annotations);
-                std::pair<std::string, Tribool> r((*c)->accept_returning<std::pair<std::string, Tribool> >(g));
+                std::pair<std::string, Tribool> r(c->accept_returning<std::pair<std::string, Tribool> >(g));
                 if (r.first.empty())
                     continue;
                 changes_reasons.insert(r.first);
             }
 
-        for (Constraints::ConstIterator c(resolution->constraints()->begin()),
-                c_end(resolution->constraints()->end()) ;
-                c != c_end ; ++c)
+        for (const auto & c : *resolution->constraints())
         {
             ReasonNameGetter g(false, more_annotations);
-            std::pair<std::string, Tribool> r((*c)->reason()->accept_returning<std::pair<std::string, Tribool> >(g));
+            std::pair<std::string, Tribool> r(c->reason()->accept_returning<std::pair<std::string, Tribool> >(g));
             if (r.first.empty())
                 continue;
 
@@ -819,10 +809,9 @@ namespace
     {
         std::stringstream result;
 
-        for (auto c(resolution->constraints()->begin()), c_end(resolution->constraints()->end()) ;
-                c != c_end ; ++c)
+        for (const auto & c : *resolution->constraints())
         {
-            const DepSpec & spec((*c)->spec().if_block() ? static_cast<const DepSpec &>(*(*c)->spec().if_block()) : *(*c)->spec().if_package());
+            const DepSpec & spec(c->spec().if_block() ? static_cast<const DepSpec &>(*c->spec().if_block()) : *c->spec().if_package());
             if (spec.maybe_annotations())
             {
                 auto a(spec.maybe_annotations()->find(dsar_suggestions_group_name));
@@ -1233,9 +1222,7 @@ namespace
         {
             cout << fuc(fs_change_replacing());
             bool first(true);
-            for (PackageIDSequence::ConstIterator i(decision.destination()->replacing()->begin()),
-                    i_end(decision.destination()->replacing()->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & i : *decision.destination()->replacing())
             {
                 std::string comma;
                 if (! first)
@@ -1243,7 +1230,7 @@ namespace
                 first = false;
 
                 cout << fuc(fs_change_replacing_one(), fv<'c'>(comma), fv<'s'>(
-                            (*i)->name() == decision.origin_id()->name() ? (*i)->canonical_form(idcf_version) : (*i)->canonical_form(idcf_full)));
+                            i->name() == decision.origin_id()->name() ? i->canonical_form(idcf_version) : i->canonical_form(idcf_full)));
             }
         }
 
@@ -1291,16 +1278,14 @@ namespace
             cout << fuc(fs_uninstall_taken(), fv<'s'>(stringify(decision.resolvent().package())));
 
         bool first(true);
-        for (PackageIDSequence::ConstIterator i(decision.ids()->begin()),
-                i_end(decision.ids()->end()) ;
-                i != i_end ; ++i)
+        for (const auto & i : *decision.ids())
         {
             std::string comma;
             if (! first)
                 comma = ", ";
             first = false;
 
-            cout << fuc(fs_uninstall_version(), fv<'c'>(comma), fv<'v'>(stringify((*i)->canonical_form(idcf_no_name))));
+            cout << fuc(fs_uninstall_version(), fv<'c'>(comma), fv<'v'>(stringify(i->canonical_form(idcf_no_name))));
         }
 
         if (-1 != cycle_notes_heading)
@@ -1346,36 +1331,32 @@ namespace
             return;
         }
 
-        for (UnsuitableCandidates::ConstIterator u(d.unsuitable_candidates()->begin()),
-                u_end(d.unsuitable_candidates()->end()) ;
-                u != u_end ; ++u)
+        for (const auto & u : *d.unsuitable_candidates())
         {
             std::string colour;
-            if (! u->unmet_constraints()->empty())
+            if (! u.unmet_constraints()->empty())
                 colour = c::red().colour_string();
-            else if (u->package_id()->masked())
+            else if (u.package_id()->masked())
             {
-                if (not_strongly_masked(u->package_id()))
+                if (not_strongly_masked(u.package_id()))
                     colour = c::bold_red().colour_string();
                 else
                     colour = c::red().colour_string();
             }
 
-            cout << fuc(fs_unable_unsuitable_id(), fv<'c'>(colour), fv<'i'>(stringify(*u->package_id())));
+            cout << fuc(fs_unable_unsuitable_id(), fv<'c'>(colour), fv<'i'>(stringify(*u.package_id())));
 
-            for (PackageID::MasksConstIterator m(u->package_id()->begin_masks()),
-                    m_end(u->package_id()->end_masks()) ;
+            for (PackageID::MasksConstIterator m(u.package_id()->begin_masks()),
+                    m_end(u.package_id()->end_masks()) ;
                     m != m_end ; ++m)
-                (*m)->accept(MaskedByVisitor{env.get(), u->package_id(), "", "        "});
+                (*m)->accept(MaskedByVisitor{env.get(), u.package_id(), "", "        "});
 
             std::map<std::string, std::pair<std::shared_ptr<const Constraint>, std::set<std::string> > > duplicates;
-            for (Constraints::ConstIterator c(u->unmet_constraints()->begin()),
-                    c_end(u->unmet_constraints()->end()) ;
-                    c != c_end ; ++c)
+            for (const auto & c : *u.unmet_constraints())
             {
                 ReasonNameGetter g(false, true);
-                duplicates.insert(std::make_pair(constraint_as_string(**c), std::make_pair(*c, std::set<std::string>()))).first->second.second.insert(
-                        (*c)->reason()->accept_returning<std::pair<std::string, Tribool> >(g).first);
+                duplicates.insert(std::make_pair(constraint_as_string(*c), std::make_pair(c, std::set<std::string>()))).first->second.second.insert(
+                        c->reason()->accept_returning<std::pair<std::string, Tribool> >(g).first);
             }
 
             for (auto & duplicate : duplicates)
@@ -1391,14 +1372,12 @@ namespace
                 cout << fuc(fs_unable_unsuitable_did_not_meet(), fv<'s'>(s));
 
                 if (constraint->spec().if_package() && constraint->spec().if_package()->additional_requirements_ptr() &&
-                        (! match_package(*env, *constraint->spec().if_package(), u->package_id(), constraint->from_id(), { })) &&
-                        match_package(*env, *constraint->spec().if_package(), u->package_id(), constraint->from_id(), { mpo_ignore_additional_requirements }))
+                        (! match_package(*env, *constraint->spec().if_package(), u.package_id(), constraint->from_id(), { })) &&
+                        match_package(*env, *constraint->spec().if_package(), u.package_id(), constraint->from_id(), { mpo_ignore_additional_requirements }))
                 {
-                    for (AdditionalPackageDepSpecRequirements::ConstIterator a(constraint->spec().if_package()->additional_requirements_ptr()->begin()),
-                            a_end(constraint->spec().if_package()->additional_requirements_ptr()->end()) ;
-                            a != a_end ; ++a)
+                    for (const auto & a : *constraint->spec().if_package()->additional_requirements_ptr())
                     {
-                        const std::pair<bool, std::string> p((*a)->requirement_met(env.get(), nullptr, u->package_id(), constraint->from_id(), nullptr));
+                        const std::pair<bool, std::string> p(a->requirement_met(env.get(), nullptr, u.package_id(), constraint->from_id(), nullptr));
                         if (p.first)
                             continue;
 
@@ -1439,12 +1418,11 @@ namespace
                 else
                 {
                     cout << fuc(fs_choice_to_explain_not_all_same(), fv<'s'>(stringify(first_choice_value->unprefixed_name())));
-                    for (PackageIDSequence::ConstIterator w(v.second->begin()), w_end(v.second->end()) ;
-                            w != w_end ; ++w)
+                    for (const auto & w : *v.second)
                     {
                         const std::shared_ptr<const ChoiceValue> value(
-                                (*w)->choices_key()->parse_value()->find_by_name_with_prefix(v.first));
-                        cout << fuc(fs_choice_to_explain_one(), fv<'s'>((*w)->canonical_form(idcf_no_version)), fv<'d'>(value->description()));
+                                w->choices_key()->parse_value()->find_by_name_with_prefix(v.first));
+                        cout << fuc(fs_choice_to_explain_one(), fv<'s'>(w->canonical_form(idcf_no_version)), fv<'d'>(value->description()));
                     }
                 }
             }
@@ -1771,14 +1749,12 @@ namespace
         else
             cout << fuc(fs_display_errors());
 
-        for (Decisions<UnableToMakeDecision>::ConstIterator i(decisions->begin()),
-                i_end(decisions->end()) ;
-                i != i_end ; ++i)
+        for (const auto & i : *decisions)
         {
             display_unable_to_make_decision(
                     env,
-                    *resolved->resolutions_by_resolvent()->find((*i)->resolvent()),
-                    **i,
+                    *resolved->resolutions_by_resolvent()->find(i->resolvent()),
+                    *i,
                     untaken);
         }
 

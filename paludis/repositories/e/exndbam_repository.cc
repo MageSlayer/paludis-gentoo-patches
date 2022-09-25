@@ -209,14 +209,13 @@ ExndbamRepository::package_ids(const QualifiedPackageName & q,
     std::shared_ptr<NDBAMEntrySequence> entries(_imp->ndbam.entries(q));
     std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
-    for (IndirectIterator<NDBAMEntrySequence::ConstIterator> e(entries->begin()), e_end(entries->end()) ;
-            e != e_end ; ++e)
+    for (auto & e : *entries)
     {
-        std::unique_lock<std::mutex> l(*(*e).mutex());
-        if (! (*e).package_id())
-            (*e).package_id() = std::make_shared<ExndbamID>((*e).name(), (*e).version(), _imp->params.environment(),
-                        name(), (*e).fs_location(), &_imp->ndbam);
-        result->push_back((*e).package_id());
+        std::unique_lock<std::mutex> l(*e->mutex());
+        if (! e->package_id())
+            e->package_id() = std::make_shared<ExndbamID>(e->name(), e->version(), _imp->params.environment(),
+                        name(), e->fs_location(), &_imp->ndbam);
+        result->push_back(e->package_id());
     }
 
     return result;
@@ -366,13 +365,12 @@ ExndbamRepository::merge(const MergeParams & m)
     std::shared_ptr<const PackageID> if_same_name_id;
     {
         std::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id()->name(), { }));
-        for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
-                v != v_end ; ++v)
+        for (const auto & v : *ids)
         {
-            if_same_name_id = *v;
-            if ((*v)->version() == m.package_id()->version() && parallel_slot_is_same(*v, m.package_id()))
+            if_same_name_id = v;
+            if (v->version() == m.package_id()->version() && parallel_slot_is_same(v, m.package_id()))
             {
-                if_overwritten_id = *v;
+                if_overwritten_id = v;
                 break;
             }
         }
@@ -520,10 +518,9 @@ ExndbamRepository::merge(const MergeParams & m)
             ->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
     {
         const std::shared_ptr<const PackageIDSequence> & replace_candidates(package_ids(m.package_id()->name(), { }));
-        for (PackageIDSequence::ConstIterator it(replace_candidates->begin()),
-                 it_end(replace_candidates->end()); it_end != it; ++it)
+        for (const auto & it : *replace_candidates)
         {
-            std::shared_ptr<const ERepositoryID> candidate(std::static_pointer_cast<const ERepositoryID>(*it));
+            std::shared_ptr<const ERepositoryID> candidate(std::static_pointer_cast<const ERepositoryID>(it));
             if (candidate != if_overwritten_id && candidate->fs_location_key()->parse_value() != target_ver_dir && parallel_slot_is_same(candidate, m.package_id()))
             {
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(

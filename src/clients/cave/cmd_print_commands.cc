@@ -85,17 +85,16 @@ PrintCommandsCommand::run(
     if (cmdline.begin_parameters() != cmdline.end_parameters())
         throw args::DoHelp("print-commands takes no parameters");
 
-    for (CommandFactory::ConstIterator cmd(CommandFactory::get_instance()->begin()), cmd_end(CommandFactory::get_instance()->end()) ;
-            cmd != cmd_end ; ++cmd)
+    for (const auto & cmd : *CommandFactory::get_instance())
     {
-        std::shared_ptr<Command> instance(CommandFactory::get_instance()->create(*cmd));
+        std::shared_ptr<Command> instance(CommandFactory::get_instance()->create(cmd));
 
         if (! cmdline.a_all.specified() && instance->importance() != ci_core)
             continue;
         if (instance->importance() == ci_ignore)
             continue;
 
-        cout << stringify(*cmd) << endl;
+        cout << stringify(cmd) << endl;
     }
 
     return EXIT_SUCCESS;

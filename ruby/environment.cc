@@ -52,9 +52,8 @@ namespace
         {
             std::shared_ptr<const PackageIDSequence> ids(value_to_environment(self)->operator[] (value_to_selection(selection)));
             VALUE result(rb_ary_new());
-            for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                    i != i_end ; ++i)
-                rb_ary_push(result, package_id_to_value(*i));
+            for (const auto & i : *ids)
+                rb_ary_push(result, package_id_to_value(i));
             return result;
         }
         catch (const std::exception & e)

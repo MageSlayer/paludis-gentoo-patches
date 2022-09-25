@@ -172,9 +172,8 @@ namespace
 void
 VDBUnmerger::populate_unmerge_set()
 {
-    for (Contents::ConstIterator c(_imp->options.contents()->begin()), c_end(_imp->options.contents()->end()) ;
-            c != c_end ; ++c)
-        add_unmerge_entry(get_et(**c), *c);
+    for (const auto & c : *_imp->options.contents())
+        add_unmerge_entry(get_et(*c), c);
 }
 
 namespace

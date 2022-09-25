@@ -120,9 +120,8 @@ PrintDependentIDsCommand::run(
                 installed_filter)]);
 
     auto dependents(resolver::collect_dependents(env.get(), *ids->begin(), installed_ids));
-    for (auto i(dependents->begin()), i_end(dependents->end()) ;
-            i != i_end ; ++i)
-        cout << format_package_id(*i, cmdline.a_format.argument());
+    for (const auto & i : *dependents)
+        cout << format_package_id(i, cmdline.a_format.argument());
 
     return dependents->empty() ? EXIT_FAILURE : EXIT_SUCCESS;
 }

@@ -83,13 +83,12 @@ int main(int argc, char * argv[])
                     generator::Package(QualifiedPackageName("sys-apps/paludis")))]);
 
         /* For each ID: */
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
+        for (const auto & i : *ids)
         {
-            cout << **i << ":" << endl;
+            cout << *i << ":" << endl;
 
             /* For each mask key: */
-            for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
+            for (PackageID::MasksConstIterator m(i->begin_masks()), m_end(i->end_masks()) ;
                     m != m_end ; ++m)
             {
                 /* All Mask instances have two basic bits of information: a one

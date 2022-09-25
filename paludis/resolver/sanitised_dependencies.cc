@@ -227,17 +227,15 @@ namespace
 
             if (active_sublist)
             {
-                for (std::list<SanitisedDependency>::const_iterator i(l.begin()), i_end(l.end()) ;
-                        i != i_end ; ++i)
-                    visit_package_or_block_spec(i->spec());
+                for (const auto & i : l)
+                    visit_package_or_block_spec(i.spec());
             }
             else
             {
                 Save<std::list<PackageOrBlockDepSpec> *> save_active_sublist(&active_sublist, nullptr);
                 active_sublist = &*child_groups.insert(child_groups.end(), std::list<PackageOrBlockDepSpec>());
-                for (std::list<SanitisedDependency>::const_iterator i(l.begin()), i_end(l.end()) ;
-                        i != i_end ; ++i)
-                    visit_package_or_block_spec(i->spec());
+                for (const auto & i : l)
+                    visit_package_or_block_spec(i.spec());
             }
         }
 
@@ -358,12 +356,10 @@ namespace
             std::stringstream adl;
             std::stringstream acs;
             auto classifier_builder(std::make_shared<LabelsClassifierBuilder>(env, our_id));
-            for (DependenciesLabelSequence::ConstIterator i((*labels_stack.begin())->begin()),
-                    i_end((*labels_stack.begin())->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & i : *(*labels_stack.begin()))
             {
-                adl << (adl.str().empty() ? "" : ", ") << stringify(**i);
-                (*i)->accept(*classifier_builder);
+                adl << (adl.str().empty() ? "" : ", ") << stringify(*i);
+                i->accept(*classifier_builder);
             }
 
             auto classifier(classifier_builder->create());

@@ -44,14 +44,13 @@ namespace
         std::list<std::string> tokens;
         tokenise_whitespace(s, std::back_inserter(tokens));
 
-        for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                t != t_end ; ++t)
+        for (const auto & token : tokens)
         {
-            std::string::size_type p(t->find(':'));
+            std::string::size_type p(token.find(':'));
             if (std::string::npos == p)
-                id->choices_key()->add("", *t);
+                id->choices_key()->add("", token);
             else
-                id->choices_key()->add(t->substr(0, p), t->substr(p + 1));
+                id->choices_key()->add(token.substr(0, p), token.substr(p + 1));
         }
     }
 

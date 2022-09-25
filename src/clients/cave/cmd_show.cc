@@ -188,9 +188,8 @@ namespace
 
             if (node.spec()->maybe_annotations())
             {
-                for (auto m(node.spec()->maybe_annotations()->begin()), m_end(node.spec()->maybe_annotations()->end()) ;
-                        m != m_end ; ++m)
-                    annotations << m->key() << " = [" << (m->value().empty() ? " " : " " + m->value() + " ") << "] ";
+                for (const auto & m : *node.spec()->maybe_annotations())
+                    annotations << m.key() << " = [" << (m.value().empty() ? " " : " " + m.value() + " ") << "] ";
             }
 
             out << fuc(select_format_for_spec(env, *node.spec(), nullptr,
@@ -248,10 +247,9 @@ namespace
         if (names->empty())
             throw NothingMatching(s);
 
-        for (PackageIDSequence::ConstIterator i(names->begin()), i_end(names->end()) ;
-                i != i_end ; ++i)
+        for (const auto & i : *names)
         {
-            PackageDepSpec name_spec(make_package_dep_spec({ }).package((*i)->name()));
+            PackageDepSpec name_spec(make_package_dep_spec({ }).package(i->name()));
             cout << fuc(select_format_for_spec(env, name_spec, nullptr,
                         fs_wildcard_spec_installed(),
                         fs_wildcard_spec_installable(),
@@ -390,11 +388,10 @@ namespace
             if (! v.allowed_values_and_descriptions()->empty())
             {
                 out << fuc(fs_permitted_choice_value_enum_values());
-                for (auto a(v.allowed_values_and_descriptions()->begin()), a_end(v.allowed_values_and_descriptions()->end()) ;
-                        a != a_end ; ++a)
+                for (const auto & a : *v.allowed_values_and_descriptions())
                     out << fuc(
-                            actual_value == a->first ? fs_permitted_choice_value_enum_value_chosen() : fs_permitted_choice_value_enum_value(),
-                            fv<'v'>(a->first), fv<'d'>(a->second));
+                            actual_value == a.first ? fs_permitted_choice_value_enum_value_chosen() : fs_permitted_choice_value_enum_value(),
+                            fv<'v'>(a.first), fv<'d'>(a.second));
             }
         }
     };
@@ -763,20 +760,18 @@ namespace
             {
                 std::stringstream s;
                 bool empty_prefix(true);
-                for (Choices::ConstIterator c(choices->begin()), c_end(choices->end()) ;
-                        c != c_end ; ++c)
+                for (const auto & c : *choices)
                 {
                     if (! cmdline.a_internal_keys.specified())
                     {
-                        if ((*c)->hidden())
+                        if (c->hidden())
                             continue;
-                        if ((*c)->begin() == (*c)->end())
+                        if (c->begin() == c->end())
                             continue;
 
                         bool any_explicitish(false);
-                        for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
-                                v != v_end ; ++v)
-                            if (co_implicit != (*v)->origin())
+                        for (const auto & v : *c)
+                            if (co_implicit != v->origin())
                             {
                                 any_explicitish = true;
                                 break;
@@ -786,40 +781,39 @@ namespace
                             continue;
                     }
 
-                    if ((! empty_prefix) || (! (*c)->show_with_no_prefix()))
+                    if ((! empty_prefix) || (! c->show_with_no_prefix()))
                     {
-                        s << (*c)->prefix() << ": ";
+                        s << c->prefix() << ": ";
                         empty_prefix = false;
                     }
 
-                    for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
-                            v != v_end ; ++v)
+                    for (const auto & v : *c)
                     {
                         if (! cmdline.a_internal_keys.specified())
-                            if (co_implicit == (*v)->origin())
+                            if (co_implicit == v->origin())
                                 continue;
 
-                        if ((*v)->enabled())
+                        if (v->enabled())
                         {
-                            if ((*v)->locked())
-                                s << fuc(fs_choice_forced_enabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
-                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)));
+                            if (v->locked())
+                                s << fuc(fs_choice_forced_enabled(), fv<'s'>(stringify(v->unprefixed_name())),
+                                        fv<'r'>(added_or_changed_string(c, v, maybe_old_id, old_id_is_installed)));
                             else
-                                s << fuc(fs_choice_enabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
-                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)));
+                                s << fuc(fs_choice_enabled(), fv<'s'>(stringify(v->unprefixed_name())),
+                                        fv<'r'>(added_or_changed_string(c, v, maybe_old_id, old_id_is_installed)));
                         }
                         else
                         {
-                            if ((*v)->locked())
-                                s << fuc(fs_choice_forced_disabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
-                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)));
+                            if (v->locked())
+                                s << fuc(fs_choice_forced_disabled(), fv<'s'>(stringify(v->unprefixed_name())),
+                                        fv<'r'>(added_or_changed_string(c, v, maybe_old_id, old_id_is_installed)));
                             else
-                                s << fuc(fs_choice_disabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
-                                        fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)));
+                                s << fuc(fs_choice_disabled(), fv<'s'>(stringify(v->unprefixed_name())),
+                                        fv<'r'>(added_or_changed_string(c, v, maybe_old_id, old_id_is_installed)));
                         }
 
-                        if (! (*v)->parameter().empty())
-                            s << fuc(fs_choice_parameter(), fv<'v'>((*v)->parameter()));
+                        if (! v->parameter().empty())
+                            s << fuc(fs_choice_parameter(), fv<'v'>(v->parameter()));
                         s << " ";
                     }
                 }
@@ -844,20 +838,18 @@ namespace
                         fv<'p'>("")
                         );
 
-                for (Choices::ConstIterator c(choices->begin()), c_end(choices->end()) ;
-                        c != c_end ; ++c)
+                for (const auto & c : *choices)
                 {
                     if (! cmdline.a_internal_keys.specified())
                     {
-                        if ((*c)->hidden())
+                        if (c->hidden())
                             continue;
-                        if ((*c)->begin() == (*c)->end())
+                        if (c->begin() == c->end())
                             continue;
 
                         bool any_explicitish(false);
-                        for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
-                                v != v_end ; ++v)
-                            if (co_implicit != (*v)->origin())
+                        for (const auto & v : *c)
+                            if (co_implicit != v->origin())
                             {
                                 any_explicitish = true;
                                 break;
@@ -869,35 +861,34 @@ namespace
 
                     out << fuc(
                             (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
-                            fv<'s'>(cmdline.a_raw_names.specified() ? (*c)->raw_name() : (*c)->human_name()),
+                            fv<'s'>(cmdline.a_raw_names.specified() ? c->raw_name() : c->human_name()),
                             fv<'v'>(""),
                             fv<'i'>(std::string(indent + 1, ' ')),
                             fv<'b'>(important ? "true" : ""),
                             fv<'p'>("")
                             );
 
-                    for (Choice::ConstIterator v((*c)->begin()), v_end((*c)->end()) ;
-                            v != v_end ; ++v)
+                    for (const auto & v : *c)
                     {
                         if (! cmdline.a_internal_keys.specified())
-                            if (co_implicit == (*v)->origin())
+                            if (co_implicit == v->origin())
                                 continue;
 
-                        if ((*v)->enabled())
+                        if (v->enabled())
                         {
-                            if ((*v)->locked())
+                            if (v->locked())
                             {
                                 out << fuc(
                                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                                         fv<'s'>(cmdline.a_raw_names.specified() ?
-                                            fuc(fs_choice_forced_enabled(), fv<'s'>(stringify((*v)->name_with_prefix())),
-                                                fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))) :
-                                            fuc(fs_choice_forced_enabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
-                                                fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)))),
-                                        fv<'v'>((*v)->description()),
+                                            fuc(fs_choice_forced_enabled(), fv<'s'>(stringify(v->name_with_prefix())),
+                                                fv<'r'>(added_or_changed_string(c, v, maybe_old_id, old_id_is_installed))) :
+                                            fuc(fs_choice_forced_enabled(), fv<'s'>(stringify(v->unprefixed_name())),
+                                                fv<'r'>(added_or_changed_string(c, v, maybe_old_id, old_id_is_installed)))),
+                                        fv<'v'>(v->description()),
                                         fv<'i'>(std::string(indent + 2, ' ')),
                                         fv<'b'>(important ? "true" : ""),
-                                        fv<'p'>((*v)->parameter())
+                                        fv<'p'>(v->parameter())
                                         );
                             }
                             else
@@ -905,32 +896,32 @@ namespace
                                 out << fuc(
                                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                                         fv<'s'>(cmdline.a_raw_names.specified() ?
-                                            fuc(fs_choice_enabled(), fv<'s'>(stringify((*v)->name_with_prefix())),
-                                                fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))) :
-                                            fuc(fs_choice_enabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
-                                                fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)))),
-                                        fv<'v'>((*v)->description()),
+                                            fuc(fs_choice_enabled(), fv<'s'>(stringify(v->name_with_prefix())),
+                                                fv<'r'>(added_or_changed_string(c, v, maybe_old_id, old_id_is_installed))) :
+                                            fuc(fs_choice_enabled(), fv<'s'>(stringify(v->unprefixed_name())),
+                                                fv<'r'>(added_or_changed_string(c, v, maybe_old_id, old_id_is_installed)))),
+                                        fv<'v'>(v->description()),
                                         fv<'i'>(std::string(indent + 2, ' ')),
                                         fv<'b'>(important ? "true" : ""),
-                                        fv<'p'>((*v)->parameter())
+                                        fv<'p'>(v->parameter())
                                         );
                             }
                         }
                         else
                         {
-                            if ((*v)->locked())
+                            if (v->locked())
                             {
                                 out << fuc(
                                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                                         fv<'s'>(cmdline.a_raw_names.specified() ?
-                                            fuc(fs_choice_forced_disabled(), fv<'s'>(stringify((*v)->name_with_prefix())),
-                                                fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))) :
-                                            fuc(fs_choice_forced_disabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
-                                                fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)))),
-                                        fv<'v'>((*v)->description()),
+                                            fuc(fs_choice_forced_disabled(), fv<'s'>(stringify(v->name_with_prefix())),
+                                                fv<'r'>(added_or_changed_string(c, v, maybe_old_id, old_id_is_installed))) :
+                                            fuc(fs_choice_forced_disabled(), fv<'s'>(stringify(v->unprefixed_name())),
+                                                fv<'r'>(added_or_changed_string(c, v, maybe_old_id, old_id_is_installed)))),
+                                        fv<'v'>(v->description()),
                                         fv<'i'>(std::string(indent + 2, ' ')),
                                         fv<'b'>(important ? "true" : ""),
-                                        fv<'p'>((*v)->parameter())
+                                        fv<'p'>(v->parameter())
                                         );
                             }
                             else
@@ -938,22 +929,22 @@ namespace
                                 out << fuc(
                                         (cmdline.a_raw_names.specified() ? fs_metadata_value_raw() : fs_metadata_value_human()),
                                         fv<'s'>(cmdline.a_raw_names.specified() ?
-                                            fuc(fs_choice_disabled(), fv<'s'>(stringify((*v)->name_with_prefix())),
-                                                fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed))) :
-                                            fuc(fs_choice_disabled(), fv<'s'>(stringify((*v)->unprefixed_name())),
-                                                fv<'r'>(added_or_changed_string(*c, *v, maybe_old_id, old_id_is_installed)))),
-                                        fv<'v'>((*v)->description()),
+                                            fuc(fs_choice_disabled(), fv<'s'>(stringify(v->name_with_prefix())),
+                                                fv<'r'>(added_or_changed_string(c, v, maybe_old_id, old_id_is_installed))) :
+                                            fuc(fs_choice_disabled(), fv<'s'>(stringify(v->unprefixed_name())),
+                                                fv<'r'>(added_or_changed_string(c, v, maybe_old_id, old_id_is_installed)))),
+                                        fv<'v'>(v->description()),
                                         fv<'i'>(std::string(indent + 2, ' ')),
                                         fv<'b'>(important ? "true" : ""),
-                                        fv<'p'>((*v)->parameter())
+                                        fv<'p'>(v->parameter())
                                         );
                             }
                         }
 
-                        if ((*v)->permitted_parameter_values())
+                        if (v->permitted_parameter_values())
                         {
-                            PermittedChoiceValueParameterValuesDisplayer d{out, (*v)->parameter()};
-                            (*v)->permitted_parameter_values()->accept(d);
+                            PermittedChoiceValueParameterValuesDisplayer d{out, v->parameter()};
+                            v->permitted_parameter_values()->accept(d);
                         }
                     }
                 }
@@ -1147,33 +1138,32 @@ namespace
         std::shared_ptr<PackageIDSequence> all_installed(std::make_shared<PackageIDSequence>());
         std::shared_ptr<PackageIDSequence> all_not_installed(std::make_shared<PackageIDSequence>());
         std::set<RepositoryName> repos;
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
+        for (const auto & i : *ids)
         {
-            auto repo(env->fetch_repository((*i)->repository_name()));
+            auto repo(env->fetch_repository(i->repository_name()));
             if (repo->installed_root_key())
-                all_installed->push_back(*i);
+                all_installed->push_back(i);
             else
             {
-                all_not_installed->push_back(*i);
+                all_not_installed->push_back(i);
 
-                if ((*i)->supports_action(SupportsActionTest<InstallAction>()))
+                if (i->supports_action(SupportsActionTest<InstallAction>()))
                 {
-                    if ((*i)->masked())
+                    if (i->masked())
                     {
-                        if (not_strongly_masked(*i))
-                            best_weak_masked_installable = *i;
+                        if (not_strongly_masked(i))
+                            best_weak_masked_installable = i;
                         else
-                            best_masked_installable = *i;
+                            best_masked_installable = i;
                     }
                     else
-                        best_installable = *i;
+                        best_installable = i;
                 }
                 else
-                    best_not_installed = *i;
+                    best_not_installed = i;
             }
 
-            repos.insert((*i)->repository_name());
+            repos.insert(i->repository_name());
         }
 
         if (! best_installable)
@@ -1188,50 +1178,49 @@ namespace
             header_out << fuc(fs_package_repository(), fv<'s'>(stringify(r)));
             std::string slot_name;
             bool need_space(false);
-            for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & i : *ids)
             {
-                if ((*i)->repository_name() != r)
+                if (i->repository_name() != r)
                     continue;
 
-                if (slot_name != slot_as_string(*i))
+                if (slot_name != slot_as_string(i))
                 {
                     if (! slot_name.empty())
                         header_out << fuc(fs_package_slot(), fv<'s'>(slot_name));
-                    slot_name = slot_as_string(*i);
+                    slot_name = slot_as_string(i);
                 }
 
                 if (need_space)
                     header_out << " ";
                 need_space = true;
 
-                auto repo(env->fetch_repository((*i)->repository_name()));
+                auto repo(env->fetch_repository(i->repository_name()));
                 if (repo->installed_root_key())
-                    header_out << fuc(fs_package_version_installed(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))));
+                    header_out << fuc(fs_package_version_installed(), fv<'s'>(stringify(i->canonical_form(idcf_version))));
                 else
                 {
                     std::string rr;
-                    for (PackageID::OverriddenMasksConstIterator m((*i)->begin_overridden_masks()), m_end((*i)->end_overridden_masks()) ;
+                    for (PackageID::OverriddenMasksConstIterator m(i->begin_overridden_masks()), m_end(i->end_overridden_masks()) ;
                             m != m_end ; ++m)
                         rr.append(stringify((*m)->mask()->key()));
 
                     if (! rr.empty())
                         rr = "(" + rr + ")";
 
-                    if (! (*i)->masked())
-                        header_out << fuc(fs_package_version_installable(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))), fv<'r'>(rr));
+                    if (! i->masked())
+                        header_out << fuc(fs_package_version_installable(), fv<'s'>(stringify(i->canonical_form(idcf_version))), fv<'r'>(rr));
                     else
                     {
                         std::string rs;
-                        for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
+                        for (PackageID::MasksConstIterator m(i->begin_masks()), m_end(i->end_masks()) ;
                                 m != m_end ; ++m)
                             rs.append(stringify((*m)->key()));
                         rr = rs + rr;
-                        header_out << fuc(fs_package_version_unavailable(), fv<'s'>(stringify((*i)->canonical_form(idcf_version))), fv<'r'>(rr));
+                        header_out << fuc(fs_package_version_unavailable(), fv<'s'>(stringify(i->canonical_form(idcf_version))), fv<'r'>(rr));
                     }
                 }
 
-                if (best_installable && (**i == *best_installable))
+                if (best_installable && (*i == *best_installable))
                     header_out << fuc(fs_package_best());
             }
 
@@ -1256,19 +1245,16 @@ namespace
         }
         else if (cmdline.a_all_versions.specified())
         {
-            for (PackageIDSequence::ConstIterator i(all_installed->begin()), i_end(all_installed->end()) ;
-                    i != i_end ; ++i)
-                do_one_package_id(cmdline, env, basic_ppos, *i, best_installable, false, rest_out);
+            for (const auto & i : *all_installed)
+                do_one_package_id(cmdline, env, basic_ppos, i, best_installable, false, rest_out);
 
-            for (PackageIDSequence::ConstIterator i(all_not_installed->begin()), i_end(all_not_installed->end()) ;
-                    i != i_end ; ++i)
-                do_one_package_id(cmdline, env, basic_ppos, *i, all_installed->empty() ? nullptr : *all_installed->rbegin(), true, rest_out);
+            for (const auto & i : *all_not_installed)
+                do_one_package_id(cmdline, env, basic_ppos, i, all_installed->empty() ? nullptr : *all_installed->rbegin(), true, rest_out);
         }
         else
         {
-            for (PackageIDSequence::ConstIterator i(all_installed->begin()), i_end(all_installed->end()) ;
-                    i != i_end ; ++i)
-                do_one_package_id(cmdline, env, basic_ppos, *i, best_installable, false, rest_out);
+            for (const auto & i : *all_installed)
+                do_one_package_id(cmdline, env, basic_ppos, i, best_installable, false, rest_out);
             if (best_installable)
                 do_one_package_id(cmdline, env, basic_ppos, best_installable, all_installed->empty() ? nullptr : *all_installed->rbegin(),
                         true, rest_out);
@@ -1290,8 +1276,8 @@ namespace
         if (cmdline.a_repository_at_a_time.specified())
         {
             std::set<RepositoryName> repos;
-            for (auto i(ids->begin()), i_end(ids->end()) ; i != i_end ; ++i)
-                repos.insert((*i)->repository_name());
+            for (const auto & i : *ids)
+                repos.insert(i->repository_name());
 
             std::stringstream rest_out;
 
@@ -1323,9 +1309,8 @@ namespace
         if (ids->empty())
             throw NothingMatching(s);
 
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
-            do_one_package(cmdline, env, basic_ppos, PartiallyMadePackageDepSpec(s).package((*i)->name()));
+        for (const auto & i : *ids)
+            do_one_package(cmdline, env, basic_ppos, PartiallyMadePackageDepSpec(s).package(i->name()));
     }
 }
 

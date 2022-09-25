@@ -190,17 +190,15 @@ namespace
         if (dd)
         {
             result->top()->append(GemcutterDependenciesKeyData::get_instance()->development_dependencies_label);
-            for (auto i(dd->dependencies().begin()), i_end(dd->dependencies().end()) ;
-                    i != i_end ; ++i)
-                result->top()->append(spec_from(*i));
+            for (const auto & i : dd->dependencies())
+                result->top()->append(spec_from(i));
         }
 
         if (dr)
         {
             result->top()->append(GemcutterDependenciesKeyData::get_instance()->runtime_dependencies_label);
-            for (auto i(dr->dependencies().begin()), i_end(dr->dependencies().end()) ;
-                    i != i_end ; ++i)
-                result->top()->append(spec_from(*i));
+            for (const auto & i : dr->dependencies())
+                result->top()->append(spec_from(i));
         }
 
         return result;

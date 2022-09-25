@@ -431,11 +431,10 @@ namespace
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & i : *ids)
             {
-                if (match_package(*env, spec, *i, from_id, options))
-                    result->insert(*i);
+                if (match_package(*env, spec, i, from_id, options))
+                    result->insert(i);
             }
 
             return result;
@@ -468,11 +467,10 @@ namespace
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & i : *ids)
             {
-                if (! func(*i))
-                    result->insert(*i);
+                if (! func(i))
+                    result->insert(i);
             }
 
             return result;

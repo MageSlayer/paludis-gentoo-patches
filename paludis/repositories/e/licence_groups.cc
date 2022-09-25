@@ -55,11 +55,10 @@ LicenceGroups::add(const FSPath & p)
     try
     {
         LineConfigFile file(p, { });
-        for (auto l(file.begin()), l_end(file.end()) ;
-                l != l_end ; ++l)
+        for (const auto & l : file)
         {
             std::vector<std::string> tokens;
-            tokenise_whitespace(*l, std::back_inserter(tokens));
+            tokenise_whitespace(l, std::back_inserter(tokens));
 
             if (tokens.size() < 2)
                 continue;

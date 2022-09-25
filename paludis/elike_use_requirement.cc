@@ -170,13 +170,12 @@ namespace
                     else
                     {
                         std::pair<bool, std::string> result(true, "");
-                        for (Choice::ConstIterator v((*cc)->begin()), v_end((*cc)->end()) ;
-                                v != v_end ; ++v)
-                            if (! one_requirement_met(env, (*v)->name_with_prefix(), maybe_changes_to_owner, id, from_id, maybe_changes_to_target))
+                        for (const auto & v : *(*cc))
+                            if (! one_requirement_met(env, v->name_with_prefix(), maybe_changes_to_owner, id, from_id, maybe_changes_to_target))
                             {
                                 if (! result.first)
                                     result.second.append(", ");
-                                result.second.append(stringify((*v)->name_with_prefix()));
+                                result.second.append(stringify(v->name_with_prefix()));
                                 result.first = false;
                             }
 
@@ -244,9 +243,8 @@ namespace
                             "ID '" << *from_id << "' uses requirement '" << _flags << "' but has no choice prefix '" << prefix << "'";
                     else
                     {
-                        for (Choice::ConstIterator v((*cc)->begin()), v_end((*cc)->end()) ;
-                                v != v_end ; ++v)
-                            if (! one_accumulate_changes_to_make_met(env, maybe_changes_to_owner, id, changed_choices, (*v)->name_with_prefix()))
+                        for (const auto & v : *(*cc))
+                            if (! one_accumulate_changes_to_make_met(env, maybe_changes_to_owner, id, changed_choices, v->name_with_prefix()))
                                 return false;
                     }
                 }
@@ -918,21 +916,21 @@ namespace
                 auto choices(id->choices_key()->parse_value());
                 std::string p;
                 int n(0);
-                for (auto c(choices->begin()), c_end(choices->end()) ; c != c_end ; ++c)
+                for (const auto & c : *choices)
                 {
-                    if (_mentioned->end() != _mentioned->find(stringify((*c)->prefix()) + ":*"))
+                    if (_mentioned->end() != _mentioned->find(stringify(c->prefix()) + ":*"))
                         continue;
 
-                    for (auto v((*c)->begin()), v_end((*c)->end()) ; v != v_end ; ++v)
-                        if ((*v)->presumed() && ! (*v)->enabled())
+                    for (const auto & v : *c)
+                        if (v->presumed() && ! v->enabled())
                         {
-                            if (_mentioned->end() != _mentioned->find(stringify((*v)->name_with_prefix())))
+                            if (_mentioned->end() != _mentioned->find(stringify(v->name_with_prefix())))
                                 continue;
 
                             ++n;
                             if (! p.empty())
                                 p.append("', '");
-                            p.append(stringify((*v)->name_with_prefix()));
+                            p.append(stringify(v->name_with_prefix()));
                         }
                 }
 

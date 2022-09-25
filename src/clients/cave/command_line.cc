@@ -59,9 +59,8 @@ CaveCommandLine::CaveCommandLine() :
 
     for (EnumIterator<CommandImportance> i, i_end(last_ci) ;
             i != i_end ; ++i)
-        for (CommandFactory::ConstIterator c(CommandFactory::get_instance()->begin()), c_end(CommandFactory::get_instance()->end()) ;
-                c != c_end ; ++c)
-            if (CommandFactory::get_instance()->create(*c)->importance() == *i)
-                add_see_also("cave-" + *c, 1);
+        for (const auto & c : *CommandFactory::get_instance())
+            if (CommandFactory::get_instance()->create(c)->importance() == *i)
+                add_see_also("cave-" + c, 1);
 }
 

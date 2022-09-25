@@ -112,10 +112,9 @@ TEST(PortageEnvironment, KnownUseFlagNames)
                             &env, { })), nullptr, { }))]->begin());
     std::shared_ptr<const Choice> foo_cards;
     auto choices(id1->choices_key()->parse_value());
-    for (Choices::ConstIterator c(choices->begin()), c_end(choices->end()) ;
-            c != c_end ; ++c)
-        if ((*c)->raw_name() == "FOO_CARDS")
-            foo_cards = *c;
+    for (const auto & c : *choices)
+        if (c->raw_name() == "FOO_CARDS")
+            foo_cards = c;
     if (! foo_cards)
         throw InternalError(PALUDIS_HERE, "oops");
     std::shared_ptr<const Set<UnprefixedChoiceName> > k1(env.known_choice_value_names(id1, foo_cards));

@@ -157,15 +157,14 @@ Executor::execute()
         for (auto & r : running)
             r.second.second->flush_threaded();
 
-        for (ReadyForPost::iterator p(_imp->ready_for_post.begin()), p_end(_imp->ready_for_post.end()) ;
-                p != p_end ; ++p)
+        for (auto & p : _imp->ready_for_post)
         {
             --_imp->active;
             ++_imp->done;
-            auto r = running.find((*p)->queue_name());
+            auto r = running.find(p->queue_name());
             r->second.first.join();
             running.erase(r);
-            (*p)->post_execute_exclusive();
+            p->post_execute_exclusive();
         }
 
         _imp->ready_for_post.clear();

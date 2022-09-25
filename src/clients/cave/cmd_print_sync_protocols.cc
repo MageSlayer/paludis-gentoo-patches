@@ -81,11 +81,8 @@ PrintSyncProtocolsCommand::run(
 
     std::shared_ptr<const FSPathSequence> fes(env->syncers_dirs());
 
-    for (FSPathSequence::ConstIterator s(fes->begin()), s_end(fes->end());
-            s != s_end; ++s)
+    for (const auto & dir : *fes)
     {
-        FSPath dir(*s);
-
         if (! dir.stat().is_directory())
             continue;
 
@@ -118,4 +115,3 @@ PrintSyncProtocolsCommand::importance() const
 {
     return ci_scripting;
 }
-

@@ -171,20 +171,17 @@ namespace
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
-                    r != r_end ; ++r)
+            for (const auto & r : *repos)
             {
-                for (QualifiedPackageNameSet::ConstIterator q(qpns->begin()), q_end(qpns->end()) ;
-                        q != q_end ; ++q)
+                for (const auto & q : *qpns)
                 {
-                    std::shared_ptr<const PackageIDSequence> ids(env->fetch_repository(*r)->package_ids(*q, x));
-                    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                            i != i_end ; ++i)
-                        if ((*i)->from_repositories_key())
+                    std::shared_ptr<const PackageIDSequence> ids(env->fetch_repository(r)->package_ids(q, x));
+                    for (const auto & i : *ids)
+                        if (i->from_repositories_key())
                         {
-                            auto v((*i)->from_repositories_key()->parse_value());
+                            auto v(i->from_repositories_key()->parse_value());
                             if (v->end() != v->find(stringify(name)))
-                                result->insert(*i);
+                                result->insert(i);
                         }
                 }
             }
@@ -216,9 +213,8 @@ namespace
         {
             std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
 
-            for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
-                    r != r_end ; ++r)
-                if (env->fetch_repository(*r)->has_category_named(name, x))
+            for (const auto & r : *repos)
+                if (env->fetch_repository(r)->has_category_named(name, x))
                 {
                     result->insert(name);
                     break;
@@ -251,9 +247,8 @@ namespace
         {
             std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
 
-            for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
-                    r != r_end ; ++r)
-                if (env->fetch_repository(*r)->has_category_named(name.category(), x))
+            for (const auto & r : *repos)
+                if (env->fetch_repository(r)->has_category_named(name.category(), x))
                 {
                     result->insert(name.category());
                     break;
@@ -269,11 +264,10 @@ namespace
                 const RepositoryContentMayExcludes & x) const override
         {
             std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
-            for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
-                    r != r_end ; ++r)
+            for (const auto & r : *repos)
                 for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
                         c != c_end ; ++c)
-                    if (env->fetch_repository(*r)->has_package_named(name, x))
+                    if (env->fetch_repository(r)->has_package_named(name, x))
                         result->insert(name);
 
             return result;
@@ -368,9 +362,8 @@ namespace
             if (spec.category_name_part_ptr())
             {
                 std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
-                for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
-                        r != r_end ; ++r)
-                    if (env->fetch_repository(*r)->has_category_named(*spec.category_name_part_ptr(), x))
+                for (const auto & r : *repos)
+                    if (env->fetch_repository(r)->has_category_named(*spec.category_name_part_ptr(), x))
                     {
                         result->insert(*spec.category_name_part_ptr());
                         break;
@@ -381,11 +374,10 @@ namespace
             else if (spec.package_name_part_ptr())
             {
                 std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
-                for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
-                        r != r_end ; ++r)
+                for (const auto & r : *repos)
                 {
                     std::shared_ptr<const CategoryNamePartSet> cats(
-                        env->fetch_repository(*r)
+                        env->fetch_repository(r)
                         ->category_names_containing_package(*spec.package_name_part_ptr(), x));
                     std::copy(cats->begin(), cats->end(), result->inserter());
                 }
@@ -395,9 +387,8 @@ namespace
             else if (spec.package_ptr())
             {
                 std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
-                for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
-                        r != r_end ; ++r)
-                    if (env->fetch_repository(*r)->has_category_named(spec.package_ptr()->category(), x))
+                for (const auto & r : *repos)
+                    if (env->fetch_repository(r)->has_category_named(spec.package_ptr()->category(), x))
                     {
                         result->insert(spec.package_ptr()->category());
                         break;
@@ -418,21 +409,18 @@ namespace
             if (spec.package_name_part_ptr())
             {
                 std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
-                for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
-                        r != r_end ; ++r)
-                    for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
-                            c != c_end ; ++c)
-                        if (env->fetch_repository(*r)->has_package_named(*c + *spec.package_name_part_ptr(), x))
-                            result->insert(*c + *spec.package_name_part_ptr());
+                for (const auto & r : *repos)
+                    for (const auto & c : *cats)
+                        if (env->fetch_repository(r)->has_package_named(c + *spec.package_name_part_ptr(), x))
+                            result->insert(c + *spec.package_name_part_ptr());
 
                 return result;
             }
             else if (spec.package_ptr())
             {
                 std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
-                for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
-                        r != r_end ; ++r)
-                    if (env->fetch_repository(*r)->has_package_named(*spec.package_ptr(), x))
+                for (const auto & r : *repos)
+                    if (env->fetch_repository(r)->has_package_named(*spec.package_ptr(), x))
                     {
                         result->insert(*spec.package_ptr());
                         break;
@@ -452,17 +440,14 @@ namespace
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (RepositoryNameSet::ConstIterator r(repos->begin()), r_end(repos->end()) ;
-                    r != r_end ; ++r)
+            for (const auto & r : *repos)
             {
-                for (QualifiedPackageNameSet::ConstIterator q(qpns->begin()), q_end(qpns->end()) ;
-                        q != q_end ; ++q)
+                for (const auto & q : *qpns)
                 {
-                    std::shared_ptr<const PackageIDSequence> ids(env->fetch_repository(*r)->package_ids(*q, x));
-                    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                            i != i_end ; ++i)
-                        if (match_package(*env, spec, *i, from_id, options))
-                            result->insert(*i);
+                    std::shared_ptr<const PackageIDSequence> ids(env->fetch_repository(r)->package_ids(q, x));
+                    for (const auto & i : *ids)
+                        if (match_package(*env, spec, i, from_id, options))
+                            result->insert(i);
                 }
             }
 
