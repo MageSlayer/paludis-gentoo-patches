@@ -24,8 +24,11 @@
 #include <paludis/util/options.hh>
 
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include <algorithm>
 
 using namespace paludis;
+using testing::UnorderedElementsAre;
 
 TEST(FSIterator, Manipulation)
 {
@@ -78,3 +81,29 @@ TEST(FSIterator, Iterate)
     EXPECT_EQ(3, std::distance(iter3, FSIterator()));
 }
 
+TEST(FSIterator, SpecialWants)
+{
+    const FSPath test_dir("fs_iterator_TEST_dir/special-wants");
+    FSIterator iter_want_dirs(test_dir, { fsio_want_directories });
+    FSIterator iter_want_files(test_dir, { fsio_want_regular_files });
+    FSIterator iter_symlinks(test_dir, { fsio_want_regular_files, fsio_deref_symlinks_for_wants });
+    FSIterator iter_dotfiles(test_dir, { fsio_want_regular_files, fsio_include_dotfiles });
+
+    const auto list_entries = [](const FSIterator & iter) {
+        std::vector<std::string> result;
+        std::transform(iter, FSIterator(), std::back_inserter(result), [](const FSPath & path) {
+            return path.basename();
+        });
+
+        return result;
+    };
+
+    EXPECT_THAT(list_entries(iter_want_dirs), UnorderedElementsAre("dir1", "dir2"));
+    EXPECT_THAT(list_entries(iter_want_files), UnorderedElementsAre("file1", "file2", "hardlink1"));
+    EXPECT_THAT(
+            list_entries(iter_symlinks),
+            UnorderedElementsAre("file1", "file2", "hardlink1", "symlink1"));
+    EXPECT_THAT(
+            list_entries(iter_dotfiles),
+            UnorderedElementsAre("file1", "file2", "hardlink1", ".file3"));
+}
