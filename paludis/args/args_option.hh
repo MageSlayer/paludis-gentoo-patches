@@ -643,8 +643,8 @@ namespace paludis
                         const AllowedEnumArg> AllowedArgConstIterator;
 
                 AllowedArgConstIterator begin_allowed_args() const;
-
                 AllowedArgConstIterator end_allowed_args() const;
+                IteratorRange<AllowedArgConstIterator> allowed_args() const;
 
                 ///\}
 
