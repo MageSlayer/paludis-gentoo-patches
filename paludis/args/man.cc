@@ -100,42 +100,37 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
 
     dw.heading(h->app_name(), h->man_section(), h->app_synopsis());
 
-    for (ArgsHandler::UsageLineConstIterator u(h->begin_usage_lines()),
-            u_end(h->end_usage_lines()) ; u != u_end ; ++u)
+    if (h->begin_usage_lines() != h->end_usage_lines())
     {
-        if (u == h->begin_usage_lines())
-            dw.start_usage_lines();
-        dw.usage_line(h->app_name(), *u);
+        dw.start_usage_lines();
+
+        for (const auto & usage_line : h->usage_lines())
+            dw.usage_line(h->app_name(), usage_line);
     }
 
     dw.start_description(h->app_description());
-    for (ArgsHandler::DescriptionLineConstIterator u(h->begin_description_lines()),
-            u_end(h->end_description_lines()) ;
-            u != u_end ; ++u)
-        dw.extra_description(*u);
+    for (const auto & description_line : h->description_lines())
+        dw.extra_description(description_line);
     dw.end_description();
 
-    for (ArgsHandler::ArgsSectionsConstIterator s(h->begin_args_sections()), s_end(h->end_args_sections()) ;
-            s != s_end ; ++s)
+    for (const auto & section : h->args_sections())
     {
-        dw.start_options(s->name());
-        for (ArgsSection::GroupsConstIterator a(s->begin()),
-                a_end(s->end()) ; a != a_end ; ++a)
+        dw.start_options(section.name());
+        for (const auto & group : section)
         {
-            dw.start_arg_group(a->name(), a->description());
+            dw.start_arg_group(group.name(), group.description());
 
-            for (paludis::args::ArgsGroup::ConstIterator b(a->begin()), b_end(a->end()) ;
-                    b != b_end ; ++b)
+            for (const auto & option : group)
             {
-                if (visitor_cast<const paludis::args::AliasArg>(**b) &&
-                        visitor_cast<const paludis::args::AliasArg>(**b)->hidden())
+                if (visitor_cast<const paludis::args::AliasArg>(*option) &&
+                        visitor_cast<const paludis::args::AliasArg>(*option)->hidden())
                     continue;
 
-                dw.arg_group_item((*b)->short_name(), (*b)->long_name(),
-                        (*b)->can_be_negated() ? "no-" + (*b)->long_name() : "", (*b)->description());
+                dw.arg_group_item(option->short_name(), option->long_name(),
+                        option->can_be_negated() ? "no-" + option->long_name() : "", option->description());
 
                 ExtraText t(dw);
-                (*b)->accept(t);
+                option->accept(t);
 
             }
             dw.end_arg_group();
@@ -147,11 +142,8 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
     {
         dw.start_environment();
 
-        for (ArgsHandler::EnvironmentLineConstIterator a(h->begin_environment_lines()),
-                a_end(h->end_environment_lines()) ; a != a_end ; ++a)
-        {
-            dw.environment_line(a->first, a->second);
-        }
+        for (const auto & environment_line : h->environment_lines())
+            dw.environment_line(environment_line.first, environment_line.second);
 
         dw.end_environment();
     }
@@ -167,8 +159,8 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
     {
         dw.start_examples();
 
-        for (ArgsHandler::ExamplesConstIterator a(h->begin_examples()), a_end(h->end_examples()) ; a != a_end ; ++a)
-            dw.example(a->first, a->second);
+        for (const auto & example : h->examples())
+            dw.example(example.first, example.second);
 
         dw.end_examples();
     }
@@ -177,9 +169,12 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
     {
         dw.start_see_alsos();
 
-        for (ArgsHandler::SeeAlsoConstIterator u(h->begin_see_alsos()),
-                u_end(h->end_see_alsos()) ; u != u_end ; ++u)
-            dw.see_also(u->first, u->second, u == h->begin_see_alsos());
+        bool first{true};
+        for (const auto & see_also : h->see_alsos())
+        {
+            dw.see_also(see_also.first, see_also.second, first);
+            first = false;
+        }
 
         dw.end_see_alsos();
     }
