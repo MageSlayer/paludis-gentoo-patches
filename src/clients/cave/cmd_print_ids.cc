@@ -255,11 +255,9 @@ PrintIDsCommand::run(
     Generator g((generator::All()));
     if (cmdline.a_matching.specified())
     {
-        for (args::StringSetArg::ConstIterator m(cmdline.a_matching.begin_args()),
-                m_end(cmdline.a_matching.end_args()) ;
-                m != m_end ; ++m)
+        for (const auto & matching_spec : cmdline.a_matching.args())
         {
-            PackageDepSpec s(parse_user_package_dep_spec(*m, env.get(), { updso_allow_wildcards }));
+            PackageDepSpec s(parse_user_package_dep_spec(matching_spec, env.get(), { updso_allow_wildcards }));
             g = g & generator::Matches(s, nullptr, { });
         }
     }
@@ -268,36 +266,32 @@ PrintIDsCommand::run(
 
     if (cmdline.a_supporting.specified())
     {
-        for (args::StringSetArg::ConstIterator m(cmdline.a_supporting.begin_args()),
-                m_end(cmdline.a_supporting.end_args()) ;
-                m != m_end ; ++m)
+        for (const auto & action : cmdline.a_supporting.args())
         {
-            if (*m == "install")
+            if (action == "install")
                 fg = fg | filter::SupportsAction<InstallAction>();
-            else if (*m == "uninstall")
+            else if (action == "uninstall")
                 fg = fg | filter::SupportsAction<UninstallAction>();
-            else if (*m == "pretend")
+            else if (action == "pretend")
                 fg = fg | filter::SupportsAction<PretendAction>();
-            else if (*m == "config")
+            else if (action == "config")
                 fg = fg | filter::SupportsAction<ConfigAction>();
-            else if (*m == "fetch")
+            else if (action == "fetch")
                 fg = fg | filter::SupportsAction<FetchAction>();
-            else if (*m == "pretend-fetch")
+            else if (action == "pretend-fetch")
                 fg = fg | filter::SupportsAction<PretendFetchAction>();
-            else if (*m == "info")
+            else if (action == "info")
                 fg = fg | filter::SupportsAction<InfoAction>();
             else
-                throw args::DoHelp("Unknown --" + cmdline.a_supporting.long_name() + " value '" + *m + "'");
+                throw args::DoHelp("Unknown --" + cmdline.a_supporting.long_name() + " value '" + action + "'");
         }
     }
 
     if (cmdline.a_with_mask.specified())
     {
-        for (args::StringSetArg::ConstIterator m(cmdline.a_with_mask.begin_args()),
-                m_end(cmdline.a_with_mask.end_args()) ;
-                m != m_end ; ++m)
+        for (const auto & mask : cmdline.a_with_mask.args())
         {
-            fg = fg | WithMaskFilter(cmdline, *m);
+            fg = fg | WithMaskFilter(cmdline, mask);
         }
     }
 

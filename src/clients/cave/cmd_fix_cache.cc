@@ -107,10 +107,8 @@ FixCacheCommand::run(
     if (cmdline.a_repository.specified())
     {
         all = false;
-        for (args::StringSetArg::ConstIterator p(cmdline.a_repository.begin_args()),
-                p_end(cmdline.a_repository.end_args()) ;
-                p != p_end ; ++p)
-            repository_names.insert(RepositoryName(*p));
+        for (const auto & repository : cmdline.a_repository.args())
+            repository_names.insert(RepositoryName(repository));
     }
 
     if (cmdline.a_installable.specified())

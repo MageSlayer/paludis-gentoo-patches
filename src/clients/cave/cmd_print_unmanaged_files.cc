@@ -166,10 +166,9 @@ PrintUnmanagedFilesCommand::run(const std::shared_ptr<Environment> & env,
 
     const auto sysroot = env->preferred_root_key()->parse_value();
 
-    for (auto root(cmdline.a_root.begin_args()), end(cmdline.a_root.end_args());
-            root != end; ++root)
+    for (const auto & root : cmdline.a_root.args())
     {
-        const FSPath path(*root);
+        const FSPath path(root);
         const FSPath realpath(path.realpath());
 
         if (! realpath.stat().is_directory())

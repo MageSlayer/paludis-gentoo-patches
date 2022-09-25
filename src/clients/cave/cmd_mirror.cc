@@ -124,11 +124,9 @@ MirrorCommand::run(
     Generator g((generator::All()));
     if (cmdline.a_matching.specified())
     {
-        for (args::StringSetArg::ConstIterator m(cmdline.a_matching.begin_args()),
-                m_end(cmdline.a_matching.end_args()) ;
-                m != m_end ; ++m)
+        for (const auto & matching_spec : cmdline.a_matching.args())
         {
-            PackageDepSpec s(parse_user_package_dep_spec(*m, env.get(), { updso_allow_wildcards }));
+            PackageDepSpec s(parse_user_package_dep_spec(matching_spec, env.get(), { updso_allow_wildcards }));
             g = g & generator::Matches(s, nullptr, { });
         }
     }

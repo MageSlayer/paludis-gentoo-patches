@@ -159,9 +159,8 @@ PrintUnusedDistfilesCommand::run(
     std::list<Selection> selections;
     selections.push_back(selection::AllVersionsUnsorted(generator::All() | filter::InstalledAtRoot(env->preferred_root_key()->parse_value())));
 
-    for (auto c(cmdline.a_include.begin_args()), c_end(cmdline.a_include.end_args()) ;
-            c != c_end ; ++c)
-        selections.push_back(selection::AllVersionsUnsorted(generator::InRepository(RepositoryName(*c))));
+    for (const auto & repository_name : cmdline.a_include.args())
+        selections.push_back(selection::AllVersionsUnsorted(generator::InRepository(RepositoryName(repository_name))));
 
     std::set<std::shared_ptr<const PackageID>, PackageIDComparator> already_done(PackageIDComparator(env.get()));
     for (const auto & selection : selections)

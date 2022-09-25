@@ -447,11 +447,9 @@ MatchCommand::run_hosted(
             texts.push_back(stringify(id->long_description_key()->parse_value()));
     }
 
-    for (args::StringSetArg::ConstIterator a(match_options.a_key.begin_args()),
-            a_end(match_options.a_key.end_args()) ;
-            a != a_end ; ++a)
+    for (const auto & key : match_options.a_key.args())
     {
-        PackageID::MetadataConstIterator i(id->find_metadata(*a));
+        PackageID::MetadataConstIterator i(id->find_metadata(key));
         if (i == id->end_metadata())
             continue;
 

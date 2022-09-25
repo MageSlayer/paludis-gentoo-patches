@@ -102,10 +102,9 @@ PrintCategoriesCommand::run(
 
         if (cmdline.a_containing.specified())
         {
-            for (args::StringSetArg::ConstIterator p(cmdline.a_containing.begin_args()), p_end(cmdline.a_containing.end_args()) ;
-                    p != p_end ; ++p)
+            for (const auto & package_name : cmdline.a_containing.args())
             {
-                std::shared_ptr<const CategoryNamePartSet> cats(repository->category_names_containing_package(PackageNamePart(*p), { }));
+                std::shared_ptr<const CategoryNamePartSet> cats(repository->category_names_containing_package(PackageNamePart(package_name), { }));
                 std::copy(cats->begin(), cats->end(), std::inserter(categories, categories.begin()));
             }
         }
