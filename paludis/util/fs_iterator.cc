@@ -80,7 +80,7 @@ FSIterator::FSIterator(const FSPath & base, const FSIteratorOptions & options) :
 
     DIR * d(opendir(stringify(base).c_str()));
     if (nullptr == d)
-        throw FSError("Error opening directory '" + stringify(base) + "': " + stringify(::strerror(errno)));
+        throw FSError(errno, "Error opening directory '" + stringify(base) + "'");
 
     bool have_any_special_wants(options[fsio_want_directories] || options[fsio_want_regular_files]);
 
