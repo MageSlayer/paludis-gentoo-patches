@@ -65,9 +65,8 @@ namespace
 
             _dw.start_extra_arg();
 
-            for (EnumArg::AllowedArgConstIterator a(e.begin_allowed_args()), a_end(e.end_allowed_args()) ;
-                    a != a_end ; ++a)
-                _dw.extra_arg_enum(*a, e.default_arg());
+            for (const auto & arg : e.allowed_args())
+                _dw.extra_arg_enum(arg, e.default_arg());
 
             _dw.end_extra_arg();
         }
@@ -79,9 +78,8 @@ namespace
 
             _dw.start_extra_arg();
 
-            for (StringSetArg::AllowedArgConstIterator a(e.begin_allowed_args()), a_end(e.end_allowed_args()) ;
-                    a != a_end ; ++a)
-                _dw.extra_arg_string_set(a->first, a->second);
+            for (const auto & arg : e.allowed_args())
+                _dw.extra_arg_string_set(arg.first, arg.second);
 
             _dw.end_extra_arg();
         }
