@@ -18,9 +18,9 @@
  */
 
 #include <cstdlib>
+#include <cstring>
 #include <unistd.h>
 #include <errno.h>
-#include <string.h>
 #include <iostream>
 
 int
@@ -36,7 +36,7 @@ main(int argc, char *argv[])
     int read_fd(std::atoi(argv[2]));
     if (0 != ::lockf(write_fd, F_LOCK, 0))
     {
-        std::cerr << "Error: " << argv[0] << ": lockf failed with " << ::strerror(errno) << std::endl;
+        std::cerr << "Error: " << argv[0] << ": lockf failed with " << std::strerror(errno) << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -56,14 +56,14 @@ main(int argc, char *argv[])
         }
         if (w == -1)
         {
-            std::cerr << "Error: " << argv[0] << ": write failed with " << ::strerror(errno) << std::endl;
+            std::cerr << "Error: " << argv[0] << ": write failed with " << std::strerror(errno) << std::endl;
             return EXIT_FAILURE;
         }
     }
 
     if (c == -1)
     {
-        std::cerr << "Error: " << argv[0] << ": read failed with " << ::strerror(errno) << std::endl;
+        std::cerr << "Error: " << argv[0] << ": read failed with " << std::strerror(errno) << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -73,7 +73,7 @@ main(int argc, char *argv[])
         sleep(0);
     if (w == -1)
     {
-        std::cerr << "Error: " << argv[0] << ": write failed with " << ::strerror(errno) << std::endl;
+        std::cerr << "Error: " << argv[0] << ": write failed with " << std::strerror(errno) << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -98,7 +98,7 @@ main(int argc, char *argv[])
 
         if (w == -1)
         {
-            std::cerr << "Error: " << argv[0] << ": write failed with " << ::strerror(errno) << std::endl;
+            std::cerr << "Error: " << argv[0] << ": write failed with " << std::strerror(errno) << std::endl;
             return EXIT_FAILURE;
         }
 
@@ -108,13 +108,13 @@ main(int argc, char *argv[])
 
     if (c == -1)
     {
-        std::cerr << "Error: " << argv[0] << ": read failed with " << ::strerror(errno) << std::endl;
+        std::cerr << "Error: " << argv[0] << ": read failed with " << std::strerror(errno) << std::endl;
         return EXIT_FAILURE;
     }
 
     if (0 != ::lockf(write_fd, F_ULOCK, 0))
     {
-        std::cerr << "Error: " << argv[0] << ": lockf unlock failed with " << ::strerror(errno) << std::endl;
+        std::cerr << "Error: " << argv[0] << ": lockf unlock failed with " << std::strerror(errno) << std::endl;
         return EXIT_FAILURE;
     }
 
