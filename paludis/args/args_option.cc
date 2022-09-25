@@ -518,6 +518,12 @@ EnumArg::end_allowed_args() const
     return AllowedArgConstIterator(_imp->allowed_args.end());
 }
 
+IteratorRange<EnumArg::AllowedArgConstIterator>
+EnumArg::allowed_args() const
+{
+    return {_imp->allowed_args};
+}
+
 const std::string
 EnumArg::forwardable_string() const
 {
