@@ -45,6 +45,7 @@ namespace paludis
     {
         public:
             ProcessError(const std::string &) noexcept;
+            ProcessError(int error, const std::string &) noexcept;
     };
 
     class PALUDIS_VISIBLE ProcessCommand
