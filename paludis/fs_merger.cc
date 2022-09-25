@@ -103,6 +103,11 @@ FSMergerError::FSMergerError(const std::string & s) noexcept :
 {
 }
 
+FSMergerError::FSMergerError(int error, const std::string & msg) noexcept :
+    MergerError(msg + ": " + std::string(std::strerror(error)))
+{
+}
+
 FSMerger::FSMerger(const FSMergerParams & p) :
     Merger(make_named_values<MergerParams>(
                 n::environment() = p.environment(),
@@ -356,8 +361,8 @@ FSMerger::install_file(const FSPath & src, const FSPath & dst_dir, const std::st
     std::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst_real), src_stat.permissions()));
     FSCreateCon createcon(secctx);
     if (0 != paludis::setfilecon(src, secctx))
-        throw FSMergerError("Could not set SELinux context on '"
-                + stringify(src) + "': " + stringify(::strerror(errno)));
+        throw FSMergerError(errno, "Could not set SELinux context on '"
+                + stringify(src) + "'");
 
     mode_t src_perms(src_stat.permissions());
     if (0 != (src_perms & (S_ISVTX | S_ISUID | S_ISGID)))
@@ -376,7 +381,7 @@ FSMerger::install_file(const FSPath & src, const FSPath & dst_dir, const std::st
         FSPath d(stringify(dst_real));
         if (touch && ! _imp->params.options()[mo_preserve_mtimes])
             if (! d.utime(Timestamp::now()))
-                throw FSMergerError("utime(" + stringify(dst_real) + ", 0) failed: " + stringify(::strerror(errno)));
+                throw FSMergerError(errno, "utime(" + stringify(dst_real) + ", 0) failed");
 
         /* set*id bits get partially clobbered on a rename on linux */
         dst_real.chmod(src_perms);
@@ -390,7 +395,7 @@ FSMerger::install_file(const FSPath & src, const FSPath & dst_dir, const std::st
             if (0 == ::link(i->second.c_str(), stringify(dst).c_str()))
             {
                 if (0 != std::rename(stringify(dst).c_str(), stringify(dst_real).c_str()))
-                    throw FSMergerError("rename(" + stringify(dst) + ", " + stringify(dst_real) + ") failed: " + stringify(::strerror(errno)));
+                    throw FSMergerError(errno, "rename(" + stringify(dst) + ", " + stringify(dst_real) + ") failed");
                 do_copy = false;
                 result += msi_as_hardlink;
                 break;
@@ -408,15 +413,15 @@ FSMerger::install_file(const FSPath & src, const FSPath & dst_dir, const std::st
 
         FDHolder input_fd(::open(stringify(src).c_str(), O_RDONLY), false);
         if (-1 == input_fd)
-            throw FSMergerError("Cannot read '" + stringify(src) + "': " + stringify(::strerror(errno)));
+            throw FSMergerError(errno, "Cannot read '" + stringify(src) + "'");
 
         FDHolder output_fd(::open(stringify(dst).c_str(), O_WRONLY | O_CREAT, src_perms), false);
         if (-1 == output_fd)
-            throw FSMergerError("Cannot write '" + stringify(dst) + "': " + stringify(::strerror(errno)));
+            throw FSMergerError(errno, "Cannot write '" + stringify(dst) + "'");
 
         if (! _imp->params.no_chown())
             if (0 != ::fchown(output_fd, src_stat.owner(), src_stat.group()))
-                throw FSMergerError("Cannot fchown '" + stringify(dst) + "': " + stringify(::strerror(errno)));
+                throw FSMergerError(errno, "Cannot fchown '" + stringify(dst) + "'");
 
 #ifdef HAVE_FALLOCATE
         if (0 != ::fallocate(output_fd, FALLOC_FL_KEEP_SIZE, 0, src_stat.file_size()))
@@ -427,7 +432,7 @@ FSMerger::install_file(const FSPath & src, const FSPath & dst_dir, const std::st
                     break;
 
                 case ENOSPC:
-                    throw FSMergerError("fallocate '" + stringify(dst) + "' returned " + stringify(::strerror(errno)));
+                    throw FSMergerError(errno, "fallocate '" + stringify(dst) + "' failed");
 
                 default:
                     Log::get_instance()->message("merger.file.fallocate_failed", ll_debug, lc_context) <<
@@ -438,16 +443,16 @@ FSMerger::install_file(const FSPath & src, const FSPath & dst_dir, const std::st
 
         /* set*id bits, after fallocate because xfs is weird */
         if (0 != ::fchmod(output_fd, src_perms))
-            throw FSMergerError("Cannot fchmod '" + stringify(dst) + "': " + stringify(::strerror(errno)));
+            throw FSMergerError(errno, "Cannot fchmod '" + stringify(dst) + "'");
         try_to_copy_xattrs(src, output_fd, result);
 
         char buf[4096];
         ssize_t count;
         while ((count = read(input_fd, buf, 4096)) > 0)
             if (-1 == write(output_fd, buf, count))
-                throw FSMergerError("write failed: " + stringify(::strerror(errno)));
+                throw FSMergerError(errno, "write failed");
         if (-1 == count)
-            throw FSMergerError("read failed: " + stringify(::strerror(errno)));
+            throw FSMergerError(errno, "read failed");
 
         /* might need to copy mtime */
         if (_imp->params.options()[mo_preserve_mtimes])
@@ -456,7 +461,7 @@ FSMerger::install_file(const FSPath & src, const FSPath & dst_dir, const std::st
             struct timespec ts[2];
             ts[0] = ts[1] = timestamp.as_timespec();
             if (0 != ::futimens(output_fd, ts))
-                throw FSMergerError("Cannot futimens '" + stringify(dst) + "': " + stringify(::strerror(errno)));
+                throw FSMergerError(errno, "Cannot futimens '" + stringify(dst) + "'");
         }
 
         if (0 != std::rename(stringify(dst).c_str(), stringify(dst_real).c_str()))
@@ -506,7 +511,7 @@ FSMerger::track_renamed_dir_recursive(const FSPath & dst)
 
                     if (touch && ! _imp->params.options()[mo_preserve_mtimes])
                         if (! d->utime(Timestamp::now()))
-                            throw FSMergerError("utime(" + stringify(*d) + ", 0) failed: " + stringify(::strerror(errno)));
+                            throw FSMergerError(errno, "utime(" + stringify(*d) + ", 0) failed");
                     track_install_file(*d, dst, stringify(d->basename()), merged_how);
                 }
                 continue;
@@ -539,8 +544,8 @@ FSMerger::relabel_dir_recursive(const FSPath & src, const FSPath & dst)
         std::shared_ptr<const SecurityContext> secctx(
                 MatchPathCon::get_instance()->match(stringify(dst / d->basename()), mode));
         if (0 != paludis::setfilecon(*d, secctx))
-            throw FSMergerError("Could not set SELinux context on '"
-                    + stringify(*d) + "' : " + stringify(::strerror(errno)));
+            throw FSMergerError(errno, "Could not set SELinux context on '"
+                    + stringify(*d) + "'");
         if (d_star_stat.is_directory())
             relabel_dir_recursive(*d, dst / d->basename());
     }
@@ -580,8 +585,8 @@ FSMerger::install_dir(const FSPath & src, const FSPath & dst_dir)
     std::shared_ptr<const SecurityContext> secctx(MatchPathCon::get_instance()->match(stringify(dst), mode));
     FSCreateCon createcon(secctx);
     if (0 != paludis::setfilecon(src, secctx))
-        throw FSMergerError("Could not set SELinux context on '"
-                + stringify(src) + "': " + stringify(::strerror(errno)));
+        throw FSMergerError(errno, "Could not set SELinux context on '"
+                + stringify(src) + "'");
 
     if (is_selinux_enabled())
         relabel_dir_recursive(src, dst);
@@ -606,17 +611,17 @@ FSMerger::install_dir(const FSPath & src, const FSPath & dst_dir)
         FDHolder dst_fd(::open(stringify(dst).c_str(), O_RDONLY));
         struct stat sb;
         if (-1 == dst_fd)
-            throw FSMergerError("Could not get an FD for the directory '"
-                    + stringify(dst) + "' that we just created: " + stringify(::strerror(errno)));
+            throw FSMergerError(errno, "Could not get an FD for the directory '"
+                    + stringify(dst) + "' that we just created");
         if (-1 == ::fstat(dst_fd, &sb))
-            throw FSMergerError("Could not fstat the directory '"
-                    + stringify(dst) + "' that we just created: " + stringify(::strerror(errno)));
+            throw FSMergerError(errno, "Could not fstat the directory '"
+                    + stringify(dst) + "' that we just created");
         if ( !S_ISDIR(sb.st_mode))
             throw FSMergerError("The directory that we just created is not a directory anymore");
         if (! _imp->params.no_chown())
             if (-1 == ::fchown(dst_fd, src_stat.owner(), src_stat.group()))
-                throw FSMergerError("Could not fchown the directory '" + stringify(dst) + "' that we just created: "
-                        + stringify(::strerror(errno)));
+                throw FSMergerError(errno, "Could not fchown the directory '"
+                        + stringify(dst) + "' that we just created");
         /* pick up set*id bits */
         ::fchmod(dst_fd, mode);
         try_to_copy_xattrs(src, dst_fd, result);
@@ -682,8 +687,7 @@ FSMerger::install_sym(const FSPath & src, const FSPath & dst_dir)
     if (do_sym)
     {
         if (0 != ::symlink(stringify(src.readlink()).c_str(), stringify(dst).c_str()))
-            throw FSMergerError("Couldn't create symlink at '" + stringify(dst) + "': "
-                    + stringify(::strerror(errno)));
+            throw FSMergerError(errno, "Couldn't create symlink at '" + stringify(dst) + "'");
         _imp->merged_ids.insert(make_pair(src_stat.lowlevel_id(), stringify(dst)));
     }
 
