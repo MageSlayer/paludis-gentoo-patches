@@ -58,6 +58,11 @@ ProcessError::ProcessError(const std::string & s) noexcept :
 {
 }
 
+ProcessError::ProcessError(int error, const std::string & message) noexcept :
+    Exception(message + ": " + std::string(std::strerror(error)))
+{
+}
+
 namespace paludis
 {
     template <>
@@ -1068,7 +1073,7 @@ Process::run()
 
     pid_t child(fork());
     if (-1 == child)
-        throw ProcessError("fork() failed: " + stringify(::strerror(errno)));
+        throw ProcessError(errno, "fork() failed");
     else if ((0 == child) ^ _imp->as_main_process)
     {
         if (_imp->as_main_process)
@@ -1204,7 +1209,7 @@ Process::run()
 
             pid_t p(fork());
             if (-1 == p)
-                throw ProcessError("fork() failed: " + stringify(::strerror(errno)));
+                throw ProcessError(errno, "fork() failed");
             else if (0 != p)
                 _exit(0);
         }
