@@ -146,9 +146,8 @@ PrintIDEnvironmentVariableCommand::run(
 
     for (auto i(cmdline.a_best.specified() ? entries->last() : entries->begin()), i_end(entries->end()) ;
             i != i_end ; ++i)
-        for (args::StringSequenceArg::ConstIterator v(cmdline.a_variable_name.begin_args()), v_end(cmdline.a_variable_name.end_args()) ;
-                v != v_end ; ++v)
-            do_one_var(env.get(), spec, *i, *v, cmdline);
+        for (const std::string & var_name : cmdline.a_variable_name.args())
+            do_one_var(env.get(), spec, *i, var_name, cmdline);
 
     return EXIT_SUCCESS;
 }
