@@ -20,6 +20,7 @@
  */
 
 #include <paludis/util/fs_error.hh>
+#include <cstring>
 
 using namespace paludis;
 
@@ -28,3 +29,7 @@ FSError::FSError(const std::string & our_message) noexcept :
 {
 }
 
+FSError::FSError(int error, const std::string & message) noexcept :
+    Exception(message + ": " + std::string(std::strerror(error)))
+{
+}
