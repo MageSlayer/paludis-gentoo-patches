@@ -87,7 +87,6 @@ endif()
 # }}}
 
 # {{{ miscellaneous functions
-paludis_check_function_exists(strerror HAVE_STRERROR REQUIRED)
 paludis_check_function_exists(signal HAVE_SIGNAL REQUIRED)
 paludis_check_function_exists(grantpt HAVE_GRANTPT REQUIRED)
 paludis_check_function_exists(unlockpt HAVE_UNLOCKPT REQUIRED)
