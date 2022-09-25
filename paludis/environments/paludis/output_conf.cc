@@ -349,14 +349,13 @@ OutputConf::add(const FSPath & filename, const FSPath & root)
     Managers local_managers;
     Managers local_rules;
 
-    for (KeyValueConfigFile::ConstIterator k(f->begin()), k_end(f->end()) ;
-            k != k_end ; ++k)
+    for (const auto & k : *f)
     {
-        std::string remainder(k->first);
+        std::string remainder(k.first);
         std::string::size_type p(remainder.find('/'));
         if (std::string::npos == p)
         {
-            _imp->misc_vars[k->first] = k->second;
+            _imp->misc_vars[k.first] = k.second;
             continue;
         }
 
@@ -374,21 +373,20 @@ OutputConf::add(const FSPath & filename, const FSPath & root)
             local_rules.insert(
                     std::make_pair(section_name,
                         std::make_shared<Map<std::string, std::string>>())).first->second->insert(
-                    remainder, k->second);
+                    remainder, k.second);
         }
         else if (section_kind == "manager")
         {
             local_managers.insert(
                     std::make_pair(section_name,
                         std::make_shared<Map<std::string, std::string>>())).first->second->insert(
-                    remainder, k->second);
+                    remainder, k.second);
         }
         else
             throw PaludisConfigError("Section kind '" + section_kind + "' unknown");
     }
 
-    for (Managers::const_iterator r(local_rules.begin()), r_end(local_rules.end()) ;
-            r != r_end ; ++r)
+    for (const auto & local_rule : local_rules)
     {
         Rule rule(make_named_values<Rule>(
                     n::action_requirement() = "*",
@@ -399,22 +397,19 @@ OutputConf::add(const FSPath & filename, const FSPath & root)
                     n::output_exclusivity_requirement() = static_cast<OutputExclusivity>(-1),
                     n::type_requirement() = "*"
                     ));
-        for (Map<std::string, std::string>::ConstIterator m(r->second->begin()), m_end(r->second->end()) ;
-                m != m_end ; ++m)
-            set_rule(_imp->env, rule, m->first, m->second);
+        for (const auto & m : *local_rule.second)
+            set_rule(_imp->env, rule, m.first, m.second);
 
         _imp->rules.push_back(rule);
     }
 
-    for (Managers::const_iterator m(local_managers.begin()), m_end(local_managers.end()) ;
-            m != m_end ; ++m)
-        _imp->managers.insert(std::make_pair(m->first, m->second));
+    for (const auto & local_manager : local_managers)
+        _imp->managers.insert(std::make_pair(local_manager.first, local_manager.second));
 
-    for (auto i(f->begin()), i_end(f->end()) ;
-            i != i_end ; ++i)
+    for (const auto & i : *f)
     {
-        _imp->predefined_variables->erase(i->first);
-        _imp->predefined_variables->insert(i->first, i->second);
+        _imp->predefined_variables->erase(i.first);
+        _imp->predefined_variables->insert(i.first, i.second);
     }
 }
 

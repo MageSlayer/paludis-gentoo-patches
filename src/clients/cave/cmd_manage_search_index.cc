@@ -112,9 +112,8 @@ namespace
             if (! metadata.empty())
             {
                 std::multimap<int, std::string> biggest;
-                for (std::map<std::string, int>::const_iterator i(metadata.begin()), i_end(metadata.end()) ;
-                        i != i_end ; ++i)
-                    biggest.insert(std::make_pair(i->second, i->first));
+                for (const auto & i : metadata)
+                    biggest.insert(std::make_pair(i.second, i.first));
 
                 int t(0);
                 int n(0);

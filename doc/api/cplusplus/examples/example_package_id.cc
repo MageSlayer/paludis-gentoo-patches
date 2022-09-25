@@ -50,37 +50,36 @@ int main(int argc, char * argv[])
                     generator::Package(QualifiedPackageName("sys-apps/paludis")))]);
 
         /* For each ID: */
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
+        for (const auto & i : *ids)
         {
             /* IDs can be written to an ostream. */
-            cout << **i << ":" << endl;
+            cout << *i << ":" << endl;
 
             /* Start by outputting some basic properties: */
-            cout << left << setw(30) << "    Name:" << " " << (*i)->name() << endl;
-            cout << left << setw(30) << "    Version:" << " " << (*i)->version() << endl;
-            cout << left << setw(30) << "    Repository Name:" << " " << (*i)->repository_name() << endl;
+            cout << left << setw(30) << "    Name:" << " " << i->name() << endl;
+            cout << left << setw(30) << "    Version:" << " " << i->version() << endl;
+            cout << left << setw(30) << "    Repository Name:" << " " << i->repository_name() << endl;
 
             /* The PackageID::canonical_form method should be used when
              * outputting a package (the ostream << operator uses this). */
-            cout << left << setw(30) << "    idcf_full:" << " " << (*i)->canonical_form(idcf_full) << endl;
-            cout << left << setw(30) << "    idcf_version:" << " " << (*i)->canonical_form(idcf_version) << endl;
-            cout << left << setw(30) << "    idcf_no_version:" << " " << (*i)->canonical_form(idcf_no_version) << endl;
-            cout << left << setw(30) << "    idcf_no_name:" << " " << (*i)->canonical_form(idcf_no_name) << endl;
+            cout << left << setw(30) << "    idcf_full:" << " " << i->canonical_form(idcf_full) << endl;
+            cout << left << setw(30) << "    idcf_version:" << " " << i->canonical_form(idcf_version) << endl;
+            cout << left << setw(30) << "    idcf_no_version:" << " " << i->canonical_form(idcf_no_version) << endl;
+            cout << left << setw(30) << "    idcf_no_name:" << " " << i->canonical_form(idcf_no_name) << endl;
 
             /* Let's see what keys we have. Other examples cover keys in depth,
              * so we'll just use the basic methods here. */
             cout << left << setw(30) << "    Keys:" << " " << endl;
-            for (PackageID::MetadataConstIterator k((*i)->begin_metadata()), k_end((*i)->end_metadata()) ;
+            for (PackageID::MetadataConstIterator k(i->begin_metadata()), k_end(i->end_metadata()) ;
                     k != k_end ; ++k)
                 cout << left << setw(30) << ("        " + (*k)->raw_name() + ":") << " " << (*k)->human_name() << endl;
 
             /* And what about masks? Again, these are covered in depth
              * elsewhere. */
-            if ((*i)->masked())
+            if (i->masked())
             {
                 cout << left << setw(30) << "    Masks:" << " " << endl;
-                for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
+                for (PackageID::MasksConstIterator m(i->begin_masks()), m_end(i->end_masks()) ;
                         m != m_end ; ++m)
                     cout << left << setw(30) << ("        " + stringify((*m)->key()) + ":") << " " << (*m)->description() << endl;
             }
@@ -91,34 +90,34 @@ int main(int argc, char * argv[])
             std::set<std::string> actions;
             {
                 SupportsActionTest<InstallAction> install_action;
-                if ((*i)->supports_action(install_action))
+                if (i->supports_action(install_action))
                     actions.insert("install");
 
                 SupportsActionTest<UninstallAction> uninstall_action;
-                if ((*i)->supports_action(uninstall_action))
+                if (i->supports_action(uninstall_action))
                     actions.insert("uninstall");
 
                 SupportsActionTest<PretendAction> pretend_action;
-                if ((*i)->supports_action(pretend_action))
+                if (i->supports_action(pretend_action))
                     actions.insert("pretend");
 
                 SupportsActionTest<ConfigAction> config_action;
-                if ((*i)->supports_action(config_action))
+                if (i->supports_action(config_action))
                     actions.insert("config");
 
                 SupportsActionTest<FetchAction> fetch_action;
-                if ((*i)->supports_action(fetch_action))
+                if (i->supports_action(fetch_action))
                     actions.insert("fetch");
 
                 SupportsActionTest<InfoAction> info_action;
-                if ((*i)->supports_action(info_action))
+                if (i->supports_action(info_action))
                     actions.insert("info");
             }
             cout << left << setw(30) << "    Actions:" << " " << join(actions.begin(), actions.end(), " ") << endl;
 
             /* And various misc methods. Clients don't usually use these
              * directly. */
-            cout << left << setw(30) << "    extra_hash_value:" << " " << "0x" << hex << (*i)->extra_hash_value() << endl;
+            cout << left << setw(30) << "    extra_hash_value:" << " " << "0x" << hex << i->extra_hash_value() << endl;
 
             cout << endl;
         }

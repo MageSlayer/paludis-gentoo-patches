@@ -667,9 +667,8 @@ KeyValueConfigFile::KeyValueConfigFile(
             Context local_context("When following 'source '" + filename + "' statement:");
             KeyValueConfigFile kv(FSPath(filename), o,
                     std::bind(&default_from_kv, std::cref(*this), std::placeholders::_1, std::placeholders::_2), i);
-            for (KeyValueConfigFile::ConstIterator k(kv.begin()), k_end(kv.end()) ;
-                    k != k_end ; ++k)
-                _imp->values[k->first] = k->second;
+            for (const auto & k : kv)
+                _imp->values[k.first] = k.second;
 
 
             continue;

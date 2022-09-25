@@ -68,16 +68,16 @@ TraditionalMaskFile::TraditionalMaskFile(const FSPath & f, const LineConfigFileO
     LineConfigFile file(f, myopts);
     std::shared_ptr<Sequence<std::string> > comment(std::make_shared<Sequence<std::string>>());
     bool comment_used(false);
-    for (LineConfigFile::ConstIterator it(file.begin()), it_end(file.end()); it_end != it; ++it)
+    for (const auto & it : file)
     {
-        if (it->empty())
+        if (it.empty())
         {
             comment = std::make_shared<Sequence<std::string>>();
             comment_used = false;
             continue;
         }
 
-        if ('#' == it->at(0))
+        if ('#' == it.at(0))
         {
             if (comment_used)
             {
@@ -86,12 +86,12 @@ TraditionalMaskFile::TraditionalMaskFile(const FSPath & f, const LineConfigFileO
                 comment = cpy;
                 comment_used = false;
             }
-            comment->push_back(strip_leading(it->substr(1), " \t\r\n"));
+            comment->push_back(strip_leading(it.substr(1), " \t\r\n"));
             continue;
         }
 
         std::vector<std::string> tokens;
-        tokenise_whitespace(*it, std::back_inserter(tokens));
+        tokenise_whitespace(it, std::back_inserter(tokens));
 
         if (tokens.size() == 0)
             continue;
@@ -101,13 +101,13 @@ TraditionalMaskFile::TraditionalMaskFile(const FSPath & f, const LineConfigFileO
         else if (tokens.size() == 2 && ! eapi.supported()->allow_tokens_in_mask_files())
         {
             Log::get_instance()->message("e.mask.malformed", ll_qa, lc_context)
-                << "Line '" << *it << "' in '" << f << "' contains tokens after the spec; ignoring";
+                << "Line '" << it << "' in '" << f << "' contains tokens after the spec; ignoring";
             continue;
         }
         else
         {
             Log::get_instance()->message("e.mask.malformed", ll_qa, lc_context)
-                << "Line '" << *it << "' in '" << f << "' contains multiple tokens; ignoring";
+                << "Line '" << it << "' in '" << f << "' contains multiple tokens; ignoring";
             continue;
         }
 

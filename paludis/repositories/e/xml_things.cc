@@ -168,9 +168,8 @@ namespace
                             tokenise_whitespace(unstupid_libxml_string(xmlNodeListGetString(doc, a->xmlChildrenNode, 1)),
                                     std::inserter(archs, archs.end()));
                             archs.erase("*");
-                            for (std::set<std::string>::const_iterator r(archs.begin()), r_end(archs.end()) ;
-                                    r != r_end ; ++r)
-                                pkg->add_arch(*r);
+                            for (const auto & arch : archs)
+                                pkg->add_arch(arch);
                         }
                     }
                 }

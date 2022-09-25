@@ -168,9 +168,8 @@ namespace
             if (! metadata.empty())
             {
                 std::multimap<int, std::string> biggest;
-                for (std::map<std::string, int>::const_iterator i(metadata.begin()), i_end(metadata.end()) ;
-                        i != i_end ; ++i)
-                    biggest.insert(std::make_pair(i->second, i->first));
+                for (const auto & i : metadata)
+                    biggest.insert(std::make_pair(i.second, i.first));
 
                 int t(0);
                 int n(0);
@@ -318,9 +317,8 @@ SearchCommand::run(
                 std::bind(&step, std::ref(display_callback), std::placeholders::_1)
                 );
 
-        for (Set<QualifiedPackageName>::ConstIterator p(matches->begin()), p_end(matches->end()) ;
-                p != p_end ; ++p)
-            show_args->push_back(stringify(*p));
+        for (const auto & p : *matches)
+            show_args->push_back(stringify(p));
     }
 
     if (show_args->empty())

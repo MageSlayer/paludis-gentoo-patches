@@ -543,14 +543,13 @@ VersionSpec::hash() const
 
             size_t x(0);
             int zeroes(0);
-            for (std::string::const_iterator i(r_v.begin()), i_end(r_v.end()) ;
-                    i != i_end ; ++i)
+            for (char i : r_v)
             {
                 /* count leading zeroes if we are not the first component */
                 if (x == 0 && ! first)
                     ++zeroes;
                 x *= 10;
-                x += *i - '0';
+                x += i - '0';
             }
             first = false;
 
@@ -736,12 +735,11 @@ VersionSpec::bump() const
 
     bool need_dot(false);
     std::string str;
-    for (std::vector<VersionSpecComponent>::const_iterator r(number_parts.begin()), r_end(number_parts.end()) ;
-            r != r_end ; ++r)
+    for (const auto & number_part : number_parts)
     {
         if (need_dot)
             str.append(".");
-        str.append((*r).number_value());
+        str.append(number_part.number_value());
         need_dot = true;
     }
     return VersionSpec(str, _imp->options);

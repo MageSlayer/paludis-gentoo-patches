@@ -484,9 +484,8 @@ namespace
     {
         spec->set_annotations(parse_annotations(eapi, m));
 
-        for (auto a(spec->maybe_annotations()->begin()), a_end(spec->maybe_annotations()->end()) ;
-                a != a_end ; ++a)
-            switch (a->kind())
+        for (const auto & a : *spec->maybe_annotations())
+            switch (a.kind())
             {
                 case dsak_synthetic:
                 case dsak_literal:
@@ -495,7 +494,7 @@ namespace
 
                 case dsak_expandable:
                     for (const auto & c : children)
-                        add_expanded_annotation(eapi, c, *a);
+                        add_expanded_annotation(eapi, c, a);
                     continue;
 
                 case last_dsak:

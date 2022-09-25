@@ -968,11 +968,10 @@ namespace
                 local_ok = true;
             else
             {
-                for (LicenseSpecTree::NodeType<AnyDepSpec>::Type::ConstIterator c(node.begin()), c_end(node.end()) ;
-                        c != c_end ; ++c)
+                for (const auto & c : node)
                 {
                     Save<bool> save_ok(&ok, true);
-                    (*c)->accept(*this);
+                    c->accept(*this);
                     local_ok |= ok;
                 }
             }

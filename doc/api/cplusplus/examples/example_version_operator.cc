@@ -56,29 +56,26 @@ int main(int argc, char * argv[])
 
         /* Display a header */
         cout << " " << left << setw(8) << "LHS" << " | " << left << setw(8) << "RHS";
-        for (std::list<VersionOperator>::const_iterator o(operators.begin()), o_end(operators.end()) ;
-                o != o_end ; ++o)
-            cout << " | " << setw(8) << *o;
+        for (const auto & o : operators)
+            cout << " | " << setw(8) << o;
         cout << endl << std::string(10, '-');
         for (unsigned x(0) ; x <= operators.size() ; ++x)
             cout << "+" << std::string(10, '-');
         cout << endl;
 
         /* For each pair of versions... */
-        for (std::set<VersionSpec>::const_iterator v1(versions.begin()), v1_end(versions.end()) ;
-                v1 != v1_end ; ++v1)
+        for (const auto & v1 : versions)
         {
             for (const auto & version : versions)
             {
-                cout << " " << left << setw(8) << *v1 << " | " << left << setw(8) << version;
+                cout << " " << left << setw(8) << v1 << " | " << left << setw(8) << version;
 
                 /* Apply all of our operators, and show the results */
-                for (std::list<VersionOperator>::const_iterator o(operators.begin()), o_end(operators.end()) ;
-                        o != o_end ; ++o)
+                for (const auto & o : operators)
                 {
                     /* VersionOperator::as_version_spec_comparator returns a
                      * binary boolean functor. */
-                    cout << " | " << left << setw(8) << boolalpha << (o->as_version_spec_comparator()(*v1, version));
+                    cout << " | " << left << setw(8) << boolalpha << (o.as_version_spec_comparator()(v1, version));
                 }
 
                 cout << endl;

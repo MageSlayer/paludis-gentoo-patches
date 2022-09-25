@@ -282,10 +282,9 @@ EInstalledRepository::perform_info(
         if (id->from_repositories_key())
         {
             auto fr(id->from_repositories_key()->parse_value());
-            for (Set<std::string>::ConstIterator o(fr->begin()), o_end(fr->end()) ;
-                    o != o_end ; ++o)
+            for (const auto & o : *fr)
             {
-                RepositoryName rn(*o);
+                RepositoryName rn(o);
                 if (_imp->params.environment()->has_repository_named(rn))
                 {
                     const std::shared_ptr<const Repository> r(

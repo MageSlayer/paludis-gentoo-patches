@@ -202,8 +202,8 @@ PyHookFile::run(const Hook & hook, const std::shared_ptr<OutputManager> &) const
     hook_env["HOOK"] = hook.name();
     hook_env["HOOK_FILE"] = stringify(file_name());
 
-    for (Hook::ConstIterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
-        hook_env[x->first] = x->second;
+    for (const auto & x : hook)
+        hook_env[x.first] = x.second;
 
     bp::object result;
     try
@@ -292,8 +292,8 @@ PyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::string, 
     hook_env["HOOK"] = hook.name();
     hook_env["HOOK_FILE"] = stringify(file_name());
 
-    for (Hook::ConstIterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
-        hook_env[x->first] = x->second;
+    for (const auto & x : hook)
+        hook_env[x.first] = x.second;
 
     bp::object result;
     try
@@ -348,17 +348,16 @@ PyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::string, 
         << "Hook '" << file_name() <<  "':  hook_"
         << stringify(depend ? "depend" : "after") << "_" << hook.name() << " function returned '" << deps << "'";
 
-    for (std::set<std::string>::const_iterator d(deps_s.begin()), d_end(deps_s.end()) ;
-            d != d_end ; ++d)
+    for (const auto & deps_ : deps_s)
     {
-        if (g.has_node(*d))
-            g.add_edge(strip_trailing_string(file_name().basename(), ".py"), *d, 0);
+        if (g.has_node(deps_))
+            g.add_edge(strip_trailing_string(file_name().basename(), ".py"), deps_, 0);
         else if (depend)
             Log::get_instance()->message("hook.python.dependency_not_found", ll_warning, lc_context)
-                << "Hook dependency '" << *d << "' for '" << file_name() << "' not found";
+                << "Hook dependency '" << deps_ << "' for '" << file_name() << "' not found";
         else
             Log::get_instance()->message("hook.python.after_not_found", ll_debug, lc_context)
-                << "Hook after '" << *d << "' for '" << file_name() << "' not found";
+                << "Hook after '" << deps_ << "' for '" << file_name() << "' not found";
     }
 }
 

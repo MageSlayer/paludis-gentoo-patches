@@ -88,11 +88,10 @@ KeywordsConf::add(const FSPath & filename)
     if (! f)
         return;
 
-    for (LineConfigFile::ConstIterator line(f->begin()), line_end(f->end()) ;
-            line != line_end ; ++line)
+    for (const auto & line : *f)
     {
         std::vector<std::string> tokens;
-        tokenise_whitespace_quoted(*line, std::back_inserter(tokens));
+        tokenise_whitespace_quoted(line, std::back_inserter(tokens));
 
         if (tokens.size() < 2)
             continue;
@@ -170,33 +169,31 @@ KeywordsConf::query(const std::shared_ptr<const KeywordNameSet> & k, const std::
     {
         std::unique_lock<std::mutex> lock(_imp->set_mutex);
 
-        for (NamedSetMap::iterator i(_imp->set.begin()), i_end(_imp->set.end()) ;
-                 i != i_end ; ++i)
+        for (auto & i : _imp->set)
         {
-            if (! i->second.first)
+            if (! i.second.first)
             {
-                i->second.first = _imp->env->set(i->first);
-                if (! i->second.first)
+                i.second.first = _imp->env->set(i.first);
+                if (! i.second.first)
                 {
                     Log::get_instance()->message("paludis_environment.keywords_conf.unknown_set", ll_warning, lc_no_context) << "Set name '"
-                        << i->first << "' does not exist";
-                    i->second.first = std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
+                        << i.first << "' does not exist";
+                    i.second.first = std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
                 }
             }
 
-            if (! match_package_in_set(*_imp->env, *i->second.first, e, { }))
+            if (! match_package_in_set(*_imp->env, *i.second.first, e, { }))
                 continue;
 
-            for (KeywordsList::const_iterator l(i->second.second.begin()), l_end(i->second.second.end()) ;
-                    l != l_end ; ++l)
+            for (const auto & l : i.second.second)
             {
-                if (k->end() != k->find(*l))
+                if (k->end() != k->find(l))
                     return true;
 
-                if (*l == star_keyword)
+                if (l == star_keyword)
                     return true;
 
-                if (*l == minus_star_keyword)
+                if (l == minus_star_keyword)
                     break_when_done = true;
             }
         }
@@ -207,13 +204,12 @@ KeywordsConf::query(const std::shared_ptr<const KeywordNameSet> & k, const std::
         return false;
 
     /* last: unspecific */
-    for (PDSToKeywordsList::const_iterator j(_imp->unqualified.begin()), j_end(_imp->unqualified.end()) ;
-            j != j_end ; ++j)
+    for (const auto & j : _imp->unqualified)
     {
-        if (! match_package(*_imp->env, *j->first, e, nullptr, { }))
+        if (! match_package(*_imp->env, *j.first, e, nullptr, { }))
             continue;
 
-        for (const auto & l : j->second)
+        for (const auto & l : j.second)
         {
             if (k->end() != k->find(l))
                 return true;

@@ -72,8 +72,7 @@ int main(int argc, char * argv[])
             {
                 cout << "    " << left << setw(24) << "Version requirements:" << " ";
                 bool need_join(false);
-                for (VersionRequirements::ConstIterator r(spec.version_requirements_ptr()->begin()),
-                        r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+                for (const auto & r : *spec.version_requirements_ptr())
                 {
                     if (need_join)
                     {
@@ -92,7 +91,7 @@ int main(int argc, char * argv[])
                         }
                     }
 
-                    cout << r->version_operator() << r->version_spec();
+                    cout << r.version_operator() << r.version_spec();
                     need_join = true;
                 }
                 cout << endl;
@@ -127,13 +126,12 @@ int main(int argc, char * argv[])
             {
                 cout << "    " << left << setw(24) << "Additional requirements:" << " ";
                 bool need_join(false);
-                for (AdditionalPackageDepSpecRequirements::ConstIterator u(spec.additional_requirements_ptr()->begin()),
-                        u_end(spec.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
+                for (const auto & u : *spec.additional_requirements_ptr())
                 {
                     if (need_join)
                         cout << " and ";
 
-                    cout << (*u)->as_raw_string() + " (meaning: " + (*u)->as_human_string(nullptr) + ")";
+                    cout << u->as_raw_string() + " (meaning: " + u->as_human_string(nullptr) + ")";
                     need_join = true;
                 }
                 cout << endl;
@@ -144,12 +142,11 @@ int main(int argc, char * argv[])
             std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
                         generator::Matches(spec, nullptr, { }))]);
             bool need_indent(false);
-            for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & i : *ids)
             {
                 if (need_indent)
                     cout << "    " << left << setw(24) << "" << " ";
-                cout << **i << endl;
+                cout << *i << endl;
                 need_indent = true;
             }
 

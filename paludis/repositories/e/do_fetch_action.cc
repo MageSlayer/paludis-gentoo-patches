@@ -69,14 +69,13 @@ paludis::erepository::do_fetch_action(
         if (id->restrict_key())
             id->restrict_key()->parse_value()->top()->accept(restricts);
 
-        for (DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIterator i(restricts.begin()), i_end(restricts.end()) ;
-                i != i_end ; ++i)
+        for (const auto & restrict : restricts)
         {
             if (id->eapi()->supported()->ebuild_options()->restrict_fetch()->end() !=
                     std::find(id->eapi()->supported()->ebuild_options()->restrict_fetch()->begin(),
-                        id->eapi()->supported()->ebuild_options()->restrict_fetch()->end(), (*i)->text()))
+                        id->eapi()->supported()->ebuild_options()->restrict_fetch()->end(), restrict->text()))
                 fetch_restrict = true;
-            if ("userpriv" == (*i)->text() || "nouserpriv" == (*i)->text())
+            if ("userpriv" == restrict->text() || "nouserpriv" == restrict->text())
                 userpriv_restrict = true;
         }
     }

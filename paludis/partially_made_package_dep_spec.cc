@@ -214,8 +214,7 @@ namespace
                 {
                     bool need_op(false);
                     s << "[";
-                    for (VersionRequirements::ConstIterator r(version_requirements_ptr()->begin()),
-                            r_end(version_requirements_ptr()->end()) ; r != r_end ; ++r)
+                    for (const auto & r : *version_requirements_ptr())
                     {
                         if (need_op)
                         {
@@ -238,14 +237,14 @@ namespace
                             } while (false);
                         }
 
-                        if (r->version_operator() == vo_equal_star)
+                        if (r.version_operator() == vo_equal_star)
                             s << "=";
                         else
-                            s << r->version_operator();
+                            s << r.version_operator();
 
-                        s << r->version_spec();
+                        s << r.version_spec();
 
-                        if (r->version_operator() == vo_equal_star)
+                        if (r.version_operator() == vo_equal_star)
                             s << "*";
 
                         need_op = true;
@@ -255,9 +254,8 @@ namespace
             }
 
             if (additional_requirements_ptr())
-                for (AdditionalPackageDepSpecRequirements::ConstIterator u(additional_requirements_ptr()->begin()),
-                        u_end(additional_requirements_ptr()->end()) ; u != u_end ; ++u)
-                    s << (*u)->as_raw_string();
+                for (const auto & u : *additional_requirements_ptr())
+                    s << u->as_raw_string();
 
             return s.str();
         }

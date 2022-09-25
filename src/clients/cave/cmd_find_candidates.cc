@@ -113,11 +113,10 @@ namespace
             const std::function<void (const std::string &)> & step,
             const std::shared_ptr<const PackageIDSequence> & ids)
     {
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
+        for (const auto & i : *ids)
         {
             step("Checking candidates");
-            yield((*i)->uniquely_identifying_spec());
+            yield(i->uniquely_identifying_spec());
         }
     }
 }

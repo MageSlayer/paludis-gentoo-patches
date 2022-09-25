@@ -135,21 +135,20 @@ namespace
     std::string escape(const std::string & s)
     {
         std::string result;
-        for (std::string::size_type p(0), p_end(s.length()) ;
-                p != p_end ; ++p)
+        for (char p : s)
         {
-            if (s[p] >= 'a' && s[p] <= 'z')
-                result.append(1, s[p]);
-            else if (s[p] >= 'A' && s[p] <= 'Z')
-                result.append(1, s[p]);
-            else if (s[p] >= '0' && s[p] <= '9')
-                result.append(1, s[p]);
-            else if (s[p] == '/' || s[p] == '-' || s[p] == '_' || s[p] == '.')
-                result.append(1, s[p]);
-            else if (s[p] == '\n')
+            if (p >= 'a' && p <= 'z')
+                result.append(1, p);
+            else if (p >= 'A' && p <= 'Z')
+                result.append(1, p);
+            else if (p >= '0' && p <= '9')
+                result.append(1, p);
+            else if (p == '/' || p == '-' || p == '_' || p == '.')
+                result.append(1, p);
+            else if (p == '\n')
                 result.append("\\n");
             else
-                result.append("\\" + stringify(s[p]));
+                result.append("\\" + stringify(p));
         }
         return result;
     }

@@ -210,9 +210,8 @@ PaludisEnvironment::perform_hook(
     {
         _imp->need_hook_dirs(FSPath(_imp->config->config_dir()));
         _imp->hooker = std::make_shared<Hooker>(this);
-        for (std::list<std::pair<FSPath, bool> >::const_iterator h(_imp->hook_dirs.begin()),
-                h_end(_imp->hook_dirs.end()) ; h != h_end ; ++h)
-            _imp->hooker->add_dir(h->first, h->second);
+        for (const auto & hook_dir : _imp->hook_dirs)
+            _imp->hooker->add_dir(hook_dir.first, hook_dir.second);
     }
 
     return _imp->hooker->perform_hook(hook, optional_output_manager);

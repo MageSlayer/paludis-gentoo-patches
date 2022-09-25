@@ -257,10 +257,9 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
 
             if (entry)
             {
-                for (std::list<VersionSpec>::const_iterator v(versions.begin()), v_end(versions.end()) ;
-                        v != v_end ; ++v)
+                for (const auto & version : versions)
                 {
-                    entry->version() = *v;
+                    entry->version() = version;
                     _imp->entries.push_back(*entry);
                 }
                 versions.clear();
@@ -320,9 +319,8 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
                 std::shared_ptr<SimpleURISpecTree> tree(std::make_shared<SimpleURISpecTree>(all_spec));
                 std::list<std::string> uris;
                 tokenise_whitespace(token2, std::back_inserter(uris));
-                for (std::list<std::string>::const_iterator t(uris.begin()), t_end(uris.end()) ;
-                        t != t_end ; ++t)
-                    tree->top()->append(std::make_shared<SimpleURIDepSpec>(*t));
+                for (const auto & uri : uris)
+                    tree->top()->append(std::make_shared<SimpleURIDepSpec>(uri));
                 entry->homepage() = std::make_shared<UnwrittenHomepageKey>("homepage", "Homepage", mkt_normal, tree);
             }
             else if (token == "comment")
@@ -344,9 +342,8 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
                 std::shared_ptr<Sequence<std::string> > seq(std::make_shared<Sequence<std::string>>());
                 std::list<std::string> bug_ids;
                 tokenise_whitespace(token2, std::back_inserter(bug_ids));
-                for (std::list<std::string>::const_iterator t(bug_ids.begin()), t_end(bug_ids.end()) ;
-                        t != t_end ; ++t)
-                    seq->push_back(*t);
+                for (const auto & bug_id : bug_ids)
+                    seq->push_back(bug_id);
                 entry->bug_ids() = std::make_shared<LiteralMetadataStringSequenceKey>("bug-ids", "Bug IDs", mkt_normal, seq);
             }
             else if (token == "remote-ids")
@@ -354,9 +351,8 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
                 std::shared_ptr<Sequence<std::string> > seq(std::make_shared<Sequence<std::string>>());
                 std::list<std::string> remote_ids;
                 tokenise_whitespace(token2, std::back_inserter(remote_ids));
-                for (std::list<std::string>::const_iterator t(remote_ids.begin()), t_end(remote_ids.end()) ;
-                        t != t_end ; ++t)
-                    seq->push_back(*t);
+                for (const auto & remote_id : remote_ids)
+                    seq->push_back(remote_id);
                 entry->remote_ids() = std::make_shared<LiteralMetadataStringSequenceKey>("remote-ids", "Remote IDs", mkt_internal, seq);
             }
             else
@@ -370,10 +366,9 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
 
     if (entry)
     {
-        for (std::list<VersionSpec>::const_iterator v(versions.begin()), v_end(versions.end()) ;
-                v != v_end ; ++v)
+        for (const auto & version : versions)
         {
-            entry->version() = *v;
+            entry->version() = version;
             _imp->entries.push_back(*entry);
         }
     }

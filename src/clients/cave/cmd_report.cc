@@ -99,11 +99,10 @@ namespace
         if (id->from_repositories_key())
         {
             auto from_repositories(id->from_repositories_key()->parse_value());
-            for (auto r(from_repositories->begin()), r_end(from_repositories->end()) ;
-                    r != r_end ; ++r)
+            for (const auto & r : *from_repositories)
             {
                 auto ids((*env)[selection::BestVersionOnly((
-                                generator::InRepository(RepositoryName(*r)) &
+                                generator::InRepository(RepositoryName(r)) &
                                 generator::Matches(make_package_dep_spec({ })
                                     .package(id->name())
                                     .version_requirement(make_named_values<VersionRequirement>(
@@ -181,20 +180,19 @@ ReportCommand::run(
 
     bool errors(false);
 
-    for (auto i(ids->begin()), i_end(ids->end()) ;
-            i != i_end ; ++i)
+    for (const auto & i : *ids)
     {
         bool done_heading(false);
         bool done_heading_origin(false);
 
-        auto origin(find_origin_for(env, *i));
+        auto origin(find_origin_for(env, i));
         if (! origin)
         {
             bool is_transient(false);
 
-            if ((*i)->behaviours_key())
+            if (i->behaviours_key())
             {
-                auto behaviours((*i)->behaviours_key()->parse_value());
+                auto behaviours(i->behaviours_key()->parse_value());
                 is_transient = behaviours->end() != behaviours->find("transient");
             }
 
@@ -204,11 +202,11 @@ ReportCommand::run(
             }
             else
             {
-                need_heading(done_heading, *i);
+                need_heading(done_heading, i);
                 std::string repos;
-                if ((*i)->from_repositories_key())
+                if (i->from_repositories_key())
                 {
-                    auto from_repositories((*i)->from_repositories_key()->parse_value());
+                    auto from_repositories(i->from_repositories_key()->parse_value());
                     repos = join(from_repositories->begin(), from_repositories->end(), ", ");
                 }
                 cout << fuc(fs_package_no_origin(), fv<'s'>(repos));
@@ -218,52 +216,52 @@ ReportCommand::run(
         {
             if (origin->masked())
             {
-                need_heading_origin(done_heading, done_heading_origin, *i, origin);
+                need_heading_origin(done_heading, done_heading_origin, i, origin);
                 cout << fuc(fs_package_origin_masked());
             }
         }
 
-        if (insecurity && match_package_in_set(*env, *insecurity, *i, { }))
+        if (insecurity && match_package_in_set(*env, *insecurity, i, { }))
         {
-            need_heading(done_heading, *i);
+            need_heading(done_heading, i);
             cout << fuc(fs_package_insecure());
         }
 
-        if (unused->end() != unused->find(*i))
+        if (unused->end() != unused->find(i))
         {
             bool is_used(false);
 
-            if ((*i)->behaviours_key())
+            if (i->behaviours_key())
             {
-                auto behaviours((*i)->behaviours_key()->parse_value());
+                auto behaviours(i->behaviours_key()->parse_value());
                 is_used = behaviours->end() != behaviours->find("used");
             }
 
-            if (is_used || (! (*i)->supports_action(SupportsActionTest<UninstallAction>())))
+            if (is_used || (! i->supports_action(SupportsActionTest<UninstallAction>())))
             {
                 /* ok, or weird */
             }
             else
             {
-                need_heading(done_heading, *i);
+                need_heading(done_heading, i);
                 cout << fuc(fs_package_unused());
             }
         }
 
         auto superiors((*env)[selection::BestVersionOnly((
                               generator::Matches(make_package_dep_spec({ })
-                                  .package((*i)->name())
+                                  .package(i->name())
                                   .version_requirement(make_named_values<VersionRequirement>(
                                       n::version_operator() = vo_greater,
-                                      n::version_spec() = (*i)->version())),
+                                      n::version_spec() = i->version())),
                                   nullptr, { })) |
-                              filter::SameSlot(*i) |
+                              filter::SameSlot(i) |
                               filter::NotMasked() |
                               filter::SupportsAction<InstallAction>())]);
 
         if (! superiors->empty())
         {
-            need_heading(done_heading, *i);
+            need_heading(done_heading, i);
             cout << fuc(fs_package_not_best(), fv<'s'>(stringify(**superiors->begin())));
         }
 

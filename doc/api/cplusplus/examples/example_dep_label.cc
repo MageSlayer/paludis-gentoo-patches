@@ -160,31 +160,29 @@ int main(int argc, char * argv[])
         ResultsMap results;
 
         /* For each ID: */
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
+        for (const auto & i : *ids)
         {
             /* If we don't have a fetches key, skip this package. All PackageID
              * _key() functions can potentially return zero pointers, so checking is
              * essential. */
-            if (! (*i)->fetches_key())
+            if (! i->fetches_key())
                 continue;
 
             /* We need to know whether the default label for this package's src_uri
              * is restricted. */
             IsLabelRestrictedVisitor is_initial_label_restricted(false);
-            (*i)->fetches_key()->initial_label()->accept(is_initial_label_restricted);
+            i->fetches_key()->initial_label()->accept(is_initial_label_restricted);
 
             /* Create a visitor that will collect distfiles, and do the collecting. */
             DistfilesCollector collector(results, is_initial_label_restricted.result);
-            (*i)->fetches_key()->parse_value()->top()->accept(collector);
+            i->fetches_key()->parse_value()->top()->accept(collector);
         }
 
         /* Display summary of results */
         cout << left << setw(59) << "Distfile Name" << "| " << "Fetch Restricted?" << endl;
         cout << std::string(59, '-') << "+" << std::string(18, '-') << endl;
-        for (ResultsMap::const_iterator r(results.begin()), r_end(results.end()) ;
-                r != r_end ; ++r)
-            cout << left << setw(59) << r->first << "| " << (r->second ? "yes" : "no") << endl;
+        for (const auto & result : results)
+            cout << left << setw(59) << result.first << "| " << (result.second ? "yes" : "no") << endl;
     }
     catch (const Exception & e)
     {

@@ -548,9 +548,8 @@ VDBRepository::perform_uninstall(
     {
         std::shared_ptr<const PackageIDSequence> ids(package_ids(id->name(), { }));
         bool only(true);
-        for (PackageIDSequence::ConstIterator it(ids->begin()),
-                 it_end(ids->end()); it_end != it; ++it)
-            if (*std::static_pointer_cast<const PackageID>(id) != **it)
+        for (const auto & it : *ids)
+            if (*std::static_pointer_cast<const PackageID>(id) != *it)
             {
                 only = false;
                 break;
@@ -767,10 +766,9 @@ VDBRepository::merge(const MergeParams & m)
             ->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
     {
         const std::shared_ptr<const PackageIDSequence> & replace_candidates(package_ids(m.package_id()->name(), { }));
-        for (PackageIDSequence::ConstIterator it(replace_candidates->begin()),
-                 it_end(replace_candidates->end()); it_end != it; ++it)
+        for (const auto & it : *replace_candidates)
         {
-            std::shared_ptr<const ERepositoryID> candidate(std::static_pointer_cast<const ERepositoryID>(*it));
+            std::shared_ptr<const ERepositoryID> candidate(std::static_pointer_cast<const ERepositoryID>(it));
             if (candidate != is_replace && candidate != new_id && parallel_slot_is_same(candidate, m.package_id()))
             {
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
@@ -949,10 +947,9 @@ namespace
             if (p.maybe_annotations())
             {
                 bool done_open(false);
-                for (auto m(p.maybe_annotations()->begin()), m_end(p.maybe_annotations()->end()) ;
-                        m != m_end ; ++m)
+                for (const auto & m : *p.maybe_annotations())
                 {
-                    switch (m->kind())
+                    switch (m.kind())
                     {
                         case dsak_literal:
                         case dsak_expandable:
@@ -970,7 +967,7 @@ namespace
                         str << " [[ ";
                     done_open = true;
 
-                    str << m->key() << " = [" << (m->value().empty() ? " " : " " + m->value() + " ") << "] ";
+                    str << m.key() << " = [" << (m.value().empty() ? " " : " " + m.value() + " ") << "] ";
                 }
 
                 if (done_open)
@@ -1074,24 +1071,23 @@ VDBRepository::perform_updates()
         Context ctx2("When reading update file timestamps from '" + stringify(cache_file) + "':");
         LineConfigFile f(cache_file, { lcfo_preserve_whitespace });
 
-        for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
-                line != line_end ; ++line)
+        for (const auto & line : f)
         {
-            std::string::size_type tab(line->find('\t'));
+            std::string::size_type tab(line.find('\t'));
             if (std::string::npos == tab)
             {
                 Log::get_instance()->message("e.vdb.updates.bad_timestamp_line", ll_warning, lc_context)
-                    << "Line '" << *line << "' does not contain a tab character";
+                    << "Line '" << line << "' does not contain a tab character";
                 continue;
             }
             try
             {
-                cache_contents.insert(std::make_pair(FSPath(line->substr(tab + 1)), destringify<std::time_t>(line->substr(0, tab))));
+                cache_contents.insert(std::make_pair(FSPath(line.substr(tab + 1)), destringify<std::time_t>(line.substr(0, tab))));
             }
             catch (const DestringifyError &)
             {
                 Log::get_instance()->message("e.vdb.updates.bad_timestamp_line", ll_warning, lc_context)
-                    << "Line '" << *line << "' contains an invalid timestamp";
+                    << "Line '" << line << "' contains an invalid timestamp";
             }
         }
     }
@@ -1152,11 +1148,10 @@ VDBRepository::perform_updates()
 
                 LineConfigFile f(*d, { });
 
-                for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
-                        line != line_end ; ++line)
+                for (const auto & line : f)
                 {
                     std::vector<std::string> tokens;
-                    tokenise_whitespace(*line, std::back_inserter(tokens));
+                    tokenise_whitespace(line, std::back_inserter(tokens));
 
                     if (tokens.empty())
                         continue;
@@ -1180,14 +1175,13 @@ VDBRepository::perform_updates()
                                         )]);
                             if (! ids->empty())
                             {
-                                for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                                        i != i_end ; ++i)
-                                    moves.push_back(std::make_pair(*i, new_q));
+                                for (const auto & i : *ids)
+                                    moves.push_back(std::make_pair(i, new_q));
                             }
                         }
                         else
                             Log::get_instance()->message("e.vdb.updates.bad_line", ll_warning, lc_context) <<
-                                "Don't know how to handle '" << *line << "' in " << *d << ": expected 3 tokens for a move";
+                                "Don't know how to handle '" << line << "' in " << *d << ": expected 3 tokens for a move";
                     }
                     else if ("slotmove" == tokens.at(0))
                     {
@@ -1204,18 +1198,17 @@ VDBRepository::perform_updates()
                                         )]);
                             if (! ids->empty())
                             {
-                                for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                                        i != i_end ; ++i)
-                                    slot_moves.push_back(std::make_pair(*i, new_slot));
+                                for (const auto & i : *ids)
+                                    slot_moves.push_back(std::make_pair(i, new_slot));
                             }
                         }
                         else
                             Log::get_instance()->message("e.vdb.updates.bad_line", ll_warning, lc_context) <<
-                                "Don't know how to handle '" << *line << "' in " << *d << ": expected 4 tokens for a slotmove";
+                                "Don't know how to handle '" << line << "' in " << *d << ": expected 4 tokens for a slotmove";
                     }
                     else
                         Log::get_instance()->message("e.vdb.updates.bad_line", ll_warning, lc_context) <<
-                            "Don't know how to handle '" << *line << "' in " << *d << ": unknown operation";
+                            "Don't know how to handle '" << line << "' in " << *d << ": unknown operation";
                 }
             }
         }
@@ -1235,16 +1228,15 @@ VDBRepository::perform_updates()
         if (! moves.empty())
         {
             std::cout << std::endl << "Performing moves:" << std::endl;
-            for (Moves::const_iterator m(moves.begin()), m_end(moves.end()) ;
-                    m != m_end ; ++m)
+            for (const auto & move : moves)
             {
-                std::cout << "    " << *m->first << " to " << m->second << std::endl;
+                std::cout << "    " << *move.first << " to " << move.second << std::endl;
 
-                FSPath target_cat_dir(_imp->params.location() / stringify(m->second.category()));
+                FSPath target_cat_dir(_imp->params.location() / stringify(move.second.category()));
                 target_cat_dir.mkdir(0755, { fspmkdo_ok_if_exists });
 
-                FSPath from_dir(m->first->fs_location_key()->parse_value());
-                FSPath to_dir(target_cat_dir / ((stringify(m->second.package()) + "-" + stringify(m->first->version()))));
+                FSPath from_dir(move.first->fs_location_key()->parse_value());
+                FSPath to_dir(target_cat_dir / ((stringify(move.second.package()) + "-" + stringify(move.first->version()))));
 
                 if (to_dir.stat().exists())
                 {
@@ -1256,12 +1248,12 @@ VDBRepository::perform_updates()
                 }
                 else
                 {
-                    std::string oldpf(stringify(m->first->name().package()) + "-" + stringify(m->first->version()));
-                    std::string newpf(stringify(m->second.package()) + "-" + stringify(m->first->version()));
+                    std::string oldpf(stringify(move.first->name().package()) + "-" + stringify(move.first->version()));
+                    std::string newpf(stringify(move.second.package()) + "-" + stringify(move.first->version()));
 
                     from_dir.rename(to_dir);
 
-                    std::shared_ptr<const EAPI> eapi(std::static_pointer_cast<const VDBID>(m->first)->eapi());
+                    std::shared_ptr<const EAPI> eapi(std::static_pointer_cast<const VDBID>(move.first)->eapi());
                     if (eapi->supported())
                     {
                         SafeOFStream pf(to_dir / eapi->supported()->ebuild_environment_variables()->env_pf(), -1, true);
@@ -1270,12 +1262,12 @@ VDBRepository::perform_updates()
                     else
                     {
                         Log::get_instance()->message("e.vdb.updates.eapi", ll_warning, lc_context)
-                            << "Unsupported EAPI '" << eapi->name() << "' for '" << *m->first
+                            << "Unsupported EAPI '" << eapi->name() << "' for '" << *move.first
                             << "', cannot update PF-equivalent VDB key for move";
                     }
 
                     SafeOFStream category(to_dir / "CATEGORY", -1, true);
-                    category << m->second.category() << std::endl;
+                    category << move.second.category() << std::endl;
 
                     if (newpf != oldpf)
                     {
@@ -1293,13 +1285,12 @@ VDBRepository::perform_updates()
         if (! slot_moves.empty())
         {
             std::cout << std::endl << "Performing slot moves:" << std::endl;
-            for (SlotMoves::const_iterator m(slot_moves.begin()), m_end(slot_moves.end()) ;
-                    m != m_end ; ++m)
+            for (const auto & slot_move : slot_moves)
             {
-                std::cout << "    " << *m->first << " to " << m->second << std::endl;
+                std::cout << "    " << *slot_move.first << " to " << slot_move.second << std::endl;
 
-                SafeOFStream f(m->first->fs_location_key()->parse_value() / "SLOT", -1, true);
-                f << m->second << std::endl;
+                SafeOFStream f(slot_move.first->fs_location_key()->parse_value() / "SLOT", -1, true);
+                f << slot_move.second << std::endl;
             }
         }
 
@@ -1317,27 +1308,25 @@ VDBRepository::perform_updates()
 
             const std::shared_ptr<const PackageIDSequence> ids((*_imp->params.environment())[selection::AllVersionsSorted(
                         generator::InRepository(name()))]);
-            for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & i : *ids)
             {
-                if ((*i)->build_dependencies_key())
-                    rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->build_dependencies_key()->raw_name(),
-                            (*i)->build_dependencies_key(), dep_rewrites);
-                if ((*i)->run_dependencies_key())
-                    rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->run_dependencies_key()->raw_name(),
-                            (*i)->run_dependencies_key(), dep_rewrites);
-                if ((*i)->post_dependencies_key())
-                    rewrite_dependencies((*i)->fs_location_key()->parse_value() / (*i)->post_dependencies_key()->raw_name(),
-                            (*i)->post_dependencies_key(), dep_rewrites);
+                if (i->build_dependencies_key())
+                    rewrite_dependencies(i->fs_location_key()->parse_value() / i->build_dependencies_key()->raw_name(),
+                            i->build_dependencies_key(), dep_rewrites);
+                if (i->run_dependencies_key())
+                    rewrite_dependencies(i->fs_location_key()->parse_value() / i->run_dependencies_key()->raw_name(),
+                            i->run_dependencies_key(), dep_rewrites);
+                if (i->post_dependencies_key())
+                    rewrite_dependencies(i->fs_location_key()->parse_value() / i->post_dependencies_key()->raw_name(),
+                            i->post_dependencies_key(), dep_rewrites);
             }
 
             std::cout << std::endl << "Updating configuration files" << std::endl;
 
-            for (DepRewrites::const_iterator i(dep_rewrites.begin()), i_end(dep_rewrites.end()) ;
-                    i != i_end ; ++i)
+            for (const auto & dep_rewrite : dep_rewrites)
                 _imp->params.environment()->update_config_files_for_package_move(
-                        make_package_dep_spec({ }).package(i->first),
-                        i->second
+                        make_package_dep_spec({ }).package(dep_rewrite.first),
+                        dep_rewrite.second
                         );
         }
 
@@ -1345,9 +1334,8 @@ VDBRepository::perform_updates()
         {
             cache_dir.mkdir(0755, { fspmkdo_ok_if_exists });
             SafeOFStream cache_file_f(cache_file, -1, true);
-            for (std::map<FSPath, std::time_t, FSPathComparator>::const_iterator it(update_timestamps.begin()),
-                     it_end(update_timestamps.end()); it_end != it; ++it)
-                cache_file_f << it->second << '\t' << it->first << std::endl;
+            for (const auto & update_timestamp : update_timestamps)
+                cache_file_f << update_timestamp.second << '\t' << update_timestamp.first << std::endl;
         }
     }
     catch (const Exception & e)

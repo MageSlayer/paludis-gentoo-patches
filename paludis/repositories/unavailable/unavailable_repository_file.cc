@@ -221,8 +221,7 @@ UnavailableRepositoryFile::_load(const FSPath & f)
             std::shared_ptr<LiteralMetadataValueKey<std::string> > desc(
                     std::make_shared<LiteralMetadataValueKey<std::string>>("DESCRIPTION", "Description", mkt_significant,
                         token));
-            for (std::list<VersionSpec>::const_iterator v(versions.begin()), v_end(versions.end()) ;
-                    v != v_end ; ++v)
+            for (const auto & version : versions)
                 _imp->entries.push_back(make_named_values<UnavailableRepositoryFileEntry>(
                             n::description() = desc,
                             n::name() = category + package,
@@ -230,7 +229,7 @@ UnavailableRepositoryFile::_load(const FSPath & f)
                                 n::match_values() = std::make_pair(slot, subslot),
                                 n::parallel_value() = slot,
                                 n::raw_value() = ss),
-                            n::version() = *v
+                            n::version() = version
                         ));
         }
         else

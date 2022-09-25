@@ -133,10 +133,10 @@ namespace
                 if (p->empty())
                     return result;
 
-                for (QualifiedPackageNameSet::ConstIterator q(p->begin()), q_end(p->end()) ; q != q_end ; ++q)
+                for (const auto & q : *p)
                 {
                     std::shared_ptr<QualifiedPackageNameSet> s(std::make_shared<QualifiedPackageNameSet>());
-                    s->insert(*q);
+                    s->insert(q);
                     std::shared_ptr<const PackageIDSet> ids(_fg.filter().ids(env, _fg.generator().ids(env, r, s, may_excludes)));
                     if (! ids->empty())
                     {
@@ -180,10 +180,10 @@ namespace
                 if (p->empty())
                     return result;
 
-                for (QualifiedPackageNameSet::ConstIterator q(p->begin()), q_end(p->end()) ; q != q_end ; ++q)
+                for (const auto & q : *p)
                 {
                     std::shared_ptr<QualifiedPackageNameSet> s(std::make_shared<QualifiedPackageNameSet>());
-                    s->insert(*q);
+                    s->insert(q);
                     std::shared_ptr<const PackageIDSet> ids(_fg.filter().ids(env, _fg.generator().ids(env, r, s, may_excludes)));
                     if (! ids->empty())
                         result->push_back(*std::max_element(ids->begin(), ids->end(), PackageIDComparator(env)));
@@ -305,14 +305,13 @@ namespace
 
                 typedef std::map<std::pair<QualifiedPackageName, std::string>, std::shared_ptr<PackageIDSequence> > SlotMap;
                 SlotMap by_slot;
-                for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                        i != i_end ; ++i)
+                for (const auto & i : *ids)
                 {
-                    SlotMap::iterator m(by_slot.find(std::make_pair((*i)->name(), slot_as_string(*i))));
+                    SlotMap::iterator m(by_slot.find(std::make_pair(i->name(), slot_as_string(i))));
                     if (m == by_slot.end())
-                        m = by_slot.insert(std::make_pair(std::make_pair((*i)->name(), slot_as_string(*i)),
+                        m = by_slot.insert(std::make_pair(std::make_pair(i->name(), slot_as_string(i)),
                                     std::make_shared<PackageIDSequence>())).first;
-                    m->second->push_back(*i);
+                    m->second->push_back(i);
                 }
 
                 PackageIDComparator comparator(env);
@@ -369,14 +368,13 @@ namespace
 
                 typedef std::map<std::pair<QualifiedPackageName, std::string>, std::shared_ptr<PackageIDSequence> > SlotMap;
                 SlotMap by_slot;
-                for (PackageIDSet::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                        i != i_end ; ++i)
+                for (const auto & i : *ids)
                 {
-                    SlotMap::iterator m(by_slot.find(std::make_pair((*i)->name(), slot_as_string(*i))));
+                    SlotMap::iterator m(by_slot.find(std::make_pair(i->name(), slot_as_string(i))));
                     if (m == by_slot.end())
-                        m = by_slot.insert(std::make_pair(std::make_pair((*i)->name(), slot_as_string(*i)),
+                        m = by_slot.insert(std::make_pair(std::make_pair(i->name(), slot_as_string(i)),
                                     std::make_shared<PackageIDSequence>())).first;
-                    m->second->push_back(*i);
+                    m->second->push_back(i);
                 }
 
                 PackageIDComparator comparator(env);

@@ -62,11 +62,10 @@ TeeOutputManager::TeeOutputManager(
         const std::shared_ptr<const OutputManagerSequence> & ss) :
     _imp(s, ss, nullptr, nullptr)
 {
-    for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;
-            i != i_end ; ++i)
+    for (const auto & i : *_imp->streams)
     {
-        _imp->stdout_stream.add_stream(&(*i)->stdout_stream());
-        _imp->stderr_stream.add_stream(&(*i)->stderr_stream());
+        _imp->stdout_stream.add_stream(&i->stdout_stream());
+        _imp->stderr_stream.add_stream(&i->stderr_stream());
     }
 }
 
@@ -77,20 +76,17 @@ TeeOutputManager::TeeOutputManager(
         const std::shared_ptr<const OutputManagerSequence> & se) :
     _imp(s, ss, so, se)
 {
-    for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;
-            i != i_end ; ++i)
+    for (const auto & i : *_imp->streams)
     {
-        _imp->stdout_stream.add_stream(&(*i)->stdout_stream());
-        _imp->stderr_stream.add_stream(&(*i)->stderr_stream());
+        _imp->stdout_stream.add_stream(&i->stdout_stream());
+        _imp->stderr_stream.add_stream(&i->stderr_stream());
     }
 
-    for (OutputManagerSequence::ConstIterator i(_imp->stdout_streams->begin()), i_end(_imp->stdout_streams->end()) ;
-            i != i_end ; ++i)
-        _imp->stdout_stream.add_stream(&(*i)->stdout_stream());
+    for (const auto & i : *_imp->stdout_streams)
+        _imp->stdout_stream.add_stream(&i->stdout_stream());
 
-    for (OutputManagerSequence::ConstIterator i(_imp->stderr_streams->begin()), i_end(_imp->stderr_streams->end()) ;
-            i != i_end ; ++i)
-        _imp->stderr_stream.add_stream(&(*i)->stderr_stream());
+    for (const auto & i : *_imp->stderr_streams)
+        _imp->stderr_stream.add_stream(&i->stderr_stream());
 }
 
 TeeOutputManager::~TeeOutputManager() = default;
@@ -110,69 +106,56 @@ TeeOutputManager::stderr_stream()
 void
 TeeOutputManager::message(const MessageType t, const std::string & m)
 {
-    for (OutputManagerSequence::ConstIterator i(_imp->messages_streams->begin()), i_end(_imp->messages_streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->message(t, m);
+    for (const auto & i : *_imp->messages_streams)
+        i->message(t, m);
 }
 
 void
 TeeOutputManager::succeeded()
 {
-    for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->succeeded();
+    for (const auto & i : *_imp->streams)
+        i->succeeded();
 
-    for (OutputManagerSequence::ConstIterator i(_imp->messages_streams->begin()), i_end(_imp->messages_streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->succeeded();
+    for (const auto & i : *_imp->messages_streams)
+        i->succeeded();
 
-    for (OutputManagerSequence::ConstIterator i(_imp->stdout_streams->begin()), i_end(_imp->stdout_streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->succeeded();
+    for (const auto & i : *_imp->stdout_streams)
+        i->succeeded();
 
-    for (OutputManagerSequence::ConstIterator i(_imp->stderr_streams->begin()), i_end(_imp->stderr_streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->succeeded();
+    for (const auto & i : *_imp->stderr_streams)
+        i->succeeded();
 }
 
 void
 TeeOutputManager::ignore_succeeded()
 {
-    for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->ignore_succeeded();
+    for (const auto & i : *_imp->streams)
+        i->ignore_succeeded();
 
-    for (OutputManagerSequence::ConstIterator i(_imp->messages_streams->begin()), i_end(_imp->messages_streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->ignore_succeeded();
+    for (const auto & i : *_imp->messages_streams)
+        i->ignore_succeeded();
 
-    for (OutputManagerSequence::ConstIterator i(_imp->stdout_streams->begin()), i_end(_imp->stdout_streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->ignore_succeeded();
+    for (const auto & i : *_imp->stdout_streams)
+        i->ignore_succeeded();
 
-    for (OutputManagerSequence::ConstIterator i(_imp->stderr_streams->begin()), i_end(_imp->stderr_streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->ignore_succeeded();
+    for (const auto & i : *_imp->stderr_streams)
+        i->ignore_succeeded();
 }
 
 void
 TeeOutputManager::flush()
 {
-    for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->flush();
+    for (const auto & i : *_imp->streams)
+        i->flush();
 
-    for (OutputManagerSequence::ConstIterator i(_imp->messages_streams->begin()), i_end(_imp->messages_streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->flush();
+    for (const auto & i : *_imp->messages_streams)
+        i->flush();
 
-    for (OutputManagerSequence::ConstIterator i(_imp->stdout_streams->begin()), i_end(_imp->stdout_streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->flush();
+    for (const auto & i : *_imp->stdout_streams)
+        i->flush();
 
-    for (OutputManagerSequence::ConstIterator i(_imp->stderr_streams->begin()), i_end(_imp->stderr_streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->flush();
+    for (const auto & i : *_imp->stderr_streams)
+        i->flush();
 }
 
 bool
@@ -195,21 +178,17 @@ TeeOutputManager::want_to_flush() const
 void
 TeeOutputManager::nothing_more_to_come()
 {
-    for (OutputManagerSequence::ConstIterator i(_imp->streams->begin()), i_end(_imp->streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->nothing_more_to_come();
+    for (const auto & i : *_imp->streams)
+        i->nothing_more_to_come();
 
-    for (OutputManagerSequence::ConstIterator i(_imp->messages_streams->begin()), i_end(_imp->messages_streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->nothing_more_to_come();
+    for (const auto & i : *_imp->messages_streams)
+        i->nothing_more_to_come();
 
-    for (OutputManagerSequence::ConstIterator i(_imp->stdout_streams->begin()), i_end(_imp->stdout_streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->nothing_more_to_come();
+    for (const auto & i : *_imp->stdout_streams)
+        i->nothing_more_to_come();
 
-    for (OutputManagerSequence::ConstIterator i(_imp->stderr_streams->begin()), i_end(_imp->stderr_streams->end()) ;
-            i != i_end ; ++i)
-        (*i)->nothing_more_to_come();
+    for (const auto & i : *_imp->stderr_streams)
+        i->nothing_more_to_come();
 }
 
 const std::shared_ptr<const Set<std::string> >
@@ -243,21 +222,17 @@ TeeOutputManager::factory_create(
     std::vector<std::string> stderr_children_keys;
     tokenise_whitespace(key_func("stderr_children"), std::back_inserter(stderr_children_keys));
 
-    for (std::vector<std::string>::const_iterator c(children_keys.begin()), c_end(children_keys.end()) ;
-            c != c_end ; ++c)
-        children->push_back(create_child(*c));
+    for (const auto & children_key : children_keys)
+        children->push_back(create_child(children_key));
 
-    for (std::vector<std::string>::const_iterator c(messages_children_keys.begin()), c_end(messages_children_keys.end()) ;
-            c != c_end ; ++c)
-        messages_children->push_back(create_child(*c));
+    for (const auto & messages_children_key : messages_children_keys)
+        messages_children->push_back(create_child(messages_children_key));
 
-    for (std::vector<std::string>::const_iterator c(stdout_children_keys.begin()), c_end(stdout_children_keys.end()) ;
-            c != c_end ; ++c)
-        stdout_children->push_back(create_child(*c));
+    for (const auto & stdout_children_key : stdout_children_keys)
+        stdout_children->push_back(create_child(stdout_children_key));
 
-    for (std::vector<std::string>::const_iterator c(stderr_children_keys.begin()), c_end(stderr_children_keys.end()) ;
-            c != c_end ; ++c)
-        stderr_children->push_back(create_child(*c));
+    for (const auto & stderr_children_key : stderr_children_keys)
+        stderr_children->push_back(create_child(stderr_children_key));
 
 
     return std::make_shared<TeeOutputManager>(children, messages_children, stdout_children, stderr_children);

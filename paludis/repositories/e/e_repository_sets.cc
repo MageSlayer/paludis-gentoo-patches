@@ -289,27 +289,26 @@ ERepositorySets::security_set(bool insecurity) const
                             generator::Package(glsa_pkg->name()) |
                             filter::InstalledAtRoot(_imp->environment->preferred_root_key()->parse_value()))];
 
-                for (PackageIDSequence::ConstIterator c(candidates->begin()), c_end(candidates->end()) ;
-                        c != c_end ; ++c)
+                for (const auto & c : *candidates)
                 {
-                    if (! is_vulnerable(_imp->environment, *eapi, *glsa_pkg, *c, ver_options, pds_options))
+                    if (! is_vulnerable(_imp->environment, *eapi, *glsa_pkg, c, ver_options, pds_options))
                         continue;
 
                     if (insecurity)
                     {
                         std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
                                     make_package_dep_spec({ })
-                                    .package((*c)->name())
+                                    .package(c->name())
                                     .version_requirement(make_named_values<VersionRequirement>(
                                             n::version_operator() = vo_equal,
-                                            n::version_spec() = (*c)->version()))
-                                    .in_repository((*c)->repository_name())));
+                                            n::version_spec() = c->version()))
+                                    .in_repository(c->repository_name())));
                         security_packages->top()->append(spec);
                     }
                     else
                     {
                         Context local_local_local_context("When finding upgrade for '" + stringify(glsa_pkg->name()) + ":"
-                                + ((*c)->slot_key() ? stringify((*c)->slot_key()->parse_value().parallel_value()) : "(none)") + "'");
+                                + (c->slot_key() ? stringify(c->slot_key()->parse_value().parallel_value()) : "(none)") + "'");
 
                         /* we need to find the best not vulnerable installable package that isn't masked
                          * that's in the same slot as our vulnerable installed package. */
@@ -317,7 +316,7 @@ ERepositorySets::security_set(bool insecurity) const
                         std::shared_ptr<const PackageIDSequence> available(
                                 (*_imp->environment)[selection::AllVersionsSorted(
                                     generator::Package(glsa_pkg->name()) |
-                                    filter::SameSlot(*c) |
+                                    filter::SameSlot(c) |
                                     filter::SupportsAction<InstallAction>() |
                                     filter::NotMasked())]);
 
@@ -344,7 +343,7 @@ ERepositorySets::security_set(bool insecurity) const
                         if (! ok)
                             throw GLSAError("Could not determine upgrade path to resolve '"
                                     + glsa->id() + ": " + glsa->title() + "' for package '"
-                                    + stringify(**c) + "'");
+                                    + stringify(*c) + "'");
                     }
                 }
             }

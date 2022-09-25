@@ -102,9 +102,8 @@ paludis::paludis_environment::make_bashable_kv_conf(const FSPath & f,
             .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
             .prefix_stderr(f.basename() + "> ")
             .capture_stdout(s);
-        for (Map<std::string, std::string>::ConstIterator i(predefined_variables->begin()),
-                end(predefined_variables->end()); i != end; ++i)
-            process.setenv(i->first, i->second);
+        for (const auto & i : *predefined_variables)
+            process.setenv(i.first, i.second);
         int exit_status(process.run().wait());
         result = std::make_shared<KeyValueConfigFile>(s, o, &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 

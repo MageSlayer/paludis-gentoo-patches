@@ -161,9 +161,8 @@ cave_search_extras_find_candidates(CaveSearchExtrasDB * const data,
         h = " and ( name like ?1 escape '\\' or short_desc like ?1 escape '\\' or long_desc like ?1 escape '\\' )";
 
         p1 = "%";
-        for (auto i(name_description_substring_hint.begin()), i_end(name_description_substring_hint.end()) ;
-                i != i_end ; ++i)
-            switch (*i)
+        for (char i : name_description_substring_hint)
+            switch (i)
             {
                 case '%':
                 case '_':
@@ -171,7 +170,7 @@ cave_search_extras_find_candidates(CaveSearchExtrasDB * const data,
                     p1.append(1, '\\');
                     /* fall through */
                 default:
-                    p1.append(1, *i);
+                    p1.append(1, i);
             }
         p1.append("%");
     }

@@ -230,10 +230,9 @@ namespace
                     return _v;
 
                 _v = std::make_shared<Set<std::string>>();
-                for (FSPathSequence::ConstIterator a(_f.begin()), a_end(_f.end()) ;
-                        a != a_end ; ++a)
+                for (const auto & a : _f)
                 {
-                    SafeIFStream f(*a);
+                    SafeIFStream f(a);
                     _v->insert(strip_trailing(std::string((std::istreambuf_iterator<char>(f)),
                                     std::istreambuf_iterator<char>()), "\n"));
                 }
@@ -698,9 +697,8 @@ InstalledUnpackagedID::uninstall(const bool replace,
     if (last)
     {
         std::shared_ptr<const PackageIDSequence> ids(repo->package_ids(name(), { }));
-        for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
-                v != v_end ; ++v)
-            if (**v != *this)
+        for (const auto & v : *ids)
+            if (*v != *this)
             {
                 last = false;
                 break;

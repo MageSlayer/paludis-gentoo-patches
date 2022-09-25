@@ -92,11 +92,10 @@ GetInitialConstraintsForHelper::add_preset_spec(const PackageDepSpec & spec, con
     auto reason(std::make_shared<PresetReason>("preset", nullptr));
 
     auto ids((*_imp->env)[selection::BestVersionInEachSlot(generator::Matches(spec, from_id, { }))]);
-    for (auto i(ids->begin()), i_end(ids->end()) ;
-            i != i_end ; ++i)
+    for (const auto & i : *ids)
         for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
         {
-            Resolvent r(*i, *t);
+            Resolvent r(i, *t);
 
             const std::shared_ptr<Constraint> constraint(std::make_shared<Constraint>(make_named_values<Constraint>(
                             n::destination_type() = r.destination_type(),

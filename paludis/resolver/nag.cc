@@ -151,18 +151,16 @@ NAG::verify_edges() const
 {
     Context context("When verifying NAG edges:");
 
-    for (Edges::const_iterator e(_imp->edges.begin()), e_end(_imp->edges.end()) ;
-            e != e_end ; ++e)
+    for (const auto & edge : _imp->edges)
     {
-        if (_imp->nodes.end() == _imp->nodes.find(e->first))
-            throw InternalError(PALUDIS_HERE, "Missing node for edge '" + stringify(e->first)
-                    + "' to { '" + join(first_iterator(e->second.begin()), first_iterator(e->second.end()), "', '")
+        if (_imp->nodes.end() == _imp->nodes.find(edge.first))
+            throw InternalError(PALUDIS_HERE, "Missing node for edge '" + stringify(edge.first)
+                    + "' to { '" + join(first_iterator(edge.second.begin()), first_iterator(edge.second.end()), "', '")
                     + " }' in nodes { " + join(_imp->nodes.begin(), _imp->nodes.end(), ", ") + " }");
 
-        for (NodesWithProperties::const_iterator f(e->second.begin()), f_end(e->second.end()) ;
-                f != f_end ; ++f)
-            if (_imp->nodes.end() == _imp->nodes.find(f->first))
-                throw InternalError(PALUDIS_HERE, "Missing node for edge '" + stringify(e->first) + "' -> '" + stringify(f->first) + "' in nodes { "
+        for (const auto & f : edge.second)
+            if (_imp->nodes.end() == _imp->nodes.find(f.first))
+                throw InternalError(PALUDIS_HERE, "Missing node for edge '" + stringify(edge.first) + "' -> '" + stringify(f.first) + "' in nodes { "
                         + join(_imp->nodes.begin(), _imp->nodes.end(), ", ") + " }");
     }
 }
@@ -256,10 +254,9 @@ namespace
     {
         int best_score(-1);
 
-        for (Set<NAGIndex>::ConstIterator e(scc.nodes()->begin()), e_end(scc.nodes()->end()) ;
-                e != e_end ; ++e)
+        for (const auto & e : *scc.nodes())
         {
-            int score(order_score_one(*e, order_early_fn));
+            int score(order_score_one(e, order_early_fn));
             if (best_score == -1 || score < best_score)
                 best_score = score;
         }
@@ -279,18 +276,15 @@ NAG::sorted_strongly_connected_components(
 
     /* find our strongly connected components */
     int index(0);
-    for (Nodes::const_iterator n(_imp->nodes.begin()), n_end(_imp->nodes.end()) ;
-            n != n_end ; ++n)
-        if (data.end() == data.find(*n))
-            tarjan(*n, _imp->edges, data, stack, index, sccs);
+    for (const auto & node : _imp->nodes)
+        if (data.end() == data.find(node))
+            tarjan(node, _imp->edges, data, stack, index, sccs);
 
     /* find the 'representative' scc node for every node */
     RepresentativeNodes representative_nodes;
-    for (StronglyConnectedComponentsByRepresentative::const_iterator s(sccs.begin()), s_end(sccs.end()) ;
-            s != s_end ; ++s)
-        for (Set<NAGIndex>::ConstIterator r(s->second.nodes()->begin()), r_end(s->second.nodes()->end()) ;
-                r != r_end ; ++r)
-            if (! representative_nodes.insert(std::make_pair(*r, s->first)).second)
+    for (const auto & scc : sccs)
+        for (const auto & r : *scc.second.nodes())
+            if (! representative_nodes.insert(std::make_pair(r, scc.first)).second)
                 throw InternalError(PALUDIS_HERE, "node in multiple sccs");
 
     /* sanity check, to avoid us much weirdness if there's a bug */
@@ -325,10 +319,9 @@ NAG::sorted_strongly_connected_components(
     Nodes done;
     Nodes pending_fetches;
 
-    for (StronglyConnectedComponentsByRepresentative::const_iterator c(sccs.begin()), c_end(sccs.end()) ;
-            c != c_end ; ++c)
-        if (scc_edges.end() == scc_edges.find(c->first))
-            orderable_now.insert(order_score(c->first, c->second, order_early_fn));
+    for (const auto & scc : sccs)
+        if (scc_edges.end() == scc_edges.find(scc.first))
+            orderable_now.insert(order_score(scc.first, scc.second, order_early_fn));
 
     while (! orderable_now.empty())
     {
@@ -430,13 +423,12 @@ NAG::serialise(Serialiser & s) const
     int c(0);
     for (const auto & edge : _imp->edges)
     {
-        for (NodesWithProperties::const_iterator n(edge.second.begin()), n_end(edge.second.end()) ;
-                n != n_end ; ++n)
+        for (const auto & n : edge.second)
         {
             ++c;
             w.member(SerialiserFlags<>(), "edge." + stringify(c) + ".f", edge.first);
-            w.member(SerialiserFlags<>(), "edge." + stringify(c) + ".t", n->first);
-            w.member(SerialiserFlags<>(), "edge." + stringify(c) + ".p", n->second);
+            w.member(SerialiserFlags<>(), "edge." + stringify(c) + ".t", n.first);
+            w.member(SerialiserFlags<>(), "edge." + stringify(c) + ".p", n.second);
         }
     }
 

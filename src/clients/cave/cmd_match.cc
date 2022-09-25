@@ -285,11 +285,9 @@ namespace
         void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
             auto choices(k.parse_value());
-            for (Choices::ConstIterator c(choices->begin()), c_end(choices->end()) ;
-                    c != c_end ; ++c)
-                for (Choice::ConstIterator i((*c)->begin()), i_end((*c)->end()) ;
-                        i != i_end ; ++i)
-                    texts.push_back(stringify((*i)->name_with_prefix()));
+            for (const auto & c : *choices)
+                for (const auto & i : *c)
+                    texts.push_back(stringify(i->name_with_prefix()));
         }
 
         void visit(const MetadataTimeKey & k)
@@ -459,11 +457,10 @@ MatchCommand::run_hosted(
 
     bool any(false);
     bool all(true);
-    for (auto p(patterns->begin()), p_end(patterns->end()) ;
-            p != p_end ; ++p)
+    for (const auto & p : *patterns)
     {
         bool current(texts.end() != std::find_if(texts.begin(), texts.end(),
-                    std::bind(&match, std::placeholders::_1, *p, match_options.a_case_sensitive.specified(), match_options.a_type.argument())));
+                    std::bind(&match, std::placeholders::_1, p, match_options.a_case_sensitive.specified(), match_options.a_type.argument())));
 
         if (match_options.a_not.specified())
             current = ! current;

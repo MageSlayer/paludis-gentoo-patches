@@ -531,8 +531,7 @@ EnvironmentImplementation::fetch_unique_qualified_package_name(const PackageName
     std::shared_ptr<const PackageIDSequence> ids((*this)[selection::AllVersionsUnsorted(
                 generator::Matches(make_package_dep_spec({ }).package_name_part(p), nullptr, { }) | f)]);
 
-    for (IndirectIterator<PackageIDSequence::ConstIterator> it(ids->begin()),
-             it_end(ids->end()); it_end != it; ++it)
+    for (const auto & it : *ids)
     {
         Context local_context("When checking category '" + stringify(it->name().category()) + "' in repository '" +
                 stringify(it->repository_name()) + "':");
@@ -628,10 +627,9 @@ EnvironmentImplementation::expand_licence(
         {
             auto l(repository->maybe_expand_licence_nonrecursively(t));
             if (l)
-                for (auto i(l->begin()), i_end(l->end()) ;
-                        i != i_end ; ++i)
-                    if (result->end() == result->find(*i))
-                        todo.insert(*i);
+                for (const auto & i : *l)
+                    if (result->end() == result->find(i))
+                        todo.insert(i);
         }
     }
 

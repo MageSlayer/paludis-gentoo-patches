@@ -145,10 +145,9 @@ Repository::category_names_containing_package(const PackageNamePart & p, const R
 
     std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     std::shared_ptr<const CategoryNamePartSet> cats(category_names({ }));
-    for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
-            c != c_end ; ++c)
-        if (has_package_named(*c + p, { }))
-            result->insert(*c);
+    for (const auto & c : *cats)
+        if (has_package_named(c + p, { }))
+            result->insert(c);
 
     return result;
 }

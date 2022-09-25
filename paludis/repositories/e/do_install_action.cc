@@ -513,15 +513,14 @@ paludis::erepository::do_install_action(
 
     /* replacing for pbins is done during the merge */
     if (destination->installed_root_key())
-        for (PackageIDSequence::ConstIterator i(install_action.options.replacing()->begin()), i_end(install_action.options.replacing()->end()) ;
-                i != i_end ; ++i)
+        for (const auto & i : *install_action.options.replacing())
         {
-            Context local_context("When cleaning '" + stringify(**i) + "':");
-            if ((*i)->name() == id->name() && (*i)->version() == id->version())
+            Context local_context("When cleaning '" + stringify(*i) + "':");
+            if (i->name() == id->name() && i->version() == id->version())
                 continue;
 
             if (id->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
-                if ((*i)->name() == id->name() && parallel_slot_is_same(*i, id))
+                if (i->name() == id->name() && parallel_slot_is_same(i, id))
                     continue;
 
             UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
@@ -534,7 +533,7 @@ paludis::erepository::do_install_action(
                         n::override_contents() = nullptr,
                         n::want_phase() = install_action.options.want_phase()
                         ));
-            install_action.options.perform_uninstall()(*i, uo);
+            install_action.options.perform_uninstall()(i, uo);
         }
 
     output_manager->succeeded();

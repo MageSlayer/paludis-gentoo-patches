@@ -383,9 +383,8 @@ ProcessCommand::exec_prepare()
             env_map.insert(std::make_pair(name, val));
     }
 
-    for (std::map<std::string, std::string>::const_iterator it(env_map.begin()),
-            it_end(env_map.end()) ; it_end != it ; ++it)
-        _imp->env_storage.push_back(it->first + "=" + it->second);
+    for (const auto & it : env_map)
+        _imp->env_storage.push_back(it.first + "=" + it.second);
 
     for(const std::string & env : _imp->env_storage)
         _imp->env_ptrs.push_back(env.c_str());
