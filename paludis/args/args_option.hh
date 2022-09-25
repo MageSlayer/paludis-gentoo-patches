@@ -369,8 +369,8 @@ namespace paludis
                         const std::pair<std::string, std::string> > AllowedArgConstIterator;
 
                 AllowedArgConstIterator begin_allowed_args() const;
-
                 AllowedArgConstIterator end_allowed_args() const;
+                IteratorRange<AllowedArgConstIterator> allowed_args() const;
 
                 ///\}
 
