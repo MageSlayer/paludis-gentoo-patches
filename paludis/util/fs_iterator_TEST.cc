@@ -39,7 +39,7 @@ TEST(FSIterator, Manipulation)
 
 TEST(FSIterator, Iterate)
 {
-    const FSPath test_dir("fs_iterator_TEST_dir");
+    const FSPath test_dir("fs_iterator_TEST_dir/iterate");
     FSIterator iter(test_dir, { });
     FSIterator iter1(test_dir, { });
     FSIterator iter2(test_dir, { fsio_include_dotfiles });
