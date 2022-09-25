@@ -402,14 +402,14 @@ FSMerger::install_file(const FSPath & src, const FSPath & dst_dir, const std::st
             }
             Log::get_instance()->message("merger.file.link_failed", ll_debug, lc_context)
                     << "link(" << i->second << ", " << dst_real << ") failed: "
-                    << ::strerror(errno);
+                    << std::strerror(errno);
         }
     }
 
     if (do_copy)
     {
         Log::get_instance()->message("merger.file.will_copy", ll_debug, lc_context) <<
-            "rename/link failed: " << ::strerror(errno) << ". Falling back to regular read/write copy";
+            "rename/link failed: " << std::strerror(errno) << ". Falling back to regular read/write copy";
 
         FDHolder input_fd(::open(stringify(src).c_str(), O_RDONLY), false);
         if (-1 == input_fd)
@@ -436,7 +436,7 @@ FSMerger::install_file(const FSPath & src, const FSPath & dst_dir, const std::st
 
                 default:
                     Log::get_instance()->message("merger.file.fallocate_failed", ll_debug, lc_context) <<
-                        "fallocate '" + stringify(dst) + "' returned " + stringify(::strerror(errno));
+                        "fallocate '" + stringify(dst) + "' returned " + stringify(std::strerror(errno));
                     break;
             }
 #endif
@@ -466,7 +466,7 @@ FSMerger::install_file(const FSPath & src, const FSPath & dst_dir, const std::st
 
         if (0 != std::rename(stringify(dst).c_str(), stringify(dst_real).c_str()))
             throw FSMergerError(
-                    "rename(" + stringify(dst) + ", " + stringify(dst_real) + ") failed: " + stringify(::strerror(errno)));
+                    "rename(" + stringify(dst) + ", " + stringify(dst_real) + ") failed: " + stringify(std::strerror(errno)));
 
         _imp->merged_ids.insert(make_pair(src_stat.lowlevel_id(), stringify(dst_real)));
     }
@@ -681,7 +681,7 @@ FSMerger::install_sym(const FSPath & src, const FSPath & dst_dir)
         }
         Log::get_instance()->message("merger.sym.link_failed", ll_debug, lc_context)
             << "link(" << i->second + ", " << stringify(dst) << ") failed: "
-            << ::strerror(errno);
+            << std::strerror(errno);
     }
 
     if (do_sym)
@@ -810,7 +810,7 @@ FSMerger::try_to_copy_xattrs(const FSPath & src, int dst_fd, FSMergerStatusFlags
     {
         if (ENOTSUP != errno)
             Log::get_instance()->message("merger.xattrs.failure", ll_warning, lc_context) <<
-                "Got error '" << ::strerror(errno) << "' when trying to find extended attributes size for '" << src << "'";
+                "Got error '" << std::strerror(errno) << "' when trying to find extended attributes size for '" << src << "'";
         return;
     }
     else if (list_sz > (2 << 29))
@@ -826,7 +826,7 @@ FSMerger::try_to_copy_xattrs(const FSPath & src, int dst_fd, FSMergerStatusFlags
     if (-1 == list_sz)
     {
         Log::get_instance()->message("merger.xattrs.failure", ll_warning, lc_context) <<
-            "Got error '" << ::strerror(errno) << "' when trying to find extended attributes for '" << src << "'";
+            "Got error '" << std::strerror(errno) << "' when trying to find extended attributes for '" << src << "'";
         return;
     }
 
@@ -839,7 +839,7 @@ FSMerger::try_to_copy_xattrs(const FSPath & src, int dst_fd, FSMergerStatusFlags
             if (-1 == value_sz)
             {
                 Log::get_instance()->message("merger.xattrs.failure", ll_warning, lc_context) <<
-                    "Got error '" << ::strerror(errno) << "' when trying to read size of extended attribute '" <<
+                    "Got error '" << std::strerror(errno) << "' when trying to read size of extended attribute '" <<
                     key << "' for '" << src << "'";
                 break;
             }
@@ -856,7 +856,7 @@ FSMerger::try_to_copy_xattrs(const FSPath & src, int dst_fd, FSMergerStatusFlags
             if (-1 == value_sz)
             {
                 Log::get_instance()->message("merger.xattrs.failure", ll_warning, lc_context) <<
-                    "Got error '" << ::strerror(errno) << "' when trying to read extended attribute '" <<
+                    "Got error '" << std::strerror(errno) << "' when trying to read extended attribute '" <<
                     key << "' for '" << src << "'";
             }
 
@@ -871,7 +871,7 @@ FSMerger::try_to_copy_xattrs(const FSPath & src, int dst_fd, FSMergerStatusFlags
                 }
                 else
                     Log::get_instance()->message("merger.xattrs.failure", ll_warning, lc_context) <<
-                        "Got error '" << ::strerror(errno) << "' when trying to set extended attribute '" <<
+                        "Got error '" << std::strerror(errno) << "' when trying to set extended attribute '" <<
                         key << "' taken from source file '" << src << "'";
             }
 
