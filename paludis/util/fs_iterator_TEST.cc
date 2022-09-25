@@ -39,10 +39,11 @@ TEST(FSIterator, Manipulation)
 
 TEST(FSIterator, Iterate)
 {
-    FSIterator iter(FSPath("fs_iterator_TEST_dir"), { });
-    FSIterator iter1(FSPath("fs_iterator_TEST_dir"), { });
-    FSIterator iter2(FSPath("fs_iterator_TEST_dir"), { fsio_include_dotfiles });
-    FSIterator iter3(FSPath("fs_iterator_TEST_dir"), { fsio_inode_sort });
+    const FSPath test_dir("fs_iterator_TEST_dir");
+    FSIterator iter(test_dir, { });
+    FSIterator iter1(test_dir, { });
+    FSIterator iter2(test_dir, { fsio_include_dotfiles });
+    FSIterator iter3(test_dir, { fsio_inode_sort });
 
     ASSERT_TRUE(iter != FSIterator());
     ASSERT_TRUE(FSIterator() != iter);
