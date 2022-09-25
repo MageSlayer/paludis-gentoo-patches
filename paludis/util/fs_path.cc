@@ -300,7 +300,7 @@ FSPath::mkdir(const mode_t mode, const FSPathMkdirOptions & options) const
         throw FSError("mkdir '" + _imp->path + "' failed: target exists and is not a directory");
     }
     else
-        throw FSError("mkdir '" + _imp->path + "' failed: " + ::strerror(e));
+        throw FSError(errno, "mkdir '" + _imp->path + "' failed");
 }
 
 bool
@@ -317,7 +317,7 @@ FSPath::symlink(const std::string & target) const
         throw FSError("symlink '" + _imp->path + "' to '" + target + "' failed: target exists");
     }
     else
-        throw FSError("symlink '" + _imp->path + "' to '" + target + "' failed: " + ::strerror(e));
+        throw FSError(errno, "symlink '" + _imp->path + "' to '" + target + "' failed");
 }
 
 bool
@@ -328,7 +328,7 @@ FSPath::unlink() const
     {
         int e(errno);
         if (e != ENOENT)
-            throw FSError("lchflags for unlink '" + _imp->path + "' failed: " + ::strerror(e));
+            throw FSError(e, "lchflags for unlink '" + _imp->path + "' failed");
     }
 #endif
 
@@ -339,7 +339,7 @@ FSPath::unlink() const
     if (e == ENOENT)
         return false;
     else
-        throw FSError("unlink '" + _imp->path + "' failed: " + ::strerror(e));
+        throw FSError(e, "unlink '" + _imp->path + "' failed");
 }
 
 bool
@@ -352,7 +352,7 @@ FSPath::rmdir() const
     if (e == ENOENT)
         return false;
     else
-        throw FSError("rmdir '" + _imp->path + "' failed: " + ::strerror(e));
+        throw FSError(e, "rmdir '" + _imp->path + "' failed");
 }
 
 bool
@@ -379,7 +379,7 @@ FSPath::utime(const Timestamp & t) const
                 << "utimensat(2) not implemented by this kernel, using utimes(2)";
         }
         else
-            throw FSError("utimensat '" + _imp->path + "' failed: " + ::strerror(e));
+            throw FSError(e, "utimensat '" + _imp->path + "' failed");
     }
 #endif
 
@@ -391,7 +391,7 @@ FSPath::utime(const Timestamp & t) const
     if (e == ENOENT)
         return false;
     else
-        throw FSError("utimes '" + _imp->path + "' failed: " + ::strerror(e));
+        throw FSError(e, "utimes '" + _imp->path + "' failed");
 }
 
 std::string
@@ -400,7 +400,7 @@ FSPath::readlink() const
     char buf[PATH_MAX + 1];
     std::memset(buf, 0, PATH_MAX + 1);
     if (-1 == ::readlink(_imp->path.c_str(), buf, PATH_MAX))
-        throw FSError("readlink '" + _imp->path + "' failed: " + ::strerror(errno));
+        throw FSError(errno, "readlink '" + _imp->path + "' failed");
     return buf;
 }
 
@@ -408,31 +408,31 @@ void
 FSPath::chown(const uid_t new_owner, const gid_t new_group) const
 {
     if (0 != ::chown(_imp->path.c_str(), new_owner, new_group))
-        throw FSError("chown '" + _imp->path + "' to '" + stringify(new_owner) + "', '"
-                + stringify(new_group) + "' failed: " + ::strerror(errno));
+        throw FSError(errno, "chown '" + _imp->path + "' to '" + stringify(new_owner) + "', '"
+                + stringify(new_group) + "' failed");
 }
 
 void
 FSPath::lchown(const uid_t new_owner, const gid_t new_group) const
 {
     if (0 != ::lchown(_imp->path.c_str(), new_owner, new_group))
-        throw FSError("lchown '" + _imp->path + "' to '" + stringify(new_owner) + "', '"
-                + stringify(new_group) + "' failed: " + ::strerror(errno));
+        throw FSError(errno, "lchown '" + _imp->path + "' to '" + stringify(new_owner) + "', '"
+                + stringify(new_group) + "' failed");
 }
 
 void
 FSPath::chmod(const mode_t mode) const
 {
     if (0 != ::chmod(_imp->path.c_str(), mode))
-        throw FSError("chmod '" + _imp->path + "' failed: " + ::strerror(errno));
+        throw FSError(errno, "chmod '" + _imp->path + "' failed");
 }
 
 void
 FSPath::rename(const FSPath & new_name) const
 {
     if (0 != std::rename(_imp->path.c_str(), new_name._imp->path.c_str()))
-        throw FSError("rename('" + stringify(_imp->path) + "', '" + stringify(new_name._imp->path) + "') failed: " +
-                ::strerror(errno));
+        throw FSError(errno, "rename('" + stringify(_imp->path) + "', '"
+                + stringify(new_name._imp->path) + "') failed");
 }
 
 bool
