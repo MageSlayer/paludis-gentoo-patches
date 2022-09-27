@@ -147,9 +147,9 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::sha
 
     Context ctx("When checking for broken linkage in '" + stringify(env->preferred_root_key()->parse_value()) + "':");
 
-    _imp->checkers.push_back(std::shared_ptr<LinkageChecker>(std::make_shared<ElfLinkageChecker>(env->preferred_root_key()->parse_value(), libraries)));
+    _imp->checkers.push_back(std::make_shared<ElfLinkageChecker>(env->preferred_root_key()->parse_value(), libraries));
     if (libraries->empty())
-        _imp->checkers.push_back(std::shared_ptr<LinkageChecker>(std::make_shared<LibtoolLinkageChecker>(env->preferred_root_key()->parse_value())));
+        _imp->checkers.push_back(std::make_shared<LibtoolLinkageChecker>(env->preferred_root_key()->parse_value()));
 
     std::vector<FSPath> search_dirs_nosyms, search_dirs_pruned;
     std::transform(_imp->config.begin_search_dirs(), _imp->config.end_search_dirs(),
