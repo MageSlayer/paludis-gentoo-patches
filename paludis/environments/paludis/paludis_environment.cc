@@ -147,7 +147,7 @@ namespace paludis
 }
 
 PaludisEnvironment::PaludisEnvironment(const std::string & s) :
-    _imp(std::shared_ptr<PaludisConfig>(std::make_shared<PaludisConfig>(this, s)))
+    _imp(std::make_shared<PaludisConfig>(this, s))
 {
     Context context("When loading paludis environment:");
 
