@@ -36,15 +36,19 @@
 using namespace paludis;
 using namespace paludis::paludis_environment;
 
-std::string defined_vars_to_kv_func(
-        const std::shared_ptr<const Map<std::string, std::string> > v,
-        const KeyValueConfigFile &,
-        const std::string & k)
+namespace
 {
-    Map<std::string, std::string>::ConstIterator i(v->find(k));
-    if (i != v->end())
-        return i->second;
-    return "";
+    std::string defined_vars_to_kv_func(
+            const std::shared_ptr<const Map<std::string, std::string>> v,
+            const KeyValueConfigFile &,
+            const std::string & k)
+    {
+        Map<std::string, std::string>::ConstIterator i(v->find(k));
+        if (i != v->end())
+            return i->second;
+
+        return "";
+    }
 }
 
 std::shared_ptr<LineConfigFile>
