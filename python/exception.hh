@@ -65,9 +65,9 @@ namespace paludis
                 const std::string & doc, PyObject * base) :
             _name(name),
             _longname("paludis." + name),
-            _e(PyErr_NewException(const_cast<char*>(_longname.c_str()), base, NULL))
+            _e(PyErr_NewException(_longname.c_str(), base, NULL))
         {
-            PyModule_AddObject(boost::python::detail::current_scope, const_cast<char*>(_name.c_str()), _e);
+            PyModule_AddObject(boost::python::detail::current_scope, _name.c_str(), _e);
             PyObject * doc_string = PyUnicode_FromString(doc.c_str());
             PyObject_SetAttrString(_e, "__doc__", doc_string);
             boost::python::register_exception_translator<Ex_>(
