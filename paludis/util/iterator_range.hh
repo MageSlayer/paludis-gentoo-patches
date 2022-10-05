@@ -31,6 +31,8 @@ namespace paludis
             Iterator_ _begin, _end;
 
         public:
+            using value_type = typename Iterator_::value_type;
+
             // TODO(compnerd) use SFINAE to ensure that the container's
             // iterators match the range's iterator
             template <typename Container_>
