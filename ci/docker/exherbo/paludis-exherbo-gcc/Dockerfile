@@ -1,4 +1,4 @@
-FROM exherbo/exherbo-x86_64-pc-linux-gnu-base:latest
+FROM exherbo/exherbo-x86_64-pc-linux-gnu-gcc-base:latest
 MAINTAINER Marvin Schmidt <marv@exherbo.org>
 
 # Control dependency versions
