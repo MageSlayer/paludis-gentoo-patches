@@ -1,4 +1,4 @@
-FROM marvins/exherbo-x86_64-pc-linux-gnu-gcc-with-clang:13
+FROM marvins/exherbo-x86_64-pc-linux-gnu-gcc-with-clang:14
 MAINTAINER Marvin Schmidt <marv@exherbo.org>
 
 # Build generic binaries
