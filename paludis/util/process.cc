@@ -17,39 +17,39 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <paludis/util/env_var_names.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/log.hh>
 #include <paludis/util/persona.hh>
-#include <paludis/util/process.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/pipe.hh>
+#include <paludis/util/process.hh>
 #include <paludis/util/pty.hh>
-#include <paludis/util/fs_path.hh>
-#include <paludis/util/stringify.hh>
 #include <paludis/util/safe_ofstream.hh>
-#include <paludis/util/log.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/env_var_names.hh>
 
-#include <iostream>
-#include <functional>
 #include <algorithm>
-#include <vector>
-#include <map>
 #include <cstdlib>
 #include <cstring>
-#include <thread>
+#include <functional>
+#include <iostream>
+#include <map>
 #include <mutex>
+#include <thread>
+#include <vector>
 
 #include <errno.h>
-#include <unistd.h>
+#include <fcntl.h>
 #include <grp.h>
+#include <limits.h>
 #include <pwd.h>
 #include <signal.h>
-#include <fcntl.h>
-#include <limits.h>
+#include <sys/ioctl.h>
+#include <sys/select.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/select.h>
-#include <sys/ioctl.h>
+#include <unistd.h>
 
 using namespace paludis;
 
