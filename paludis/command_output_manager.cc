@@ -28,6 +28,7 @@
 #include <paludis/util/stringify.hh>
 #include <paludis/util/process.hh>
 #include <paludis/util/pipe.hh>
+#include <memory>
 
 using namespace paludis;
 
@@ -93,25 +94,25 @@ CommandOutputManager::CommandOutputManager(const std::string & s, const std::str
             throw CommandOutputManagerError("start command returned non-zero");
     }
 
-    _imp->stdout_pipe.reset(new Pipe(true));
-    _imp->stdout_process.reset(new Process(ProcessCommand(_imp->stdout_command)));
+    _imp->stdout_pipe = std::make_unique<Pipe>(true);
+    _imp->stdout_process = std::make_unique<Process>(ProcessCommand(_imp->stdout_command));
     _imp->stdout_process->set_stdin_fd(_imp->stdout_pipe->read_fd());
-    _imp->stdout_process_handle.reset(new RunningProcessHandle(_imp->stdout_process->run()));
+    _imp->stdout_process_handle = std::make_unique<RunningProcessHandle>(_imp->stdout_process->run());
 
     if (0 != ::close(_imp->stdout_pipe->read_fd()))
         throw CommandOutputManagerError("close stdout_pipe read_fd failed");
     _imp->stdout_pipe->clear_read_fd();
-    _imp->stdout_stream.reset(new SafeOFStream(_imp->stdout_pipe->write_fd(), false));
+    _imp->stdout_stream = std::make_unique<SafeOFStream>(_imp->stdout_pipe->write_fd(), false);
 
-    _imp->stderr_pipe.reset(new Pipe(true));
-    _imp->stderr_process.reset(new Process(ProcessCommand(_imp->stderr_command)));
+    _imp->stderr_pipe = std::make_unique<Pipe>(true);
+    _imp->stderr_process = std::make_unique<Process>(ProcessCommand(_imp->stderr_command));
     _imp->stderr_process->set_stdin_fd(_imp->stderr_pipe->read_fd());
-    _imp->stderr_process_handle.reset(new RunningProcessHandle(_imp->stderr_process->run()));
+    _imp->stderr_process_handle = std::make_unique<RunningProcessHandle>(_imp->stderr_process->run());
 
     if (0 != ::close(_imp->stderr_pipe->read_fd()))
         throw CommandOutputManagerError("close stderr_pipe read_fd failed");
     _imp->stderr_pipe->clear_read_fd();
-    _imp->stderr_stream.reset(new SafeOFStream(_imp->stderr_pipe->write_fd(), false));
+    _imp->stderr_stream = std::make_unique<SafeOFStream>(_imp->stderr_pipe->write_fd(), false);
 }
 
 CommandOutputManager::~CommandOutputManager() noexcept(false)

@@ -35,6 +35,7 @@
 #include <functional>
 #include <iostream>
 #include <map>
+#include <memory>
 #include <mutex>
 #include <thread>
 #include <vector>
@@ -901,7 +902,7 @@ Process::run()
     std::unique_ptr<RunningProcessThread> thread;
     if (_imp->need_thread)
     {
-        thread.reset(new RunningProcessThread{});
+        thread = std::make_unique<RunningProcessThread>();
         thread->as_main_process = _imp->as_main_process;
 
         if (! _imp->prefix_stdout.empty())
@@ -909,7 +910,7 @@ Process::run()
             thread->prefix_stdout = _imp->prefix_stdout;
             if (! _imp->capture_stdout)
             {
-                thread->own_capture_stdout.reset(new SafeOFStream(STDOUT_FILENO, false));
+                thread->own_capture_stdout = std::make_unique<SafeOFStream>(STDOUT_FILENO, false);
                 _imp->capture_stdout = *thread->own_capture_stdout;
             }
         }
@@ -919,7 +920,7 @@ Process::run()
             thread->prefix_stderr = _imp->prefix_stderr;
             if (! _imp->capture_stderr)
             {
-                thread->own_capture_stderr.reset(new SafeOFStream(STDERR_FILENO, false));
+                thread->own_capture_stderr = std::make_unique<SafeOFStream>(STDERR_FILENO, false);
                 _imp->capture_stderr = *thread->own_capture_stderr;
             }
         }
@@ -963,30 +964,30 @@ Process::run()
         {
             thread->capture_stdout = _imp->capture_stdout;
             if (_imp->use_ptys)
-                thread->capture_stdout_pipe.reset(new Pty(true, columns, lines));
+                thread->capture_stdout_pipe = std::make_unique<Pty>(true, columns, lines);
             else
-                thread->capture_stdout_pipe.reset(new Pipe(true));
+                thread->capture_stdout_pipe = std::make_unique<Pipe>(true);
         }
 
         if (_imp->capture_stderr)
         {
             thread->capture_stderr = _imp->capture_stderr;
             if (_imp->use_ptys)
-                thread->capture_stderr_pipe.reset(new Pty(true, columns, lines));
+                thread->capture_stderr_pipe = std::make_unique<Pty>(true, columns, lines);
             else
-                thread->capture_stderr_pipe.reset(new Pipe(true));
+                thread->capture_stderr_pipe = std::make_unique<Pipe>(true);
         }
 
         if (_imp->capture_output_to_fd_stream)
         {
             thread->capture_output_to_fd = _imp->capture_output_to_fd_stream;
-            thread->capture_output_to_fd_pipe.reset(new Pipe(true));
+            thread->capture_output_to_fd_pipe = std::make_unique<Pipe>(true);
         }
 
         if (_imp->send_input_to_fd_stream)
         {
             thread->send_input_to_fd = _imp->send_input_to_fd_stream;
-            thread->send_input_to_fd_pipe.reset(new Pipe(true));
+            thread->send_input_to_fd_pipe = std::make_unique<Pipe>(true);
 
             int arg(::fcntl(thread->send_input_to_fd_pipe->write_fd(), F_GETFL, NULL));
             if (-1 == arg)
@@ -999,8 +1000,8 @@ Process::run()
         if (_imp->pipe_command_handler)
         {
             thread->pipe_command_handler = _imp->pipe_command_handler;
-            thread->pipe_command_handler_command_pipe.reset(new Pipe(true));
-            thread->pipe_command_handler_response_pipe.reset(new Pipe(true));
+            thread->pipe_command_handler_command_pipe = std::make_unique<Pipe>(true);
+            thread->pipe_command_handler_response_pipe = std::make_unique<Pipe>(true);
         }
     }
 
