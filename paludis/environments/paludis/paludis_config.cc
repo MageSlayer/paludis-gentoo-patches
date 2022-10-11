@@ -552,9 +552,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
                 continue;
 
             std::remove_copy_if(FSIterator(*dir, { }), FSIterator(), std::back_inserter(repo_files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(FSIterator(*dir, { }), FSIterator(), std::back_inserter(repo_files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         /* get a mapping from repository name to key function, so we can work out the order */
@@ -642,9 +642,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((_imp->local_config_dir / (dist->keywords_filename_part() + ".conf.d")).stat().exists())
         {
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->keywords_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->keywords_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -669,9 +669,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((_imp->local_config_dir / (dist->output_filename_part() + ".conf.d")).stat().exists())
         {
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->output_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->output_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         bool any(false);
@@ -699,9 +699,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((_imp->local_config_dir / (dist->use_filename_part() + ".conf.d")).stat().exists())
         {
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->use_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->use_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -724,9 +724,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((_imp->local_config_dir / (dist->licenses_filename_part() + ".conf.d")).stat().exists())
         {
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->licenses_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->licenses_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -750,10 +750,10 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         {
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->package_mask_filename_part() + ".conf.d"), { }),
                     FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->package_mask_filename_part() + ".conf.d"), { }),
                     FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -777,10 +777,10 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         {
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->package_unmask_filename_part() + ".conf.d"), { }),
                     FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->package_unmask_filename_part() + ".conf.d"), { }),
                     FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -803,9 +803,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((_imp->local_config_dir / (dist->mirrors_filename_part() + ".conf.d")).stat().exists())
         {
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->mirrors_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->mirrors_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;
@@ -828,9 +828,9 @@ PaludisConfig::PaludisConfig(PaludisEnvironment * const e, const std::string & s
         if ((_imp->local_config_dir / (dist->suggestions_filename_part() + ".conf.d")).stat().exists())
         {
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->suggestions_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".conf", IsFileWithOptions())));
             std::remove_copy_if(FSIterator(_imp->local_config_dir / (dist->suggestions_filename_part() + ".conf.d"), { }), FSIterator(), std::back_inserter(files),
-                    std::bind(std::logical_not<bool>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
+                    std::bind(std::logical_not<>(), std::bind(&is_file_with_extension, _1, ".bash", IsFileWithOptions())));
         }
 
         for (std::list<FSPath>::const_iterator file(files.begin()), file_end(files.end()) ;

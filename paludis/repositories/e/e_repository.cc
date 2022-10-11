@@ -1668,11 +1668,12 @@ ERepository::get_environment_variable(
         if (id->restrict_key())
             id->restrict_key()->parse_value()->top()->accept(restricts);
 
+        // MARKER: refactor
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
     bool userpriv_ok((! userpriv_restrict) && (_imp->params.environment()->reduced_gid() != getgid()) &&
             check_userpriv(FSPath(_imp->params.builddir()), _imp->params.environment(), id->eapi()->supported()->userpriv_cannot_use_root()));

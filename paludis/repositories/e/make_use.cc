@@ -90,7 +90,7 @@ paludis::erepository::make_expand(const Environment * const,
         expand_vars->insert(stringify(*x), "");
 
         Choices::ConstIterator k(std::find_if(choices->begin(), choices->end(),
-                    std::bind(std::equal_to<std::string>(), *x,
+                    std::bind(std::equal_to<>(), *x,
                         std::bind(std::mem_fn(&Choice::raw_name), std::placeholders::_1))));
         if (k == choices->end())
             continue;
