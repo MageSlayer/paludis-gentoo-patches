@@ -145,19 +145,19 @@ paludis::erepository::do_install_action(
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
 
         test_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "test"));
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "test"));
 
         strip_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "strip")) ||
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "strip")) ||
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nostrip"));
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nostrip"));
     }
 
     std::string archives;

@@ -1624,7 +1624,7 @@ Decider::_installed_but_allowed_to_remove(const std::shared_ptr<const Resolution
         return false;
 
     return ids->end() == std::find_if(ids->begin(), ids->end(),
-            std::bind(std::logical_not<bool>(), std::bind(&Decider::_allowed_to_remove,
+            std::bind(std::logical_not<>(), std::bind(&Decider::_allowed_to_remove,
                     this, resolution, std::placeholders::_1, with_confirmation)));
 }
 

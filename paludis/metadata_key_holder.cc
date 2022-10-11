@@ -58,7 +58,7 @@ MetadataKeyHolder::add_metadata_key(const std::shared_ptr<const MetadataKey> & k
     using namespace std::placeholders;
 
     if (indirect_iterator(_imp->keys.end()) != std::find_if(indirect_iterator(_imp->keys.begin()), indirect_iterator(_imp->keys.end()),
-                std::bind(std::equal_to<std::string>(), k->raw_name(), std::bind(std::mem_fn(&MetadataKey::raw_name), _1))))
+                std::bind(std::equal_to<>(), k->raw_name(), std::bind(std::mem_fn(&MetadataKey::raw_name), _1))))
         throw ConfigurationError("Tried to add duplicate key '" + k->raw_name() + "'");
 
     _imp->keys.push_back(k);

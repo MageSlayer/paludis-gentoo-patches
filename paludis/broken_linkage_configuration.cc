@@ -198,7 +198,7 @@ BrokenLinkageConfiguration::BrokenLinkageConfiguration(const FSPath & root) :
     _imp->load_from_etc_ld_so_conf(root);
     _imp->add_defaults();
 
-    cleanup("LD_LIBRARY_MASK",  _imp->ld_library_mask,  root, std::less<std::string>());
+    cleanup("LD_LIBRARY_MASK",  _imp->ld_library_mask,  root, std::less<>());
     cleanup("SEARCH_DIRS",      _imp->search_dirs,      root, FSPathComparator());
     cleanup("SEARCH_DIRS_MASK", _imp->search_dirs_mask, root, FSPathComparator());
 

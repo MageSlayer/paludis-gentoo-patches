@@ -484,7 +484,7 @@ namespace
         std::remove_copy_if(first_iterator(result->begin()),
                             first_iterator(result->end()),
                             std::front_inserter(qpns),
-                            std::bind(std::logical_and<bool>(),
+                            std::bind(std::logical_and<>(),
                                       std::bind(std::not1(is_important), _1),
                                       std::bind(std::not1(is_installed), _1)));
         if (! qpns.empty() && next(qpns.begin()) == qpns.end())
@@ -494,13 +494,13 @@ namespace
         if (! qpns.empty() && next(qpns.begin()) == qpns.end())
             return;
 
-        qpns.remove_if(std::bind(std::logical_and<bool>(),
+        qpns.remove_if(std::bind(std::logical_and<>(),
                        std::bind(is_important, _1),
                        std::bind(std::not1(is_installed), _1)));
         if (! qpns.empty() && next(qpns.begin()) == qpns.end())
             return;
 
-        qpns.remove_if(std::bind(std::logical_and<bool>(),
+        qpns.remove_if(std::bind(std::logical_and<>(),
                        std::bind(std::not1(is_important), _1),
                        std::bind(is_installed, _1)));
         if (! qpns.empty() && next(qpns.begin()) == qpns.end())

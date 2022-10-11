@@ -278,7 +278,7 @@ TraditionalLayout::need_package_ids(const QualifiedPackageName & n) const
         {
             std::shared_ptr<const PackageID> id(_imp->repository->make_id(n, *e));
             if (indirect_iterator(v->end()) != std::find_if(indirect_iterator(v->begin()), indirect_iterator(v->end()),
-                        std::bind(std::equal_to<VersionSpec>(), id->version(), std::bind(std::mem_fn(&PackageID::version), _1))))
+                        std::bind(std::equal_to<>(), id->version(), std::bind(std::mem_fn(&PackageID::version), _1))))
                 Log::get_instance()->message("e.traditional_layout.id.duplicate", ll_warning, lc_context)
                     << "Ignoring entry '" << *e << "' for '" << n << "' in repository '" << _imp->repository->name()
                     << "' because another equivalent version already exists";
