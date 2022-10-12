@@ -116,28 +116,22 @@ FixCacheCommand::run(
     if (cmdline.a_installable.specified())
     {
         all = false;
-        for (IndirectIterator<Environment::RepositoryConstIterator, const Repository>
-                r(env->begin_repositories()), r_end(env->end_repositories());
-                r != r_end; ++r)
-            if (! r->installed_root_key())
-                repository_names.insert(r->name());
+        for (const auto & repository : env->repositories())
+            if (! repository->installed_root_key())
+                repository_names.insert(repository->name());
     }
 
     if (cmdline.a_installed.specified())
     {
         all = false;
-        for (IndirectIterator<Environment::RepositoryConstIterator, const Repository>
-                r(env->begin_repositories()), r_end(env->end_repositories());
-                r != r_end; ++r)
-            if (r->installed_root_key())
-                repository_names.insert(r->name());
+        for (const auto & repository : env->repositories())
+            if (repository->installed_root_key())
+                repository_names.insert(repository->name());
     }
 
     if (all)
-        for (IndirectIterator<Environment::RepositoryConstIterator, const Repository>
-                r(env->begin_repositories()), r_end(env->end_repositories());
-                r != r_end; ++r)
-            repository_names.insert(r->name());
+        for (const auto & repository : env->repositories())
+            repository_names.insert(repository->name());
 
     for (const auto & repository_name : repository_names)
     {
