@@ -20,6 +20,7 @@ Checks: >
     -*-braces-around-statements,
     -*-named-parameter,
     -*-uppercase-literal-suffix,
+    -modernize-concat-nested-namespaces,
     -modernize-use-trailing-return-type,
 
 
