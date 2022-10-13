@@ -48,6 +48,7 @@
 #include <iostream>
 #include <algorithm>
 #include <list>
+#include <regex>
 #include <string.h>
 #include <dlfcn.h>
 #include <stdint.h>
@@ -59,38 +60,8 @@ using namespace paludis;
 using namespace cave;
 using std::cout;
 
-#define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
-
 namespace
 {
-    struct ExtrasHandle :
-        Singleton<ExtrasHandle>
-    {
-        typedef bool (* MatchFunction)(const std::string &, const std::string &, bool);
-
-        void * handle;
-        MatchFunction match_function;
-
-        ExtrasHandle() :
-            handle(nullptr),
-            match_function(nullptr)
-        {
-            handle = ::dlopen(("libcavematchextras_" + stringify(PALUDIS_PC_SLOT) + ".so").c_str(), RTLD_NOW | RTLD_GLOBAL);
-            if (! handle)
-                throw args::DoHelp("Regular expression match not available because dlopen said " + stringify(::dlerror()));
-
-            match_function = STUPID_CAST(MatchFunction, ::dlsym(handle, "cave_match_extras_match_regex"));
-            if (! match_function)
-                throw args::DoHelp("Regular expression match not available because dlsym said " + stringify(::dlerror()));
-        }
-
-        ~ExtrasHandle()
-        {
-            if (handle)
-                ::dlclose(handle);
-        }
-    };
-
     struct MatchCommandLine :
         CaveCommandCommandLine
     {
@@ -137,7 +108,20 @@ namespace
 
     bool match_regex(const std::string & text, const std::string & pattern, bool case_sensitive)
     {
-        return ExtrasHandle::get_instance()->match_function(text, pattern, case_sensitive);
+        try
+        {
+            auto flags = std::regex_constants::ECMAScript;
+            if (! case_sensitive)
+                flags |= std::regex_constants::icase;
+
+            const auto re = std::regex(pattern, flags);
+
+            return std::regex_search(text, re);
+        }
+        catch (const std::regex_error & error)
+        {
+            throw args::DoHelp("Pattern '" + pattern + "' error: " + error.what());
+        }
     }
 
     bool match(const std::string & text, const std::string & pattern, bool case_sensitive, const std::string & algorithm)

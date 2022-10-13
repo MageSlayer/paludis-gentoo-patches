@@ -88,12 +88,6 @@ paludis_add_library(libcave
                       "${CMAKE_CURRENT_SOURCE_DIR}/size_common.cc")
 add_dependencies(libcave libpaludis_SE libpaludisargs_SE libpaludisutil_SE libpaludisresolver_SE)
 
-paludis_add_library(libcavematchextras
-                      "${CMAKE_CURRENT_SOURCE_DIR}/match_extras.cc")
-target_link_libraries(libcavematchextras
-                      PRIVATE
-                        ${PCRECPP_LIBRARIES})
-
 if(ENABLE_SEARCH_INDEX)
   paludis_add_library(libcavesearchextras
                         "${CMAKE_CURRENT_SOURCE_DIR}/search_extras.cc")
@@ -292,10 +286,6 @@ install(TARGETS
           cave
         DESTINATION
           "${CMAKE_INSTALL_FULL_BINDIR}")
-install(TARGETS
-          libcavematchextras
-        DESTINATION
-          "${CMAKE_INSTALL_FULL_LIBDIR}")
 if(ENABLE_SEARCH_INDEX)
   install(TARGETS
             libcavesearchextras

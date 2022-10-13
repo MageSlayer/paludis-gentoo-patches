@@ -406,10 +406,6 @@ if(NOT USE_PREBUILT_DOCUMENTATION)
   endif()
 endif()
 
-if(cave IN_LIST PALUDIS_CLIENTS)
-  find_package(PCRECPP 7.8 REQUIRED)
-endif()
-
 enable_testing()
 if(ENABLE_GTEST)
   find_package(GTest 1.10 REQUIRED)
