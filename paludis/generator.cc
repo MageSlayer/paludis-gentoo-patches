@@ -260,15 +260,13 @@ namespace
         std::shared_ptr<const QualifiedPackageNameSet> packages(
                 const Environment * const env,
                 const std::shared_ptr<const RepositoryNameSet> & repos,
-                const std::shared_ptr<const CategoryNamePartSet> & cats,
+                const std::shared_ptr<const CategoryNamePartSet> & /*cats*/,
                 const RepositoryContentMayExcludes & x) const override
         {
             std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
             for (const auto & r : *repos)
-                for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
-                        c != c_end ; ++c)
-                    if (env->fetch_repository(r)->has_package_named(name, x))
-                        result->insert(name);
+                if (env->fetch_repository(r)->has_package_named(name, x))
+                    result->insert(name);
 
             return result;
         }
