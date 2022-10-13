@@ -496,17 +496,17 @@ namespace paludis
                 for (FSIterator e(d_a, { }), e_end ; e != e_end ; ++e)
                 {
                     std::shared_ptr<HookFile> hook_file;
-                    std::string name;
+                    std::string filename;
 
                     if (is_file_with_extension(*e, ".hook", { }))
                     {
                         hook_file = std::make_shared<FancyHookFile>(*e, dir.second, env);
-                        name = strip_trailing_string(e->basename(), ".hook");
+                        filename = strip_trailing_string(e->basename(), ".hook");
                     }
                     else if (is_file_with_extension(*e, so_suffix, { }))
                     {
                         hook_file = std::make_shared<SoHookFile>(*e, dir.second, env);
-                        name = strip_trailing_string(e->basename(), so_suffix);
+                        filename = strip_trailing_string(e->basename(), so_suffix);
                     }
 
                     if (! hook_file)
@@ -515,10 +515,10 @@ namespace paludis
                     const std::shared_ptr<const Sequence<std::string> > names(hook_file->auto_hook_names());
                     for (const auto & n : *names)
                     {
-                        if (! auto_hook_files[n].insert(std::make_pair(name, hook_file)).second)
+                        if (! auto_hook_files[n].insert(std::make_pair(filename, hook_file)).second)
                             Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
                                 << "' in phase '" << n << "' because of naming conflict with '"
-                                << auto_hook_files[n].find(name)->second->file_name() << "'";
+                                << auto_hook_files[n].find(filename)->second->file_name() << "'";
                     }
                 }
             }
