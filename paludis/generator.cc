@@ -177,8 +177,8 @@ namespace
                 for (QualifiedPackageNameSet::ConstIterator q(qpns->begin()), q_end(qpns->end()) ;
                         q != q_end ; ++q)
                 {
-                    std::shared_ptr<const PackageIDSequence> id(env->fetch_repository(*r)->package_ids(*q, x));
-                    for (PackageIDSequence::ConstIterator i(id->begin()), i_end(id->end()) ;
+                    std::shared_ptr<const PackageIDSequence> ids(env->fetch_repository(*r)->package_ids(*q, x));
+                    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                             i != i_end ; ++i)
                         if ((*i)->from_repositories_key())
                         {
@@ -458,9 +458,8 @@ namespace
                 for (QualifiedPackageNameSet::ConstIterator q(qpns->begin()), q_end(qpns->end()) ;
                         q != q_end ; ++q)
                 {
-                    std::shared_ptr<const PackageIDSequence> id(
-                            env->fetch_repository(*r)->package_ids(*q, x));
-                    for (PackageIDSequence::ConstIterator i(id->begin()), i_end(id->end()) ;
+                    std::shared_ptr<const PackageIDSequence> ids(env->fetch_repository(*r)->package_ids(*q, x));
+                    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
                             i != i_end ; ++i)
                         if (match_package(*env, spec, *i, from_id, options))
                             result->insert(*i);
