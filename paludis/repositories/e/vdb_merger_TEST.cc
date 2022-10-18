@@ -112,7 +112,7 @@ namespace
                         n::merged_entries() = std::make_shared<FSPathSet>(),
                         n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                         n::output_manager() = std::make_shared<StandardOutputManager>(),
-                        n::package_id() = std::shared_ptr<PackageID>(),
+                        n::package_id() = nullptr,
                         n::permit_destination() = std::bind(return_literal_function(true)),
                         n::root() = root_dir
                         ));

@@ -219,7 +219,7 @@ Choices::find_by_name_with_prefix(const ChoiceNameWithPrefix & f) const
                 return *j;
     }
 
-    return std::shared_ptr<const ChoiceValue>();
+    return nullptr;
 }
 
 bool

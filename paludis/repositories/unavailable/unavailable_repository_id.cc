@@ -311,7 +311,7 @@ UnavailableRepositoryID::extra_hash_value() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnavailableRepositoryID::fs_location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSPath> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -323,7 +323,7 @@ UnavailableRepositoryID::behaviours_key() const
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 UnavailableRepositoryID::keywords_key() const
 {
-    return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -341,13 +341,13 @@ UnavailableRepositoryID::build_dependencies_key() const
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailableRepositoryID::run_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailableRepositoryID::post_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
@@ -359,25 +359,25 @@ UnavailableRepositoryID::short_description_key() const
 const std::shared_ptr<const MetadataValueKey<std::string> >
 UnavailableRepositoryID::long_description_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<std::string> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 UnavailableRepositoryID::fetches_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 UnavailableRepositoryID::homepage_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataTimeKey>
 UnavailableRepositoryID::installed_time_key() const
 {
-    return std::shared_ptr<const MetadataTimeKey>();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >

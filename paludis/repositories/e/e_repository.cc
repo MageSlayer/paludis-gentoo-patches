@@ -328,7 +328,7 @@ namespace paludis
         master_repositories_key(params.master_repositories() ?
                 std::shared_ptr<MetadataCollectionKey<Sequence<std::string> > >(std::make_shared<LiteralMetadataStringSequenceKey>(
                         "master_repository", "master_repository", mkt_normal, get_master_names(params.master_repositories()))) :
-                std::shared_ptr<MetadataCollectionKey<Sequence<std::string> > >()),
+                nullptr),
         eapi_when_unknown_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "eapi_when_unknown", "eapi_when_unknown", mkt_normal, params.eapi_when_unknown())),
         eapi_when_unspecified_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
@@ -346,14 +346,14 @@ namespace paludis
                     std::bind(std::mem_fn(&FSStat::is_regular_file_or_symlink_to_regular_file),
                         std::bind(std::mem_fn(&FSPath::stat), std::placeholders::_1))) ?
                 std::make_shared<InfoPkgsMetadataKey>(params.environment(), layout->info_packages_files(), repo) :
-                std::shared_ptr<InfoPkgsMetadataKey>()
+                nullptr
                 ),
         info_vars_key(layout->info_variables_files()->end() != std::find_if(layout->info_variables_files()->begin(),
                     layout->info_variables_files()->end(),
                     std::bind(std::mem_fn(&FSStat::is_regular_file_or_symlink_to_regular_file),
                         std::bind(std::mem_fn(&FSPath::stat), std::placeholders::_1))) ?
                 std::make_shared<InfoVarsMetadataKey>(layout->info_variables_files()) :
-                std::shared_ptr<InfoVarsMetadataKey>()
+                nullptr
                 ),
         binary_destination_key(std::make_shared<LiteralMetadataValueKey<bool> >(
                     "binary_destination", "binary_destination", params.binary_destination() ? mkt_normal : mkt_internal,
@@ -1085,7 +1085,7 @@ ERepository::location_key() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 ERepository::installed_root_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSPath> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >

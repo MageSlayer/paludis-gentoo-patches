@@ -494,7 +494,7 @@ InstalledUnpackagedID::repository_name() const
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 InstalledUnpackagedID::keywords_key() const
 {
-    return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -518,19 +518,19 @@ InstalledUnpackagedID::run_dependencies_key() const
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 InstalledUnpackagedID::post_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 InstalledUnpackagedID::fetches_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 InstalledUnpackagedID::homepage_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
@@ -542,7 +542,7 @@ InstalledUnpackagedID::short_description_key() const
 const std::shared_ptr<const MetadataValueKey<std::string> >
 InstalledUnpackagedID::long_description_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<std::string> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const Contents>
@@ -744,6 +744,6 @@ InstalledUnpackagedID::uninstall(const bool replace,
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >
 InstalledUnpackagedID::choices_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >();
+    return nullptr;
 }
 

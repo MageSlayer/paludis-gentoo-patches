@@ -396,7 +396,7 @@ PaludisEnvironment::mask_for_user(const std::shared_ptr<const PackageID> & d, co
     if (_imp->config->package_mask_conf()->query(d, ""))
         return std::make_shared<UserConfigMask>(o);
 
-    return std::shared_ptr<const Mask>();
+    return nullptr;
 }
 
 void

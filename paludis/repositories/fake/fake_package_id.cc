@@ -826,28 +826,28 @@ const std::shared_ptr<const MetadataValueKey<std::string> >
 FakePackageID::short_description_key() const
 {
     need_keys_added();
-    return std::shared_ptr<const MetadataValueKey<std::string> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
 FakePackageID::long_description_key() const
 {
     need_keys_added();
-    return std::shared_ptr<const MetadataValueKey<std::string> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataTimeKey>
 FakePackageID::installed_time_key() const
 {
     need_keys_added();
-    return std::shared_ptr<const MetadataTimeKey>();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 FakePackageID::from_repositories_key() const
 {
     need_keys_added();
-    return std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
+    return nullptr;
 }
 
 void
@@ -1119,19 +1119,19 @@ FakePackageID::perform_action(Action & a) const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 FakePackageID::fs_location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSPath> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<long> >
 FakePackageID::size_of_download_required_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<long> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<long> >
 FakePackageID::size_of_all_distfiles_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<long> >();
+    return nullptr;
 }
 
 char

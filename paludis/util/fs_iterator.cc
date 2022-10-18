@@ -130,7 +130,7 @@ namespace
 }
 
 FSIterator::FSIterator(const FSPath & base, const FSIteratorOptions & options) :
-    _imp(std::shared_ptr<EntrySet>())
+    _imp(nullptr)
 {
     using namespace std::placeholders;
 

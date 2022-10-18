@@ -931,7 +931,7 @@ EbuildID::long_description_key() const
 const std::shared_ptr<const MetadataTimeKey>
 EbuildID::installed_time_key() const
 {
-    return std::shared_ptr<const MetadataTimeKey>();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >

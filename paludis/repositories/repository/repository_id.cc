@@ -174,7 +174,7 @@ RepositoryID::extra_hash_value() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 RepositoryID::fs_location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSPath> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -186,31 +186,31 @@ RepositoryID::behaviours_key() const
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 RepositoryID::keywords_key() const
 {
-    return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 RepositoryID::dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 RepositoryID::build_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 RepositoryID::run_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 RepositoryID::post_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
@@ -222,25 +222,25 @@ RepositoryID::short_description_key() const
 const std::shared_ptr<const MetadataValueKey<std::string> >
 RepositoryID::long_description_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<std::string> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 RepositoryID::fetches_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 RepositoryID::homepage_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataTimeKey>
 RepositoryID::installed_time_key() const
 {
-    return std::shared_ptr<const MetadataTimeKey>();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >

@@ -143,7 +143,7 @@ UnwrittenRepository::location_key() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnwrittenRepository::installed_root_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSPath> >();
+    return nullptr;
 }
 
 void
