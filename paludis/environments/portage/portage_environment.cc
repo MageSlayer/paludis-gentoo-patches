@@ -803,7 +803,7 @@ PortageEnvironment::mask_for_user(const std::shared_ptr<const PackageID> & d, co
         if (match_package(*this, **i, d, nullptr, { }))
             return std::make_shared<UserConfigMask>(o);
 
-    return std::shared_ptr<const Mask>();
+    return nullptr;
 }
 
 std::string

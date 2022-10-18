@@ -230,7 +230,7 @@ NDBAM::has_category_named(const CategoryNamePart & c)
             _imp->category_contents_map.insert(std::make_pair(c, std::make_shared<CategoryContents>()));
             return true;
         }
-        _imp->category_contents_map.insert(std::make_pair(c, std::shared_ptr<CategoryContents>()));
+        _imp->category_contents_map.insert(std::make_pair(c, nullptr));
     }
 
     return false;
@@ -262,7 +262,7 @@ NDBAM::has_package_named(const QualifiedPackageName & q)
             cc.package_contents_map.insert(std::make_pair(q, std::make_shared<PackageContents>()));
             return true;
         }
-        cc.package_contents_map.insert(std::make_pair(q, std::shared_ptr<PackageContents>()));
+        cc.package_contents_map.insert(std::make_pair(q, nullptr));
     }
 
     return false;
@@ -329,7 +329,7 @@ NDBAM::entries(const QualifiedPackageName & q)
                                         n::magic() = m,
                                         n::mutex() = std::make_shared<std::mutex>(),
                                         n::name() = q,
-                                        n::package_id() = std::shared_ptr<PackageID>(),
+                                        n::package_id() = nullptr,
                                         n::slot() = s,
                                         n::version() = v
                                 ))));
@@ -381,7 +381,7 @@ NDBAM::add_entry(const QualifiedPackageName & q, const FSPath & d)
                                 n::magic() = m,
                                 n::mutex() = std::make_shared<std::mutex>(),
                                 n::name() = q,
-                                n::package_id() = std::shared_ptr<PackageID>(),
+                                n::package_id() = nullptr,
                                 n::slot() = s,
                                 n::version() = v
                         ))));

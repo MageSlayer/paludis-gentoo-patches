@@ -810,8 +810,7 @@ VDBRepository::need_category_names() const
     for (FSIterator d(_imp->params.location(), { fsio_inode_sort, fsio_want_directories, fsio_deref_symlinks_for_wants }), d_end ; d != d_end ; ++d)
         try
         {
-            _imp->categories.insert(std::make_pair(CategoryNamePart(d->basename()),
-                        std::shared_ptr<QualifiedPackageNameSet>()));
+            _imp->categories.insert(std::make_pair(CategoryNamePart(d->basename()), nullptr));
         }
         catch (const InternalError &)
         {
@@ -885,7 +884,7 @@ VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const Versio
     std::unique_lock<std::recursive_mutex> lock(*_imp->big_nasty_mutex);
 
     if (! has_package_named(q, { }))
-        return std::shared_ptr<const ERepositoryID>();
+        return nullptr;
 
     need_package_ids(q.category());
 
@@ -896,7 +895,8 @@ VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const Versio
     for ( ; i != i_end ; ++i)
         if (v == (*i)->version())
             return std::static_pointer_cast<const ERepositoryID>(*i);
-    return std::shared_ptr<const ERepositoryID>();
+
+    return nullptr;
 }
 
 void

@@ -193,14 +193,14 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
     std::unique_lock<std::mutex> l(_imp->mutex);
 
     if (! usable())
-        return std::shared_ptr<const CategoryNamePartSet>();
+        return nullptr;
 
     Context context("When using name cache at '" + stringify(_imp->location) + "':");
 
     std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     NameCacheMap::iterator r(_imp->find(p));
     if (_imp->name_cache_map.end() == r)
-        return std::shared_ptr<const CategoryNamePartSet>();
+        return nullptr;
 
     std::copy(r->second.begin(), r->second.end(), result->inserter());
     return result;

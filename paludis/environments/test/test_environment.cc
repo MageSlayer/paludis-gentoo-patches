@@ -164,7 +164,7 @@ TestEnvironment::hook_dirs() const
 const std::shared_ptr<const Mask>
 TestEnvironment::mask_for_user(const std::shared_ptr<const PackageID> &, const bool) const
 {
-    return std::shared_ptr<const Mask>();
+    return nullptr;
 }
 
 bool
@@ -205,13 +205,13 @@ TestEnvironment::need_keys_added() const
 const std::shared_ptr<const MetadataValueKey<std::string> >
 TestEnvironment::format_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<std::string> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 TestEnvironment::config_location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSPath> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<FSPath> >

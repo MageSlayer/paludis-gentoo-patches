@@ -467,7 +467,7 @@ EAPIData::eapi_from_string(const std::string & s) const
     return std::make_shared<EAPI>(make_named_values<EAPI>(
                     n::exported_name() = s,
                     n::name() = s,
-                    n::supported() = std::shared_ptr<const SupportedEAPI>())
+                    n::supported() = nullptr)
                 );
 }
 
