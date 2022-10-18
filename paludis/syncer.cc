@@ -74,16 +74,18 @@ DefaultSyncer::DefaultSyncer(const SyncerParams & params) :
     std::shared_ptr<const FSPathSequence> syncer_dirs(_environment->syncers_dirs());
     FSPath syncer("/var/empty");
     bool ok(false);
-    for (auto d(syncer_dirs->begin()), d_end(syncer_dirs->end()) ;
-            d != d_end && ! ok; ++d)
+    for (const auto & dir : *syncer_dirs)
     {
-        syncer = FSPath(*d) / ("do" + format);
+        syncer = dir / ("do" + format);
         FSStat syncer_stat(syncer);
         if (syncer_stat.exists() && 0 != (syncer_stat.permissions() & S_IXUSR))
             ok = true;
 
         Log::get_instance()->message("syncer.trying_file", ll_debug, lc_no_context)
             << "Trying '" << syncer << "': " << (ok ? "ok" : "not ok");
+
+        if (ok)
+            break;
     }
 
     if (! ok)
