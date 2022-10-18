@@ -142,12 +142,12 @@ paludis::erepository::do_fetch_action(
         std::shared_ptr<const FSPathSequence> exlibsdirs(repo->layout()->exlibsdirs(id->name()));
 
         EAPIPhases fetch_extra_phases(id->eapi()->supported()->ebuild_phases()->ebuild_fetch_extra());
-        if ((! fetch_action.options.ignore_unfetched()) && (fetch_extra_phases.begin_phases() != fetch_extra_phases.end_phases()))
+        if ((! fetch_action.options.ignore_unfetched()) && (fetch_extra_phases.begin() != fetch_extra_phases.end()))
         {
             FSPath package_builddir(repo->params().builddir() / (stringify(id->name().category()) + "-" +
                     stringify(id->name().package()) + "-" + stringify(id->version()) + "-fetch_extra"));
 
-            for (EAPIPhases::ConstIterator phase(fetch_extra_phases.begin_phases()), phase_end(fetch_extra_phases.end_phases()) ;
+            for (EAPIPhases::ConstIterator phase(fetch_extra_phases.begin()), phase_end(fetch_extra_phases.end()) ;
                     phase != phase_end ; ++phase)
             {
                 bool skip(false);
@@ -229,7 +229,7 @@ paludis::erepository::do_fetch_action(
         if (c.need_nofetch())
         {
             EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_nofetch());
-            for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+            for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
                     phase != phase_end ; ++phase)
             {
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(

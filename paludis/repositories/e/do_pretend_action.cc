@@ -95,10 +95,10 @@ paludis::erepository::do_pretend_action(
         if (verifier.unmet_requirements() && ! verifier.unmet_requirements()->empty())
         {
             EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_bad_options());
-            if (phases.begin_phases() == phases.end_phases())
+            if (phases.begin() == phases.end())
                 throw InternalError(PALUDIS_HERE, "using myoptions but no ebuild_bad_options phase");
 
-            for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+            for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
                     phase != phase_end ; ++phase)
             {
                 if (! output_manager)
@@ -163,10 +163,10 @@ paludis::erepository::do_pretend_action(
         if (verifier.unmet_requirements() && ! verifier.unmet_requirements()->empty())
         {
             EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_bad_options());
-            if (phases.begin_phases() == phases.end_phases())
+            if (phases.begin() == phases.end())
                 throw InternalError(PALUDIS_HERE, "using required_use but no ebuild_bad_options phase");
 
-            for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+            for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
                     phase != phase_end ; ++phase)
             {
                 if (! output_manager)
@@ -230,7 +230,7 @@ paludis::erepository::do_pretend_action(
         return result;
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_pretend());
-    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+    for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
             phase != phase_end ; ++phase)
     {
         if (can_skip_phase(env, id, *phase))

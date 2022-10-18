@@ -80,7 +80,7 @@ paludis::erepository::do_info_action(
     std::shared_ptr<const FSPathSequence> exlibsdirs(repo->layout()->exlibsdirs(id->name()));
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_info());
-    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+    for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
             phase != phase_end ; ++phase)
     {
         if (phase->option("installed=true"))

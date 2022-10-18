@@ -569,7 +569,7 @@ ExndbamRepository::perform_uninstall(
     eclassdirs->push_back(ver_dir);
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_uninstall());
-    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+    for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
             phase != phase_end ; ++phase)
     {
         bool skip(false);
