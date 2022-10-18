@@ -888,8 +888,6 @@ VDBRepository::package_id_if_exists(const QualifiedPackageName & q, const Versio
 
     need_package_ids(q.category());
 
-    using namespace std::placeholders;
-
     PackageIDSequence::ConstIterator i(_imp->ids[q]->begin());
     PackageIDSequence::ConstIterator i_end(_imp->ids[q]->end());
     for ( ; i != i_end ; ++i)
