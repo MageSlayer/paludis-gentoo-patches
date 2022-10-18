@@ -25,6 +25,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/wrapped_value-impl.hh>
+#include <algorithm>
 #include <list>
 
 using namespace paludis;
@@ -196,11 +197,11 @@ Choices::end() const
 Choices::ConstIterator
 Choices::find(const ChoicePrefixName & p) const
 {
-    for (ConstIterator i(begin()), i_end(end()) ;
-            i != i_end ; ++i)
-        if ((*i)->prefix() == p)
-            return i;
-    return end();
+    const auto prefix_matches = [&](const std::shared_ptr<const Choice> & choice) {
+        return choice->prefix() == p;
+    };
+
+    return std::find_if(begin(), end(), prefix_matches);
 }
 
 const std::shared_ptr<const ChoiceValue>
