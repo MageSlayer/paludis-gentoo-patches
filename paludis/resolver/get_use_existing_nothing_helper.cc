@@ -103,9 +103,9 @@ namespace
     bool use_existing_from_withish(
             const Environment * const env,
             const QualifiedPackageName & name,
-            const std::list<PackageDepSpec> & list)
+            const std::list<PackageDepSpec> & specs)
     {
-        for (const auto & l : list)
+        for (const auto & l : specs)
             if (match_qpns(*env, l, name))
                 return true;
         return false;
