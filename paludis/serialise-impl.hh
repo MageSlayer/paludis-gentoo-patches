@@ -168,8 +168,7 @@ namespace paludis
         {
             s.raw_stream() << "c(";
             unsigned n(0);
-            for (typename SerialiserConstIteratorType<T_>::Type i(t.begin()), i_end(t.end()) ;
-                    i != i_end ; ++i)
+            for (const auto & i : t)
             {
                 typedef typename std::iterator_traits<
                     typename SerialiserConstIteratorType<T_>::Type>::value_type ItemValueType;
@@ -180,7 +179,7 @@ namespace paludis
                     false,
                     ! std::is_same<ItemType, typename RemoveSharedPtr<ItemType>::Type>::value,
                     ItemType
-                        >::write(s, *i);
+                        >::write(s, i);
             }
 
             s.raw_stream() << "count=";
