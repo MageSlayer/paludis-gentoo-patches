@@ -212,7 +212,7 @@ EInstalledRepository::perform_config(
     FSPath load_env(ver_dir / "environment.bz2");
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_config());
 
-    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+    for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
             phase != phase_end ; ++phase)
     {
         EbuildConfigCommand config_cmd(make_named_values<EbuildCommandParams>(
@@ -271,7 +271,7 @@ EInstalledRepository::perform_info(
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_info());
 
-    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+    for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
             phase != phase_end ; ++phase)
     {
         if (phase->option("installed=false"))

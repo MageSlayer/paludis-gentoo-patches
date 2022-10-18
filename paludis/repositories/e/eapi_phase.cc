@@ -121,13 +121,13 @@ EAPIPhases::EAPIPhases(const std::string & s) :
 EAPIPhases::~EAPIPhases() = default;
 
 EAPIPhases::ConstIterator
-EAPIPhases::begin_phases() const
+EAPIPhases::begin() const
 {
     return ConstIterator(indirect_iterator(_imp->phases.begin()));
 }
 
 EAPIPhases::ConstIterator
-EAPIPhases::end_phases() const
+EAPIPhases::end() const
 {
     return ConstIterator(indirect_iterator(_imp->phases.end()));
 }

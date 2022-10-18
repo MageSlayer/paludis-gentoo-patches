@@ -225,7 +225,7 @@ paludis::erepository::do_install_action(
     auto destination = install_action.options.destination();
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_install());
-    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+    for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
             phase != phase_end ; ++phase)
     {
         bool skip(false);
@@ -446,7 +446,7 @@ paludis::erepository::do_install_action(
             {
                 if (work_choice && ELikeWorkChoiceValue::should_remove_on_failure(work_choice->parameter()))
                 {
-                    for (EAPIPhases::ConstIterator tidyup_phase(phases.begin_phases()), tidyup_phase_end(phases.end_phases()) ;
+                    for (EAPIPhases::ConstIterator tidyup_phase(phases.begin()), tidyup_phase_end(phases.end()) ;
                             tidyup_phase != tidyup_phase_end ; ++tidyup_phase)
                     {
                         if (! tidyup_phase->option("tidyup"))

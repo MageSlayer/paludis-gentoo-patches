@@ -293,15 +293,15 @@ EbuildID::need_non_xml_keys_added() const
 
             EAPIPhases phases(_imp->eapi->supported()->ebuild_phases()->ebuild_metadata());
 
-            int count(std::distance(phases.begin_phases(), phases.end_phases()));
+            int count(std::distance(phases.begin(), phases.end()));
             if (1 != count)
                 throw EAPIConfigurationError("EAPI '" + _imp->eapi->name() + "' defines "
                         + (count == 0 ? "no" : stringify(count)) + " ebuild variable phases but expected exactly one");
 
             EbuildMetadataCommand cmd(make_named_values<EbuildCommandParams>(
                     n::builddir() = e_repo->params().builddir(),
-                    n::clearenv() = phases.begin_phases()->option("clearenv"),
-                    n::commands() = join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "),
+                    n::clearenv() = phases.begin()->option("clearenv"),
+                    n::commands() = join(phases.begin()->begin_commands(), phases.begin()->end_commands(), " "),
                     n::distdir() = e_repo->params().distdir(),
                     n::ebuild_dir() = e_repo->layout()->package_directory(name()),
                     n::ebuild_file() = _imp->fs_location->parse_value(),
@@ -318,9 +318,9 @@ EbuildID::need_non_xml_keys_added() const
                         (e_repo->params().master_repositories() && ! e_repo->params().master_repositories()->empty()) ?
                         (*e_repo->params().master_repositories()->begin())->params().location() : e_repo->params().location(),
                     n::root() = "/",
-                    n::sandbox() = phases.begin_phases()->option("sandbox"),
-                    n::sydbox() = phases.begin_phases()->option("sydbox"),
-                    n::userpriv() = phases.begin_phases()->option("userpriv"),
+                    n::sandbox() = phases.begin()->option("sandbox"),
+                    n::sydbox() = phases.begin()->option("sydbox"),
+                    n::userpriv() = phases.begin()->option("userpriv"),
                     n::volatile_files() = nullptr
                     ));
 
@@ -1649,7 +1649,7 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
 
         bool has_expensive_test_phase(false);
         EAPIPhases phases(_imp->eapi->supported()->ebuild_phases()->ebuild_install());
-        for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
+        for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
                 phase != phase_end ; ++phase)
         {
             if (phase->option("expensive_tests"))

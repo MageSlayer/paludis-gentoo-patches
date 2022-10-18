@@ -1634,7 +1634,7 @@ ERepository::get_environment_variable(
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_variable());
 
-    int c(std::distance(phases.begin_phases(), phases.end_phases()));
+    int c(std::distance(phases.begin(), phases.end()));
     if (1 != c)
         throw EAPIConfigurationError("EAPI '" + id->eapi()->name() + "' defines "
                 + (c == 0 ? "no" : stringify(c)) + " ebuild variable phases but expected exactly one");
@@ -1661,8 +1661,8 @@ ERepository::get_environment_variable(
 
     EbuildVariableCommand cmd(make_named_values<EbuildCommandParams>(
             n::builddir() = _imp->params.builddir(),
-            n::clearenv() = phases.begin_phases()->option("clearenv"),
-            n::commands() = join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "),
+            n::clearenv() = phases.begin()->option("clearenv"),
+            n::commands() = join(phases.begin()->begin_commands(), phases.begin()->end_commands(), " "),
             n::distdir() = _imp->params.distdir(),
             n::ebuild_dir() = layout()->package_directory(id->name()),
             n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -1679,9 +1679,9 @@ ERepository::get_environment_variable(
                 (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                 (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),
             n::root() = "/",
-            n::sandbox() = phases.begin_phases()->option("sandbox"),
-            n::sydbox() = phases.begin_phases()->option("sydbox"),
-            n::userpriv() = phases.begin_phases()->option("userpriv") && userpriv_ok,
+            n::sandbox() = phases.begin()->option("sandbox"),
+            n::sydbox() = phases.begin()->option("sydbox"),
+            n::userpriv() = phases.begin()->option("userpriv") && userpriv_ok,
             n::volatile_files() = nullptr
             ),
 
