@@ -100,13 +100,13 @@ namespace paludis
             /**
              * Constructor.
              */
-            Syncer();
+            Syncer() = default;
 
         public:
             /**
              * Destructor.
              */
-            virtual ~Syncer();
+            virtual ~Syncer() = default;
 
             Syncer(const Syncer &) = delete;
             Syncer & operator= (const Syncer &) = delete;
@@ -140,7 +140,7 @@ namespace paludis
             /**
              * Destructor.
              */
-            ~DefaultSyncer() override;
+            ~DefaultSyncer() override = default;
 
             /**
              * Perform the sync.
