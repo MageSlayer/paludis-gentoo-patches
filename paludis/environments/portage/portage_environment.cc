@@ -604,7 +604,8 @@ PortageEnvironment::accept_keywords(const std::shared_ptr <const KeywordNameSet>
         return true;
 
     std::set<std::string> accepted;
-    bool accept_star_star(false), accept_tilde_star(false);
+    bool accept_star_star(false);
+    bool accept_tilde_star(false);
 
     std::copy(_imp->accept_keywords.begin(), _imp->accept_keywords.end(), std::inserter(accepted, accepted.begin()));
     for (PackageKeywords::const_iterator it(_imp->package_keywords.begin()),
