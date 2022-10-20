@@ -119,10 +119,3 @@ DefaultSyncer::sync(const SyncOptions & opts) const
     if (0 != process.run().wait())
         throw SyncFailedError(_local, _remote);
 }
-
-Syncer::Syncer() = default;
-
-Syncer::~Syncer() = default;
-
-DefaultSyncer::~DefaultSyncer() = default;
-
