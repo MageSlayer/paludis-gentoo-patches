@@ -44,7 +44,7 @@ namespace
     bool enabled_if_option(
             const Environment * const env,
             const std::shared_ptr<const PackageID> & id,
-            const std::string label,
+            const std::string & label,
             const ChoiceNameWithPrefix n)
     {
         auto repo(env->fetch_repository(id->repository_name()));
