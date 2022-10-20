@@ -5,10 +5,11 @@ BUILD_TYPE=${4:-debug}
 
 [[ -z ${RUBY_VERSION} ]] && RUBY_VERSION=3.1
 
-myconf=()
+myconf=(
+    -DPALUDIS_ENVIRONMENTS="all"
+)
 if [[ ${DISTRIBUTION} == "exherbo" ]]; then
     myconf+=(
-        -DPALUDIS_ENVIRONMENTS="default;test"
         -DPALUDIS_REPOSITORIES="default;accounts;gemcutter;repository"
         -DPALUDIS_DEFAULT_DISTRIBUTION=exherbo
         -DCONFIG_FRAMEWORK=eclectic
@@ -18,7 +19,6 @@ if [[ ${DISTRIBUTION} == "exherbo" ]]; then
     )
 elif [[ ${DISTRIBUTION} == "gentoo" ]]; then
     myconf+=(
-        -DPALUDIS_ENVIRONMENTS="default;test"
         -DPALUDIS_REPOSITORIES="default"
         -DPALUDIS_DEFAULT_DISTRIBUTION=gentoo
         -DCONFIG_FRAMEWORK=eselect
