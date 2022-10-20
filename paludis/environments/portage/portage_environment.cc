@@ -754,17 +754,17 @@ namespace
             {
             }
 
-            char key() const
+            char key() const override
             {
                 return 'B';
             }
 
-            const std::string description() const
+            const std::string description() const override
             {
                 return "breaks Portage";
             }
 
-            const std::string explanation() const
+            const std::string explanation() const override
             {
                 return breakages;
             }
@@ -782,12 +782,12 @@ namespace
             {
             }
 
-            char key() const
+            char key() const override
             {
                 return _overridden ? 'u' : 'U';
             }
 
-            const std::string description() const
+            const std::string description() const override
             {
                 return _overridden ? "user (overridden)" : "user";
             }
