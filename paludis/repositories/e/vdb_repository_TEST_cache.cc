@@ -110,12 +110,11 @@ namespace
 
     void read_cache(const FSPath & names_cache, std::vector<FSPath> & vec)
     {
-        using namespace std::placeholders;
-        std::remove_copy_if(FSIterator(names_cache, { fsio_include_dotfiles }),
-                            FSIterator(), std::back_inserter(vec),
-                            std::bind(&std::equal_to<std::string>::operator(),
-                                      std::equal_to<std::string>(),
-                                      "_VERSION_", std::bind(&FSPath::basename, _1)));
+        std::remove_copy_if(
+                FSIterator(names_cache, { fsio_include_dotfiles }),
+                FSIterator(),
+                std::back_inserter(vec),
+                [](const FSPath & path) { return path.basename() == "_VERSION_"; });
     }
 
     std::string read_file(const FSPath & f)
