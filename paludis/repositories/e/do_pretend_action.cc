@@ -98,8 +98,7 @@ paludis::erepository::do_pretend_action(
             if (phases.begin() == phases.end())
                 throw InternalError(PALUDIS_HERE, "using myoptions but no ebuild_bad_options phase");
 
-            for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
-                    phase != phase_end ; ++phase)
+            for (const auto & phase : phases)
             {
                 if (! output_manager)
                     output_manager = a.options.make_output_manager()(a);
@@ -110,8 +109,8 @@ paludis::erepository::do_pretend_action(
 
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                             n::builddir() = params.builddir(),
-                            n::clearenv() = phase->option("clearenv"),
-                            n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                            n::clearenv() = phase.option("clearenv"),
+                            n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                             n::distdir() = params.distdir(),
                             n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                             n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -130,9 +129,9 @@ paludis::erepository::do_pretend_action(
                             n::root() = destination->installed_root_key()
                                             ? stringify(destination->installed_root_key()->parse_value())
                                             : "/",
-                            n::sandbox() = phase->option("sandbox"),
-                            n::sydbox() = phase->option("sydbox"),
-                            n::userpriv() = phase->option("userpriv") && userpriv_ok,
+                            n::sandbox() = phase.option("sandbox"),
+                            n::sydbox() = phase.option("sydbox"),
+                            n::userpriv() = phase.option("userpriv") && userpriv_ok,
                             n::volatile_files() = nullptr
                             ));
 
@@ -166,8 +165,7 @@ paludis::erepository::do_pretend_action(
             if (phases.begin() == phases.end())
                 throw InternalError(PALUDIS_HERE, "using required_use but no ebuild_bad_options phase");
 
-            for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
-                    phase != phase_end ; ++phase)
+            for (const auto & phase : phases)
             {
                 if (! output_manager)
                     output_manager = a.options.make_output_manager()(a);
@@ -178,8 +176,8 @@ paludis::erepository::do_pretend_action(
 
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                             n::builddir() = params.builddir(),
-                            n::clearenv() = phase->option("clearenv"),
-                            n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                            n::clearenv() = phase.option("clearenv"),
+                            n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                             n::distdir() = params.distdir(),
                             n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                             n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -199,9 +197,9 @@ paludis::erepository::do_pretend_action(
                             n::root() = destination->installed_root_key()
                                             ? stringify(destination->installed_root_key()->parse_value())
                                             : "/",
-                            n::sandbox() = phase->option("sandbox"),
-                            n::sydbox() = phase->option("sydbox"),
-                            n::userpriv() = phase->option("userpriv") && userpriv_ok,
+                            n::sandbox() = phase.option("sandbox"),
+                            n::sydbox() = phase.option("sydbox"),
+                            n::userpriv() = phase.option("userpriv") && userpriv_ok,
                             n::volatile_files() = nullptr
                             ));
 
@@ -230,10 +228,9 @@ paludis::erepository::do_pretend_action(
         return result;
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_pretend());
-    for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
-            phase != phase_end ; ++phase)
+    for (const auto & phase : phases)
     {
-        if (can_skip_phase(env, id, *phase))
+        if (can_skip_phase(env, id, phase))
             continue;
 
         if (! output_manager)
@@ -245,8 +242,8 @@ paludis::erepository::do_pretend_action(
 
         EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                 n::builddir() = params.builddir(),
-                n::clearenv() = phase->option("clearenv"),
-                n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                n::clearenv() = phase.option("clearenv"),
+                n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                 n::distdir() = params.distdir(),
                 n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                 n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -266,9 +263,9 @@ paludis::erepository::do_pretend_action(
                 n::root() = destination->installed_root_key()
                                 ? stringify(destination->installed_root_key()->parse_value())
                                 : "/",
-                n::sandbox() = phase->option("sandbox"),
-                n::sydbox() = phase->option("sydbox"),
-                n::userpriv() = phase->option("userpriv") && userpriv_ok,
+                n::sandbox() = phase.option("sandbox"),
+                n::sydbox() = phase.option("sydbox"),
+                n::userpriv() = phase.option("userpriv") && userpriv_ok,
                 n::volatile_files() = nullptr
                 ));
 
