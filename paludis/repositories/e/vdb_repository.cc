@@ -400,13 +400,12 @@ VDBRepository::perform_uninstall(
     std::shared_ptr<FSPath> load_env(std::make_shared<FSPath>(pkg_dir / "environment.bz2"));
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_uninstall());
-    for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
-            phase != phase_end ; ++phase)
+    for (const auto & phase : phases)
     {
         bool skip(false);
         do
         {
-            switch (a.options.want_phase()(phase->equal_option("skipname")))
+            switch (a.options.want_phase()(phase.equal_option("skipname")))
             {
                 case wp_yes:
                     continue;
@@ -428,13 +427,13 @@ VDBRepository::perform_uninstall(
         if (skip)
             continue;
 
-        if (can_skip_phase(_imp->params.environment(), id, *phase))
+        if (can_skip_phase(_imp->params.environment(), id, phase))
         {
-            output_manager->stdout_stream() << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
+            output_manager->stdout_stream() << "--- No need to do anything for " << phase.equal_option("skipname") << " phase" << std::endl;
             continue;
         }
 
-        if (phase->option("unmerge"))
+        if (phase.option("unmerge"))
         {
             /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb, supplement with env */
             std::string config_protect;
@@ -491,8 +490,8 @@ VDBRepository::perform_uninstall(
             FSPath package_builddir(_imp->params.builddir() / (stringify(id->name().category()) + "-" + stringify(id->name().package()) + "-" + stringify(id->version()) + "-uninstall"));
             EbuildCommandParams params(make_named_values<EbuildCommandParams>(
                     n::builddir() = _imp->params.builddir(),
-                    n::clearenv() = phase->option("clearenv"),
-                    n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                    n::clearenv() = phase.option("clearenv"),
+                    n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                     n::distdir() = pkg_dir,
                     n::ebuild_dir() = pkg_dir,
                     n::ebuild_file() = pkg_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
@@ -507,9 +506,9 @@ VDBRepository::perform_uninstall(
                     n::permitted_directories() = nullptr,
                     n::portdir() = _imp->params.location(),
                     n::root() = stringify(_imp->params.root()),
-                    n::sandbox() = phase->option("sandbox"),
-                    n::sydbox() = phase->option("sydbox"),
-                    n::userpriv() = phase->option("userpriv"),
+                    n::sandbox() = phase.option("sandbox"),
+                    n::sydbox() = phase.option("sydbox"),
+                    n::userpriv() = phase.option("userpriv"),
                     n::volatile_files() = nullptr
                     ));
 

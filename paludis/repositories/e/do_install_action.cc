@@ -225,13 +225,12 @@ paludis::erepository::do_install_action(
     auto destination = install_action.options.destination();
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_install());
-    for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
-            phase != phase_end ; ++phase)
+    for (const auto & phase : phases)
     {
         bool skip(false);
         do
         {
-            switch (install_action.options.want_phase()(phase->equal_option("skipname")))
+            switch (install_action.options.want_phase()(phase.equal_option("skipname")))
             {
                 case wp_yes:
                     continue;
@@ -253,20 +252,20 @@ paludis::erepository::do_install_action(
         if (skip)
             continue;
 
-        if (can_skip_phase(env, id, *phase))
+        if (can_skip_phase(env, id, phase))
         {
-            output_manager->stdout_stream() << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
+            output_manager->stdout_stream() << "--- No need to do anything for " << phase.equal_option("skipname") << " phase" << std::endl;
             continue;
         }
 
-        if (phase->option("tidyup") && work_choice && ! ELikeWorkChoiceValue::should_remove(work_choice->parameter()))
+        if (phase.option("tidyup") && work_choice && ! ELikeWorkChoiceValue::should_remove(work_choice->parameter()))
         {
-            output_manager->stdout_stream() << "--- Skipping " << phase->equal_option("skipname")
+            output_manager->stdout_stream() << "--- Skipping " << phase.equal_option("skipname")
                 << " phase to preserve work" << std::endl;
             continue;
         }
 
-        if (phase->option("merge") || phase->option("check_merge"))
+        if (phase.option("merge") || phase.option("check_merge"))
         {
             if (! destination->destination_interface())
                 throw ActionFailedError("Can't install '" + stringify(*id)
@@ -281,7 +280,7 @@ paludis::erepository::do_install_action(
             destination->destination_interface()->merge(
                     make_named_values<MergeParams>(
                         n::build_start_time() = build_start_time,
-                        n::check() = phase->option("check_merge"),
+                        n::check() = phase.option("check_merge"),
                         n::environment_file() = package_builddir / "temp" / "loadsaveenv",
                         n::image_dir() = package_builddir / "image",
                         n::is_volatile() = [&] (const FSPath & f) { return volatile_files->end() != volatile_files->find(f); },
@@ -301,7 +300,7 @@ paludis::erepository::do_install_action(
                         n::want_phase() = install_action.options.want_phase()
                         ));
 
-            if (volatile_files && phase->option("check_merge")) {
+            if (volatile_files && phase.option("check_merge")) {
                 for (auto & file : *volatile_files) {
                     auto vabs = (package_builddir / "image" / file);
                     auto vstat = vabs.stat();
@@ -318,7 +317,7 @@ paludis::erepository::do_install_action(
                 }
             }
         }
-        else if (phase->option("strip"))
+        else if (phase.option("strip"))
         {
             if ((! id->eapi()->supported()->is_pbin()) && (! strip_restrict))
             {
@@ -354,11 +353,11 @@ paludis::erepository::do_install_action(
                 stripper.strip();
             }
         }
-        else if ((! phase->option("prepost")) ||
+        else if ((! phase.option("prepost")) ||
                 (destination->destination_interface() &&
                  destination->destination_interface()->want_pre_post_phases()))
         {
-            if (phase->option("optional_tests"))
+            if (phase.option("optional_tests"))
             {
                 if (test_restrict)
                     continue;
@@ -368,7 +367,7 @@ paludis::erepository::do_install_action(
                 if (choice && ! choice->enabled())
                     continue;
             }
-            else if (phase->option("recommended_tests"))
+            else if (phase.option("recommended_tests"))
             {
                 if (test_restrict)
                     continue;
@@ -378,7 +377,7 @@ paludis::erepository::do_install_action(
                 if (choice && ! choice->enabled())
                     continue;
             }
-            else if (phase->option("expensive_tests"))
+            else if (phase.option("expensive_tests"))
             {
                 std::shared_ptr<const ChoiceValue> choice(choices->find_by_name_with_prefix(
                             ELikeExpensiveTestsChoiceValue::canonical_name_with_prefix()));
@@ -391,8 +390,8 @@ paludis::erepository::do_install_action(
 
             EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                     n::builddir() = params.builddir(),
-                    n::clearenv() = phase->option("clearenv"),
-                    n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                    n::clearenv() = phase.option("clearenv"),
+                    n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                     n::distdir() = params.distdir(),
                     n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                     n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -411,9 +410,9 @@ paludis::erepository::do_install_action(
                     n::root() = destination->installed_root_key()
                                     ? stringify(destination->installed_root_key()->parse_value())
                                     : "/",
-                    n::sandbox() = phase->option("sandbox"),
-                    n::sydbox() = phase->option("sydbox"),
-                    n::userpriv() = phase->option("userpriv") && userpriv_ok,
+                    n::sandbox() = phase.option("sandbox"),
+                    n::sydbox() = phase.option("sydbox"),
+                    n::userpriv() = phase.option("userpriv") && userpriv_ok,
                     n::volatile_files() = volatile_files
                     ));
 
@@ -446,16 +445,15 @@ paludis::erepository::do_install_action(
             {
                 if (work_choice && ELikeWorkChoiceValue::should_remove_on_failure(work_choice->parameter()))
                 {
-                    for (EAPIPhases::ConstIterator tidyup_phase(phases.begin()), tidyup_phase_end(phases.end()) ;
-                            tidyup_phase != tidyup_phase_end ; ++tidyup_phase)
+                    for (const auto & tidyup_phase : phases)
                     {
-                        if (! tidyup_phase->option("tidyup"))
+                        if (! tidyup_phase.option("tidyup"))
                             continue;
 
                         EbuildCommandParams tidyup_command_params(make_named_values<EbuildCommandParams>(
                                     n::builddir() = params.builddir(),
-                                    n::clearenv() = tidyup_phase->option("clearenv"),
-                                    n::commands() = join(tidyup_phase->begin_commands(), tidyup_phase->end_commands(), " "),
+                                    n::clearenv() = tidyup_phase.option("clearenv"),
+                                    n::commands() = join(tidyup_phase.begin_commands(), tidyup_phase.end_commands(), " "),
                                     n::distdir() = params.distdir(),
                                     n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                                     n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -475,9 +473,9 @@ paludis::erepository::do_install_action(
                                     n::root() = destination->installed_root_key()
                                                     ?  stringify(destination->installed_root_key()->parse_value())
                                                     : "/",
-                                    n::sandbox() = tidyup_phase->option("sandbox"),
-                                    n::sydbox() = tidyup_phase->option("sydbox"),
-                                    n::userpriv() = tidyup_phase->option("userpriv") && userpriv_ok,
+                                    n::sandbox() = tidyup_phase.option("sandbox"),
+                                    n::sydbox() = tidyup_phase.option("sydbox"),
+                                    n::userpriv() = tidyup_phase.option("userpriv") && userpriv_ok,
                                     n::volatile_files() = volatile_files
                                         ));
 

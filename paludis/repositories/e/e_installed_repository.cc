@@ -212,13 +212,12 @@ EInstalledRepository::perform_config(
     FSPath load_env(ver_dir / "environment.bz2");
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_config());
 
-    for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
-            phase != phase_end ; ++phase)
+    for (const auto & phase : phases)
     {
         EbuildConfigCommand config_cmd(make_named_values<EbuildCommandParams>(
                     n::builddir() = _imp->params.builddir(),
-                    n::clearenv() = phase->option("clearenv"),
-                    n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                    n::clearenv() = phase.option("clearenv"),
+                    n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                     n::distdir() = ver_dir,
                     n::ebuild_dir() = ver_dir,
                     n::ebuild_file() = ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
@@ -233,9 +232,9 @@ EInstalledRepository::perform_config(
                     n::permitted_directories() = nullptr,
                     n::portdir() = ver_dir,
                     n::root() = stringify(_imp->params.root()),
-                    n::sandbox() = phase->option("sandbox"),
-                    n::sydbox() = phase->option("sydbox"),
-                    n::userpriv() = phase->option("userpriv"),
+                    n::sandbox() = phase.option("sandbox"),
+                    n::sydbox() = phase.option("sydbox"),
+                    n::userpriv() = phase.option("userpriv"),
                     n::volatile_files() = nullptr
                 ),
 
@@ -271,10 +270,9 @@ EInstalledRepository::perform_info(
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_info());
 
-    for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
-            phase != phase_end ; ++phase)
+    for (const auto & phase : phases)
     {
-        if (phase->option("installed=false"))
+        if (phase.option("installed=false"))
             continue;
 
         /* try to find an info_vars file from the original repo */
@@ -324,8 +322,8 @@ EInstalledRepository::perform_info(
 
         EbuildInfoCommand info_cmd(make_named_values<EbuildCommandParams>(
                     n::builddir() = _imp->params.builddir(),
-                    n::clearenv() = phase->option("clearenv"),
-                    n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                    n::clearenv() = phase.option("clearenv"),
+                    n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                     n::distdir() = ver_dir,
                     n::ebuild_dir() = ver_dir,
                     n::ebuild_file() = ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
@@ -340,9 +338,9 @@ EInstalledRepository::perform_info(
                     n::permitted_directories() = nullptr,
                     n::portdir() = ver_dir,
                     n::root() = stringify(_imp->params.root()),
-                    n::sandbox() = phase->option("sandbox"),
-                    n::sydbox() = phase->option("sydbox"),
-                    n::userpriv() = phase->option("userpriv"),
+                    n::sandbox() = phase.option("sandbox"),
+                    n::sydbox() = phase.option("sydbox"),
+                    n::userpriv() = phase.option("userpriv"),
                     n::volatile_files() = nullptr
                 ),
 

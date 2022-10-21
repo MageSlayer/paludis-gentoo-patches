@@ -147,13 +147,12 @@ paludis::erepository::do_fetch_action(
             FSPath package_builddir(repo->params().builddir() / (stringify(id->name().category()) + "-" +
                     stringify(id->name().package()) + "-" + stringify(id->version()) + "-fetch_extra"));
 
-            for (EAPIPhases::ConstIterator phase(fetch_extra_phases.begin()), phase_end(fetch_extra_phases.end()) ;
-                    phase != phase_end ; ++phase)
+            for (const auto & phase : fetch_extra_phases)
             {
                 bool skip(false);
                 do
                 {
-                    switch (fetch_action.options.want_phase()(phase->equal_option("skipname")))
+                    switch (fetch_action.options.want_phase()(phase.equal_option("skipname")))
                     {
                         case wp_yes:
                             continue;
@@ -175,7 +174,7 @@ paludis::erepository::do_fetch_action(
                 if (skip)
                     continue;
 
-                if (can_skip_phase(env, id, *phase))
+                if (can_skip_phase(env, id, phase))
                     continue;
 
                 const auto params = repo->params();
@@ -183,8 +182,8 @@ paludis::erepository::do_fetch_action(
 
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                         n::builddir() = params.builddir(),
-                        n::clearenv() = phase->option("clearenv"),
-                        n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                        n::clearenv() = phase.option("clearenv"),
+                        n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                         n::distdir() = params.distdir(),
                         n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                         n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -202,9 +201,9 @@ paludis::erepository::do_fetch_action(
                                 ? (*params.master_repositories()->begin())->params().location()
                                 : params.location(),
                         n::root() = "/",
-                        n::sandbox() = phase->option("sandbox"),
-                        n::sydbox() = phase->option("sydbox"),
-                        n::userpriv() = phase->option("userpriv") && userpriv_ok,
+                        n::sandbox() = phase.option("sandbox"),
+                        n::sydbox() = phase.option("sydbox"),
+                        n::userpriv() = phase.option("userpriv") && userpriv_ok,
                         n::volatile_files() = nullptr
                         ));
 
@@ -229,13 +228,12 @@ paludis::erepository::do_fetch_action(
         if (c.need_nofetch())
         {
             EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_nofetch());
-            for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
-                    phase != phase_end ; ++phase)
+            for (const auto & phase : phases)
             {
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                         n::builddir() = repo->params().builddir(),
-                        n::clearenv() = phase->option("clearenv"),
-                        n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                        n::clearenv() = phase.option("clearenv"),
+                        n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                         n::distdir() = repo->params().distdir(),
                         n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                         n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -251,9 +249,9 @@ paludis::erepository::do_fetch_action(
                         n::portdir() = (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
                             (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
                         n::root() = "/",
-                        n::sandbox() = phase->option("sandbox"),
-                        n::sydbox() = phase->option("sydbox"),
-                        n::userpriv() = phase->option("userpriv") && userpriv_ok,
+                        n::sandbox() = phase.option("sandbox"),
+                        n::sydbox() = phase.option("sydbox"),
+                        n::userpriv() = phase.option("userpriv") && userpriv_ok,
                         n::volatile_files() = nullptr
                         ));
 

@@ -1649,13 +1649,12 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
 
         bool has_expensive_test_phase(false);
         EAPIPhases phases(_imp->eapi->supported()->ebuild_phases()->ebuild_install());
-        for (EAPIPhases::ConstIterator phase(phases.begin()), phase_end(phases.end()) ;
-                phase != phase_end ; ++phase)
+        for (const auto & phase : phases)
         {
-            if (phase->option("expensive_tests"))
+            if (phase.option("expensive_tests"))
             {
                 auto defined_phases(_imp->defined_phases->parse_value());
-                if (defined_phases->end() != defined_phases->find(phase->equal_option("skipname")))
+                if (defined_phases->end() != defined_phases->find(phase.equal_option("skipname")))
                 {
                     has_expensive_test_phase = true;
                     break;
