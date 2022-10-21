@@ -43,19 +43,50 @@ syn region PaludisRepositoriesConfString contained start=/"/ end=/"/
             \ skipwhite
 
 syn keyword PaludisRepositoriesConfKnownKey contained
-            \ location distdir format builddir library sync root yaml_uri
-            \ master_repository profiles pkgdir setsdir securitydir newsdir
-            \ names_cache sync sync_options eclassdirs cache write_cache
-            \ importance layout use_manifest manifest_hashes thin_manifests
-            \ binary_uri_prefix binary_keywords_filter binary_destination binary_distdir
-            \ eapi_when_unspecified eapi_when_unknown profile_eapi_when_unspecified
-            \ name handler config_template config_filename
+            \ binary_destination
+            \ binary_distdir
+            \ binary_keywords_filter
+            \ binary_uri_prefix
+            \ builddir
+            \ cache
+            \ config_filename
+            \ config_template
+            \ distdir
+            \ eapi_when_unknown
+            \ eapi_when_unspecified
+            \ eclassdirs
+            \ format
+            \ handler
+            \ importance
+            \ layout
+            \ library
+            \ location
+            \ manifest_hashes
+            \ master_repository
+            \ name
+            \ names_cache
+            \ newsdir
+            \ pkgdir
+            \ profile_eapi_when_unspecified
+            \ profiles
+            \ root
+            \ securitydir
+            \ setsdir
+            \ sync
+            \ sync
+            \ sync_options
+            \ thin_manifests
+            \ use_manifest
+            \ write_cache
+            \ yaml_uri
 
 syn keyword PaludisRepositoriesConfBadKey contained
             \ world
 
 syn keyword PaludisRepositoriesConfKnownValue contained
-            \ use require ignore
+            \ ignore
+            \ require
+            \ use
 
 syn match PaludisRepositoriesConfVariable contained
             \ /\$\({\(repository_template\)\@![^{}]\+}\|\(repository_template\|ENV{\)\@![a-zA-Z0-9_]\+\)/ skipwhite
