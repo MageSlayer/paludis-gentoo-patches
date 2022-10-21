@@ -39,7 +39,9 @@ syn region PaludisGeneralConfString contained start=/"/ end=/"/
             \ skipwhite
 
 syn keyword PaludisGeneralConfKnownKey contained
-            \ reduced_username distribution world
+            \ distribution
+            \ reduced_username
+            \ world
 
 syn match PaludisGeneralConfVariable contained /\$\({[^{}]\+}\|\(ENV{\)\@!=[a-zA-Z0-9_]\+\)/ skipwhite
 
