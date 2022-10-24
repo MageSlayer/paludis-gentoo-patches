@@ -50,12 +50,13 @@ paludis::erepository::make_archives_strings(
 
     for (AFinder::ConstIterator i(f.begin()), i_end(f.end()) ; i != i_end ; ++i)
     {
-        const FetchableURIDepSpec * const spec(static_cast<const FetchableURIDepSpec *>(i->first));
+        const FetchableURIDepSpec * const spec = i->first;
+        const std::string filename = spec->filename();
 
-        if (already_in_archives.end() == already_in_archives.find(spec->filename()))
+        if (already_in_archives.end() == already_in_archives.find(filename))
         {
-            archives.append(spec->filename());
-            already_in_archives.insert(spec->filename());
+            archives.append(filename);
+            already_in_archives.insert(filename);
         }
         archives.append(" ");
     }
