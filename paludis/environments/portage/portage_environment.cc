@@ -194,12 +194,12 @@ namespace
         if (before.empty())
             return value;
 
-        std::list<std::string> values;
-        std::set<std::string> new_values;
-        tokenise_whitespace(before, std::back_inserter(values));
-        tokenise_whitespace(value, std::back_inserter(values));
+        std::list<std::string> old_values;
+        tokenise_whitespace(before, std::back_inserter(old_values));
+        tokenise_whitespace(value, std::back_inserter(old_values));
 
-        for (std::list<std::string>::const_iterator v(values.begin()), v_end(values.end()) ;
+        std::set<std::string> new_values;
+        for (std::list<std::string>::const_iterator v(old_values.begin()), v_end(old_values.end()) ;
                 v != v_end ; ++v)
         {
             if (v->empty())
@@ -1054,4 +1054,3 @@ PortageEnvironment::interest_in_suggestion(
 {
     return indeterminate;
 }
-
