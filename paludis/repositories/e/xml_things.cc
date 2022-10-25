@@ -26,6 +26,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/choice.hh>
 #include <paludis/maintainer.hh>
+#include <cctype>
 #include <set>
 
 #include <libxml/tree.h>
@@ -57,11 +58,6 @@ namespace
         return s ? std::string(reinterpret_cast<const char *>(s)) : "";
     }
 
-    bool is_space(const char c)
-    {
-        return c == ' ' || c == '\t' || c == '\r' || c == '\n';
-    }
-
     std::string fix_whitespace(const std::string & s)
     {
         std::string t;
@@ -70,21 +66,21 @@ namespace
         std::string::size_type p(0);
         std::string::size_type p_end(s.length());
 
-        while (p != p_end && is_space(s[p]))
+        while (p != p_end && std::isspace(s[p]))
             ++p;
 
-        while (p_end > p && is_space(s[p_end - 1]))
+        while (p_end > p && std::isspace(s[p_end - 1]))
             --p_end;
 
         while (p != p_end)
         {
-            while (p != p_end && ! is_space(s[p]))
+            while (p != p_end && ! std::isspace(s[p]))
                 t.append(1, s[p++]);
 
             if (p != p_end)
                 t.append(1, ' ');
 
-            while (p != p_end && is_space(s[p]))
+            while (p != p_end && std::isspace(s[p]))
                 ++p;
         }
 
