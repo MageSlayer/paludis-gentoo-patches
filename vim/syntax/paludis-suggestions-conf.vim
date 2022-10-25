@@ -39,4 +39,3 @@ hi def link PaludisSuggestionsConfContinuation     Preproc
 
 let b:current_syntax = "paludis-suggestions-conf"
 
-

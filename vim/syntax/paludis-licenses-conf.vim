@@ -40,4 +40,3 @@ hi def link PaludisLicensesConfContinuation     Preproc
 
 let b:current_syntax = "paludis-licenses-conf"
 
-

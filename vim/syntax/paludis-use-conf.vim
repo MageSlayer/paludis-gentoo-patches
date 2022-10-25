@@ -43,4 +43,3 @@ hi def link PaludisUseConfContinuation     Preproc
 
 let b:current_syntax = "paludis-use-conf"
 
-

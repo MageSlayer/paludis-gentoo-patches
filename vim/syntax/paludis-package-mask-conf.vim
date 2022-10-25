@@ -35,5 +35,3 @@ hi def link PaludisPackageMaskToken                Macro
 
 let b:current_syntax = "paludis-package-mask-conf"
 
-
-
