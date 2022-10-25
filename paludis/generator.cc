@@ -141,7 +141,6 @@ namespace
                 const Environment * const env,
                 const RepositoryContentMayExcludes &) const override
         {
-            using namespace std::placeholders;
             std::shared_ptr<RepositoryNameSet> result(std::make_shared<RepositoryNameSet>());
             if (env->has_repository_named(name))
                 result->insert(name);
