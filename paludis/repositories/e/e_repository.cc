@@ -326,8 +326,8 @@ namespace paludis
         builddir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
                     "builddir", "builddir", mkt_normal, params.builddir())),
         master_repositories_key(params.master_repositories() ?
-                std::shared_ptr<MetadataCollectionKey<Sequence<std::string> > >(std::make_shared<LiteralMetadataStringSequenceKey>(
-                        "master_repository", "master_repository", mkt_normal, get_master_names(params.master_repositories()))) :
+                std::make_shared<LiteralMetadataStringSequenceKey>(
+                        "master_repository", "master_repository", mkt_normal, get_master_names(params.master_repositories())) :
                 nullptr),
         eapi_when_unknown_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "eapi_when_unknown", "eapi_when_unknown", mkt_normal, params.eapi_when_unknown())),
