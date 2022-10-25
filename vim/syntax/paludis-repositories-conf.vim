@@ -87,4 +87,3 @@ hi def link PaludisRepositoriesConfComment                     Comment
 
 let b:current_syntax = "paludis-repositories-conf"
 
-

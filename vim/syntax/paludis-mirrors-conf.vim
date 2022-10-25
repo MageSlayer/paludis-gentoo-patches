@@ -34,4 +34,3 @@ hi def link PaludisMirrorsConfContinuation     Preproc
 
 let b:current_syntax = "paludis-mirrors-conf"
 
-
