@@ -132,8 +132,6 @@ namespace
 FSIterator::FSIterator(const FSPath & base, const FSIteratorOptions & options) :
     _imp(nullptr)
 {
-    using namespace std::placeholders;
-
     if (options[fsio_inode_sort])
         _imp->items = std::make_shared<EntrySet>(&compare_inode);
     else
