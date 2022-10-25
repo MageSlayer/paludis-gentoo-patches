@@ -28,6 +28,7 @@
 #include <paludis/util/named_value.hh>
 #include <paludis/util/visitor.hh>
 #include <paludis/util/sequence-fwd.hh>
+#include <functional>
 #include <memory>
 
 /** \file
@@ -238,7 +239,9 @@ namespace paludis
             private:
                 std::string _argument;
                 bool _can_be_negated;
-                void (* _validator) (const std::string &);
+
+                using ValidatorFunction = std::function<void (const std::string &)>;
+                ValidatorFunction _validator;
 
             public:
                 /**
@@ -253,8 +256,7 @@ namespace paludis
                  */
                 StringArg(ArgsGroup * const, const std::string & long_name,
                        const char short_name, const std::string & description,
-                       void (* validator) (const std::string &),
-                       const bool can_be_negated = false);
+                       ValidatorFunction validator, const bool can_be_negated = false);
 
                 /**
                  * Fetch the argument that was given to this option.
@@ -285,7 +287,8 @@ namespace paludis
             private:
                 Pimp<StringSetArg> _imp;
 
-                void (* _validator) (const std::string &);
+                using ValidatorFunction = std::function<void (const std::string &)>;
+                ValidatorFunction _validator;
 
             public:
                 /**
@@ -337,8 +340,7 @@ namespace paludis
 
                 StringSetArg(ArgsGroup * const, const std::string & long_name,
                         const char short_name, const std::string & description,
-                        const StringSetArgOptions & options,
-                        void (* validator) (const std::string &));
+                        const StringSetArgOptions & options, ValidatorFunction validator);
 
                 ~StringSetArg() override;
 
