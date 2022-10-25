@@ -132,7 +132,7 @@ StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
 
 StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
         const char our_short_name, const std::string & our_description,
-        void (* v) (const std::string &), const bool neg) :
+        ValidatorFunction v, const bool neg) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
     _can_be_negated(neg),
     _validator(v)
@@ -201,7 +201,7 @@ StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & our_long_nam
 
 StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & our_long_name,
         const char our_short_name, const std::string & our_description,
-        const StringSetArgOptions & opts, void (* v) (const std::string &)) :
+        const StringSetArgOptions & opts, ValidatorFunction v) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
     _imp(),
     _validator(v)
@@ -239,7 +239,7 @@ StringSetArg::add_argument(const std::string & arg)
             throw BadValue("--" + long_name(), arg);
 
     if (_validator)
-        (*_validator)(arg);
+        _validator(arg);
 
     _imp->args.insert(arg);
 }
@@ -437,7 +437,7 @@ StringArg::set_argument(const std::string & arg)
     Context context("When handling argument '" + arg + "' for '--" + long_name() + "':");
 
     if (_validator)
-        (*_validator)(arg);
+        _validator(arg);
 
     _argument = arg;
 }
