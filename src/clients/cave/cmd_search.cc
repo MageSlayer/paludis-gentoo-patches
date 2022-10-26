@@ -317,8 +317,8 @@ SearchCommand::run(
                 std::bind(&step, std::ref(display_callback), std::placeholders::_1)
                 );
 
-        for (const auto & p : *matches)
-            show_args->push_back(stringify(p));
+        for (const auto & match : *matches)
+            show_args->push_back(stringify(match));
     }
 
     if (show_args->empty())

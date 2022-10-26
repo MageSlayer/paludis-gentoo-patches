@@ -113,10 +113,10 @@ namespace
             const std::function<void (const std::string &)> & step,
             const std::shared_ptr<const PackageIDSequence> & ids)
     {
-        for (const auto & i : *ids)
+        for (const auto & id : *ids)
         {
             step("Checking candidates");
-            yield(i->uniquely_identifying_spec());
+            yield(id->uniquely_identifying_spec());
         }
     }
 }
@@ -186,8 +186,8 @@ FindCandidatesCommand::run_hosted(
             {
                 bool ok(false);
 
-                for (auto & matche : matches)
-                    if (match_package(*env, matche, *(*env)[selection::RequireExactlyOne(generator::Matches(
+                for (auto & match : matches)
+                    if (match_package(*env, match, *(*env)[selection::RequireExactlyOne(generator::Matches(
                                         parse_user_package_dep_spec(spec, env.get(), { }), nullptr, { }))]->begin(), nullptr, { }))
                     {
                         ok = true;

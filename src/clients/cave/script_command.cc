@@ -63,8 +63,8 @@ ScriptCommand::run(
         )
 {
     std::string arg_str;
-    for (const auto & n : *args)
-        arg_str = arg_str + " " + args::escape(n);
+    for (const auto & arg : *args)
+        arg_str = arg_str + " " + args::escape(arg);
 
     Process process((ProcessCommand(stringify(_imp->executable) + arg_str)));
     int retcode(process.run().wait());

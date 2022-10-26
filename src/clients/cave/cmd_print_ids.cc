@@ -163,51 +163,51 @@ namespace
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (const auto & i : *c)
+            for (const auto & id : *c)
             {
                 if (mask_filter == "none")
                 {
-                    if (! i->masked())
-                        result->insert(i);
+                    if (! id->masked())
+                        result->insert(id);
                 }
                 else if (mask_filter == "any")
                 {
-                    if (i->masked())
-                        result->insert(i);
+                    if (id->masked())
+                        result->insert(id);
                 }
                 else if (mask_filter == "user")
                 {
-                    for (const auto & mask : i->masks())
+                    for (const auto & mask : id->masks())
                         if (visitor_cast<const UserMask>(*mask))
                         {
-                            result->insert(i);
+                            result->insert(id);
                             break;
                         }
                 }
                 else if (mask_filter == "unaccepted")
                 {
-                    for (const auto & mask : i->masks())
+                    for (const auto & mask : id->masks())
                         if (visitor_cast<const UnacceptedMask>(*mask))
                         {
-                            result->insert(i);
+                            result->insert(id);
                             break;
                         }
                 }
                 else if (mask_filter == "repository")
                 {
-                    for (const auto & mask : i->masks())
+                    for (const auto & mask : id->masks())
                         if (visitor_cast<const RepositoryMask>(*mask))
                         {
-                            result->insert(i);
+                            result->insert(id);
                             break;
                         }
                 }
                 else if (mask_filter == "unsupported")
                 {
-                    for (const auto & mask : i->masks())
+                    for (const auto & mask : id->masks())
                         if (visitor_cast<const UnsupportedMask>(*mask))
                         {
-                            result->insert(i);
+                            result->insert(id);
                             break;
                         }
                 }
@@ -291,8 +291,8 @@ PrintIDsCommand::run(
     }
 
     const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(fg)]);
-    for (const auto & i : *ids)
-        cout << format_package_id(i, cmdline.a_format.argument());
+    for (const auto & id : *ids)
+        cout << format_package_id(id, cmdline.a_format.argument());
 
     return EXIT_SUCCESS;
 }

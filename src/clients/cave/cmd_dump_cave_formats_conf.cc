@@ -219,7 +219,7 @@ DumpCaveFormatsConfCommand::run(
     get_formats.collect();
 
     std::string current_section;
-    for (auto & storer : get_formats.storers)
+    for (const auto & storer : get_formats.storers)
     {
         std::string::size_type p(storer.first.find("/"));
         if (std::string::npos == p)
