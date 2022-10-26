@@ -203,10 +203,9 @@ namespace
                 cout << indent << left << setw(30) << "    Keys:" << endl;
 
                 /* A MetadataSectionKey contains other keys. */
-                for (MetadataSectionKey::MetadataConstIterator k(key.begin_metadata()), k_end(key.end_metadata()) ;
-                        k != k_end ; ++k)
+                for (const auto & section_key : key.metadata())
                 {
-                    show_key(**k, indent + "    ");
+                    show_key(*section_key, indent + "    ");
                     cout << endl;
                 }
             }
@@ -258,12 +257,11 @@ int main(int argc, char * argv[])
             cout << *i << ":" << endl;
 
             /* For each metadata key: */
-            for (PackageID::MetadataConstIterator k(i->begin_metadata()), k_end(i->end_metadata()) ;
-                    k != k_end ; ++k)
+            for (const auto & key : i->metadata())
             {
                 /* Display it. Note that PackageID::MetadataConstIterator returns a std::shared_ptr
-                 * to a key, so we dereference twice (or we could have used IndirectIterator). */
-                show_key(**k);
+                 * to a key, so we dereference it */
+                show_key(*key);
                 cout << endl;
             }
 
@@ -276,12 +274,11 @@ int main(int argc, char * argv[])
             cout << repository->name() << ":" << endl;
 
             /* For each metadata key: */
-            for (Repository::MetadataConstIterator k(repository->begin_metadata()), k_end(repository->end_metadata()) ;
-                    k != k_end ; ++k)
+            for (const auto & key : repository->metadata())
             {
                 /* Display it. Repository::MetadataConstIterator also returns a
                  * std::shared_ptr to the key. */
-                show_key(**k);
+                show_key(*key);
                 cout << endl;
             }
 
@@ -315,6 +312,4 @@ int main(int argc, char * argv[])
 
     return exit_status;
 }
-
-
 

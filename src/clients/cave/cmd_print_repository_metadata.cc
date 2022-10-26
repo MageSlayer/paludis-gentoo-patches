@@ -106,9 +106,8 @@ namespace
         const MetadataSectionKey * section(visitor_cast<const MetadataSectionKey>(*k));
         if (section)
         {
-            for (MetadataSectionKey::MetadataConstIterator s(section->begin_metadata()), s_end(section->end_metadata()) ;
-                    s != s_end ; ++s)
-                do_one_key(*s, cmdline, name_prefix + " ");
+            for (const auto & key : section->metadata())
+                do_one_key(key, cmdline, name_prefix + " ");
         }
     }
 }
@@ -134,9 +133,8 @@ PrintRepositoryMetadataCommand::run(
     RepositoryName name(*cmdline.begin_parameters());
     const std::shared_ptr<const Repository> repo(env->fetch_repository(name));
 
-    for (Repository::MetadataConstIterator m(repo->begin_metadata()), m_end(repo->end_metadata()) ;
-            m != m_end ; ++m)
-        do_one_key(*m, cmdline, "");
+    for (const auto & key : repo->metadata())
+        do_one_key(key, cmdline, "");
 
     return EXIT_SUCCESS;
 }

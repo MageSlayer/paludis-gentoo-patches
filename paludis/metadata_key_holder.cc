@@ -78,6 +78,13 @@ MetadataKeyHolder::end_metadata() const
     return MetadataConstIterator(_imp->keys.end());
 }
 
+IteratorRange<MetadataKeyHolder::MetadataConstIterator>
+MetadataKeyHolder::metadata() const
+{
+    need_keys_added();
+    return {_imp->keys};
+}
+
 MetadataKeyHolder::MetadataConstIterator
 MetadataKeyHolder::find_metadata(const std::string & s) const
 {

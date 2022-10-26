@@ -122,9 +122,8 @@ namespace
         const MetadataSectionKey * section(visitor_cast<const MetadataSectionKey>(*k));
         if (section)
         {
-            for (MetadataSectionKey::MetadataConstIterator s(section->begin_metadata()), s_end(section->end_metadata()) ;
-                    s != s_end ; ++s)
-                do_one_key(*s, cmdline, name_prefix + " ");
+            for (const auto & key : section->metadata())
+                do_one_key(key, cmdline, name_prefix + " ");
         }
     }
 }
@@ -161,9 +160,8 @@ PrintIDMetadataCommand::run(
 
     for (auto i(cmdline.a_best.specified() ? entries->last() : entries->begin()), i_end(entries->end()) ;
             i != i_end ; ++i)
-        for (PackageID::MetadataConstIterator m((*i)->begin_metadata()), m_end((*i)->end_metadata()) ;
-                m != m_end ; ++m)
-            do_one_key(*m, cmdline, "");
+        for (const auto & key : (*i)->metadata())
+            do_one_key(key, cmdline, "");
 
     return EXIT_SUCCESS;
 }
