@@ -295,14 +295,14 @@ PythonPackageDepSpec::operator PackageDepSpec() const
 
     if (additional_requirements_ptr())
     {
-        for (const auto & i : *additional_requirements_ptr())
-            p.additional_requirement(i);
+        for (const auto & requirement : *additional_requirements_ptr())
+            p.additional_requirement(requirement);
     }
 
     if (version_requirements_ptr())
     {
-        for (const auto & i : *version_requirements_ptr())
-            p.version_requirement(i);
+        for (const auto & requirement : *version_requirements_ptr())
+            p.version_requirement(requirement);
     }
 
     return p.to_package_dep_spec();
