@@ -83,12 +83,12 @@ int main(int argc, char * argv[])
                     generator::Package(QualifiedPackageName("sys-apps/paludis")))]);
 
         /* For each ID: */
-        for (const auto & i : *ids)
+        for (const auto & id : *ids)
         {
-            cout << *i << ":" << endl;
+            cout << *id << ":" << endl;
 
             /* For each mask key: */
-            for (const auto & mask : i->masks())
+            for (const auto & mask : id->masks())
             {
                 /* All Mask instances have two basic bits of information: a one
                  * character short key, and a longer description. */

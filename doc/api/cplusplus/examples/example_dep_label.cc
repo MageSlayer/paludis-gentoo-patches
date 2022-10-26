@@ -160,22 +160,22 @@ int main(int argc, char * argv[])
         ResultsMap results;
 
         /* For each ID: */
-        for (const auto & i : *ids)
+        for (const auto & id : *ids)
         {
             /* If we don't have a fetches key, skip this package. All PackageID
              * _key() functions can potentially return zero pointers, so checking is
              * essential. */
-            if (! i->fetches_key())
+            if (! id->fetches_key())
                 continue;
 
             /* We need to know whether the default label for this package's src_uri
              * is restricted. */
             IsLabelRestrictedVisitor is_initial_label_restricted(false);
-            i->fetches_key()->initial_label()->accept(is_initial_label_restricted);
+            id->fetches_key()->initial_label()->accept(is_initial_label_restricted);
 
             /* Create a visitor that will collect distfiles, and do the collecting. */
             DistfilesCollector collector(results, is_initial_label_restricted.result);
-            i->fetches_key()->parse_value()->top()->accept(collector);
+            id->fetches_key()->parse_value()->top()->accept(collector);
         }
 
         /* Display summary of results */

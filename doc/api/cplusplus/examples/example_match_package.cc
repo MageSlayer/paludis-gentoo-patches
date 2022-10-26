@@ -51,20 +51,20 @@ int main(int argc, char * argv[])
         std::shared_ptr<const SetSpecTree> world(env->set(SetName("world")));
 
         /* For each ID: */
-        for (const auto & i : *ids)
+        for (const auto & id : *ids)
         {
             /* Is it paludis? */
             if (match_package(*env, make_package_dep_spec({ }).package(
-                            QualifiedPackageName("sys-apps/paludis")), i, nullptr, { }))
-                cout << left << setw(50) << (stringify(*i) + ":") << " " << "paludis" << endl;
+                            QualifiedPackageName("sys-apps/paludis")), id, nullptr, { }))
+                cout << left << setw(50) << (stringify(*id) + ":") << " " << "paludis" << endl;
 
             /* No. Is it in system or world? */
-            else if (match_package_in_set(*env, *system, i, { }))
-                cout << left << setw(50) << (stringify(*i) + ":") << " " << "system" << endl;
-            else if (match_package_in_set(*env, *world, i, { }))
-                cout << left << setw(50) << (stringify(*i) + ":") << " " << "world" << endl;
+            else if (match_package_in_set(*env, *system, id, { }))
+                cout << left << setw(50) << (stringify(*id) + ":") << " " << "system" << endl;
+            else if (match_package_in_set(*env, *world, id, { }))
+                cout << left << setw(50) << (stringify(*id) + ":") << " " << "world" << endl;
             else
-                cout << left << setw(50) << (stringify(*i) + ":") << " " << "nothing" << endl;
+                cout << left << setw(50) << (stringify(*id) + ":") << " " << "nothing" << endl;
         }
 
     }

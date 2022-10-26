@@ -72,7 +72,7 @@ int main(int argc, char * argv[])
             {
                 cout << "    " << left << setw(24) << "Version requirements:" << " ";
                 bool need_join(false);
-                for (const auto & r : *spec.version_requirements_ptr())
+                for (const auto & requirement : *spec.version_requirements_ptr())
                 {
                     if (need_join)
                     {
@@ -91,7 +91,7 @@ int main(int argc, char * argv[])
                         }
                     }
 
-                    cout << r.version_operator() << r.version_spec();
+                    cout << requirement.version_operator() << requirement.version_spec();
                     need_join = true;
                 }
                 cout << endl;
@@ -126,12 +126,12 @@ int main(int argc, char * argv[])
             {
                 cout << "    " << left << setw(24) << "Additional requirements:" << " ";
                 bool need_join(false);
-                for (const auto & u : *spec.additional_requirements_ptr())
+                for (const auto & requirement : *spec.additional_requirements_ptr())
                 {
                     if (need_join)
                         cout << " and ";
 
-                    cout << u->as_raw_string() + " (meaning: " + u->as_human_string(nullptr) + ")";
+                    cout << requirement->as_raw_string() + " (meaning: " + requirement->as_human_string(nullptr) + ")";
                     need_join = true;
                 }
                 cout << endl;
@@ -142,11 +142,11 @@ int main(int argc, char * argv[])
             std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
                         generator::Matches(spec, nullptr, { }))]);
             bool need_indent(false);
-            for (const auto & i : *ids)
+            for (const auto & id : *ids)
             {
                 if (need_indent)
                     cout << "    " << left << setw(24) << "" << " ";
-                cout << *i << endl;
+                cout << *id << endl;
                 need_indent = true;
             }
 
@@ -180,4 +180,3 @@ int main(int argc, char * argv[])
 
     return EXIT_SUCCESS;
 }
-
