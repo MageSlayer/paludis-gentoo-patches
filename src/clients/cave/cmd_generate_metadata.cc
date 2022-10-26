@@ -243,11 +243,11 @@ namespace
             if (! id)
                 return;
 
-            for (PackageID::MetadataConstIterator m(id->begin_metadata()), m_end(id->end_metadata()); m_end != m; ++m)
+            for (const auto & key : id->metadata())
                 try
                 {
                     MetadataVisitor v;
-                    (*m)->accept(v);
+                    key->accept(v);
                 }
                 catch (const InternalError &)
                 {

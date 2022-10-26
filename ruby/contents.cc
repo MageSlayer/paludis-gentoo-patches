@@ -295,10 +295,9 @@ namespace
     {
         std::shared_ptr<const ContentsEntry> * self_ptr;
         Data_Get_Struct(self, std::shared_ptr<const ContentsEntry>, self_ptr);
-        for (ContentsEntry::MetadataConstIterator it((*self_ptr)->begin_metadata()),
-                it_end((*self_ptr)->end_metadata()); it_end != it; ++it)
+        for (const auto & key : (*self_ptr)->metadata())
         {
-            VALUE val(metadata_key_to_value(*it));
+            VALUE val(metadata_key_to_value(key));
             if (Qnil != val)
                 rb_yield(val);
         }

@@ -103,9 +103,8 @@ namespace
         const MetadataSectionKey * section(visitor_cast<const MetadataSectionKey>(*k));
         if (section)
         {
-            for (MetadataSectionKey::MetadataConstIterator s(section->begin_metadata()), s_end(section->end_metadata()) ;
-                    s != s_end ; ++s)
-                do_one_key(*s, cmdline, name_prefix + " ");
+            for (const auto & key : section->metadata())
+                do_one_key(key, cmdline, name_prefix + " ");
         }
     }
 }
@@ -128,9 +127,8 @@ PrintEnvironmentMetadataCommand::run(
     if (cmdline.begin_parameters() != cmdline.end_parameters())
         throw args::DoHelp("print-environment-metadata takes no parameters");
 
-    for (Environment::MetadataConstIterator m(env->begin_metadata()), m_end(env->end_metadata()) ;
-            m != m_end ; ++m)
-        do_one_key(*m, cmdline, "");
+    for (const auto & key : env->metadata())
+        do_one_key(key, cmdline, "");
 
     return EXIT_SUCCESS;
 }

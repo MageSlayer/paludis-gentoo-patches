@@ -70,9 +70,8 @@ int main(int argc, char * argv[])
             /* Let's see what keys we have. Other examples cover keys in depth,
              * so we'll just use the basic methods here. */
             cout << left << setw(30) << "    Keys:" << " " << endl;
-            for (PackageID::MetadataConstIterator k(i->begin_metadata()), k_end(i->end_metadata()) ;
-                    k != k_end ; ++k)
-                cout << left << setw(30) << ("        " + (*k)->raw_name() + ":") << " " << (*k)->human_name() << endl;
+            for (const auto & key : i->metadata())
+                cout << left << setw(30) << ("        " + key->raw_name() + ":") << " " << key->human_name() << endl;
 
             /* And what about masks? Again, these are covered in depth
              * elsewhere. */

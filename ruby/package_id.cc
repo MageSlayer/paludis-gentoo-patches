@@ -236,10 +236,9 @@ namespace
         Data_Get_Struct(self, std::shared_ptr<const PackageID>, self_ptr);
         try
         {
-            for (PackageID::MetadataConstIterator it((*self_ptr)->begin_metadata()),
-                    it_end((*self_ptr)->end_metadata()); it_end != it; ++it)
+            for (const auto & key : (*self_ptr)->metadata())
             {
-                VALUE val(metadata_key_to_value(*it));
+                VALUE val(metadata_key_to_value(key));
                 if (Qnil != val)
                     rb_yield(val);
             }

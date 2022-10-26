@@ -52,9 +52,8 @@ int main(int argc, char * argv[])
              * \ref example_metadata_key.cc "example_metadata_key.cc" for how to
              * display a metadata key in detail. */
             cout << left << setw(30) << "    Metadata keys:" << endl;
-            for (Repository::MetadataConstIterator k(repository->begin_metadata()), k_end(repository->end_metadata()) ;
-                    k != k_end ; ++k)
-                cout << "        " << (*k)->human_name() << endl;
+            for (const auto & key : repository->metadata())
+                cout << "        " << key->human_name() << endl;
 
             /* Repositories support various methods for querying categories,
              * packages, IDs and so on. These methods are used by

@@ -576,10 +576,9 @@ namespace
         std::shared_ptr<const MetadataKey> * self_ptr;
         Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
         std::shared_ptr<const MetadataSectionKey> c = std::static_pointer_cast<const MetadataSectionKey>(*self_ptr);
-        for (MetadataSectionKey::MetadataConstIterator it((c)->begin_metadata()),
-                it_end((c)->end_metadata()); it_end != it; ++it)
+        for (const auto & key : c->metadata())
         {
-            VALUE val(metadata_key_to_value(*it));
+            VALUE val(metadata_key_to_value(key));
             if (Qnil != val)
                 rb_yield(val);
         }
