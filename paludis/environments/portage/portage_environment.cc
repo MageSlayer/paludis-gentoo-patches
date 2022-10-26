@@ -632,8 +632,8 @@ PortageEnvironment::accept_keywords(const std::shared_ptr <const KeywordNameSet>
 bool
 PortageEnvironment::unmasked_by_user(const std::shared_ptr<const PackageID> & e, const std::string &) const
 {
-    for (const auto & i : _imp->package_unmask)
-        if (match_package(*this, *i, e, nullptr, { }))
+    for (const auto & spec : _imp->package_unmask)
+        if (match_package(*this, *spec, e, nullptr, { }))
             return true;
 
     return false;
@@ -784,8 +784,8 @@ namespace
 const std::shared_ptr<const Mask>
 PortageEnvironment::mask_for_user(const std::shared_ptr<const PackageID> & d, const bool o) const
 {
-    for (const auto & i : _imp->package_mask)
-        if (match_package(*this, *i, d, nullptr, { }))
+    for (const auto & spec : _imp->package_mask)
+        if (match_package(*this, *spec, d, nullptr, { }))
             return std::make_shared<UserConfigMask>(o);
 
     return nullptr;
