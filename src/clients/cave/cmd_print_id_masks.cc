@@ -196,14 +196,12 @@ PrintIDMasksCommand::run(
             i != i_end ; ++i)
     {
         if (! cmdline.a_no_active.specified())
-            for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
-                    m != m_end ; ++m)
-                do_one_mask(*i, *m, last_mro, cmdline);
+            for (const auto & mask : (*i)->masks())
+                do_one_mask(*i, mask, last_mro, cmdline);
 
         if (cmdline.a_overridden.specified())
-            for (PackageID::OverriddenMasksConstIterator m((*i)->begin_overridden_masks()), m_end((*i)->end_overridden_masks()) ;
-                    m != m_end ; ++m)
-                do_one_mask(*i, (*m)->mask(), (*m)->override_reason(), cmdline);
+            for (const auto & overridden_mask : (*i)->overridden_masks())
+                do_one_mask(*i, overridden_mask->mask(), overridden_mask->override_reason(), cmdline);
     }
 
     return EXIT_SUCCESS;

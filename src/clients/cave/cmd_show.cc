@@ -1115,9 +1115,8 @@ namespace
         {
             out << fuc(fs_package_id_masks_overridden(), fv<'s'>("Overridden Masks"));
             MaskDisplayer d(env, best, cmdline, basic_ppos, 2, out);
-            for (PackageID::OverriddenMasksConstIterator m(best->begin_overridden_masks()), m_end(best->end_overridden_masks()) ;
-                    m != m_end ; ++m)
-                (*m)->mask()->accept(d);
+            for (const auto & overridden_mask : best->overridden_masks())
+                overridden_mask->mask()->accept(d);
         }
     }
 
@@ -1200,9 +1199,8 @@ namespace
                 else
                 {
                     std::string rr;
-                    for (PackageID::OverriddenMasksConstIterator m(i->begin_overridden_masks()), m_end(i->end_overridden_masks()) ;
-                            m != m_end ; ++m)
-                        rr.append(stringify((*m)->mask()->key()));
+                    for (const auto & overridden_mask : i->overridden_masks())
+                        rr.append(stringify(overridden_mask->mask()->key()));
 
                     if (! rr.empty())
                         rr = "(" + rr + ")";
@@ -1212,9 +1210,8 @@ namespace
                     else
                     {
                         std::string rs;
-                        for (PackageID::MasksConstIterator m(i->begin_masks()), m_end(i->end_masks()) ;
-                                m != m_end ; ++m)
-                            rs.append(stringify((*m)->key()));
+                        for (const auto & mask : i->masks())
+                            rs.append(stringify(mask->key()));
                         rr = rs + rr;
                         header_out << fuc(fs_package_version_unavailable(), fv<'s'>(stringify(i->canonical_form(idcf_version))), fv<'r'>(rr));
                     }

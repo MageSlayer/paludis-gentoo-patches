@@ -1010,9 +1010,8 @@ namespace
         if (! decision.origin_id()->masked())
             return;
 
-        for (auto m(decision.origin_id()->begin_masks()), m_end(decision.origin_id()->end_masks()) ;
-                m != m_end ; ++m)
-            (*m)->accept(MaskedByVisitor{env.get(), decision.origin_id(), c::bold_red().colour_string(), "    "});
+        for (const auto & mask : decision.origin_id()->masks())
+            mask->accept(MaskedByVisitor{env.get(), decision.origin_id(), c::bold_red().colour_string(), "    "});
     }
 
     struct Totals
@@ -1346,10 +1345,8 @@ namespace
 
             cout << fuc(fs_unable_unsuitable_id(), fv<'c'>(colour), fv<'i'>(stringify(*u.package_id())));
 
-            for (PackageID::MasksConstIterator m(u.package_id()->begin_masks()),
-                    m_end(u.package_id()->end_masks()) ;
-                    m != m_end ; ++m)
-                (*m)->accept(MaskedByVisitor{env.get(), u.package_id(), "", "        "});
+            for (const auto & mask : u.package_id()->masks())
+                mask->accept(MaskedByVisitor{env.get(), u.package_id(), "", "        "});
 
             std::map<std::string, std::pair<std::shared_ptr<const Constraint>, std::set<std::string> > > duplicates;
             for (const auto & c : *u.unmet_constraints())

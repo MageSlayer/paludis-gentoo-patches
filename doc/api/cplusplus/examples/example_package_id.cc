@@ -79,9 +79,8 @@ int main(int argc, char * argv[])
             if (i->masked())
             {
                 cout << left << setw(30) << "    Masks:" << " " << endl;
-                for (PackageID::MasksConstIterator m(i->begin_masks()), m_end(i->end_masks()) ;
-                        m != m_end ; ++m)
-                    cout << left << setw(30) << ("        " + stringify((*m)->key()) + ":") << " " << (*m)->description() << endl;
+                for (const auto & mask : i->masks())
+                    cout << left << setw(30) << ("        " + stringify(mask->key()) + ":") << " " << mask->description() << endl;
             }
 
             /* Let's see which actions we support. There's no particularly nice

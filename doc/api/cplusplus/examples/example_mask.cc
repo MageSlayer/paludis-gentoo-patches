@@ -88,18 +88,17 @@ int main(int argc, char * argv[])
             cout << *i << ":" << endl;
 
             /* For each mask key: */
-            for (PackageID::MasksConstIterator m(i->begin_masks()), m_end(i->end_masks()) ;
-                    m != m_end ; ++m)
+            for (const auto & mask : i->masks())
             {
                 /* All Mask instances have two basic bits of information: a one
                  * character short key, and a longer description. */
-                cout << left << setw(30) << "    Key:" << " " << std::string(1, (*m)->key()) << endl;
-                cout << left << setw(30) << "    Description:" << " " << (*m)->description() << endl;
+                cout << left << setw(30) << "    Key:" << " " << std::string(1, mask->key()) << endl;
+                cout << left << setw(30) << "    Description:" << " " << mask->description() << endl;
 
                 /* To display more information about a Mask we create a visitor
                  * that visits the appropriate subtype. */
                 MaskInformationVisitor v;
-                (*m)->accept(v);
+                mask->accept(v);
 
                 cout << endl;
             }

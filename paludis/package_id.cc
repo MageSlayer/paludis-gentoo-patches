@@ -99,6 +99,13 @@ PackageID::end_masks() const
     return MasksConstIterator(_imp->masks.end());
 }
 
+IteratorRange<PackageID::MasksConstIterator>
+PackageID::masks() const
+{
+    need_masks_added();
+    return {begin_masks(), end_masks()};
+}
+
 PackageID::OverriddenMasksConstIterator
 PackageID::begin_overridden_masks() const
 {
@@ -111,6 +118,13 @@ PackageID::end_overridden_masks() const
 {
     need_masks_added();
     return OverriddenMasksConstIterator(_imp->overridden_masks.end());
+}
+
+IteratorRange<PackageID::OverriddenMasksConstIterator>
+PackageID::overridden_masks() const
+{
+    need_masks_added();
+    return {begin_overridden_masks(), end_overridden_masks()};
 }
 
 bool

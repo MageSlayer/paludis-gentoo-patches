@@ -266,10 +266,9 @@ namespace
         VALUE result(rb_ary_new());
         try
         {
-            for (PackageID::MasksConstIterator it((*self_ptr)->begin_masks()),
-                    it_end((*self_ptr)->end_masks()); it_end != it; ++it)
+            for (const auto & mask : (*self_ptr)->masks())
             {
-                rb_ary_push(result, mask_to_value(*it));
+                rb_ary_push(result, mask_to_value(mask));
             }
             return result;
         }
@@ -295,10 +294,9 @@ namespace
         VALUE result(rb_ary_new());
         try
         {
-            for (PackageID::OverriddenMasksConstIterator it((*self_ptr)->begin_overridden_masks()),
-                    it_end((*self_ptr)->end_overridden_masks()); it_end != it; ++it)
+            for (const auto & overridden_mask : (*self_ptr)->overridden_masks())
             {
-                rb_ary_push(result, overridden_mask_to_value(*it));
+                rb_ary_push(result, overridden_mask_to_value(overridden_mask));
             }
             return result;
         }

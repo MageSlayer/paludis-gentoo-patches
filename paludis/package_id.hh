@@ -24,6 +24,7 @@
 
 #include <paludis/util/attributes.hh>
 #include <paludis/util/fs_path-fwd.hh>
+#include <paludis/util/iterator_range.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/sequence.hh>
@@ -334,6 +335,7 @@ namespace paludis
 
             MasksConstIterator begin_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
             MasksConstIterator end_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            IteratorRange<MasksConstIterator> masks() const;
 
             /**
              * Do we have any effective masks? Equivalent to begin_masks() != end_masks().
@@ -351,6 +353,7 @@ namespace paludis
 
             OverriddenMasksConstIterator begin_overridden_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
             OverriddenMasksConstIterator end_overridden_masks() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            IteratorRange<OverriddenMasksConstIterator> overridden_masks() const;
 
             ///\}
 
