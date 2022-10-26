@@ -54,9 +54,9 @@ AllGeneratorHandlerBase::categories(
 {
     std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
 
-    for (const auto & r : *repos)
+    for (const auto & repository_name : *repos)
     {
-        std::shared_ptr<const CategoryNamePartSet> cats(env->fetch_repository(r)->category_names(may_exclude));
+        std::shared_ptr<const CategoryNamePartSet> cats(env->fetch_repository(repository_name)->category_names(may_exclude));
         std::copy(cats->begin(), cats->end(), result->inserter());
     }
 

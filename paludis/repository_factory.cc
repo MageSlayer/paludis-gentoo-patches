@@ -193,15 +193,15 @@ RepositoryFactory::add_repository_format(
         const DependenciesFunction & dependencies_function
         )
 {
-    for (const auto & f : *formats)
+    for (const auto & format : *formats)
     {
-        if (! _imp->keys.insert(std::make_pair(f, make_named_values<Funcs>(
+        if (! _imp->keys.insert(std::make_pair(format, make_named_values<Funcs>(
                             n::create_function() = create_function,
                             n::dependencies_function() = dependencies_function,
                             n::importance_function() = importance_function,
                             n::name_function() = name_function
                             ))).second)
-            throw ConfigurationError("Handler for repository format '" + stringify(f) + "' already exists");
+            throw ConfigurationError("Handler for repository format '" + stringify(format) + "' already exists");
     }
 }
 

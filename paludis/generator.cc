@@ -171,17 +171,17 @@ namespace
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (const auto & r : *repos)
+            for (const auto & repository_name : *repos)
             {
-                for (const auto & q : *qpns)
+                for (const auto & qpn : *qpns)
                 {
-                    std::shared_ptr<const PackageIDSequence> ids(env->fetch_repository(r)->package_ids(q, x));
-                    for (const auto & i : *ids)
-                        if (i->from_repositories_key())
+                    std::shared_ptr<const PackageIDSequence> ids(env->fetch_repository(repository_name)->package_ids(qpn, x));
+                    for (const auto & id : *ids)
+                        if (id->from_repositories_key())
                         {
-                            auto v(i->from_repositories_key()->parse_value());
+                            auto v(id->from_repositories_key()->parse_value());
                             if (v->end() != v->find(stringify(name)))
-                                result->insert(i);
+                                result->insert(id);
                         }
                 }
             }
@@ -213,8 +213,8 @@ namespace
         {
             std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
 
-            for (const auto & r : *repos)
-                if (env->fetch_repository(r)->has_category_named(name, x))
+            for (const auto & repository_name : *repos)
+                if (env->fetch_repository(repository_name)->has_category_named(name, x))
                 {
                     result->insert(name);
                     break;
@@ -247,8 +247,8 @@ namespace
         {
             std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
 
-            for (const auto & r : *repos)
-                if (env->fetch_repository(r)->has_category_named(name.category(), x))
+            for (const auto & repository_name : *repos)
+                if (env->fetch_repository(repository_name)->has_category_named(name.category(), x))
                 {
                     result->insert(name.category());
                     break;
@@ -264,8 +264,8 @@ namespace
                 const RepositoryContentMayExcludes & x) const override
         {
             std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
-            for (const auto & r : *repos)
-                if (env->fetch_repository(r)->has_package_named(name, x))
+            for (const auto & repository_name : *repos)
+                if (env->fetch_repository(repository_name)->has_package_named(name, x))
                     result->insert(name);
 
             return result;
@@ -360,8 +360,8 @@ namespace
             if (spec.category_name_part_ptr())
             {
                 std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
-                for (const auto & r : *repos)
-                    if (env->fetch_repository(r)->has_category_named(*spec.category_name_part_ptr(), x))
+                for (const auto & repository_name : *repos)
+                    if (env->fetch_repository(repository_name)->has_category_named(*spec.category_name_part_ptr(), x))
                     {
                         result->insert(*spec.category_name_part_ptr());
                         break;
@@ -372,10 +372,10 @@ namespace
             else if (spec.package_name_part_ptr())
             {
                 std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
-                for (const auto & r : *repos)
+                for (const auto & repository_name : *repos)
                 {
                     std::shared_ptr<const CategoryNamePartSet> cats(
-                        env->fetch_repository(r)
+                        env->fetch_repository(repository_name)
                         ->category_names_containing_package(*spec.package_name_part_ptr(), x));
                     std::copy(cats->begin(), cats->end(), result->inserter());
                 }
@@ -385,8 +385,8 @@ namespace
             else if (spec.package_ptr())
             {
                 std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
-                for (const auto & r : *repos)
-                    if (env->fetch_repository(r)->has_category_named(spec.package_ptr()->category(), x))
+                for (const auto & repository_name : *repos)
+                    if (env->fetch_repository(repository_name)->has_category_named(spec.package_ptr()->category(), x))
                     {
                         result->insert(spec.package_ptr()->category());
                         break;
@@ -407,18 +407,18 @@ namespace
             if (spec.package_name_part_ptr())
             {
                 std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
-                for (const auto & r : *repos)
-                    for (const auto & c : *cats)
-                        if (env->fetch_repository(r)->has_package_named(c + *spec.package_name_part_ptr(), x))
-                            result->insert(c + *spec.package_name_part_ptr());
+                for (const auto & repository_name : *repos)
+                    for (const auto & category_name : *cats)
+                        if (env->fetch_repository(repository_name)->has_package_named(category_name + *spec.package_name_part_ptr(), x))
+                            result->insert(category_name + *spec.package_name_part_ptr());
 
                 return result;
             }
             else if (spec.package_ptr())
             {
                 std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
-                for (const auto & r : *repos)
-                    if (env->fetch_repository(r)->has_package_named(*spec.package_ptr(), x))
+                for (const auto & repository_name : *repos)
+                    if (env->fetch_repository(repository_name)->has_package_named(*spec.package_ptr(), x))
                     {
                         result->insert(*spec.package_ptr());
                         break;
@@ -438,14 +438,14 @@ namespace
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (const auto & r : *repos)
+            for (const auto & repository_name : *repos)
             {
-                for (const auto & q : *qpns)
+                for (const auto & qpn : *qpns)
                 {
-                    std::shared_ptr<const PackageIDSequence> ids(env->fetch_repository(r)->package_ids(q, x));
-                    for (const auto & i : *ids)
-                        if (match_package(*env, spec, i, from_id, options))
-                            result->insert(i);
+                    std::shared_ptr<const PackageIDSequence> ids(env->fetch_repository(repository_name)->package_ids(qpn, x));
+                    for (const auto & id : *ids)
+                        if (match_package(*env, spec, id, from_id, options))
+                            result->insert(id);
                 }
             }
 

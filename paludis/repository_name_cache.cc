@@ -233,11 +233,11 @@ RepositoryNameCache::regenerate_cache() const
     std::unordered_map<std::string, std::string, Hash<std::string> > m;
 
     std::shared_ptr<const CategoryNamePartSet> cats(_imp->repo->category_names({ }));
-    for (const auto & c : *cats)
+    for (const auto & category : *cats)
     {
-        std::shared_ptr<const QualifiedPackageNameSet> pkgs(_imp->repo->package_names(c, { }));
-        for (const auto & p : *pkgs)
-            m[stringify(p.package())].append(stringify(c) + "\n");
+        std::shared_ptr<const QualifiedPackageNameSet> pkgs(_imp->repo->package_names(category, { }));
+        for (const auto & qpn : *pkgs)
+            m[stringify(qpn.package())].append(stringify(category) + "\n");
     }
 
     for (const auto & e : m)

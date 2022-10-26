@@ -513,12 +513,12 @@ namespace paludis
                         continue;
 
                     const std::shared_ptr<const Sequence<std::string> > names(hook_file->auto_hook_names());
-                    for (const auto & n : *names)
+                    for (const auto & name : *names)
                     {
-                        if (! auto_hook_files[n].insert(std::make_pair(filename, hook_file)).second)
+                        if (! auto_hook_files[name].insert(std::make_pair(filename, hook_file)).second)
                             Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
-                                << "' in phase '" << n << "' because of naming conflict with '"
-                                << auto_hook_files[n].find(filename)->second->file_name() << "'";
+                                << "' in phase '" << name << "' because of naming conflict with '"
+                                << auto_hook_files[name].find(filename)->second->file_name() << "'";
                     }
                 }
             }

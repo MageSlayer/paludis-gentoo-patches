@@ -107,9 +107,9 @@ paludis::find_blocker_role_in_annotations(
     if (! maybe_annotations)
         return dsar_none;
 
-    for (const auto & i : *maybe_annotations)
+    for (const auto & annotation : *maybe_annotations)
     {
-        switch (i.role())
+        switch (annotation.role())
         {
             case dsar_blocker_manual:
             case dsar_blocker_uninstall_blocked_after:
@@ -117,7 +117,7 @@ paludis::find_blocker_role_in_annotations(
             case dsar_blocker_upgrade_blocked_before:
             case dsar_blocker_weak:
             case dsar_blocker_strong:
-                return i.role();
+                return annotation.role();
 
             case dsar_none:
             case dsar_general_description:

@@ -399,8 +399,8 @@ namespace
             if (values_group.prefix() != prefix)
                 continue;
 
-            for (const auto & v : values_group.values())
-                known->insert(v.unprefixed_name());
+            for (const auto & value : values_group.values())
+                known->insert(value.unprefixed_name());
         }
     }
 
