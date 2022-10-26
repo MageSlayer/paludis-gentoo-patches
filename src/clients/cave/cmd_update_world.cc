@@ -105,29 +105,27 @@ UpdateWorldCommand::run(
     if (cmdline.begin_parameters() == cmdline.end_parameters())
         throw args::DoHelp("update-world requires at least one parameter");
 
-    for (UpdateWorldCommandLine::ParametersConstIterator p(cmdline.begin_parameters()),
-            p_end(cmdline.end_parameters()) ;
-            p != p_end ; ++p)
+    for (const auto & param : cmdline.parameters())
     {
         bool result(false);
         std::string name;
 
         if (cmdline.a_set.specified())
         {
-            name = *p;
+            name = param;
             if (cmdline.a_remove.specified())
-                result = env->remove_from_world(SetName(*p));
+                result = env->remove_from_world(SetName(param));
             else
-                result = env->add_to_world(SetName(*p));
+                result = env->add_to_world(SetName(param));
         }
         else
         {
             QualifiedPackageName q("x/x");
 
-            if (std::string::npos == p->find('/'))
-                q = env->fetch_unique_qualified_package_name(PackageNamePart(*p));
+            if (std::string::npos == param.find('/'))
+                q = env->fetch_unique_qualified_package_name(PackageNamePart(param));
             else
-                q = QualifiedPackageName(*p);
+                q = QualifiedPackageName(param);
 
             name = stringify(q);
 

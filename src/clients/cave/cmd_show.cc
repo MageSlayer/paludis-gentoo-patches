@@ -1351,22 +1351,21 @@ ShowCommand::run(
     if (cmdline.a_internal_keys.specified())
         basic_ppos += ppo_include_special_annotations;
 
-    for (ShowCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
-            p != p_end ; ++p)
+    for (const auto & param : cmdline.parameters())
     {
         if (cmdline.a_type.argument() == "set")
-            do_one_set(env, SetName(*p));
+            do_one_set(env, SetName(param));
         else if (cmdline.a_type.argument() == "repository")
-            do_one_repository(cmdline, env, basic_ppos, RepositoryName(*p));
+            do_one_repository(cmdline, env, basic_ppos, RepositoryName(param));
         else if (cmdline.a_type.argument() == "wildcard")
-            do_one_wildcard(env, parse_spec_with_nice_error(*p, env.get(), { updso_allow_wildcards }, filter::All()));
+            do_one_wildcard(env, parse_spec_with_nice_error(param, env.get(), { updso_allow_wildcards }, filter::All()));
         else if (cmdline.a_type.argument() == "package")
-            do_all_packages(cmdline, env, basic_ppos, parse_spec_with_nice_error(*p, env.get(), { updso_allow_wildcards }, filter::All()));
+            do_all_packages(cmdline, env, basic_ppos, parse_spec_with_nice_error(param, env.get(), { updso_allow_wildcards }, filter::All()));
         else if (cmdline.a_type.argument() == "auto")
         {
             try
             {
-                PackageDepSpec spec(parse_spec_with_nice_error(*p, env.get(), { updso_throw_if_set, updso_allow_wildcards }, filter::All()));
+                PackageDepSpec spec(parse_spec_with_nice_error(param, env.get(), { updso_throw_if_set, updso_allow_wildcards }, filter::All()));
                 if ((! spec.package_ptr()))
                     do_one_wildcard(env, spec);
                 else
@@ -1375,14 +1374,14 @@ ShowCommand::run(
             }
             catch (const GotASetNotAPackageDepSpec &)
             {
-                do_one_set(env, SetName(*p));
+                do_one_set(env, SetName(param));
                 continue;
             }
             catch (const NoSuchPackageError &)
             {
                 try
                 {
-                    RepositoryName repo_name(*p);
+                    RepositoryName repo_name(param);
                     if (env->has_repository_named(repo_name))
                     {
                         do_one_repository(cmdline, env, basic_ppos, repo_name);
@@ -1394,7 +1393,7 @@ ShowCommand::run(
                 }
             }
 
-            nothing_matching_error(env.get(), *p, filter::All());
+            nothing_matching_error(env.get(), param, filter::All());
         }
         else
             throw args::DoHelp("bad value '" + cmdline.a_type.argument() + "' for --" + cmdline.a_type.long_name());
@@ -1414,4 +1413,3 @@ ShowCommand::importance() const
 {
     return ci_core;
 }
-

@@ -130,13 +130,12 @@ UninstallCommand::run(
     std::set<QualifiedPackageName> qpns_being_changed;
     auto ids_going_away(std::make_shared<PackageIDSequence>());
 
-    for (UninstallCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
-            p != p_end ; ++p)
+    for (const auto & param : cmdline.parameters())
     {
-        PackageDepSpec spec(parse_spec_with_nice_error(*p, env.get(), { updso_allow_wildcards }, filter::All()));
+        PackageDepSpec spec(parse_spec_with_nice_error(param, env.get(), { updso_allow_wildcards }, filter::All()));
         const auto ids((*env)[selection::AllVersionsSorted(generator::Matches(spec, nullptr, { }) | filter::SupportsAction<UninstallAction>())]);
         if (ids->empty())
-            nothing_matching_error(env.get(), *p, filter::SupportsAction<UninstallAction>());
+            nothing_matching_error(env.get(), param, filter::SupportsAction<UninstallAction>());
         else if ((! cmdline.a_all_versions.specified()) && has_multiple_versions(ids))
             throw BeMoreSpecific(spec, ids, "Consider using '--" + cmdline.a_all_versions.long_name() + "'");
         else
