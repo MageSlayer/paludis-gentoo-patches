@@ -103,16 +103,16 @@ paludis::cave::owner_common(
     std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(generator::All() |
                 filter::InstalledAtRoot(env->preferred_root_key()->parse_value()) | matching )]);
 
-    for (const auto & p : *ids)
+    for (const auto & id : *ids)
     {
-        std::shared_ptr<const Contents> contents(p->contents());
+        std::shared_ptr<const Contents> contents(id->contents());
         if (! contents)
             continue;
 
         if (contents->end() != std::find_if(contents->begin(), contents->end(), std::bind(handler, query,
                         std::placeholders::_1)))
         {
-            callback(p);
+            callback(id);
             found = true;
         }
     }

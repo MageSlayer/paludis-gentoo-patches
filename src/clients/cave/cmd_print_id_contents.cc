@@ -176,9 +176,9 @@ PrintIDContentsCommand::run(
         if (! contents)
             throw BadIDForCommand(spec, (*i), "does not support listing contents");
 
-        for (const auto & c : *contents)
-            if (match_type(cmdline.a_type, c))
-                cout << format_plain_contents_entry(c, cmdline.a_format.argument());
+        for (const auto & entry : *contents)
+            if (match_type(cmdline.a_type, entry))
+                cout << format_plain_contents_entry(entry, cmdline.a_format.argument());
     }
 
     return EXIT_SUCCESS;

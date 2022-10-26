@@ -375,11 +375,11 @@ namespace
         if (installed_ids->empty() && installable_ids->empty())
             nothing_matching_error(env.get(), param, filter::InstalledAtRoot(env->preferred_root_key()->parse_value()));
 
-        for (const auto & i : *installed_ids)
-            do_one_id(cmdline, env, i);
+        for (const auto & id : *installed_ids)
+            do_one_id(cmdline, env, id);
 
-        for (const auto & i : *installable_ids)
-            do_one_id(cmdline, env, i);
+        for (const auto & id : *installable_ids)
+            do_one_id(cmdline, env, id);
     }
 }
 
@@ -416,9 +416,8 @@ InfoCommand::run(
     }
     else
     {
-        for (InfoCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
-                p != p_end ; ++p)
-            do_one_param(cmdline, env, *p);
+        for (const auto & parameter : cmdline.parameters())
+            do_one_param(cmdline, env, parameter);
     }
 
     return EXIT_SUCCESS;

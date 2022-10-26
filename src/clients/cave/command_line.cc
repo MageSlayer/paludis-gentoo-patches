@@ -57,10 +57,9 @@ CaveCommandLine::CaveCommandLine() :
     add_environment_variable("CAVE_COMMANDS_PATH", "Colon-separated paths in which to look for "
             "additional commands.");
 
-    for (EnumIterator<CommandImportance> i, i_end(last_ci) ;
-            i != i_end ; ++i)
-        for (const auto & c : *CommandFactory::get_instance())
-            if (CommandFactory::get_instance()->create(c)->importance() == *i)
-                add_see_also("cave-" + c, 1);
+    for (EnumIterator<CommandImportance> i, i_end(last_ci); i != i_end; ++i)
+        for (const auto & cmd : *CommandFactory::get_instance())
+            if (CommandFactory::get_instance()->create(cmd)->importance() == *i)
+                add_see_also("cave-" + cmd, 1);
 }
 

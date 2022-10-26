@@ -232,13 +232,13 @@ VerifyCommand::run(
         nothing_matching_error(env.get(), *cmdline.begin_parameters(), filter::InstalledAtRoot(env->preferred_root_key()->parse_value()));
 
     int exit_status(0);
-    for (const auto & i : *entries)
+    for (const auto & id : *entries)
     {
-        auto contents(i->contents());
+        auto contents(id->contents());
         if (! contents)
             continue;
 
-        Verifier v(i);
+        Verifier v(id);
         std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(v));
         exit_status |= v.exit_status;
     }

@@ -167,15 +167,15 @@ PrintUnusedDistfilesCommand::run(
     {
         auto ids((*env)[selection]);
 
-        for (const auto & iter : *ids)
+        for (const auto & id : *ids)
         {
-            if (! already_done.insert(iter).second)
+            if (! already_done.insert(id).second)
                 continue;
 
-            if (iter->fetches_key())
+            if (id->fetches_key())
             {
-                DistfilesFilter filter(env.get(), iter, used_distfiles);
-                iter->fetches_key()->parse_value()->top()->accept(filter);
+                DistfilesFilter filter(env.get(), id, used_distfiles);
+                id->fetches_key()->parse_value()->top()->accept(filter);
             }
         }
     }

@@ -112,33 +112,33 @@ namespace
 
         std::shared_ptr<Sequence<std::string> > args(std::make_shared<Sequence<std::string>>());
 
-        for (const auto & program_option : program_options)
+        for (const auto & group : program_options)
         {
-            for (auto o : program_option)
-                if (o->specified())
+            for (const auto & option : group)
+                if (option->specified())
                 {
-                    const std::shared_ptr<const Sequence<std::string> > f(o->forwardable_args());
+                    const std::shared_ptr<const Sequence<std::string> > f(option->forwardable_args());
                     std::copy(f->begin(), f->end(), args->back_inserter());
                 }
         }
 
-        for (const auto & execution_option : execution_options)
+        for (const auto & group : execution_options)
         {
-            for (auto o : execution_option)
-                if (o->specified())
+            for (const auto & option : group)
+                if (option->specified())
                 {
-                    const std::shared_ptr<const Sequence<std::string> > f(o->forwardable_args());
+                    const std::shared_ptr<const Sequence<std::string> > f(option->forwardable_args());
                     std::copy(f->begin(), f->end(), args->back_inserter());
                 }
         }
 
-        for (const auto & p : *data->targets())
-            args->push_back(p);
+        for (const auto & target : *data->targets())
+            args->push_back(target);
 
-        for (const auto & p : *data->world_specs())
+        for (const auto & spec : *data->world_specs())
         {
             args->push_back("--world-specs");
-            args->push_back(p);
+            args->push_back(spec);
         }
 
         if (data->preserve_world())
@@ -160,8 +160,8 @@ namespace
             else
                 command = "$CAVE execute-resolution";
 
-            for (const auto & a : *args)
-                command = command + " " + args::escape(a);
+            for (const auto & arg : *args)
+                command = command + " " + args::escape(arg);
 
             Process process((ProcessCommand(command)));
             process
@@ -217,20 +217,20 @@ namespace
             const ResumeCommandLine & cmdline,
             const std::shared_ptr<JobLists> & lists)
     {
-        for (const auto & c : *lists->execute_job_list())
+        for (const auto & job : *lists->execute_job_list())
         {
             StateVisitor s;
-            if (c->state())
-                c->state()->accept(s);
+            if (job->state())
+                job->state()->accept(s);
 
             if (s.is_active)
-                c->set_state(std::make_shared<JobPendingState>());
+                job->set_state(std::make_shared<JobPendingState>());
             else if (cmdline.a_retry_failed.specified() && s.is_failed)
-                c->set_state(std::make_shared<JobPendingState>());
+                job->set_state(std::make_shared<JobPendingState>());
             else if (cmdline.a_skip_failed.specified() && s.is_failed)
-                c->set_state(std::make_shared<JobSkippedState>());
+                job->set_state(std::make_shared<JobSkippedState>());
             else if (cmdline.a_retry_skipped.specified() && s.is_skipped)
-                c->set_state(std::make_shared<JobPendingState>());
+                job->set_state(std::make_shared<JobPendingState>());
         }
     }
 }

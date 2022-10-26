@@ -480,8 +480,8 @@ PerformCommand::run(
         {
             if (cmdline.a_ignore_manual_fetch_errors.specified())
             {
-                for (const auto & f : *failures)
-                    if (! f.requires_manual_fetching())
+                for (const auto & failure : *failures)
+                    if (! failure.requires_manual_fetching())
                         throw;
             }
             else

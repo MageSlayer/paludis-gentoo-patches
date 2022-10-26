@@ -166,21 +166,21 @@ namespace
             (*j)->accept(ShowOneJobAttrs{output_stream, cmdline.graph_jobs_options.a_graph_jobs_full_names.specified()});
             output_stream << " ]" << endl;
 
-            for (const auto & r : *(*j)->requirements())
+            for (const auto & requirement : *(*j)->requirements())
             {
                 if (! cmdline.graph_jobs_options.a_graph_jobs_all_arrows.specified())
-                    if (! (r.required_if() - jri_require_for_independent).any())
+                    if (! (requirement.required_if() - jri_require_for_independent).any())
                         continue;
 
-                output_stream << "    job" << execute_job_list->number(j) << " -> job" << r.job_number() << " [ ";
-                if (r.required_if()[jri_require_always])
+                output_stream << "    job" << execute_job_list->number(j) << " -> job" << requirement.job_number() << " [ ";
+                if (requirement.required_if()[jri_require_always])
                     output_stream << " color=crimson";
-                else if (r.required_if()[jri_require_for_satisfied])
+                else if (requirement.required_if()[jri_require_for_satisfied])
                     output_stream << " color=indianred";
-                else if (r.required_if()[jri_require_for_independent])
+                else if (requirement.required_if()[jri_require_for_independent])
                     output_stream << " color=lightpink";
 
-                if (! r.required_if()[jri_fetching])
+                if (! requirement.required_if()[jri_fetching])
                     output_stream << " style=dotted";
 
                 output_stream << " ]" << endl;
