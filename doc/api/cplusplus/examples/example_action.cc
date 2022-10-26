@@ -61,7 +61,7 @@ int main(int argc, char * argv[])
                     generator::Package(QualifiedPackageName("sys-apps/paludis")))]);
 
         /* For each ID: */
-        for (const auto & i : *ids)
+        for (const auto & id : *ids)
         {
             /* Failures go here: */
             const std::shared_ptr<Sequence<FetchActionFailure> > failures(std::make_shared<Sequence<FetchActionFailure>>());
@@ -70,13 +70,13 @@ int main(int argc, char * argv[])
              * SupportsActionTest<FetchAction> object, and querying via the
              * PackageID::supports_action method. */
             SupportsActionTest<FetchAction> supports_fetch_action;
-            if (! i->supports_action(supports_fetch_action))
+            if (! id->supports_action(supports_fetch_action))
             {
-                cout << "ID '" << *i << "' does not support the fetch action." << endl;
+                cout << "ID '" << *id << "' does not support the fetch action." << endl;
             }
             else
             {
-                cout << "ID '" << *i << "' supports the fetch action, trying to fetch:" << endl;
+                cout << "ID '" << *id << "' supports the fetch action, trying to fetch:" << endl;
 
                 /* Carry out a FetchAction. We need to specify various options when
                  * creating a FetchAction, controlling whether safe resume is used
@@ -94,7 +94,7 @@ int main(int argc, char * argv[])
                             ));
                 try
                 {
-                    i->perform_action(fetch_action);
+                    id->perform_action(fetch_action);
                 }
                 catch (const ActionFailedError & e)
                 {
@@ -104,18 +104,18 @@ int main(int argc, char * argv[])
 
                     /* We might get detailed information about individual fetch
                      * failures.  */
-                    for (const auto & f : *failures)
+                    for (const auto & failure : *failures)
                     {
-                        cout << "  * File '" << f.target_file() << "': ";
+                        cout << "  * File '" << failure.target_file() << "': ";
 
                         bool need_comma(false);
-                        if (f.requires_manual_fetching())
+                        if (failure.requires_manual_fetching())
                         {
                             cout << "requires manual fetching";
                             need_comma = true;
                         }
 
-                        if (f.failed_automatic_fetching())
+                        if (failure.failed_automatic_fetching())
                         {
                             if (need_comma)
                                 cout << ", ";
@@ -123,11 +123,11 @@ int main(int argc, char * argv[])
                             need_comma = true;
                         }
 
-                        if (! f.failed_integrity_checks().empty())
+                        if (! failure.failed_integrity_checks().empty())
                         {
                             if (need_comma)
                                 cout << ", ";
-                            cout << "failed integrity checks: " << f.failed_integrity_checks();
+                            cout << "failed integrity checks: " << failure.failed_integrity_checks();
                             need_comma = true;
                         }
                     }

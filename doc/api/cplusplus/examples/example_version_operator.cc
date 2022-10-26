@@ -56,26 +56,26 @@ int main(int argc, char * argv[])
 
         /* Display a header */
         cout << " " << left << setw(8) << "LHS" << " | " << left << setw(8) << "RHS";
-        for (const auto & o : operators)
-            cout << " | " << setw(8) << o;
+        for (const auto & op : operators)
+            cout << " | " << setw(8) << op;
         cout << endl << std::string(10, '-');
         for (unsigned x(0) ; x <= operators.size() ; ++x)
             cout << "+" << std::string(10, '-');
         cout << endl;
 
         /* For each pair of versions... */
-        for (const auto & v1 : versions)
+        for (const auto & version_lhs : versions)
         {
-            for (const auto & version : versions)
+            for (const auto & version_rhs : versions)
             {
-                cout << " " << left << setw(8) << v1 << " | " << left << setw(8) << version;
+                cout << " " << left << setw(8) << version_lhs << " | " << left << setw(8) << version_rhs;
 
                 /* Apply all of our operators, and show the results */
-                for (const auto & o : operators)
+                for (const auto & op : operators)
                 {
                     /* VersionOperator::as_version_spec_comparator returns a
                      * binary boolean functor. */
-                    cout << " | " << left << setw(8) << boolalpha << (o.as_version_spec_comparator()(v1, version));
+                    cout << " | " << left << setw(8) << boolalpha << (op.as_version_spec_comparator()(version_lhs, version_rhs));
                 }
 
                 cout << endl;
