@@ -44,8 +44,7 @@ int main(int argc, char * argv[])
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* For each command line parameter... */
-        for (CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
-                q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
+        for (const auto & param : CommandLine::get_instance()->parameters())
         {
             /* Create a PackageDepSpec from the parameter. For user-inputted
              * data, parse_user_package_dep_spec() should be used. If wildcards
@@ -54,7 +53,8 @@ int main(int argc, char * argv[])
              * updso_throw_if_set and catch the GotASetNotAPackageDepSpec
              * exception. If data about the spec is known at compile time,
              * make_package_dep_spec() should be used instead. */
-            PackageDepSpec spec(parse_user_package_dep_spec(*q, env.get(), { updso_allow_wildcards }));
+            PackageDepSpec spec(
+                    parse_user_package_dep_spec(param, env.get(), {updso_allow_wildcards}));
 
             /* Display information about the PackageDepSpec. */
             cout << "Information about '" << spec << "':" << endl;
