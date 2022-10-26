@@ -116,11 +116,11 @@ namespace
         FilterHandler
     {
         const PrintIDsCommandLine & cmdline;
-        const std::string mask;
+        const std::string mask_filter;
 
         WithMaskFilterHandler(const PrintIDsCommandLine & c, const std::string & f) :
             cmdline(c),
-            mask(f)
+            mask_filter(f)
         {
         }
 
@@ -131,7 +131,7 @@ namespace
 
         std::string as_string() const override
         {
-            return "with mask '" + mask + "'";
+            return "with mask '" + mask_filter + "'";
         }
 
         std::shared_ptr<const RepositoryNameSet> repositories(
@@ -166,17 +166,17 @@ namespace
             for (PackageIDSet::ConstIterator i(c->begin()), i_end(c->end()) ;
                     i != i_end ; ++i)
             {
-                if (mask == "none")
+                if (mask_filter == "none")
                 {
                     if (! (*i)->masked())
                         result->insert(*i);
                 }
-                else if (mask == "any")
+                else if (mask_filter == "any")
                 {
                     if ((*i)->masked())
                         result->insert(*i);
                 }
-                else if (mask == "user")
+                else if (mask_filter == "user")
                 {
                     for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
                             m != m_end ; ++m)
@@ -186,7 +186,7 @@ namespace
                             break;
                         }
                 }
-                else if (mask == "unaccepted")
+                else if (mask_filter == "unaccepted")
                 {
                     for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
                             m != m_end ; ++m)
@@ -196,7 +196,7 @@ namespace
                             break;
                         }
                 }
-                else if (mask == "repository")
+                else if (mask_filter == "repository")
                 {
                     for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
                             m != m_end ; ++m)
@@ -206,7 +206,7 @@ namespace
                             break;
                         }
                 }
-                else if (mask == "unsupported")
+                else if (mask_filter == "unsupported")
                 {
                     for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
                             m != m_end ; ++m)
@@ -217,7 +217,7 @@ namespace
                         }
                 }
                 else
-                    throw args::DoHelp("Unknown --" + cmdline.a_with_mask.long_name() + " value '" + mask + "'");
+                    throw args::DoHelp("Unknown --" + cmdline.a_with_mask.long_name() + " value '" + mask_filter + "'");
             }
 
             return result;
