@@ -23,26 +23,26 @@
 #include <paludis/package_id-fwd.hh>
 
 #include <paludis/util/attributes.hh>
+#include <paludis/util/fs_path-fwd.hh>
 #include <paludis/util/operators.hh>
 #include <paludis/util/pimp.hh>
+#include <paludis/util/sequence.hh>
+#include <paludis/util/set.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/util/wrapped_output_iterator.hh>
-#include <paludis/util/fs_path-fwd.hh>
-#include <paludis/util/set.hh>
-#include <paludis/util/sequence.hh>
 
 #include <paludis/action-fwd.hh>
+#include <paludis/choice-fwd.hh>
+#include <paludis/contents-fwd.hh>
 #include <paludis/dep_spec-fwd.hh>
-#include <paludis/spec_tree-fwd.hh>
 #include <paludis/mask-fwd.hh>
 #include <paludis/metadata_key-fwd.hh>
 #include <paludis/metadata_key_holder.hh>
 #include <paludis/name-fwd.hh>
 #include <paludis/repository-fwd.hh>
-#include <paludis/contents-fwd.hh>
-#include <paludis/version_spec-fwd.hh>
-#include <paludis/choice-fwd.hh>
 #include <paludis/slot-fwd.hh>
+#include <paludis/spec_tree-fwd.hh>
+#include <paludis/version_spec-fwd.hh>
 
 #include <memory>
 
