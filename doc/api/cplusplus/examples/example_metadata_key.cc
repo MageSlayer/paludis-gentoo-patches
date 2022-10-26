@@ -272,13 +272,12 @@ int main(int argc, char * argv[])
         }
 
         /* And for each repository: */
-        for (auto r(env->begin_repositories()), r_end(env->end_repositories()) ;
-                r != r_end ; ++r)
+        for (const auto & repository : env->repositories())
         {
-            cout << (*r)->name() << ":" << endl;
+            cout << repository->name() << ":" << endl;
 
             /* For each metadata key: */
-            for (Repository::MetadataConstIterator k((*r)->begin_metadata()), k_end((*r)->end_metadata()) ;
+            for (Repository::MetadataConstIterator k(repository->begin_metadata()), k_end(repository->end_metadata()) ;
                     k != k_end ; ++k)
             {
                 /* Display it. Repository::MetadataConstIterator also returns a
