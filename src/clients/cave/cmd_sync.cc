@@ -373,12 +373,11 @@ SyncCommand::run(
 
     Repos repos;
     if (cmdline.begin_parameters() != cmdline.end_parameters())
-        for (SyncCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
-                p != p_end ; ++p)
+        for (const auto & param : cmdline.parameters())
         {
-            RepositoryName n(*p);
+            RepositoryName n(param);
             if (! env->has_repository_named(n))
-                throw NothingMatching(*p);
+                throw NothingMatching(param);
             repos.insert(n);
         }
     else
