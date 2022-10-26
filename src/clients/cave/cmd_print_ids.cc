@@ -177,9 +177,8 @@ namespace
                 }
                 else if (mask_filter == "user")
                 {
-                    for (PackageID::MasksConstIterator m(i->begin_masks()), m_end(i->end_masks()) ;
-                            m != m_end ; ++m)
-                        if (visitor_cast<const UserMask>(**m))
+                    for (const auto & mask : i->masks())
+                        if (visitor_cast<const UserMask>(*mask))
                         {
                             result->insert(i);
                             break;
@@ -187,9 +186,8 @@ namespace
                 }
                 else if (mask_filter == "unaccepted")
                 {
-                    for (PackageID::MasksConstIterator m(i->begin_masks()), m_end(i->end_masks()) ;
-                            m != m_end ; ++m)
-                        if (visitor_cast<const UnacceptedMask>(**m))
+                    for (const auto & mask : i->masks())
+                        if (visitor_cast<const UnacceptedMask>(*mask))
                         {
                             result->insert(i);
                             break;
@@ -197,9 +195,8 @@ namespace
                 }
                 else if (mask_filter == "repository")
                 {
-                    for (PackageID::MasksConstIterator m(i->begin_masks()), m_end(i->end_masks()) ;
-                            m != m_end ; ++m)
-                        if (visitor_cast<const RepositoryMask>(**m))
+                    for (const auto & mask : i->masks())
+                        if (visitor_cast<const RepositoryMask>(*mask))
                         {
                             result->insert(i);
                             break;
@@ -207,9 +204,8 @@ namespace
                 }
                 else if (mask_filter == "unsupported")
                 {
-                    for (PackageID::MasksConstIterator m(i->begin_masks()), m_end(i->end_masks()) ;
-                            m != m_end ; ++m)
-                        if (visitor_cast<const UnsupportedMask>(**m))
+                    for (const auto & mask : i->masks())
+                        if (visitor_cast<const UnsupportedMask>(*mask))
                         {
                             result->insert(i);
                             break;

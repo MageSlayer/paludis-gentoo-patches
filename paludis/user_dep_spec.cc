@@ -1059,11 +1059,10 @@ UserKeyRequirement::requirement_met(
     {
         std::string mask_name(_imp->key.substr(1, _imp->key.length() - 2));
         MaskChecker checker{mask_name};
-        for (auto m(id->begin_masks()), m_end(id->end_masks()) ;
-                m != m_end ; ++m)
-            if ((*m)->accept_returning<bool>(checker))
+        for (const auto & mask : id->masks())
+            if (mask->accept_returning<bool>(checker))
             {
-                mask_requirement = &**m;
+                mask_requirement = &*mask;
                 break;
             }
     }
