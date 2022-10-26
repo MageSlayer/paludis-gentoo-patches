@@ -115,8 +115,8 @@ paludis::match_package_with_maybe_changes(
         switch (spec.version_requirements_mode())
         {
             case vr_and:
-                for (const auto & r : *spec.version_requirements_ptr())
-                    if (! r.version_operator().as_version_spec_comparator()(id->version(), r.version_spec()))
+                for (const auto & requirement : *spec.version_requirements_ptr())
+                    if (! requirement.version_operator().as_version_spec_comparator()(id->version(), requirement.version_spec()))
                         return false;
                 break;
 

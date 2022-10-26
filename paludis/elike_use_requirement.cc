@@ -170,12 +170,12 @@ namespace
                     else
                     {
                         std::pair<bool, std::string> result(true, "");
-                        for (const auto & v : *(*cc))
-                            if (! one_requirement_met(env, v->name_with_prefix(), maybe_changes_to_owner, id, from_id, maybe_changes_to_target))
+                        for (const auto & value : *(*cc))
+                            if (! one_requirement_met(env, value->name_with_prefix(), maybe_changes_to_owner, id, from_id, maybe_changes_to_target))
                             {
                                 if (! result.first)
                                     result.second.append(", ");
-                                result.second.append(stringify(v->name_with_prefix()));
+                                result.second.append(stringify(value->name_with_prefix()));
                                 result.first = false;
                             }
 
@@ -243,8 +243,8 @@ namespace
                             "ID '" << *from_id << "' uses requirement '" << _flags << "' but has no choice prefix '" << prefix << "'";
                     else
                     {
-                        for (const auto & v : *(*cc))
-                            if (! one_accumulate_changes_to_make_met(env, maybe_changes_to_owner, id, changed_choices, v->name_with_prefix()))
+                        for (const auto & value : *(*cc))
+                            if (! one_accumulate_changes_to_make_met(env, maybe_changes_to_owner, id, changed_choices, value->name_with_prefix()))
                                 return false;
                     }
                 }
@@ -916,21 +916,21 @@ namespace
                 auto choices(id->choices_key()->parse_value());
                 std::string p;
                 int n(0);
-                for (const auto & c : *choices)
+                for (const auto & choice : *choices)
                 {
-                    if (_mentioned->end() != _mentioned->find(stringify(c->prefix()) + ":*"))
+                    if (_mentioned->end() != _mentioned->find(stringify(choice->prefix()) + ":*"))
                         continue;
 
-                    for (const auto & v : *c)
-                        if (v->presumed() && ! v->enabled())
+                    for (const auto & value : *choice)
+                        if (value->presumed() && ! value->enabled())
                         {
-                            if (_mentioned->end() != _mentioned->find(stringify(v->name_with_prefix())))
+                            if (_mentioned->end() != _mentioned->find(stringify(value->name_with_prefix())))
                                 continue;
 
                             ++n;
                             if (! p.empty())
                                 p.append("', '");
-                            p.append(stringify(v->name_with_prefix()));
+                            p.append(stringify(value->name_with_prefix()));
                         }
                 }
 

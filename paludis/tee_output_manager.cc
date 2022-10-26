@@ -62,10 +62,10 @@ TeeOutputManager::TeeOutputManager(
         const std::shared_ptr<const OutputManagerSequence> & ss) :
     _imp(s, ss, nullptr, nullptr)
 {
-    for (const auto & i : *_imp->streams)
+    for (const auto & manager : *_imp->streams)
     {
-        _imp->stdout_stream.add_stream(&i->stdout_stream());
-        _imp->stderr_stream.add_stream(&i->stderr_stream());
+        _imp->stdout_stream.add_stream(&manager->stdout_stream());
+        _imp->stderr_stream.add_stream(&manager->stderr_stream());
     }
 }
 
@@ -76,17 +76,17 @@ TeeOutputManager::TeeOutputManager(
         const std::shared_ptr<const OutputManagerSequence> & se) :
     _imp(s, ss, so, se)
 {
-    for (const auto & i : *_imp->streams)
+    for (const auto & manager : *_imp->streams)
     {
-        _imp->stdout_stream.add_stream(&i->stdout_stream());
-        _imp->stderr_stream.add_stream(&i->stderr_stream());
+        _imp->stdout_stream.add_stream(&manager->stdout_stream());
+        _imp->stderr_stream.add_stream(&manager->stderr_stream());
     }
 
-    for (const auto & i : *_imp->stdout_streams)
-        _imp->stdout_stream.add_stream(&i->stdout_stream());
+    for (const auto & manager : *_imp->stdout_streams)
+        _imp->stdout_stream.add_stream(&manager->stdout_stream());
 
-    for (const auto & i : *_imp->stderr_streams)
-        _imp->stderr_stream.add_stream(&i->stderr_stream());
+    for (const auto & manager : *_imp->stderr_streams)
+        _imp->stderr_stream.add_stream(&manager->stderr_stream());
 }
 
 TeeOutputManager::~TeeOutputManager() = default;
@@ -106,56 +106,56 @@ TeeOutputManager::stderr_stream()
 void
 TeeOutputManager::message(const MessageType t, const std::string & m)
 {
-    for (const auto & i : *_imp->messages_streams)
-        i->message(t, m);
+    for (const auto & manager : *_imp->messages_streams)
+        manager->message(t, m);
 }
 
 void
 TeeOutputManager::succeeded()
 {
-    for (const auto & i : *_imp->streams)
-        i->succeeded();
+    for (const auto & manager : *_imp->streams)
+        manager->succeeded();
 
-    for (const auto & i : *_imp->messages_streams)
-        i->succeeded();
+    for (const auto & manager : *_imp->messages_streams)
+        manager->succeeded();
 
-    for (const auto & i : *_imp->stdout_streams)
-        i->succeeded();
+    for (const auto & manager : *_imp->stdout_streams)
+        manager->succeeded();
 
-    for (const auto & i : *_imp->stderr_streams)
-        i->succeeded();
+    for (const auto & manager : *_imp->stderr_streams)
+        manager->succeeded();
 }
 
 void
 TeeOutputManager::ignore_succeeded()
 {
-    for (const auto & i : *_imp->streams)
-        i->ignore_succeeded();
+    for (const auto & manager : *_imp->streams)
+        manager->ignore_succeeded();
 
-    for (const auto & i : *_imp->messages_streams)
-        i->ignore_succeeded();
+    for (const auto & manager : *_imp->messages_streams)
+        manager->ignore_succeeded();
 
-    for (const auto & i : *_imp->stdout_streams)
-        i->ignore_succeeded();
+    for (const auto & manager : *_imp->stdout_streams)
+        manager->ignore_succeeded();
 
-    for (const auto & i : *_imp->stderr_streams)
-        i->ignore_succeeded();
+    for (const auto & manager : *_imp->stderr_streams)
+        manager->ignore_succeeded();
 }
 
 void
 TeeOutputManager::flush()
 {
-    for (const auto & i : *_imp->streams)
-        i->flush();
+    for (const auto & manager : *_imp->streams)
+        manager->flush();
 
-    for (const auto & i : *_imp->messages_streams)
-        i->flush();
+    for (const auto & manager : *_imp->messages_streams)
+        manager->flush();
 
-    for (const auto & i : *_imp->stdout_streams)
-        i->flush();
+    for (const auto & manager : *_imp->stdout_streams)
+        manager->flush();
 
-    for (const auto & i : *_imp->stderr_streams)
-        i->flush();
+    for (const auto & manager : *_imp->stderr_streams)
+        manager->flush();
 }
 
 bool
@@ -178,17 +178,17 @@ TeeOutputManager::want_to_flush() const
 void
 TeeOutputManager::nothing_more_to_come()
 {
-    for (const auto & i : *_imp->streams)
-        i->nothing_more_to_come();
+    for (const auto & manager : *_imp->streams)
+        manager->nothing_more_to_come();
 
-    for (const auto & i : *_imp->messages_streams)
-        i->nothing_more_to_come();
+    for (const auto & manager : *_imp->messages_streams)
+        manager->nothing_more_to_come();
 
-    for (const auto & i : *_imp->stdout_streams)
-        i->nothing_more_to_come();
+    for (const auto & manager : *_imp->stdout_streams)
+        manager->nothing_more_to_come();
 
-    for (const auto & i : *_imp->stderr_streams)
-        i->nothing_more_to_come();
+    for (const auto & manager : *_imp->stderr_streams)
+        manager->nothing_more_to_come();
 }
 
 const std::shared_ptr<const Set<std::string> >

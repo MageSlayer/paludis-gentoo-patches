@@ -137,10 +137,10 @@ EnvironmentFactory::add_environment_format(
         const CreateFunction & create_function
         )
 {
-    for (const auto & f : *formats)
+    for (const auto & format : *formats)
     {
-        if (! _imp->keys.insert(std::make_pair(f, create_function)).second)
-            throw ConfigurationError("Handler for environment format '" + stringify(f) + "' already exists");
+        if (! _imp->keys.insert(std::make_pair(format, create_function)).second)
+            throw ConfigurationError("Handler for environment format '" + stringify(format) + "' already exists");
     }
 }
 

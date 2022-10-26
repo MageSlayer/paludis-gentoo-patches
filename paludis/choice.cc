@@ -207,14 +207,14 @@ Choices::find(const ChoicePrefixName & p) const
 const std::shared_ptr<const ChoiceValue>
 Choices::find_by_name_with_prefix(const ChoiceNameWithPrefix & f) const
 {
-    for (const auto & i : *this)
+    for (const auto & choice : *this)
     {
-        if (0 != i->prefix().value().compare(0, i->prefix().value().length(), f.value(), 0, i->prefix().value().length()))
+        if (0 != choice->prefix().value().compare(0, choice->prefix().value().length(), f.value(), 0, choice->prefix().value().length()))
             continue;
 
-        for (const auto & j : *i)
-            if (j->name_with_prefix() == f)
-                return j;
+        for (const auto & value : *choice)
+            if (value->name_with_prefix() == f)
+                return value;
     }
 
     return nullptr;
@@ -223,12 +223,12 @@ Choices::find_by_name_with_prefix(const ChoiceNameWithPrefix & f) const
 bool
 Choices::has_matching_contains_every_value_prefix(const ChoiceNameWithPrefix & f) const
 {
-    for (const auto & i : *this)
+    for (const auto & choice : *this)
     {
-        if (0 != i->prefix().value().compare(0, i->prefix().value().length(), f.value(), 0, i->prefix().value().length()))
+        if (0 != choice->prefix().value().compare(0, choice->prefix().value().length(), f.value(), 0, choice->prefix().value().length()))
             continue;
 
-        if (i->contains_every_value())
+        if (choice->contains_every_value())
             return true;
     }
 

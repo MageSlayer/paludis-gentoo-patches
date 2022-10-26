@@ -431,10 +431,10 @@ namespace
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (const auto & i : *ids)
+            for (const auto & id : *ids)
             {
-                if (match_package(*env, spec, i, from_id, options))
-                    result->insert(i);
+                if (match_package(*env, spec, id, from_id, options))
+                    result->insert(id);
             }
 
             return result;
@@ -467,10 +467,10 @@ namespace
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (const auto & i : *ids)
+            for (const auto & id : *ids)
             {
-                if (! func(i))
-                    result->insert(i);
+                if (! func(id))
+                    result->insert(id);
             }
 
             return result;
