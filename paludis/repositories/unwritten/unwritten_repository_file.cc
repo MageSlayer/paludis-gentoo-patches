@@ -318,9 +318,9 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
             {
                 std::shared_ptr<AllDepSpec> all_spec(std::make_shared<AllDepSpec>());
                 std::shared_ptr<SimpleURISpecTree> tree(std::make_shared<SimpleURISpecTree>(all_spec));
-                std::list<std::string> tokens;
-                tokenise_whitespace(token2, std::back_inserter(tokens));
-                for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+                std::list<std::string> uris;
+                tokenise_whitespace(token2, std::back_inserter(uris));
+                for (std::list<std::string>::const_iterator t(uris.begin()), t_end(uris.end()) ;
                         t != t_end ; ++t)
                     tree->top()->append(std::make_shared<SimpleURIDepSpec>(*t));
                 entry->homepage() = std::make_shared<UnwrittenHomepageKey>("homepage", "Homepage", mkt_normal, tree);
@@ -342,9 +342,9 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
             else if (token == "bug-ids")
             {
                 std::shared_ptr<Sequence<std::string> > seq(std::make_shared<Sequence<std::string>>());
-                std::list<std::string> tokens;
-                tokenise_whitespace(token2, std::back_inserter(tokens));
-                for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+                std::list<std::string> bug_ids;
+                tokenise_whitespace(token2, std::back_inserter(bug_ids));
+                for (std::list<std::string>::const_iterator t(bug_ids.begin()), t_end(bug_ids.end()) ;
                         t != t_end ; ++t)
                     seq->push_back(*t);
                 entry->bug_ids() = std::make_shared<LiteralMetadataStringSequenceKey>("bug-ids", "Bug IDs", mkt_normal, seq);
@@ -352,9 +352,9 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
             else if (token == "remote-ids")
             {
                 std::shared_ptr<Sequence<std::string> > seq(std::make_shared<Sequence<std::string>>());
-                std::list<std::string> tokens;
-                tokenise_whitespace(token2, std::back_inserter(tokens));
-                for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
+                std::list<std::string> remote_ids;
+                tokenise_whitespace(token2, std::back_inserter(remote_ids));
+                for (std::list<std::string>::const_iterator t(remote_ids.begin()), t_end(remote_ids.end()) ;
                         t != t_end ; ++t)
                     seq->push_back(*t);
                 entry->remote_ids() = std::make_shared<LiteralMetadataStringSequenceKey>("remote-ids", "Remote IDs", mkt_internal, seq);
