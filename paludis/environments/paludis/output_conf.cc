@@ -349,13 +349,13 @@ OutputConf::add(const FSPath & filename, const FSPath & root)
     Managers local_managers;
     Managers local_rules;
 
-    for (const auto & k : *f)
+    for (const auto & kv : *f)
     {
-        std::string remainder(k.first);
+        std::string remainder(kv.first);
         std::string::size_type p(remainder.find('/'));
         if (std::string::npos == p)
         {
-            _imp->misc_vars[k.first] = k.second;
+            _imp->misc_vars[kv.first] = kv.second;
             continue;
         }
 
@@ -373,14 +373,14 @@ OutputConf::add(const FSPath & filename, const FSPath & root)
             local_rules.insert(
                     std::make_pair(section_name,
                         std::make_shared<Map<std::string, std::string>>())).first->second->insert(
-                    remainder, k.second);
+                    remainder, kv.second);
         }
         else if (section_kind == "manager")
         {
             local_managers.insert(
                     std::make_pair(section_name,
                         std::make_shared<Map<std::string, std::string>>())).first->second->insert(
-                    remainder, k.second);
+                    remainder, kv.second);
         }
         else
             throw PaludisConfigError("Section kind '" + section_kind + "' unknown");
@@ -397,8 +397,8 @@ OutputConf::add(const FSPath & filename, const FSPath & root)
                     n::output_exclusivity_requirement() = static_cast<OutputExclusivity>(-1),
                     n::type_requirement() = "*"
                     ));
-        for (const auto & m : *local_rule.second)
-            set_rule(_imp->env, rule, m.first, m.second);
+        for (const auto & kv : *local_rule.second)
+            set_rule(_imp->env, rule, kv.first, kv.second);
 
         _imp->rules.push_back(rule);
     }
@@ -406,10 +406,10 @@ OutputConf::add(const FSPath & filename, const FSPath & root)
     for (const auto & local_manager : local_managers)
         _imp->managers.insert(std::make_pair(local_manager.first, local_manager.second));
 
-    for (const auto & i : *f)
+    for (const auto & kv : *f)
     {
-        _imp->predefined_variables->erase(i.first);
-        _imp->predefined_variables->insert(i.first, i.second);
+        _imp->predefined_variables->erase(kv.first);
+        _imp->predefined_variables->insert(kv.first, kv.second);
     }
 }
 
