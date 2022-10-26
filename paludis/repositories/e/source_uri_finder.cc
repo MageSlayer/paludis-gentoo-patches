@@ -189,16 +189,16 @@ SourceURIFinder::add_listed()
 
     if (0 == _imp->url.compare(0, 9, "mirror://"))
     {
-        std::string mirror(_imp->url.substr(9));
-        std::string::size_type p(mirror.find('/'));
+        std::string mirror_name(_imp->url.substr(9));
+        std::string::size_type p(mirror_name.find('/'));
         if (std::string::npos == p)
             throw ActionFailedError("Broken URI component '" + _imp->url + "'");
-        std::string original_name(mirror.substr(p + 1));
-        mirror.erase(p);
+        std::string original_name(mirror_name.substr(p + 1));
+        mirror_name.erase(p);
 
         {
-            Context local_context("When adding from environment for listed mirror '" + mirror + "':");
-            std::shared_ptr<const MirrorsSequence> mirrors(_imp->env->mirrors(mirror));
+            Context local_context("When adding from environment for listed mirror '" + mirror_name + "':");
+            std::shared_ptr<const MirrorsSequence> mirrors(_imp->env->mirrors(mirror_name));
             if (mirrors->empty())
                 Log::get_instance()->message("e.source_uri_finder.no_mirrors", ll_debug, lc_context) << "Mirrors set is empty";
             for (MirrorsSequence::ConstIterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
@@ -210,8 +210,8 @@ SourceURIFinder::add_listed()
         }
 
         {
-            Context local_context("When adding from repository for listed mirror '" + mirror + "':");
-            std::shared_ptr<const MirrorsSequence> mirrors(_imp->get_mirrors_fn(mirror));
+            Context local_context("When adding from repository for listed mirror '" + mirror_name + "':");
+            std::shared_ptr<const MirrorsSequence> mirrors(_imp->get_mirrors_fn(mirror_name));
             for (MirrorsSequence::ConstIterator m(mirrors->begin()), m_end(mirrors->end()) ; m != m_end ; ++m)
             {
                 Log::get_instance()->message("e.source_uri_finder.adding_mirror", ll_debug, lc_context)
