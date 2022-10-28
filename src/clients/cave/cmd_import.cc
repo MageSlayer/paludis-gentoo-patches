@@ -205,12 +205,10 @@ ImportCommand::run(
         throw args::DoHelp("import takes between one and three parameters");
 
     QualifiedPackageName package(*cmdline.begin_parameters());
-    VersionSpec version((next(cmdline.begin_parameters()) != cmdline.end_parameters()) ?
-            *next(cmdline.begin_parameters()) : "0", user_version_spec_options());
-    SlotName slot(
-            (next(cmdline.begin_parameters()) != cmdline.end_parameters() &&
-             next(cmdline.begin_parameters(), 2) != cmdline.end_parameters()) ?
-            *next(cmdline.begin_parameters(), 2) : "0");
+    VersionSpec version(
+            (cmdline.parameters().size() > 1) ? *next(cmdline.begin_parameters()) : "0",
+            user_version_spec_options());
+    SlotName slot((cmdline.parameters().size() > 2) ? *next(cmdline.begin_parameters(), 2) : "0");
 
     std::string build_dependencies;
     std::string run_dependencies;
