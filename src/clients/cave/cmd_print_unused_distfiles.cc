@@ -164,7 +164,7 @@ PrintUnusedDistfilesCommand::run(
         selections.push_back(selection::AllVersionsUnsorted(generator::InRepository(RepositoryName(*c))));
 
     std::set<std::shared_ptr<const PackageID>, PackageIDComparator> already_done(PackageIDComparator(env.get()));
-    for (auto & selection : selections)
+    for (const auto & selection : selections)
     {
         auto ids((*env)[selection]);
 
