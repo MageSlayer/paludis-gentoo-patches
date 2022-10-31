@@ -99,9 +99,14 @@ PackageMaskConf::add(const FSPath & filename)
 
         try
         {
-            _imp->masks.push_back(std::make_pair(std::shared_ptr<PackageDepSpec>(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
-                                    spec, _imp->env,
-                                    { updso_allow_wildcards, updso_no_disambiguation, updso_throw_if_set }))), reasons));
+            _imp->masks.push_back(std::make_pair(
+                    std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
+                            spec,
+                            _imp->env,
+                            { updso_allow_wildcards,
+                              updso_no_disambiguation,
+                              updso_throw_if_set })),
+                    reasons));
         }
         catch (const GotASetNotAPackageDepSpec &)
         {
