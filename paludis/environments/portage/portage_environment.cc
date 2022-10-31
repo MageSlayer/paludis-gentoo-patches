@@ -434,9 +434,10 @@ PortageEnvironment::_load_lined_file(const FSPath & f, I_ i)
     {
         LineConfigFile file(f, { lcfo_disallow_continuations });
         for (const auto & line : file)
-            *i++ = std::shared_ptr<PackageDepSpec>(std::make_shared<PackageDepSpec>(
-                        parse_user_package_dep_spec(strip_trailing(strip_leading(line, " \t"), " \t"),
-                            this, UserPackageDepSpecOptions() + updso_no_disambiguation)));
+            *i++ = std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
+                    strip_trailing(strip_leading(line, " \t"), " \t"),
+                    this,
+                    UserPackageDepSpecOptions() + updso_no_disambiguation));
     }
 }
 
