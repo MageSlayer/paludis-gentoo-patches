@@ -199,7 +199,7 @@ FSIterator::FSIterator(const FSIterator & other) :
 }
 
 FSIterator::FSIterator() :
-    _imp(std::shared_ptr<EntrySet>(std::make_shared<EntrySet>(&compare_name)))
+    _imp(std::make_shared<EntrySet>(&compare_name))
 {
     _imp->iter = _imp->items->end();
 }
