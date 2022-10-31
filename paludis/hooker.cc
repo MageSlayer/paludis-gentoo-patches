@@ -596,21 +596,21 @@ Hooker::_find_hooks(const Hook & hook) const
 
             if (is_file_with_extension(*e, ".bash", { }))
                 if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".bash"),
-                                std::shared_ptr<HookFile>(std::make_shared<BashHookFile>(*e, dir.second, _imp->env)))).second)
+                                std::make_shared<BashHookFile>(*e, dir.second, _imp->env))).second)
                     Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
                         << "' because of naming conflict with '" <<
                         hook_files.find(stringify(strip_trailing_string(e->basename(), ".bash")))->second->file_name() << "'";
 
             if (is_file_with_extension(*e, ".hook", { }))
                 if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), ".hook"),
-                                std::shared_ptr<HookFile>(std::make_shared<FancyHookFile>(*e, dir.second, _imp->env)))).second)
+                                std::make_shared<FancyHookFile>(*e, dir.second, _imp->env))).second)
                     Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
                         << "' because of naming conflict with '" <<
                         hook_files.find(stringify(strip_trailing_string(e->basename(), ".hook")))->second->file_name() << "'";
 
             if (is_file_with_extension(*e, so_suffix, { }))
                  if (! hook_files.insert(std::make_pair(strip_trailing_string(e->basename(), so_suffix),
-                                 std::shared_ptr<HookFile>(std::make_shared<SoHookFile>(*e, dir.second, _imp->env)))).second)
+                                std::make_shared<SoHookFile>(*e, dir.second, _imp->env))).second)
                      Log::get_instance()->message("hook.discarding", ll_warning, lc_context) << "Discarding hook file '" << *e
                          << "' because of naming conflict with '" <<
                          hook_files.find(stringify(strip_trailing_string(e->basename(), so_suffix)))->second->file_name() << "'";
