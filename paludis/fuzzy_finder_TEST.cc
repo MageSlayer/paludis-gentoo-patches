@@ -35,24 +35,28 @@
 
 using namespace paludis;
 
+namespace
+{
+    std::shared_ptr<FakeRepository>
+    make_fake_repo(const Environment & env, const RepositoryName & name)
+    {
+        return std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
+                n::environment() = &env, n::name() = RepositoryName(name)));
+    };
+}
+
 TEST(FuzzyCandidatesFinder, Works)
 {
     TestEnvironment e;
 
-    const std::shared_ptr<FakeRepository> r1(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                    n::environment() = &e,
-                    n::name() = RepositoryName("r1")
-                    )));
+    const auto r1 = make_fake_repo(e, RepositoryName("r1"));
     r1->add_version("some-cat", "foo", "1");
     r1->add_version("other-cat", "foo", "1");
     r1->add_version("some-cat", "bar", "1");
     r1->add_version("some-cat", "one-two-three", "1");
     e.add_repository(1, r1);
 
-    const std::shared_ptr<FakeRepository> r2(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                    n::environment() = &e,
-                    n::name() = RepositoryName("r2")
-                    )));
+    const auto r2 = make_fake_repo(e, RepositoryName("r2"));
     e.add_repository(2, r2);
 
     FuzzyCandidatesFinder f1(e, std::string("some-cat/one-two-thee"), filter::All());
@@ -79,21 +83,11 @@ TEST(FuzzyRepositoriesFinder, Works)
 {
     TestEnvironment e;
 
-    e.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                        n::environment() = &e,
-                        n::name() = RepositoryName("my-main-repository")))));
-    e.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                        n::environment() = &e,
-                        n::name() = RepositoryName("x-new-repository")))));
-    e.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                        n::environment() = &e,
-                        n::name() = RepositoryName("bar-overlay")))));
-    e.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                        n::environment() = &e,
-                        n::name() = RepositoryName("baz-overlay")))));
-    e.add_repository(1, std::shared_ptr<FakeRepository>(std::make_shared<FakeRepository>(make_named_values<FakeRepositoryParams>(
-                        n::environment() = &e,
-                        n::name() = RepositoryName("sunrise")))));
+    e.add_repository(1, make_fake_repo(e, RepositoryName("my-main-repository")));
+    e.add_repository(1, make_fake_repo(e, RepositoryName("x-new-repository")));
+    e.add_repository(1, make_fake_repo(e, RepositoryName("bar-overlay")));
+    e.add_repository(1, make_fake_repo(e, RepositoryName("baz-overlay")));
+    e.add_repository(1, make_fake_repo(e, RepositoryName("sunrise")));
 
     FuzzyRepositoriesFinder f1(e, "my-main-respository");
     EXPECT_EQ(1, std::distance(f1.begin(), f1.end()));
