@@ -81,8 +81,7 @@ namespace
         PrintIDsCommandLine() :
             g_filters(main_options_section(), "Filters", "Filter the output. Each filter may be specified more than once."),
             a_matching(&g_filters, "matching", 'm', "Show only IDs matching this spec. If specified multiple "
-                    "times, only IDs matching every spec are selected.",
-                    args::StringSetArg::StringSetArgOptions()),
+                    "times, only IDs matching every spec are selected."),
             a_supporting(&g_filters, "supporting", 's', "Show only IDs supporting this action. If specified "
                     "multiple times, all listed actions must be supported.",
                     args::StringSetArg::StringSetArgOptions

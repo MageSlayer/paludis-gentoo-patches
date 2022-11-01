@@ -64,10 +64,8 @@ namespace
 
         PrintPackagesCommandLine() :
             g_filters(main_options_section(), "Filters", "Filter the output. Each filter may be specified more than once."),
-            a_repository(&g_filters, "repository", 'r', "Show only names in the specified repository.",
-                    args::StringSetArg::StringSetArgOptions()),
-            a_category(&g_filters, "category", 'c', "Show only names in the specified category.",
-                    args::StringSetArg::StringSetArgOptions())
+            a_repository(&g_filters, "repository", 'r', "Show only names in the specified repository."),
+            a_category(&g_filters, "category", 'c', "Show only names in the specified category.")
         {
         }
     };

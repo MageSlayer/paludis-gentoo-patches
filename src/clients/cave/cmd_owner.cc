@@ -81,8 +81,7 @@ namespace
             a_dereference(&g_owner_options, "dereference", 'd', "If the pattern is a path that exists and is a symbolic link, "
                     "dereference it recursively, and then search for the real path.", true),
             a_matching(&g_owner_options, "matching", 'm', "Show only IDs matching this spec. If specified multiple "
-                    "times, only IDs matching every spec are selected.",
-                    args::StringSetArg::StringSetArgOptions())
+                    "times, only IDs matching every spec are selected.")
         {
             add_usage_line("[ --type algorithm ] [ --matching spec ] pattern");
         }
