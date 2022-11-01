@@ -102,13 +102,13 @@ namespace paludis
          */
         NamedValue<n::fetch_parts, FetchParts> fetch_parts;
 
-         /**
-          * Ignore if a package is or isn't referenced in the Manifest.
-          * It's useful for generating manifests, to avoid getting errors
-          * before generating it.
-          *
-          * \since 0.46
-          */
+        /**
+         * Ignore if a package is or isn't referenced in the Manifest.
+         * It's useful for generating manifests, to avoid getting errors
+         * before generating it.
+         *
+         * \since 0.46
+         */
         NamedValue<n::ignore_not_in_manifest, bool> ignore_not_in_manifest;
 
         /**
