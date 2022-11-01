@@ -82,8 +82,7 @@ namespace
         GenerateMetadataCommandLine() :
             g_filters(main_options_section(), "Filters", "Filter the output. Each filter may be specified more than once."),
             a_matching(&g_filters, "matching", 'm', "Consider only IDs matching this spec. Note that certain specs "
-                    "may force metadata generation anyway, e.g. to see whether a slot matches.",
-                    args::StringSetArg::StringSetArgOptions())
+                    "may force metadata generation anyway, e.g. to see whether a slot matches.")
         {
             add_usage_line("[ --matching spec ]");
         }

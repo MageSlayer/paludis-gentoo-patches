@@ -76,8 +76,7 @@ namespace
                     ("partial",       "Partial match"),
                     "auto"),
             a_matching(&g_owner_options, "matching", 'm', "Show only IDs matching this spec. If specified multiple "
-                    "times, only IDs matching every spec are selected.",
-                    args::StringSetArg::StringSetArgOptions()),
+                    "times, only IDs matching every spec are selected."),
             g_display_options(main_options_section(), "Display Options", "Controls the output format."),
             a_format(&g_display_options, "format", 'f', format_package_id_help)
         {

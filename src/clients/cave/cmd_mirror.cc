@@ -85,8 +85,7 @@ namespace
 
         MirrorCommandLine() :
             g_filters(main_options_section(), "Filters", "Filter the output. Each filter may be specified more than once."),
-            a_matching(&g_filters, "matching", 'm', "Consider only IDs matching this spec.",
-                    args::StringSetArg::StringSetArgOptions())
+            a_matching(&g_filters, "matching", 'm', "Consider only IDs matching this spec.")
         {
             add_usage_line("[ --matching spec ]");
         }
