@@ -88,15 +88,14 @@ namespace
     {
         if (full || ! p.package_ptr())
             return stringify(p);
-        else
-        {
-            std::string result(stringify(p.package_ptr()->package()));
-            if (p.slot_requirement_ptr())
-                result = result + stringify(*p.slot_requirement_ptr());
-            if (p.in_repository_ptr())
-                result = result + "::" + stringify(*p.in_repository_ptr());
-            return result;
-        }
+
+        std::string result(stringify(p.package_ptr()->package()));
+        if (p.slot_requirement_ptr())
+            result = result + stringify(*p.slot_requirement_ptr());
+        if (p.in_repository_ptr())
+            result = result + "::" + stringify(*p.in_repository_ptr());
+
+        return result;
     }
 
     struct ShowOneJobAttrs
