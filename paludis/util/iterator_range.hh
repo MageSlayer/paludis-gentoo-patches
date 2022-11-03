@@ -59,7 +59,7 @@ namespace paludis
 
             size_t size() const
             {
-                return std::distance(_end, _begin);
+                return std::distance(_begin, _end);
             }
     };
 
