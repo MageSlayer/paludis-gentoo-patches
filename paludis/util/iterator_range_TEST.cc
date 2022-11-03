@@ -64,3 +64,16 @@ TEST(IteratorRange, MakeRangeFromPair)
     EXPECT_EQ(3, range.size());
     EXPECT_THAT(range, ElementsAre(3, 3, 3));
 }
+
+TEST(IteratorRange, Empty)
+{
+    std::vector<std::string> v1;
+    auto range1 = make_range(v1.begin(), v1.end());
+    EXPECT_EQ(0, range1.size());
+    EXPECT_TRUE(range1.empty());
+
+    std::list<int> v2 = {1, 2, 3, 3, 3, 4, 5};
+    auto range2 = make_range(std::equal_range(v2.begin(), v2.end(), 8));
+    EXPECT_EQ(0, range2.size());
+    EXPECT_TRUE(range2.empty());
+}
