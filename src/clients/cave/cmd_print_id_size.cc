@@ -78,7 +78,7 @@ PrintIDSizeCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) != 1)
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("print-id-size takes exactly one parameter");
 
     return size_common(env, false, *cmdline.begin_parameters(), cmdline.a_all.specified(), cmdline.a_best.specified());
