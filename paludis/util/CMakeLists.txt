@@ -101,6 +101,7 @@ foreach(test
           graph
           hashes
           iterator_funcs
+          iterator_range
           indirect_iterator
           join
           log
