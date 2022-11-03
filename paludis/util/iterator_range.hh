@@ -61,6 +61,11 @@ namespace paludis
             {
                 return std::distance(_begin, _end);
             }
+
+            bool empty() const
+            {
+                return _begin == _end;
+            }
     };
 
     template <typename Iterator_>
