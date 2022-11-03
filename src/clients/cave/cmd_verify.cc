@@ -218,7 +218,7 @@ VerifyCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != cmdline.parameters().size())
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("verify takes exactly one parameter");
 
     PackageDepSpec spec(parse_spec_with_nice_error(*cmdline.begin_parameters(), env.get(),

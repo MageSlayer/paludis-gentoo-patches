@@ -86,7 +86,7 @@ SyncProtocolOptionsCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != cmdline.parameters().size())
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("sync-protocol-options takes exactly one parameter");
     std::string format(*cmdline.begin_parameters());
 
