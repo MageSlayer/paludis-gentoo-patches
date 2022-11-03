@@ -241,7 +241,7 @@ ManageSearchIndexCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (capped_distance(cmdline.begin_parameters(), cmdline.end_parameters(), 2) != 1)
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("manage-search-index requires exactly one parameter");
 
     if (! cmdline.a_create.specified())

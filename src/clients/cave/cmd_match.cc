@@ -397,7 +397,7 @@ MatchCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (capped_distance(cmdline.begin_parameters(), cmdline.end_parameters(), 2) < 2)
+    if (cmdline.parameters().size() < 2)
         throw args::DoHelp("match requires at least two parameters");
 
     PackageDepSpec spec(parse_spec_with_nice_error(*cmdline.begin_parameters(), env.get(), { }, filter::All()));
