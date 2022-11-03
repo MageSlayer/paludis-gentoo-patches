@@ -135,7 +135,7 @@ PrintSetCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != cmdline.parameters().size())
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("print-set takes exactly one parameter");
 
     const std::shared_ptr<const SetSpecTree> set(env->set(SetName(*cmdline.begin_parameters())));

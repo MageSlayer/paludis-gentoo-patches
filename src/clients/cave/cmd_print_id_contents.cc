@@ -152,7 +152,7 @@ PrintIDContentsCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != cmdline.parameters().size())
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("print-id-contents takes exactly one parameter");
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(),

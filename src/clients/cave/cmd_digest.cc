@@ -111,7 +111,7 @@ DigestCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (2 != cmdline.parameters().size())
+    if (cmdline.parameters().size() != 2)
         throw args::DoHelp("digest takes exactly two parameters");
 
     RepositoryName repo(*next(cmdline.begin_parameters()));

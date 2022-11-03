@@ -290,7 +290,7 @@ SearchCommand::run(
         if (cmdline.match_options.a_not.specified())
             break;
 
-        if ((! cmdline.match_options.a_and.specified()) && (1 != cmdline.parameters().size()))
+        if ((! cmdline.match_options.a_and.specified()) && (cmdline.parameters().size() != 1))
             break;
 
         name_description_substring_hint = *cmdline.begin_parameters();

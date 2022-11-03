@@ -89,7 +89,7 @@ ExecutablesCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != cmdline.parameters().size())
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("executables takes exactly one parameter");
 
     return executables_common(env, *cmdline.begin_parameters(), &format_fsentry, true, false);

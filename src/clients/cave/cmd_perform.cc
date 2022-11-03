@@ -404,7 +404,7 @@ PerformCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (2 != cmdline.parameters().size())
+    if (cmdline.parameters().size() != 2)
         throw args::DoHelp("perform takes exactly two parameters");
 
     cmdline.import_options.apply(env);
