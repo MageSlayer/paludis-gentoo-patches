@@ -101,7 +101,7 @@ PrintDependentIDsCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
+    if (1 != cmdline.parameters().size())
         throw args::DoHelp("print-dependent-ids requires exactly one parameter");
 
     auto installed_filter(filter::InstalledAtRoot(env->system_root_key()->parse_value()));

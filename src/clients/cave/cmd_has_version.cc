@@ -90,7 +90,7 @@ HasVersionCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
+    if (1 != cmdline.parameters().size())
         throw args::DoHelp("has-version takes exactly one parameter");
 
     auto s(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { }));

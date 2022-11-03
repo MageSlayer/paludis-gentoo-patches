@@ -109,7 +109,7 @@ OwnerCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) != 1)
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("owner takes exactly one parameter");
 
     Filter matches((filter::All()));

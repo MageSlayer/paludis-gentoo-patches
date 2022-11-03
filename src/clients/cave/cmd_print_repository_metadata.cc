@@ -127,7 +127,7 @@ PrintRepositoryMetadataCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
+    if (1 != cmdline.parameters().size())
         throw args::DoHelp("print-repository-metadata takes exactly one parameter");
 
     RepositoryName name(*cmdline.begin_parameters());

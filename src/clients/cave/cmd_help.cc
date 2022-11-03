@@ -82,7 +82,7 @@ HelpCommand::run(const std::shared_ptr<Environment> & env,
         return EXIT_SUCCESS;
     }
 
-    if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) > 1)
+    if (cmdline.parameters().size() > 1)
         throw args::DoHelp("help takes at most one parameter");
 
     if (cmdline.begin_parameters() == cmdline.end_parameters())

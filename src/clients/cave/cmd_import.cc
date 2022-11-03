@@ -201,8 +201,7 @@ ImportCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) < 1 ||
-            std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) > 3)
+    if (cmdline.parameters().size() < 1 || cmdline.parameters().size() > 3)
         throw args::DoHelp("import takes between one and three parameters");
 
     QualifiedPackageName package(*cmdline.begin_parameters());
