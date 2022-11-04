@@ -87,7 +87,7 @@ PrintRepositoriesCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("print-repositories takes no parameters");
 
     std::set<RepositoryName> repository_names;

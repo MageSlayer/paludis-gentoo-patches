@@ -60,7 +60,7 @@ main(int argc, char * argv[])
 
     auto w(std::make_shared<paludis::args::AsciidocWriter>(cout));
 
-    if (cmdline.begin_parameters() == cmdline.end_parameters())
+    if (cmdline.parameters().empty())
     {
         paludis::cave::CaveCommandLine c;
         paludis::args::generate_doc(*w, &c);

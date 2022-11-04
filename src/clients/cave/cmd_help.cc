@@ -85,7 +85,7 @@ HelpCommand::run(const std::shared_ptr<Environment> & env,
     if (cmdline.parameters().size() > 1)
         throw args::DoHelp("help takes at most one parameter");
 
-    if (cmdline.begin_parameters() == cmdline.end_parameters())
+    if (cmdline.parameters().empty())
     {
         if (cmdline.a_all.specified())
             cout << "All available cave commands:" << std::endl;

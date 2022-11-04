@@ -160,7 +160,7 @@ PrintUnmanagedFilesCommand::run(const std::shared_ptr<Environment> & env,
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("print-unmanaged-files takes no parameters");
 
     const auto sysroot = env->preferred_root_key()->parse_value();

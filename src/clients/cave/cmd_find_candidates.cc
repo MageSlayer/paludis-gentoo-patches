@@ -136,7 +136,7 @@ FindCandidatesCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("find-candidates takes no parameters");
 
     return run_hosted(env, cmdline.search_options, cmdline.match_options, cmdline.index_options,

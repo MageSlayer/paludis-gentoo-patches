@@ -270,7 +270,7 @@ SearchCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() == cmdline.end_parameters())
+    if (cmdline.parameters().empty())
         throw args::DoHelp("search requires at least one parameter");
 
     int retcode(0);

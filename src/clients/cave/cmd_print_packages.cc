@@ -88,7 +88,7 @@ PrintPackagesCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("print-packages takes no parameters");
 
     std::set<QualifiedPackageName> all_packages;

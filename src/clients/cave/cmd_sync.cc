@@ -370,7 +370,7 @@ SyncCommand::run(
     int retcode(0);
 
     Repos repos;
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         for (const auto & param : cmdline.parameters())
         {
             RepositoryName n(param);

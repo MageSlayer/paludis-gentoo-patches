@@ -404,7 +404,7 @@ InfoCommand::run(
     for (const auto & repository : env->repositories())
         do_one_repository(cmdline, env, repository);
 
-    if (cmdline.begin_parameters() == cmdline.end_parameters())
+    if (cmdline.parameters().empty())
     {
         cout << c::bold_red().colour_string() <<
             "No packages were specified on the command line, so detailed information is not" << c::normal().colour_string() << endl;
