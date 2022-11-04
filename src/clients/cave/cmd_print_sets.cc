@@ -75,7 +75,7 @@ PrintSetsCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("print-sets takes no parameters");
 
     std::copy(env->set_names()->begin(), env->set_names()->end(), std::ostream_iterator<SetName>(cout, "\n"));

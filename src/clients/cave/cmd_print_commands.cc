@@ -82,7 +82,7 @@ PrintCommandsCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("print-commands takes no parameters");
 
     for (const auto & cmd : *CommandFactory::get_instance())

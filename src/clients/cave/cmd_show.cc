@@ -1328,7 +1328,7 @@ ShowCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() == cmdline.end_parameters())
+    if (cmdline.parameters().empty())
         throw args::DoHelp("show requires at least one parameter");
 
     PrettyPrintOptions basic_ppos;

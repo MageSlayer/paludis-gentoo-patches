@@ -90,7 +90,7 @@ PrintCategoriesCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("print-categories takes no parameters");
 
     std::set<CategoryNamePart> categories;

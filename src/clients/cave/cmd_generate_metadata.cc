@@ -281,7 +281,7 @@ GenerateMetadataCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("generate-metadata takes no parameters");
 
     Generator g((generator::All()));

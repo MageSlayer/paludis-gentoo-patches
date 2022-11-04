@@ -147,7 +147,7 @@ PrintUnusedDistfilesCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("print-unused-distfiles takes no parameters");
 
     //

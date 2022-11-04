@@ -74,7 +74,7 @@ PrintSyncProtocolsCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("print-sync-protocols takes no parameters");
 
     std::set<std::string> syncers;

@@ -165,7 +165,7 @@ ReportCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("report takes no parameters");
 
     auto ids((*env)[selection::AllVersionsSorted(

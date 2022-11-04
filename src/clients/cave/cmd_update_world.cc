@@ -102,7 +102,7 @@ UpdateWorldCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() == cmdline.end_parameters())
+    if (cmdline.parameters().empty())
         throw args::DoHelp("update-world requires at least one parameter");
 
     for (const auto & param : cmdline.parameters())
