@@ -48,17 +48,16 @@ void ArgsDumper::visit(const StringSetArg & a)
 {
     generic_visit(a);
 
-    if (a.begin_allowed_args() != a.end_allowed_args())
-        for (const auto & arg : a.allowed_args())
-        {
-            std::stringstream p;
-            p << "      " << arg.first;
-            if (p.str().length() < 26)
-                p << std::string(26 - p.str().length(), ' ');
-            _os << p.str();
-            _os << " " << arg.second;
-            _os << std::endl;
-        }
+    for (const auto & arg : a.allowed_args())
+    {
+        std::stringstream p;
+        p << "      " << arg.first;
+        if (p.str().length() < 26)
+            p << std::string(26 - p.str().length(), ' ');
+        _os << p.str();
+        _os << " " << arg.second;
+        _os << std::endl;
+    }
 }
 
 void ArgsDumper::visit(const StringSequenceArg & a)
