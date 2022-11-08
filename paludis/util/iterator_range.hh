@@ -31,6 +31,7 @@ namespace paludis
             Iterator_ _begin, _end;
 
         public:
+            using const_iterator = Iterator_;
             using value_type = typename Iterator_::value_type;
 
             // TODO(compnerd) use SFINAE to ensure that the container's
