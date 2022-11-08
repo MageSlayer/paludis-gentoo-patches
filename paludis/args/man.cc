@@ -60,7 +60,7 @@ namespace
 
         void visit(const EnumArg & e)
         {
-            if (e.begin_allowed_args() == e.end_allowed_args())
+            if (e.allowed_args().empty())
                 return;
 
             _dw.start_extra_arg();
@@ -73,7 +73,7 @@ namespace
 
         void visit(const StringSetArg & e)
         {
-            if (e.begin_allowed_args() == e.end_allowed_args())
+            if (e.allowed_args().empty())
                 return;
 
             _dw.start_extra_arg();
@@ -98,7 +98,7 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
 
     dw.heading(h->app_name(), h->man_section(), h->app_synopsis());
 
-    if (h->begin_usage_lines() != h->end_usage_lines())
+    if (! h->usage_lines().empty())
     {
         dw.start_usage_lines();
 
@@ -136,7 +136,7 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
     }
     dw.end_options();
 
-    if (h->begin_environment_lines() != h->end_environment_lines())
+    if (! h->environment_lines().empty())
     {
         dw.start_environment();
 
@@ -146,14 +146,14 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
         dw.end_environment();
     }
 
-    if (h->begin_notes() != h->end_notes())
+    if (! h->notes().empty())
     {
         dw.start_notes();
         std::for_each(h->begin_notes(), h->end_notes(), std::bind(&DocWriter::note, &dw, _1));
         dw.end_notes();
     }
 
-    if (h->begin_examples() != h->end_examples())
+    if (! h->examples().empty())
     {
         dw.start_examples();
 
@@ -163,7 +163,7 @@ paludis::args::generate_doc(DocWriter & dw, const ArgsHandler * const h)
         dw.end_examples();
     }
 
-    if (h->begin_see_alsos() != h->end_see_alsos())
+    if (! h->see_alsos().empty())
     {
         dw.start_see_alsos();
 
