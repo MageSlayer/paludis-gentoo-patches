@@ -776,7 +776,6 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 
 pkg_setup() {
-    die 'FIXME'
     echo "EPREFIX ${EPREFIX}"
 
     echo "ED ${ED}"
@@ -787,9 +786,9 @@ pkg_setup() {
     echo "BROOT ${BROOT}"
     echo "SYSROOT ${SYSROOT}"
     echo "ESYSROOT ${ESYSROOT}"
-    [[ "${ED}" == "${D%/}${EPREFIX}" ]] || die 'ED is wrong'
-    [[ "${EROOT}" == "${ROOT%/}${EPREFIX}" ]] || die 'EROOT is wrong'
-    [[ "${ESYSROOT}" == "${SYSROOT%/}${EPREFIX}" ]] || die 'ESYSROOT is wrong'
+    [[ "${ED}" == "${D%/}${EPREFIX}" ]] || die 'ED is wrong ('"'${ED}'"' vs. '"'${D%/}${EPREFIX}'"')'
+    [[ "${EROOT}" == "${ROOT%/}${EPREFIX}" ]] || die 'EROOT is wrong ('"'${EROOT}'"' vs. '"'${ROOT%/}${EPREFIX}'"')'
+    [[ "${ESYSROOT}" == "${SYSROOT%/}${EPREFIX}" ]] || die 'ESYSROOT is wrong ('"'${ESYSROOT}'"' vs. '"'${SYSROOT%/}${EPREFIX}'"')'
 }
 END
 
