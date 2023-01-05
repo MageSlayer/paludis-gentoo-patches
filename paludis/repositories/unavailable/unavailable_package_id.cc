@@ -226,7 +226,7 @@ UnavailablePackageID::dependencies_key() const
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailablePackageID::build_dependencies_target_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
