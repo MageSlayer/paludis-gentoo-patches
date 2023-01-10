@@ -49,7 +49,7 @@ namespace paludis
 
         struct JobRequirementComparator
         {
-            bool operator() (const JobRequirement & a, const JobRequirement & b);
+            bool operator() (const JobRequirement & a, const JobRequirement & b) const;
         };
     }
 

@@ -115,15 +115,14 @@ namespace
     {
         auto eapi(EAPIData::get_instance()->eapi_from_string(e));
         if (eapi->supported())
-            return std::make_shared<LiteralMetadataValueKey<FSPath> >(
-                eapi->supported()->ebuild_options()->fs_location_name(),
-                eapi->supported()->ebuild_options()->fs_location_description(),
-                mkt_internal, p);
-        else
-            return std::make_shared<LiteralMetadataValueKey<FSPath> >(
-                "FS_LOCATION",
-                "FS Location",
-                mkt_internal, p);
+            return std::make_shared<LiteralMetadataValueKey<FSPath>>(
+                    eapi->supported()->ebuild_options()->fs_location_name(),
+                    eapi->supported()->ebuild_options()->fs_location_description(),
+                    mkt_internal,
+                    p);
+
+        return std::make_shared<LiteralMetadataValueKey<FSPath>>(
+                "FS_LOCATION", "FS Location", mkt_internal, p);
     }
 }
 
@@ -294,15 +293,15 @@ EbuildID::need_non_xml_keys_added() const
 
             EAPIPhases phases(_imp->eapi->supported()->ebuild_phases()->ebuild_metadata());
 
-            int count(std::distance(phases.begin_phases(), phases.end_phases()));
+            int count(std::distance(phases.begin(), phases.end()));
             if (1 != count)
                 throw EAPIConfigurationError("EAPI '" + _imp->eapi->name() + "' defines "
                         + (count == 0 ? "no" : stringify(count)) + " ebuild variable phases but expected exactly one");
 
             EbuildMetadataCommand cmd(make_named_values<EbuildCommandParams>(
                     n::builddir() = e_repo->params().builddir(),
-                    n::clearenv() = phases.begin_phases()->option("clearenv"),
-                    n::commands() = join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "),
+                    n::clearenv() = phases.begin()->option("clearenv"),
+                    n::commands() = join(phases.begin()->begin_commands(), phases.begin()->end_commands(), " "),
                     n::distdir() = e_repo->params().distdir(),
                     n::ebuild_dir() = e_repo->layout()->package_directory(name()),
                     n::ebuild_file() = _imp->fs_location->parse_value(),
@@ -319,9 +318,9 @@ EbuildID::need_non_xml_keys_added() const
                         (e_repo->params().master_repositories() && ! e_repo->params().master_repositories()->empty()) ?
                         (*e_repo->params().master_repositories()->begin())->params().location() : e_repo->params().location(),
                     n::root() = "/",
-                    n::sandbox() = phases.begin_phases()->option("sandbox"),
-                    n::sydbox() = phases.begin_phases()->option("sydbox"),
-                    n::userpriv() = phases.begin_phases()->option("userpriv"),
+                    n::sandbox() = phases.begin()->option("sandbox"),
+                    n::sydbox() = phases.begin()->option("sydbox"),
+                    n::userpriv() = phases.begin()->option("userpriv"),
                     n::volatile_files() = nullptr
                     ));
 
@@ -378,26 +377,23 @@ EbuildID::need_non_xml_keys_added() const
             const std::shared_ptr<const Set<std::string> > use_expand_unprefixed(e_repo->profile()->use_expand_unprefixed());
             const std::string separator(stringify(supported_eapi->choices_options()->use_expand_separator()));
 
-            for (Set<std::string>::ConstIterator x(e_repo->profile()->use_expand_implicit()->begin()),
-                    x_end(e_repo->profile()->use_expand_implicit()->end()) ;
-                    x != x_end ; ++x)
+            for (const auto & x : *e_repo->profile()->use_expand_implicit())
             {
-                std::string lower_x(tolower(*x));
-                bool prefixed(use_expand->end() != use_expand->find(*x));
-                bool unprefixed(use_expand_unprefixed->end() != use_expand_unprefixed->find(*x));
+                std::string lower_x(tolower(x));
+                bool prefixed(use_expand->end() != use_expand->find(x));
+                bool unprefixed(use_expand_unprefixed->end() != use_expand_unprefixed->find(x));
 
                 if ((! unprefixed) && (! prefixed))
                     Log::get_instance()->message("e.ebuild.iuse_effective.neither", ll_qa, lc_context)
-                        << "USE_EXPAND_IMPLICIT value " << *x << " is not in either USE_EXPAND or USE_EXPAND_UNPREFIXED";
+                        << "USE_EXPAND_IMPLICIT value " << x << " is not in either USE_EXPAND or USE_EXPAND_UNPREFIXED";
 
-                const std::shared_ptr<const Set<std::string> > values(e_repo->profile()->use_expand_values(*x));
-                for (Set<std::string>::ConstIterator v(values->begin()), v_end(values->end()) ;
-                        v != v_end ; ++v)
+                const std::shared_ptr<const Set<std::string> > values(e_repo->profile()->use_expand_values(x));
+                for (const auto & value : *values)
                 {
                     if (prefixed)
-                        iuse_effective->insert(lower_x + separator + *v);
+                        iuse_effective->insert(lower_x + separator + value);
                     if (unprefixed)
-                        iuse_effective->insert(*v);
+                        iuse_effective->insert(value);
                 }
             }
 
@@ -576,11 +572,10 @@ namespace
                 local_ok = true;
             else
             {
-                for (LicenseSpecTree::NodeType<AnyDepSpec>::Type::ConstIterator c(node.begin()), c_end(node.end()) ;
-                        c != c_end ; ++c)
+                for (const auto & c : node)
                 {
                     Save<bool> save_ok(&ok, true);
-                    (*c)->accept(*this);
+                    c->accept(*this);
                     local_ok |= ok;
                 }
             }
@@ -668,32 +663,31 @@ EbuildID::need_masks_added() const
     {
         auto repo_masks(e_repo->layout()->repository_masks(shared_from_this()));
 
-        for (auto r(repo_masks->begin()), r_end(repo_masks->end()) ;
-                r != r_end ; ++r)
-            if (_imp->environment->unmasked_by_user(shared_from_this(), r->token()))
+        for (const auto & mask_info : *repo_masks)
+            if (_imp->environment->unmasked_by_user(shared_from_this(), mask_info.token()))
                 add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
                                 n::mask() = std::make_shared<ERepositoryMask>('r', "repository (overridden)",
-                                    r->comment(), r->token(), r->mask_file()),
+                                    mask_info.comment(), mask_info.token(), mask_info.mask_file()),
                                 n::override_reason() = mro_overridden_by_user
                                 )));
             else
-                add_mask(std::make_shared<ERepositoryMask>('R', "repository", r->comment(), r->token(), r->mask_file())); 
+                add_mask(std::make_shared<ERepositoryMask>(
+                        'R', "repository", mask_info.comment(), mask_info.token(), mask_info.mask_file()));
     }
 
     {
         auto profile_masks(e_repo->profile()->profile_masks(shared_from_this()));
-        for (auto r(profile_masks->begin()), r_end(profile_masks->end()) ;
-                r != r_end ; ++r)
-            if (_imp->environment->unmasked_by_user(shared_from_this(), r->token()))
+        for (const auto & mask_info : *profile_masks)
+            if (_imp->environment->unmasked_by_user(shared_from_this(), mask_info.token()))
                 add_overridden_mask(std::make_shared<OverriddenMask>(
                             make_named_values<OverriddenMask>(
                                 n::mask() = std::make_shared<ERepositoryMask>('p', "profile (overridden)",
-                                    r->comment(), r->token(), r->mask_file()),
+                                    mask_info.comment(), mask_info.token(), mask_info.mask_file()),
                                 n::override_reason() = mro_overridden_by_user
                                 )));
             else
-                add_mask(std::make_shared<ERepositoryMask>('P', "profile", r->comment(), r->token(), r->mask_file()));
+                add_mask(std::make_shared<ERepositoryMask>('P', "profile", mask_info.comment(), mask_info.token(), mask_info.mask_file()));
     }
 
     {
@@ -932,7 +926,7 @@ EbuildID::long_description_key() const
 const std::shared_ptr<const MetadataTimeKey>
 EbuildID::installed_time_key() const
 {
-    return std::shared_ptr<const MetadataTimeKey>();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -1486,7 +1480,9 @@ EbuildID::make_choice_value(
     }
     ChoiceNameWithPrefix name_with_prefix(name_with_prefix_s);
 
-    bool locked(false), enabled(false), enabled_by_default(false);
+    bool locked(false);
+    bool enabled(false);
+    bool enabled_by_default(false);
     if (raw_use_key())
     {
         locked = true;
@@ -1579,106 +1575,105 @@ namespace
 void
 EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
 {
-    if (eapi()->supported())
+    if (! eapi()->supported())
+        return;
+
+    std::shared_ptr<Choice> build_options(std::make_shared<Choice>(make_named_values<ChoiceParams>(
+            n::consider_added_or_changed() = false,
+            n::contains_every_value() = false,
+            n::hidden() = false,
+            n::hide_description() = false,
+            n::human_name() = canonical_build_options_human_name(),
+            n::prefix() = canonical_build_options_prefix(),
+            n::raw_name() = canonical_build_options_raw_name(),
+            n::show_with_no_prefix() = false)));
+    choices->add(build_options);
+
+    bool mask_tests(false);
+    bool mask_expensive_tests(false);
+    if (! eapi()->supported()->is_pbin())
     {
-        std::shared_ptr<Choice> build_options(std::make_shared<Choice>(make_named_values<ChoiceParams>(
-                        n::consider_added_or_changed() = false,
-                        n::contains_every_value() = false,
-                        n::hidden() = false,
-                        n::hide_description() = false,
-                        n::human_name() = canonical_build_options_human_name(),
-                        n::prefix() = canonical_build_options_prefix(),
-                        n::raw_name() = canonical_build_options_raw_name(),
-                        n::show_with_no_prefix() = false
-                        )));
-        choices->add(build_options);
+        bool may_be_unrestricted_strip(true);
 
-        bool mask_tests(false), mask_expensive_tests(false);
-        if (! eapi()->supported()->is_pbin())
+        /* if we unconditionally restrict an action, don't add / force mask
+         * a build option for it. but if we conditionally restrict it, do,
+         * to avoid weirdness in cases like RESTRICT="test? ( test )." */
+        if (restrict_key())
         {
-            bool may_be_unrestricted_strip(true);
-
-            /* if we unconditionally restrict an action, don't add / force mask
-             * a build option for it. but if we conditionally restrict it, do,
-             * to avoid weirdness in cases like RESTRICT="test? ( test )." */
-            if (restrict_key())
-            {
-                UnconditionalRestrictFinder f;
-                restrict_key()->parse_value()->top()->accept(f);
-                mask_tests = f.s.end() != f.s.find("test");
-                may_be_unrestricted_strip = f.s.end() == f.s.find("strip");
-            }
-
-            /* symbols */
-            if (may_be_unrestricted_strip)
-                build_options->add(std::make_shared<ELikeSymbolsChoiceValue>(shared_from_this(), _imp->environment, build_options, last_escvp));
-
-            /* jobs */
-            if (! eapi()->supported()->ebuild_environment_variables()->env_jobs().empty())
-            {
-                if (! _imp->defined_phases)
-                    throw InternalError(PALUDIS_HERE, "bug! no defined_phases yet");
-
-                build_options->add(std::make_shared<ELikeJobsChoiceValue>(
-                            shared_from_this(), _imp->environment, build_options));
-            }
-
-            /* dwarf compression */
-            build_options->add(std::make_shared<ELikeDwarfCompressionChoiceValue>(shared_from_this(),
-                                                                                  _imp->environment,
-                                                                                  build_options));
-        }
-        else
-        {
-            mask_tests = true;
-            mask_expensive_tests = true;
+            UnconditionalRestrictFinder f;
+            restrict_key()->parse_value()->top()->accept(f);
+            mask_tests = f.s.end() != f.s.find("test");
+            may_be_unrestricted_strip = f.s.end() == f.s.find("strip");
         }
 
-        /* optional_tests */
-        if (eapi()->supported()->choices_options()->has_optional_tests())
-            build_options->add(std::make_shared<ELikeOptionalTestsChoiceValue>(shared_from_this(), _imp->environment, build_options,
-                        mask_tests));
+        /* symbols */
+        if (may_be_unrestricted_strip)
+            build_options->add(std::make_shared<ELikeSymbolsChoiceValue>(
+                    shared_from_this(), _imp->environment, build_options, last_escvp));
 
-        /* recommended_tests */
-        if (eapi()->supported()->choices_options()->has_recommended_tests())
-            build_options->add(std::make_shared<ELikeRecommendedTestsChoiceValue>(shared_from_this(), _imp->environment, build_options,
-                        mask_tests));
-
-        /* expensive_tests */
-        if (eapi()->supported()->choices_options()->has_expensive_tests())
+        /* jobs */
+        if (! eapi()->supported()->ebuild_environment_variables()->env_jobs().empty())
         {
             if (! _imp->defined_phases)
                 throw InternalError(PALUDIS_HERE, "bug! no defined_phases yet");
 
-            bool has_expensive_test_phase(false);
-            EAPIPhases phases(_imp->eapi->supported()->ebuild_phases()->ebuild_install());
-            for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
-                    phase != phase_end ; ++phase)
-            {
-                if (phase->option("expensive_tests"))
-                {
-                    auto defined_phases(_imp->defined_phases->parse_value());
-                    if (defined_phases->end() != defined_phases->find(phase->equal_option("skipname")))
-                    {
-                        has_expensive_test_phase = true;
-                        break;
-                    }
-                }
-            }
-
-            if (has_expensive_test_phase)
-                build_options->add(std::make_shared<ELikeExpensiveTestsChoiceValue>(shared_from_this(), _imp->environment, build_options,
-                            mask_expensive_tests));
+            build_options->add(std::make_shared<ELikeJobsChoiceValue>(
+                    shared_from_this(), _imp->environment, build_options));
         }
 
-        /* trace */
-        build_options->add(std::make_shared<ELikeTraceChoiceValue>(
-                        shared_from_this(), _imp->environment, build_options));
-
-        /* preserve_work */
-        build_options->add(std::make_shared<ELikeWorkChoiceValue>(
-                        shared_from_this(), _imp->environment, build_options, last_ewcvp));
+        /* dwarf compression */
+        build_options->add(std::make_shared<ELikeDwarfCompressionChoiceValue>(
+                shared_from_this(), _imp->environment, build_options));
     }
+    else
+    {
+        mask_tests = true;
+        mask_expensive_tests = true;
+    }
+
+    /* optional_tests */
+    if (eapi()->supported()->choices_options()->has_optional_tests())
+        build_options->add(std::make_shared<ELikeOptionalTestsChoiceValue>(
+                shared_from_this(), _imp->environment, build_options, mask_tests));
+
+    /* recommended_tests */
+    if (eapi()->supported()->choices_options()->has_recommended_tests())
+        build_options->add(std::make_shared<ELikeRecommendedTestsChoiceValue>(
+                shared_from_this(), _imp->environment, build_options, mask_tests));
+
+    /* expensive_tests */
+    if (eapi()->supported()->choices_options()->has_expensive_tests())
+    {
+        if (! _imp->defined_phases)
+            throw InternalError(PALUDIS_HERE, "bug! no defined_phases yet");
+
+        bool has_expensive_test_phase(false);
+        EAPIPhases phases(_imp->eapi->supported()->ebuild_phases()->ebuild_install());
+        for (const auto & phase : phases)
+        {
+            if (phase.option("expensive_tests"))
+            {
+                auto defined_phases(_imp->defined_phases->parse_value());
+                if (defined_phases->end() != defined_phases->find(phase.equal_option("skipname")))
+                {
+                    has_expensive_test_phase = true;
+                    break;
+                }
+            }
+        }
+
+        if (has_expensive_test_phase)
+            build_options->add(std::make_shared<ELikeExpensiveTestsChoiceValue>(
+                    shared_from_this(), _imp->environment, build_options, mask_expensive_tests));
+    }
+
+    /* trace */
+    build_options->add(std::make_shared<ELikeTraceChoiceValue>(
+            shared_from_this(), _imp->environment, build_options));
+
+    /* preserve_work */
+    build_options->add(std::make_shared<ELikeWorkChoiceValue>(
+            shared_from_this(), _imp->environment, build_options, last_ewcvp));
 }
 
 void
@@ -1759,16 +1754,14 @@ EbuildID::set_scm_revision(const std::string & s) const
             eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name().empty() ||
             _imp->scm_revision)
         throw CannotChangeSCMRevision(stringify(*this), s);
-    else
-    {
-        _imp->scm_revision = std::make_shared<LiteralMetadataValueKey<std::string> >(
-                eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name(),
-                eapi()->supported()->ebuild_metadata_variables()->scm_revision()->description(),
-                mkt_normal,
-                s);
 
-        add_metadata_key(_imp->scm_revision);
-    }
+    _imp->scm_revision = std::make_shared<LiteralMetadataValueKey<std::string>>(
+            eapi()->supported()->ebuild_metadata_variables()->scm_revision()->name(),
+            eapi()->supported()->ebuild_metadata_variables()->scm_revision()->description(),
+            mkt_normal,
+            s);
+
+    add_metadata_key(_imp->scm_revision);
 }
 
 const std::shared_ptr<const Contents>
@@ -1776,4 +1769,3 @@ EbuildID::contents() const
 {
     return nullptr;
 }
-

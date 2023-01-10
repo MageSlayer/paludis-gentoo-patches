@@ -40,11 +40,10 @@ int main(int argc, char * argv[])
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* For each repository... */
-        for (auto r(env->begin_repositories()), r_end(env->end_repositories()) ;
-                r != r_end ; ++r)
+        for (const auto & repository : env->repositories())
         {
             /* A repository is identified by its name. */
-            cout << left << (*r)->name() << ":" << endl;
+            cout << left << repository->name() << ":" << endl;
 
             /* Like a PackageID, a Repository has metadata. Usually metadata
              * keys will be available for all of the configuration options for
@@ -53,17 +52,16 @@ int main(int argc, char * argv[])
              * \ref example_metadata_key.cc "example_metadata_key.cc" for how to
              * display a metadata key in detail. */
             cout << left << setw(30) << "    Metadata keys:" << endl;
-            for (Repository::MetadataConstIterator k((*r)->begin_metadata()), k_end((*r)->end_metadata()) ;
-                    k != k_end ; ++k)
-                cout << "        " << (*k)->human_name() << endl;
+            for (const auto & key : repository->metadata())
+                cout << "        " << key->human_name() << endl;
 
             /* Repositories support various methods for querying categories,
              * packages, IDs and so on. These methods are used by
              * Environment::operator[], but are also sometimes of direct use to
              * clients. */
-            std::shared_ptr<const CategoryNamePartSet> cats((*r)->category_names({ }));
+            std::shared_ptr<const CategoryNamePartSet> cats(repository->category_names({ }));
             cout << left << setw(30) << "    Number of categories:" << " " << cats->size() << endl;
-            std::shared_ptr<const PackageIDSequence> ids((*r)->package_ids(QualifiedPackageName("sys-apps/paludis"), { }));
+            std::shared_ptr<const PackageIDSequence> ids(repository->package_ids(QualifiedPackageName("sys-apps/paludis"), { }));
             cout << left << setw(30) << "    IDs for sys-apps/paludis:" << " " <<
                 join(indirect_iterator(ids->begin()), indirect_iterator(ids->end()), " ") << endl;
 

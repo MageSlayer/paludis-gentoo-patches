@@ -198,10 +198,10 @@ ERepositoryNews::update_news() const
 
                 bool local_show(false);
                 std::shared_ptr<const FSPathSequence> c(_imp->params.profiles());
-                for (FSPathSequence::ConstIterator p(c->begin()), p_end(c->end()) ; p != p_end ; ++p)
+                for (const auto & profile_path : *c)
                 {
                     std::string profile(strip_leading_string(strip_trailing_string(
-                                strip_leading_string(stringify(p->realpath()),
+                                strip_leading_string(stringify(profile_path.realpath()),
                                     stringify(_imp->e_repository->location_key()->parse_value().realpath() / "profiles")), "/"), "/"));
                     Log::get_instance()->message("e.news.profile_path", ll_debug, lc_no_context) <<
                         "Profile path is '" << profile << "'";
@@ -271,25 +271,28 @@ NewsFile::NewsFile(const FSPath & our_filename) :
 {
     Context context("When parsing GLEP 42 news file '" + stringify(our_filename) + "':");
 
-    bool seen_content_type(false), seen_title(false), seen_author(false), seen_news_item_format(false), seen_posted(false),
-         seen_revision(false);
+    bool seen_content_type(false);
+    bool seen_title(false);
+    bool seen_author(false);
+    bool seen_news_item_format(false);
+    bool seen_posted(false);
+    bool seen_revision(false);
 
     LineConfigFile line_file(our_filename, { lcfo_disallow_continuations, lcfo_no_skip_blank_lines, lcfo_disallow_comments });
-    for (LineConfigFile::ConstIterator line(line_file.begin()), line_end(line_file.end()) ;
-            line != line_end ; ++line)
+    for (const auto & line : line_file)
     {
-        if (line->empty())
+        if (line.empty())
             break;
 
-        std::string::size_type p(line->find(':'));
+        std::string::size_type p(line.find(':'));
         if (std::string::npos == p)
         {
-            throw NewsError(our_filename, "Bad header line '" + *line + "'");
+            throw NewsError(our_filename, "Bad header line '" + line + "'");
         }
         else
         {
-            std::string k(strip_leading(strip_trailing(line->substr(0, p), " \t\n"), " \t\n"));
-            std::string v(strip_leading(strip_trailing(line->substr(p + 1), " \t\n"), " \t\n"));
+            std::string k(strip_leading(strip_trailing(line.substr(0, p), " \t\n"), " \t\n"));
+            std::string v(strip_leading(strip_trailing(line.substr(p + 1), " \t\n"), " \t\n"));
             if (k == "Display-If-Installed")
                 _imp->display_if_installed.push_back(v);
             else if (k == "Display-If-Keyword")
@@ -310,7 +313,7 @@ NewsFile::NewsFile(const FSPath & our_filename) :
 
                 seen_content_type = true;
                 if (v != "text/plain")
-                    throw NewsError(our_filename, "Bad Content-Type line '" + *line + "'");
+                    throw NewsError(our_filename, "Bad Content-Type line '" + line + "'");
             }
             else if (k == "News-Item-Format")
             {
@@ -330,7 +333,7 @@ NewsFile::NewsFile(const FSPath & our_filename) :
             else if (k == "Revision")
                 seen_revision = true;
             else
-                throw NewsError(our_filename, "Invalid header '" + *line + "'");
+                throw NewsError(our_filename, "Invalid header '" + line + "'");
         }
     }
 

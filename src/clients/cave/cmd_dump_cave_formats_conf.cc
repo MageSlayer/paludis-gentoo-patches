@@ -198,7 +198,7 @@ DumpCaveFormatsConfCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("dump-cave-formats-conf takes no parameters");
 
     cout << "[colours]"   << endl;
@@ -219,12 +219,13 @@ DumpCaveFormatsConfCommand::run(
     get_formats.collect();
 
     std::string current_section;
-    for (auto & storer : get_formats.storers)
+    for (const auto & storer : get_formats.storers)
     {
         std::string::size_type p(storer.first.find("/"));
         if (std::string::npos == p)
             throw InternalError(PALUDIS_HERE, "weird key " + storer.first);
-        std::string section(storer.first.substr(0, p)), key(storer.first.substr(p + 1));
+        std::string section(storer.first.substr(0, p));
+        std::string key(storer.first.substr(p + 1));
 
         if (current_section != section)
         {

@@ -20,7 +20,8 @@ include(CMakeDependentOption)
 # TODO(compnerd) figure out if we want to just replace the HTMLDIR usage
 set(CMAKE_INSTALL_FULL_HTMLDIR "${CMAKE_INSTALL_FULL_DOCDIR}")
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 set(PALUDIS_PKG_CONFIG_SLOT ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR})
@@ -50,11 +51,11 @@ endif()
 set(PALUDIS_VIM_INSTALL_DIR "${CMAKE_INSTALL_FULL_DATADIR}/vim/vimfiles" CACHE PATH
     "vim installation directory")
 
-set(PYTHON_SUPPORTED_VERSIONS 2.7 3.6 3.7 3.8 3.9 3.10)
-set(PYTHON_VERSION "2.7" CACHE STRING
+set(PYTHON_SUPPORTED_VERSIONS 3.6 3.7 3.8 3.9 3.10 3.11)
+set(PYTHON_VERSION "3.10" CACHE STRING
   "Python version (${PYTHON_SUPPORTED_VERSIONS}) (requires corresponding Boost.Python as well)")
 
-set(RUBY_SUPPORTED_VERSIONS 2.6 2.7 3.0)
+set(RUBY_SUPPORTED_VERSIONS 2.6 2.7 3.0 3.1)
 set(RUBY_VERSION "2.7" CACHE STRING "Ruby Version (${RUBY_SUPPORTED_VERSIONS})")
 
 set(CMAKE_THREAD_PREFER_PTHREAD TRUE)
@@ -87,7 +88,6 @@ endif()
 # }}}
 
 # {{{ miscellaneous functions
-paludis_check_function_exists(strerror HAVE_STRERROR REQUIRED)
 paludis_check_function_exists(signal HAVE_SIGNAL REQUIRED)
 paludis_check_function_exists(grantpt HAVE_GRANTPT REQUIRED)
 paludis_check_function_exists(unlockpt HAVE_UNLOCKPT REQUIRED)
@@ -127,7 +127,7 @@ CHECK_C_SOURCE_COMPILES("
   #include <dirent.h>
   int main(void) {
     struct dirent dent;
-    dent.d_type = DT_LINK;
+    dent.d_type = DT_LNK;
     return 0;
   }
 "
@@ -337,10 +337,6 @@ if(ENABLE_PYTHON)
 endif()
 
 if(ENABLE_PYTHON_DOCS)
-  if(NOT ENABLE_PYTHON)
-    message(SEND_ERROR "python docs requires python to build")
-  endif()
-
   find_package(Sphinx REQUIRED)
 
   execute_process(COMMAND
@@ -356,25 +352,20 @@ endif()
 
 if(ENABLE_RUBY)
   list(FIND RUBY_SUPPORTED_VERSIONS "${RUBY_VERSION}" _ruby_version_index)
-
   if(_ruby_version_index EQUAL -1)
     message(SEND_ERROR "invalid ruby version specified (${RUBY_VERSION})")
   endif()
 
   find_package(Ruby ${RUBY_VERSION} REQUIRED)
+
+  set(PALUDIS_RUBY_INSTALL_DIR "${RUBY_SITEARCH_DIR}" CACHE PATH
+      "ruby installation directory")
 endif()
 
-set(PALUDIS_RUBY_INSTALL_DIR "${RUBY_SITEARCH_DIR}" CACHE PATH
-    "ruby installation directory")
-
 if(ENABLE_RUBY_DOCS)
-  if(NOT ENABLE_RUBY)
-    message(SEND_ERROR "ruby docs requires ruby to build")
-  endif()
-
   execute_process(COMMAND
-                    "${RUBY_EXECUTABLE}" -rubygems -e "require 'syntax/convertors/html'"
-                  OUTPUT_VARIABLE
+                    "${RUBY_EXECUTABLE}" -r rubygems -e "require 'syntax/convertors/html'"
+                  RESULT_VARIABLE
                     ruby_gem_syntax_available
                   OUTPUT_QUIET
                   ERROR_QUIET)
@@ -419,6 +410,9 @@ endif()
 enable_testing()
 if(ENABLE_GTEST)
   find_package(GTest 1.10 REQUIRED)
+  if (NOT TARGET GTest::gmock)
+    message(SEND_ERROR "gtest installation lacks required googlemock")
+  endif()
 endif()
 
 find_program(BASH_EXECUTABLE bash)

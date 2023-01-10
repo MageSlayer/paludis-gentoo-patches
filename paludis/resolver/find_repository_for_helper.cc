@@ -132,7 +132,7 @@ FindRepositoryForHelper::operator() (
 void
 FindRepositoryForHelper::set_chroot_path(const FSPath & p)
 {
-    _imp->chroot_path.reset(new FSPath(p));
+    _imp->chroot_path = std::make_unique<FSPath>(p);
 }
 
 namespace paludis

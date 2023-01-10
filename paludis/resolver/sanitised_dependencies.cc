@@ -219,25 +219,23 @@ namespace
         {
             AnyDepSpecChildHandler h(env, decider, our_resolution, our_id, changed_choices, parent_make_sanitised);
             std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(h));
-            std::list<SanitisedDependency> l;
+            std::list<SanitisedDependency> sanitised_deps;
             h.commit(
                     parent_make_sanitised,
-                    std::bind(&list_push_back<SanitisedDependency>, &l, std::placeholders::_1)
+                    std::bind(&list_push_back<SanitisedDependency>, &sanitised_deps, std::placeholders::_1)
                     );
 
             if (active_sublist)
             {
-                for (std::list<SanitisedDependency>::const_iterator i(l.begin()), i_end(l.end()) ;
-                        i != i_end ; ++i)
-                    visit_package_or_block_spec(i->spec());
+                for (const auto & dep : sanitised_deps)
+                    visit_package_or_block_spec(dep.spec());
             }
             else
             {
                 Save<std::list<PackageOrBlockDepSpec> *> save_active_sublist(&active_sublist, nullptr);
                 active_sublist = &*child_groups.insert(child_groups.end(), std::list<PackageOrBlockDepSpec>());
-                for (std::list<SanitisedDependency>::const_iterator i(l.begin()), i_end(l.end()) ;
-                        i != i_end ; ++i)
-                    visit_package_or_block_spec(i->spec());
+                for (const auto & dep : sanitised_deps)
+                    visit_package_or_block_spec(dep.spec());
             }
         }
 
@@ -274,14 +272,14 @@ namespace
                     std::pair<AnyChildScore, OperatorScore> worst_score(acs_better_than_best, os_better_than_best);
 
                     /* score of a group is the score of the worst child. */
-                    for (const auto & h : *g)
+                    for (const auto & dep_spec : *g)
                     {
-                        auto s(maybe_make_sanitised(PackageOrBlockDepSpec(h)));
+                        auto s(maybe_make_sanitised(PackageOrBlockDepSpec(dep_spec)));
                         if (s)
                         {
                             auto score(decider.find_any_score(our_resolution, our_id, *s));
                             Log::get_instance()->message("resolver.sanitised_dependencies.any_score", ll_debug, lc_context)
-                                << "Scored " << h << " as " << score.first << " " << score.second;
+                                << "Scored " << dep_spec << " as " << score.first << " " << score.second;
 
                             if (score < worst_score)
                                 worst_score = score;
@@ -298,9 +296,9 @@ namespace
                 if (g_best != child_groups.end())
                 {
                     /* might be nothing to do, if no labels are enabled */
-                    for (const auto & h : *g_best)
+                    for (const auto & spec : *g_best)
                     {
-                        auto s(maybe_make_sanitised(h));
+                        auto s(maybe_make_sanitised(spec));
                         if (s)
                             apply(*s);
                     }
@@ -355,21 +353,20 @@ namespace
 
         std::shared_ptr<SanitisedDependency> maybe_make_sanitised(const PackageOrBlockDepSpec & spec)
         {
-            std::stringstream adl, acs;
+            std::stringstream adl;
+            std::stringstream acs;
             auto classifier_builder(std::make_shared<LabelsClassifierBuilder>(env, our_id));
-            for (DependenciesLabelSequence::ConstIterator i((*labels_stack.begin())->begin()),
-                    i_end((*labels_stack.begin())->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & label : *(*labels_stack.begin()))
             {
-                adl << (adl.str().empty() ? "" : ", ") << stringify(**i);
-                (*i)->accept(*classifier_builder);
+                adl << (adl.str().empty() ? "" : ", ") << stringify(*label);
+                label->accept(*classifier_builder);
             }
 
             auto classifier(classifier_builder->create());
             if (classifier->any_enabled)
             {
-                for (auto & c : conditions_stack)
-                    acs << (acs.str().empty() ? "" : ", ") << stringify(c);
+                for (const auto & conditional_spec : conditions_stack)
+                    acs << (acs.str().empty() ? "" : ", ") << stringify(conditional_spec);
 
                 return make_shared_copy(make_named_values<SanitisedDependency>(
                             n::active_conditions_as_string() = acs.str(),

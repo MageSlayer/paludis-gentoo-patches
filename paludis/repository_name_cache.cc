@@ -166,9 +166,8 @@ Imp<RepositoryNameCache>::update(const PackageNamePart & p, NameCacheMap::iterat
     {
         SafeOFStream f(ff, -1, true);
 
-        for (std::set<CategoryNamePart>::const_iterator it(r->second.begin()),
-                 it_end(r->second.end()); it_end != it; ++it)
-            f << *it << std::endl;
+        for (const auto & it : r->second)
+            f << it << std::endl;
     }
     catch (const SafeOFStreamError & e)
     {
@@ -193,15 +192,15 @@ RepositoryNameCache::category_names_containing_package(const PackageNamePart & p
     std::unique_lock<std::mutex> l(_imp->mutex);
 
     if (! usable())
-        return std::shared_ptr<const CategoryNamePartSet>();
+        return nullptr;
 
     Context context("When using name cache at '" + stringify(_imp->location) + "':");
 
-    std::shared_ptr<CategoryNamePartSet> result(std::make_shared<CategoryNamePartSet>());
     NameCacheMap::iterator r(_imp->find(p));
     if (_imp->name_cache_map.end() == r)
-        return std::shared_ptr<const CategoryNamePartSet>();
+        return nullptr;
 
+    auto result(std::make_shared<CategoryNamePartSet>());
     std::copy(r->second.begin(), r->second.end(), result->inserter());
     return result;
 }
@@ -234,22 +233,19 @@ RepositoryNameCache::regenerate_cache() const
     std::unordered_map<std::string, std::string, Hash<std::string> > m;
 
     std::shared_ptr<const CategoryNamePartSet> cats(_imp->repo->category_names({ }));
-    for (CategoryNamePartSet::ConstIterator c(cats->begin()), c_end(cats->end()) ;
-            c != c_end ; ++c)
+    for (const auto & category : *cats)
     {
-        std::shared_ptr<const QualifiedPackageNameSet> pkgs(_imp->repo->package_names(*c, { }));
-        for (QualifiedPackageNameSet::ConstIterator p(pkgs->begin()), p_end(pkgs->end()) ;
-                p != p_end ; ++p)
-            m[stringify(p->package())].append(stringify(*c) + "\n");
+        std::shared_ptr<const QualifiedPackageNameSet> pkgs(_imp->repo->package_names(category, { }));
+        for (const auto & qpn : *pkgs)
+            m[stringify(qpn.package())].append(stringify(category) + "\n");
     }
 
-    for (std::unordered_map<std::string, std::string, Hash<std::string> >::const_iterator e(m.begin()), e_end(m.end()) ;
-            e != e_end ; ++e)
+    for (const auto & e : m)
     {
         try
         {
-            SafeOFStream f(_imp->location / stringify(e->first), -1, true);
-            f << e->second;
+            SafeOFStream f(_imp->location / stringify(e.first), -1, true);
+            f << e.second;
         }
         catch (const SafeOFStreamError & ee)
         {

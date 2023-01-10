@@ -25,20 +25,29 @@ import unittest
 
 Log.instance.log_level = LogLevel.WARNING
 
+
 class TestCase_01_Generator(unittest.TestCase):
     def test_01_get(self):
         pass
 
     def test_02_str(self):
         env = TestEnvironment()
-        self.assertEquals(str(Generator.All()), "all packages")
-        self.assertEquals(str(Generator.Matches(parse_user_package_dep_spec("foo/bar",
-            env, []), MatchPackageOptions())), "packages matching foo/bar")
-        self.assertEquals(str(Generator.Matches(parse_user_package_dep_spec("foo/bar",
-            env, []), [MatchPackageOption.IGNORE_ADDITIONAL_REQUIREMENTS])),
-            "packages matching foo/bar (ignoring additional requirements)")
+        spec = parse_user_package_dep_spec("foo/bar", env, [])
+
+        self.assertEqual(str(Generator.All()), "all packages")
+        self.assertEqual(
+            str(Generator.Matches(spec, MatchPackageOptions())),
+            "packages matching foo/bar",
+        )
+        self.assertEqual(
+            str(
+                Generator.Matches(
+                    spec, [MatchPackageOption.IGNORE_ADDITIONAL_REQUIREMENTS]
+                )
+            ),
+            "packages matching foo/bar (ignoring additional requirements)",
+        )
 
 
 if __name__ == "__main__":
     unittest.main()
-

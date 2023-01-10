@@ -515,10 +515,9 @@ SpecTreePrettyPrinter::do_annotations(const DepSpec & p)
     {
         bool done_open(false);
 
-        for (auto m(p.maybe_annotations()->begin()), m_end(p.maybe_annotations()->end()) ;
-                m != m_end ; ++m)
+        for (const auto & annotation : *p.maybe_annotations())
         {
-            switch (m->kind())
+            switch (annotation.kind())
             {
                 case dsak_literal:
                 case dsak_expandable:
@@ -538,11 +537,10 @@ SpecTreePrettyPrinter::do_annotations(const DepSpec & p)
                 _imp->s << " [[ ";
             done_open = true;
 
-            _imp->s << m->key() << " = [" << (m->value().empty() ? " " : " " + m->value() + " ") << "] ";
+            _imp->s << annotation.key() << " = [" << (annotation.value().empty() ? " " : " " + annotation.value() + " ") << "] ";
         }
 
         if (done_open)
             _imp->s << "]]";
     }
 }
-

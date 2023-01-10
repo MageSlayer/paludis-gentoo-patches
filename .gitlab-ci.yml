@@ -1,7 +1,7 @@
 stages:
   - docker-images
-  - build
   - clang-tidy
+  - build
 
 .dockerimage-template: &dockerimage-template
   stage: docker-images
@@ -64,7 +64,7 @@ Exherbo GCC:
     DISTRIBUTION: "exherbo"
     COMPILER: "gcc"
     VERSION: "latest"
-    PYTHON_VERSION: "3.9"
+    PYTHON_VERSION: "3.10"
   <<: *build-template
 
 Exherbo GCC testing:
@@ -72,7 +72,7 @@ Exherbo GCC testing:
     DISTRIBUTION: "exherbo"
     COMPILER: "gcc"
     VERSION: "next"
-    PYTHON_VERSION: "3.9"
+    PYTHON_VERSION: "3.10"
   allow_failure: true
   <<: *build-template
 
@@ -81,7 +81,7 @@ Exherbo clang:
     DISTRIBUTION: "exherbo"
     COMPILER: "clang"
     VERSION: "latest"
-    PYTHON_VERSION: "3.9"
+    PYTHON_VERSION: "3.10"
   <<: *build-template
 
 Gentoo GCC:
@@ -89,7 +89,7 @@ Gentoo GCC:
     DISTRIBUTION: "gentoo"
     COMPILER: "gcc"
     VERSION: "latest"
-    PYTHON_VERSION: "3.9"
+    PYTHON_VERSION: "3.10"
     RUBY_VERSION: "2.7"
   <<: *build-template
 
@@ -100,9 +100,9 @@ clang-tidy:
     DISTRIBUTION: "exherbo"
     COMPILER: "clang"
     VERSION: "latest"
-    PYTHON_VERSION: "3.9"
+    PYTHON_VERSION: "3.10"
   script:
     - *build-script
     - export PATH="${PATH}:$(llvm-config --prefix)/share/clang"
-    - run-clang-tidy.py -j$(nproc)
+    - run-clang-tidy -j$(nproc)
 

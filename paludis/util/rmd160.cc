@@ -87,8 +87,16 @@ namespace
 void
 RMD160::_update(const uint8_t * const block)
 {
-    uint32_t a(_h[0]), b(_h[1]), c(_h[2]), d(_h[3]), e(_h[4]);
-    uint32_t ap(_h[0]), bp(_h[1]), cp(_h[2]), dp(_h[3]), ep(_h[4]);
+    uint32_t a(_h[0]);
+    uint32_t b(_h[1]);
+    uint32_t c(_h[2]);
+    uint32_t d(_h[3]);
+    uint32_t e(_h[4]);
+    uint32_t ap(_h[0]);
+    uint32_t bp(_h[1]);
+    uint32_t cp(_h[2]);
+    uint32_t dp(_h[3]);
+    uint32_t ep(_h[4]);
     uint32_t t;
 
     for (unsigned j(0) ; j <= 79 ; ++j)
@@ -129,7 +137,8 @@ RMD160::RMD160(std::istream & stream) :
     _h[4] = 0xc3d2e1f0;
 
     uint8_t buffer[64];
-    int c, s(0);
+    int c;
+    int s(0);
     while (-1 != ((c = _get(stream))))
     {
         buffer[s++] = c;

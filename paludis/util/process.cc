@@ -17,44 +17,50 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <paludis/util/env_var_names.hh>
+#include <paludis/util/fs_path.hh>
+#include <paludis/util/log.hh>
 #include <paludis/util/persona.hh>
-#include <paludis/util/process.hh>
 #include <paludis/util/pimp-impl.hh>
 #include <paludis/util/pipe.hh>
+#include <paludis/util/process.hh>
 #include <paludis/util/pty.hh>
-#include <paludis/util/fs_path.hh>
-#include <paludis/util/stringify.hh>
 #include <paludis/util/safe_ofstream.hh>
-#include <paludis/util/log.hh>
+#include <paludis/util/stringify.hh>
 #include <paludis/util/system.hh>
-#include <paludis/util/env_var_names.hh>
 
-#include <iostream>
-#include <functional>
 #include <algorithm>
-#include <vector>
-#include <map>
 #include <cstdlib>
 #include <cstring>
-#include <thread>
+#include <functional>
+#include <iostream>
+#include <map>
+#include <memory>
 #include <mutex>
+#include <thread>
+#include <vector>
 
 #include <errno.h>
-#include <unistd.h>
+#include <fcntl.h>
 #include <grp.h>
+#include <limits.h>
 #include <pwd.h>
 #include <signal.h>
-#include <fcntl.h>
-#include <limits.h>
+#include <sys/ioctl.h>
+#include <sys/select.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <sys/select.h>
-#include <sys/ioctl.h>
+#include <unistd.h>
 
 using namespace paludis;
 
 ProcessError::ProcessError(const std::string & s) noexcept :
     Exception(s)
+{
+}
+
+ProcessError::ProcessError(int error, const std::string & message) noexcept :
+    Exception(message + ": " + std::string(std::strerror(error)))
 {
 }
 
@@ -377,9 +383,8 @@ ProcessCommand::exec_prepare()
             env_map.insert(std::make_pair(name, val));
     }
 
-    for (std::map<std::string, std::string>::const_iterator it(env_map.begin()),
-            it_end(env_map.end()) ; it_end != it ; ++it)
-        _imp->env_storage.push_back(it->first + "=" + it->second);
+    for (const auto & it : env_map)
+        _imp->env_storage.push_back(it.first + "=" + it.second);
 
     for(const std::string & env : _imp->env_storage)
         _imp->env_ptrs.push_back(env.c_str());
@@ -540,8 +545,11 @@ namespace paludis
 void
 RunningProcessThread::thread_func()
 {
-    bool prefix_stdout_buffer_has_newline(false), prefix_stderr_buffer_has_newline(false), want_to_finish(true);
-    bool done_extra_newlines_stdout(false), done_extra_newlines_stderr(false);
+    bool prefix_stdout_buffer_has_newline(false);
+    bool prefix_stderr_buffer_has_newline(false);
+    bool want_to_finish(true);
+    bool done_extra_newlines_stdout(false);
+    bool done_extra_newlines_stderr(false);
     std::string input_stream_pending;
 
     if (as_main_process && send_input_to_fd)
@@ -550,7 +558,8 @@ RunningProcessThread::thread_func()
     bool done(false);
     while (! done)
     {
-        fd_set read_fds, write_fds;
+        fd_set read_fds;
+        fd_set write_fds;
         int max_fd(0);
         FD_ZERO(&read_fds);
         FD_ZERO(&write_fds);
@@ -886,12 +895,13 @@ Process::run()
         _imp->command.echo_command_to(*_imp->echo_command_to);
 
     bool set_tty_size_envvars(false);
-    unsigned short columns(80), lines(24);
+    unsigned short columns(80);
+    unsigned short lines(24);
 
     std::unique_ptr<RunningProcessThread> thread;
     if (_imp->need_thread)
     {
-        thread.reset(new RunningProcessThread{});
+        thread = std::make_unique<RunningProcessThread>();
         thread->as_main_process = _imp->as_main_process;
 
         if (! _imp->prefix_stdout.empty())
@@ -899,7 +909,7 @@ Process::run()
             thread->prefix_stdout = _imp->prefix_stdout;
             if (! _imp->capture_stdout)
             {
-                thread->own_capture_stdout.reset(new SafeOFStream(STDOUT_FILENO, false));
+                thread->own_capture_stdout = std::make_unique<SafeOFStream>(STDOUT_FILENO, false);
                 _imp->capture_stdout = *thread->own_capture_stdout;
             }
         }
@@ -909,7 +919,7 @@ Process::run()
             thread->prefix_stderr = _imp->prefix_stderr;
             if (! _imp->capture_stderr)
             {
-                thread->own_capture_stderr.reset(new SafeOFStream(STDERR_FILENO, false));
+                thread->own_capture_stderr = std::make_unique<SafeOFStream>(STDERR_FILENO, false);
                 _imp->capture_stderr = *thread->own_capture_stderr;
             }
         }
@@ -953,30 +963,30 @@ Process::run()
         {
             thread->capture_stdout = _imp->capture_stdout;
             if (_imp->use_ptys)
-                thread->capture_stdout_pipe.reset(new Pty(true, columns, lines));
+                thread->capture_stdout_pipe = std::make_unique<Pty>(true, columns, lines);
             else
-                thread->capture_stdout_pipe.reset(new Pipe(true));
+                thread->capture_stdout_pipe = std::make_unique<Pipe>(true);
         }
 
         if (_imp->capture_stderr)
         {
             thread->capture_stderr = _imp->capture_stderr;
             if (_imp->use_ptys)
-                thread->capture_stderr_pipe.reset(new Pty(true, columns, lines));
+                thread->capture_stderr_pipe = std::make_unique<Pty>(true, columns, lines);
             else
-                thread->capture_stderr_pipe.reset(new Pipe(true));
+                thread->capture_stderr_pipe = std::make_unique<Pipe>(true);
         }
 
         if (_imp->capture_output_to_fd_stream)
         {
             thread->capture_output_to_fd = _imp->capture_output_to_fd_stream;
-            thread->capture_output_to_fd_pipe.reset(new Pipe(true));
+            thread->capture_output_to_fd_pipe = std::make_unique<Pipe>(true);
         }
 
         if (_imp->send_input_to_fd_stream)
         {
             thread->send_input_to_fd = _imp->send_input_to_fd_stream;
-            thread->send_input_to_fd_pipe.reset(new Pipe(true));
+            thread->send_input_to_fd_pipe = std::make_unique<Pipe>(true);
 
             int arg(::fcntl(thread->send_input_to_fd_pipe->write_fd(), F_GETFL, NULL));
             if (-1 == arg)
@@ -989,8 +999,8 @@ Process::run()
         if (_imp->pipe_command_handler)
         {
             thread->pipe_command_handler = _imp->pipe_command_handler;
-            thread->pipe_command_handler_command_pipe.reset(new Pipe(true));
-            thread->pipe_command_handler_response_pipe.reset(new Pipe(true));
+            thread->pipe_command_handler_command_pipe = std::make_unique<Pipe>(true);
+            thread->pipe_command_handler_response_pipe = std::make_unique<Pipe>(true);
         }
     }
 
@@ -1063,7 +1073,7 @@ Process::run()
 
     pid_t child(fork());
     if (-1 == child)
-        throw ProcessError("fork() failed: " + stringify(::strerror(errno)));
+        throw ProcessError(errno, "fork() failed");
     else if ((0 == child) ^ _imp->as_main_process)
     {
         if (_imp->as_main_process)
@@ -1199,7 +1209,7 @@ Process::run()
 
             pid_t p(fork());
             if (-1 == p)
-                throw ProcessError("fork() failed: " + stringify(::strerror(errno)));
+                throw ProcessError(errno, "fork() failed");
             else if (0 != p)
                 _exit(0);
         }

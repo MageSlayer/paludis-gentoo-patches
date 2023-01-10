@@ -118,9 +118,6 @@ using namespace paludis;
 using namespace paludis::resolver;
 using namespace cave;
 
-using std::cout;
-using std::endl;
-
 namespace
 {
     const std::shared_ptr<const Sequence<std::string> > add_resolver_targets(
@@ -136,7 +133,8 @@ namespace
             throw args::DoHelp("Must specify at least one target");
 
         const std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
-        bool seen_sets(false), seen_packages(false);
+        bool seen_sets(false);
+        bool seen_packages(false);
         for (const auto & target : *targets)
         {
             if (target.first.empty())
@@ -767,7 +765,7 @@ paludis::cave::resolve_common(
 {
     int retcode(0);
 
-    AllowChoiceChangesHelper allow_choice_changes_helper(env.get());;
+    AllowChoiceChangesHelper allow_choice_changes_helper(env.get());
     allow_choice_changes_helper.set_allow_choice_changes(! resolution_options.a_no_override_flags.specified());
 
     AllowedToRemoveHelper allowed_to_remove_helper(env.get());
@@ -1125,6 +1123,7 @@ paludis::cave::resolve_common(
                                     }
                                 }
 
+                        // NOLINTNEXTLINE(clang-analyzer-deadcode.DeadStores)
                         first = false;
                     }
 

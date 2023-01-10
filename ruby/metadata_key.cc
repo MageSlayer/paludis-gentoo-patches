@@ -416,8 +416,8 @@ namespace
                 Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
                 std::shared_ptr<const T_> c = std::static_pointer_cast<const MetadataCollectionKey<T_> >(*self_ptr)->parse_value();
                 VALUE result (rb_ary_new());
-                for (typename T_::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                        rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
+                for (const auto & item : *c)
+                    rb_ary_push(result, rb_str_new2(stringify(item).c_str()));
                 return result;
             }
             catch (const std::exception & e)
@@ -445,8 +445,8 @@ namespace
                 Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
                 std::shared_ptr<const T_> c = std::static_pointer_cast<const MetadataCollectionKey<T_> >(*self_ptr)->parse_value();
                 VALUE result (rb_hash_new());
-                for (typename T_::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                        rb_hash_aset(result, rb_str_new2(stringify(i->first).c_str()), rb_str_new2(stringify(i->second).c_str()));
+                for (const auto & item : *c)
+                    rb_hash_aset(result, rb_str_new2(stringify(item.first).c_str()), rb_str_new2(stringify(item.second).c_str()));
                 return result;
             }
             catch (const std::exception & e)
@@ -475,8 +475,8 @@ namespace
                 std::shared_ptr<const PackageIDSequence> c = std::static_pointer_cast<const MetadataCollectionKey<PackageIDSequence> >(
                         *self_ptr)->parse_value();
                 VALUE result (rb_ary_new());
-                for (PackageIDSequence::ConstIterator i(c->begin()), i_end(c->end()) ; i != i_end ; ++i)
-                    rb_ary_push(result, package_id_to_value(*i));
+                for (const auto & id : *c)
+                    rb_ary_push(result, package_id_to_value(id));
                 return result;
             }
             catch (const std::exception & e)
@@ -553,9 +553,8 @@ namespace
 
             VALUE result(rb_ary_new());
 
-            for (DependenciesLabelSequence::ConstIterator it(real_self->initial_labels()->begin()),
-                     it_end(real_self->initial_labels()->end()); it_end != it; ++it)
-                rb_ary_push(result, dependencies_label_to_value(*it));
+            for (const auto & label : *real_self->initial_labels())
+                rb_ary_push(result, dependencies_label_to_value(label));
 
             return result;
         }
@@ -577,10 +576,9 @@ namespace
         std::shared_ptr<const MetadataKey> * self_ptr;
         Data_Get_Struct(self, std::shared_ptr<const MetadataKey>, self_ptr);
         std::shared_ptr<const MetadataSectionKey> c = std::static_pointer_cast<const MetadataSectionKey>(*self_ptr);
-        for (MetadataSectionKey::MetadataConstIterator it((c)->begin_metadata()),
-                it_end((c)->end_metadata()); it_end != it; ++it)
+        for (const auto & key : c->metadata())
         {
-            VALUE val(metadata_key_to_value(*it));
+            VALUE val(metadata_key_to_value(key));
             if (Qnil != val)
                 rb_yield(val);
         }

@@ -1,5 +1,8 @@
-FROM marvins/exherbo-x86_64-pc-linux-gnu-gcc-with-clang:12
+FROM marvins/exherbo-x86_64-pc-linux-gnu-gcc-with-clang:14
 MAINTAINER Marvin Schmidt <marv@exherbo.org>
+
+# Build generic binaries
+COPY ./config/bashrc /etc/paludis/bashrc
 
 # Switch to option.conf.d layout
 RUN mkdir /etc/paludis/options.conf.d \

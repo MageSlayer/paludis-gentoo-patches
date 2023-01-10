@@ -21,12 +21,15 @@
 from paludis import *
 import unittest
 
+
 class TestCase_Names(unittest.TestCase):
     def test_1_create(self):
         self.names = {}
         self.names["cat-foo"] = CategoryNamePart("cat-foo")
         self.names["pkg"] = PackageNamePart("pkg")
-        self.names["cat-foo/pkg"] = QualifiedPackageName(self.names["cat-foo"], self.names["pkg"])
+        self.names["cat-foo/pkg"] = QualifiedPackageName(
+            self.names["cat-foo"], self.names["pkg"]
+        )
         self.names["cat-blah/pkg"] = QualifiedPackageName("cat-blah/pkg")
         self.names["3.3"] = SlotName("3.3")
         self.names["repo"] = RepositoryName("repo")
@@ -51,12 +54,16 @@ class TestCase_Names(unittest.TestCase):
             self.assertEqual(str(v), k)
 
     def test_4_operators(self):
-        self.assert_(CategoryNamePart("cat-foo") + PackageNamePart("pkg") == QualifiedPackageName("cat-foo/pkg"))
+        self.assertTrue(
+            CategoryNamePart("cat-foo") + PackageNamePart("pkg")
+            == QualifiedPackageName("cat-foo/pkg")
+        )
 
     def test_5_data_members(self):
         qpn = QualifiedPackageName("cat/foo")
         self.assertEqual(str(qpn.category), "cat")
         self.assertEqual(str(qpn.package), "foo")
+
 
 if __name__ == "__main__":
     unittest.main()

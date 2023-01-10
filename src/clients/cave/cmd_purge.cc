@@ -40,7 +40,6 @@ using namespace paludis;
 using namespace cave;
 
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -97,7 +96,7 @@ PurgeCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("purge takes no parameters");
 
     cmdline.resolution_options->apply_shortcuts();

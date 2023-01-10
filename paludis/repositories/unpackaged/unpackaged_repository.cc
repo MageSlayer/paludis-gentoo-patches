@@ -201,7 +201,7 @@ UnpackagedRepository::location_key() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnpackagedRepository::installed_root_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSPath> >();
+    return nullptr;
 }
 
 std::shared_ptr<Repository>

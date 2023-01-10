@@ -63,7 +63,7 @@ AFinder::visit(const FetchableURISpecTree::NodeType<ConditionalDepSpec>::Type & 
 }
 
 AFinder::ConstIterator
-AFinder::begin()
+AFinder::begin() const
 {
     return _specs.begin();
 }

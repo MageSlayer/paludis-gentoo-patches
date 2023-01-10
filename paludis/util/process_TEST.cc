@@ -107,7 +107,8 @@ TEST(Process, GrabStderr)
 
 TEST(Process, GrabStdoutStderr)
 {
-    std::stringstream stdout_stream, stderr_stream;
+    std::stringstream stdout_stream;
+    std::stringstream stderr_stream;
     Process echo_process(ProcessCommand({"bash", "-c", "echo monkey 1>&2 ; echo chimp"}));
     echo_process.capture_stdout(stdout_stream);
     echo_process.capture_stderr(stderr_stream);
@@ -160,7 +161,8 @@ TEST(Process, Chdir)
 
 TEST(Process, NoPty)
 {
-    std::stringstream stdout_stream, stderr_stream;
+    std::stringstream stdout_stream;
+    std::stringstream stderr_stream;
     Process test_t_process(ProcessCommand({"test", "-t", "1", "-o", "-t", "2"}));
     test_t_process.capture_stdout(stdout_stream);
     test_t_process.capture_stderr(stderr_stream);
@@ -169,7 +171,8 @@ TEST(Process, NoPty)
 
 TEST(Process, Pty)
 {
-    std::stringstream stdout_stream, stderr_stream;
+    std::stringstream stdout_stream;
+    std::stringstream stderr_stream;
     Process test_t_process(ProcessCommand({"test", "-t", "1", "-a", "-t", "2"}));
     test_t_process.capture_stdout(stdout_stream);
     test_t_process.capture_stderr(stderr_stream);
@@ -318,7 +321,8 @@ TEST(Process, ClearenvPres)
 
 TEST(Process, SendFD)
 {
-    std::stringstream stdout_stream, in_stream;
+    std::stringstream stdout_stream;
+    std::stringstream in_stream;
     in_stream << "monkey" << std::endl;
 
     Process cat_process(ProcessCommand({"bash", "-c", "cat <&$MAGIC_FD"}));
@@ -331,7 +335,8 @@ TEST(Process, SendFD)
 
 TEST(Process, SendFDFixed)
 {
-    std::stringstream stdout_stream, in_stream;
+    std::stringstream stdout_stream;
+    std::stringstream in_stream;
     in_stream << "monkey" << std::endl;
 
     Process cat_process(ProcessCommand({"bash", "-c", "cat <&5"}));

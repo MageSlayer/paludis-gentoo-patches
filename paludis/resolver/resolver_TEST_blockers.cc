@@ -356,7 +356,9 @@ namespace
             this->data->allowed_to_remove_helper.add_allowed_to_remove_spec(parse_user_package_dep_spec(stringify(cat) + "/dep", &this->data->env, UserPackageDepSpecOptions()));
 
             std::shared_ptr<const Resolved> resolved(this->data->get_resolved(cat + "/target"));
-            std::shared_ptr<ResolverTestCase::DecisionChecks> checks, u_checks, o_checks;
+            std::shared_ptr<ResolverTestCase::DecisionChecks> checks;
+            std::shared_ptr<ResolverTestCase::DecisionChecks> u_checks;
+            std::shared_ptr<ResolverTestCase::DecisionChecks> o_checks;
 
             // dep_version_ != 0 means it blocks itself, but only in exheres
             if (exheres_ && dep_version_ != 0)

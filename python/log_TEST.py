@@ -21,6 +21,7 @@
 from paludis import *
 import unittest
 
+
 class TestCase_Log(unittest.TestCase):
     def test_01_get_instance(self):
         Log.instance
@@ -31,12 +32,12 @@ class TestCase_Log(unittest.TestCase):
     def test_03_log_level(self):
         ll = Log.instance.log_level
 
-        self.assertEquals(ll, LogLevel.QA)
-        self.assert_(ll >= LogLevel.DEBUG)
-        self.assert_(ll <= LogLevel.SILENT)
+        self.assertEqual(ll, LogLevel.QA)
+        self.assertTrue(ll >= LogLevel.DEBUG)
+        self.assertTrue(ll <= LogLevel.SILENT)
 
         ll = LogLevel.WARNING
-        self.assertEquals(ll, LogLevel.WARNING)
+        self.assertEqual(ll, LogLevel.WARNING)
 
         self.assertRaises(Exception, ll, 123)
 

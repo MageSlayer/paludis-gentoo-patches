@@ -42,10 +42,9 @@ namespace
     choices_each(VALUE self_v)
     {
         std::shared_ptr<const Choices> self(value_to_choices(self_v));
-        for (Choices::ConstIterator k(self->begin()), k_end(self->end()) ;
-                k != k_end ; ++k)
+        for (const auto & choice : *self)
         {
-            VALUE val(choice_to_value(*k));
+            VALUE val(choice_to_value(choice));
             if (Qnil != val)
                 rb_yield(val);
         }
@@ -119,10 +118,9 @@ namespace
     choice_each(VALUE self_v)
     {
         std::shared_ptr<const Choice> self(value_to_choice(self_v));
-        for (Choice::ConstIterator k(self->begin()), k_end(self->end()) ;
-                k != k_end ; ++k)
+        for (const auto & value : *self)
         {
-            VALUE val(choice_value_to_value(*k));
+            VALUE val(choice_value_to_value(value));
             if (Qnil != val)
                 rb_yield(val);
         }

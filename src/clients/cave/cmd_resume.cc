@@ -55,7 +55,6 @@ using namespace cave;
 using namespace paludis::resolver;
 
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -113,41 +112,33 @@ namespace
 
         std::shared_ptr<Sequence<std::string> > args(std::make_shared<Sequence<std::string>>());
 
-        for (args::ArgsSection::GroupsConstIterator g(program_options.begin()), g_end(program_options.end()) ;
-                g != g_end ; ++g)
+        for (const auto & group : program_options)
         {
-            for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
-                    o != o_end ; ++o)
-                if ((*o)->specified())
+            for (const auto & option : group)
+                if (option->specified())
                 {
-                    const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    const std::shared_ptr<const Sequence<std::string> > f(option->forwardable_args());
                     std::copy(f->begin(), f->end(), args->back_inserter());
                 }
         }
 
-        for (args::ArgsSection::GroupsConstIterator g(execution_options.begin()), g_end(execution_options.end()) ;
-                g != g_end ; ++g)
+        for (const auto & group : execution_options)
         {
-            for (args::ArgsGroup::ConstIterator o(g->begin()), o_end(g->end()) ;
-                    o != o_end ; ++o)
-                if ((*o)->specified())
+            for (const auto & option : group)
+                if (option->specified())
                 {
-                    const std::shared_ptr<const Sequence<std::string> > f((*o)->forwardable_args());
+                    const std::shared_ptr<const Sequence<std::string> > f(option->forwardable_args());
                     std::copy(f->begin(), f->end(), args->back_inserter());
                 }
         }
 
-        for (Sequence<std::string>::ConstIterator p(data->targets()->begin()),
-                p_end(data->targets()->end()) ;
-                p != p_end ; ++p)
-            args->push_back(*p);
+        for (const auto & target : *data->targets())
+            args->push_back(target);
 
-        for (Sequence<std::string>::ConstIterator p(data->world_specs()->begin()),
-                p_end(data->world_specs()->end()) ;
-                p != p_end ; ++p)
+        for (const auto & spec : *data->world_specs())
         {
             args->push_back("--world-specs");
-            args->push_back(*p);
+            args->push_back(spec);
         }
 
         if (data->preserve_world())
@@ -169,9 +160,8 @@ namespace
             else
                 command = "$CAVE execute-resolution";
 
-            for (Sequence<std::string>::ConstIterator a(args->begin()), a_end(args->end()) ;
-                    a != a_end ; ++a)
-                command = command + " " + args::escape(*a);
+            for (const auto & arg : *args)
+                command = command + " " + args::escape(arg);
 
             Process process((ProcessCommand(command)));
             process
@@ -227,22 +217,20 @@ namespace
             const ResumeCommandLine & cmdline,
             const std::shared_ptr<JobLists> & lists)
     {
-        for (JobList<ExecuteJob>::ConstIterator c(lists->execute_job_list()->begin()),
-                c_end(lists->execute_job_list()->end()) ;
-                c != c_end ; ++c)
+        for (const auto & job : *lists->execute_job_list())
         {
             StateVisitor s;
-            if ((*c)->state())
-                (*c)->state()->accept(s);
+            if (job->state())
+                job->state()->accept(s);
 
             if (s.is_active)
-                (*c)->set_state(std::make_shared<JobPendingState>());
+                job->set_state(std::make_shared<JobPendingState>());
             else if (cmdline.a_retry_failed.specified() && s.is_failed)
-                (*c)->set_state(std::make_shared<JobPendingState>());
+                job->set_state(std::make_shared<JobPendingState>());
             else if (cmdline.a_skip_failed.specified() && s.is_failed)
-                (*c)->set_state(std::make_shared<JobSkippedState>());
+                job->set_state(std::make_shared<JobSkippedState>());
             else if (cmdline.a_retry_skipped.specified() && s.is_skipped)
-                (*c)->set_state(std::make_shared<JobPendingState>());
+                job->set_state(std::make_shared<JobPendingState>());
         }
     }
 }

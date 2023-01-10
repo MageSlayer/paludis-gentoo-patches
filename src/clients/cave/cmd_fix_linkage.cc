@@ -153,7 +153,7 @@ FixLinkageCommand::run(const std::shared_ptr<Environment> & env,
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("fix-linkage takes no parameters");
 
     resolve_cmdline.resolution_options.apply_shortcuts();

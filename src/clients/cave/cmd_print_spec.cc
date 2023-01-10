@@ -221,16 +221,15 @@ namespace
         {
             s.clear_version_requirements();
 
-            for (args::StringSetArg::ConstIterator a(cmdline.a_version_requirement.begin_args()),
-                    a_end(cmdline.a_version_requirement.end_args()) ;
-                    a != a_end ; ++a)
-                if (! a->empty())
+            for (const auto & version_req : cmdline.a_version_requirement.args())
+                if (! version_req.empty())
                 {
-                    std::string::size_type p(a->find_first_not_of("=<>~"));
+                    std::string::size_type p(version_req.find_first_not_of("=<>~"));
                     if (std::string::npos == p)
                         throw args::DoHelp("--" + cmdline.a_version_requirement.long_name() + " arguments should be in the form =1.23");
 
-                    std::string op(a->substr(0, p)), ver(a->substr(p));
+                    std::string op(version_req.substr(0, p));
+                    std::string ver(version_req.substr(p));
 
                     s.version_requirement(make_named_values<VersionRequirement>(
                                 n::version_operator() = VersionOperator(op),
@@ -253,11 +252,9 @@ namespace
         {
             s.clear_additional_requirements();
 
-            for (args::StringSetArg::ConstIterator a(cmdline.a_additional_requirement.begin_args()),
-                    a_end(cmdline.a_additional_requirement.end_args()) ;
-                    a != a_end ; ++a)
-                if (! a->empty())
-                    s.additional_requirement(std::make_shared<UserKeyRequirement>(*a));
+            for (const std::string & requirement : cmdline.a_additional_requirement.args())
+                if (! requirement.empty())
+                    s.additional_requirement(std::make_shared<UserKeyRequirement>(requirement));
         }
 
         cout << PackageDepSpec(s) << endl;
@@ -279,7 +276,7 @@ PrintSpecCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("print-spec takes exactly one parameter");
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { updso_allow_wildcards }));

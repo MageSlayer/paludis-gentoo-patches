@@ -113,11 +113,10 @@ namespace
             const std::function<void (const std::string &)> & step,
             const std::shared_ptr<const PackageIDSequence> & ids)
     {
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
+        for (const auto & id : *ids)
         {
             step("Checking candidates");
-            yield((*i)->uniquely_identifying_spec());
+            yield(id->uniquely_identifying_spec());
         }
     }
 }
@@ -137,7 +136,7 @@ FindCandidatesCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("find-candidates takes no parameters");
 
     return run_hosted(env, cmdline.search_options, cmdline.match_options, cmdline.index_options,
@@ -180,17 +179,15 @@ FindCandidatesCommand::run_hosted(
             step("Checking indexed candidates");
 
             std::list<PackageDepSpec> matches;
-            for (args::StringSetArg::ConstIterator k(search_options.a_matching.begin_args()),
-                    k_end(search_options.a_matching.end_args()) ;
-                    k != k_end ; ++k)
-                matches.push_back(parse_user_package_dep_spec(*k, env.get(), { updso_allow_wildcards }));
+            for (const auto & matching_spec : search_options.a_matching.args())
+                matches.push_back(parse_user_package_dep_spec(matching_spec, env.get(), { updso_allow_wildcards }));
 
             if (! matches.empty())
             {
                 bool ok(false);
 
-                for (auto & matche : matches)
-                    if (match_package(*env, matche, *(*env)[selection::RequireExactlyOne(generator::Matches(
+                for (auto & match : matches)
+                    if (match_package(*env, match, *(*env)[selection::RequireExactlyOne(generator::Matches(
                                         parse_user_package_dep_spec(spec, env.get(), { }), nullptr, { }))]->begin(), nullptr, { }))
                     {
                         ok = true;
@@ -299,11 +296,9 @@ FindCandidatesCommand::run_hosted(
         else
             mask_filter = std::make_shared<filter::All>();
 
-        for (args::StringSetArg::ConstIterator k(search_options.a_matching.begin_args()),
-                k_end(search_options.a_matching.end_args()) ;
-                k != k_end ; ++k)
+        for (const auto & matching_spec : search_options.a_matching.args())
         {
-            generator::Matches m(parse_user_package_dep_spec(*k, env.get(), { updso_allow_wildcards }), nullptr, { });
+            generator::Matches m(parse_user_package_dep_spec(matching_spec, env.get(), { updso_allow_wildcards }), nullptr, { });
 
             if (match_generator)
                 match_generator = std::make_shared<generator::Union>(*match_generator, m);

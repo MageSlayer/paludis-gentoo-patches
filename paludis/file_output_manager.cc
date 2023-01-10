@@ -171,11 +171,11 @@ FileOutputManager::factory_create(
         const OutputManagerFactory::CreateChildFunction & create_child_function,
         const OutputManagerFactory::ReplaceVarsFunc & replace_vars_func)
 {
-    std::string filename_s(key_func("filename")),
-        keep_on_success_s(key_func("keep_on_success")),
-        keep_on_empty_s(key_func("keep_on_empty")),
-        summary_output_manager_s(key_func("summary_output_manager")),
-        summary_output_message_s(key_func("summary_output_message"));
+    std::string filename_s(key_func("filename"));
+    std::string keep_on_success_s(key_func("keep_on_success"));
+    std::string keep_on_empty_s(key_func("keep_on_empty"));
+    std::string summary_output_manager_s(key_func("summary_output_manager"));
+    std::string summary_output_message_s(key_func("summary_output_message"));
 
     if (filename_s.empty())
         throw ConfigurationError("Key 'filename' not specified when creating a file output manager");

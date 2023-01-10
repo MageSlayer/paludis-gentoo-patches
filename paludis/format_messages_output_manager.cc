@@ -201,13 +201,13 @@ FormatMessagesOutputManager::factory_create(
         const OutputManagerFactory::CreateChildFunction & create_child_function,
         const OutputManagerFactory::ReplaceVarsFunc & replace_vars_func)
 {
-    std::string child_s(key_func("child")),
-        format_debug_s(key_func("format_debug")),
-        format_info_s(key_func("format_info")),
-        format_warn_s(key_func("format_warn")),
-        format_error_s(key_func("format_error")),
-        format_log_s(key_func("format_log")),
-        format_status_s(key_func("format_status"));
+    std::string child_s(key_func("child"));
+    std::string format_debug_s(key_func("format_debug"));
+    std::string format_info_s(key_func("format_info"));
+    std::string format_warn_s(key_func("format_warn"));
+    std::string format_error_s(key_func("format_error"));
+    std::string format_log_s(key_func("format_log"));
+    std::string format_status_s(key_func("format_status"));
 
     std::shared_ptr<OutputManager> child(create_child_function(child_s));
 

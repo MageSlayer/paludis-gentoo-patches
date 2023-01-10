@@ -62,9 +62,9 @@ paludis::erepository::do_info_action(
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
     bool userpriv_ok((! userpriv_restrict) && (env->reduced_gid() != getgid()) &&
             check_userpriv(FSPath(repo->params().builddir()), env, id->eapi()->supported()->userpriv_cannot_use_root()));
@@ -80,10 +80,9 @@ paludis::erepository::do_info_action(
     std::shared_ptr<const FSPathSequence> exlibsdirs(repo->layout()->exlibsdirs(id->name()));
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_info());
-    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
-            phase != phase_end ; ++phase)
+    for (const auto & phase : phases)
     {
-        if (phase->option("installed=true"))
+        if (phase.option("installed=true"))
             continue;
 
         const auto params = repo->params();
@@ -91,8 +90,8 @@ paludis::erepository::do_info_action(
 
         EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                 n::builddir() = params.builddir(),
-                n::clearenv() = phase->option("clearenv"),
-                n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                n::clearenv() = phase.option("clearenv"),
+                n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                 n::distdir() = params.distdir(),
                 n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                 n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -110,9 +109,9 @@ paludis::erepository::do_info_action(
                         ? (*params.master_repositories()->begin())->params().location()
                         : params.location(),
                 n::root() = stringify(env->preferred_root_key()->parse_value()),
-                n::sandbox() = phase->option("sandbox"),
-                n::sydbox() = phase->option("sydbox"),
-                n::userpriv() = phase->option("userpriv") && userpriv_ok,
+                n::sandbox() = phase.option("sandbox"),
+                n::sydbox() = phase.option("sydbox"),
+                n::userpriv() = phase.option("userpriv") && userpriv_ok,
                 n::volatile_files() = nullptr
                 ));
 

@@ -79,95 +79,95 @@ namespace paludis
             std::string reduced_groupname() const;
 
         protected:
-            virtual void need_keys_added() const;
-            virtual void populate_sets() const;
+            void need_keys_added() const override;
+            void populate_sets() const override;
 
         public:
             ///\name Basic operations
             ///\{
 
             PortageEnvironment(const std::string &);
-            virtual ~PortageEnvironment();
+            ~PortageEnvironment() override;
 
             ///\}
 
-            virtual Tribool interest_in_suggestion(
+            Tribool interest_in_suggestion(
                     const std::shared_ptr<const PackageID> & from_id,
-                    const PackageDepSpec & spec) const;
+                    const PackageDepSpec & spec) const override;
 
-            virtual const Tribool want_choice_enabled(
+            const Tribool want_choice_enabled(
                     const std::shared_ptr<const PackageID> &,
                     const std::shared_ptr<const Choice> &,
                     const UnprefixedChoiceName &
                     ) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string value_for_choice_parameter(
+            const std::string value_for_choice_parameter(
                     const std::shared_ptr<const PackageID> &,
                     const std::shared_ptr<const Choice> &,
                     const UnprefixedChoiceName &
                     ) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
+            std::shared_ptr<const Set<UnprefixedChoiceName> > known_choice_value_names(
                     const std::shared_ptr<const PackageID> &,
                     const std::shared_ptr<const Choice> &
                     ) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const FSPathSequence> bashrc_files() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<const FSPathSequence> bashrc_files() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const FSPathSequence> hook_dirs() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<const FSPathSequence> hook_dirs() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const MirrorsSequence> mirrors(const std::string &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<const MirrorsSequence> mirrors(const std::string &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual HookResult perform_hook(
+            HookResult perform_hook(
                     const Hook &,
                     const std::shared_ptr<OutputManager> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool accept_license(const std::string &, const std::shared_ptr<const PackageID> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool accept_license(const std::string &, const std::shared_ptr<const PackageID> &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool accept_keywords(const std::shared_ptr<const KeywordNameSet> &, const std::shared_ptr<const PackageID> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool accept_keywords(const std::shared_ptr<const KeywordNameSet> &, const std::shared_ptr<const PackageID> &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::shared_ptr<const Mask> mask_for_user(const std::shared_ptr<const PackageID> &, const bool) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const Mask> mask_for_user(const std::shared_ptr<const PackageID> &, const bool) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool unmasked_by_user(const std::shared_ptr<const PackageID> &, const std::string &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool unmasked_by_user(const std::shared_ptr<const PackageID> &, const std::string &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::string reduced_username() const;
+            std::string reduced_username() const override;
 
-            virtual uid_t reduced_uid() const;
+            uid_t reduced_uid() const override;
 
-            virtual gid_t reduced_gid() const;
+            gid_t reduced_gid() const override;
 
-            virtual bool add_to_world(const QualifiedPackageName &) const;
+            bool add_to_world(const QualifiedPackageName &) const override;
 
-            virtual bool add_to_world(const SetName &) const;
+            bool add_to_world(const SetName &) const override;
 
-            virtual bool remove_from_world(const QualifiedPackageName &) const;
+            bool remove_from_world(const QualifiedPackageName &) const override;
 
-            virtual bool remove_from_world(const SetName &) const;
+            bool remove_from_world(const SetName &) const override;
 
-            virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > config_location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > preferred_root_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > system_root_key() const;
+            const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const override;
+            const std::shared_ptr<const MetadataValueKey<FSPath> > config_location_key() const override;
+            const std::shared_ptr<const MetadataValueKey<FSPath> > preferred_root_key() const override;
+            const std::shared_ptr<const MetadataValueKey<FSPath> > system_root_key() const override;
 
-            virtual const std::shared_ptr<OutputManager> create_output_manager(
-                    const CreateOutputManagerInfo &) const;
+            const std::shared_ptr<OutputManager> create_output_manager(
+                    const CreateOutputManagerInfo &) const override;
 
-            virtual const std::shared_ptr<Repository> repository_from_new_config_file(
-                    const FSPath &) PALUDIS_ATTRIBUTE((noreturn));
+            const std::shared_ptr<Repository> repository_from_new_config_file(
+                    const FSPath &) override PALUDIS_ATTRIBUTE((noreturn));
 
-            virtual void update_config_files_for_package_move(
-                    const PackageDepSpec &, const QualifiedPackageName &) const;
+            void update_config_files_for_package_move(
+                    const PackageDepSpec &, const QualifiedPackageName &) const override;
     };
 }
 

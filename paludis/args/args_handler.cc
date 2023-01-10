@@ -201,7 +201,8 @@ ArgsHandler::run(
 
     args.insert(args.end(), argseq->begin(), argseq->end());
 
-    ArgsIterator argit(args.begin()), arge(args.end());
+    ArgsIterator argit(args.begin());
+    ArgsIterator arge(args.end());
 
     for ( ; argit != arge; ++argit )
     {
@@ -314,15 +315,13 @@ void
 ArgsHandler::dump_to_stream(std::ostream & s) const
 {
     ArgsDumper dump(s);
-    for (ArgsSectionsConstIterator a(begin_args_sections()), a_end(end_args_sections()) ;
-            a != a_end ; ++a)
+    for (const auto & section : args_sections())
     {
-        for (ArgsSection::GroupsConstIterator g(a->begin()), g_end(a->end()) ;
-                g != g_end ; ++g)
+        for (const auto & group : section)
         {
-            s << g->name() << ":" << std::endl;
+            s << group.name() << ":" << std::endl;
 
-            std::for_each(indirect_iterator(g->begin()), indirect_iterator(g->end()), accept_visitor(dump));
+            std::for_each(indirect_iterator(group.begin()), indirect_iterator(group.end()), accept_visitor(dump));
 
             s << std::endl;
         }

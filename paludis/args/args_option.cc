@@ -132,7 +132,7 @@ StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
 
 StringArg::StringArg(ArgsGroup * const g, const std::string & our_long_name,
         const char our_short_name, const std::string & our_description,
-        void (* v) (const std::string &), const bool neg) :
+        ValidatorFunction v, const bool neg) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
     _can_be_negated(neg),
     _validator(v)
@@ -201,7 +201,7 @@ StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & our_long_nam
 
 StringSetArg::StringSetArg(ArgsGroup * const g, const std::string & our_long_name,
         const char our_short_name, const std::string & our_description,
-        const StringSetArgOptions & opts, void (* v) (const std::string &)) :
+        const StringSetArgOptions & opts, ValidatorFunction v) :
     ArgsOption(g, our_long_name, our_short_name, our_description),
     _imp(),
     _validator(v)
@@ -239,7 +239,7 @@ StringSetArg::add_argument(const std::string & arg)
             throw BadValue("--" + long_name(), arg);
 
     if (_validator)
-        (*_validator)(arg);
+        _validator(arg);
 
     _imp->args.insert(arg);
 }
@@ -260,11 +260,10 @@ StringSetArg::forwardable_args() const
     std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
     if (specified())
     {
-        for (ConstIterator i(begin_args()), i_end(end_args()) ;
-                i != i_end ; ++i)
+        for (const auto & arg : args())
         {
             result->push_back("--" + long_name());
-            result->push_back(*i);
+            result->push_back(arg);
         }
     }
     return result;
@@ -306,6 +305,12 @@ StringSequenceArg::end_args() const
     return ConstIterator(_imp->args.end());
 }
 
+IteratorRange<StringSequenceArg::ConstIterator>
+StringSequenceArg::args() const
+{
+    return {_imp->args};
+}
+
 void
 StringSequenceArg::add_argument(const std::string & arg)
 {
@@ -329,11 +334,10 @@ StringSequenceArg::forwardable_args() const
     std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
     if (specified())
     {
-        for (ConstIterator i(begin_args()), i_end(end_args()) ;
-                i != i_end ; ++i)
+        for (const auto & arg : args())
         {
             result->push_back("--" + long_name());
-            result->push_back(*i);
+            result->push_back(arg);
         }
     }
     return result;
@@ -433,7 +437,7 @@ StringArg::set_argument(const std::string & arg)
     Context context("When handling argument '" + arg + "' for '--" + long_name() + "':");
 
     if (_validator)
-        (*_validator)(arg);
+        _validator(arg);
 
     _argument = arg;
 }
@@ -514,6 +518,12 @@ EnumArg::end_allowed_args() const
     return AllowedArgConstIterator(_imp->allowed_args.end());
 }
 
+IteratorRange<EnumArg::AllowedArgConstIterator>
+EnumArg::allowed_args() const
+{
+    return {_imp->allowed_args};
+}
+
 const std::string
 EnumArg::forwardable_string() const
 {
@@ -547,6 +557,12 @@ StringSetArg::AllowedArgConstIterator
 StringSetArg::end_allowed_args() const
 {
     return AllowedArgConstIterator(_imp->allowed_args.end());
+}
+
+IteratorRange<StringSetArg::AllowedArgConstIterator>
+StringSetArg::allowed_args() const
+{
+    return {_imp->allowed_args};
 }
 
 bool

@@ -484,9 +484,9 @@ namespace
         std::remove_copy_if(first_iterator(result->begin()),
                             first_iterator(result->end()),
                             std::front_inserter(qpns),
-                            std::bind(std::logical_and<bool>(),
-                                      std::bind(std::not1(is_important), _1),
-                                      std::bind(std::not1(is_installed), _1)));
+                            std::bind(std::logical_and<>(),
+                                      std::bind(std::not_fn(is_important), _1),
+                                      std::bind(std::not_fn(is_installed), _1)));
         if (! qpns.empty() && next(qpns.begin()) == qpns.end())
             return;
 
@@ -494,14 +494,14 @@ namespace
         if (! qpns.empty() && next(qpns.begin()) == qpns.end())
             return;
 
-        qpns.remove_if(std::bind(std::logical_and<bool>(),
+        qpns.remove_if(std::bind(std::logical_and<>(),
                        std::bind(is_important, _1),
-                       std::bind(std::not1(is_installed), _1)));
+                       std::bind(std::not_fn(is_installed), _1)));
         if (! qpns.empty() && next(qpns.begin()) == qpns.end())
             return;
 
-        qpns.remove_if(std::bind(std::logical_and<bool>(),
-                       std::bind(std::not1(is_important), _1),
+        qpns.remove_if(std::bind(std::logical_and<>(),
+                       std::bind(std::not_fn(is_important), _1),
                        std::bind(is_installed, _1)));
         if (! qpns.empty() && next(qpns.begin()) == qpns.end())
             return;
@@ -528,23 +528,22 @@ EnvironmentImplementation::fetch_unique_qualified_package_name(const PackageName
     std::shared_ptr<QPNIMap> result(new QPNIMap);
     std::set<std::pair<CategoryNamePart, RepositoryName>, CategoryRepositoryNamePairComparator> checked;
 
-    std::shared_ptr<const PackageIDSequence> pkgs((*this)[selection::AllVersionsUnsorted(
+    std::shared_ptr<const PackageIDSequence> ids((*this)[selection::AllVersionsUnsorted(
                 generator::Matches(make_package_dep_spec({ }).package_name_part(p), nullptr, { }) | f)]);
 
-    for (IndirectIterator<PackageIDSequence::ConstIterator> it(pkgs->begin()),
-             it_end(pkgs->end()); it_end != it; ++it)
+    for (const auto & id : *ids)
     {
-        Context local_context("When checking category '" + stringify(it->name().category()) + "' in repository '" +
-                stringify(it->repository_name()) + "':");
+        Context local_context("When checking category '" + stringify(id->name().category()) + "' in repository '" +
+                stringify(id->repository_name()) + "':");
 
-        if (! checked.insert(std::make_pair(it->name().category(), it->repository_name())).second)
+        if (! checked.insert(std::make_pair(id->name().category(), id->repository_name())).second)
             continue;
 
-        auto repo(fetch_repository(it->repository_name()));
+        auto repo(fetch_repository(id->repository_name()));
         std::shared_ptr<const CategoryNamePartSet> unimportant_cats(repo->unimportant_category_names({ }));
-        bool is_important(unimportant_cats->end() == unimportant_cats->find(it->name().category()));
+        bool is_important(unimportant_cats->end() == unimportant_cats->find(id->name().category()));
         bool is_in_important_repo(! repo->is_unimportant());
-        QPNIMap::iterator i(result->insert(std::make_pair(it->name(), std::make_pair(is_important, is_in_important_repo))).first);
+        QPNIMap::iterator i(result->insert(std::make_pair(id->name(), std::make_pair(is_important, is_in_important_repo))).first);
         i->second.first = i->second.first || is_important;
         i->second.second = i->second.second || is_in_important_repo;
     }
@@ -626,12 +625,11 @@ EnvironmentImplementation::expand_licence(
 
         for (const auto & repository : repositories())
         {
-            auto l(repository->maybe_expand_licence_nonrecursively(t));
-            if (l)
-                for (auto i(l->begin()), i_end(l->end()) ;
-                        i != i_end ; ++i)
-                    if (result->end() == result->find(*i))
-                        todo.insert(*i);
+            auto licences(repository->maybe_expand_licence_nonrecursively(t));
+            if (licences)
+                for (const auto & licence : *licences)
+                    if (result->end() == result->find(licence))
+                        todo.insert(licence);
         }
     }
 

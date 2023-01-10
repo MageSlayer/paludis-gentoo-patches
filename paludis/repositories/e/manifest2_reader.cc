@@ -74,14 +74,15 @@ Manifest2Reader::Manifest2Reader(const FSPath & f) :
 
     LineConfigFile lines(_imp->manifest, { });
 
-    for (LineConfigFile::ConstIterator l(lines.begin()), l_end(lines.end()) ;
-        l != l_end ; ++l)
+    for (const auto & line : lines)
     {
         std::list<std::string> tokens;
-        tokenise_whitespace((*l), create_inserter<std::string>(std::back_inserter(tokens)));
-        std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end());
+        tokenise_whitespace(line, create_inserter<std::string>(std::back_inserter(tokens)));
+        std::list<std::string>::const_iterator t(tokens.begin());
+        std::list<std::string>::const_iterator t_end(tokens.end());
 
-        std::string type, name;
+        std::string type;
+        std::string name;
         off_t size;
         std::shared_ptr<Map<std::string, std::string> > hashes(std::make_shared<Map<std::string, std::string> >());
 

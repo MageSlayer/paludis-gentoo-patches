@@ -203,10 +203,9 @@ namespace
                 cout << indent << left << setw(30) << "    Keys:" << endl;
 
                 /* A MetadataSectionKey contains other keys. */
-                for (MetadataSectionKey::MetadataConstIterator k(key.begin_metadata()), k_end(key.end_metadata()) ;
-                        k != k_end ; ++k)
+                for (const auto & section_key : key.metadata())
                 {
-                    show_key(**k, indent + "    ");
+                    show_key(*section_key, indent + "    ");
                     cout << endl;
                 }
             }
@@ -253,18 +252,16 @@ int main(int argc, char * argv[])
                     generator::Package(QualifiedPackageName("sys-apps/paludis")))]);
 
         /* For each ID: */
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
+        for (const auto & id : *ids)
         {
-            cout << **i << ":" << endl;
+            cout << *id << ":" << endl;
 
             /* For each metadata key: */
-            for (PackageID::MetadataConstIterator k((*i)->begin_metadata()), k_end((*i)->end_metadata()) ;
-                    k != k_end ; ++k)
+            for (const auto & key : id->metadata())
             {
                 /* Display it. Note that PackageID::MetadataConstIterator returns a std::shared_ptr
-                 * to a key, so we dereference twice (or we could have used IndirectIterator). */
-                show_key(**k);
+                 * to a key, so we dereference it */
+                show_key(*key);
                 cout << endl;
             }
 
@@ -272,18 +269,16 @@ int main(int argc, char * argv[])
         }
 
         /* And for each repository: */
-        for (auto r(env->begin_repositories()), r_end(env->end_repositories()) ;
-                r != r_end ; ++r)
+        for (const auto & repository : env->repositories())
         {
-            cout << (*r)->name() << ":" << endl;
+            cout << repository->name() << ":" << endl;
 
             /* For each metadata key: */
-            for (Repository::MetadataConstIterator k((*r)->begin_metadata()), k_end((*r)->end_metadata()) ;
-                    k != k_end ; ++k)
+            for (const auto & key : repository->metadata())
             {
                 /* Display it. Repository::MetadataConstIterator also returns a
                  * std::shared_ptr to the key. */
-                show_key(**k);
+                show_key(*key);
                 cout << endl;
             }
 
@@ -317,6 +312,4 @@ int main(int argc, char * argv[])
 
     return exit_status;
 }
-
-
 

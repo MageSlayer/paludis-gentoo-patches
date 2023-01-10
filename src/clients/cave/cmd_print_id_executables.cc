@@ -93,7 +93,7 @@ PrintIDExecutablesCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("print-id-executables takes exactly one parameter");
 
     return executables_common(env, *cmdline.begin_parameters(), &print_fsentry, cmdline.a_all.specified(),

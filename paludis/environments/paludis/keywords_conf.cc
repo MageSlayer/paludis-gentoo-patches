@@ -88,11 +88,10 @@ KeywordsConf::add(const FSPath & filename)
     if (! f)
         return;
 
-    for (LineConfigFile::ConstIterator line(f->begin()), line_end(f->end()) ;
-            line != line_end ; ++line)
+    for (const auto & line : *f)
     {
         std::vector<std::string> tokens;
-        tokenise_whitespace_quoted(*line, std::back_inserter(tokens));
+        tokenise_whitespace_quoted(line, std::back_inserter(tokens));
 
         if (tokens.size() < 2)
             continue;
@@ -143,20 +142,20 @@ KeywordsConf::query(const std::shared_ptr<const KeywordNameSet> & k, const std::
         SpecificMap::const_iterator i(_imp->qualified.find(e->name()));
         if (i != _imp->qualified.end())
         {
-            for (const auto & j : i->second)
+            for (const auto & spec_to_keywords : i->second)
             {
-                if (! match_package(*_imp->env, *j.first, e, nullptr, { }))
+                if (! match_package(*_imp->env, *spec_to_keywords.first, e, nullptr, { }))
                     continue;
 
-                for (const auto & l : j.second)
+                for (const auto & keyword : spec_to_keywords.second)
                 {
-                    if (l == star_keyword)
+                    if (keyword == star_keyword)
                         return true;
 
-                    else if (l == minus_star_keyword)
+                    else if (keyword == minus_star_keyword)
                         break_when_done = true;
 
-                    else if (k->end() != k->find(l))
+                    else if (k->end() != k->find(keyword))
                         return true;
                 }
             }
@@ -170,33 +169,31 @@ KeywordsConf::query(const std::shared_ptr<const KeywordNameSet> & k, const std::
     {
         std::unique_lock<std::mutex> lock(_imp->set_mutex);
 
-        for (NamedSetMap::iterator i(_imp->set.begin()), i_end(_imp->set.end()) ;
-                 i != i_end ; ++i)
+        for (auto & name_to_entry : _imp->set)
         {
-            if (! i->second.first)
+            if (! name_to_entry.second.first)
             {
-                i->second.first = _imp->env->set(i->first);
-                if (! i->second.first)
+                name_to_entry.second.first = _imp->env->set(name_to_entry.first);
+                if (! name_to_entry.second.first)
                 {
                     Log::get_instance()->message("paludis_environment.keywords_conf.unknown_set", ll_warning, lc_no_context) << "Set name '"
-                        << i->first << "' does not exist";
-                    i->second.first = std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
+                        << name_to_entry.first << "' does not exist";
+                    name_to_entry.second.first = std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
                 }
             }
 
-            if (! match_package_in_set(*_imp->env, *i->second.first, e, { }))
+            if (! match_package_in_set(*_imp->env, *name_to_entry.second.first, e, { }))
                 continue;
 
-            for (KeywordsList::const_iterator l(i->second.second.begin()), l_end(i->second.second.end()) ;
-                    l != l_end ; ++l)
+            for (const auto & keyword : name_to_entry.second.second)
             {
-                if (k->end() != k->find(*l))
+                if (k->end() != k->find(keyword))
                     return true;
 
-                if (*l == star_keyword)
+                if (keyword == star_keyword)
                     return true;
 
-                if (*l == minus_star_keyword)
+                if (keyword == minus_star_keyword)
                     break_when_done = true;
             }
         }
@@ -207,22 +204,20 @@ KeywordsConf::query(const std::shared_ptr<const KeywordNameSet> & k, const std::
         return false;
 
     /* last: unspecific */
-    for (PDSToKeywordsList::const_iterator j(_imp->unqualified.begin()), j_end(_imp->unqualified.end()) ;
-            j != j_end ; ++j)
+    for (const auto & spec_to_keywords : _imp->unqualified)
     {
-        if (! match_package(*_imp->env, *j->first, e, nullptr, { }))
+        if (! match_package(*_imp->env, *spec_to_keywords.first, e, nullptr, { }))
             continue;
 
-        for (const auto & l : j->second)
+        for (const auto & keyword : spec_to_keywords.second)
         {
-            if (k->end() != k->find(l))
+            if (k->end() != k->find(keyword))
                 return true;
 
-            if (l == star_keyword)
+            if (keyword == star_keyword)
                 return true;
         }
     }
 
     return false;
 }
-

@@ -104,17 +104,15 @@ InfoVarsMetadataKey::parse_value() const
         return _imp->value;
     _imp->value = std::make_shared<Set<std::string>>();
 
-    for (FSPathSequence::ConstIterator location(_imp->locations->begin()), location_end(_imp->locations->end()) ;
-            location != location_end ; ++location)
+    for (const auto & location : *_imp->locations)
     {
-        Context context("When loading info variables file '" + stringify(*location) + "':");
+        Context context("When loading info variables file '" + stringify(location) + "':");
 
-        if (location->stat().is_regular_file_or_symlink_to_regular_file())
+        if (location.stat().is_regular_file_or_symlink_to_regular_file())
         {
-            LineConfigFile f(*location, { lcfo_disallow_continuations });
-            for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
-                    line != line_end ; ++line)
-                _imp->value->insert(*line);
+            LineConfigFile f(location, { lcfo_disallow_continuations });
+            for (const auto & line : f)
+                _imp->value->insert(line);
         }
     }
 
@@ -156,49 +154,46 @@ InfoPkgsMetadataKey::need_keys_added() const
         return;
 
     std::map<std::string, std::string> info_pkgs;
-    for (FSPathSequence::ConstIterator location(_imp->locations->begin()), location_end(_imp->locations->end()) ;
-            location != location_end ; ++location)
+    for (const auto & location : *_imp->locations)
     {
-        Context context("When loading info packages file '" + stringify(*location) + "':");
+        Context context("When loading info packages file '" + stringify(location) + "':");
         _imp->added = true;
 
-        if (location->stat().is_regular_file_or_symlink_to_regular_file())
+        if (location.stat().is_regular_file_or_symlink_to_regular_file())
         {
-            std::string eapi(_imp->e_repository->eapi_for_file(*location));
-            LineConfigFile p(*location, { lcfo_disallow_continuations });
-            for (LineConfigFile::ConstIterator line(p.begin()), line_end(p.end()) ;
-                    line != line_end ; ++line)
-                info_pkgs.insert(std::make_pair(*line, eapi));
+            std::string eapi(_imp->e_repository->eapi_for_file(location));
+            LineConfigFile p(location, { lcfo_disallow_continuations });
+            for (const auto & line : p)
+                info_pkgs.insert(std::make_pair(line, eapi));
         }
     }
 
-    for (std::map<std::string, std::string>::const_iterator i(info_pkgs.begin()), i_end(info_pkgs.end()) ;
-            i != i_end ; ++i)
+    for (const auto & info_pkg : info_pkgs)
     {
-        std::shared_ptr<const EAPI> eapi(erepository::EAPIData::get_instance()->eapi_from_string(i->second));
+        std::shared_ptr<const EAPI> eapi(erepository::EAPIData::get_instance()->eapi_from_string(info_pkg.second));
         std::shared_ptr<MetadataKey> key;
 
         if (eapi->supported())
         {
             std::shared_ptr<const PackageIDSequence> q((*_imp->env)[selection::AllVersionsSorted(
-                        generator::Matches(parse_elike_package_dep_spec(i->first,
+                        generator::Matches(parse_elike_package_dep_spec(info_pkg.first,
                                 eapi->supported()->package_dep_spec_parse_options(),
                                 eapi->supported()->version_spec_options()), nullptr, { }) |
                         filter::InstalledAtRoot(_imp->env->preferred_root_key()->parse_value()))]);
 
             if (q->empty())
-                key = std::make_shared<LiteralMetadataValueKey<std::string>>(i->first, i->first, mkt_normal, "(none)");
+                key = std::make_shared<LiteralMetadataValueKey<std::string>>(info_pkg.first, info_pkg.first, mkt_normal, "(none)");
             else
             {
                 using namespace std::placeholders;
                 std::shared_ptr<Set<std::string> > s(std::make_shared<Set<std::string>>());
                 std::transform(indirect_iterator(q->begin()), indirect_iterator(q->end()), s->inserter(),
                         std::bind(std::mem_fn(&PackageID::canonical_form), _1, idcf_version));
-                key = std::make_shared<LiteralMetadataStringSetKey>(i->first, i->first, mkt_normal, s);
+                key = std::make_shared<LiteralMetadataStringSetKey>(info_pkg.first, info_pkg.first, mkt_normal, s);
             }
         }
         else
-            key = std::make_shared<LiteralMetadataValueKey<std::string>>(i->first, i->first, mkt_normal, "(unknown EAPI)");
+            key = std::make_shared<LiteralMetadataValueKey<std::string>>(info_pkg.first, info_pkg.first, mkt_normal, "(unknown EAPI)");
 
         add_metadata_key(key);
     }

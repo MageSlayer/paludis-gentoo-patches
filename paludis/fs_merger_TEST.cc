@@ -90,9 +90,8 @@ namespace
         if (! hooker)
         {
             hooker = std::make_shared<Hooker>(this);
-            for (std::list<std::pair<FSPath, bool> >::const_iterator h(hook_dirs.begin()),
-                    h_end(hook_dirs.end()) ; h != h_end ; ++h)
-                hooker->add_dir(h->first, h->second);
+            for (const auto & hook_dir : hook_dirs)
+                hooker->add_dir(hook_dir.first, hook_dir.second);
         }
         return hooker->perform_hook(hook, optional_output_manager);
     }

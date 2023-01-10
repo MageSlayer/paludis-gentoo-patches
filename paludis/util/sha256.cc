@@ -97,8 +97,14 @@ namespace
 void
 SHA256::_update(const uint8_t * const block)
 {
-    uint32_t a(_h[0]), b(_h[1]), c(_h[2]), d(_h[3]), e(_h[4]), f(_h[5]),
-             g(_h[6]), h(_h[7]);
+    uint32_t a(_h[0]);
+    uint32_t b(_h[1]);
+    uint32_t c(_h[2]);
+    uint32_t d(_h[3]);
+    uint32_t e(_h[4]);
+    uint32_t f(_h[5]);
+    uint32_t g(_h[6]);
+    uint32_t h(_h[7]);
 
     uint32_t w[64];
 
@@ -146,7 +152,8 @@ SHA256::SHA256(std::istream & stream) :
     _h[7] = 0x5be0cd19;
 
     uint8_t buffer[64];
-    int c, s(0);
+    int c;
+    int s(0);
     while (-1 != ((c = _get(stream))))
     {
         buffer[s++] = c;

@@ -41,7 +41,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -82,8 +81,7 @@ namespace
             a_dereference(&g_owner_options, "dereference", 'd', "If the pattern is a path that exists and is a symbolic link, "
                     "dereference it recursively, and then search for the real path.", true),
             a_matching(&g_owner_options, "matching", 'm', "Show only IDs matching this spec. If specified multiple "
-                    "times, only IDs matching every spec are selected.",
-                    args::StringSetArg::StringSetArgOptions())
+                    "times, only IDs matching every spec are selected.")
         {
             add_usage_line("[ --type algorithm ] [ --matching spec ] pattern");
         }
@@ -110,17 +108,15 @@ OwnerCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) != 1)
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("owner takes exactly one parameter");
 
     Filter matches((filter::All()));
     if (cmdline.a_matching.specified())
     {
-        for (args::StringSetArg::ConstIterator m(cmdline.a_matching.begin_args()),
-                m_end(cmdline.a_matching.end_args()) ;
-                m != m_end ; ++m)
+        for (const auto & matching_spec : cmdline.a_matching.args())
         {
-            PackageDepSpec s(parse_user_package_dep_spec(*m, env.get(), { updso_allow_wildcards }));
+            PackageDepSpec s(parse_user_package_dep_spec(matching_spec, env.get(), { updso_allow_wildcards }));
             matches = filter::And(matches, filter::Matches(s, nullptr, { }));
         }
     }

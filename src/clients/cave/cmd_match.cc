@@ -58,7 +58,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 #define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
 
@@ -286,11 +285,9 @@ namespace
         void visit(const MetadataValueKey<std::shared_ptr<const Choices> > & k)
         {
             auto choices(k.parse_value());
-            for (Choices::ConstIterator c(choices->begin()), c_end(choices->end()) ;
-                    c != c_end ; ++c)
-                for (Choice::ConstIterator i((*c)->begin()), i_end((*c)->end()) ;
-                        i != i_end ; ++i)
-                    texts.push_back(stringify((*i)->name_with_prefix()));
+            for (const auto & choice : *choices)
+                for (const auto & value : *choice)
+                    texts.push_back(stringify(value->name_with_prefix()));
         }
 
         void visit(const MetadataTimeKey & k)
@@ -400,7 +397,7 @@ MatchCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (capped_distance(cmdline.begin_parameters(), cmdline.end_parameters(), 2) < 2)
+    if (cmdline.parameters().size() < 2)
         throw args::DoHelp("match requires at least two parameters");
 
     PackageDepSpec spec(parse_spec_with_nice_error(*cmdline.begin_parameters(), env.get(), { }, filter::All()));
@@ -448,11 +445,9 @@ MatchCommand::run_hosted(
             texts.push_back(stringify(id->long_description_key()->parse_value()));
     }
 
-    for (args::StringSetArg::ConstIterator a(match_options.a_key.begin_args()),
-            a_end(match_options.a_key.end_args()) ;
-            a != a_end ; ++a)
+    for (const auto & key : match_options.a_key.args())
     {
-        PackageID::MetadataConstIterator i(id->find_metadata(*a));
+        PackageID::MetadataConstIterator i(id->find_metadata(key));
         if (i == id->end_metadata())
             continue;
 
@@ -460,12 +455,12 @@ MatchCommand::run_hosted(
         (*i)->accept(m);
     }
 
-    bool any(false), all(true);
-    for (auto p(patterns->begin()), p_end(patterns->end()) ;
-            p != p_end ; ++p)
+    bool any(false);
+    bool all(true);
+    for (const auto & pattern : *patterns)
     {
         bool current(texts.end() != std::find_if(texts.begin(), texts.end(),
-                    std::bind(&match, std::placeholders::_1, *p, match_options.a_case_sensitive.specified(), match_options.a_type.argument())));
+                    std::bind(&match, std::placeholders::_1, pattern, match_options.a_case_sensitive.specified(), match_options.a_type.argument())));
 
         if (match_options.a_not.specified())
             current = ! current;

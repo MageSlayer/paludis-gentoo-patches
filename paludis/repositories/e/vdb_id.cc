@@ -118,7 +118,7 @@ VDBID::contents() const
             value->add(e);
         }
         else if ("misc" == tokens.at(0) || "fif" == tokens.at(0) || "dev" == tokens.at(0))
-            value->add(std::shared_ptr<ContentsEntry>(std::make_shared<ContentsOtherEntry>(FSPath(tokens.at(1)))));
+            value->add(std::make_shared<ContentsOtherEntry>(FSPath(tokens.at(1))));
         else
             Log::get_instance()->message("e.contents.unknown", ll_warning, lc_context) << "CONTENTS has unsupported entry type '" <<
                 tokens.at(0) << "', skipping";

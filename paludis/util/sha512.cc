@@ -97,7 +97,14 @@ namespace
 void
 SHA512::process_block(uint64_t * w)
 {
-    uint64_t a(h0), b(h1), c(h2), d(h3), e(h4), f(h5), g(h6), h(h7);
+    uint64_t a(h0);
+    uint64_t b(h1);
+    uint64_t c(h2);
+    uint64_t d(h3);
+    uint64_t e(h4);
+    uint64_t f(h5);
+    uint64_t g(h6);
+    uint64_t h(h7);
 
     std::transform(&w[0], &w[16], &w[0], from_bigendian<uint64_t>);
 
@@ -139,7 +146,8 @@ SHA512::SHA512(std::istream & s) :
     h7(0x5BE0CD19137E2179ULL)
 {
     std::streambuf * buf(s.rdbuf());
-    uint64_t size_l(0), size_h(0);
+    uint64_t size_l(0);
+    uint64_t size_h(0);
 
     union
     {

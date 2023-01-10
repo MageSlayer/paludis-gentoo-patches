@@ -39,7 +39,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -90,7 +89,7 @@ ExecutablesCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("executables takes exactly one parameter");
 
     return executables_common(env, *cmdline.begin_parameters(), &format_fsentry, true, false);
