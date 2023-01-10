@@ -31,7 +31,8 @@ namespace
 
 TEST(Options, Works)
 {
-    MyOptions options, second;
+    MyOptions options;
+    MyOptions second;
 
     EXPECT_TRUE(! options.any());
 

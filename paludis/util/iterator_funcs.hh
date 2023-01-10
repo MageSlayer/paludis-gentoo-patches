@@ -27,35 +27,7 @@ namespace paludis
 {
     using std::next;
 
-    /**
-     * Return a new iterator pointing to the item before i.
-     *
-     * \ingroup g_iterator
-     */
-    template <typename T_>
-    T_ previous(const T_ & i)
-    {
-        T_ result(i);
-        return --result;
-    }
-
-    /**
-     * Return the distance from a to b, except if it is greater than n,
-     * in which case return n instead.
-     *
-     * \ingroup g_iterator
-     */
-    template <typename T_>
-    std::size_t capped_distance(T_ a, const T_ & b, unsigned n)
-    {
-        std::size_t x(0);
-        while ((x < n) && (a != b))
-        {
-            ++x;
-            ++a;
-        }
-        return x;
-    }
+    using std::prev;
 }
 
 #endif

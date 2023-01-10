@@ -135,7 +135,9 @@ paludis::erepository::do_install_action(
 
     std::shared_ptr<OutputManager> output_manager(install_action.options.make_output_manager()(install_action));
 
-    bool userpriv_restrict, test_restrict, strip_restrict;
+    bool userpriv_restrict;
+    bool test_restrict;
+    bool strip_restrict;
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env, id);
         if (id->restrict_key())
@@ -143,22 +145,24 @@ paludis::erepository::do_install_action(
 
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
 
         test_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "test"));
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "test"));
 
         strip_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "strip")) ||
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "strip")) ||
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nostrip"));
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nostrip"));
     }
 
-    std::string archives, all_archives, accept_license;
+    std::string archives;
+    std::string all_archives;
+    std::string accept_license;
     std::tie(archives, all_archives) = make_archives_strings(env, id);
 
     /* make ACCEPT_LICENSE */
@@ -221,13 +225,12 @@ paludis::erepository::do_install_action(
     auto destination = install_action.options.destination();
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_install());
-    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
-            phase != phase_end ; ++phase)
+    for (const auto & phase : phases)
     {
         bool skip(false);
         do
         {
-            switch (install_action.options.want_phase()(phase->equal_option("skipname")))
+            switch (install_action.options.want_phase()(phase.equal_option("skipname")))
             {
                 case wp_yes:
                     continue;
@@ -249,20 +252,20 @@ paludis::erepository::do_install_action(
         if (skip)
             continue;
 
-        if (can_skip_phase(env, id, *phase))
+        if (can_skip_phase(env, id, phase))
         {
-            output_manager->stdout_stream() << "--- No need to do anything for " << phase->equal_option("skipname") << " phase" << std::endl;
+            output_manager->stdout_stream() << "--- No need to do anything for " << phase.equal_option("skipname") << " phase" << std::endl;
             continue;
         }
 
-        if (phase->option("tidyup") && work_choice && ! ELikeWorkChoiceValue::should_remove(work_choice->parameter()))
+        if (phase.option("tidyup") && work_choice && ! ELikeWorkChoiceValue::should_remove(work_choice->parameter()))
         {
-            output_manager->stdout_stream() << "--- Skipping " << phase->equal_option("skipname")
+            output_manager->stdout_stream() << "--- Skipping " << phase.equal_option("skipname")
                 << " phase to preserve work" << std::endl;
             continue;
         }
 
-        if (phase->option("merge") || phase->option("check_merge"))
+        if (phase.option("merge") || phase.option("check_merge"))
         {
             if (! destination->destination_interface())
                 throw ActionFailedError("Can't install '" + stringify(*id)
@@ -277,7 +280,7 @@ paludis::erepository::do_install_action(
             destination->destination_interface()->merge(
                     make_named_values<MergeParams>(
                         n::build_start_time() = build_start_time,
-                        n::check() = phase->option("check_merge"),
+                        n::check() = phase.option("check_merge"),
                         n::environment_file() = package_builddir / "temp" / "loadsaveenv",
                         n::image_dir() = package_builddir / "image",
                         n::is_volatile() = [&] (const FSPath & f) { return volatile_files->end() != volatile_files->find(f); },
@@ -297,24 +300,24 @@ paludis::erepository::do_install_action(
                         n::want_phase() = install_action.options.want_phase()
                         ));
 
-            if (volatile_files && phase->option("check_merge")) {
-                for (auto & v : *volatile_files) {
-                    auto vabs = (package_builddir / "image" / v);
+            if (volatile_files && phase.option("check_merge")) {
+                for (auto & file : *volatile_files) {
+                    auto vabs = (package_builddir / "image" / file);
                     auto vstat = vabs.stat();
                     if (! vstat.is_regular_file_or_symlink_to_regular_file())
                         throw ActionFailedError("Can't install '" + stringify(*id)
                                 + "' to destination '" + stringify(destination->name())
-                                + "' because '" + stringify(v) + "' was marked using exvolatile, but it is not a regular "
+                                + "' because '" + stringify(file) + "' was marked using exvolatile, but it is not a regular "
                                 "file or a symlink to a regular file");
                     if (vstat.is_symlink() && 0 == vabs.readlink().compare(0, 1, "/", 0, 1))
                         throw ActionFailedError("Can't install '" + stringify(*id)
                                 + "' to destination '" + stringify(destination->name())
-                                + "' because '" + stringify(v) + "' was marked using exvolatile, but volatile symlinks"
+                                + "' because '" + stringify(file) + "' was marked using exvolatile, but volatile symlinks"
                                 "must not be absolute");
                 }
             }
         }
-        else if (phase->option("strip"))
+        else if (phase.option("strip"))
         {
             if ((! id->eapi()->supported()->is_pbin()) && (! strip_restrict))
             {
@@ -350,11 +353,11 @@ paludis::erepository::do_install_action(
                 stripper.strip();
             }
         }
-        else if ((! phase->option("prepost")) ||
+        else if ((! phase.option("prepost")) ||
                 (destination->destination_interface() &&
                  destination->destination_interface()->want_pre_post_phases()))
         {
-            if (phase->option("optional_tests"))
+            if (phase.option("optional_tests"))
             {
                 if (test_restrict)
                     continue;
@@ -364,7 +367,7 @@ paludis::erepository::do_install_action(
                 if (choice && ! choice->enabled())
                     continue;
             }
-            else if (phase->option("recommended_tests"))
+            else if (phase.option("recommended_tests"))
             {
                 if (test_restrict)
                     continue;
@@ -374,7 +377,7 @@ paludis::erepository::do_install_action(
                 if (choice && ! choice->enabled())
                     continue;
             }
-            else if (phase->option("expensive_tests"))
+            else if (phase.option("expensive_tests"))
             {
                 std::shared_ptr<const ChoiceValue> choice(choices->find_by_name_with_prefix(
                             ELikeExpensiveTestsChoiceValue::canonical_name_with_prefix()));
@@ -387,8 +390,8 @@ paludis::erepository::do_install_action(
 
             EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                     n::builddir() = params.builddir(),
-                    n::clearenv() = phase->option("clearenv"),
-                    n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                    n::clearenv() = phase.option("clearenv"),
+                    n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                     n::distdir() = params.distdir(),
                     n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                     n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -407,9 +410,9 @@ paludis::erepository::do_install_action(
                     n::root() = destination->installed_root_key()
                                     ? stringify(destination->installed_root_key()->parse_value())
                                     : "/",
-                    n::sandbox() = phase->option("sandbox"),
-                    n::sydbox() = phase->option("sydbox"),
-                    n::userpriv() = phase->option("userpriv") && userpriv_ok,
+                    n::sandbox() = phase.option("sandbox"),
+                    n::sydbox() = phase.option("sydbox"),
+                    n::userpriv() = phase.option("userpriv") && userpriv_ok,
                     n::volatile_files() = volatile_files
                     ));
 
@@ -442,16 +445,15 @@ paludis::erepository::do_install_action(
             {
                 if (work_choice && ELikeWorkChoiceValue::should_remove_on_failure(work_choice->parameter()))
                 {
-                    for (EAPIPhases::ConstIterator tidyup_phase(phases.begin_phases()), tidyup_phase_end(phases.end_phases()) ;
-                            tidyup_phase != tidyup_phase_end ; ++tidyup_phase)
+                    for (const auto & tidyup_phase : phases)
                     {
-                        if (! tidyup_phase->option("tidyup"))
+                        if (! tidyup_phase.option("tidyup"))
                             continue;
 
                         EbuildCommandParams tidyup_command_params(make_named_values<EbuildCommandParams>(
                                     n::builddir() = params.builddir(),
-                                    n::clearenv() = tidyup_phase->option("clearenv"),
-                                    n::commands() = join(tidyup_phase->begin_commands(), tidyup_phase->end_commands(), " "),
+                                    n::clearenv() = tidyup_phase.option("clearenv"),
+                                    n::commands() = join(tidyup_phase.begin_commands(), tidyup_phase.end_commands(), " "),
                                     n::distdir() = params.distdir(),
                                     n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                                     n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -471,9 +473,9 @@ paludis::erepository::do_install_action(
                                     n::root() = destination->installed_root_key()
                                                     ?  stringify(destination->installed_root_key()->parse_value())
                                                     : "/",
-                                    n::sandbox() = tidyup_phase->option("sandbox"),
-                                    n::sydbox() = tidyup_phase->option("sydbox"),
-                                    n::userpriv() = tidyup_phase->option("userpriv") && userpriv_ok,
+                                    n::sandbox() = tidyup_phase.option("sandbox"),
+                                    n::sydbox() = tidyup_phase.option("sydbox"),
+                                    n::userpriv() = tidyup_phase.option("userpriv") && userpriv_ok,
                                     n::volatile_files() = volatile_files
                                         ));
 
@@ -509,15 +511,14 @@ paludis::erepository::do_install_action(
 
     /* replacing for pbins is done during the merge */
     if (destination->installed_root_key())
-        for (PackageIDSequence::ConstIterator i(install_action.options.replacing()->begin()), i_end(install_action.options.replacing()->end()) ;
-                i != i_end ; ++i)
+        for (const auto & replaced_id : *install_action.options.replacing())
         {
-            Context local_context("When cleaning '" + stringify(**i) + "':");
-            if ((*i)->name() == id->name() && (*i)->version() == id->version())
+            Context local_context("When cleaning '" + stringify(*replaced_id) + "':");
+            if (replaced_id->name() == id->name() && replaced_id->version() == id->version())
                 continue;
 
             if (id->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
-                if ((*i)->name() == id->name() && parallel_slot_is_same(*i, id))
+                if (replaced_id->name() == id->name() && parallel_slot_is_same(replaced_id, id))
                     continue;
 
             UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
@@ -530,9 +531,8 @@ paludis::erepository::do_install_action(
                         n::override_contents() = nullptr,
                         n::want_phase() = install_action.options.want_phase()
                         ));
-            install_action.options.perform_uninstall()(*i, uo);
+            install_action.options.perform_uninstall()(replaced_id, uo);
         }
 
     output_manager->succeeded();
 }
-

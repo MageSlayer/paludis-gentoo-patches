@@ -94,9 +94,8 @@ namespace
     long hash_set(const std::shared_ptr<const Set<KeywordName> > & v)
     {
         int result(0);
-        for (auto s(v->begin()), s_end(v->end()) ;
-                s != s_end ; ++s)
-            result = (result << 4) ^ Hash<std::string>()(stringify(*s));
+        for (const auto & s : *v)
+            result = (result << 4) ^ Hash<std::string>()(stringify(s));
         return result;
     }
 

@@ -25,7 +25,10 @@ using namespace paludis;
 
 TEST(SimpleParser, Works)
 {
-    std::string text("oneTWOthree"), one, two, three;
+    std::string text("oneTWOthree");
+    std::string one;
+    std::string two;
+    std::string three;
     SimpleParser parser(text);
     ASSERT_TRUE(parser.consume(simple_parser::exact("one") >> one));
     ASSERT_TRUE(parser.consume(simple_parser::exact_ignoring_case("two") >> two));

@@ -204,7 +204,7 @@ LogMessageHandler::_append(const std::string & s)
 
 LogMessageHandler::~LogMessageHandler()
 {
-    if (! std::uncaught_exception() && ! _message.empty())
+    if (0 == std::uncaught_exceptions() && ! _message.empty())
         _log->_message(_id, _log_level, _log_context, _message);
 }
 

@@ -278,8 +278,8 @@ EbuildCommand::operator() ()
         .setenv("PALUDIS_PROFILES_DIRS", "")
         .setenv("ROOT", params.root());
 
-    if (! params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_merge_type().empty())
-        process.setenv(params.package_id()->eapi()->supported()->ebuild_environment_variables()->env_merge_type(), "");
+    if (! environment_variables->env_merge_type().empty())
+        process.setenv(environment_variables->env_merge_type(), "");
 
     extend_command(process);
 
@@ -423,7 +423,9 @@ EbuildMetadataCommand::do_run_command(Process & process)
     {
         Context context("When running ebuild command to generate metadata for '" + stringify(*params.package_id()) + "':");
 
-        std::stringstream prog, prog_err, metadata;
+        std::stringstream prog;
+        std::stringstream prog_err;
+        std::stringstream metadata;
         process
             .capture_stdout(prog)
             .capture_stderr(prog_err)
@@ -686,7 +688,9 @@ EbuildMetadataCommand::load(const std::shared_ptr<const EbuildID> & id)
 
     if (! m.defined_phases()->name().empty())
     {
-        std::set<std::string> defined_phases, raw_values, ebuild_functions;
+        std::set<std::string> defined_phases;
+        std::set<std::string> raw_values;
+        std::set<std::string> ebuild_functions;
         std::string raw_value(get(keys, "PALUDIS_DECLARED_FUNCTIONS"));
         tokenise_whitespace(raw_value, std::inserter(raw_values, raw_values.begin()));
         tokenise_whitespace(id->eapi()->supported()->ebuild_options()->ebuild_functions(),

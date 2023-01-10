@@ -129,11 +129,10 @@ SuggestionsConf::add(const FSPath & filename)
     if (! f)
         return;
 
-    for (LineConfigFile::ConstIterator line(f->begin()), line_end(f->end()) ;
-            line != line_end ; ++line)
+    for (const auto & line : *f)
     {
         std::vector<std::string> tokens;
-        tokenise_whitespace_quoted(*line, std::back_inserter(tokens));
+        tokenise_whitespace_quoted(line, std::back_inserter(tokens));
 
         if (tokens.size() < 2)
             continue;
@@ -219,41 +218,39 @@ SuggestionsConf::interest_in_suggestion(
     /* next: named sets */
     {
         std::unique_lock<std::mutex> lock(_imp->set_mutex);
-        for (NamedSetMap::iterator i(_imp->set.begin()), i_end(_imp->set.end()) ;
-                 i != i_end ; ++i)
+        for (auto & i : _imp->set)
         {
-            if (! i->second.first)
+            if (! i.second.first)
             {
-                i->second.first = _imp->env->set(i->first);
-                if (! i->second.first)
+                i.second.first = _imp->env->set(i.first);
+                if (! i.second.first)
                 {
                     Log::get_instance()->message("paludis_environment.suggestions_conf.unknown_set", ll_warning, lc_no_context) << "Set name '"
-                        << i->first << "' does not exist";
-                    i->second.first = std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
+                        << i.first << "' does not exist";
+                    i.second.first = std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
                 }
             }
 
-            if (! match_package_in_set(*_imp->env, *i->second.first, from_id, { }))
+            if (! match_package_in_set(*_imp->env, *i.second.first, from_id, { }))
                 continue;
 
-            for (ValuesList::const_iterator l(i->second.second.begin()), l_end(i->second.second.end()) ;
-                    l != l_end ; ++l)
+            for (const auto & l : i.second.second)
             {
-                if (! l->group_requirement.empty())
+                if (! l.group_requirement.empty())
                 {
-                    if (spec_group == l->group_requirement)
-                        return l->negated ? false : true;
+                    if (spec_group == l.group_requirement)
+                        return l.negated ? false : true;
                 }
                 else
                 {
-                    if (! l->pkg_requirement.empty())
-                        if (stringify(spec.package_ptr()->package()) != l->pkg_requirement)
+                    if (! l.pkg_requirement.empty())
+                        if (stringify(spec.package_ptr()->package()) != l.pkg_requirement)
                             continue;
-                    if (! l->cat_requirement.empty())
-                        if (stringify(spec.package_ptr()->category()) != l->cat_requirement)
+                    if (! l.cat_requirement.empty())
+                        if (stringify(spec.package_ptr()->category()) != l.cat_requirement)
                             continue;
 
-                    return l->negated ? false : true;
+                    return l.negated ? false : true;
                 }
             }
         }
@@ -261,13 +258,12 @@ SuggestionsConf::interest_in_suggestion(
 
 
     /* last: unspecific */
-    for (PDSToValuesList::const_iterator j(_imp->unqualified.begin()), j_end(_imp->unqualified.end()) ;
-            j != j_end ; ++j)
+    for (const auto & j : _imp->unqualified)
     {
-        if (! match_package(*_imp->env, *j->first, from_id, nullptr, { }))
+        if (! match_package(*_imp->env, *j.first, from_id, nullptr, { }))
             continue;
 
-        for (const auto & l : j->second)
+        for (const auto & l : j.second)
         {
             if (! l.group_requirement.empty())
             {

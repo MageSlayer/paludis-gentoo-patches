@@ -73,9 +73,9 @@ void
 TailOutputStreamBuf::_append(const std::string & s)
 {
     std::unique_lock<std::mutex> lock(_imp->mutex);
-    for (std::string::size_type p(0), p_end(s.length()) ; p != p_end ; ++p)
+    for (const char & p : s)
     {
-        if ('\n' == s[p])
+        if ('\n' == p)
         {
             if (++_imp->n > _imp->size + 1)
             {
@@ -85,7 +85,7 @@ TailOutputStreamBuf::_append(const std::string & s)
             _imp->tail.push_back("");
         }
         else
-            _imp->tail.back().append(&s[p], 1);
+            _imp->tail.back().append(&p, 1);
     }
 }
 
@@ -94,7 +94,7 @@ TailOutputStreamBuf::tail(const bool clear)
 {
     std::shared_ptr<Sequence<std::string> > result(std::make_shared<Sequence<std::string>>());
     std::unique_lock<std::mutex> lock(_imp->mutex);
-    for (std::list<std::string>::const_iterator i(_imp->tail.begin()), i_end(_imp->tail.end()), i_last(previous(_imp->tail.end())) ;
+    for (std::list<std::string>::const_iterator i(_imp->tail.begin()), i_end(_imp->tail.end()), i_last(prev(_imp->tail.end())) ;
             i != i_end ; ++i)
     {
         if (i == i_last && i->empty())

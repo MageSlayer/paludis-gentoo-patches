@@ -103,10 +103,10 @@ namespace
     bool use_existing_from_withish(
             const Environment * const env,
             const QualifiedPackageName & name,
-            const std::list<PackageDepSpec> & list)
+            const std::list<PackageDepSpec> & specs)
     {
-        for (const auto & l : list)
-            if (match_qpns(*env, l, name))
+        for (const auto & spec : specs)
+            if (match_qpns(*env, spec, name))
                 return true;
         return false;
     }
@@ -153,9 +153,8 @@ namespace
                 return false;
             else
             {
-                for (auto i(origin_ids->begin()), i_end(origin_ids->end()) ;
-                        i != i_end ; ++i)
-                    if ((*can)(*i))
+                for (const auto & id : *origin_ids)
+                    if ((*can)(id))
                         return false;
 
                 return true;

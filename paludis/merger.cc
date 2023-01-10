@@ -148,7 +148,8 @@ Merger::do_dir_recursive(bool is_check, const FSPath & src, const FSPath & dst)
 
     on_enter_dir(is_check, src);
 
-    FSIterator d(src, { fsio_include_dotfiles, fsio_inode_sort }), d_end;
+    FSIterator d(src, { fsio_include_dotfiles, fsio_inode_sort });
+    FSIterator d_end;
 
     if (is_check)
     {

@@ -147,7 +147,7 @@ namespace paludis
 }
 
 PaludisEnvironment::PaludisEnvironment(const std::string & s) :
-    _imp(std::shared_ptr<PaludisConfig>(std::make_shared<PaludisConfig>(this, s)))
+    _imp(std::make_shared<PaludisConfig>(this, s))
 {
     Context context("When loading paludis environment:");
 
@@ -210,9 +210,8 @@ PaludisEnvironment::perform_hook(
     {
         _imp->need_hook_dirs(FSPath(_imp->config->config_dir()));
         _imp->hooker = std::make_shared<Hooker>(this);
-        for (std::list<std::pair<FSPath, bool> >::const_iterator h(_imp->hook_dirs.begin()),
-                h_end(_imp->hook_dirs.end()) ; h != h_end ; ++h)
-            _imp->hooker->add_dir(h->first, h->second);
+        for (const auto & hook_dir : _imp->hook_dirs)
+            _imp->hooker->add_dir(hook_dir.first, hook_dir.second);
     }
 
     return _imp->hooker->perform_hook(hook, optional_output_manager);
@@ -396,7 +395,7 @@ PaludisEnvironment::mask_for_user(const std::shared_ptr<const PackageID> & d, co
     if (_imp->config->package_mask_conf()->query(d, ""))
         return std::make_shared<UserConfigMask>(o);
 
-    return std::shared_ptr<const Mask>();
+    return nullptr;
 }
 
 void

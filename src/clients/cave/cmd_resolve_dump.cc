@@ -262,12 +262,10 @@ namespace
     {
         std::cout << "Dumping resolutions by QPN:S:" << std::endl << std::endl;
 
-        for (ResolutionsByResolvent::ConstIterator c(resolver->resolved()->resolutions_by_resolvent()->begin()),
-                c_end(resolver->resolved()->resolutions_by_resolvent()->end()) ;
-                c != c_end ; ++c)
+        for (const auto & resolution : *resolver->resolved()->resolutions_by_resolvent())
         {
-            std::cout << (*c)->resolvent() << std::endl;
-            std::cout << "  = " << **c << std::endl;
+            std::cout << resolution->resolvent() << std::endl;
+            std::cout << "  = " << *resolution << std::endl;
         }
 
         std::cout << std::endl;

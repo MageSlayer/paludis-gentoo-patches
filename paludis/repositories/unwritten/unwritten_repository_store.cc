@@ -126,49 +126,48 @@ UnwrittenRepositoryStore::_populate_one(const Environment * const env, const FSP
     QualifiedPackageName old_name("x/x");
     std::shared_ptr<QualifiedPackageNameSet> pkgs;
     std::shared_ptr<PackageIDSequence> ids;
-    for (UnwrittenRepositoryFile::ConstIterator i(file.begin()), i_end(file.end()) ;
-            i != i_end ; ++i)
+    for (const auto & entry : file)
     {
-        if (old_name.category() != (*i).name().category())
+        if (old_name.category() != entry.name().category())
         {
-            _imp->categories->insert((*i).name().category());
-            PackageNames::iterator p(_imp->package_names.find((*i).name().category()));
+            _imp->categories->insert(entry.name().category());
+            PackageNames::iterator p(_imp->package_names.find(entry.name().category()));
             if (_imp->package_names.end() == p)
-                p = _imp->package_names.insert(std::make_pair((*i).name().category(),
+                p = _imp->package_names.insert(std::make_pair(entry.name().category(),
                             std::make_shared<QualifiedPackageNameSet>())).first;
             pkgs = p->second;
         }
 
-        if (old_name != (*i).name())
+        if (old_name != entry.name())
         {
-            pkgs->insert((*i).name());
-            IDs::iterator p(_imp->ids.find((*i).name()));
+            pkgs->insert(entry.name());
+            IDs::iterator p(_imp->ids.find(entry.name()));
             if (_imp->ids.end() == p)
-                p = _imp->ids.insert(std::make_pair((*i).name(),
+                p = _imp->ids.insert(std::make_pair(entry.name(),
                             std::make_shared<PackageIDSequence>())).first;
 
             ids = p->second;
         }
 
         ids->push_back(std::make_shared<UnwrittenID>(make_named_values<UnwrittenIDParams>(
-                            n::added_by() = (*i).added_by(),
-                            n::bug_ids() = (*i).bug_ids(),
-                            n::comment() = (*i).comment(),
-                            n::commit_id() = (*i).commit_id(),
-                            n::description() = (*i).description(),
+                            n::added_by() = entry.added_by(),
+                            n::bug_ids() = entry.bug_ids(),
+                            n::comment() = entry.comment(),
+                            n::commit_id() = entry.commit_id(),
+                            n::description() = entry.description(),
                             n::environment() = env,
-                            n::homepage() = (*i).homepage(),
+                            n::homepage() = entry.homepage(),
                             n::mask() = mask,
-                            n::name() = (*i).name(),
-                            n::remote_ids() = (*i).remote_ids(),
-                            n::removed_by() = (*i).removed_by(),
-                            n::removed_from() = (*i).removed_from(),
+                            n::name() = entry.name(),
+                            n::remote_ids() = entry.remote_ids(),
+                            n::removed_by() = entry.removed_by(),
+                            n::removed_from() = entry.removed_from(),
                             n::repository() = _imp->repo->name(),
-                            n::slot() = (*i).slot(),
-                            n::version() = (*i).version()
+                            n::slot() = entry.slot(),
+                            n::version() = entry.version()
                         )));
 
-        old_name = (*i).name();
+        old_name = entry.name();
     }
 }
 

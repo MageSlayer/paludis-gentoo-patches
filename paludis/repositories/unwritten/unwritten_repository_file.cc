@@ -174,7 +174,8 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
         if (line.empty())
             break;
 
-        std::string key, value;
+        std::string key;
+        std::string value;
         SimpleParser line_parser(line);
         if (line_parser.consume(
                     (+simple_parser::any_except(" \t") >> key) &
@@ -208,7 +209,8 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
     {
         SimpleParser line_parser(line);
 
-        std::string token, token2;
+        std::string token;
+        std::string token2;
         if (line.empty())
         {
         }
@@ -255,10 +257,9 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
 
             if (entry)
             {
-                for (std::list<VersionSpec>::const_iterator v(versions.begin()), v_end(versions.end()) ;
-                        v != v_end ; ++v)
+                for (const auto & version : versions)
                 {
-                    entry->version() = *v;
+                    entry->version() = version;
                     _imp->entries.push_back(*entry);
                 }
                 versions.clear();
@@ -316,11 +317,10 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
             {
                 std::shared_ptr<AllDepSpec> all_spec(std::make_shared<AllDepSpec>());
                 std::shared_ptr<SimpleURISpecTree> tree(std::make_shared<SimpleURISpecTree>(all_spec));
-                std::list<std::string> tokens;
-                tokenise_whitespace(token2, std::back_inserter(tokens));
-                for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                        t != t_end ; ++t)
-                    tree->top()->append(std::make_shared<SimpleURIDepSpec>(*t));
+                std::list<std::string> uris;
+                tokenise_whitespace(token2, std::back_inserter(uris));
+                for (const auto & uri : uris)
+                    tree->top()->append(std::make_shared<SimpleURIDepSpec>(uri));
                 entry->homepage() = std::make_shared<UnwrittenHomepageKey>("homepage", "Homepage", mkt_normal, tree);
             }
             else if (token == "comment")
@@ -340,21 +340,19 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
             else if (token == "bug-ids")
             {
                 std::shared_ptr<Sequence<std::string> > seq(std::make_shared<Sequence<std::string>>());
-                std::list<std::string> tokens;
-                tokenise_whitespace(token2, std::back_inserter(tokens));
-                for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                        t != t_end ; ++t)
-                    seq->push_back(*t);
+                std::list<std::string> bug_ids;
+                tokenise_whitespace(token2, std::back_inserter(bug_ids));
+                for (const auto & bug_id : bug_ids)
+                    seq->push_back(bug_id);
                 entry->bug_ids() = std::make_shared<LiteralMetadataStringSequenceKey>("bug-ids", "Bug IDs", mkt_normal, seq);
             }
             else if (token == "remote-ids")
             {
                 std::shared_ptr<Sequence<std::string> > seq(std::make_shared<Sequence<std::string>>());
-                std::list<std::string> tokens;
-                tokenise_whitespace(token2, std::back_inserter(tokens));
-                for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                        t != t_end ; ++t)
-                    seq->push_back(*t);
+                std::list<std::string> remote_ids;
+                tokenise_whitespace(token2, std::back_inserter(remote_ids));
+                for (const auto & remote_id : remote_ids)
+                    seq->push_back(remote_id);
                 entry->remote_ids() = std::make_shared<LiteralMetadataStringSequenceKey>("remote-ids", "Remote IDs", mkt_internal, seq);
             }
             else
@@ -368,10 +366,9 @@ UnwrittenRepositoryFile::_load(const FSPath & f)
 
     if (entry)
     {
-        for (std::list<VersionSpec>::const_iterator v(versions.begin()), v_end(versions.end()) ;
-                v != v_end ; ++v)
+        for (const auto & version : versions)
         {
-            entry->version() = *v;
+            entry->version() = version;
             _imp->entries.push_back(*entry);
         }
     }

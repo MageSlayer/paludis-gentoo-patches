@@ -136,13 +136,13 @@ FakeRepository::format_key() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 FakeRepository::location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSPath> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 FakeRepository::installed_root_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSPath> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > >

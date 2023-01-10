@@ -44,6 +44,8 @@
 #include <paludis/util/pimp.hh>
 #include <paludis/util/sequence-fwd.hh>
 
+#include <memory>
+
 /** \file
  * Declarations for the Environment class.
  *
@@ -67,7 +69,7 @@ namespace paludis
     {
         private:
             struct NameData;
-            NameData * const _name_data;
+            const std::unique_ptr<NameData> _name_data;
 
             std::string _name;
 

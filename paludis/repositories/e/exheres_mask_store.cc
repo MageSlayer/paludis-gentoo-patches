@@ -142,29 +142,27 @@ ExheresMaskStore::_populate()
 
     using namespace std::placeholders;
 
-    for (auto f(_imp->files->begin()), f_end(_imp->files->end()) ;
-            f != f_end ; ++f)
+    for (const auto & f : *_imp->files)
     {
-        if (! f->stat().exists())
+        if (! f.stat().exists())
             continue;
 
-        SafeIFStream file(*f);
+        SafeIFStream file(f);
         std::string file_text((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
         try
         {
-            auto specs(parse_commented_set(file_text, _imp->env, *EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(*f))));
+            auto specs(parse_commented_set(file_text, _imp->env, *EAPIData::get_instance()->eapi_from_string(_imp->eapi_for_file(f))));
             DepSpecFlattener<SetSpecTree, PackageDepSpec> flat_specs(_imp->env, nullptr);
             specs->top()->accept(flat_specs);
 
-            for (auto s(flat_specs.begin()), s_end(flat_specs.end()) ;
-                    s != s_end ; ++s)
+            for (const auto & spec : flat_specs)
             {
-                if ((*s)->package_ptr())
-                    _imp->repo_mask[*(*s)->package_ptr()].push_back(std::make_pair(**s, make_mask_info(**s, *f)));
+                if (spec->package_ptr())
+                    _imp->repo_mask[*spec->package_ptr()].push_back(std::make_pair(*spec, make_mask_info(*spec, f)));
                 else
                     Log::get_instance()->message("e.package_mask.bad_spec", ll_warning, lc_context)
-                        << "Loading package mask spec '" << **s << "' failed because specification does not restrict to a "
+                        << "Loading package mask spec '" << *spec << "' failed because specification does not restrict to a "
                         "unique package";
             }
         }
@@ -175,7 +173,7 @@ ExheresMaskStore::_populate()
         catch (const Exception & e)
         {
             Log::get_instance()->message("e.exheres_mask.bad", ll_warning, lc_context) << "Loading package mask file '"
-                << *f << "' failed due to exception '" << e.message() << "' ("
+                << f << "' failed due to exception '" << e.message() << "' ("
                 << e.what() << ")";
         }
     }
@@ -193,4 +191,3 @@ ExheresMaskStore::query(const std::shared_ptr<const PackageID> & id) const
 
     return result;
 }
-

@@ -201,7 +201,8 @@ VersionSpec::VersionSpec(const std::string & text, const VersionSpecOptions & op
 
         while (true)
         {
-            std::string suffix_str, number_str;
+            std::string suffix_str;
+            std::string number_str;
             VersionSpecComponentType k(vsct_empty);
             if (parser.consume(make_dash_parse_expression("_", "alpha", options[vso_ignore_case], options[vso_flexible_dashes]) >> suffix_str))
                 k = vsct_alpha;
@@ -359,8 +360,10 @@ namespace
             std::pair<R_, bool> (*comparator)(const VersionSpecComponent &, Parts::const_iterator, Parts::const_iterator,
                     const VersionSpecComponent &, Parts::const_iterator, Parts::const_iterator, int))
     {
-        std::vector<VersionSpecComponent>::const_iterator
-            v1(a.begin()), v1_end(a.end()), v2(b.begin()), v2_end(b.end());
+        std::vector<VersionSpecComponent>::const_iterator v1(a.begin());
+        std::vector<VersionSpecComponent>::const_iterator v1_end(a.end());
+        std::vector<VersionSpecComponent>::const_iterator v2(b.begin());
+        std::vector<VersionSpecComponent>::const_iterator v2_end(b.end());
 
         VersionSpecComponent end_part(make_named_values<VersionSpecComponent>(
                     n::number_value() = "",
@@ -408,7 +411,8 @@ namespace
 
             else
             {
-                std::string p1s((*p1).number_value()), p2s((*p2).number_value());
+                std::string p1s((*p1).number_value());
+                std::string p2s((*p2).number_value());
                 if ((*p1).type() == vsct_floatlike)
                 {
                     p1s = strip_trailing(p1s, "0");
@@ -539,14 +543,13 @@ VersionSpec::hash() const
 
             size_t x(0);
             int zeroes(0);
-            for (std::string::const_iterator i(r_v.begin()), i_end(r_v.end()) ;
-                    i != i_end ; ++i)
+            for (char i : r_v)
             {
                 /* count leading zeroes if we are not the first component */
                 if (x == 0 && ! first)
                     ++zeroes;
                 x *= 10;
-                x += *i - '0';
+                x += i - '0';
             }
             first = false;
 
@@ -560,8 +563,7 @@ VersionSpec::hash() const
 namespace
 {
     template <VersionSpecComponentType p_>
-    struct IsVersionSpecComponentType :
-        std::unary_function<VersionSpecComponent, bool>
+    struct IsVersionSpecComponentType
     {
         bool operator() (const VersionSpecComponent & p) const
         {
@@ -570,8 +572,7 @@ namespace
     };
 
     template <VersionSpecComponentType p_, VersionSpecComponentType q_>
-    struct IsEitherVersionSpecComponentType :
-        std::unary_function<VersionSpecComponent, bool>
+    struct IsEitherVersionSpecComponentType
     {
         bool operator() (const VersionSpecComponent & p) const
         {
@@ -663,7 +664,7 @@ VersionSpec::is_scm() const
          * four 9's? */
         std::string mystr = remove_revision()._imp->text;
         if ((mystr.length() >= 4) &&
-            (std::string::npos == mystr.find_first_not_of("9")))
+            (std::string::npos == mystr.find_first_not_of('9')))
         {
             result = true;
             break;
@@ -698,8 +699,15 @@ VersionSpec
 VersionSpec::bump() const
 {
     std::vector<VersionSpecComponent> number_parts;
-    std::copy(_imp->parts.begin(),
-            std::find_if(_imp->parts.begin(), _imp->parts.end(), std::not1(IsEitherVersionSpecComponentType<vsct_number, vsct_floatlike>())),
+    std::copy(
+            _imp->parts.begin(),
+            std::find_if(
+                    _imp->parts.begin(),
+                    _imp->parts.end(),
+                    [](const VersionSpecComponent & component) {
+                        return ! IsEitherVersionSpecComponentType<vsct_number, vsct_floatlike>()(
+                                component);
+                    }),
             std::back_inserter(number_parts));
 
     if (number_parts.empty())
@@ -708,8 +716,8 @@ VersionSpec::bump() const
         number_parts.pop_back();
 
     /* ++string */
-    std::string::reverse_iterator i(number_parts.back().number_value().rbegin()),
-        i_end(number_parts.back().number_value().rend());
+    std::string::reverse_iterator i(number_parts.back().number_value().rbegin());
+    std::string::reverse_iterator i_end(number_parts.back().number_value().rend());
     bool add1(true);
     while (i != i_end && add1)
     {
@@ -727,12 +735,11 @@ VersionSpec::bump() const
 
     bool need_dot(false);
     std::string str;
-    for (std::vector<VersionSpecComponent>::const_iterator r(number_parts.begin()), r_end(number_parts.end()) ;
-            r != r_end ; ++r)
+    for (const auto & number_part : number_parts)
     {
         if (need_dot)
             str.append(".");
-        str.append((*r).number_value());
+        str.append(number_part.number_value());
         need_dot = true;
     }
     return VersionSpec(str, _imp->options);

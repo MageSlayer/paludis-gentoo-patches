@@ -221,9 +221,9 @@ std::shared_ptr<T_>
 deep_copy(const std::shared_ptr<const T_> & x)
 {
     if (x)
-        return std::shared_ptr<T_>(std::make_shared<T_>(*x));
-    else
-        return std::shared_ptr<T_>();
+        return std::make_shared<T_>(*x);
+
+    return nullptr;
 }
 
 PythonPackageDepSpec::PythonPackageDepSpec(const PackageDepSpec & p) :
@@ -295,16 +295,14 @@ PythonPackageDepSpec::operator PackageDepSpec() const
 
     if (additional_requirements_ptr())
     {
-        for (AdditionalPackageDepSpecRequirements::ConstIterator i(additional_requirements_ptr()->begin()),
-                i_end(additional_requirements_ptr()->end()) ; i != i_end ; ++i)
-            p.additional_requirement(*i);
+        for (const auto & requirement : *additional_requirements_ptr())
+            p.additional_requirement(requirement);
     }
 
     if (version_requirements_ptr())
     {
-        for (VersionRequirements::ConstIterator i(version_requirements_ptr()->begin()),
-                i_end(version_requirements_ptr()->end()) ; i != i_end ; ++i)
-            p.version_requirement(*i);
+        for (const auto & requirement : *version_requirements_ptr())
+            p.version_requirement(requirement);
     }
 
     return p.to_package_dep_spec();

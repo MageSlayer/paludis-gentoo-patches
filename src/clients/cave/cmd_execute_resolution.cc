@@ -202,9 +202,8 @@ namespace
             std::copy(cmdline.a_world_specs.begin_args(), cmdline.a_world_specs.end_args(), world_specs->back_inserter());
 
             std::shared_ptr<Sequence<std::string> > removed_if_dependent_names(std::make_shared<Sequence<std::string>>());
-            for (auto r(cmdline.a_removed_if_dependent_names.begin_args()), r_end(cmdline.a_removed_if_dependent_names.end_args()) ;
-                    r != r_end ; ++r)
-                world_specs->push_back("!" + *r);
+            for (const auto & name : cmdline.a_removed_if_dependent_names.args())
+                world_specs->push_back("!" + name);
 
             ResumeData resume_data(make_named_values<ResumeData>(
                         n::job_lists() = lists,
@@ -267,12 +266,10 @@ namespace
 
             if (cmdline.import_options.a_unpackaged_repository_params.specified())
             {
-                for (args::StringSetArg::ConstIterator p(cmdline.import_options.a_unpackaged_repository_params.begin_args()),
-                        p_end(cmdline.import_options.a_unpackaged_repository_params.end_args()) ;
-                        p != p_end ; ++p)
+                for (const auto & param : cmdline.import_options.a_unpackaged_repository_params.args())
                 {
                     args->push_back("--" + cmdline.import_options.a_unpackaged_repository_params.long_name());
-                    args->push_back(*p);
+                    args->push_back(param);
                 }
             }
 
@@ -458,10 +455,8 @@ namespace
 
         if (cmdline.import_options.a_unpackaged_repository_params.specified())
         {
-            for (args::StringSetArg::ConstIterator p(cmdline.import_options.a_unpackaged_repository_params.begin_args()),
-                    p_end(cmdline.import_options.a_unpackaged_repository_params.end_args()) ;
-                    p != p_end ; ++p)
-                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " " + args::escape(*p));
+            for (const auto & param : cmdline.import_options.a_unpackaged_repository_params.args())
+                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " " + args::escape(param));
         }
 
         IPCInputManager input_manager(env.get(), std::bind(&set_output_manager, std::ref(job_mutex),
@@ -522,10 +517,8 @@ namespace
 
         if (cmdline.import_options.a_unpackaged_repository_params.specified())
         {
-            for (args::StringSetArg::ConstIterator p(cmdline.import_options.a_unpackaged_repository_params.begin_args()),
-                    p_end(cmdline.import_options.a_unpackaged_repository_params.end_args()) ;
-                    p != p_end ; ++p)
-                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " " + args::escape(*p));
+            for (const auto & param : cmdline.import_options.a_unpackaged_repository_params.args())
+                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " " + args::escape(param));
         }
 
         IPCInputManager input_manager(env.get(), std::bind(&set_output_manager, std::ref(job_mutex),
@@ -580,10 +573,8 @@ namespace
 
         if (cmdline.import_options.a_unpackaged_repository_params.specified())
         {
-            for (args::StringSetArg::ConstIterator p(cmdline.import_options.a_unpackaged_repository_params.begin_args()),
-                    p_end(cmdline.import_options.a_unpackaged_repository_params.end_args()) ;
-                    p != p_end ; ++p)
-                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " " + args::escape(*p));
+            for (const auto & param : cmdline.import_options.a_unpackaged_repository_params.args())
+                command.append(" --" + cmdline.import_options.a_unpackaged_repository_params.long_name() + " " + args::escape(param));
         }
 
         IPCInputManager input_manager(env.get(), std::bind(&set_output_manager, std::ref(job_mutex),
@@ -730,7 +721,10 @@ namespace
             const ExecuteResolutionCommandLine & cmdline)
     {
         bool failed(false);
-        int x(0), y(lists->pretend_job_list()->length()), f(0), s(0);
+        int x(0);
+        int y(lists->pretend_job_list()->length());
+        int f(0);
+        int s(0);
         std::string string_to_backspace("");
 
         if (0 != env->perform_hook(Hook("pretend_all_pre")
@@ -846,7 +840,8 @@ namespace
 
         int visit(InstallJob & install_item)
         {
-            std::string destination_string, action_string;
+            std::string destination_string;
+            std::string action_string;
             switch (install_item.destination_type())
             {
                 case dt_install_to_slash:

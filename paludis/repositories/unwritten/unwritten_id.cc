@@ -199,7 +199,7 @@ UnwrittenID::extra_hash_value() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnwrittenID::fs_location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSPath> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -211,31 +211,31 @@ UnwrittenID::behaviours_key() const
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 UnwrittenID::keywords_key() const
 {
-    return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnwrittenID::dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnwrittenID::build_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnwrittenID::run_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnwrittenID::post_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<Slot> >
@@ -253,13 +253,13 @@ UnwrittenID::short_description_key() const
 const std::shared_ptr<const MetadataValueKey<std::string> >
 UnwrittenID::long_description_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<std::string> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 UnwrittenID::fetches_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
@@ -271,7 +271,7 @@ UnwrittenID::homepage_key() const
 const std::shared_ptr<const MetadataTimeKey>
 UnwrittenID::installed_time_key() const
 {
-    return std::shared_ptr<const MetadataTimeKey>();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >

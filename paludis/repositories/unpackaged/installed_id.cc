@@ -230,10 +230,9 @@ namespace
                     return _v;
 
                 _v = std::make_shared<Set<std::string>>();
-                for (FSPathSequence::ConstIterator a(_f.begin()), a_end(_f.end()) ;
-                        a != a_end ; ++a)
+                for (const auto & file : _f)
                 {
-                    SafeIFStream f(*a);
+                    SafeIFStream f(file);
                     _v->insert(strip_trailing(std::string((std::istreambuf_iterator<char>(f)),
                                     std::istreambuf_iterator<char>()), "\n"));
                 }
@@ -494,7 +493,7 @@ InstalledUnpackagedID::repository_name() const
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 InstalledUnpackagedID::keywords_key() const
 {
-    return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -518,19 +517,19 @@ InstalledUnpackagedID::run_dependencies_key() const
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 InstalledUnpackagedID::post_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 InstalledUnpackagedID::fetches_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 InstalledUnpackagedID::homepage_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
@@ -542,7 +541,7 @@ InstalledUnpackagedID::short_description_key() const
 const std::shared_ptr<const MetadataValueKey<std::string> >
 InstalledUnpackagedID::long_description_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<std::string> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const Contents>
@@ -698,9 +697,8 @@ InstalledUnpackagedID::uninstall(const bool replace,
     if (last)
     {
         std::shared_ptr<const PackageIDSequence> ids(repo->package_ids(name(), { }));
-        for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
-                v != v_end ; ++v)
-            if (**v != *this)
+        for (const auto & id : *ids)
+            if (*id != *this)
             {
                 last = false;
                 break;
@@ -744,6 +742,5 @@ InstalledUnpackagedID::uninstall(const bool replace,
 const std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >
 InstalledUnpackagedID::choices_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<std::shared_ptr<const Choices> > >();
+    return nullptr;
 }
-

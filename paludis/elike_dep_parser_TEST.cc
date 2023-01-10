@@ -47,9 +47,8 @@ namespace
     void handle_annotations(std::string & s, const std::shared_ptr<const Map<std::string, std::string> > & m)
     {
         s.append("[");
-        for (Map<std::string, std::string>::ConstIterator i(m->begin()), i_end(m->end()) ;
-                i != i_end ; ++i)
-            s.append(i->first + ":" + i->second + ";");
+        for (const auto & i : *m)
+            s.append(i.first + ":" + i.second + ";");
         s.append("]");
     }
 }
@@ -58,7 +57,8 @@ TEST(ELikeDepParser, Basic)
 {
     using namespace std::placeholders;
 
-    std::string in("|| ( a b ( c d e ) )"), out;
+    std::string in("|| ( a b ( c d e ) )");
+    std::string out;
     ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
                 n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),
@@ -83,7 +83,8 @@ TEST(ELikeDepParser, Empty)
 {
     using namespace std::placeholders;
 
-    std::string in("( ( ) )"), out;
+    std::string in("( ( ) )");
+    std::string out;
     ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
                 n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),
@@ -108,7 +109,8 @@ TEST(ELikeDepParser, Annotations)
 {
     using namespace std::placeholders;
 
-    std::string in("a [[ first = foo second = [ bar baz ] ]]"), out;
+    std::string in("a [[ first = foo second = [ bar baz ] ]]");
+    std::string out;
     ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
                 n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),
@@ -133,7 +135,8 @@ TEST(ELikeDepParser, Comments)
 {
     using namespace std::placeholders;
 
-    std::string in("# comment\na [[ first = foo second = [ bar baz ] ]] # comment"), out;
+    std::string in("# comment\na [[ first = foo second = [ bar baz ] ]] # comment");
+    std::string out;
     ELikeDepParserCallbacks callbacks(make_named_values<ELikeDepParserCallbacks>(
                 n::on_all() = std::bind(&handler, std::ref(out), "all<", "", "", "", ""),
                 n::on_annotations() = std::bind(&handle_annotations, std::ref(out), _1),

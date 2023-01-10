@@ -76,21 +76,18 @@ namespace paludis
 
 Exception::Exception(const std::string & m) noexcept :
     _message(m),
-    _context_data(new ContextData)
+    _context_data(std::make_unique<ContextData>())
 {
 }
 
 Exception::Exception(const Exception & other) :
     std::exception(other),
     _message(other._message),
-    _context_data(new ContextData(*other._context_data))
+    _context_data(std::make_unique<ContextData>(*other._context_data))
 {
 }
 
-Exception::~Exception()
-{
-    delete _context_data;
-}
+Exception::~Exception() = default;
 
 const std::string &
 Exception::message() const noexcept

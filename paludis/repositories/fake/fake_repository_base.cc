@@ -97,8 +97,8 @@ FakeRepositoryBase::package_names(const CategoryNamePart & c, const RepositoryCo
     if (! has_category_named(c, x))
         return result;
 
-    PackageNamePartSet::ConstIterator p(_imp->package_names.find(c)->second->begin()),
-        p_end(_imp->package_names.find(c)->second->end());
+    PackageNamePartSet::ConstIterator p(_imp->package_names.find(c)->second->begin());
+    PackageNamePartSet::ConstIterator p_end(_imp->package_names.find(c)->second->end());
     for ( ; p != p_end ; ++p)
         result->insert(c + *p);
     return result;

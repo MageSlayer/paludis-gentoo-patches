@@ -207,7 +207,7 @@ UnpackagedID::repository_name() const
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 UnpackagedID::keywords_key() const
 {
-    return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -231,19 +231,19 @@ UnpackagedID::run_dependencies_key() const
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnpackagedID::post_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 UnpackagedID::fetches_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 UnpackagedID::homepage_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
@@ -255,19 +255,19 @@ UnpackagedID::short_description_key() const
 const std::shared_ptr<const MetadataValueKey<std::string> >
 UnpackagedID::long_description_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<std::string> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataTimeKey>
 UnpackagedID::installed_time_key() const
 {
-    return std::shared_ptr<const MetadataTimeKey>();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
 UnpackagedID::from_repositories_key() const
 {
-    return std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<FSPath> >
@@ -462,11 +462,10 @@ UnpackagedID::perform_action(Action & action) const
             throw InternalError(PALUDIS_HERE, "bad WantPhase");
     }
 
-    for (PackageIDSequence::ConstIterator i(install_action->options.replacing()->begin()), i_end(install_action->options.replacing()->end()) ;
-            i != i_end ; ++i)
+    for (const auto & replaced_id : *install_action->options.replacing())
     {
-        Context local_context("When cleaning '" + stringify(**i) + "':");
-        if ((*i)->name() == name() && (*i)->version() == version() && parallel_slot_is_same(*i, this))
+        Context local_context("When cleaning '" + stringify(*replaced_id) + "':");
+        if (replaced_id->name() == name() && replaced_id->version() == version() && parallel_slot_is_same(replaced_id, this))
             continue;
 
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
@@ -478,7 +477,7 @@ UnpackagedID::perform_action(Action & action) const
                     n::override_contents() = nullptr,
                     n::want_phase() = install_action->options.want_phase()
                     ));
-        install_action->options.perform_uninstall()(*i, uo);
+        install_action->options.perform_uninstall()(replaced_id, uo);
     }
 
     output_manager->succeeded();
@@ -507,4 +506,3 @@ UnpackagedID::contents() const
 {
     return nullptr;
 }
-

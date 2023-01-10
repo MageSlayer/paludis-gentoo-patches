@@ -83,24 +83,22 @@ int main(int argc, char * argv[])
                     generator::Package(QualifiedPackageName("sys-apps/paludis")))]);
 
         /* For each ID: */
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
+        for (const auto & id : *ids)
         {
-            cout << **i << ":" << endl;
+            cout << *id << ":" << endl;
 
             /* For each mask key: */
-            for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
-                    m != m_end ; ++m)
+            for (const auto & mask : id->masks())
             {
                 /* All Mask instances have two basic bits of information: a one
                  * character short key, and a longer description. */
-                cout << left << setw(30) << "    Key:" << " " << std::string(1, (*m)->key()) << endl;
-                cout << left << setw(30) << "    Description:" << " " << (*m)->description() << endl;
+                cout << left << setw(30) << "    Key:" << " " << std::string(1, mask->key()) << endl;
+                cout << left << setw(30) << "    Description:" << " " << mask->description() << endl;
 
                 /* To display more information about a Mask we create a visitor
                  * that visits the appropriate subtype. */
                 MaskInformationVisitor v;
-                (*m)->accept(v);
+                mask->accept(v);
 
                 cout << endl;
             }

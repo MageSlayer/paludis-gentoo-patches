@@ -328,26 +328,24 @@ namespace
         int retcode(0);
 
         cout << fuc(fs_heading(), fv<'s'>("Sync results"));
-        for (std::list<std::shared_ptr<SyncExecutive> >::const_iterator x(executives.begin()),
-                x_end(executives.end()) ;
-                x != x_end ; ++x)
+        for (const auto & executive : executives)
         {
-            if (! (*x)->success)
+            if (! executive->success)
             {
                 retcode |= 1;
-                cout << fuc(fs_message_failure(), fv<'k'>(stringify((*x)->name)), fv<'v'>("failed"));
-                cout << fuc(fs_message_failure_message(), fv<'s'>((*x)->error));
+                cout << fuc(fs_message_failure(), fv<'k'>(stringify(executive->name)), fv<'v'>("failed"));
+                cout << fuc(fs_message_failure_message(), fv<'s'>(executive->error));
             }
             else
             {
-                (*x)->output_manager->succeeded();
-                if ((*x)->skipped)
-                    cout << fuc(fs_message_success(), fv<'k'>(stringify((*x)->name)), fv<'v'>("no syncing required"));
+                executive->output_manager->succeeded();
+                if (executive->skipped)
+                    cout << fuc(fs_message_success(), fv<'k'>(stringify(executive->name)), fv<'v'>("no syncing required"));
                 else
-                    cout << fuc(fs_message_success(), fv<'k'>(stringify((*x)->name)), fv<'v'>("success"));
+                    cout << fuc(fs_message_success(), fv<'k'>(stringify(executive->name)), fv<'v'>("success"));
             }
 
-            (*x)->output_manager.reset();
+            executive->output_manager.reset();
         }
 
         return retcode;
@@ -372,13 +370,12 @@ SyncCommand::run(
     int retcode(0);
 
     Repos repos;
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
-        for (SyncCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
-                p != p_end ; ++p)
+    if (! cmdline.parameters().empty())
+        for (const auto & param : cmdline.parameters())
         {
-            RepositoryName n(*p);
+            RepositoryName n(param);
             if (! env->has_repository_named(n))
-                throw NothingMatching(*p);
+                throw NothingMatching(param);
             repos.insert(n);
         }
     else

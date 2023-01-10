@@ -67,21 +67,12 @@ namespace paludis
 
 namespace
 {
-    struct IsGarbageFile : std::unary_function<const FSPath &, bool>
-    {
-        bool operator() (const FSPath & file)
-        {
-            std::string basename(file.basename());
-            return '#' == basename[0] || '~' == basename[basename.length() - 1];
-        }
-    };
-
     template <typename T_>
     void
     from_colon_string(const std::function<std::string (const std::string &)> & source,
                 const std::string & varname, std::vector<T_> & vec)
     {
-        std::string str(source.operator() (varname)); /* silly 4.3 ICE */
+        std::string str(source(varname));
         if (! str.empty())
         {
             Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
@@ -95,7 +86,7 @@ namespace
     from_string(const std::function<std::string (const std::string &)> & source,
                 const std::string & varname, std::vector<T_> & vec)
     {
-        std::string str(source.operator() (varname)); /* silly 4.3 ICE */
+        std::string str(source(varname));
         if (! str.empty())
         {
             Log::get_instance()->message("broken_linkage_finder.config", ll_debug, lc_context)
@@ -118,8 +109,7 @@ namespace
             std::copy(WildcardExpander(stringify(path), root), WildcardExpander(),
                       std::back_inserter(scratch));
 
-        using std::swap;
-        swap(vec, scratch);
+        std::swap(vec, scratch);
     }
 
     template <typename T_, typename C_>
@@ -208,7 +198,7 @@ BrokenLinkageConfiguration::BrokenLinkageConfiguration(const FSPath & root) :
     _imp->load_from_etc_ld_so_conf(root);
     _imp->add_defaults();
 
-    cleanup("LD_LIBRARY_MASK",  _imp->ld_library_mask,  root, std::less<std::string>());
+    cleanup("LD_LIBRARY_MASK",  _imp->ld_library_mask,  root, std::less<>());
     cleanup("SEARCH_DIRS",      _imp->search_dirs,      root, FSPathComparator());
     cleanup("SEARCH_DIRS_MASK", _imp->search_dirs_mask, root, FSPathComparator());
 
@@ -246,11 +236,17 @@ Imp<BrokenLinkageConfiguration>::load_from_etc_revdep_rebuild(const FSPath & roo
     FSStat etc_revdep_rebuild_stat(etc_revdep_rebuild);
     Context ctx("When reading '" + stringify(etc_revdep_rebuild) + "':");
 
+    const auto is_garbage_file = [](const FSPath & file) {
+        std::string basename(file.basename());
+        return '#' == basename[0] || '~' == basename[basename.length() - 1];
+    };
+
     if (etc_revdep_rebuild_stat.is_directory_or_symlink_to_directory())
     {
         std::vector<FSPath> conf_files = std::vector<FSPath>(FSIterator(etc_revdep_rebuild, { }), FSIterator());
-        conf_files.erase(std::remove_if(conf_files.begin(), conf_files.end(), IsGarbageFile()),
-                         conf_files.end());
+        conf_files.erase(
+                std::remove_if(conf_files.begin(), conf_files.end(), is_garbage_file),
+                conf_files.end());
         std::sort(conf_files.begin(), conf_files.end(), FSPathComparator());
 
         KeyValueConfigFileOptions opts;

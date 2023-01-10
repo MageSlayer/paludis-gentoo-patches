@@ -24,8 +24,6 @@ using namespace examples;
 
 using std::cout;
 using std::endl;
-using std::left;
-using std::setw;
 
 int main(int argc, char * argv[])
 {

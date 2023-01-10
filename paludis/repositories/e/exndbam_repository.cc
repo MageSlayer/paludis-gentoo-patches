@@ -209,14 +209,13 @@ ExndbamRepository::package_ids(const QualifiedPackageName & q,
     std::shared_ptr<NDBAMEntrySequence> entries(_imp->ndbam.entries(q));
     std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
-    for (IndirectIterator<NDBAMEntrySequence::ConstIterator> e(entries->begin()), e_end(entries->end()) ;
-            e != e_end ; ++e)
+    for (auto & entry : *entries)
     {
-        std::unique_lock<std::mutex> l(*(*e).mutex());
-        if (! (*e).package_id())
-            (*e).package_id() = std::make_shared<ExndbamID>((*e).name(), (*e).version(), _imp->params.environment(),
-                        name(), (*e).fs_location(), &_imp->ndbam);
-        result->push_back((*e).package_id());
+        std::unique_lock<std::mutex> l(*entry->mutex());
+        if (! entry->package_id())
+            entry->package_id() = std::make_shared<ExndbamID>(entry->name(), entry->version(), _imp->params.environment(),
+                        name(), entry->fs_location(), &_imp->ndbam);
+        result->push_back(entry->package_id());
     }
 
     return result;
@@ -362,16 +361,16 @@ ExndbamRepository::merge(const MergeParams & m)
     if (! is_suitable_destination_for(m.package_id()))
         throw ActionFailedError("Not a suitable destination for '" + stringify(*m.package_id()) + "'");
 
-    std::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
+    std::shared_ptr<const PackageID> if_overwritten_id;
+    std::shared_ptr<const PackageID> if_same_name_id;
     {
         std::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id()->name(), { }));
-        for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
-                v != v_end ; ++v)
+        for (const auto & id : *ids)
         {
-            if_same_name_id = *v;
-            if ((*v)->version() == m.package_id()->version() && parallel_slot_is_same(*v, m.package_id()))
+            if_same_name_id = id;
+            if (id->version() == m.package_id()->version() && parallel_slot_is_same(id, m.package_id()))
             {
-                if_overwritten_id = *v;
+                if_overwritten_id = id;
                 break;
             }
         }
@@ -400,7 +399,8 @@ ExndbamRepository::merge(const MergeParams & m)
     if (! m.check())
         target_ver_dir.mkdir(0755, { });
 
-    std::string config_protect, config_protect_mask;
+    std::string config_protect;
+    std::string config_protect_mask;
     if (! m.check())
     {
         WriteVDBEntryCommand write_vdb_entry_command(
@@ -518,10 +518,9 @@ ExndbamRepository::merge(const MergeParams & m)
             ->eapi()->supported()->ebuild_phases()->ebuild_new_upgrade_phase_order())
     {
         const std::shared_ptr<const PackageIDSequence> & replace_candidates(package_ids(m.package_id()->name(), { }));
-        for (PackageIDSequence::ConstIterator it(replace_candidates->begin()),
-                 it_end(replace_candidates->end()); it_end != it; ++it)
+        for (const auto & it : *replace_candidates)
         {
-            std::shared_ptr<const ERepositoryID> candidate(std::static_pointer_cast<const ERepositoryID>(*it));
+            std::shared_ptr<const ERepositoryID> candidate(std::static_pointer_cast<const ERepositoryID>(it));
             if (candidate != if_overwritten_id && candidate->fs_location_key()->parse_value() != target_ver_dir && parallel_slot_is_same(candidate, m.package_id()))
             {
                 UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
@@ -570,13 +569,12 @@ ExndbamRepository::perform_uninstall(
     eclassdirs->push_back(ver_dir);
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_uninstall());
-    for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
-            phase != phase_end ; ++phase)
+    for (const auto & phase : phases)
     {
         bool skip(false);
         do
         {
-            switch (a.options.want_phase()(phase->equal_option("skipname")))
+            switch (a.options.want_phase()(phase.equal_option("skipname")))
             {
                 case wp_yes:
                     continue;
@@ -597,17 +595,18 @@ ExndbamRepository::perform_uninstall(
 
         if (skip)
             continue;
-        if (can_skip_phase(_imp->params.environment(), id, *phase))
+        if (can_skip_phase(_imp->params.environment(), id, phase))
         {
             output_manager->stdout_stream() << "--- No need to do anything for " <<
-                phase->equal_option("skipname") << " phase" << std::endl;
+                phase.equal_option("skipname") << " phase" << std::endl;
             continue;
         }
 
-        if (phase->option("unmerge"))
+        if (phase.option("unmerge"))
         {
             /* load CONFIG_PROTECT, CONFIG_PROTECT_MASK from vdb, supplement with env */
-            std::string config_protect, config_protect_mask;
+            std::string config_protect;
+            std::string config_protect_mask;
 
             try
             {
@@ -659,8 +658,8 @@ ExndbamRepository::perform_uninstall(
             EbuildCommandParams params(
                     make_named_values<EbuildCommandParams>(
                         n::builddir() = _imp->params.builddir(),
-                        n::clearenv() = phase->option("clearenv"),
-                        n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                        n::clearenv() = phase.option("clearenv"),
+                        n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                         n::distdir() = ver_dir,
                         n::ebuild_dir() = ver_dir,
                         n::ebuild_file() = ver_dir / (stringify(id->name().package()) + "-" + stringify(id->version()) + ".ebuild"),
@@ -675,9 +674,9 @@ ExndbamRepository::perform_uninstall(
                         n::permitted_directories() = nullptr,
                         n::portdir() = _imp->params.location(),
                         n::root() = stringify(_imp->params.root()),
-                        n::sandbox() = phase->option("sandbox"),
-                        n::sydbox() = phase->option("sydbox"),
-                        n::userpriv() = phase->option("userpriv"),
+                        n::sandbox() = phase.option("sandbox"),
+                        n::sydbox() = phase.option("sydbox"),
+                        n::userpriv() = phase.option("userpriv"),
                         n::volatile_files() = nullptr
                     ));
 

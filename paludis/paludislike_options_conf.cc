@@ -181,11 +181,10 @@ PaludisLikeOptionsConf::add_file(const FSPath & f)
     if (! file)
         return;
 
-    for (LineConfigFile::ConstIterator line(file->begin()), line_end(file->end()) ;
-            line != line_end ; ++line)
+    for (const auto & line : *file)
     {
         std::vector<std::string> tokens;
-        tokenise_whitespace_quoted(*line, std::back_inserter(tokens));
+        tokenise_whitespace_quoted(line, std::back_inserter(tokens));
 
         if (tokens.size() < 2)
             continue;
@@ -253,7 +252,7 @@ PaludisLikeOptionsConf::add_file(const FSPath & f)
             {
                 /* foo: */
                 std::string p;
-                std::transform(t->begin(), previous(t->end()), std::back_inserter(p), &::tolower);
+                std::transform(t->begin(), prev(t->end()), std::back_inserter(p), &::tolower);
 
                 values_group = &*values_groups->insert(values_groups->end(), make_named_values<ValuesGroup>(
                             n::minus_star() = false,
@@ -400,8 +399,8 @@ namespace
             if (values_group.prefix() != prefix)
                 continue;
 
-            for (const auto & v : values_group.values())
-                known->insert(v.unprefixed_name());
+            for (const auto & value : values_group.values())
+                known->insert(value.unprefixed_name());
         }
     }
 
@@ -489,14 +488,13 @@ PaludisLikeOptionsConf::want_choice_enabled_locked(
     /* Any set matches? */
     if (maybe_id && ! seen_minus_star)
     {
-        for (SetNamesWithValuesGroups::const_iterator r(_imp->set_specs.begin()), r_end(_imp->set_specs.end()) ;
-                r != r_end ; ++r)
+        for (const auto & set_spec : _imp->set_specs)
         {
-            if (! match_package_in_set(*_imp->params.environment(), *r->set_value().value().value(),
+            if (! match_package_in_set(*_imp->params.environment(), *set_spec.set_value().value().value(),
                         maybe_id, { }))
                 continue;
 
-            check_values_groups(_imp->params.environment(), maybe_id, prefix, unprefixed_name, r->values_groups(),
+            check_values_groups(_imp->params.environment(), maybe_id, prefix, unprefixed_name, set_spec.values_groups(),
                     seen_minus_star, result, dummy);
         }
 
@@ -549,13 +547,12 @@ PaludisLikeOptionsConf::value_for_choice_parameter(
 
     /* Any set matches? */
     {
-        for (SetNamesWithValuesGroups::const_iterator r(_imp->set_specs.begin()), r_end(_imp->set_specs.end()) ;
-                r != r_end ; ++r)
+        for (const auto & set_spec : _imp->set_specs)
         {
-            if (! match_package_in_set(*_imp->params.environment(), *r->set_value().value().value(), id, { }))
+            if (! match_package_in_set(*_imp->params.environment(), *set_spec.set_value().value().value(), id, { }))
                 continue;
 
-            check_values_groups(_imp->params.environment(), id, prefix, unprefixed_name, r->values_groups(),
+            check_values_groups(_imp->params.environment(), id, prefix, unprefixed_name, set_spec.values_groups(),
                     dummy_seen_minus_star, dummy_result, equals_value);
         }
 
@@ -594,14 +591,13 @@ PaludisLikeOptionsConf::known_choice_value_names(
     /* Any set matches? */
     if (maybe_id)
     {
-        for (SetNamesWithValuesGroups::const_iterator r(_imp->set_specs.begin()), r_end(_imp->set_specs.end()) ;
-                r != r_end ; ++r)
+        for (const auto & set_spec : _imp->set_specs)
         {
-            if (! match_package_in_set(*_imp->params.environment(), *r->set_value().value().value(),
+            if (! match_package_in_set(*_imp->params.environment(), *set_spec.set_value().value().value(),
                         maybe_id, { }))
                 continue;
 
-            collect_known_from_values_groups(_imp->params.environment(), maybe_id, prefix, r->values_groups(), result);
+            collect_known_from_values_groups(_imp->params.environment(), maybe_id, prefix, set_spec.values_groups(), result);
         }
     }
 

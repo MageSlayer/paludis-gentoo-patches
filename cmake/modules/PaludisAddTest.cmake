@@ -28,6 +28,7 @@ function(paludis_add_test test_name)
                             libpaludisutil
                             GTest::GTest
                             GTest::Main
+                            GTest::gmock
                             ${PAT_LINK_LIBRARIES})
   endif()
 

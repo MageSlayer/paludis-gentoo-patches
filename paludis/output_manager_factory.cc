@@ -133,13 +133,12 @@ OutputManagerFactory::add_manager(
         const CreateFunction & create_function
         )
 {
-    for (Set<std::string>::ConstIterator f(formats->begin()), f_end(formats->end()) ;
-            f != f_end ; ++f)
+    for (const auto & format : *formats)
     {
-        if (! _imp->keys.insert(std::make_pair(*f, make_named_values<Funcs>(
+        if (! _imp->keys.insert(std::make_pair(format, make_named_values<Funcs>(
                             n::create_function() = create_function
                             ))).second)
-            throw ConfigurationError("Handler for output manager format '" + stringify(*f) + "' already exists");
+            throw ConfigurationError("Handler for output manager format '" + stringify(format) + "' already exists");
     }
 }
 

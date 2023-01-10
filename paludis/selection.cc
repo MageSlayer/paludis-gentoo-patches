@@ -44,9 +44,9 @@
 
 using namespace paludis;
 
-DidNotGetExactlyOneError::DidNotGetExactlyOneError(const std::string & s, const std::shared_ptr<const PackageIDSet> & r) noexcept :
-    Exception("Did not get unique result for '" + stringify(s) + "' (got { " + join(indirect_iterator(r->begin()),
-                    indirect_iterator(r->end()), ", ") + "})")
+DidNotGetExactlyOneError::DidNotGetExactlyOneError(const std::string & s, const std::shared_ptr<const PackageIDSet> & ids) noexcept :
+    Exception("Did not get unique result for '" + stringify(s) + "' (got { " + join(indirect_iterator(ids->begin()),
+                    indirect_iterator(ids->end()), ", ") + "})")
 {
 }
 
@@ -133,14 +133,14 @@ namespace
                 if (p->empty())
                     return result;
 
-                for (QualifiedPackageNameSet::ConstIterator q(p->begin()), q_end(p->end()) ; q != q_end ; ++q)
+                for (const auto & qpn : *p)
                 {
                     std::shared_ptr<QualifiedPackageNameSet> s(std::make_shared<QualifiedPackageNameSet>());
-                    s->insert(*q);
-                    std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, s, may_excludes)));
-                    if (! i->empty())
+                    s->insert(qpn);
+                    std::shared_ptr<const PackageIDSet> ids(_fg.filter().ids(env, _fg.generator().ids(env, r, s, may_excludes)));
+                    if (! ids->empty())
                     {
-                        result->push_back(*i->begin());
+                        result->push_back(*ids->begin());
                         break;
                     }
                 }
@@ -165,8 +165,6 @@ namespace
 
             std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
-                using namespace std::placeholders;
-
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
                 RepositoryContentMayExcludes may_excludes(_fg.filter().may_excludes());
 
@@ -182,13 +180,13 @@ namespace
                 if (p->empty())
                     return result;
 
-                for (QualifiedPackageNameSet::ConstIterator q(p->begin()), q_end(p->end()) ; q != q_end ; ++q)
+                for (const auto & qpn : *p)
                 {
                     std::shared_ptr<QualifiedPackageNameSet> s(std::make_shared<QualifiedPackageNameSet>());
-                    s->insert(*q);
-                    std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, s, may_excludes)));
-                    if (! i->empty())
-                        result->push_back(*std::max_element(i->begin(), i->end(), PackageIDComparator(env)));
+                    s->insert(qpn);
+                    std::shared_ptr<const PackageIDSet> ids(_fg.filter().ids(env, _fg.generator().ids(env, r, s, may_excludes)));
+                    if (! ids->empty())
+                        result->push_back(*std::max_element(ids->begin(), ids->end(), PackageIDComparator(env)));
                 }
 
                 return result;
@@ -211,8 +209,6 @@ namespace
 
             std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
-                using namespace std::placeholders;
-
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
                 RepositoryContentMayExcludes may_excludes(_fg.filter().may_excludes());
 
@@ -228,8 +224,8 @@ namespace
                 if (p->empty())
                     return result;
 
-                std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p, may_excludes)));
-                std::copy(i->begin(), i->end(), result->back_inserter());
+                std::shared_ptr<const PackageIDSet> ids(_fg.filter().ids(env, _fg.generator().ids(env, r, p, may_excludes)));
+                std::copy(ids->begin(), ids->end(), result->back_inserter());
                 result->sort(PackageIDComparator(env));
 
                 return result;
@@ -252,8 +248,6 @@ namespace
 
             std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
-                using namespace std::placeholders;
-
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
                 RepositoryContentMayExcludes may_excludes(_fg.filter().may_excludes());
 
@@ -269,8 +263,8 @@ namespace
                 if (p->empty())
                     return result;
 
-                std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p, may_excludes)));
-                std::copy(i->begin(), i->end(), result->back_inserter());
+                std::shared_ptr<const PackageIDSet> ids(_fg.filter().ids(env, _fg.generator().ids(env, r, p, may_excludes)));
+                std::copy(ids->begin(), ids->end(), result->back_inserter());
 
                 return result;
             }
@@ -292,8 +286,6 @@ namespace
 
             std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
-                using namespace std::placeholders;
-
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
                 RepositoryContentMayExcludes may_excludes(_fg.filter().may_excludes());
 
@@ -309,18 +301,17 @@ namespace
                 if (p->empty())
                     return result;
 
-                std::shared_ptr<const PackageIDSet> id(_fg.filter().ids(env, _fg.generator().ids(env, r, p, may_excludes)));
+                std::shared_ptr<const PackageIDSet> ids(_fg.filter().ids(env, _fg.generator().ids(env, r, p, may_excludes)));
 
                 typedef std::map<std::pair<QualifiedPackageName, std::string>, std::shared_ptr<PackageIDSequence> > SlotMap;
                 SlotMap by_slot;
-                for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                        i != i_end ; ++i)
+                for (const auto & id : *ids)
                 {
-                    SlotMap::iterator m(by_slot.find(std::make_pair((*i)->name(), slot_as_string(*i))));
+                    SlotMap::iterator m(by_slot.find(std::make_pair(id->name(), slot_as_string(id))));
                     if (m == by_slot.end())
-                        m = by_slot.insert(std::make_pair(std::make_pair((*i)->name(), slot_as_string(*i)),
+                        m = by_slot.insert(std::make_pair(std::make_pair(id->name(), slot_as_string(id)),
                                     std::make_shared<PackageIDSequence>())).first;
-                    m->second->push_back(*i);
+                    m->second->push_back(id);
                 }
 
                 PackageIDComparator comparator(env);
@@ -358,8 +349,6 @@ namespace
 
             std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
-                using namespace std::placeholders;
-
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
                 RepositoryContentMayExcludes may_excludes(_fg.filter().may_excludes());
 
@@ -375,18 +364,17 @@ namespace
                 if (p->empty())
                     return result;
 
-                std::shared_ptr<const PackageIDSet> id(_fg.filter().ids(env, _fg.generator().ids(env, r, p, may_excludes)));
+                std::shared_ptr<const PackageIDSet> ids(_fg.filter().ids(env, _fg.generator().ids(env, r, p, may_excludes)));
 
                 typedef std::map<std::pair<QualifiedPackageName, std::string>, std::shared_ptr<PackageIDSequence> > SlotMap;
                 SlotMap by_slot;
-                for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                        i != i_end ; ++i)
+                for (const auto & id : *ids)
                 {
-                    SlotMap::iterator m(by_slot.find(std::make_pair((*i)->name(), slot_as_string(*i))));
+                    SlotMap::iterator m(by_slot.find(std::make_pair(id->name(), slot_as_string(id))));
                     if (m == by_slot.end())
-                        m = by_slot.insert(std::make_pair(std::make_pair((*i)->name(), slot_as_string(*i)),
+                        m = by_slot.insert(std::make_pair(std::make_pair(id->name(), slot_as_string(id)),
                                     std::make_shared<PackageIDSequence>())).first;
-                    m->second->push_back(*i);
+                    m->second->push_back(id);
                 }
 
                 PackageIDComparator comparator(env);
@@ -424,8 +412,6 @@ namespace
 
             std::shared_ptr<PackageIDSequence> perform_select(const Environment * const env) const override
             {
-                using namespace std::placeholders;
-
                 std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
                 RepositoryContentMayExcludes may_excludes(_fg.filter().may_excludes());
 
@@ -441,12 +427,12 @@ namespace
                 if (p->empty())
                     throw DidNotGetExactlyOneError(as_string(), std::make_shared<PackageIDSet>());
 
-                std::shared_ptr<const PackageIDSet> i(_fg.filter().ids(env, _fg.generator().ids(env, r, p, may_excludes)));
+                std::shared_ptr<const PackageIDSet> ids(_fg.filter().ids(env, _fg.generator().ids(env, r, p, may_excludes)));
 
-                if (i->empty() || next(i->begin()) != i->end())
-                    throw DidNotGetExactlyOneError(as_string(), i);
+                if (ids->empty() || next(ids->begin()) != ids->end())
+                    throw DidNotGetExactlyOneError(as_string(), ids);
 
-                result->push_back(*i->begin());
+                result->push_back(*ids->begin());
 
                 return result;
             }

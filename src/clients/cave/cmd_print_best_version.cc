@@ -103,7 +103,7 @@ PrintBestVersionCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("print-best-version takes exactly one parameter");
 
     auto s(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { }));

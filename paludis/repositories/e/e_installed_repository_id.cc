@@ -698,7 +698,7 @@ EInstalledRepositoryID::eapi() const
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 EInstalledRepositoryID::keywords_key() const
 {
-    return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
