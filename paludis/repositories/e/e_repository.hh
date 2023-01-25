@@ -63,7 +63,7 @@ namespace paludis
             void need_mirrors() const;
 
         protected:
-            virtual void need_keys_added() const;
+            void need_keys_added() const override;
 
         public:
             /**
@@ -74,64 +74,64 @@ namespace paludis
             /**
              * Destructor.
              */
-            ~ERepository();
+            ~ERepository() override;
 
-            virtual void invalidate();
+            void invalidate() override;
 
-            virtual void purge_invalid_cache() const;
+            void purge_invalid_cache() const override;
 
             /* RepositoryDestinationInterface */
 
-            virtual bool is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool is_suitable_destination_for(const std::shared_ptr<const PackageID> &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool want_pre_post_phases() const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool want_pre_post_phases() const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void merge(const MergeParams &);
+            void merge(const MergeParams &) override;
 
             /* RepositoryManifestInterface */
-            virtual void make_manifest(const QualifiedPackageName & qpn);
+            void make_manifest(const QualifiedPackageName & qpn) override;
 
             /* RepositorySyncableInterface */
 
-            virtual bool sync(
+            bool sync(
                     const std::string &,
                     const std::string &,
-                    const std::shared_ptr<OutputManager> &) const;
+                    const std::shared_ptr<OutputManager> &) const override;
 
             /* RepositoryEnvironmentVariableInterface */
 
-            virtual std::string get_environment_variable(
+            std::string get_environment_variable(
                     const std::shared_ptr<const PackageID> & for_package,
                     const std::string & var) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /* Repository */
 
-            virtual std::shared_ptr<const PackageIDSequence> package_ids(
+            std::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &, const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const QualifiedPackageNameSet> package_names(
+            std::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &, const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const CategoryNamePartSet> category_names(const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<const CategoryNamePartSet> category_names(const RepositoryContentMayExcludes &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
-                    const PackageNamePart &, const RepositoryContentMayExcludes &) const;
+            std::shared_ptr<const CategoryNamePartSet> category_names_containing_package(
+                    const PackageNamePart &, const RepositoryContentMayExcludes &) const override;
 
-            virtual bool has_package_named(const QualifiedPackageName &, const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool has_package_named(const QualifiedPackageName &, const RepositoryContentMayExcludes &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool has_category_named(const CategoryNamePart &, const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool has_category_named(const CategoryNamePart &, const RepositoryContentMayExcludes &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool some_ids_might_support_action(const SupportsActionTestBase &) const;
+            bool some_ids_might_support_action(const SupportsActionTestBase &) const override;
 
-            virtual bool some_ids_might_not_be_masked() const;
+            bool some_ids_might_not_be_masked() const override;
 
             const erepository::ERepositoryParams & params() const;
 
@@ -139,13 +139,13 @@ namespace paludis
             std::string environment_updated_profile_variable(const std::string &) const;
 
             HookResult perform_hook(const Hook &, const std::shared_ptr<OutputManager> &)
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const CategoryNamePartSet> unimportant_category_names(const RepositoryContentMayExcludes &) const;
-            virtual const bool is_unimportant() const;
+            std::shared_ptr<const CategoryNamePartSet> unimportant_category_names(const RepositoryContentMayExcludes &) const override;
+            const bool is_unimportant() const override;
 
-            virtual const std::shared_ptr<const Set<std::string> > maybe_expand_licence_nonrecursively(
-                    const std::string &) const;
+            const std::shared_ptr<const Set<std::string> > maybe_expand_licence_nonrecursively(
+                    const std::string &) const override;
 
             /**
              * Update GLEP 42 news files.
@@ -155,15 +155,15 @@ namespace paludis
             const std::shared_ptr<const erepository::Layout> layout() const;
             const std::shared_ptr<const erepository::Profile> profile() const;
 
-            void regenerate_cache() const;
+            void regenerate_cache() const override;
 
             /* Keys */
 
-            virtual const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
-            virtual const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const;
+            const std::shared_ptr<const MetadataValueKey<std::string> > format_key() const override;
+            const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const override;
+            const std::shared_ptr<const MetadataValueKey<FSPath> > installed_root_key() const override;
             virtual const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > > info_vars_key() const;
-            virtual const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const;
+            const std::shared_ptr<const MetadataCollectionKey<Map<std::string, std::string> > > sync_host_key() const override;
 
             ///\name RepositoryFactory functions
             ///\{
@@ -192,7 +192,7 @@ namespace paludis
             ///\name Set methods
             ///\{
 
-            virtual void populate_sets() const;
+            void populate_sets() const override;
 
             ///\}
 

@@ -556,7 +556,8 @@ Decider::_make_constraints_from_blocker(
 {
     const std::shared_ptr<ConstraintSequence> result(std::make_shared<ConstraintSequence>());
 
-    bool nothing_is_fine_too(true), force_unable(false);
+    bool nothing_is_fine_too(true);
+    bool force_unable(false);
     switch (find_blocker_role_in_annotations(spec.maybe_annotations()))
     {
         case dsar_blocker_weak:
@@ -1355,11 +1356,10 @@ Decider::_get_resolvents_for_blocker(const BlockDepSpec & spec,
         const std::shared_ptr<const PackageIDSequence> ids((*_imp->env)[selection::BestVersionInEachSlot(
                     generator::Package(*spec.blocking().package_ptr())
                     )]);
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
+        for (const auto & id : *ids)
             for (EnumIterator<DestinationType> t, t_end(last_dt) ; t != t_end ; ++t)
                 if (destination_types[*t])
-                    result->push_back(Resolvent(*i, *t));
+                    result->push_back(Resolvent(id, *t));
     }
 
     return result;
@@ -1623,7 +1623,7 @@ Decider::_installed_but_allowed_to_remove(const std::shared_ptr<const Resolution
         return false;
 
     return ids->end() == std::find_if(ids->begin(), ids->end(),
-            std::bind(std::logical_not<bool>(), std::bind(&Decider::_allowed_to_remove,
+            std::bind(std::logical_not<>(), std::bind(&Decider::_allowed_to_remove,
                     this, resolution, std::placeholders::_1, with_confirmation)));
 }
 
@@ -1637,7 +1637,8 @@ Decider::_allowed_to_remove(
         return false;
 
     if (with_confirmation) {
-        bool all = true, any = false;
+        bool all = true;
+        bool any = false;
         for (auto & c : *resolution->constraints()) {
             any = true;
             if (! c->reason()->make_accept_returning(

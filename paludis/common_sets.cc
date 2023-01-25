@@ -54,18 +54,17 @@ namespace
         else
             ids = ((*env)[selection::BestVersionOnly(generator::InRepository(repo->name()))]);
 
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
-            if (slots && (*i)->slot_key())
+        for (const auto & id : *ids)
+            if (slots && id->slot_key())
                 result->top()->append(std::make_shared<PackageDepSpec>(
                                 make_package_dep_spec({ })
-                                .package((*i)->name())
-                                .slot_requirement(std::make_shared<UserSlotExactPartialRequirement>((*i)->slot_key()->parse_value().parallel_value()))
+                                .package(id->name())
+                                .slot_requirement(std::make_shared<UserSlotExactPartialRequirement>(id->slot_key()->parse_value().parallel_value()))
                                 ));
             else
                 result->top()->append(std::make_shared<PackageDepSpec>(
                                 make_package_dep_spec({ })
-                                .package((*i)->name())
+                                .package(id->name())
                                 ));
 
         return result;

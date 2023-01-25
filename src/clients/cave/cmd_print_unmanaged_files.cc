@@ -132,9 +132,8 @@ namespace
                 if (! contents)
                     return;
 
-                for (auto entry(contents->begin()), end(contents->end());
-                        entry != end; ++entry)
-                    _contents->insert((*entry)->location_key()->parse_value());
+                for (const auto & entry : *contents)
+                    _contents->insert(entry->location_key()->parse_value());
             }
 
         private:
@@ -161,15 +160,14 @@ PrintUnmanagedFilesCommand::run(const std::shared_ptr<Environment> & env,
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("print-unmanaged-files takes no parameters");
 
     const auto sysroot = env->preferred_root_key()->parse_value();
 
-    for (auto root(cmdline.a_root.begin_args()), end(cmdline.a_root.end_args());
-            root != end; ++root)
+    for (const auto & root : cmdline.a_root.args())
     {
-        const FSPath path(*root);
+        const FSPath path(root);
         const FSPath realpath(path.realpath());
 
         if (! realpath.stat().is_directory())

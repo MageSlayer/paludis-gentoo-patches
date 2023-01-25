@@ -67,14 +67,13 @@ namespace
     {
         std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const override
+                const std::shared_ptr<const PackageIDSet> & ids) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                    i != i_end ; ++i)
-                if (! is_already_binary(*i))
-                    result->insert(*i);
+            for (const auto & id : *ids)
+                if (! is_already_binary(id))
+                    result->insert(id);
 
             return result;
         }

@@ -124,32 +124,29 @@ ExheresProfile::ExheresProfile(
         const RepositoryName &,
         const EAPIForFileFunction & eapi_for_file,
         const IsArchFlagFunction &,
-        const FSPathSequence & location,
+        const FSPathSequence & locations,
         const std::string &,
         const bool,
         const bool has_master_repositories,
         const bool) :
     _imp(env, eapi_for_file, has_master_repositories)
 {
-    for (FSPathSequence::ConstIterator l(location.begin()), l_end(location.end()) ;
-            l != l_end ; ++l)
-        _load_dir(*l);
+    for (const auto & location : locations)
+        _load_dir(location);
 
     const std::shared_ptr<const Set<UnprefixedChoiceName> > s(_imp->options_conf.known_choice_value_names(
                 nullptr, ChoicePrefixName("suboptions")));
-    for (Set<UnprefixedChoiceName>::ConstIterator f(s->begin()), f_end(s->end()) ;
-            f != f_end ; ++f)
+    for (const auto & choice_name : *s)
         if (_imp->options_conf.want_choice_enabled_locked(nullptr,
-                    ChoicePrefixName("suboptions"), *f).first.is_true())
-            _imp->use_expand->insert(stringify(*f));
+                    ChoicePrefixName("suboptions"), choice_name).first.is_true())
+            _imp->use_expand->insert(stringify(choice_name));
 
     const std::shared_ptr<const Set<UnprefixedChoiceName> > sh(_imp->options_conf.known_choice_value_names(
                 nullptr, ChoicePrefixName("hidden_suboptions")));
-    for (Set<UnprefixedChoiceName>::ConstIterator f(sh->begin()), f_end(sh->end()) ;
-            f != f_end ; ++f)
+    for (const auto & choice_name : *sh)
         if (_imp->options_conf.want_choice_enabled_locked(nullptr,
-                    ChoicePrefixName("hidden_suboptions"), *f).first.is_true())
-            _imp->use_expand_hidden->insert(stringify(*f));
+                    ChoicePrefixName("hidden_suboptions"), choice_name).first.is_true())
+            _imp->use_expand_hidden->insert(stringify(choice_name));
 
     const std::shared_ptr<const Set<UnprefixedChoiceName>> suboptions_no_describe =
         _imp->options_conf.known_choice_value_names(nullptr,
@@ -173,9 +170,8 @@ ExheresProfile::_load_dir(const FSPath & f)
     if ((f / "parents.conf").stat().exists())
     {
         LineConfigFile file(f / "parents.conf", { });
-        for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
-                line != line_end ; ++line)
-            _load_dir((f / *line).realpath());
+        for (const auto & line : file)
+            _load_dir((f / line).realpath());
     }
 
     if ((f / "options.conf").stat().exists())
@@ -193,9 +189,8 @@ ExheresProfile::_load_dir(const FSPath & f)
             DepSpecFlattener<SetSpecTree, PackageDepSpec> flat_specs(_imp->env, nullptr);
             specs->top()->accept(flat_specs);
 
-            for (auto s(flat_specs.begin()), s_end(flat_specs.end()) ;
-                    s != s_end ; ++s)
-                _imp->system_packages->top()->append(std::make_shared<PackageDepSpec>(**s));
+            for (const auto & spec : flat_specs)
+                _imp->system_packages->top()->append(std::make_shared<PackageDepSpec>(*spec));
         }
     }
 
@@ -210,9 +205,8 @@ ExheresProfile::_load_dir(const FSPath & f)
                 kvcfo_allow_inline_comments, kvcfo_allow_multiple_assigns_per_line },
                 &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
-        for (KeyValueConfigFile::ConstIterator k(file.begin()), k_end(file.end()) ;
-                k != k_end ; ++k)
-            _imp->environment_variables[k->first] = k->second;
+        for (const auto & kv : file)
+            _imp->environment_variables[kv.first] = kv.second;
     }
 
     _imp->profiles_with_parents->push_back(f);
@@ -341,4 +335,3 @@ ExheresProfile::system_packages() const
 {
     return _imp->system_packages;
 }
-

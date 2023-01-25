@@ -21,17 +21,17 @@ namespace paludis
                 Pimp<InfoPkgsMetadataKey> _imp;
 
             protected:
-                virtual void need_keys_added() const;
+                void need_keys_added() const override;
 
             public:
                 InfoPkgsMetadataKey(const Environment * const e,
                         const std::shared_ptr<const FSPathSequence> & f,
                         const ERepository * const);
-                ~InfoPkgsMetadataKey();
+                ~InfoPkgsMetadataKey() override;
 
-                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
         };
 
         class InfoVarsMetadataKey :
@@ -42,17 +42,17 @@ namespace paludis
 
             public:
                 InfoVarsMetadataKey(const std::shared_ptr<const FSPathSequence> &);
-                ~InfoVarsMetadataKey();
+                ~InfoVarsMetadataKey() override;
 
-                const std::shared_ptr<const Set<std::string> > parse_value() const;
+                const std::shared_ptr<const Set<std::string> > parse_value() const override;
 
-                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::string pretty_print_value(
+                const std::string pretty_print_value(
                         const PrettyPrinter &,
-                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                        const PrettyPrintOptions &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 

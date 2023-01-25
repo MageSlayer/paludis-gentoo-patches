@@ -43,9 +43,9 @@ namespace paludis
         public MetadataValueKey<T_>
     {
         public:
-            virtual const std::string pretty_print_value(
+            const std::string pretty_print_value(
                     const PrettyPrinter &,
-                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const PrettyPrintOptions &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -68,15 +68,15 @@ namespace paludis
 
             LiteralMetadataValueKey(const std::string &, const std::string &, const MetadataKeyType,
                     const T_ &);
-            ~LiteralMetadataValueKey();
+            ~LiteralMetadataValueKey() override;
 
             ///\}
 
-            virtual const T_ parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const T_ parse_value() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * \since 0.36
@@ -103,19 +103,19 @@ namespace paludis
 
             LiteralMetadataFSPathSequenceKey(const std::string &, const std::string &, const MetadataKeyType,
                     const std::shared_ptr<const FSPathSequence> &);
-            ~LiteralMetadataFSPathSequenceKey();
+            ~LiteralMetadataFSPathSequenceKey() override;
 
             ///\}
 
-            virtual const std::shared_ptr<const FSPathSequence> parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const FSPathSequence> parse_value() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string pretty_print_value(
+            const std::string pretty_print_value(
                     const PrettyPrinter &,
-                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const PrettyPrintOptions &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -137,19 +137,19 @@ namespace paludis
 
             LiteralMetadataStringSetKey(const std::string &, const std::string &, const MetadataKeyType,
                     const std::shared_ptr<const Set<std::string> > &);
-            ~LiteralMetadataStringSetKey();
+            ~LiteralMetadataStringSetKey() override;
 
             ///\}
 
-            virtual const std::shared_ptr<const Set<std::string> > parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const Set<std::string> > parse_value() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string pretty_print_value(
+            const std::string pretty_print_value(
                     const PrettyPrinter &,
-                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const PrettyPrintOptions &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -171,19 +171,19 @@ namespace paludis
 
             LiteralMetadataStringSequenceKey(const std::string &, const std::string &, const MetadataKeyType,
                     const std::shared_ptr<const Sequence<std::string> > &);
-            ~LiteralMetadataStringSequenceKey();
+            ~LiteralMetadataStringSequenceKey() override;
 
             ///\}
 
-            virtual const std::shared_ptr<const Sequence<std::string> > parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const Sequence<std::string> > parse_value() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string pretty_print_value(
+            const std::string pretty_print_value(
                     const PrettyPrinter &,
-                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const PrettyPrintOptions &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -205,15 +205,15 @@ namespace paludis
             ///\{
 
             LiteralMetadataTimeKey(const std::string &, const std::string &, const MetadataKeyType, const Timestamp);
-            ~LiteralMetadataTimeKey();
+            ~LiteralMetadataTimeKey() override;
 
             ///\}
 
-            virtual Timestamp parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            Timestamp parse_value() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -235,19 +235,19 @@ namespace paludis
 
             LiteralMetadataStringStringMapKey(const std::string &, const std::string &, const MetadataKeyType,
                     const std::shared_ptr<const Map<std::string, std::string> > &);
-            ~LiteralMetadataStringStringMapKey();
+            ~LiteralMetadataStringStringMapKey() override;
 
             ///\}
 
-            virtual const std::shared_ptr<const Map<std::string, std::string> > parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const Map<std::string, std::string> > parse_value() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string pretty_print_value(
+            const std::string pretty_print_value(
                     const PrettyPrinter &,
-                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const PrettyPrintOptions &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -269,19 +269,19 @@ namespace paludis
 
             LiteralMetadataMaintainersKey(const std::string &, const std::string &, const MetadataKeyType,
                     const std::shared_ptr<const Maintainers> &);
-            ~LiteralMetadataMaintainersKey();
+            ~LiteralMetadataMaintainersKey() override;
 
             ///\}
 
-            virtual const std::shared_ptr<const Maintainers> parse_value() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const Maintainers> parse_value() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const std::string pretty_print_value(
+            const std::string pretty_print_value(
                     const PrettyPrinter &,
-                    const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                    const PrettyPrintOptions &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

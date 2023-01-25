@@ -81,8 +81,8 @@ namespace
                 const std::shared_ptr<const DependenciesLabelSequence> & s)
         {
             std::stringstream adl;
-            for (auto l(s->begin()), l_end(s->end()) ; l != l_end ; ++l)
-                adl << (adl.str().empty() ? "" : ", ") << stringify(**l);
+            for (const auto & label : *s)
+                adl << (adl.str().empty() ? "" : ", ") << stringify(*label);
 
             return make_named_values<DependentPackageID>(
                     n::active_dependency_labels_as_string() = adl.str(),
@@ -101,12 +101,11 @@ namespace
     {
         std::shared_ptr<const PackageID> result;
 
-        for (auto i(seq->begin()), i_end(seq->end()) ;
-                i != i_end ; ++i)
+        for (const auto & id : *seq)
         {
-            if ((! result) || dependent_checker_id(*i)->version() >= result->version())
-                if (match_package(*env, spec, dependent_checker_id(*i), from_id, { }))
-                    result = dependent_checker_id(*i);
+            if ((! result) || dependent_checker_id(id)->version() >= result->version())
+                if (match_package( *env, spec, dependent_checker_id(id), from_id, { }))
+                    result = dependent_checker_id(id);
         }
 
         return result;
@@ -289,26 +288,25 @@ paludis::resolver::collect_dependents(
 
     auto result(std::make_shared<PackageIDSet>());
 
-    for (auto i(installed_ids->begin()), i_end(installed_ids->end()) ;
-            i != i_end ; ++i)
+    for (const auto & id : *installed_ids)
     {
-        DependentChecker<PackageIDSequence, PackageIDSequence> c(env, *i, going_away_as_ids,
+        DependentChecker<PackageIDSequence, PackageIDSequence> c(env, id, going_away_as_ids,
                 std::make_shared<PackageIDSequence>(), std::make_shared<PackageIDSequence>());
 
-        if ((*i)->dependencies_key())
-            (*i)->dependencies_key()->parse_value()->top()->accept(c);
+        if (id->dependencies_key())
+            id->dependencies_key()->parse_value()->top()->accept(c);
         else
         {
-            if ((*i)->build_dependencies_key())
-                (*i)->build_dependencies_key()->parse_value()->top()->accept(c);
-            if ((*i)->run_dependencies_key())
-                (*i)->run_dependencies_key()->parse_value()->top()->accept(c);
-            if ((*i)->post_dependencies_key())
-                (*i)->post_dependencies_key()->parse_value()->top()->accept(c);
+            if (id->build_dependencies_key())
+                id->build_dependencies_key()->parse_value()->top()->accept(c);
+            if (id->run_dependencies_key())
+                id->run_dependencies_key()->parse_value()->top()->accept(c);
+            if (id->post_dependencies_key())
+                id->post_dependencies_key()->parse_value()->top()->accept(c);
         }
 
         if (! c.result->empty())
-            result->insert(*i);
+            result->insert(id);
     }
 
     return result;

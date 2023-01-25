@@ -51,7 +51,7 @@ int main(int argc, char * argv[])
 
         if (cmdline.a_help.specified())
         {
-            if (cmdline.begin_usage_lines() != cmdline.end_usage_lines())
+            if (! cmdline.usage_lines().empty())
             {
                 cout << "usage: ";
                 for (args::ArgsHandler::UsageLineConstIterator u_begin(cmdline.begin_usage_lines()), u(u_begin), u_end(cmdline.end_usage_lines()) ;
@@ -78,7 +78,7 @@ int main(int argc, char * argv[])
             return EXIT_SUCCESS;
         }
 
-        if (cmdline.begin_parameters() == cmdline.end_parameters())
+        if (cmdline.parameters().empty())
             throw args::DoHelp();
 
         std::string cave_var(argv[0]);

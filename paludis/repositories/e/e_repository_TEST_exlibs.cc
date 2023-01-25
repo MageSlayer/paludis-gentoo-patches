@@ -166,7 +166,7 @@ TEST_P(ExlibsTest, Works)
     }
 }
 
-INSTANTIATE_TEST_CASE_P(Works, ExlibsTest, testing::Values(
+INSTANTIATE_TEST_SUITE_P(Works, ExlibsTest, testing::Values(
             TestInfo{"require-success", success},
             TestInfo{"require-fail", unsupported},
             TestInfo{"require-param", success},

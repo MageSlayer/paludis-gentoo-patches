@@ -12,7 +12,7 @@ if &compatible || v:version < 700
 endif
 
 if exists("b:current_syntax")
-  finish
+    finish
 endif
 
 syn region PaludisPackageMaskConfComment start=/^\s*#/ end=/$/
@@ -34,6 +34,4 @@ hi def link PaludisPackageMaskConfWildcard         Special
 hi def link PaludisPackageMaskToken                Macro
 
 let b:current_syntax = "paludis-package-mask-conf"
-
-
 

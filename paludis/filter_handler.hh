@@ -63,25 +63,25 @@ namespace paludis
         public FilterHandler
     {
         public:
-            virtual const RepositoryContentMayExcludes may_excludes() const;
+            const RepositoryContentMayExcludes may_excludes() const override;
 
-            virtual std::shared_ptr<const RepositoryNameSet> repositories(
+            std::shared_ptr<const RepositoryNameSet> repositories(
                     const Environment * const,
-                    const std::shared_ptr<const RepositoryNameSet> &) const;
+                    const std::shared_ptr<const RepositoryNameSet> &) const override;
 
-            virtual std::shared_ptr<const CategoryNamePartSet> categories(
-                    const Environment * const,
-                    const std::shared_ptr<const RepositoryNameSet> &,
-                    const std::shared_ptr<const CategoryNamePartSet> &) const;
-
-            virtual std::shared_ptr<const QualifiedPackageNameSet> packages(
+            std::shared_ptr<const CategoryNamePartSet> categories(
                     const Environment * const,
                     const std::shared_ptr<const RepositoryNameSet> &,
-                    const std::shared_ptr<const QualifiedPackageNameSet> &) const;
+                    const std::shared_ptr<const CategoryNamePartSet> &) const override;
 
-            virtual std::shared_ptr<const PackageIDSet> ids(
+            std::shared_ptr<const QualifiedPackageNameSet> packages(
                     const Environment * const,
-                    const std::shared_ptr<const PackageIDSet> &) const;
+                    const std::shared_ptr<const RepositoryNameSet> &,
+                    const std::shared_ptr<const QualifiedPackageNameSet> &) const override;
+
+            std::shared_ptr<const PackageIDSet> ids(
+                    const Environment * const,
+                    const std::shared_ptr<const PackageIDSet> &) const override;
     };
 }
 

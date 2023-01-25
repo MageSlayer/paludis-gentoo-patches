@@ -88,19 +88,19 @@ namespace paludis
                         const PackageDepSpec &,
                         const bool was_target
                         );
-                ~FetchJob();
+                ~FetchJob() override;
 
                 const PackageDepSpec origin_id_spec() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual void set_state(const std::shared_ptr<JobState> &);
+                const std::shared_ptr<JobState> state() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                void set_state(const std::shared_ptr<JobState> &) override;
 
-                virtual bool was_target() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool was_target() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::shared_ptr<const JobRequirements> requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const JobRequirements> requirements() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 static const std::shared_ptr<FetchJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class PALUDIS_VISIBLE InstallJob :
@@ -118,22 +118,22 @@ namespace paludis
                         const DestinationType,
                         const std::shared_ptr<const Sequence<PackageDepSpec> > &,
                         const bool was_target);
-                ~InstallJob();
+                ~InstallJob() override;
 
                 const PackageDepSpec origin_id_spec() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const RepositoryName destination_repository_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 DestinationType destination_type() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::shared_ptr<const Sequence<PackageDepSpec> > replacing_specs() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual void set_state(const std::shared_ptr<JobState> &);
+                const std::shared_ptr<JobState> state() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                void set_state(const std::shared_ptr<JobState> &) override;
 
-                virtual bool was_target() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool was_target() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::shared_ptr<const JobRequirements> requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const JobRequirements> requirements() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 static const std::shared_ptr<InstallJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class PALUDIS_VISIBLE UninstallJob :
@@ -149,19 +149,19 @@ namespace paludis
                         const std::shared_ptr<const Sequence<PackageDepSpec> > &,
                         const bool was_target
                         );
-                ~UninstallJob();
+                ~UninstallJob() override;
 
                 const std::shared_ptr<const Sequence<PackageDepSpec> > ids_to_remove_specs() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::shared_ptr<JobState> state() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual void set_state(const std::shared_ptr<JobState> &);
+                const std::shared_ptr<JobState> state() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                void set_state(const std::shared_ptr<JobState> &) override;
 
-                virtual bool was_target() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool was_target() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::shared_ptr<const JobRequirements> requirements() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const JobRequirements> requirements() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 static const std::shared_ptr<UninstallJob> deserialise(Deserialisation &) PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
     }
 }

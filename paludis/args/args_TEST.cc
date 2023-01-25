@@ -163,7 +163,10 @@ TEST(Args, Defaults)
 {
     const char *args1[] = { "program-name", "--enum", "three" };
     const char *args2[] = { "program-name" };
-    CommandLine c1, c2, c3, c4;
+    CommandLine c1;
+    CommandLine c2;
+    CommandLine c3;
+    CommandLine c4;
     c2.arg_enum.set_default_arg("one");
     c4.arg_enum.set_default_arg("one");
 

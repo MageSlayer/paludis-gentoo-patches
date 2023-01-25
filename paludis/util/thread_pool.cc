@@ -46,7 +46,7 @@ ThreadPool::~ThreadPool()
 }
 
 void
-ThreadPool::create_thread(const std::function<void () noexcept> & f)
+ThreadPool::create_thread(const std::function<void ()> & f)
 {
     _imp->threads.emplace_back(f);
 }

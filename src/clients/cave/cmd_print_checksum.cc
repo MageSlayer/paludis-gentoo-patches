@@ -87,7 +87,7 @@ PrintChecksumCommand::run(const std::shared_ptr<Environment> &,
         return EXIT_SUCCESS;
     }
 
-    if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) != 1)
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("print-checksum takes exactly one parameter");
 
     std::string algo(toupper(*cmdline.begin_parameters()));

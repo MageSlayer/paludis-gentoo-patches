@@ -396,7 +396,8 @@ TEST(VersionSpec, Ordering)
     v.push_back(VersionSpec("scm-r3", { }));
     v.push_back(VersionSpec("scm-r3.4", { }));
 
-    std::vector<VersionSpec>::iterator v1(v.begin()), v_end(v.end());
+    std::vector<VersionSpec>::iterator v1(v.begin());
+    std::vector<VersionSpec>::iterator v_end(v.end());
     for ( ; v1 != v_end ; ++v1)
     {
         std::vector<VersionSpec>::iterator v2(v.begin());
@@ -434,7 +435,8 @@ TEST(VersionSpec, Ordering)
 TEST(VersionSpec, Components)
 {
     VersionSpec v1("1.2x_pre3_rc-scm", { });
-    VersionSpec::ConstIterator i(v1.begin()), i_end(v1.end());
+    VersionSpec::ConstIterator i(v1.begin());
+    VersionSpec::ConstIterator i_end(v1.end());
 
     ASSERT_TRUE(i != i_end);
     EXPECT_EQ(vsct_number, i->type());

@@ -55,9 +55,9 @@ namespace paludis
             static const int buffer_size = 512 + lookbehind_size;
             char buffer[buffer_size];
 
-            virtual int_type underflow();
-            virtual pos_type seekoff(off_type, std::ios_base::seekdir, std::ios_base::openmode);
-            virtual pos_type seekpos(pos_type, std::ios_base::openmode);
+            int_type underflow() override;
+            pos_type seekoff(off_type, std::ios_base::seekdir, std::ios_base::openmode) override;
+            pos_type seekpos(pos_type, std::ios_base::openmode) override;
 
         public:
             ///\name Basic operations
@@ -112,7 +112,7 @@ namespace paludis
 
             explicit SafeIFStream(const int fd);
             explicit SafeIFStream(const FSPath &);
-            ~SafeIFStream();
+            ~SafeIFStream() override;
 
             ///\}
     };

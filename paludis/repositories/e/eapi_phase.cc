@@ -114,21 +114,20 @@ EAPIPhases::EAPIPhases(const std::string & s) :
 
     std::list<std::string> tokens;
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(s, ";", "", std::back_inserter(tokens));
-    for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-            t != t_end ; ++t)
-        _imp->phases.push_back(std::make_shared<EAPIPhase>(*t));
+    for (const auto & token : tokens)
+        _imp->phases.push_back(std::make_shared<EAPIPhase>(token));
 }
 
 EAPIPhases::~EAPIPhases() = default;
 
 EAPIPhases::ConstIterator
-EAPIPhases::begin_phases() const
+EAPIPhases::begin() const
 {
     return ConstIterator(indirect_iterator(_imp->phases.begin()));
 }
 
 EAPIPhases::ConstIterator
-EAPIPhases::end_phases() const
+EAPIPhases::end() const
 {
     return ConstIterator(indirect_iterator(_imp->phases.end()));
 }

@@ -136,10 +136,9 @@ CommandFactory::CommandFactory() :
     std::vector<std::string> paths;
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(getenv_with_default("CAVE_COMMANDS_PATH", LIBEXECDIR "/cave/commands"),
             ":", "", std::back_inserter(paths));
-    for (std::vector<std::string>::const_iterator t(paths.begin()), t_end(paths.end()) ;
-            t != t_end ; ++t)
+    for (const auto & path_str : paths)
     {
-        FSPath path(*t);
+        FSPath path(path_str);
         if (! path.stat().exists())
             continue;
 

@@ -47,7 +47,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -202,33 +201,31 @@ ImportCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) < 1 ||
-            std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) > 3)
+    if (cmdline.parameters().size() < 1 || cmdline.parameters().size() > 3)
         throw args::DoHelp("import takes between one and three parameters");
 
     QualifiedPackageName package(*cmdline.begin_parameters());
-    VersionSpec version((next(cmdline.begin_parameters()) != cmdline.end_parameters()) ?
-            *next(cmdline.begin_parameters()) : "0", user_version_spec_options());
-    SlotName slot(
-            (next(cmdline.begin_parameters()) != cmdline.end_parameters() &&
-             next(cmdline.begin_parameters(), 2) != cmdline.end_parameters()) ?
-            *next(cmdline.begin_parameters(), 2) : "0");
+    VersionSpec version(
+            (cmdline.parameters().size() > 1) ? *next(cmdline.begin_parameters()) : "0",
+            user_version_spec_options());
+    SlotName slot((cmdline.parameters().size() > 2) ? *next(cmdline.begin_parameters(), 2) : "0");
 
-    std::string build_dependencies, run_dependencies, description;
+    std::string build_dependencies;
+    std::string run_dependencies;
+    std::string description;
 
     if (cmdline.a_preserve_metadata.specified())
     {
         std::shared_ptr<const PackageIDSequence> old_ids((*env)[selection::AllVersionsSorted(generator::Package(package))]);
         std::shared_ptr<const PackageID> old_id;
-        for (PackageIDSequence::ConstIterator i(old_ids->begin()), i_end(old_ids->end()) ;
-                i != i_end ; ++i)
+        for (const auto & id : *old_ids)
         {
-            auto repo(env->fetch_repository((*i)->repository_name()));
+            auto repo(env->fetch_repository(id->repository_name()));
             if (! repo->format_key())
                 continue;
             if (repo->format_key()->parse_value() != "installed_unpackaged")
                 continue;
-            old_id = *i;
+            old_id = id;
             break;
         }
 

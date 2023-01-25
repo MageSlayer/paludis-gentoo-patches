@@ -78,14 +78,16 @@ PackageIDComparatorWithPromotion::operator() (const std::shared_ptr<const Packag
     if (a->version() > b->version())
         return false;
 
-    bool a_bin(false), b_bin(false);
+    bool a_bin(false);
+    bool b_bin(false);
     if (a->behaviours_key()) a_bin = a->behaviours_key()->parse_value()->count("binary");
     if (b->behaviours_key()) b_bin = b->behaviours_key()->parse_value()->count("binary");
 
     if ( (a_bin != b_bin) && get_sameness(a, b)[epia_is_same] )
         return b_bin;
 
-    auto ma(_imp->m.find(a->repository_name())), mb(_imp->m.find(b->repository_name()));
+    auto ma(_imp->m.find(a->repository_name()));
+    auto mb(_imp->m.find(b->repository_name()));
 
     if (ma == _imp->m.end() || mb == _imp->m.end())
         throw InternalError(PALUDIS_HERE, "Repository not in database");

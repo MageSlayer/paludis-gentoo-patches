@@ -304,9 +304,8 @@ SimpleHandler::SimpleHandler(const SetFileParams & p) :
     Context context("When loading simple set file '" + stringify(_p.file_name()) + "':");
 
     LineConfigFile ff(_p.file_name(), { lcfo_disallow_continuations, lcfo_disallow_comments, lcfo_no_skip_blank_lines });
-    for (LineConfigFile::ConstIterator line(ff.begin()), line_end(ff.end()) ;
-            line != line_end ; ++line)
-        _lines.push_back(*line);
+    for (const auto & line : ff)
+        _lines.push_back(line);
 }
 
 void
@@ -428,9 +427,8 @@ PaludisConfHandler::PaludisConfHandler(const SetFileParams & p) :
     Context context("When loading paludis conf set file '" + stringify(_p.file_name()) + "':");
 
     LineConfigFile ff(_p.file_name(), { lcfo_disallow_continuations, lcfo_disallow_comments, lcfo_no_skip_blank_lines });
-    for (LineConfigFile::ConstIterator line(ff.begin()), line_end(ff.end()) ;
-            line != line_end ; ++line)
-        _lines.push_back(*line);
+    for (const auto & line : ff)
+        _lines.push_back(line);
 }
 
 void
@@ -531,9 +529,8 @@ PaludisBashHandler::PaludisBashHandler(const SetFileParams & p) :
     int exit_status(process.run().wait());
 
     LineConfigFile ff(s, { lcfo_disallow_continuations, lcfo_disallow_comments, lcfo_no_skip_blank_lines });
-    for (LineConfigFile::ConstIterator line(ff.begin()), line_end(ff.end()) ;
-            line != line_end ; ++line)
-        do_one_conf_line(*line, _contents, _p);
+    for (const auto & line : ff)
+        do_one_conf_line(line, _contents, _p);
 
     if (exit_status != 0)
     {

@@ -38,7 +38,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -88,28 +87,26 @@ PrintRepositoriesCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("print-repositories takes no parameters");
 
     std::set<RepositoryName> repository_names;
 
-    for (IndirectIterator<Environment::RepositoryConstIterator, const Repository>
-            r(env->begin_repositories()), r_end(env->end_repositories());
-            r != r_end; ++r)
+    for (const auto & repository : env->repositories())
     {
         if (cmdline.a_repository_format.specified())
         {
-            if (r->format_key())
+            if (repository->format_key())
             {
                 if (cmdline.a_repository_format.end_args() == std::find(cmdline.a_repository_format.begin_args(), cmdline.a_repository_format.end_args(),
-                        r->format_key()->parse_value()))
+                        repository->format_key()->parse_value()))
                     continue;
 
-                repository_names.insert(r->name());
+                repository_names.insert(repository->name());
             }
         }
         else
-            repository_names.insert(r->name());
+            repository_names.insert(repository->name());
     }
 
     std::copy(repository_names.begin(), repository_names.end(), std::ostream_iterator<RepositoryName>(cout, "\n"));

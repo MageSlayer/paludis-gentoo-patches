@@ -22,15 +22,13 @@ function(paludis_add_test test_name)
                      "${CMAKE_CURRENT_SOURCE_DIR}/${test_name}.cc")
   endif()
   if(PAT_GTEST)
-    target_include_directories(${test_name}
-                               PRIVATE
-                                 ${GTEST_INCLUDE_DIRS})
     target_link_libraries(${test_name}
                           PRIVATE
                             libpaludis
                             libpaludisutil
-                            ${GTEST_BOTH_LIBRARIES}
-                            Threads::Threads
+                            GTest::GTest
+                            GTest::Main
+                            GTest::gmock
                             ${PAT_LINK_LIBRARIES})
   endif()
 
@@ -49,8 +47,10 @@ function(paludis_add_test test_name)
   set(pat_test_extension "")
   if(PAT_PYTHON)
     set(pat_test_extension ".py")
+    set(pat_display_name "python_${pat_display_name}")
   elseif(PAT_RUBY)
     set(pat_test_extension ".rb")
+    set(pat_display_name "ruby_${pat_display_name}")
   endif()
 
   if(PAT_BASH OR PAT_PYTHON OR PAT_RUBY)
@@ -90,7 +90,7 @@ function(paludis_add_test test_name)
                     PALUDIS_PYTHON_DIR=${PROJECT_SOURCE_DIR}/python
                     PALUDIS_SUFFIXES_FILE=${PROJECT_SOURCE_DIR}/paludis/repositories/e/ebuild_entries_suffixes.conf
                     PALUDIS_TMPDIR=${CMAKE_CURRENT_BINARY_DIR}
-                    PYTHON=${PYTHON_EXECUTABLE}
+                    PYTHON=${Python_EXECUTABLE}
                     PYTHONPATH=${CMAKE_BINARY_DIR}/python
                     RUBY=${RUBY_EXECUTABLE}
                     RUBYLIB=${CMAKE_BINARY_DIR}/ruby

@@ -130,7 +130,7 @@ namespace paludis
             ///\{
 
             NoGraphTopologicalOrderExistsError(const std::shared_ptr<const RemainingNodes> &) noexcept;
-            ~NoGraphTopologicalOrderExistsError() = default;
+            ~NoGraphTopologicalOrderExistsError() override = default;
 
             ///\}
 

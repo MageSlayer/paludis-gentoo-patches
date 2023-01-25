@@ -46,12 +46,14 @@ namespace
         Singleton<TarMergerHandle>
     {
         typedef PaludisTarExtras * (* InitPtr) (const std::string &, const std::string &);
+        typedef void (* AddDirPtr) (PaludisTarExtras * const, const std::string &, const std::string &);
         typedef void (* AddFilePtr) (PaludisTarExtras * const, const std::string &, const std::string &);
         typedef void (* AddSymPtr) (PaludisTarExtras * const, const std::string &, const std::string &, const std::string &);
         typedef void (* CleanupPtr) (PaludisTarExtras * const);
 
         void * handle;
         InitPtr init;
+        AddDirPtr add_dir;
         AddFilePtr add_file;
         AddSymPtr add_sym;
         CleanupPtr cleanup;
@@ -71,6 +73,10 @@ namespace
             init = STUPID_CAST(InitPtr, ::dlsym(handle, "paludis_tar_extras_init"));
             if (! init)
                 throw MergerError("Unable to init from libpaludistarextras due to error '" + stringify(::dlerror()) + "' from dlsym");
+
+            add_dir = STUPID_CAST(AddDirPtr, ::dlsym(handle, "paludis_tar_extras_add_dir"));
+            if (! add_dir)
+                throw MergerError("Unable to add_dir from libpaludistarextras due to error '" + stringify(::dlerror()) + "' from dlsym");
 
             add_file = STUPID_CAST(AddFilePtr, ::dlsym(handle, "paludis_tar_extras_add_file"));
             if (! add_file)
@@ -130,6 +136,16 @@ TarMerger::TarMerger(const TarMergerParams & p) :
 TarMerger::~TarMerger() = default;
 
 void
+TarMerger::on_dir_main(bool is_check, const FSPath & src, const FSPath & dst)
+{
+    if (is_check)
+        return;
+
+    track_install_dir(src, dst / src.basename());
+    (*TarMergerHandle::get_instance()->add_dir)(_imp->tar, stringify(src), strip_leading(stringify(dst / src.basename()), "/"));
+}
+
+void
 TarMerger::on_file_main(bool is_check, const FSPath & src, const FSPath & dst)
 {
     if (is_check)
@@ -143,11 +159,6 @@ TarMerger::add_file(const FSPath & src, const FSPath & dst)
 {
     track_install_file(src, dst);
     (*TarMergerHandle::get_instance()->add_file)(_imp->tar, stringify(src), strip_leading(stringify(dst), "/"));
-}
-
-void
-TarMerger::on_dir_main(bool, const FSPath &, const FSPath &)
-{
 }
 
 void

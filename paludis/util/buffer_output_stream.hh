@@ -34,12 +34,12 @@ namespace paludis
             Pimp<BufferOutputStreamBuf> _imp;
 
         protected:
-            virtual int_type overflow(int_type c);
-            virtual std::streamsize xsputn(const char * s, std::streamsize num);
+            int_type overflow(int_type c) override;
+            std::streamsize xsputn(const char * s, std::streamsize num) override;
 
         public:
             BufferOutputStreamBuf();
-            ~BufferOutputStreamBuf();
+            ~BufferOutputStreamBuf() override;
 
             void unbuffer(std::ostream &);
             bool anything_to_unbuffer() const PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -61,7 +61,7 @@ namespace paludis
     {
         public:
             BufferOutputStream();
-            ~BufferOutputStream() = default;
+            ~BufferOutputStream() override = default;
 
             void unbuffer(std::ostream &);
             bool anything_to_unbuffer() const PALUDIS_ATTRIBUTE((warn_unused_result));

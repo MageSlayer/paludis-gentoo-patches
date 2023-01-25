@@ -9,7 +9,7 @@ file, and may optionally be in bash format.</p>
 
 <dl>
     <dt><code>world</code></dt>
-    <dd>The location of the world file.</dd>
+    <dd>The location of the world file (e.g. <code>world=${root}/var/db/paludis/repositories/installed/world</code>).</dd>
 
     <dt><code>reduced_username</code></dt>
     <dd>If set, Paludis will use this username rather than <code>paludisbuild</code> when a reduced privilege user is

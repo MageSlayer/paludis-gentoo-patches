@@ -269,7 +269,7 @@ namespace paludis
         public:
             using ImplementVisitMethods<RealClass_, typename TypeList_::Tail>::forward_visit;
 
-            virtual void forward_visit(typename TypeList_::Item & n)
+            void forward_visit(typename TypeList_::Item & n) override
             {
                 static_cast<RealClass_ *>(this)->perform_visit(n);
             }
@@ -410,12 +410,12 @@ namespace paludis
         public virtual DeclareAbstractAcceptMethods<BaseClass_, typename BaseClass_::VisitableTypeList>
     {
         private:
-            void _real_accept(WrappedVisitorBase<typename BaseClass_::VisitableTypeList> & v)
+            void _real_accept(WrappedVisitorBase<typename BaseClass_::VisitableTypeList> & v) override
             {
                 v.forward_visit(*static_cast<RealClass_ *>(this));
             };
 
-            void _real_accept_const(WrappedVisitorBase<typename MakeTypeListConst<typename BaseClass_::VisitableTypeList>::Type> & v) const
+            void _real_accept_const(WrappedVisitorBase<typename MakeTypeListConst<typename BaseClass_::VisitableTypeList>::Type> & v) const override
             {
                 v.forward_visit(*static_cast<const RealClass_ *>(this));
             };

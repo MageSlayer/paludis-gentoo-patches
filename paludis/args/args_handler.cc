@@ -201,7 +201,8 @@ ArgsHandler::run(
 
     args.insert(args.end(), argseq->begin(), argseq->end());
 
-    ArgsIterator argit(args.begin()), arge(args.end());
+    ArgsIterator argit(args.begin());
+    ArgsIterator arge(args.end());
 
     for ( ; argit != arge; ++argit )
     {
@@ -314,15 +315,13 @@ void
 ArgsHandler::dump_to_stream(std::ostream & s) const
 {
     ArgsDumper dump(s);
-    for (ArgsSectionsConstIterator a(begin_args_sections()), a_end(end_args_sections()) ;
-            a != a_end ; ++a)
+    for (const auto & section : args_sections())
     {
-        for (ArgsSection::GroupsConstIterator g(a->begin()), g_end(a->end()) ;
-                g != g_end ; ++g)
+        for (const auto & group : section)
         {
-            s << g->name() << ":" << std::endl;
+            s << group.name() << ":" << std::endl;
 
-            std::for_each(indirect_iterator(g->begin()), indirect_iterator(g->end()), accept_visitor(dump));
+            std::for_each(indirect_iterator(group.begin()), indirect_iterator(group.end()), accept_visitor(dump));
 
             s << std::endl;
         }
@@ -481,13 +480,13 @@ ArgsHandler::separate_after_dashes_args() const
 
 namespace paludis
 {
-    template class PALUDIS_VISIBLE WrappedForwardIterator<ArgsHandler::ParametersConstIteratorTag, const std::string>;
-    template class PALUDIS_VISIBLE WrappedForwardIterator<ArgsHandler::UsageLineConstIteratorTag, const std::string>;
-    template class PALUDIS_VISIBLE WrappedForwardIterator<ArgsHandler::EnvironmentLineConstIteratorTag, const std::pair<std::string, std::string>>;
-    template class PALUDIS_VISIBLE WrappedForwardIterator<ArgsHandler::ExamplesConstIteratorTag, const std::pair<std::string, std::string>>;
-    template class PALUDIS_VISIBLE WrappedForwardIterator<ArgsHandler::ArgsSectionsConstIteratorTag, const ArgsSection>;
-    template class PALUDIS_VISIBLE WrappedForwardIterator<ArgsHandler::NotesIteratorTag, const std::string>;
-    template class PALUDIS_VISIBLE WrappedForwardIterator<ArgsHandler::DescriptionLineConstIteratorTag, const std::string>;
-    template class PALUDIS_VISIBLE WrappedForwardIterator<ArgsHandler::ArgsIteratorTag, std::string>;
-    template class PALUDIS_VISIBLE WrappedForwardIterator<ArgsHandler::SeeAlsoConstIteratorTag, const std::pair<std::string, int> >;
+    template class WrappedForwardIterator<ArgsHandler::ParametersConstIteratorTag, const std::string>;
+    template class WrappedForwardIterator<ArgsHandler::UsageLineConstIteratorTag, const std::string>;
+    template class WrappedForwardIterator<ArgsHandler::EnvironmentLineConstIteratorTag, const std::pair<std::string, std::string>>;
+    template class WrappedForwardIterator<ArgsHandler::ExamplesConstIteratorTag, const std::pair<std::string, std::string>>;
+    template class WrappedForwardIterator<ArgsHandler::ArgsSectionsConstIteratorTag, const ArgsSection>;
+    template class WrappedForwardIterator<ArgsHandler::NotesIteratorTag, const std::string>;
+    template class WrappedForwardIterator<ArgsHandler::DescriptionLineConstIteratorTag, const std::string>;
+    template class WrappedForwardIterator<ArgsHandler::ArgsIteratorTag, std::string>;
+    template class WrappedForwardIterator<ArgsHandler::SeeAlsoConstIteratorTag, const std::pair<std::string, int> >;
 }

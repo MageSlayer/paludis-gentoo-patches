@@ -86,20 +86,18 @@ TraditionalMaskStore::_populate()
     std::for_each(_imp->files->begin(), _imp->files->end(),
             std::bind(&TraditionalProfileFile<TraditionalMaskFile>::add_file, std::ref(repository_mask_file), _1));
 
-    for (TraditionalProfileFile<TraditionalMaskFile>::ConstIterator
-            line(repository_mask_file.begin()), line_end(repository_mask_file.end()) ;
-            line != line_end ; ++line)
+    for (const auto & line : repository_mask_file)
     {
         try
         {
             auto a(parse_elike_package_dep_spec(
-                        line->second.first, line->first->supported()->package_dep_spec_parse_options(),
-                        line->first->supported()->version_spec_options()));
+                        line.second.first, line.first->supported()->package_dep_spec_parse_options(),
+                        line.first->supported()->version_spec_options()));
             if (a.package_ptr())
-                _imp->repo_mask[*a.package_ptr()].push_back(std::make_pair(a, line->second.second));
+                _imp->repo_mask[*a.package_ptr()].push_back(std::make_pair(a, line.second.second));
             else
                 Log::get_instance()->message("e.package_mask.bad_spec", ll_warning, lc_context)
-                    << "Loading package mask spec '" << line->second.first << "' failed because specification does not restrict to a "
+                    << "Loading package mask spec '" << line.second.first << "' failed because specification does not restrict to a "
                     "unique package";
         }
         catch (const InternalError &)
@@ -109,7 +107,7 @@ TraditionalMaskStore::_populate()
         catch (const Exception & e)
         {
             Log::get_instance()->message("e.package_mask.bad_spec", ll_warning, lc_context) << "Loading package mask spec '"
-                << line->second.first << "' failed due to exception '" << e.message() << "' ("
+                << line.second.first << "' failed due to exception '" << e.message() << "' ("
                 << e.what() << ")";
         }
     }

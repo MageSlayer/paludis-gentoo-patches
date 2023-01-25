@@ -36,21 +36,21 @@ namespace paludis
             public:
                 AccountsDepKey(const Environment * const e,
                         const std::shared_ptr<const Set<std::string> > &);
-                ~AccountsDepKey();
+                ~AccountsDepKey() override;
 
-                virtual const std::string raw_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual const std::string human_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual MetadataKeyType type() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string raw_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::string human_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                MetadataKeyType type() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::shared_ptr<const DependencySpecTree> parse_value() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const DependencySpecTree> parse_value() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
-                    PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
+                    override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::string pretty_print_value(
+                const std::string pretty_print_value(
                         const PrettyPrinter &,
-                        const PrettyPrintOptions &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+                        const PrettyPrintOptions &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
         };
     }
 }

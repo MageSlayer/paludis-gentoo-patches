@@ -12,7 +12,7 @@ if &compatible || v:version < 700
 endif
 
 if exists("b:current_syntax")
-  finish
+    finish
 endif
 
 syn region PaludisMirrorsConfComment start=/^\s*#/ end=/$/
@@ -33,5 +33,4 @@ hi def link PaludisMirrorsConfURI              Keyword
 hi def link PaludisMirrorsConfContinuation     Preproc
 
 let b:current_syntax = "paludis-mirrors-conf"
-
 

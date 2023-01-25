@@ -41,17 +41,17 @@ namespace paludis
                     const bool if_success,
                     const bool if_failure,
                     const std::shared_ptr<OutputManager> & child);
-            ~ForwardAtFinishOutputManager();
+            ~ForwardAtFinishOutputManager() override;
 
-            virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::ostream & stdout_stream() override PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::ostream & stderr_stream() override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void succeeded();
-            virtual void ignore_succeeded();
-            virtual void flush();
-            virtual bool want_to_flush() const;
-            virtual void message(const MessageType, const std::string &);
-            virtual void nothing_more_to_come();
+            void succeeded() override;
+            void ignore_succeeded() override;
+            void flush() override;
+            bool want_to_flush() const override;
+            void message(const MessageType, const std::string &) override;
+            void nothing_more_to_come() override;
 
             static const std::shared_ptr<const Set<std::string> > factory_managers()
                 PALUDIS_ATTRIBUTE((warn_unused_result));

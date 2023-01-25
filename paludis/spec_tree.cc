@@ -17,6 +17,7 @@
  * Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <paludis/dep_spec.hh>
 #include <paludis/spec_tree.hh>
 #include <paludis/util/sequence-impl.hh>
 #include <paludis/util/wrapped_forward_iterator-impl.hh>

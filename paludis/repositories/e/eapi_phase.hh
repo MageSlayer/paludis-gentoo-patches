@@ -89,8 +89,8 @@ namespace paludis
 
                 struct ConstIteratorTag;
                 typedef WrappedForwardIterator<ConstIteratorTag, const EAPIPhase> ConstIterator;
-                ConstIterator begin_phases() const;
-                ConstIterator end_phases() const;
+                ConstIterator begin() const;
+                ConstIterator end() const;
 
                 ///\}
         };

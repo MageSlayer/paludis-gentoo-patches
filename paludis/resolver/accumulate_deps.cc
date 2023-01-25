@@ -36,7 +36,8 @@ paludis::resolver::accumulate_deps(
         const bool recurse,
         const std::function<void ()> & step)
 {
-    const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>()), done(std::make_shared<PackageIDSet>());
+    const std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
+    const std::shared_ptr<PackageIDSet> done(std::make_shared<PackageIDSet>());
     std::copy(start->begin(), start->end(), result->inserter());
 
     while (result->size() > done->size())
@@ -44,15 +45,14 @@ paludis::resolver::accumulate_deps(
         const std::shared_ptr<PackageIDSet> more(std::make_shared<PackageIDSet>());
         std::set_difference(result->begin(), result->end(), done->begin(), done->end(), more->inserter(), PackageIDSetComparator());
 
-        for (PackageIDSet::ConstIterator i(more->begin()), i_end(more->end()) ;
-                i != i_end ; ++i)
+        for (const auto & id : *more)
         {
             step();
 
-            done->insert(*i);
+            done->insert(id);
 
             const std::shared_ptr<const PackageIDSet> depped_upon(collect_depped_upon(
-                        env, *i, will_eventually_have, std::make_shared<PackageIDSequence>()));
+                        env, id, will_eventually_have, std::make_shared<PackageIDSequence>()));
             std::copy(depped_upon->begin(), depped_upon->end(), result->inserter());
         }
 
@@ -62,5 +62,3 @@ paludis::resolver::accumulate_deps(
 
     return result;
 }
-
-

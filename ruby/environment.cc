@@ -52,9 +52,8 @@ namespace
         {
             std::shared_ptr<const PackageIDSequence> ids(value_to_environment(self)->operator[] (value_to_selection(selection)));
             VALUE result(rb_ary_new());
-            for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                    i != i_end ; ++i)
-                rb_ary_push(result, package_id_to_value(*i));
+            for (const auto & id : *ids)
+                rb_ary_push(result, package_id_to_value(id));
             return result;
         }
         catch (const std::exception & e)
@@ -150,14 +149,14 @@ namespace
      * Return the mirror URI prefixes for a named mirror.
      */
     VALUE
-    environment_mirrors(VALUE self, VALUE mirror)
+    environment_mirrors(VALUE self, VALUE mirror_name)
     {
         try
         {
             VALUE result(rb_ary_new());
-            std::shared_ptr<const MirrorsSequence> m(value_to_environment(self)->mirrors(StringValuePtr(mirror)));
-            for (MirrorsSequence::ConstIterator i(m->begin()), i_end(m->end()) ; i != i_end ; i++)
-                rb_ary_push(result, rb_str_new2(stringify(*i).c_str()));
+            std::shared_ptr<const MirrorsSequence> m(value_to_environment(self)->mirrors(StringValuePtr(mirror_name)));
+            for (const auto & mirror : *m)
+                rb_ary_push(result, rb_str_new2(stringify(mirror).c_str()));
             return result;
         }
         catch (const std::exception & e)

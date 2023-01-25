@@ -85,8 +85,7 @@ namespace
 
         MirrorCommandLine() :
             g_filters(main_options_section(), "Filters", "Filter the output. Each filter may be specified more than once."),
-            a_matching(&g_filters, "matching", 'm', "Consider only IDs matching this spec.",
-                    args::StringSetArg::StringSetArgOptions())
+            a_matching(&g_filters, "matching", 'm', "Consider only IDs matching this spec.")
         {
             add_usage_line("[ --matching spec ]");
         }
@@ -118,27 +117,24 @@ MirrorCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("mirror takes no parameters");
 
     Generator g((generator::All()));
     if (cmdline.a_matching.specified())
     {
-        for (args::StringSetArg::ConstIterator m(cmdline.a_matching.begin_args()),
-                m_end(cmdline.a_matching.end_args()) ;
-                m != m_end ; ++m)
+        for (const auto & matching_spec : cmdline.a_matching.args())
         {
-            PackageDepSpec s(parse_user_package_dep_spec(*m, env.get(), { updso_allow_wildcards }));
+            PackageDepSpec s(parse_user_package_dep_spec(matching_spec, env.get(), { updso_allow_wildcards }));
             g = g & generator::Matches(s, nullptr, { });
         }
     }
 
     const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(g)]);
 
-    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-            i != i_end ; ++i)
+    for (const auto & id : *ids)
     {
-        Context i_context("When fetching ID '" + stringify(**i) + "':");
+        Context i_context("When fetching ID '" + stringify(*id) + "':");
 
         FetchAction a(make_named_values<FetchActionOptions>(
                     n::errors() = std::make_shared<Sequence<FetchActionFailure>>(),
@@ -151,13 +147,13 @@ MirrorCommand::run(
                     n::want_phase() = &want_all_phases
                     ));
 
-        if ((*i)->supports_action(SupportsActionTest<FetchAction>()))
+        if (id->supports_action(SupportsActionTest<FetchAction>()))
         {
-            cout << "Fetching " << **i << "..." << endl;
-            (*i)->perform_action(a);
+            cout << "Fetching " << *id << "..." << endl;
+            id->perform_action(a);
         }
         else
-            cout << "No fetching supported for " << **i << endl;
+            cout << "No fetching supported for " << *id << endl;
 
         cout << endl;
     }

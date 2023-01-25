@@ -39,7 +39,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -127,7 +126,7 @@ PrintIDEnvironmentVariableCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("print-id-environment-variable takes exactly one parameter");
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { updso_allow_wildcards }));
@@ -147,9 +146,8 @@ PrintIDEnvironmentVariableCommand::run(
 
     for (auto i(cmdline.a_best.specified() ? entries->last() : entries->begin()), i_end(entries->end()) ;
             i != i_end ; ++i)
-        for (args::StringSequenceArg::ConstIterator v(cmdline.a_variable_name.begin_args()), v_end(cmdline.a_variable_name.end_args()) ;
-                v != v_end ; ++v)
-            do_one_var(env.get(), spec, *i, *v, cmdline);
+        for (const std::string & var_name : cmdline.a_variable_name.args())
+            do_one_var(env.get(), spec, *i, var_name, cmdline);
 
     return EXIT_SUCCESS;
 }

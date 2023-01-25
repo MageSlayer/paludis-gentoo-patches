@@ -36,9 +36,9 @@ namespace paludis
         public:
             ELikeSlotExactFullRequirement(const std::pair<SlotName, SlotName> &, const std::shared_ptr<const SlotRequirement> &);
 
-            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::pair<SlotName, SlotName> slots() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string as_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::pair<SlotName, SlotName> slots() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE ELikeSlotExactPartialRequirement :
@@ -51,25 +51,25 @@ namespace paludis
         public:
             ELikeSlotExactPartialRequirement(const SlotName &, const std::shared_ptr<const SlotRequirement> &);
 
-            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string as_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const SlotName slot() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE ELikeSlotAnyUnlockedRequirement :
         public SlotAnyUnlockedRequirement
     {
         public:
-            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string as_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE ELikeSlotAnyAtAllLockedRequirement :
         public SlotAnyAtAllLockedRequirement
     {
         public:
-            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string as_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE ELikeSlotAnyPartialLockedRequirement :
@@ -81,9 +81,9 @@ namespace paludis
         public:
             ELikeSlotAnyPartialLockedRequirement(const SlotName &);
 
-            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string as_string() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const SlotName slot() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE ELikeSlotUnknownRewrittenRequirement :
@@ -95,9 +95,9 @@ namespace paludis
         public:
             ELikeSlotUnknownRewrittenRequirement(const SlotName &);
 
-            virtual const std::string as_string() const PALUDIS_ATTRIBUTE((noreturn));
-            virtual const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual const SlotName slot() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string as_string() const override PALUDIS_ATTRIBUTE((noreturn));
+            const std::shared_ptr<const SlotRequirement> maybe_original_requirement_if_rewritten() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+            const SlotName slot() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 }
 

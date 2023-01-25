@@ -66,10 +66,9 @@ RemoveHiddenHelper::operator() (
 {
     auto result(std::make_shared<PackageIDSequence>());
 
-    for (auto c(candidates->begin()), c_end(candidates->end()) ;
-            c != c_end ; ++c)
-        if (! _imp->hide_specs.match_any(_imp->env, *c, { }))
-            result->push_back(*c);
+    for (const auto & id : *candidates)
+        if (! _imp->hide_specs.match_any(_imp->env, id, { }))
+            result->push_back(id);
 
     return result;
 }

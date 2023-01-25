@@ -28,7 +28,6 @@ using namespace paludis;
 using namespace cave;
 
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -92,9 +91,8 @@ ResolveCommand::run(
     cmdline.resolution_options.verify(env);
 
     std::shared_ptr<Sequence<std::pair<std::string, std::string> > > targets(std::make_shared<Sequence<std::pair<std::string, std::string> >>());
-    for (ResolveCommandLine::ParametersConstIterator p(cmdline.begin_parameters()), p_end(cmdline.end_parameters()) ;
-            p != p_end ; ++p)
-        targets->push_back(std::make_pair(*p, ""));
+    for (const auto & target : cmdline.parameters())
+        targets->push_back(std::make_pair(target, ""));
 
     return resolve_common(env, cmdline.resolution_options, cmdline.execution_options, cmdline.display_options,
             cmdline.graph_jobs_options, cmdline.program_options, nullptr, targets, nullptr, false);

@@ -122,7 +122,7 @@ namespace
     const std::map<FSPath, std::set<std::string>, FSPathComparator> no_files;
     const std::set<std::string> no_reqs;
 
-    struct ParentOf : std::unary_function<FSPath, bool>
+    struct ParentOf
     {
         const FSPath & _child;
 
@@ -133,7 +133,8 @@ namespace
 
         bool operator() (const FSPath & parent)
         {
-            std::string child_str(stringify(_child)), parent_str(stringify(parent));
+            std::string child_str(stringify(_child));
+            std::string parent_str(stringify(parent));
             return 0 == child_str.compare(0, parent_str.length(), parent_str) &&
                 (parent_str.length() == child_str.length() || '/' == child_str[parent_str.length()]);
         }
@@ -147,11 +148,12 @@ BrokenLinkageFinder::BrokenLinkageFinder(const Environment * env, const std::sha
 
     Context ctx("When checking for broken linkage in '" + stringify(env->preferred_root_key()->parse_value()) + "':");
 
-    _imp->checkers.push_back(std::shared_ptr<LinkageChecker>(std::make_shared<ElfLinkageChecker>(env->preferred_root_key()->parse_value(), libraries)));
+    _imp->checkers.push_back(std::make_shared<ElfLinkageChecker>(env->preferred_root_key()->parse_value(), libraries));
     if (libraries->empty())
-        _imp->checkers.push_back(std::shared_ptr<LinkageChecker>(std::make_shared<LibtoolLinkageChecker>(env->preferred_root_key()->parse_value())));
+        _imp->checkers.push_back(std::make_shared<LibtoolLinkageChecker>(env->preferred_root_key()->parse_value()));
 
-    std::vector<FSPath> search_dirs_nosyms, search_dirs_pruned;
+    std::vector<FSPath> search_dirs_nosyms;
+    std::vector<FSPath> search_dirs_pruned;
     std::transform(_imp->config.begin_search_dirs(), _imp->config.end_search_dirs(),
                    std::back_inserter(search_dirs_nosyms),
                    std::bind(realpath_with_current_and_root, _1, FSPath("/"), env->preferred_root_key()->parse_value()));
@@ -300,10 +302,10 @@ Imp<BrokenLinkageFinder>::add_breakage(const FSPath & file, const std::string & 
 
         Context ctx("When building map from files to packages:");
 
-        std::shared_ptr<const PackageIDSequence> pkgs((*env)[selection::AllVersionsUnsorted(
+        std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsUnsorted(
                     generator::All() | filter::InstalledAtRoot(env->preferred_root_key()->parse_value()))]);
 
-        std::for_each(pkgs->begin(), pkgs->end(),
+        std::for_each(ids->begin(), ids->end(),
                 std::bind(&Imp<BrokenLinkageFinder>::gather_package, this, _1));
     }
 
@@ -457,7 +459,7 @@ BrokenLinkageFinder::missing_requirements(const std::shared_ptr<const PackageID>
 
 namespace paludis
 {
-    template class PALUDIS_VISIBLE WrappedForwardIterator<BrokenLinkageFinder::BrokenPackageConstIteratorTag, const std::shared_ptr<const PackageID>>;
-    template class PALUDIS_VISIBLE WrappedForwardIterator<BrokenLinkageFinder::BrokenFileConstIteratorTag, const FSPath>;
-    template class PALUDIS_VISIBLE WrappedForwardIterator<BrokenLinkageFinder::MissingRequirementConstIteratorTag, const std::string>;
+    template class WrappedForwardIterator<BrokenLinkageFinder::BrokenPackageConstIteratorTag, const std::shared_ptr<const PackageID>>;
+    template class WrappedForwardIterator<BrokenLinkageFinder::BrokenFileConstIteratorTag, const FSPath>;
+    template class WrappedForwardIterator<BrokenLinkageFinder::MissingRequirementConstIteratorTag, const std::string>;
 }

@@ -26,6 +26,7 @@
 struct PaludisTarExtras;
 
 extern "C" PaludisTarExtras * paludis_tar_extras_init(const std::string &, const std::string &) PALUDIS_VISIBLE PALUDIS_ATTRIBUTE((warn_unused_result));
+extern "C" void paludis_tar_extras_add_dir(PaludisTarExtras * const, const std::string &, const std::string &) PALUDIS_VISIBLE;
 extern "C" void paludis_tar_extras_add_file(PaludisTarExtras * const, const std::string &, const std::string &) PALUDIS_VISIBLE;
 extern "C" void paludis_tar_extras_add_sym(PaludisTarExtras * const, const std::string &, const std::string &, const std::string &) PALUDIS_VISIBLE;
 extern "C" void paludis_tar_extras_cleanup(PaludisTarExtras * const) PALUDIS_VISIBLE;

@@ -58,7 +58,7 @@ MetadataKeyHolder::add_metadata_key(const std::shared_ptr<const MetadataKey> & k
     using namespace std::placeholders;
 
     if (indirect_iterator(_imp->keys.end()) != std::find_if(indirect_iterator(_imp->keys.begin()), indirect_iterator(_imp->keys.end()),
-                std::bind(std::equal_to<std::string>(), k->raw_name(), std::bind(std::mem_fn(&MetadataKey::raw_name), _1))))
+                std::bind(std::equal_to<>(), k->raw_name(), std::bind(std::mem_fn(&MetadataKey::raw_name), _1))))
         throw ConfigurationError("Tried to add duplicate key '" + k->raw_name() + "'");
 
     _imp->keys.push_back(k);
@@ -78,22 +78,23 @@ MetadataKeyHolder::end_metadata() const
     return MetadataConstIterator(_imp->keys.end());
 }
 
+IteratorRange<MetadataKeyHolder::MetadataConstIterator>
+MetadataKeyHolder::metadata() const
+{
+    need_keys_added();
+    return {_imp->keys};
+}
+
 MetadataKeyHolder::MetadataConstIterator
 MetadataKeyHolder::find_metadata(const std::string & s) const
 {
-    using namespace std::placeholders;
-
     need_keys_added();
 
-    // std::mem_fn on a sptr doesn't work with boost
-    // return std::find_if(begin_metadata(), end_metadata(),
-    //        std::bind(std::equal_to<std::string>(), s, std::bind(std::mem_fn(&MetadataKey::raw_name), _1)));
+    const auto raw_name_matches = [&](const std::shared_ptr<const MetadataKey> & metadata) {
+        return metadata->raw_name() == s;
+    };
 
-    for (MetadataConstIterator i(begin_metadata()), i_end(end_metadata()) ;
-            i != i_end ; ++i)
-        if ((*i)->raw_name() == s)
-            return i;
-    return end_metadata();
+    return std::find_if(begin_metadata(), end_metadata(), raw_name_matches);
 }
 
 void

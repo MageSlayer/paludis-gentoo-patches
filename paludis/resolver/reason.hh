@@ -65,11 +65,11 @@ namespace paludis
 
             public:
                 TargetReason(const std::string &);
-                ~TargetReason();
+                ~TargetReason() override;
 
                 const std::string extra_information() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class DependencyReason :
@@ -87,7 +87,7 @@ namespace paludis
                         const SanitisedDependency & s,
                         const Tribool already_met);
 
-                ~DependencyReason();
+                ~DependencyReason() override;
 
                 const std::shared_ptr<const PackageID> from_id() const;
                 const std::shared_ptr<const ChangedChoices> from_id_changed_choices() const;
@@ -95,7 +95,7 @@ namespace paludis
                 const SanitisedDependency & sanitised_dependency() const;
                 Tribool already_met() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class DependentReason :
@@ -107,11 +107,11 @@ namespace paludis
 
             public:
                 DependentReason(const DependentPackageID &);
-                ~DependentReason();
+                ~DependentReason() override;
 
                 const DependentPackageID dependent_upon() const;
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class WasUsedByReason :
@@ -123,11 +123,11 @@ namespace paludis
 
             public:
                 WasUsedByReason(const std::shared_ptr<const ChangeByResolventSequence> & ids);
-                ~WasUsedByReason();
+                ~WasUsedByReason() override;
 
                 const std::shared_ptr<const ChangeByResolventSequence> ids_and_resolvents_being_removed() const;
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class PresetReason :
@@ -141,13 +141,13 @@ namespace paludis
                 PresetReason(
                         const std::string &,
                         const std::shared_ptr<const Reason> &);
-                ~PresetReason();
+                ~PresetReason() override;
 
                 const std::shared_ptr<const Reason> maybe_reason_for_preset() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::string maybe_explanation() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class SetReason :
@@ -159,12 +159,12 @@ namespace paludis
 
             public:
                 SetReason(const SetName &, const std::shared_ptr<const Reason> &);
-                ~SetReason();
+                ~SetReason() override;
 
                 const SetName set_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::shared_ptr<const Reason> reason_for_set() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class LikeOtherDestinationTypeReason :
@@ -176,12 +176,12 @@ namespace paludis
 
             public:
                 LikeOtherDestinationTypeReason(const Resolvent &, const std::shared_ptr<const Reason> &);
-                ~LikeOtherDestinationTypeReason();
+                ~LikeOtherDestinationTypeReason() override;
 
                 const Resolvent other_resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
                 const std::shared_ptr<const Reason> reason_for_other() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class ViaBinaryReason :
@@ -193,11 +193,11 @@ namespace paludis
 
             public:
                 ViaBinaryReason(const Resolvent &);
-                ~ViaBinaryReason();
+                ~ViaBinaryReason() override;
 
                 const Resolvent other_resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
     }
 

@@ -101,9 +101,9 @@ Filter::packages(
 std::shared_ptr<const PackageIDSet>
 Filter::ids(
         const Environment * const env,
-        const std::shared_ptr<const PackageIDSet> & i) const
+        const std::shared_ptr<const PackageIDSet> & ids) const
 {
-    return _imp->handler->ids(env, i);
+    return _imp->handler->ids(env, ids);
 }
 
 const RepositoryContentMayExcludes
@@ -146,11 +146,11 @@ namespace
         }
 
         std::shared_ptr<const PackageIDSet>
-        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & set) const override
+        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & ids) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (const auto & id : *set)
+            for (const auto & id : *ids)
                 if (id->supports_action(SupportsActionTest<A_>()))
                     result->insert(id);
 
@@ -184,11 +184,11 @@ namespace
         }
 
         std::shared_ptr<const PackageIDSet>
-        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & set) const override
+        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & ids) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (const auto & id : *set)
+            for (const auto & id : *ids)
                 if (! id->masked())
                     result->insert(id);
 
@@ -234,11 +234,11 @@ namespace
         }
 
         std::shared_ptr<const PackageIDSet>
-        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & set) const override
+        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & ids) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (const auto & id : *set)
+            for (const auto & id : *ids)
                 result->insert(id);
 
             return result;
@@ -293,9 +293,9 @@ namespace
 
         std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const env,
-                const std::shared_ptr<const PackageIDSet> & s) const override
+                const std::shared_ptr<const PackageIDSet> & ids) const override
         {
-            return f2.ids(env, f1.ids(env, s));
+            return f2.ids(env, f1.ids(env, ids));
         }
 
         std::string as_string() const override
@@ -320,11 +320,11 @@ namespace
         }
 
         std::shared_ptr<const PackageIDSet>
-        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & set) const override
+        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & ids) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (const auto & id : *set)
+            for (const auto & id : *ids)
             {
                 if (as_id->slot_key())
                 {
@@ -363,11 +363,11 @@ namespace
         }
 
         std::shared_ptr<const PackageIDSet>
-        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & set) const override
+        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & ids) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (const auto & id : *set)
+            for (const auto & id : *ids)
                 if (id->slot_key() && id->slot_key()->parse_value().parallel_value() == slot)
                     result->insert(id);
 
@@ -384,11 +384,11 @@ namespace
         AllFilterHandlerBase
     {
         std::shared_ptr<const PackageIDSet>
-        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & set) const override
+        ids(const Environment * const, const std::shared_ptr<const PackageIDSet> & ids) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (const auto & id : *set)
+            for (const auto & id : *ids)
                 if (! id->slot_key())
                     result->insert(id);
 
@@ -427,15 +427,14 @@ namespace
 
         std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const env,
-                const std::shared_ptr<const PackageIDSet> & id) const override
+                const std::shared_ptr<const PackageIDSet> & ids) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & id : *ids)
             {
-                if (match_package(*env, spec, *i, from_id, options))
-                    result->insert(*i);
+                if (match_package(*env, spec, id, from_id, options))
+                    result->insert(id);
             }
 
             return result;
@@ -464,15 +463,14 @@ namespace
 
         std::shared_ptr<const PackageIDSet> ids(
                 const Environment * const,
-                const std::shared_ptr<const PackageIDSet> & id) const override
+                const std::shared_ptr<const PackageIDSet> & ids) const override
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (PackageIDSet::ConstIterator i(id->begin()), i_end(id->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & id : *ids)
             {
-                if (! func(*i))
-                    result->insert(*i);
+                if (! func(id))
+                    result->insert(id);
             }
 
             return result;

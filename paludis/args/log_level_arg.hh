@@ -52,7 +52,7 @@ namespace paludis
                 ///\{
 
                 LogLevelArg(ArgsGroup * const, const std::string &, char);
-                ~LogLevelArg() = default;
+                ~LogLevelArg() override = default;
 
                 ///\}
 

@@ -178,7 +178,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            virtual ~MetadataSectionKey() = 0;
+            ~MetadataSectionKey() override = 0;
 
             ///\}
     };
@@ -228,7 +228,7 @@ namespace paludis
         public ImplementAcceptMethods<MetadataKey, MetadataValueKey<C_> >
     {
         public:
-            virtual ~MetadataValueKey() = 0;
+            ~MetadataValueKey() override = 0;
 
             /**
              * Fetch our value.
@@ -252,7 +252,7 @@ namespace paludis
         public ImplementAcceptMethods<MetadataKey, MetadataTimeKey>
     {
         public:
-            virtual ~MetadataTimeKey() = 0;
+            ~MetadataTimeKey() override = 0;
 
             /**
              * Fetch our value.
@@ -278,7 +278,7 @@ namespace paludis
         public ImplementAcceptMethods<MetadataKey, MetadataCollectionKey<C_> >
     {
         public:
-            virtual ~MetadataCollectionKey() = 0;
+            ~MetadataCollectionKey() override = 0;
 
             /**
              * Fetch our value, parse not necessarily cached (so
@@ -304,7 +304,7 @@ namespace paludis
         public ImplementAcceptMethods<MetadataKey, MetadataSpecTreeKey<C_> >
     {
         public:
-            virtual ~MetadataSpecTreeKey() = 0;
+            ~MetadataSpecTreeKey() override = 0;
 
             /**
              * Fetch our value, parse not necessarily cached (so
@@ -333,7 +333,7 @@ namespace paludis
         public ImplementAcceptMethods<MetadataKey, MetadataSpecTreeKey<FetchableURISpecTree> >
     {
         public:
-            virtual ~MetadataSpecTreeKey() = 0;
+            ~MetadataSpecTreeKey() override = 0;
 
             /**
              * Fetch our value, parse not necessarily cached (so
@@ -369,7 +369,7 @@ namespace paludis
         public ImplementAcceptMethods<MetadataKey, MetadataSpecTreeKey<DependencySpecTree> >
     {
         public:
-            virtual ~MetadataSpecTreeKey() = 0;
+            ~MetadataSpecTreeKey() override = 0;
 
             /**
              * Fetch our value, parse not necessarily cached (so

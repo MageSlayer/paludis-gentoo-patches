@@ -163,7 +163,7 @@ FakeInstalledRepository::format_key() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 FakeInstalledRepository::location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSPath> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<FSPath> >

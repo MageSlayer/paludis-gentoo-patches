@@ -141,7 +141,7 @@ TEST_P(EverTest, Works)
     id->perform_action(action);
 }
 
-INSTANTIATE_TEST_CASE_P(Works, EverTest, testing::Values(
+INSTANTIATE_TEST_SUITE_P(Works, EverTest, testing::Values(
             std::string("ever-split"),
             std::string("ever-split-all"),
             std::string("ever-at-least"),

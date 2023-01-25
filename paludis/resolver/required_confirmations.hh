@@ -36,6 +36,8 @@ namespace paludis
                 MaskedConfirmation, ChangedChoicesConfirmation, UninstallConfirmation>::Type>
         {
             public:
+                virtual ~RequiredConfirmation() = default;
+
                 virtual void serialise(Serialiser &) const = 0;
 
                 static const std::shared_ptr<RequiredConfirmation> deserialise(
@@ -50,7 +52,7 @@ namespace paludis
                 static const std::shared_ptr<DowngradeConfirmation> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class PALUDIS_VISIBLE NotBestConfirmation :
@@ -61,7 +63,7 @@ namespace paludis
                 static const std::shared_ptr<NotBestConfirmation> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class PALUDIS_VISIBLE BreakConfirmation :
@@ -72,7 +74,7 @@ namespace paludis
                 static const std::shared_ptr<BreakConfirmation> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class PALUDIS_VISIBLE RemoveSystemPackageConfirmation :
@@ -83,7 +85,7 @@ namespace paludis
                 static const std::shared_ptr<RemoveSystemPackageConfirmation> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class PALUDIS_VISIBLE MaskedConfirmation :
@@ -94,7 +96,7 @@ namespace paludis
                 static const std::shared_ptr<MaskedConfirmation> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class PALUDIS_VISIBLE ChangedChoicesConfirmation :
@@ -105,7 +107,7 @@ namespace paludis
                 static const std::shared_ptr<ChangedChoicesConfirmation> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class PALUDIS_VISIBLE UninstallConfirmation :
@@ -116,7 +118,7 @@ namespace paludis
                 static const std::shared_ptr<UninstallConfirmation> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
     }
 }

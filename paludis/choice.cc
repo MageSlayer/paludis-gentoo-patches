@@ -25,6 +25,7 @@
 #include <paludis/util/exception.hh>
 #include <paludis/util/set-impl.hh>
 #include <paludis/util/wrapped_value-impl.hh>
+#include <algorithm>
 #include <list>
 
 using namespace paludis;
@@ -196,41 +197,38 @@ Choices::end() const
 Choices::ConstIterator
 Choices::find(const ChoicePrefixName & p) const
 {
-    for (ConstIterator i(begin()), i_end(end()) ;
-            i != i_end ; ++i)
-        if ((*i)->prefix() == p)
-            return i;
-    return end();
+    const auto prefix_matches = [&](const std::shared_ptr<const Choice> & choice) {
+        return choice->prefix() == p;
+    };
+
+    return std::find_if(begin(), end(), prefix_matches);
 }
 
 const std::shared_ptr<const ChoiceValue>
 Choices::find_by_name_with_prefix(const ChoiceNameWithPrefix & f) const
 {
-    for (ConstIterator i(begin()), i_end(end()) ;
-            i != i_end ; ++i)
+    for (const auto & choice : *this)
     {
-        if (0 != (*i)->prefix().value().compare(0, (*i)->prefix().value().length(), f.value(), 0, (*i)->prefix().value().length()))
+        if (0 != choice->prefix().value().compare(0, choice->prefix().value().length(), f.value(), 0, choice->prefix().value().length()))
             continue;
 
-        for (Choice::ConstIterator j((*i)->begin()), j_end((*i)->end()) ;
-                j != j_end ; ++j)
-            if ((*j)->name_with_prefix() == f)
-                return *j;
+        for (const auto & value : *choice)
+            if (value->name_with_prefix() == f)
+                return value;
     }
 
-    return std::shared_ptr<const ChoiceValue>();
+    return nullptr;
 }
 
 bool
 Choices::has_matching_contains_every_value_prefix(const ChoiceNameWithPrefix & f) const
 {
-    for (ConstIterator i(begin()), i_end(end()) ;
-            i != i_end ; ++i)
+    for (const auto & choice : *this)
     {
-        if (0 != (*i)->prefix().value().compare(0, (*i)->prefix().value().length(), f.value(), 0, (*i)->prefix().value().length()))
+        if (0 != choice->prefix().value().compare(0, choice->prefix().value().length(), f.value(), 0, choice->prefix().value().length()))
             continue;
 
-        if ((*i)->contains_every_value())
+        if (choice->contains_every_value())
             return true;
     }
 

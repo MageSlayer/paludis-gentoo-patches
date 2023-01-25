@@ -83,30 +83,30 @@ namespace paludis
         public FSMerger
     {
         private:
-            void display_override(const std::string &) const;
+            void display_override(const std::string &) const override;
 
             Pimp<NDBAMMerger> _imp;
 
         public:
             NDBAMMerger(const NDBAMMergerParams &);
-            ~NDBAMMerger();
+            ~NDBAMMerger() override;
 
-            virtual Hook extend_hook(const Hook &);
+            Hook extend_hook(const Hook &) override;
 
-            virtual void record_install_file(const FSPath &, const FSPath &, const std::string &, const FSMergerStatusFlags &);
-            virtual void record_install_dir(const FSPath &, const FSPath &, const FSMergerStatusFlags &);
-            virtual void record_install_under_dir(const FSPath &, const FSMergerStatusFlags &);
-            virtual void record_install_sym(const FSPath &, const FSPath &, const FSMergerStatusFlags &);
+            void record_install_file(const FSPath &, const FSPath &, const std::string &, const FSMergerStatusFlags &) override;
+            void record_install_dir(const FSPath &, const FSPath &, const FSMergerStatusFlags &) override;
+            void record_install_under_dir(const FSPath &, const FSMergerStatusFlags &) override;
+            void record_install_sym(const FSPath &, const FSPath &, const FSMergerStatusFlags &) override;
 
-            virtual void on_error(bool is_check, const std::string &);
-            virtual void on_warn(bool is_check, const std::string &);
-            virtual void on_enter_dir(bool is_check, const FSPath);
+            void on_error(bool is_check, const std::string &) override;
+            void on_warn(bool is_check, const std::string &) override;
+            void on_enter_dir(bool is_check, const FSPath) override;
 
-            virtual bool config_protected(const FSPath &, const FSPath &);
-            virtual std::string make_config_protect_name(const FSPath &, const FSPath &);
+            bool config_protected(const FSPath &, const FSPath &) override;
+            std::string make_config_protect_name(const FSPath &, const FSPath &) override;
 
-            virtual void merge();
-            virtual bool check();
+            void merge() override;
+            bool check() override;
     };
 }
 

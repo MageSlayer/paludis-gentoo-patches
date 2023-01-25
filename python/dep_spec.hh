@@ -86,7 +86,7 @@ namespace paludis
                 PythonCompositeDepSpec();
 
             public:
-                ~PythonCompositeDepSpec();
+                ~PythonCompositeDepSpec() override;
 
                 void add_child(const std::shared_ptr<const PythonDepSpec>);
 
@@ -160,7 +160,7 @@ namespace paludis
             protected:
                 PythonStringDepSpec(const std::string &);
                 PythonStringDepSpec(const StringDepSpec &);
-                ~PythonStringDepSpec();
+                ~PythonStringDepSpec() override;
 
                 void set_text(const std::string &);
 
@@ -178,7 +178,7 @@ namespace paludis
             public:
                 PythonPackageDepSpec(const PackageDepSpec &);
                 PythonPackageDepSpec(const PythonPackageDepSpec &);
-                ~PythonPackageDepSpec();
+                ~PythonPackageDepSpec() override;
 
                 operator PackageDepSpec() const;
                 operator std::shared_ptr<PackageDepSpec>() const;

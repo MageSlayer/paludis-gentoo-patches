@@ -54,7 +54,7 @@ namespace paludis
                 void translator(const Ex_ & x) const;
 
                 PyObject *
-                get_py_exception() const
+                get_py_exception() const override
                 {
                     return _e;
                 }
@@ -65,15 +65,10 @@ namespace paludis
                 const std::string & doc, PyObject * base) :
             _name(name),
             _longname("paludis." + name),
-            _e(PyErr_NewException(const_cast<char*>(_longname.c_str()), base, NULL))
+            _e(PyErr_NewException(_longname.c_str(), base, NULL))
         {
-            PyModule_AddObject(boost::python::detail::current_scope, const_cast<char*>(_name.c_str()), _e);
-            PyObject * doc_string =
-#if PY_MAJOR_VERSION < 3
-                PyString_FromString(doc.c_str());
-#   else
-                PyUnicode_FromString(doc.c_str());
-#   endif
+            PyModule_AddObject(boost::python::detail::current_scope, _name.c_str(), _e);
+            PyObject * doc_string = PyUnicode_FromString(doc.c_str());
             PyObject_SetAttrString(_e, "__doc__", doc_string);
             boost::python::register_exception_translator<Ex_>(
                     std::bind(std::mem_fn(&RegisteredException<Ex_>::translator), this, std::placeholders::_1));
@@ -83,15 +78,10 @@ namespace paludis
         void
         RegisteredException<Ex_>::translator(const Ex_ & x) const
         {
-#if PY_MAJOR_VERSION < 3
-            PyObject * backtrace = PyString_FromString(x.backtrace("\n").c_str());
-            PyObject * message = PyString_FromString(x.message().c_str());
-            PyObject * what = PyString_FromString(x.what());
-#else
             PyObject * backtrace = PyUnicode_FromString(x.backtrace("\n").c_str());
             PyObject * message = PyUnicode_FromString(x.message().c_str());
             PyObject * what = PyUnicode_FromString(x.what());
-#endif
+
             PyObject_SetAttrString(_e, "backtrace", backtrace);
             PyObject_SetAttrString(_e, "message", message);
             PyObject_SetAttrString(_e, "what", what);

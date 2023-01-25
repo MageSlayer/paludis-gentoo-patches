@@ -143,7 +143,7 @@ TEST_P(VDBUnmergerTestRemovesAll, RemovesAll)
     ASSERT_TRUE(! (root_dir / target).stat().exists());
 }
 
-INSTANTIATE_TEST_CASE_P(RemovesAll, VDBUnmergerTestRemovesAll, testing::Values(
+INSTANTIATE_TEST_SUITE_P(RemovesAll, VDBUnmergerTestRemovesAll, testing::Values(
             std::string("file_ok"),
             std::string("file_ with spaces"),
             std::string("file_ with lots  of   spaces"),
@@ -168,7 +168,7 @@ TEST_P(VDBUnmergerTestRemaining, Remaining)
     ASSERT_TRUE((root_dir / target).stat().exists());
 }
 
-INSTANTIATE_TEST_CASE_P(Remaining, VDBUnmergerTestRemaining, testing::Values(
+INSTANTIATE_TEST_SUITE_P(Remaining, VDBUnmergerTestRemaining, testing::Values(
             std::string("file_bad_type"),
             std::string("file_bad_md5sum"),
             std::string("file_bad_mtime"),
@@ -191,7 +191,7 @@ TEST_P(VDBUnmergerTestSucceeds, Succeeds)
     unmerger->unmerge();
 }
 
-INSTANTIATE_TEST_CASE_P(Succeeds, VDBUnmergerTestSucceeds, testing::Values(
+INSTANTIATE_TEST_SUITE_P(Succeeds, VDBUnmergerTestSucceeds, testing::Values(
             std::string("file_replaces_dir")
             ));
 
@@ -232,7 +232,7 @@ TEST_P(VDBUnmergerTestConfigProtect, Works)
     EXPECT_TRUE(! (root_dir / "protected_dir_not_really/unprotected_file").stat().exists());
 }
 
-INSTANTIATE_TEST_CASE_P(Succeeds, VDBUnmergerTestConfigProtect, testing::Values(
+INSTANTIATE_TEST_SUITE_P(Succeeds, VDBUnmergerTestConfigProtect, testing::Values(
             std::string("config_protect")
             ));
 

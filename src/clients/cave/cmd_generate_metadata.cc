@@ -82,8 +82,7 @@ namespace
         GenerateMetadataCommandLine() :
             g_filters(main_options_section(), "Filters", "Filter the output. Each filter may be specified more than once."),
             a_matching(&g_filters, "matching", 'm', "Consider only IDs matching this spec. Note that certain specs "
-                    "may force metadata generation anyway, e.g. to see whether a slot matches.",
-                    args::StringSetArg::StringSetArgOptions())
+                    "may force metadata generation anyway, e.g. to see whether a slot matches.")
         {
             add_usage_line("[ --matching spec ]");
         }
@@ -148,11 +147,11 @@ namespace
             if (! metadata.empty())
             {
                 std::multimap<int, std::string> biggest;
-                for (std::map<std::string, int>::const_iterator i(metadata.begin()), i_end(metadata.end()) ;
-                        i != i_end ; ++i)
-                    biggest.insert(std::make_pair(i->second, i->first));
+                for (const auto & i : metadata)
+                    biggest.insert(std::make_pair(i.second, i.first));
 
-                int t(0), n(0);
+                int t(0);
+                int n(0);
                 std::string ss;
                 for (std::multimap<int, std::string>::const_reverse_iterator i(biggest.rbegin()), i_end(biggest.rend()) ;
                         i != i_end ; ++i)
@@ -243,11 +242,11 @@ namespace
             if (! id)
                 return;
 
-            for (PackageID::MetadataConstIterator m(id->begin_metadata()), m_end(id->end_metadata()); m_end != m; ++m)
+            for (const auto & key : id->metadata())
                 try
                 {
                     MetadataVisitor v;
-                    (*m)->accept(v);
+                    key->accept(v);
                 }
                 catch (const InternalError &)
                 {
@@ -281,17 +280,15 @@ GenerateMetadataCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("generate-metadata takes no parameters");
 
     Generator g((generator::All()));
     if (cmdline.a_matching.specified())
     {
-        for (args::StringSetArg::ConstIterator m(cmdline.a_matching.begin_args()),
-                m_end(cmdline.a_matching.end_args()) ;
-                m != m_end ; ++m)
+        for (const auto & matching_spec : cmdline.a_matching.args())
         {
-            PackageDepSpec s(parse_user_package_dep_spec(*m, env.get(), { updso_allow_wildcards }));
+            PackageDepSpec s(parse_user_package_dep_spec(matching_spec, env.get(), { updso_allow_wildcards }));
             g = g & generator::Matches(s, nullptr, { });
         }
     }
@@ -300,7 +297,8 @@ GenerateMetadataCommand::run(
     bool fail(false);
     std::mutex mutex;
 
-    PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end());
+    PackageIDSequence::ConstIterator i(ids->begin());
+    PackageIDSequence::ConstIterator i_end(ids->end());
     {
         DisplayCallback callback;
         callback.total = std::distance(ids->begin(), ids->end());

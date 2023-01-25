@@ -22,6 +22,7 @@ import sys
 stdout_cache = []
 stderr_cache = []
 
+
 class CommonOutput:
     def __init__(self, out):
         self.out = out
@@ -48,6 +49,7 @@ class CommonOutput:
     def encoding(self):
         return self.out.encoding()
 
+
 class PrefixOutput(CommonOutput):
     def __init__(self, out, prefix):
         CommonOutput.__init__(self, out)
@@ -69,11 +71,13 @@ class PrefixOutput(CommonOutput):
         newlines += str.count("\n")
         self.out.write(str.replace("\n", "\n" + self.prefix, newlines))
 
+
 def save(what):
     if what == "stderr" or what == "both":
         stderr_cache.append(sys.stderr)
     elif what == "stdout" or what == "both":
         stdout_cache.append(sys.stdout)
+
 
 def restore(what):
     if what == "stderr" or what == "both":
@@ -88,6 +92,7 @@ def restore(what):
         else:
             sys.stdout = sys.__stdout__
 
+
 def set_prefix(prefix):
     save("both")
     if prefix:
@@ -97,6 +102,6 @@ def set_prefix(prefix):
         sys.stdout = sys.__stdout__
         sys.stderr = sys.__stderr__
 
+
 def restore_prefix():
     restore("both")
-

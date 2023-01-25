@@ -34,6 +34,15 @@ namespace
         private:
             static std::mutex _mutex;
 
+            struct Initializer
+            {
+                Initializer()
+                {
+                    Py_Initialize();
+                }
+            };
+
+            static Initializer pyinit;
             static bp::dict _local_namespace_base;
             static bp::dict _output_wrapper_namespace;
             static bp::object _format_exception;
@@ -63,22 +72,23 @@ namespace
         public:
             PyHookFile(const FSPath &, const bool, const Environment * const);
 
-            virtual HookResult run(const Hook &, const std::shared_ptr<OutputManager> &) const PALUDIS_ATTRIBUTE((warn_unused_result));
+            HookResult run(const Hook &, const std::shared_ptr<OutputManager> &) const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual const FSPath file_name() const
+            const FSPath file_name() const override
             {
                 return _file_name;
             }
 
-            virtual void add_dependencies(const Hook &, DirectedGraph<std::string, int> &);
+            void add_dependencies(const Hook &, DirectedGraph<std::string, int> &) override;
 
-            virtual const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const
+            const std::shared_ptr<const Sequence<std::string> > auto_hook_names() const override
             {
                 return std::make_shared<Sequence<std::string>>();
             }
     };
 
     std::mutex PyHookFile::_mutex;
+    PyHookFile::Initializer PyHookFile::pyinit;
     bp::dict PyHookFile::_output_wrapper_namespace;
     bp::dict PyHookFile::_local_namespace_base;
     bp::object PyHookFile::_format_exception;
@@ -99,8 +109,6 @@ PyHookFile::PyHookFile(const FSPath & f, const bool r, const Environment * const
         initialized = true;
         try
         {
-            Py_Initialize();
-
             bp::object main = bp::import("__main__");
             bp::object global_namespace = main.attr("__dict__");
 
@@ -194,8 +202,8 @@ PyHookFile::run(const Hook & hook, const std::shared_ptr<OutputManager> &) const
     hook_env["HOOK"] = hook.name();
     hook_env["HOOK_FILE"] = stringify(file_name());
 
-    for (Hook::ConstIterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
-        hook_env[x->first] = x->second;
+    for (const auto & x : hook)
+        hook_env[x.first] = x.second;
 
     bp::object result;
     try
@@ -284,8 +292,8 @@ PyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::string, 
     hook_env["HOOK"] = hook.name();
     hook_env["HOOK_FILE"] = stringify(file_name());
 
-    for (Hook::ConstIterator x(hook.begin()), x_end(hook.end()) ; x != x_end ; ++x)
-        hook_env[x->first] = x->second;
+    for (const auto & x : hook)
+        hook_env[x.first] = x.second;
 
     bp::object result;
     try
@@ -340,17 +348,16 @@ PyHookFile::_add_dependency_class(const Hook & hook, DirectedGraph<std::string, 
         << "Hook '" << file_name() <<  "':  hook_"
         << stringify(depend ? "depend" : "after") << "_" << hook.name() << " function returned '" << deps << "'";
 
-    for (std::set<std::string>::const_iterator d(deps_s.begin()), d_end(deps_s.end()) ;
-            d != d_end ; ++d)
+    for (const auto & deps_ : deps_s)
     {
-        if (g.has_node(*d))
-            g.add_edge(strip_trailing_string(file_name().basename(), ".py"), *d, 0);
+        if (g.has_node(deps_))
+            g.add_edge(strip_trailing_string(file_name().basename(), ".py"), deps_, 0);
         else if (depend)
             Log::get_instance()->message("hook.python.dependency_not_found", ll_warning, lc_context)
-                << "Hook dependency '" << *d << "' for '" << file_name() << "' not found";
+                << "Hook dependency '" << deps_ << "' for '" << file_name() << "' not found";
         else
             Log::get_instance()->message("hook.python.after_not_found", ll_debug, lc_context)
-                << "Hook after '" << *d << "' for '" << file_name() << "' not found";
+                << "Hook after '" << deps_ << "' for '" << file_name() << "' not found";
     }
 }
 
@@ -391,8 +398,11 @@ PyHookFile::_get_traceback() const
 
     Context c("When getting traceback");
 
-    PyObject * ptype, * pvalue, * ptraceback;
+    PyObject * ptype;
+    PyObject * pvalue;
+    PyObject * ptraceback;
     PyErr_Fetch(&ptype, &pvalue, &ptraceback);
+    PyErr_NormalizeException(&ptype, &pvalue, &ptraceback);
 
     if (ptype == NULL)
         ptype = Py_None;

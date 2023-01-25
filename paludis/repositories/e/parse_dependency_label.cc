@@ -44,7 +44,7 @@ namespace
     bool enabled_if_option(
             const Environment * const env,
             const std::shared_ptr<const PackageID> & id,
-            const std::string label,
+            const std::string & label,
             const ChoiceNameWithPrefix n)
     {
         auto repo(env->fetch_repository(id->repository_name()));
@@ -176,7 +176,8 @@ paludis::erepository::parse_dependency_label(const Environment * const,
 
     for (const auto & label : labels)
     {
-        std::string c(e.supported()->dependency_labels()->class_for_label(label)), cc;
+        std::string c(e.supported()->dependency_labels()->class_for_label(label));
+        std::string cc;
         if (c.empty())
             throw EDepParseError(s, "Unknown label '" + label + "'");
 

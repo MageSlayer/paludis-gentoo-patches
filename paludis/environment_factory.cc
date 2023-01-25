@@ -90,7 +90,8 @@ EnvironmentFactory::create(const std::string & s) const
 {
     Context context("When making environment from specification '" + s + "':");
 
-    std::string key, suffix;
+    std::string key;
+    std::string suffix;
     std::string::size_type p(s.find(':'));
 
     if (std::string::npos == p)
@@ -136,11 +137,10 @@ EnvironmentFactory::add_environment_format(
         const CreateFunction & create_function
         )
 {
-    for (Set<std::string>::ConstIterator f(formats->begin()), f_end(formats->end()) ;
-            f != f_end ; ++f)
+    for (const auto & format : *formats)
     {
-        if (! _imp->keys.insert(std::make_pair(*f, create_function)).second)
-            throw ConfigurationError("Handler for environment format '" + stringify(*f) + "' already exists");
+        if (! _imp->keys.insert(std::make_pair(format, create_function)).second)
+            throw ConfigurationError("Handler for environment format '" + stringify(format) + "' already exists");
     }
 }
 

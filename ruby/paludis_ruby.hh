@@ -42,6 +42,17 @@
 #include <paludis/util/hashes.hh>
 
 #include <ruby.h>
+#include <ruby/version.h>
+
+#if RUBY_API_VERSION_CODE >= 30000
+// Ruby 3.0 uses "ruby" instead of "::ruby" which clashes with our ruby namespace
+#undef rb_define_method
+#define rb_define_method(klass, mid, func, arity) ::ruby::backward::cxxanyargs::define_method::rb_define_method::specific<arity>::define(klass, mid, func)
+#undef rb_define_singleton_method
+#define rb_define_singleton_method(klass, mid, func, arity) ::ruby::backward::cxxanyargs::define_method::rb_define_singleton_method::specific<arity>::define(klass, mid, func)
+#undef rb_define_module_function
+#define rb_define_module_function(klass, mid, func, arity) ::ruby::backward::cxxanyargs::define_method::rb_define_module_function::specific<arity>::define(klass, mid, func)
+#endif
 
 #define RUBY_FUNC_CAST(x) reinterpret_cast<VALUE (*)(...)>(x)
 #define RDOC_IS_STUPID(x, y) RUBY_FUNC_CAST((y))
@@ -153,7 +164,8 @@ namespace paludis
 
             static VALUE compare(VALUE left, VALUE right)
             {
-                T_ * left_ptr, * right_ptr;
+                T_ * left_ptr;
+                T_ * right_ptr;
                 Data_Get_Struct(left, T_, left_ptr);
                 Data_Get_Struct(right, T_, right_ptr);
                 if (*left_ptr < *right_ptr)
@@ -165,7 +177,8 @@ namespace paludis
 
             static VALUE equal(VALUE left, VALUE right)
             {
-                T_ * left_ptr, * right_ptr;
+                T_ * left_ptr;
+                T_ * right_ptr;
                 Data_Get_Struct(left, T_, left_ptr);
                 Data_Get_Struct(right, T_, right_ptr);
                 return (*left_ptr == *right_ptr) ? Qtrue : Qfalse;
@@ -173,7 +186,8 @@ namespace paludis
 
             static VALUE equal_via_ptr(VALUE left, VALUE right)
             {
-                T_ * left_ptr, * right_ptr;
+                T_ * left_ptr;
+                T_ * right_ptr;
                 Data_Get_Struct(left, T_, left_ptr);
                 Data_Get_Struct(right, T_, right_ptr);
                 return (**left_ptr == **right_ptr) ? Qtrue : Qfalse;

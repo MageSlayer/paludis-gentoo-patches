@@ -21,8 +21,9 @@
 #define PALUDIS_GUARD_PALUDIS_EXCEPTION_HH 1
 
 #include <paludis/util/attributes.hh>
-#include <string>
 #include <exception>
+#include <memory>
+#include <string>
 
 /** \file
  * Declaration for the Exception base class, the InternalError exception
@@ -78,7 +79,7 @@ namespace paludis
             const std::string _message;
             mutable std::string _what_str;
             struct ContextData;
-            ContextData * const _context_data;
+            const std::unique_ptr<ContextData> _context_data;
 
             const Exception & operator= (const Exception &);
 
@@ -96,7 +97,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            virtual ~Exception();
+            ~Exception() override;
 
             ///\}
 
@@ -118,7 +119,7 @@ namespace paludis
             /**
              * A better what, if possible.
              */
-            const char * what() const noexcept;
+            const char * what() const noexcept override;
     };
 
     /**

@@ -40,6 +40,8 @@ namespace paludis
             SlotExactPartialRequirement, SlotExactFullRequirement, SlotAnyAtAllLockedRequirement, SlotAnyPartialLockedRequirement, SlotAnyUnlockedRequirement, SlotUnknownRewrittenRequirement>::Type>
     {
         public:
+            virtual ~SlotRequirement() = default;
+
             /**
              * String representation, including the leading colon. Not suitable
              * for parsing.

@@ -168,11 +168,11 @@ namespace
             if (! metadata.empty())
             {
                 std::multimap<int, std::string> biggest;
-                for (std::map<std::string, int>::const_iterator i(metadata.begin()), i_end(metadata.end()) ;
-                        i != i_end ; ++i)
-                    biggest.insert(std::make_pair(i->second, i->first));
+                for (const auto & i : metadata)
+                    biggest.insert(std::make_pair(i.second, i.first));
 
-                int t(0), n(0);
+                int t(0);
+                int n(0);
                 std::string ss;
                 for (std::multimap<int, std::string>::const_reverse_iterator i(biggest.rbegin()), i_end(biggest.rend()) ;
                         i != i_end ; ++i)
@@ -270,7 +270,7 @@ SearchCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() == cmdline.end_parameters())
+    if (cmdline.parameters().empty())
         throw args::DoHelp("search requires at least one parameter");
 
     int retcode(0);
@@ -290,7 +290,7 @@ SearchCommand::run(
         if (cmdline.match_options.a_not.specified())
             break;
 
-        if ((! cmdline.match_options.a_and.specified()) && (1 != capped_distance(cmdline.begin_parameters(), cmdline.end_parameters(), 2)))
+        if ((! cmdline.match_options.a_and.specified()) && (cmdline.parameters().size() != 1))
             break;
 
         name_description_substring_hint = *cmdline.begin_parameters();
@@ -317,9 +317,8 @@ SearchCommand::run(
                 std::bind(&step, std::ref(display_callback), std::placeholders::_1)
                 );
 
-        for (Set<QualifiedPackageName>::ConstIterator p(matches->begin()), p_end(matches->end()) ;
-                p != p_end ; ++p)
-            show_args->push_back(stringify(*p));
+        for (const auto & match : *matches)
+            show_args->push_back(stringify(match));
     }
 
     if (show_args->empty())
@@ -329,11 +328,10 @@ SearchCommand::run(
         show_args->push_back("--one-version");
 
     show_args->push_back("--significant-keys-only");
-    for (args::StringSetArg::ConstIterator k(cmdline.match_options.a_key.begin_args()), k_end(cmdline.match_options.a_key.end_args()) ;
-            k != k_end ; ++k)
+    for (const auto & key : cmdline.match_options.a_key.args())
     {
         show_args->push_back("--key");
-        show_args->push_back(*k);
+        show_args->push_back(key);
     }
 
     /* also in cmd_match.cc */

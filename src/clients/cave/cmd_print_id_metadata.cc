@@ -42,7 +42,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -123,9 +122,8 @@ namespace
         const MetadataSectionKey * section(visitor_cast<const MetadataSectionKey>(*k));
         if (section)
         {
-            for (MetadataSectionKey::MetadataConstIterator s(section->begin_metadata()), s_end(section->end_metadata()) ;
-                    s != s_end ; ++s)
-                do_one_key(*s, cmdline, name_prefix + " ");
+            for (const auto & key : section->metadata())
+                do_one_key(key, cmdline, name_prefix + " ");
         }
     }
 }
@@ -145,7 +143,7 @@ PrintIDMetadataCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("print-id-metadata takes exactly one parameter");
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { updso_allow_wildcards }));
@@ -162,9 +160,8 @@ PrintIDMetadataCommand::run(
 
     for (auto i(cmdline.a_best.specified() ? entries->last() : entries->begin()), i_end(entries->end()) ;
             i != i_end ; ++i)
-        for (PackageID::MetadataConstIterator m((*i)->begin_metadata()), m_end((*i)->end_metadata()) ;
-                m != m_end ; ++m)
-            do_one_key(*m, cmdline, "");
+        for (const auto & key : (*i)->metadata())
+            do_one_key(key, cmdline, "");
 
     return EXIT_SUCCESS;
 }

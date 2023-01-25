@@ -311,40 +311,32 @@ namespace
         {
             std::list<std::string> package_dep_spec_parse_options_tokens;
             tokenise_whitespace(check_get(k, "package_dep_spec_parse_options"), std::back_inserter(package_dep_spec_parse_options_tokens));
-            for (std::list<std::string>::const_iterator t(package_dep_spec_parse_options_tokens.begin()),
-                    t_end(package_dep_spec_parse_options_tokens.end()) ;
-                    t != t_end ; ++t)
-                package_dep_spec_parse_options += destringify<ELikePackageDepSpecOption>(*t);
+            for (const auto & package_dep_spec_parse_options_token : package_dep_spec_parse_options_tokens)
+                package_dep_spec_parse_options += destringify<ELikePackageDepSpecOption>(package_dep_spec_parse_options_token);
         }
 
         DependencySpecTreeParseOptions dependency_spec_tree_parse_options;
         {
             std::list<std::string> dependency_spec_tree_parse_options_tokens;
             tokenise_whitespace(check_get(k, "dependency_spec_tree_parse_options"), std::back_inserter(dependency_spec_tree_parse_options_tokens));
-            for (std::list<std::string>::const_iterator t(dependency_spec_tree_parse_options_tokens.begin()),
-                    t_end(dependency_spec_tree_parse_options_tokens.end()) ;
-                    t != t_end ; ++t)
-                dependency_spec_tree_parse_options += destringify<DependencySpecTreeParseOption>(*t);
+            for (const auto & dependency_spec_tree_parse_options_token : dependency_spec_tree_parse_options_tokens)
+                dependency_spec_tree_parse_options += destringify<DependencySpecTreeParseOption>(dependency_spec_tree_parse_options_token);
         }
 
         IUseFlagParseOptions iuse_flag_parse_options;
         {
             std::list<std::string> iuse_flag_parse_options_tokens;
             tokenise_whitespace(check_get(k, "iuse_flag_parse_options"), std::back_inserter(iuse_flag_parse_options_tokens));
-            for (std::list<std::string>::const_iterator t(iuse_flag_parse_options_tokens.begin()),
-                    t_end(iuse_flag_parse_options_tokens.end()) ;
-                    t != t_end ; ++t)
-                iuse_flag_parse_options += destringify<IUseFlagParseOption>(*t);
+            for (const auto & iuse_flag_parse_options_token : iuse_flag_parse_options_tokens)
+                iuse_flag_parse_options += destringify<IUseFlagParseOption>(iuse_flag_parse_options_token);
         }
 
         VersionSpecOptions version_spec_options;
         {
             std::list<std::string> version_spec_options_tokens;
             tokenise_whitespace(check_get(k, "version_spec_options"), std::back_inserter(version_spec_options_tokens));
-            for (std::list<std::string>::const_iterator t(version_spec_options_tokens.begin()),
-                    t_end(version_spec_options_tokens.end()) ;
-                    t != t_end ; ++t)
-                version_spec_options += destringify<VersionSpecOption>(*t);
+            for (const auto & version_spec_options_token : version_spec_options_tokens)
+                version_spec_options += destringify<VersionSpecOption>(version_spec_options_token);
         }
 
         bool has_allow_empty_dirs(false);
@@ -352,12 +344,10 @@ namespace
         {
             std::list<std::string> merger_options_tokens;
             tokenise_whitespace(check_get(k, "merger_options"), std::back_inserter(merger_options_tokens));
-            for (std::list<std::string>::const_iterator t(merger_options_tokens.begin()),
-                    t_end(merger_options_tokens.end()) ;
-                    t != t_end ; ++t)
+            for (const auto & merger_options_token : merger_options_tokens)
             {
-                if (std::string("allow_empty_dirs") == *t) has_allow_empty_dirs = true;
-                merger_options += destringify<MergerOption>(*t);
+                if (std::string("allow_empty_dirs") == merger_options_token) has_allow_empty_dirs = true;
+                merger_options += destringify<MergerOption>(merger_options_token);
             }
         }
 
@@ -365,10 +355,8 @@ namespace
         {
             std::list<std::string> fs_merger_options_tokens;
             tokenise_whitespace(check_get(k, "fs_merger_options"), std::back_inserter(fs_merger_options_tokens));
-            for (std::list<std::string>::const_iterator t(fs_merger_options_tokens.begin()),
-                    t_end(fs_merger_options_tokens.end()) ;
-                    t != t_end ; ++t)
-                fs_merger_options += destringify<FSMergerOption>(*t);
+            for (const auto & fs_merger_options_token : fs_merger_options_tokens)
+                fs_merger_options += destringify<FSMergerOption>(fs_merger_options_token);
         }
 
         auto permitted_directories = check_get(k, "permitted_directories");
@@ -468,7 +456,7 @@ EAPIData::eapi_from_string(const std::string & s) const
     return std::make_shared<EAPI>(make_named_values<EAPI>(
                     n::exported_name() = s,
                     n::name() = s,
-                    n::supported() = std::shared_ptr<const SupportedEAPI>())
+                    n::supported() = nullptr)
                 );
 }
 
@@ -505,11 +493,10 @@ EAPILabels::EAPILabels(const std::string & s) :
 
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(s, ";", "", std::back_inserter(tokens));
 
-    for (std::vector<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-            t != t_end ; ++t)
+    for (const auto & token : tokens)
     {
         std::vector<std::string> values;
-        tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(*t, "=", "", std::back_inserter(values));
+        tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(token, "=", "", std::back_inserter(values));
 
         if (values.size() != 2)
             throw EAPIConfigurationError("EAPI labels value '" + s + "' has bad values size '" + stringify(values.size()) + "'");

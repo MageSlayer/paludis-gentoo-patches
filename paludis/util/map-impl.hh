@@ -79,7 +79,7 @@ paludis::Map<K_, V_, C_>::Map() :
 }
 
 template <typename K_, typename V_, typename C_>
-paludis::Map<K_, V_, C_>::~Map() = default;
+paludis::Map<K_, V_, C_>::~Map<K_, V_, C_>() = default;
 
 template <typename K_, typename V_, typename C_>
 typename paludis::Map<K_, V_, C_>::ConstIterator

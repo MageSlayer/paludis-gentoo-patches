@@ -44,6 +44,8 @@
 #include <paludis/util/pimp.hh>
 #include <paludis/util/sequence-fwd.hh>
 
+#include <memory>
+
 /** \file
  * Declarations for the Environment class.
  *
@@ -67,7 +69,7 @@ namespace paludis
     {
         private:
             struct NameData;
-            NameData * const _name_data;
+            const std::unique_ptr<NameData> _name_data;
 
             std::string _name;
 
@@ -79,7 +81,7 @@ namespace paludis
 
             AmbiguousPackageNameError(const AmbiguousPackageNameError &);
 
-            virtual ~AmbiguousPackageNameError();
+            ~AmbiguousPackageNameError() override;
 
             ///\}
 
@@ -135,7 +137,7 @@ namespace paludis
 
             NoSuchPackageError(const std::string & name) noexcept;
 
-            virtual ~NoSuchPackageError() = default;
+            ~NoSuchPackageError() override = default;
 
             ///\}
 
@@ -167,7 +169,7 @@ namespace paludis
 
             NoSuchRepositoryError(const RepositoryName &) noexcept;
 
-            ~NoSuchRepositoryError();
+            ~NoSuchRepositoryError() override;
 
             ///\}
 
@@ -207,7 +209,7 @@ namespace paludis
             ///\{
 
             Environment() = default;
-            virtual ~Environment() = 0;
+            ~Environment() override = 0;
 
             Environment(const Environment &) = delete;
             Environment & operator= (const Environment &) = delete;
@@ -722,8 +724,8 @@ namespace paludis
 
     extern template class Pimp<CreateOutputManagerForRepositorySyncInfo>;
     extern template class Pimp<CreateOutputManagerForPackageIDActionInfo>;
-    extern template class PALUDIS_VISIBLE WrappedForwardIterator<Environment::RepositoryConstIteratorTag, const std::shared_ptr<Repository> >;
-    extern template class PALUDIS_VISIBLE WrappedForwardIterator<AmbiguousPackageNameError::OptionsConstIteratorTag, const std::string>;
+    extern template class WrappedForwardIterator<Environment::RepositoryConstIteratorTag, const std::shared_ptr<Repository> >;
+    extern template class WrappedForwardIterator<AmbiguousPackageNameError::OptionsConstIteratorTag, const std::string>;
 }
 
 #endif

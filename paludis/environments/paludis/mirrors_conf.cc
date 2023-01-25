@@ -76,11 +76,10 @@ MirrorsConf::add(const FSPath & filename)
     if (! f)
         return;
 
-    for (LineConfigFile::ConstIterator line(f->begin()), line_end(f->end()) ;
-            line != line_end ; ++line)
+    for (const auto & line : *f)
     {
         std::vector<std::string> tokens;
-        tokenise_whitespace_quoted(*line, std::back_inserter(tokens));
+        tokenise_whitespace_quoted(line, std::back_inserter(tokens));
 
         if (tokens.size() < 2)
             continue;
