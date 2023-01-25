@@ -276,7 +276,8 @@ namespace
 
         LineConfigFile file(dir / "parent", { lcfo_disallow_continuations });
 
-        LineConfigFile::ConstIterator i(file.begin()), i_end(file.end());
+        LineConfigFile::ConstIterator i(file.begin());
+        LineConfigFile::ConstIterator i_end(file.end());
         bool once(false);
         if (i == i_end)
             Log::get_instance()->message("e.profile.parent.empty", ll_warning, lc_context) << "parent file is empty";
@@ -318,17 +319,16 @@ namespace
         try
         {
             if (! _imp->has_master_repositories)
-                for (TraditionalProfileFile<LineConfigFile>::ConstIterator i(_imp->packages_file.begin()),
-                        i_end(_imp->packages_file.end()) ; i != i_end ; ++i)
+                for (const auto & i : _imp->packages_file)
                 {
-                    if (0 != i->second.compare(0, 1, "*", 0, 1))
+                    if (0 != i.second.compare(0, 1, "*", 0, 1))
                         continue;
 
-                    Context context_spec("When parsing '" + i->second + "':");
+                    Context context_spec("When parsing '" + i.second + "':");
                     std::shared_ptr<PackageDepSpec> spec(std::make_shared<PackageDepSpec>(
-                                parse_elike_package_dep_spec(i->second.substr(1),
-                                    i->first->supported()->package_dep_spec_parse_options(),
-                                    i->first->supported()->version_spec_options())));
+                                parse_elike_package_dep_spec(i.second.substr(1),
+                                    i.first->supported()->package_dep_spec_parse_options(),
+                                    i.first->supported()->version_spec_options())));
 
                     _imp->system_packages->top()->append(spec);
                 }
@@ -343,24 +343,23 @@ namespace
                     " failed due to exception: " << e.message() << " (" << e.what() << ")";
         }
 
-        for (TraditionalProfileFile<TraditionalMaskFile>::ConstIterator line(_imp->package_mask_file.begin()), line_end(_imp->package_mask_file.end()) ;
-                line != line_end ; ++line)
+        for (const auto & line : _imp->package_mask_file)
         {
-            if (line->second.first.empty())
+            if (line.second.first.empty())
                 continue;
 
             try
             {
                 std::shared_ptr<const PackageDepSpec> a(std::make_shared<PackageDepSpec>(
-                            parse_elike_package_dep_spec(line->second.first,
-                                line->first->supported()->package_dep_spec_parse_options(),
-                                line->first->supported()->version_spec_options())));
+                            parse_elike_package_dep_spec(line.second.first,
+                                line.first->supported()->package_dep_spec_parse_options(),
+                                line.first->supported()->version_spec_options())));
 
                 if (a->package_ptr())
-                    _imp->package_mask[*a->package_ptr()].push_back(std::make_pair(a, line->second.second));
+                    _imp->package_mask[*a->package_ptr()].push_back(std::make_pair(a, line.second.second));
                 else
                     Log::get_instance()->message("e.profile.package_mask.bad_spec", ll_warning, lc_context)
-                        << "Loading package.mask spec '" << line->second.first << "' failed because specification does not restrict to a "
+                        << "Loading package.mask spec '" << line.second.first << "' failed because specification does not restrict to a "
                         "unique package";
             }
             catch (const InternalError &)
@@ -370,7 +369,7 @@ namespace
             catch (const Exception & e)
             {
                 Log::get_instance()->message("e.profile.package_mask.bad_spec", ll_warning, lc_context)
-                    << "Loading package.mask spec '" << line->second.first << "' failed due to exception '" << e.message() << "' ("
+                    << "Loading package.mask spec '" << line.second.first << "' failed due to exception '" << e.message() << "' ("
                     << e.what() << ")";
             }
         }
@@ -389,9 +388,8 @@ namespace
             {
                 std::list<std::string> tokens;
                 tokenise_whitespace(_imp->environment_variables[use_var], std::back_inserter(tokens));
-                for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                        t != t_end ; ++t)
-                    insert_use_flag_from_str( profile_negative_use, _imp->use, "", *t );
+                for (const auto & token : tokens)
+                    insert_use_flag_from_str( profile_negative_use, _imp->use, "", token );
             }
         }
         catch (const InternalError &)
@@ -447,16 +445,13 @@ namespace
         bool profile_negative_use = eapi->supported()->choices_options()->profile_negative_use();
         _imp->stacked_values_list.push_back(StackedValues("use_expand special values"));
 
-        for (Set<std::string>::ConstIterator x(_imp->use_expand->begin()), x_end(_imp->use_expand->end()) ;
-                x != x_end ; ++x)
+        for (const auto & x : *_imp->use_expand)
         {
-            std::string lower_x(tolower(*x));
+            std::string lower_x(tolower(x));
             std::list<std::string> uses;
-            tokenise_whitespace(_imp->environment_variables[stringify(*x)], std::back_inserter(uses));
-            for (std::list<std::string>::const_iterator u(uses.begin()), u_end(uses.end()) ;
-                 u != u_end ; ++u) {
-                insert_use_flag_from_str( profile_negative_use, _imp->use, lower_x, *u );
-            }
+            tokenise_whitespace(_imp->environment_variables[stringify(x)], std::back_inserter(uses));
+            for (const auto & use : uses)
+                insert_use_flag_from_str( profile_negative_use, _imp->use, lower_x, use );
         }
     }
 
@@ -465,19 +460,17 @@ namespace
     {
         Context context("When finding all known USE_EXPAND names:");
 
-        for (Set<std::string>::ConstIterator x(_imp->use_expand->begin()), x_end(_imp->use_expand->end()) ;
-                x != x_end ; ++x)
-            _imp->known_choice_value_names.insert(std::make_pair(tolower(*x), std::make_shared<Set<UnprefixedChoiceName>>()));
+        for (const auto & x : *_imp->use_expand)
+            _imp->known_choice_value_names.insert(std::make_pair(tolower(x), std::make_shared<Set<UnprefixedChoiceName>>()));
 
-        for (FlagIdStatusMap::const_iterator u(_imp->use.begin()), u_end(_imp->use.end()) ;
-                u != u_end ; ++u)
+        for (const auto & u : _imp->use)
         {
-            if (! stringify(u->first.first).empty())
+            if (! stringify(u.first.first).empty())
             {
-                KnownMap::iterator i(_imp->known_choice_value_names.find(stringify(u->first.first)));
+                KnownMap::iterator i(_imp->known_choice_value_names.find(stringify(u.first.first)));
                 if (i == _imp->known_choice_value_names.end())
-                    throw InternalError(PALUDIS_HERE, stringify(u->first.first));
-                i->second->insert(u->first.second);
+                    throw InternalError(PALUDIS_HERE, stringify(u.first.first));
+                i->second->insert(u.first.second);
             }
         }
     }
@@ -542,32 +535,31 @@ namespace
         KeyValueConfigFile file(dir / "make.defaults", { kvcfo_disallow_source, kvcfo_disallow_space_inside_unquoted_values, kvcfo_allow_inline_comments, kvcfo_allow_multiple_assigns_per_line },
                 &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
-        for (KeyValueConfigFile::ConstIterator k(file.begin()), k_end(file.end()) ;
-                k != k_end ; ++k)
+        for (const auto & kv : file)
         {
-            if (is_incremental(*eapi, k->first))
+            if (is_incremental(*eapi, kv.first))
             {
-                std::list<std::string> val, val_add;
-                tokenise_whitespace(_imp->environment_variables[k->first], std::back_inserter(val));
-                tokenise_whitespace(k->second, std::back_inserter(val_add));
+                std::list<std::string> val;
+                std::list<std::string> val_add;
+                tokenise_whitespace(_imp->environment_variables[kv.first], std::back_inserter(val));
+                tokenise_whitespace(kv.second, std::back_inserter(val_add));
 
-                for (std::list<std::string>::const_iterator v(val_add.begin()), v_end(val_add.end()) ;
-                        v != v_end ; ++v)
+                for (const auto & v : val_add)
                 {
-                    if (v->empty())
+                    if (v.empty())
                         continue;
-                    if (*v == "-*")
+                    if (v == "-*")
                         val.clear();
-                    else if ('-' == v->at(0))
-                        val.remove(v->substr(1));
+                    else if ('-' == v.at(0))
+                        val.remove(v.substr(1));
                     else
-                        val.push_back(*v);
+                        val.push_back(v);
                 }
 
-                _imp->environment_variables[k->first] = join(val.begin(), val.end(), " ");
+                _imp->environment_variables[kv.first] = join(val.begin(), val.end(), " ");
             }
             else
-                _imp->environment_variables[k->first] = k->second;
+                _imp->environment_variables[kv.first] = kv.second;
         }
 
         std::string use_expand_var(eapi->supported()->ebuild_environment_variables()->env_use_expand());
@@ -644,20 +636,18 @@ namespace
             _imp->use_expand_values.clear();
             if (! use_expand_values_part_var.empty())
             {
-                for (Set<std::string>::ConstIterator x(_imp->use_expand->begin()), x_end(_imp->use_expand->end()) ;
-                        x != x_end ; ++x)
+                for (const auto & x : *_imp->use_expand)
                 {
                     std::shared_ptr<Set<std::string> > v(std::make_shared<Set<std::string>>());
-                    tokenise_whitespace(_imp->environment_variables[use_expand_values_part_var + *x], v->inserter());
-                    _imp->use_expand_values.insert(std::make_pair(*x, v));
+                    tokenise_whitespace(_imp->environment_variables[use_expand_values_part_var + x], v->inserter());
+                    _imp->use_expand_values.insert(std::make_pair(x, v));
                 }
 
-                for (Set<std::string>::ConstIterator x(_imp->use_expand_unprefixed->begin()), x_end(_imp->use_expand_unprefixed->end()) ;
-                        x != x_end ; ++x)
+                for (const auto & x : *_imp->use_expand_unprefixed)
                 {
                     std::shared_ptr<Set<std::string> > v(std::make_shared<Set<std::string>>());
-                    tokenise_whitespace(_imp->environment_variables[use_expand_values_part_var + *x], v->inserter());
-                    _imp->use_expand_values.insert(std::make_pair(*x, v));
+                    tokenise_whitespace(_imp->environment_variables[use_expand_values_part_var + x], v->inserter());
+                    _imp->use_expand_values.insert(std::make_pair(x, v));
                 }
             }
         }
@@ -681,23 +671,21 @@ namespace
 
         Context context("When loading basic use file '" + stringify(file) + ":");
         LineConfigFile f(file, { lcfo_disallow_continuations });
-        for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
-                line != line_end ; ++line)
+        for (const auto & line : f)
         {
             std::list<std::string> tokens;
-            tokenise_whitespace(*line, std::back_inserter(tokens));
+            tokenise_whitespace(line, std::back_inserter(tokens));
 
-            for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                    t != t_end ; ++t)
+            for (const auto & token : tokens)
             {
                 try
                 {
-                    if (t->empty())
+                    if (token.empty())
                         continue;
-                    if ('-' == t->at(0))
-                        m[ChoiceNameWithPrefix(t->substr(1))] = false;
+                    if ('-' == token.at(0))
+                        m[ChoiceNameWithPrefix(token.substr(1))] = false;
                     else
-                        m[ChoiceNameWithPrefix(*t)] = true;
+                        m[ChoiceNameWithPrefix(token)] = true;
                 }
                 catch (const InternalError &)
                 {
@@ -706,7 +694,7 @@ namespace
                 catch (const Exception & e)
                 {
                     Log::get_instance()->message("e.profile.failure", ll_warning, lc_context) << "Ignoring token '"
-                        << *t << "' due to exception '" << e.message() << "' (" << e.what() << ")";
+                        << token << "' due to exception '" << e.message() << "' (" << e.what() << ")";
                 }
             }
         }
@@ -722,11 +710,10 @@ namespace
 
         Context context("When loading specised use file '" + stringify(file) + ":");
         LineConfigFile f(file, { lcfo_disallow_continuations });
-        for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
-                line != line_end ; ++line)
+        for (const auto & line : f)
         {
             std::list<std::string> tokens;
-            tokenise_whitespace(*line, std::back_inserter(tokens));
+            tokenise_whitespace(line, std::back_inserter(tokens));
 
             if (tokens.empty())
                 continue;
@@ -764,7 +751,7 @@ namespace
             catch (const PackageDepSpecError & e)
             {
                 Log::get_instance()->message("e.profile.failure", ll_warning, lc_context) << "Ignoring line '"
-                    << *line << "' due to exception '" << e.message() << "' (" << e.what() << ")";
+                    << line << "' due to exception '" << e.message() << "' (" << e.what() << ")";
             }
         }
     }
@@ -789,17 +776,16 @@ TraditionalProfile::TraditionalProfile(
 
     load_environment(_imp);
 
-    for (FSPathSequence::ConstIterator d(dirs.begin()), d_end(dirs.end()) ;
-            d != d_end ; ++d)
+    for (const auto & dir : dirs)
     {
-        Context subcontext("When using directory '" + stringify(*d) + "':");
+        Context subcontext("When using directory '" + stringify(dir) + "':");
 
         if (profiles_explicitly_set && ! ignore_deprecated_profiles)
-            if ((*d / "deprecated").stat().is_regular_file_or_symlink_to_regular_file())
-                Log::get_instance()->message("e.profile.deprecated", ll_warning, lc_context) << "Profile directory '" << *d
-                    << "' is deprecated. See the file '" << (*d / "deprecated") << "' for details";
+            if ((dir / "deprecated").stat().is_regular_file_or_symlink_to_regular_file())
+                Log::get_instance()->message("e.profile.deprecated", ll_warning, lc_context) << "Profile directory '" << dir
+                    << "' is deprecated. See the file '" << (dir / "deprecated") << "' for details";
 
-        load_profile_directory_recursively(_imp, *d);
+        load_profile_directory_recursively(_imp, dir);
     }
 
     make_vars_from_file_vars(_imp);
@@ -839,21 +825,20 @@ TraditionalProfile::use_masked(
         return true;
 
     bool result(false);
-    for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
-            i_end(_imp->stacked_values_list.end()) ; i != i_end ; ++i)
+    for (const auto & i : _imp->stacked_values_list)
     {
-        FlagStatusMap::const_iterator f(i->use_mask.find(value_prefixed));
-        if (i->use_mask.end() != f)
+        FlagStatusMap::const_iterator f(i.use_mask.find(value_prefixed));
+        if (i.use_mask.end() != f)
             result = f->second;
 
         if (id->is_stable())
         {
-            FlagStatusMap::const_iterator fs(i->use_stable_mask.find(value_prefixed));
-            if (i->use_stable_mask.end() != fs)
+            FlagStatusMap::const_iterator fs(i.use_stable_mask.find(value_prefixed));
+            if (i.use_stable_mask.end() != fs)
                 result = fs->second;
         }
 
-        for (const auto & g : i->package_use_mask)
+        for (const auto & g : i.package_use_mask)
         {
             if (! match_package(*_imp->env, *g.first, id, nullptr, { }))
                 continue;
@@ -865,7 +850,7 @@ TraditionalProfile::use_masked(
 
         if (id->is_stable())
         {
-            for (const auto & gs : i->package_use_stable_mask)
+            for (const auto & gs : i.package_use_stable_mask)
             {
                 if (! match_package(*_imp->env, *gs.first, id, nullptr, { }))
                     continue;
@@ -894,21 +879,20 @@ TraditionalProfile::use_forced(
         return true;
 
     bool result(false);
-    for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
-            i_end(_imp->stacked_values_list.end()) ; i != i_end ; ++i)
+    for (const auto & i : _imp->stacked_values_list)
     {
-        FlagStatusMap::const_iterator f(i->use_force.find(value_prefixed));
-        if (i->use_force.end() != f)
+        FlagStatusMap::const_iterator f(i.use_force.find(value_prefixed));
+        if (i.use_force.end() != f)
             result = f->second;
 
         if (id->is_stable())
         {
-            FlagStatusMap::const_iterator fs(i->use_stable_force.find(value_prefixed));
-            if (i->use_stable_force.end() != fs)
+            FlagStatusMap::const_iterator fs(i.use_stable_force.find(value_prefixed));
+            if (i.use_stable_force.end() != fs)
                 result = fs->second;
         }
 
-        for (const auto & g : i->package_use_force)
+        for (const auto & g : i.package_use_force)
         {
             if (! match_package(*_imp->env, *g.first, id, nullptr, { }))
                 continue;
@@ -920,7 +904,7 @@ TraditionalProfile::use_forced(
 
         if (id->is_stable())
         {
-            for (const auto & gs : i->package_use_stable_force)
+            for (const auto & gs : i.package_use_stable_force)
             {
                 if (! match_package(*_imp->env, *gs.first, id, nullptr, { }))
                     continue;
@@ -947,10 +931,9 @@ TraditionalProfile::use_state_ignoring_masks(
     auto u = _imp->use.find(prefix_value);
     Tribool result(_imp->use.end() != u ? Tribool(u->second) : Tribool(indeterminate));
 
-    for (StackedValuesList::const_iterator i(_imp->stacked_values_list.begin()),
-            i_end(_imp->stacked_values_list.end()) ; i != i_end ; ++i)
+    for (const auto & i : _imp->stacked_values_list)
     {
-        for (const auto & g : i->package_use)
+        for (const auto & g : i.package_use)
         {
             if (! match_package(*_imp->env, *g.first, id, nullptr, { }))
                 continue;
@@ -970,19 +953,17 @@ namespace
     add_flag_status_map(const std::shared_ptr<Set<UnprefixedChoiceName> > result,
             const FlagStatusMap & m, const std::string & prefix)
     {
-        for (FlagStatusMap::const_iterator it(m.begin()),
-                 it_end(m.end()); it_end != it; ++it)
-            if (0 == stringify(it->first).compare(0, prefix.length(), prefix))
-                result->insert(UnprefixedChoiceName(stringify(it->first).substr(prefix.length())));
+        for (const auto & it : m)
+            if (0 == stringify(it.first).compare(0, prefix.length(), prefix))
+                result->insert(UnprefixedChoiceName(stringify(it.first).substr(prefix.length())));
     }
 
     void
     add_package_flag_status_map_list(const std::shared_ptr<Set<UnprefixedChoiceName> > result,
             const PackageFlagStatusMapList & m, const std::string & prefix)
     {
-        for (PackageFlagStatusMapList::const_iterator it(m.begin()),
-                 it_end(m.end()); it_end != it; ++it)
-            add_flag_status_map(result, it->second, prefix);
+        for (const auto & it : m)
+            add_flag_status_map(result, it.second, prefix);
     }
 }
 
@@ -1014,14 +995,13 @@ TraditionalProfile::known_choice_value_names(
         std::string prefix(lower_x);
         prefix += separator;
 
-        for (StackedValuesList::const_iterator sit(_imp->stacked_values_list.begin()),
-                 sit_end(_imp->stacked_values_list.end()); sit_end != sit; ++sit)
+        for (const auto & sit : _imp->stacked_values_list)
         {
-            add_flag_status_map(result, sit->use_mask, prefix);
-            add_flag_status_map(result, sit->use_force, prefix);
-            add_package_flag_status_map_list(result, sit->package_use, prefix);
-            add_package_flag_status_map_list(result, sit->package_use_mask, prefix);
-            add_package_flag_status_map_list(result, sit->package_use_force, prefix);
+            add_flag_status_map(result, sit.use_mask, prefix);
+            add_flag_status_map(result, sit.use_force, prefix);
+            add_package_flag_status_map_list(result, sit.package_use, prefix);
+            add_package_flag_status_map_list(result, sit.package_use_mask, prefix);
+            add_package_flag_status_map_list(result, sit.package_use_force, prefix);
         }
     }
 

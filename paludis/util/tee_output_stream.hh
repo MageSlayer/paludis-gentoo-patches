@@ -34,17 +34,17 @@ namespace paludis
             Pimp<TeeOutputStreamBuf> _imp;
 
         protected:
-            virtual int_type
-            overflow(int_type c);
+            int_type
+            overflow(int_type c) override;
 
-            virtual int sync();
+            int sync() override;
 
-            virtual std::streamsize
-            xsputn(const char * s, std::streamsize num);
+            std::streamsize
+            xsputn(const char * s, std::streamsize num) override;
 
         public:
             TeeOutputStreamBuf();
-            ~TeeOutputStreamBuf();
+            ~TeeOutputStreamBuf() override;
 
             void add_stream(std::ostream * const);
     };

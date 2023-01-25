@@ -181,8 +181,8 @@ struct MetadataPackageIDKeyWrapper :
     MetadataValueKey<std::shared_ptr<const PackageID> > ,
     bp::wrapper<MetadataValueKey<std::shared_ptr<const PackageID> > >
 {
-    virtual const std::shared_ptr<const PackageID> parse_value() const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
+    const std::shared_ptr<const PackageID> parse_value() const
+        override PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -192,7 +192,7 @@ struct MetadataPackageIDKeyWrapper :
             throw PythonMethodNotImplemented("MetadataPackageIDKey", "parse_value");
     }
 
-    virtual const std::string raw_name() const
+    const std::string raw_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -202,7 +202,7 @@ struct MetadataPackageIDKeyWrapper :
             throw PythonMethodNotImplemented("MetadataPackageIDKey", "raw_name");
     }
 
-    virtual const std::string human_name() const
+    const std::string human_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -212,7 +212,7 @@ struct MetadataPackageIDKeyWrapper :
             throw PythonMethodNotImplemented("MetadataPackageIDKey", "human_name");
     }
 
-    virtual MetadataKeyType type() const
+    MetadataKeyType type() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -222,9 +222,9 @@ struct MetadataPackageIDKeyWrapper :
             throw PythonMethodNotImplemented("MetadataPackageIDKey", "type");
     }
 
-    virtual const std::string pretty_print_value(
+    const std::string pretty_print_value(
             const PrettyPrinter &,
-            const PrettyPrintOptions &) const
+            const PrettyPrintOptions &) const override
     {
         throw PythonMethodNotImplemented("MetadataPackageIDKey", "pretty_print_value");
     }
@@ -234,8 +234,8 @@ struct MetadataStringKeyWrapper :
     MetadataValueKey<std::string> ,
     bp::wrapper<MetadataValueKey<std::string> >
 {
-    virtual const std::string parse_value() const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
+    const std::string parse_value() const
+        override PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -245,7 +245,7 @@ struct MetadataStringKeyWrapper :
             throw PythonMethodNotImplemented("MetadataStringKey", "parse_value");
     }
 
-    virtual const std::string raw_name() const
+    const std::string raw_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -255,7 +255,7 @@ struct MetadataStringKeyWrapper :
             throw PythonMethodNotImplemented("MetadataStringKey", "raw_name");
     }
 
-    virtual const std::string human_name() const
+    const std::string human_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -265,7 +265,7 @@ struct MetadataStringKeyWrapper :
             throw PythonMethodNotImplemented("MetadataStringKey", "human_name");
     }
 
-    virtual MetadataKeyType type() const
+    MetadataKeyType type() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -280,8 +280,8 @@ struct MetadataSlotNameKeyWrapper :
     MetadataValueKey<Slot> ,
     bp::wrapper<MetadataValueKey<Slot> >
 {
-    virtual const Slot parse_value() const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
+    const Slot parse_value() const
+        override PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -291,7 +291,7 @@ struct MetadataSlotNameKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSlotNameKey", "parse_value");
     }
 
-    virtual const std::string raw_name() const
+    const std::string raw_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -301,7 +301,7 @@ struct MetadataSlotNameKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSlotNameKey", "raw_name");
     }
 
-    virtual const std::string human_name() const
+    const std::string human_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -311,7 +311,7 @@ struct MetadataSlotNameKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSlotNameKey", "human_name");
     }
 
-    virtual MetadataKeyType type() const
+    MetadataKeyType type() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -336,7 +336,7 @@ struct MetadataSectionKeyWrapper :
             return Py_None;
     }
 
-    virtual void need_keys_added() const
+    void need_keys_added() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -356,7 +356,7 @@ struct MetadataSectionKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSectionKey", "title_key");
     }
 
-    virtual const std::string raw_name() const
+    const std::string raw_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -366,7 +366,7 @@ struct MetadataSectionKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSectionKey", "raw_name");
     }
 
-    virtual const std::string human_name() const
+    const std::string human_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -376,7 +376,7 @@ struct MetadataSectionKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSectionKey", "human_name");
     }
 
-    virtual MetadataKeyType type() const
+    MetadataKeyType type() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -391,8 +391,8 @@ struct MetadataTimeKeyWrapper :
     MetadataTimeKey,
     bp::wrapper<MetadataTimeKey>
 {
-    virtual Timestamp parse_value() const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
+    Timestamp parse_value() const
+        override PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -402,7 +402,7 @@ struct MetadataTimeKeyWrapper :
             throw PythonMethodNotImplemented("MetadataTimeKey", "parse_value");
     }
 
-    virtual const std::string raw_name() const
+    const std::string raw_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -412,7 +412,7 @@ struct MetadataTimeKeyWrapper :
             throw PythonMethodNotImplemented("MetadataTimeKey", "raw_name");
     }
 
-    virtual const std::string human_name() const
+    const std::string human_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -422,7 +422,7 @@ struct MetadataTimeKeyWrapper :
             throw PythonMethodNotImplemented("MetadataTimeKey", "human_name");
     }
 
-    virtual MetadataKeyType type() const
+    MetadataKeyType type() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -437,8 +437,8 @@ struct MetadataChoicesKeyWrapper :
     MetadataValueKey<std::shared_ptr<const Choices> > ,
     bp::wrapper<MetadataValueKey<std::shared_ptr<const Choices> > >
 {
-    virtual const std::shared_ptr<const Choices> parse_value() const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
+    const std::shared_ptr<const Choices> parse_value() const
+        override PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -448,7 +448,7 @@ struct MetadataChoicesKeyWrapper :
             throw PythonMethodNotImplemented("MetadataChoicesKey", "parse_value");
     }
 
-    virtual const std::string raw_name() const
+    const std::string raw_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -458,7 +458,7 @@ struct MetadataChoicesKeyWrapper :
             throw PythonMethodNotImplemented("MetadataChoicesKey", "raw_name");
     }
 
-    virtual const std::string human_name() const
+    const std::string human_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -468,7 +468,7 @@ struct MetadataChoicesKeyWrapper :
             throw PythonMethodNotImplemented("MetadataChoicesKey", "human_name");
     }
 
-    virtual MetadataKeyType type() const
+    MetadataKeyType type() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -483,8 +483,8 @@ struct MetadataFSPathKeyWrapper :
     MetadataValueKey<FSPath> ,
     bp::wrapper<MetadataValueKey<FSPath> >
 {
-    virtual const FSPath parse_value() const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
+    const FSPath parse_value() const
+        override PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -494,7 +494,7 @@ struct MetadataFSPathKeyWrapper :
             throw PythonMethodNotImplemented("MetadataValueKey<FSPath> ", "parse_value");
     }
 
-    virtual const std::string raw_name() const
+    const std::string raw_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -504,7 +504,7 @@ struct MetadataFSPathKeyWrapper :
             throw PythonMethodNotImplemented("MetadataFSPathKey", "raw_name");
     }
 
-    virtual const std::string human_name() const
+    const std::string human_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -514,7 +514,7 @@ struct MetadataFSPathKeyWrapper :
             throw PythonMethodNotImplemented("MetadataFSPathKey", "human_name");
     }
 
-    virtual MetadataKeyType type() const
+    MetadataKeyType type() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -530,8 +530,8 @@ struct MetadataCollectionKeyWrapper :
     MetadataCollectionKey<C_>,
     bp::wrapper<MetadataCollectionKey<C_> >
 {
-    virtual const std::shared_ptr<const C_> parse_value() const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
+    const std::shared_ptr<const C_> parse_value() const
+        override PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -541,7 +541,7 @@ struct MetadataCollectionKeyWrapper :
             throw PythonMethodNotImplemented("MetadataCollectionKey", "parse_value");
     }
 
-    virtual const std::string raw_name() const
+    const std::string raw_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -551,7 +551,7 @@ struct MetadataCollectionKeyWrapper :
             throw PythonMethodNotImplemented("MetadataCollectionKey", "raw_name");
     }
 
-    virtual const std::string human_name() const
+    const std::string human_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -561,7 +561,7 @@ struct MetadataCollectionKeyWrapper :
             throw PythonMethodNotImplemented("MetadataCollectionKey", "human_name");
     }
 
-    virtual MetadataKeyType type() const
+    MetadataKeyType type() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -571,9 +571,9 @@ struct MetadataCollectionKeyWrapper :
             throw PythonMethodNotImplemented("MetadataCollectionKey", "type");
     }
 
-    virtual const std::string pretty_print_value(
+    const std::string pretty_print_value(
             const PrettyPrinter &,
-            const PrettyPrintOptions &) const
+            const PrettyPrintOptions &) const override
     {
         throw PythonMethodNotImplemented("MetadataCollectionKey", "pretty_print_value");
     }
@@ -584,8 +584,8 @@ struct MetadataSpecTreeKeyWrapper :
     MetadataSpecTreeKey<C_>,
     bp::wrapper<MetadataSpecTreeKey<C_> >
 {
-    virtual const std::shared_ptr<const C_> parse_value() const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
+    const std::shared_ptr<const C_> parse_value() const
+        override PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -595,7 +595,7 @@ struct MetadataSpecTreeKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "parse_value");
     }
 
-    virtual const std::string raw_name() const
+    const std::string raw_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -605,7 +605,7 @@ struct MetadataSpecTreeKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "raw_name");
     }
 
-    virtual const std::string human_name() const
+    const std::string human_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -615,7 +615,7 @@ struct MetadataSpecTreeKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "human_name");
     }
 
-    virtual MetadataKeyType type() const
+    MetadataKeyType type() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -625,9 +625,9 @@ struct MetadataSpecTreeKeyWrapper :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "type");
     }
 
-    virtual const std::string pretty_print_value(
+    const std::string pretty_print_value(
             const PrettyPrinter &,
-            const PrettyPrintOptions &) const
+            const PrettyPrintOptions &) const override
     {
         throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_value");
     }
@@ -638,8 +638,8 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
     MetadataSpecTreeKey<FetchableURISpecTree>,
     bp::wrapper<MetadataSpecTreeKey<FetchableURISpecTree> >
 {
-    virtual const std::shared_ptr<const FetchableURISpecTree> parse_value() const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
+    const std::shared_ptr<const FetchableURISpecTree> parse_value() const
+        override PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -649,8 +649,8 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "parse_value");
     }
 
-    virtual const std::shared_ptr<const URILabel> initial_label() const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
+    const std::shared_ptr<const URILabel> initial_label() const
+        override PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -660,7 +660,7 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "initial_label");
     }
 
-    virtual const std::string raw_name() const
+    const std::string raw_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -670,7 +670,7 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "raw_name");
     }
 
-    virtual const std::string human_name() const
+    const std::string human_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -680,7 +680,7 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "human_name");
     }
 
-    virtual MetadataKeyType type() const
+    MetadataKeyType type() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -690,9 +690,9 @@ struct MetadataSpecTreeKeyWrapper<FetchableURISpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "type");
     }
 
-    virtual const std::string pretty_print_value(
+    const std::string pretty_print_value(
             const PrettyPrinter &,
-            const PrettyPrintOptions &) const
+            const PrettyPrintOptions &) const override
     {
         throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_value");
     }
@@ -703,8 +703,8 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
     MetadataSpecTreeKey<DependencySpecTree>,
     bp::wrapper<MetadataSpecTreeKey<DependencySpecTree> >
 {
-    virtual const std::shared_ptr<const DependencySpecTree> parse_value() const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
+    const std::shared_ptr<const DependencySpecTree> parse_value() const
+        override PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -714,8 +714,8 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "parse_value");
     }
 
-    virtual const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
-        PALUDIS_ATTRIBUTE((warn_unused_result))
+    const std::shared_ptr<const DependenciesLabelSequence> initial_labels() const
+        override PALUDIS_ATTRIBUTE((warn_unused_result))
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -725,7 +725,7 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "initial_labels");
     }
 
-    virtual const std::string raw_name() const
+    const std::string raw_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -735,7 +735,7 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "raw_name");
     }
 
-    virtual const std::string human_name() const
+    const std::string human_name() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -745,7 +745,7 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "human_name");
     }
 
-    virtual MetadataKeyType type() const
+    MetadataKeyType type() const override
     {
         std::unique_lock<std::recursive_mutex> l(get_mutex());
 
@@ -755,9 +755,9 @@ struct MetadataSpecTreeKeyWrapper<DependencySpecTree> :
             throw PythonMethodNotImplemented("MetadataSpecTreeKey", "type");
     }
 
-    virtual const std::string pretty_print_value(
+    const std::string pretty_print_value(
             const PrettyPrinter &,
-            const PrettyPrintOptions &) const
+            const PrettyPrintOptions &) const override
     {
         throw PythonMethodNotImplemented("MetadataSpecTreeKey", "pretty_print_value");
     }

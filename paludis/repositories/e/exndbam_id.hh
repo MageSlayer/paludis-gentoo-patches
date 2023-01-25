@@ -40,10 +40,10 @@ namespace paludis
                         const FSPath & file,
                         const NDBAM * const);
 
-                virtual std::string fs_location_raw_name() const;
-                virtual std::string fs_location_human_name() const;
-                virtual std::string contents_filename() const;
-                virtual const std::shared_ptr<const Contents> contents() const;
+                std::string fs_location_raw_name() const override;
+                std::string fs_location_human_name() const override;
+                std::string contents_filename() const override;
+                const std::shared_ptr<const Contents> contents() const override;
         };
     }
 }

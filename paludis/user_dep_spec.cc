@@ -481,13 +481,13 @@ namespace paludis
                 op_size = 2;
                 op = ukro_not_equal;
             }
-            else if (std::string::npos != (p = s.find("=")))
+            else if (std::string::npos != (p = s.find('=')))
                 op = ukro_equal;
-            else if (std::string::npos != (p = s.find(">")))
+            else if (std::string::npos != (p = s.find('>')))
                 op = ukro_greater;
-            else if (std::string::npos != (p = s.find("<")))
+            else if (std::string::npos != (p = s.find('<')))
                 op = ukro_less_or_subset;
-            else if (std::string::npos != (p = s.find("?")))
+            else if (std::string::npos != (p = s.find('?')))
                 op = ukro_exists;
             else
                 throw PackageDepSpecError("Expected an =, an !=, a <, a > or a ? inside '[." + s + "]'");
@@ -1001,71 +1001,70 @@ UserKeyRequirement::requirement_met(
 {
     Context context("When working out whether '" + stringify(*id) + "' matches " + as_raw_string() + ":");
 
-    const MetadataKey * key(nullptr);
-    const Mask * mask(nullptr);
+    const MetadataKey * key_requirement(nullptr);
+    const Mask * mask_requirement(nullptr);
 
     auto repo(env->fetch_repository(id->repository_name()));
     if (0 == _imp->key.compare(0, 3, "::$"))
     {
         if (_imp->key == "::$format")
-            key = repo->format_key().get();
+            key_requirement = repo->format_key().get();
         else if (_imp->key == "::$location")
-            key = repo->location_key().get();
+            key_requirement = repo->location_key().get();
         else if (_imp->key == "::$installed_root")
-            key = repo->installed_root_key().get();
+            key_requirement = repo->installed_root_key().get();
         else if (_imp->key == "::$sync_host")
-            key = repo->sync_host_key().get();
+            key_requirement = repo->sync_host_key().get();
     }
     else if (0 == _imp->key.compare(0, 1, "$"))
     {
         if (_imp->key == "$behaviours")
-            key = id->behaviours_key().get();
+            key_requirement = id->behaviours_key().get();
         else if (_imp->key == "$build_dependencies_target")
-            key = id->build_dependencies_target_key().get();
+            key_requirement = id->build_dependencies_target_key().get();
         else if (_imp->key == "$build_dependencies_host")
-            key = id->build_dependencies_host_key().get();
+            key_requirement = id->build_dependencies_host_key().get();
         else if (_imp->key == "$choices")
-            key = id->choices_key().get();
+            key_requirement = id->choices_key().get();
         else if (_imp->key == "$dependencies")
-            key = id->dependencies_key().get();
+            key_requirement = id->dependencies_key().get();
         else if (_imp->key == "$fetches")
-            key = id->fetches_key().get();
+            key_requirement = id->fetches_key().get();
         else if (_imp->key == "$from_repositories")
-            key = id->from_repositories_key().get();
+            key_requirement = id->from_repositories_key().get();
         else if (_imp->key == "$fs_location")
-            key = id->fs_location_key().get();
+            key_requirement = id->fs_location_key().get();
         else if (_imp->key == "$homepage")
-            key = id->homepage_key().get();
+            key_requirement = id->homepage_key().get();
         else if (_imp->key == "$installed_time")
-            key = id->installed_time_key().get();
+            key_requirement = id->installed_time_key().get();
         else if (_imp->key == "$keywords")
-            key = id->keywords_key().get();
+            key_requirement = id->keywords_key().get();
         else if (_imp->key == "$long_description")
-            key = id->long_description_key().get();
+            key_requirement = id->long_description_key().get();
         else if (_imp->key == "$post_dependencies")
-            key = id->post_dependencies_key().get();
+            key_requirement = id->post_dependencies_key().get();
         else if (_imp->key == "$run_dependencies")
-            key = id->run_dependencies_key().get();
+            key_requirement = id->run_dependencies_key().get();
         else if (_imp->key == "$short_description")
-            key = id->short_description_key().get();
+            key_requirement = id->short_description_key().get();
         else if (_imp->key == "$slot")
-            key = id->slot_key().get();
+            key_requirement = id->slot_key().get();
     }
     else if (0 == _imp->key.compare(0, 2, "::"))
     {
         Repository::MetadataConstIterator m(repo->find_metadata(_imp->key.substr(2)));
         if (m != repo->end_metadata())
-            key = m->get();
+            key_requirement = m->get();
     }
     else if (0 == _imp->key.compare(0, 1, "(") && ')' == _imp->key.at(_imp->key.length() - 1))
     {
         std::string mask_name(_imp->key.substr(1, _imp->key.length() - 2));
         MaskChecker checker{mask_name};
-        for (auto m(id->begin_masks()), m_end(id->end_masks()) ;
-                m != m_end ; ++m)
-            if ((*m)->accept_returning<bool>(checker))
+        for (const auto & mask : id->masks())
+            if (mask->accept_returning<bool>(checker))
             {
-                mask = &**m;
+                mask_requirement = &*mask;
                 break;
             }
     }
@@ -1073,22 +1072,22 @@ UserKeyRequirement::requirement_met(
     {
         PackageID::MetadataConstIterator m(id->find_metadata(_imp->key));
         if (m != id->end_metadata())
-            key = m->get();
+            key_requirement = m->get();
     }
 
-    if ((! key) && (! mask))
+    if ((! key_requirement) && (! mask_requirement))
         return std::make_pair(false, as_human_string(from_id));
 
     if (_imp->op == ukro_exists)
         return std::make_pair(true, as_human_string(from_id));
 
-    if (mask && ! key)
-        key = mask->accept_returning<const MetadataKey *>(AssociatedKeyFinder{env, id});
+    if (mask_requirement && ! key_requirement)
+        key_requirement = mask_requirement->accept_returning<const MetadataKey *>(AssociatedKeyFinder{env, id});
 
-    if (key)
+    if (key_requirement)
     {
         KeyComparator c(env, id, _imp->value, _imp->op);
-        return std::make_pair(key->accept_returning<bool>(c), as_human_string(from_id));
+        return std::make_pair(key_requirement->accept_returning<bool>(c), as_human_string(from_id));
     }
     else
         return std::make_pair(false, as_human_string(from_id));

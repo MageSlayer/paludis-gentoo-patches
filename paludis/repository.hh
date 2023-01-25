@@ -197,7 +197,7 @@ namespace paludis
 
             NoSuchSetError(const std::string & name) noexcept;
 
-            virtual ~NoSuchSetError();
+            ~NoSuchSetError() override;
 
             ///\}
 
@@ -226,7 +226,7 @@ namespace paludis
 
             RecursivelyDefinedSetError(const std::string & name) noexcept;
 
-            virtual ~RecursivelyDefinedSetError();
+            ~RecursivelyDefinedSetError() override;
 
             ///\}
 
@@ -262,7 +262,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            virtual ~Repository();
+            ~Repository() override;
 
             Repository(const Repository &) = delete;
             Repository & operator= (const Repository &) = delete;

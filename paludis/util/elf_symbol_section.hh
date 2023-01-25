@@ -89,9 +89,9 @@ namespace paludis
 
         public:
             SymbolSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &, std::istream &, bool);
-            virtual ~SymbolSection();
+            ~SymbolSection() override;
 
-            virtual std::string get_type() const
+            std::string get_type() const override
             {
                 return _type;
             }

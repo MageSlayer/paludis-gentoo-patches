@@ -194,21 +194,20 @@ namespace
         if (before.empty())
             return value;
 
-        std::list<std::string> values;
-        std::set<std::string> new_values;
-        tokenise_whitespace(before, std::back_inserter(values));
-        tokenise_whitespace(value, std::back_inserter(values));
+        std::list<std::string> old_values;
+        tokenise_whitespace(before, std::back_inserter(old_values));
+        tokenise_whitespace(value, std::back_inserter(old_values));
 
-        for (std::list<std::string>::const_iterator v(values.begin()), v_end(values.end()) ;
-                v != v_end ; ++v)
+        std::set<std::string> new_values;
+        for (const auto & old_value : old_values)
         {
-            if (v->empty())
+            if (old_value.empty())
                 continue;
-            else if ("-*" == *v)
+            else if ("-*" == old_value)
                 new_values.clear();
-            else if ('-' == v->at(0))
-                new_values.erase(v->substr(1));
-            new_values.insert(*v);
+            else if ('-' == old_value.at(0))
+                new_values.erase(old_value.substr(1));
+            new_values.insert(old_value);
         }
 
         return join(new_values.begin(), new_values.end(), " ");
@@ -298,21 +297,18 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     {
         std::list<std::string> use;
         tokenise_whitespace(_imp->vars->get("USE"), std::back_inserter(use));
-        for (std::list<std::string>::const_iterator u(use.begin()), u_end(use.end()) ;
-                u != u_end ; ++u)
-            _imp->use_and_expands.insert(std::make_pair(ChoicePrefixName(""), *u));
+        for (const auto & u : use)
+            _imp->use_and_expands.insert(std::make_pair(ChoicePrefixName(""), u));
     }
 
     tokenise_whitespace(_imp->vars->get("USE_EXPAND"), std::inserter(_imp->use_expand, _imp->use_expand.begin()));
-    for (std::set<std::string>::const_iterator i(_imp->use_expand.begin()), i_end(_imp->use_expand.end()) ;
-            i != i_end ; ++i)
+    for (const auto & i : _imp->use_expand)
     {
-        std::string lower_i(tolower(*i));
+        std::string lower_i(tolower(i));
         std::set<std::string> values;
-        tokenise_whitespace(_imp->vars->get(*i), std::inserter(values, values.begin()));
-        for (std::set<std::string>::const_iterator v(values.begin()), v_end(values.end()) ;
-                v != v_end ; ++v)
-            _imp->use_and_expands.insert(std::make_pair(ChoicePrefixName(lower_i), *v));
+        tokenise_whitespace(_imp->vars->get(i), std::inserter(values, values.begin()));
+        for (const auto & value : values)
+            _imp->use_and_expands.insert(std::make_pair(ChoicePrefixName(lower_i), value));
     }
 
     /* accept keywords */
@@ -340,18 +336,16 @@ PortageEnvironment::PortageEnvironment(const std::string & s) :
     std::list<std::string> gentoo_mirrors;
     tokenise_whitespace(_imp->vars->get("GENTOO_MIRRORS"),
             std::back_inserter(gentoo_mirrors));
-    for (std::list<std::string>::const_iterator m(gentoo_mirrors.begin()), m_end(gentoo_mirrors.end()) ;
-            m != m_end ; ++m)
-        _imp->mirrors.insert(std::make_pair("*", *m + "/distfiles/"));
+    for (const auto & gentoo_mirror : gentoo_mirrors)
+        _imp->mirrors.insert(std::make_pair("*", gentoo_mirror + "/distfiles/"));
 
     if ((_imp->conf_dir / "portage" / "mirrors").stat().exists())
     {
         LineConfigFile m(_imp->conf_dir / "portage" / "mirrors", { lcfo_disallow_continuations });
-        for (LineConfigFile::ConstIterator line(m.begin()), line_end(m.end()) ;
-                line != line_end ; ++line)
+        for (const auto & line : m)
         {
             std::vector<std::string> tokens;
-            tokenise_whitespace(*line, std::back_inserter(tokens));
+            tokenise_whitespace(line, std::back_inserter(tokens));
             if (tokens.size() < 2)
                 continue;
 
@@ -387,11 +381,10 @@ PortageEnvironment::_load_atom_file(const FSPath & f, I_ i, const std::string & 
     else
     {
         LineConfigFile file(f, { lcfo_disallow_continuations });
-        for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
-                line != line_end ; ++line)
+        for (const auto & line : file)
         {
             std::vector<std::string> tokens;
-            tokenise_whitespace(*line, std::back_inserter(tokens));
+            tokenise_whitespace(line, std::back_inserter(tokens));
 
             if (tokens.empty())
                 continue;
@@ -440,11 +433,11 @@ PortageEnvironment::_load_lined_file(const FSPath & f, I_ i)
     else
     {
         LineConfigFile file(f, { lcfo_disallow_continuations });
-        for (LineConfigFile::ConstIterator line(file.begin()), line_end(file.end()) ;
-                line != line_end ; ++line)
-            *i++ = std::shared_ptr<PackageDepSpec>(std::make_shared<PackageDepSpec>(
-                        parse_user_package_dep_spec(strip_trailing(strip_leading(*line, " \t"), " \t"),
-                            this, UserPackageDepSpecOptions() + updso_no_disambiguation)));
+        for (const auto & line : file)
+            *i++ = std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
+                    strip_trailing(strip_leading(line, " \t"), " \t"),
+                    this,
+                    UserPackageDepSpecOptions() + updso_no_disambiguation));
     }
 }
 
@@ -458,9 +451,8 @@ PortageEnvironment::_load_profile(const FSPath & d)
         Context context_local("When loading parent profiles:");
 
         LineConfigFile f(d / "parent", { lcfo_disallow_continuations });
-        for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
-                line != line_end ; ++line)
-            _load_profile((d / *line).realpath());
+        for (const auto & line : f)
+            _load_profile((d / line).realpath());
     }
 
     if ((d / "make.defaults").stat().exists())
@@ -563,15 +555,14 @@ PortageEnvironment::want_choice_enabled(
     ChoiceNameWithPrefix f(stringify(choice->prefix()) + (stringify(choice->prefix()).empty() ? "" : "_") + stringify(suffix));
 
     /* check use: per package config */
-    for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
-            i != i_end ; ++i)
+    for (const auto & i : _imp->package_use)
     {
-        if (! match_package(*this, *i->first, id, nullptr, { }))
+        if (! match_package(*this, *i.first, id, nullptr, { }))
             continue;
 
-        if (i->second == stringify(f))
+        if (i.second == stringify(f))
             state = true;
-        else if (i->second == "-" + stringify(f))
+        else if (i.second == "-" + stringify(f))
             state = false;
     }
 
@@ -604,25 +595,25 @@ PortageEnvironment::accept_keywords(const std::shared_ptr <const KeywordNameSet>
         return true;
 
     std::set<std::string> accepted;
-    bool accept_star_star(false), accept_tilde_star(false);
+    bool accept_star_star(false);
+    bool accept_tilde_star(false);
 
     std::copy(_imp->accept_keywords.begin(), _imp->accept_keywords.end(), std::inserter(accepted, accepted.begin()));
-    for (PackageKeywords::const_iterator it(_imp->package_keywords.begin()),
-             it_end(_imp->package_keywords.end()); it_end != it; ++it)
+    for (const auto & package_keyword : _imp->package_keywords)
     {
-        if (! match_package(*this, *it->first, d, nullptr, { }))
+        if (! match_package(*this, *package_keyword.first, d, nullptr, { }))
             continue;
 
-        if ("-*" == it->second)
+        if ("-*" == package_keyword.second)
             accepted.clear();
-        else if ('-' == it->second.at(0))
-            accepted.erase(it->second.substr(1));
-        else if ("**" == it->second)
+        else if ('-' == package_keyword.second.at(0))
+            accepted.erase(package_keyword.second.substr(1));
+        else if ("**" == package_keyword.second)
             accept_star_star = true;
-        else if ("~*" == it->second)
+        else if ("~*" == package_keyword.second)
             accept_tilde_star = true;
         else
-            accepted.insert(it->second);
+            accepted.insert(package_keyword.second);
     }
 
     if (accept_star_star)
@@ -632,9 +623,8 @@ PortageEnvironment::accept_keywords(const std::shared_ptr <const KeywordNameSet>
         if (keywords->end() != std::find_if(keywords->begin(), keywords->end(), is_tilde_keyword))
             return true;
 
-    for (KeywordNameSet::ConstIterator it(keywords->begin()),
-             it_end(keywords->end()); it_end != it; ++it)
-        if (accepted.end() != accepted.find(stringify(*it)))
+    for (const auto & it : *keywords)
+        if (accepted.end() != accepted.find(stringify(it)))
             return true;
 
     return false;
@@ -643,9 +633,8 @@ PortageEnvironment::accept_keywords(const std::shared_ptr <const KeywordNameSet>
 bool
 PortageEnvironment::unmasked_by_user(const std::shared_ptr<const PackageID> & e, const std::string &) const
 {
-    for (PackageUnmask::const_iterator i(_imp->package_unmask.begin()), i_end(_imp->package_unmask.end()) ;
-            i != i_end ; ++i)
-        if (match_package(*this, **i, e, nullptr, { }))
+    for (const auto & spec : _imp->package_unmask)
+        if (match_package(*this, *spec, e, nullptr, { }))
             return true;
 
     return false;
@@ -667,14 +656,13 @@ PortageEnvironment::known_choice_value_names(const std::shared_ptr<const Package
         if ('-' != i->second.at(0))
             result->insert(UnprefixedChoiceName(i->second));
 
-    for (PackageUse::const_iterator i(_imp->package_use.begin()), i_end(_imp->package_use.end()) ;
-            i != i_end ; ++i)
+    for (const auto & i : _imp->package_use)
     {
-        if (! match_package(*this, *i->first, id, nullptr, { }))
+        if (! match_package(*this, *i.first, id, nullptr, { }))
             continue;
 
-        if (0 == i->second.compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
-            result->insert(UnprefixedChoiceName(i->second.substr(prefix_lower.length())));
+        if (0 == i.second.compare(0, prefix_lower.length(), prefix_lower, 0, prefix_lower.length()))
+            result->insert(UnprefixedChoiceName(i.second.substr(prefix_lower.length())));
     }
 
     return result;
@@ -754,17 +742,17 @@ namespace
             {
             }
 
-            char key() const
+            char key() const override
             {
                 return 'B';
             }
 
-            const std::string description() const
+            const std::string description() const override
             {
                 return "breaks Portage";
             }
 
-            const std::string explanation() const
+            const std::string explanation() const override
             {
                 return breakages;
             }
@@ -782,12 +770,12 @@ namespace
             {
             }
 
-            char key() const
+            char key() const override
             {
                 return _overridden ? 'u' : 'U';
             }
 
-            const std::string description() const
+            const std::string description() const override
             {
                 return _overridden ? "user (overridden)" : "user";
             }
@@ -797,12 +785,11 @@ namespace
 const std::shared_ptr<const Mask>
 PortageEnvironment::mask_for_user(const std::shared_ptr<const PackageID> & d, const bool o) const
 {
-    for (PackageMask::const_iterator i(_imp->package_mask.begin()), i_end(_imp->package_mask.end()) ;
-            i != i_end ; ++i)
-        if (match_package(*this, **i, d, nullptr, { }))
+    for (const auto & spec : _imp->package_mask)
+        if (match_package(*this, *spec, d, nullptr, { }))
             return std::make_shared<UserConfigMask>(o);
 
-    return std::shared_ptr<const Mask>();
+    return nullptr;
 }
 
 std::string
@@ -1053,4 +1040,3 @@ PortageEnvironment::interest_in_suggestion(
 {
     return indeterminate;
 }
-

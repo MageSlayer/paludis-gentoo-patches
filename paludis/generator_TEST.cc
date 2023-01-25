@@ -107,7 +107,7 @@ TEST_P(GeneratorTestCaseBase, Works)
     EXPECT_EQ("", join(indirect_iterator(got_none->begin()), indirect_iterator(got_none->end()), ", "));
 }
 
-INSTANTIATE_TEST_CASE_P(GeneratorTest, GeneratorTestCaseBase, testing::Values(
+INSTANTIATE_TEST_SUITE_P(GeneratorTest, GeneratorTestCaseBase, testing::Values(
             TestInfo{ std::make_shared<generator::All>(), std::string(
                 "cat/a-1:0::inst_repo1, "
                 "cat/a-1:0::repo1, "

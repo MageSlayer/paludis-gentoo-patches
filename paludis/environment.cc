@@ -82,7 +82,7 @@ struct AmbiguousPackageNameError::NameData
 AmbiguousPackageNameError::AmbiguousPackageNameError(const std::string & our_name,
         const std::shared_ptr<const Sequence<std::string> > & names) noexcept :
     Exception("Ambiguous package name '" + our_name + "' (candidates are " + join(names->begin(), names->end(), ", ") + ")"),
-    _name_data(new NameData)
+    _name_data(std::make_unique<NameData>())
 {
     _name_data->name = our_name;
     std::copy(names->begin(), names->end(), std::back_inserter(_name_data->names));
@@ -90,16 +90,13 @@ AmbiguousPackageNameError::AmbiguousPackageNameError(const std::string & our_nam
 
 AmbiguousPackageNameError::AmbiguousPackageNameError(const AmbiguousPackageNameError & other) :
     Exception(other),
-    _name_data(new NameData)
+    _name_data(std::make_unique<NameData>())
 {
     _name_data->name = other._name_data->name;
     _name_data->names = other._name_data->names;
 }
 
-AmbiguousPackageNameError::~AmbiguousPackageNameError()
-{
-    delete _name_data;
-}
+AmbiguousPackageNameError::~AmbiguousPackageNameError() = default;
 
 AmbiguousPackageNameError::OptionsConstIterator
 AmbiguousPackageNameError::begin_options() const

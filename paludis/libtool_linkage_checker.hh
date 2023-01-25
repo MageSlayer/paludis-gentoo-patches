@@ -33,14 +33,14 @@ namespace paludis
 
         public:
             LibtoolLinkageChecker(const FSPath &);
-            virtual ~LibtoolLinkageChecker();
+            ~LibtoolLinkageChecker() override;
 
-            virtual bool check_file(const FSPath &) PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual void note_symlink(const FSPath &, const FSPath &);
+            bool check_file(const FSPath &) override PALUDIS_ATTRIBUTE((warn_unused_result));
+            void note_symlink(const FSPath &, const FSPath &) override;
 
-            virtual void add_extra_lib_dir(const FSPath &);
-            virtual void need_breakage_added(
-                const std::function<void (const FSPath &, const std::string &)> &);
+            void add_extra_lib_dir(const FSPath &) override;
+            void need_breakage_added(
+                const std::function<void (const FSPath &, const std::string &)> &) override;
     };
 }
 

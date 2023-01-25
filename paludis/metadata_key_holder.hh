@@ -21,6 +21,7 @@
 #define PALUDIS_GUARD_PALUDIS_METADATA_KEY_HOLDER_HH 1
 
 #include <paludis/metadata_key_holder-fwd.hh>
+#include <paludis/util/iterator_range.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/wrapped_forward_iterator.hh>
 #include <paludis/metadata_key-fwd.hh>
@@ -71,6 +72,7 @@ namespace paludis
 
             MetadataConstIterator begin_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
             MetadataConstIterator end_metadata() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            IteratorRange<MetadataConstIterator> metadata() const;
             MetadataConstIterator find_metadata(const std::string &) const PALUDIS_ATTRIBUTE((warn_unused_result));
 
             ///\}

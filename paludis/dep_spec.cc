@@ -641,8 +641,8 @@ PackageDepSpec::data() const
 
 namespace paludis
 {
-    template class PALUDIS_VISIBLE LabelsDepSpec<URILabel>;
-    template class PALUDIS_VISIBLE LabelsDepSpec<DependenciesLabel>;
+    template class LabelsDepSpec<URILabel>;
+    template class LabelsDepSpec<DependenciesLabel>;
 
     template class Cloneable<DepSpec>;
     template class Pimp<ConditionalDepSpec>;
@@ -652,6 +652,6 @@ namespace paludis
     template class Pimp<URILabelsDepSpec>;
     template class Pimp<DependenciesLabelsDepSpec>;
 
-    template class PALUDIS_VISIBLE WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag, const std::shared_ptr<const DependenciesLabel>>;
-    template class PALUDIS_VISIBLE WrappedForwardIterator<URILabelsDepSpec::ConstIteratorTag, const std::shared_ptr<const URILabel>>;
+    template class WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag, const std::shared_ptr<const DependenciesLabel>>;
+    template class WrappedForwardIterator<URILabelsDepSpec::ConstIteratorTag, const std::shared_ptr<const URILabel>>;
 }

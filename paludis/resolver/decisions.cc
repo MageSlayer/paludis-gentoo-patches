@@ -157,9 +157,8 @@ Decisions<Decision_, Notes_>::serialise(Serialiser & s) const
     SerialiserObjectWriter w(s.object("Decisions"));
 
     int n(0);
-    for (ConstIterator i(begin()), i_end(end()) ;
-            i != i_end ; ++i)
-        ContainerTraits<Decision_, Notes_>::do_member(w, ++n, *i);
+    for (const auto & value : _imp->values)
+        ContainerTraits<Decision_, Notes_>::do_member(w, ++n, value);
 
     w.member(SerialiserFlags<>(), "count", stringify(n));
 }

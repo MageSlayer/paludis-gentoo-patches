@@ -21,6 +21,7 @@
 from paludis import *
 import unittest
 
+
 class TestCase_VersionRequirements(unittest.TestCase):
     def test_01_init(self):
         VersionRequirement("<", VersionSpec("0"))
@@ -31,8 +32,9 @@ class TestCase_VersionRequirements(unittest.TestCase):
         v1.version_operator = ">"
         v1.version_spec = VersionSpec("1")
 
-        self.assertEquals(str(v1.version_operator), ">")
-        self.assertEquals(str(v1.version_spec), "1")
+        self.assertEqual(str(v1.version_operator), ">")
+        self.assertEqual(str(v1.version_spec), "1")
+
 
 if __name__ == "__main__":
     unittest.main()

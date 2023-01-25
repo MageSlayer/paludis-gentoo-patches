@@ -202,7 +202,7 @@ UnavailablePackageID::extra_hash_value() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnavailablePackageID::fs_location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSPath> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -214,37 +214,37 @@ UnavailablePackageID::behaviours_key() const
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 UnavailablePackageID::keywords_key() const
 {
-    return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailablePackageID::dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailablePackageID::build_dependencies_target_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailablePackageID::build_dependencies_host_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailablePackageID::run_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailablePackageID::post_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
@@ -256,25 +256,25 @@ UnavailablePackageID::short_description_key() const
 const std::shared_ptr<const MetadataValueKey<std::string> >
 UnavailablePackageID::long_description_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<std::string> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 UnavailablePackageID::fetches_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 UnavailablePackageID::homepage_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataTimeKey>
 UnavailablePackageID::installed_time_key() const
 {
-    return std::shared_ptr<const MetadataTimeKey>();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >

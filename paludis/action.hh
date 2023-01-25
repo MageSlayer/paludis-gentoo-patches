@@ -102,13 +102,13 @@ namespace paludis
          */
         NamedValue<n::fetch_parts, FetchParts> fetch_parts;
 
-         /**
-          * Ignore if a package is or isn't referenced in the Manifest.
-          * It's useful for generating manifests, to avoid getting errors
-          * before generating it.
-          *
-          * \since 0.46
-          */
+        /**
+         * Ignore if a package is or isn't referenced in the Manifest.
+         * It's useful for generating manifests, to avoid getting errors
+         * before generating it.
+         *
+         * \since 0.46
+         */
         NamedValue<n::ignore_not_in_manifest, bool> ignore_not_in_manifest;
 
         /**
@@ -306,14 +306,14 @@ namespace paludis
             ///\{
 
             InstallAction(const InstallActionOptions &);
-            ~InstallAction();
+            ~InstallAction() override;
 
             ///\}
 
             /// Options for the action.
             const InstallActionOptions & options;
 
-            virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string simple_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const std::string class_simple_name() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
@@ -338,14 +338,14 @@ namespace paludis
             ///\{
 
             FetchAction(const FetchActionOptions &);
-            ~FetchAction();
+            ~FetchAction() override;
 
             ///\}
 
             /// Options for the action.
             const FetchActionOptions & options;
 
-            virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string simple_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const std::string class_simple_name() PALUDIS_ATTRIBUTE((warn_unused_result));
             static const std::string ignore_unfetched_flag_name() PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -370,14 +370,14 @@ namespace paludis
             ///\{
 
             UninstallAction(const UninstallActionOptions &);
-            ~UninstallAction();
+            ~UninstallAction() override;
 
             ///\}
 
             /// Options for the action.
             const UninstallActionOptions & options;
 
-            virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string simple_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const std::string class_simple_name() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
@@ -433,7 +433,7 @@ namespace paludis
              * \since 0.36
              */
             PretendAction(const PretendActionOptions &);
-            ~PretendAction();
+            ~PretendAction() override;
 
             ///\}
 
@@ -448,7 +448,7 @@ namespace paludis
              */
             const PretendActionOptions & options;
 
-            virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string simple_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const std::string class_simple_name() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
@@ -473,7 +473,7 @@ namespace paludis
             ///\{
 
             PretendFetchAction(const FetchActionOptions &);
-            ~PretendFetchAction();
+            ~PretendFetchAction() override;
 
             ///\}
 
@@ -483,7 +483,7 @@ namespace paludis
             /// Signal that we will fetch a particular file.
             virtual void will_fetch(const FSPath & destination, const unsigned long size_in_bytes) = 0;
 
-            virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string simple_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const std::string class_simple_name() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
@@ -531,7 +531,7 @@ namespace paludis
              * \since 0.36
              */
             ConfigAction(const ConfigActionOptions &);
-            ~ConfigAction();
+            ~ConfigAction() override;
 
             ///\}
 
@@ -540,7 +540,7 @@ namespace paludis
              */
             const ConfigActionOptions & options;
 
-            virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string simple_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const std::string class_simple_name() PALUDIS_ATTRIBUTE((warn_unused_result));
     };
@@ -593,7 +593,7 @@ namespace paludis
              */
             InfoAction(const InfoActionOptions &);
 
-            ~InfoAction();
+            ~InfoAction() override;
 
             ///\}
 
@@ -602,7 +602,7 @@ namespace paludis
              */
             const InfoActionOptions & options;
 
-            virtual const std::string simple_name() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string simple_name() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             static const std::string class_simple_name() PALUDIS_ATTRIBUTE((warn_unused_result));
     };

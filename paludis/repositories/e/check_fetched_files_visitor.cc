@@ -211,12 +211,12 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSPath & distfile)
     if (manifest_ignore == _imp->use_manifest)
         return true;
 
-    bool found(false), hashed(false);
+    bool found(false);
+    bool hashed(false);
 
-    for (Manifest2Reader::ConstIterator m(_imp->m2r->begin()), m_end(_imp->m2r->end()) ;
-        m != m_end ; ++m)
+    for (const auto & entry : *_imp->m2r)
     {
-        if (distfile.basename() != m->name())
+        if (distfile.basename() != entry.name())
             continue;
         found = true;
 
@@ -224,8 +224,8 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSPath & distfile)
 
         Log::get_instance()->message("e.manifest.size", ll_debug, lc_context)
             << "Actual size = " << distfile_stat.file_size()
-            << "; Manifest file size = " << m->size();
-        if (distfile_stat.file_size() != m->size())
+            << "; Manifest file size = " << entry.size();
+        if (distfile_stat.file_size() != entry.size())
         {
             Log::get_instance()->message("e.manifest.no_size", ll_debug, lc_context)
                 << "Malformed Manifest: no file size found";
@@ -245,26 +245,25 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSPath & distfile)
 
             MemoisedHashes * hashes = MemoisedHashes::get_instance();
 
-            for (Map<std::string, std::string>::ConstIterator it(m->hashes()->begin()),
-                     it_end(m->hashes()->end()); it_end != it; ++it)
+            for (const auto & hash : *entry.hashes())
             {
-                if (! DigestRegistry::get_instance()->get(it->first))
+                if (! DigestRegistry::get_instance()->get(hash.first))
                 {
                     Log::get_instance()->message("e.manifest.checksum.unsupported", ll_warning, lc_context)
-                        << "Manifest hash function '" + it->first + "' is not supported";
+                        << "Manifest hash function '" + hash.first + "' is not supported";
                     continue;
                 }
 
-                std::string hexsum(hashes->get(it->first, distfile, file_stream));
+                std::string hexsum(hashes->get(hash.first, distfile, file_stream));
 
-                if (hexsum != it->second)
+                if (hexsum != hash.second)
                 {
                     Log::get_instance()->message("e.manifest.checksum.failure", ll_debug, lc_context)
-                        << "Malformed Manifest: failed " << it->first << " checksum";
-                    _imp->output_manager->stdout_stream() << "failed " << it->first;
+                        << "Malformed Manifest: failed " << hash.first << " checksum";
+                    _imp->output_manager->stdout_stream() << "failed " << hash.first;
                     _imp->failures->push_back(make_named_values<FetchActionFailure>(
                             n::failed_automatic_fetching() = false,
-                            n::failed_integrity_checks() = "Failed " + it->first + " checksum",
+                            n::failed_integrity_checks() = "Failed " + hash.first + " checksum",
                             n::requires_manual_fetching() = false,
                             n::target_file() = stringify(distfile.basename())
                             ));
@@ -272,7 +271,7 @@ CheckFetchedFilesVisitor::check_distfile_manifest(const FSPath & distfile)
                 }
 
                 Log::get_instance()->message("e.manifest.checksum.result", ll_debug, lc_context)
-                    << "Actual " << it->first << " = " << hexsum;
+                    << "Actual " << hash.first << " = " << hexsum;
                 hashed = true;
             }
         }
@@ -401,4 +400,3 @@ CheckFetchedFilesVisitor::need_nofetch() const
 {
     return _imp->need_nofetch;
 }
-

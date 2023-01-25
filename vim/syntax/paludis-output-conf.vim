@@ -12,7 +12,7 @@ if &compatible || v:version < 700
 endif
 
 if exists("b:current_syntax")
-  finish
+    finish
 endif
 
 syn region PaludisOutputConfComment start=/^\s*#/ end=/$/
@@ -41,19 +41,55 @@ syn region PaludisOutputConfString contained start=/"/ end=/"/
             \ skipwhite
 
 syn keyword PaludisOutputConfKnownKey contained
-            \ handler children messages_children type output_exclusivity
-            \ manager action ignore_unfetched if_success if_failure
-            \ child condition_variable if_true if_false if_unset
-            \ filename keep_on_empty keep_on_success summary_output_manager
-            \ format_debug format_info format_warn format_error format_log
-            \ summary_output_message start_command end_command
-            \ nothing_more_to_come_command succeeded_command
-            \ stdout_command stderr_command extra_message_managers
-            \ extra_output_managers log_path always_keep_output_logs
-            \ quiet stdout_children stderr_children format_status
+            \ action
+            \ always_keep_output_logs
+            \ child
+            \ children
+            \ condition_variable
+            \ end_command
+            \ extra_message_managers
+            \ extra_output_managers
+            \ filename
+            \ format_debug
+            \ format_error
+            \ format_info
+            \ format_log
+            \ format_status
+            \ format_warn
+            \ handler
+            \ if_failure
+            \ if_false
+            \ if_success
+            \ if_true
+            \ if_unset
+            \ ignore_unfetched
+            \ keep_on_empty
+            \ keep_on_success
+            \ log_path
+            \ manager
+            \ messages_children
+            \ nothing_more_to_come_command
+            \ output_exclusivity
+            \ quiet
+            \ start_command
+            \ stderr_children
+            \ stderr_command
+            \ stdout_children
+            \ stdout_command
+            \ succeeded_command
+            \ summary_output_manager
+            \ summary_output_message
+            \ type
 
 syn keyword PaludisOutputConfKnownValue contained
-            \ buffer file format_messages forward_at_finish ipc tee standard command
+            \ buffer
+            \ command
+            \ file
+            \ format_messages
+            \ forward_at_finish
+            \ ipc
+            \ standard
+            \ tee
 
 syn match PaludisOutputConfVariable contained
             \ /\$\({[^{}]\+}\|\(ENV{\)\@![a-zA-Z0-9_]\+\)/ skipwhite

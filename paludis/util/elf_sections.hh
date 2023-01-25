@@ -118,8 +118,8 @@ namespace paludis
     {
         public:
             GenericSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &);
-            virtual ~GenericSection();
-            virtual std::string get_type() const;
+            ~GenericSection() override;
+            std::string get_type() const override;
     };
 
     template <typename ElfType_>
@@ -132,7 +132,7 @@ namespace paludis
 
         public:
             StringSection(typename ElfType_::Word, const typename ElfType_::SectionHeader &, std::istream &, bool);
-            virtual ~StringSection();
+            ~StringSection() override;
 
             std::string get_string(typename ElfType_::Word) const;
             typename ElfType_::Word get_max_string() const
@@ -140,7 +140,7 @@ namespace paludis
                 return _stringTable.length();
             }
 
-            virtual std::string get_type() const;
+            std::string get_type() const override;
     };
 }
 

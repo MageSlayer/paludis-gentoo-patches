@@ -112,7 +112,7 @@ namespace
                         n::merged_entries() = std::make_shared<FSPathSet>(),
                         n::options() = MergerOptions() + mo_rewrite_symlinks + mo_allow_empty_dirs,
                         n::output_manager() = std::make_shared<StandardOutputManager>(),
-                        n::package_id() = std::shared_ptr<PackageID>(),
+                        n::package_id() = nullptr,
                         n::permit_destination() = std::bind(return_literal_function(true)),
                         n::root() = root_dir
                         ));
@@ -196,7 +196,7 @@ TEST_P(VDBMergerTestConfigProtect, ConfigProtect)
     EXPECT_TRUE(! (root_dir / "protected_dir_not_really/._cfg0000_unprotected_file").stat().exists());
 }
 
-INSTANTIATE_TEST_CASE_P(ConfigProtect, VDBMergerTestConfigProtect, testing::Values(std::string("config_protect")));
+INSTANTIATE_TEST_SUITE_P(ConfigProtect, VDBMergerTestConfigProtect, testing::Values(std::string("config_protect")));
 
 struct VDBMergerErrorTest : VDBMergerTest { };
 
@@ -205,7 +205,7 @@ TEST_P(VDBMergerErrorTest, Error)
     EXPECT_THROW(merger->check(), FSMergerError);
 }
 
-INSTANTIATE_TEST_CASE_P(Errors, VDBMergerErrorTest, testing::Values(
+INSTANTIATE_TEST_SUITE_P(Errors, VDBMergerErrorTest, testing::Values(
             std::string("dir_newline"),
             std::string("sym_newline"),
             std::string("sym_target_newline"),

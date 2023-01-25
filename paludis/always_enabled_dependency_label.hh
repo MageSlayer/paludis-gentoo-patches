@@ -35,12 +35,12 @@ namespace paludis
 
         public:
             AlwaysEnabledDependencyLabel(const std::string &);
-            ~AlwaysEnabledDependencyLabel();
+            ~AlwaysEnabledDependencyLabel() override;
 
-            virtual const std::string text() const;
-            virtual bool enabled(
+            const std::string text() const override;
+            bool enabled(
                     const Environment * const,
-                    const std::shared_ptr<const PackageID> &) const;
+                    const std::shared_ptr<const PackageID> &) const override;
     };
 
     extern template class PALUDIS_VISIBLE AlwaysEnabledDependencyLabel<DependenciesBuildLabelTag>;

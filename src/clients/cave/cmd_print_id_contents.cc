@@ -44,7 +44,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -153,7 +152,7 @@ PrintIDContentsCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("print-id-contents takes exactly one parameter");
 
     PackageDepSpec spec(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(),
@@ -177,10 +176,9 @@ PrintIDContentsCommand::run(
         if (! contents)
             throw BadIDForCommand(spec, (*i), "does not support listing contents");
 
-        for (auto c(contents->begin()), c_end(contents->end()) ;
-                c != c_end ; ++c)
-            if (match_type(cmdline.a_type, *c))
-                cout << format_plain_contents_entry(*c, cmdline.a_format.argument());
+        for (const auto & entry : *contents)
+            if (match_type(cmdline.a_type, entry))
+                cout << format_plain_contents_entry(entry, cmdline.a_format.argument());
     }
 
     return EXIT_SUCCESS;

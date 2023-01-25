@@ -26,6 +26,7 @@
 #include <paludis/util/tokeniser.hh>
 #include <paludis/choice.hh>
 #include <paludis/maintainer.hh>
+#include <cctype>
 #include <set>
 
 #include <libxml/tree.h>
@@ -57,33 +58,29 @@ namespace
         return s ? std::string(reinterpret_cast<const char *>(s)) : "";
     }
 
-    bool is_space(const char c)
-    {
-        return c == ' ' || c == '\t' || c == '\r' || c == '\n';
-    }
-
     std::string fix_whitespace(const std::string & s)
     {
         std::string t;
         t.reserve(s.length());
 
-        std::string::size_type p(0), p_end(s.length());
+        std::string::size_type p(0);
+        std::string::size_type p_end(s.length());
 
-        while (p != p_end && is_space(s[p]))
+        while (p != p_end && std::isspace(s[p]))
             ++p;
 
-        while (p_end > p && is_space(s[p_end - 1]))
+        while (p_end > p && std::isspace(s[p_end - 1]))
             --p_end;
 
         while (p != p_end)
         {
-            while (p != p_end && ! is_space(s[p]))
+            while (p != p_end && ! std::isspace(s[p]))
                 t.append(1, s[p++]);
 
             if (p != p_end)
                 t.append(1, ' ');
 
-            while (p != p_end && is_space(s[p]))
+            while (p != p_end && std::isspace(s[p]))
                 ++p;
         }
 
@@ -171,9 +168,8 @@ namespace
                             tokenise_whitespace(unstupid_libxml_string(xmlNodeListGetString(doc, a->xmlChildrenNode, 1)),
                                     std::inserter(archs, archs.end()));
                             archs.erase("*");
-                            for (std::set<std::string>::const_iterator r(archs.begin()), r_end(archs.end()) ;
-                                    r != r_end ; ++r)
-                                pkg->add_arch(*r);
+                            for (const auto & arch : archs)
+                                pkg->add_arch(arch);
                         }
                     }
                 }
@@ -203,7 +199,8 @@ namespace
                         std::string name(unstupid_libxml_string(n->name));
                         if (name == "unaffected" || name == "vulnerable")
                         {
-                            std::string op, slot("*");
+                            std::string op;
+                            std::string slot("*");
                             handle_range_range(doc, n->properties, op, slot);
                             std::string version(fix_whitespace(unstupid_libxml_string(xmlNodeListGetString(doc, n->xmlChildrenNode, 1))));
                             ((*pkg).*(name == "unaffected" ? &GLSAPackage::add_unaffected : &GLSAPackage::add_vulnerable))(
@@ -296,15 +293,19 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSPath & filename)
     std::shared_ptr<xmlDoc> doc(manage_libxml_ptr(xmlParseFile(stringify(filename).c_str()), &xmlFreeDoc));
 
     std::shared_ptr<xmlXPathContext>
-        doc_context(manage_libxml_ptr(xmlXPathNewContext(doc.get()), &xmlXPathFreeContext)),
-        sub_context(manage_libxml_ptr(xmlXPathNewContext(doc.get()), &xmlXPathFreeContext)),
+        doc_context(manage_libxml_ptr(xmlXPathNewContext(doc.get()), &xmlXPathFreeContext));
+    std::shared_ptr<xmlXPathContext>
+        sub_context(manage_libxml_ptr(xmlXPathNewContext(doc.get()), &xmlXPathFreeContext));
+    std::shared_ptr<xmlXPathContext>
         text_context(manage_libxml_ptr(xmlXPathNewContext(doc.get()), &xmlXPathFreeContext));
 
     std::shared_ptr<xmlXPathObject>
         herd_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string(
-                            "//pkgmetadata/herd"), doc_context.get()), xmlXPathFreeObject)),
+                            "//pkgmetadata/herd"), doc_context.get()), xmlXPathFreeObject));
+    std::shared_ptr<xmlXPathObject>
         maintainer_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string(
-                            "//pkgmetadata/maintainer"), doc_context.get()), xmlXPathFreeObject)),
+                            "//pkgmetadata/maintainer"), doc_context.get()), xmlXPathFreeObject));
+    std::shared_ptr<xmlXPathObject>
         use_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string(
                             "//pkgmetadata/use"), doc_context.get()), xmlXPathFreeObject));
 
@@ -329,9 +330,11 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSPath & filename)
         sub_context->node = maintainer_object->nodesetval->nodeTab[i];
         std::shared_ptr<xmlXPathObject>
             name_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("./name[position()=1]"),
-                        sub_context.get()), xmlXPathFreeObject)),
+                        sub_context.get()), xmlXPathFreeObject));
+        std::shared_ptr<xmlXPathObject>
             email_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("./email[position()=1]"),
-                        sub_context.get()), xmlXPathFreeObject)),
+                        sub_context.get()), xmlXPathFreeObject));
+        std::shared_ptr<xmlXPathObject>
             description_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("./description[position()=1]"),
                         sub_context.get()), xmlXPathFreeObject));
 
@@ -378,7 +381,8 @@ paludis_xml_things_create_metadata_xml_from_xml_file(const FSPath & filename)
             text_context->node = flag_object->nodesetval->nodeTab[k];
             std::shared_ptr<xmlXPathObject>
                 text_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("descendant::text()"),
-                            text_context.get()), xmlXPathFreeObject)),
+                            text_context.get()), xmlXPathFreeObject));
+            std::shared_ptr<xmlXPathObject>
                 name_object(manage_libxml_ptr(xmlXPathEvalExpression(stupid_libxml_string("@name"),
                                 text_context.get()), xmlXPathFreeObject));
 
@@ -439,4 +443,3 @@ namespace paludis
 {
     class RepositoryFactory;
 }
-

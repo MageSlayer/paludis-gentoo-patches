@@ -109,9 +109,8 @@ paludis::cave::size_common(
             throw BadIDForCommand(spec, (*i), "does not support listing contents");
 
         unsigned long size(0);
-        for (auto c(contents->begin()), c_end(contents->end()) ;
-                c != c_end ; ++c)
-            size += (*c)->accept_returning<unsigned long>(GetSize());
+        for (const auto & entry : *contents)
+            size += entry->accept_returning<unsigned long>(GetSize());
 
         if (purdy)
             cout << pretty_print_bytes(size) << endl;

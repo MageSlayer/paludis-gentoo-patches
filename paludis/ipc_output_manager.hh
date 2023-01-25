@@ -45,17 +45,17 @@ namespace paludis
                     const int pipe_read_fd,
                     const int pipe_write_fd,
                     const CreateOutputManagerInfo &);
-            ~IPCOutputManager() noexcept(false);
+            ~IPCOutputManager() noexcept(false) override;
 
-            virtual std::ostream & stdout_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
-            virtual std::ostream & stderr_stream() PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::ostream & stdout_stream() override PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::ostream & stderr_stream() override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual void succeeded();
-            virtual void ignore_succeeded();
-            virtual void flush();
-            virtual bool want_to_flush() const;
-            virtual void nothing_more_to_come();
-            virtual void message(const MessageType, const std::string &);
+            void succeeded() override;
+            void ignore_succeeded() override;
+            void flush() override;
+            bool want_to_flush() const override;
+            void nothing_more_to_come() override;
+            void message(const MessageType, const std::string &) override;
     };
 
     class PALUDIS_VISIBLE IPCInputManager

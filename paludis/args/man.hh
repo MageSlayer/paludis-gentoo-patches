@@ -115,48 +115,48 @@ namespace paludis
                 ///\name Basic operations
                 ///\{
                 AsciidocWriter(std::ostream & os);
-                ~AsciidocWriter() = default;
+                ~AsciidocWriter() override = default;
                 ///\}
 
                 void heading(const std::string & name, const std::string & section,
-                        const std::string & synopis);
-                void start_usage_lines();
-                void usage_line(const std::string & name, const std::string & line);
+                        const std::string & synopis) override;
+                void start_usage_lines() override;
+                void usage_line(const std::string & name, const std::string & line) override;
 
-                void start_description(const std::string & description);
-                void extra_description(const std::string & description);
-                void end_description();
+                void start_description(const std::string & description) override;
+                void extra_description(const std::string & description) override;
+                void end_description() override;
 
-                void start_options(const std::string & s);
-                void start_arg_group(const std::string & name, const std::string & description);
+                void start_options(const std::string & s) override;
+                void start_arg_group(const std::string & name, const std::string & description) override;
                 void arg_group_item(const char & short_name, const std::string & long_name,
-                        const std::string & negated_long_name, const std::string & description);
-                void start_extra_arg();
-                void extra_arg_enum(const AllowedEnumArg &, const std::string & default_arg);
-                void extra_arg_string_set(const std::string & first, const std::string & second);
-                void end_extra_arg();
-                void end_arg_group();
-                void end_options();
+                        const std::string & negated_long_name, const std::string & description) override;
+                void start_extra_arg() override;
+                void extra_arg_enum(const AllowedEnumArg &, const std::string & default_arg) override;
+                void extra_arg_string_set(const std::string & first, const std::string & second) override;
+                void end_extra_arg() override;
+                void end_arg_group() override;
+                void end_options() override;
 
-                void start_environment();
-                void environment_line(const std::string & first, const std::string & second);
-                void end_environment();
+                void start_environment() override;
+                void environment_line(const std::string & first, const std::string & second) override;
+                void end_environment() override;
 
-                void start_examples();
-                void example(const std::string &, const std::string &);
-                void end_examples();
+                void start_examples() override;
+                void example(const std::string &, const std::string &) override;
+                void end_examples() override;
 
-                void start_notes();
-                void note(const std::string &);
-                void end_notes();
+                void start_notes() override;
+                void note(const std::string &) override;
+                void end_notes() override;
 
-                void section(const std::string & title);
-                void subsection(const std::string & title);
-                void paragraph(const std::string & text);
+                void section(const std::string & title) override;
+                void subsection(const std::string & title) override;
+                void paragraph(const std::string & text) override;
 
-                void start_see_alsos();
-                void see_also(const std::string &, const int, const bool first);
-                void end_see_alsos();
+                void start_see_alsos() override;
+                void see_also(const std::string &, const int, const bool first) override;
+                void end_see_alsos() override;
         };
     }
 }

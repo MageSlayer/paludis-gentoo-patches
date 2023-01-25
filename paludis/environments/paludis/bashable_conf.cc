@@ -36,15 +36,19 @@
 using namespace paludis;
 using namespace paludis::paludis_environment;
 
-std::string defined_vars_to_kv_func(
-        const std::shared_ptr<const Map<std::string, std::string> > v,
-        const KeyValueConfigFile &,
-        const std::string & k)
+namespace
 {
-    Map<std::string, std::string>::ConstIterator i(v->find(k));
-    if (i != v->end())
-        return i->second;
-    return "";
+    std::string defined_vars_to_kv_func(
+            const std::shared_ptr<const Map<std::string, std::string>> v,
+            const KeyValueConfigFile &,
+            const std::string & k)
+    {
+        Map<std::string, std::string>::ConstIterator i(v->find(k));
+        if (i != v->end())
+            return i->second;
+
+        return "";
+    }
 }
 
 std::shared_ptr<LineConfigFile>
@@ -98,9 +102,8 @@ paludis::paludis_environment::make_bashable_kv_conf(const FSPath & f,
             .setenv("PALUDIS_EBUILD_DIR", getenv_with_default(env_vars::ebuild_dir, LIBEXECDIR "/paludis"))
             .prefix_stderr(f.basename() + "> ")
             .capture_stdout(s);
-        for (Map<std::string, std::string>::ConstIterator i(predefined_variables->begin()),
-                end(predefined_variables->end()); i != end; ++i)
-            process.setenv(i->first, i->second);
+        for (const auto & var : *predefined_variables)
+            process.setenv(var.first, var.second);
         int exit_status(process.run().wait());
         result = std::make_shared<KeyValueConfigFile>(s, o, &KeyValueConfigFile::no_defaults, &KeyValueConfigFile::no_transformation);
 
@@ -120,4 +123,3 @@ paludis::paludis_environment::make_bashable_kv_conf(const FSPath & f,
 
     return result;
 }
-

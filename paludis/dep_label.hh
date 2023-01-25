@@ -93,11 +93,11 @@ namespace paludis
             ///\{
 
             SpecificURILabel(const std::string &);
-            ~SpecificURILabel();
+            ~SpecificURILabel() override;
 
             ///\}
 
-            virtual const std::string text() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::string text() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /// Convenience typedef alias to obtain our tag.
             typedef T_ Tag;

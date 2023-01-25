@@ -130,12 +130,12 @@ namespace paludis
         public:
             Options() = default;
             Options(const Options &) = default;
+            Options & operator= (const Options &) = default;
 
             Options(std::initializer_list<E_> e)
             {
-                for (auto i(e.begin()), i_end(e.end()) ;
-                        i != i_end ; ++i)
-                    _store.add(static_cast<unsigned>(*i));
+                for (const auto option : e)
+                    _store.add(static_cast<unsigned>(option));
             }
 
             /**

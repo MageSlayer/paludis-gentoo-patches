@@ -68,11 +68,70 @@ namespace paludis
     }
 }
 
-FSIterator::FSIterator(const FSPath & base, const FSIteratorOptions & options) :
-    _imp(std::shared_ptr<EntrySet>())
+namespace
 {
-    using namespace std::placeholders;
+#ifdef HAVE_DIRENT_DTYPE
+    Tribool determine_wants_using_dirent(struct dirent * de, const FSIteratorOptions & options)
+    {
+        if (DT_UNKNOWN == de->d_type)
+            return indeterminate;
 
+        int s(DTTOIF(de->d_type));
+
+        if (S_ISREG(s))
+            return options[fsio_want_regular_files];
+
+        if (S_ISDIR(s))
+            return options[fsio_want_directories];
+
+        if (S_ISLNK(s))
+        {
+            if (! options[fsio_deref_symlinks_for_wants])
+                return false;
+
+            return indeterminate;
+        }
+
+        return false;
+    }
+#else
+    Tribool determine_wants_using_dirent(struct dirent *, const FSIteratorOptions &)
+    {
+        return indeterminate;
+    }
+#endif
+
+    Tribool determine_wants_using_stat(const FSPath & f, const FSIteratorOptions & options)
+    {
+        FSStat f_stat(f);
+
+        if (f_stat.is_regular_file())
+            return options[fsio_want_regular_files];
+
+        if (f_stat.is_directory())
+            return options[fsio_want_directories];
+
+        if (f_stat.is_symlink())
+        {
+            if (options[fsio_deref_symlinks_for_wants])
+            {
+                if (f_stat.is_regular_file_or_symlink_to_regular_file())
+                    return options[fsio_want_regular_files];
+
+                if (f_stat.is_directory_or_symlink_to_directory())
+                    return options[fsio_want_directories];
+            }
+
+            return false;
+        }
+
+        return false;
+    }
+}
+
+FSIterator::FSIterator(const FSPath & base, const FSIteratorOptions & options) :
+    _imp(nullptr)
+{
     if (options[fsio_inode_sort])
         _imp->items = std::make_shared<EntrySet>(&compare_inode);
     else
@@ -80,7 +139,7 @@ FSIterator::FSIterator(const FSPath & base, const FSIteratorOptions & options) :
 
     DIR * d(opendir(stringify(base).c_str()));
     if (nullptr == d)
-        throw FSError("Error opening directory '" + stringify(base) + "': " + stringify(::strerror(errno)));
+        throw FSError(errno, "Error opening directory '" + stringify(base) + "'");
 
     bool have_any_special_wants(options[fsio_want_directories] || options[fsio_want_regular_files]);
 
@@ -108,52 +167,13 @@ FSIterator::FSIterator(const FSPath & base, const FSIteratorOptions & options) :
 
             if (have_any_special_wants)
             {
-                Tribool still_want(indeterminate);
-
-#ifdef HAVE_DIRENT_DTYPE
-                if (DT_UNKNOWN != de->d_type)
-                {
-                    int s(DTTOIF(de->d_type));
-
-                    if (S_ISLNK(s))
-                    {
-                        if (! options[fsio_deref_symlinks_for_wants])
-                            still_want = false;
-                    }
-                    else if (S_ISREG(s))
-                        still_want = options[fsio_want_regular_files];
-                    else if (S_ISDIR(s))
-                        still_want = options[fsio_want_directories];
-                    else
-                        still_want = false;
-                }
-#endif
-
+                // Determine if we want the file (regular file, directory, symlink to either)
+                // using the dirent type entry if it's available. If it can't be used to make
+                // the decision (we don't get the information if a symlink points to a regular
+                // file or directory), we use FSStat to figure it out
+                Tribool still_want = determine_wants_using_dirent(de, options);
                 if (still_want.is_indeterminate())
-                {
-                    FSStat f_stat(f);
-
-                    if (f_stat.is_regular_file())
-                        still_want = options[fsio_want_regular_files];
-                    else if (f_stat.is_directory())
-                        still_want = options[fsio_want_directories];
-                    else if (f_stat.is_symlink())
-                    {
-                        if (options[fsio_deref_symlinks_for_wants])
-                        {
-                            if (f_stat.is_regular_file_or_symlink_to_regular_file())
-                                still_want = options[fsio_want_regular_files];
-                            else if (f_stat.is_directory_or_symlink_to_directory())
-                                still_want = options[fsio_want_directories];
-                            else
-                                still_want = false;
-                        }
-                        else
-                            still_want = false;
-                    }
-                    else
-                        still_want = false;
-                }
+                    still_want = determine_wants_using_stat(f, options);
 
                 want = still_want.is_true();
             }
@@ -179,7 +199,7 @@ FSIterator::FSIterator(const FSIterator & other) :
 }
 
 FSIterator::FSIterator() :
-    _imp(std::shared_ptr<EntrySet>(std::make_shared<EntrySet>(&compare_name)))
+    _imp(std::make_shared<EntrySet>(&compare_name))
 {
     _imp->iter = _imp->items->end();
 }

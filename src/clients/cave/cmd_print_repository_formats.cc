@@ -35,7 +35,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -75,7 +74,7 @@ PrintRepositoryFormatsCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("print-repository-formats takes no parameters");
 
     std::set<std::string> repository_formats(RepositoryFactory::get_instance()->begin_keys(), RepositoryFactory::get_instance()->end_keys());

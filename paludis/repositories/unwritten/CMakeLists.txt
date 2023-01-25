@@ -7,7 +7,7 @@ paludis_add_library(libpaludisunwrittenrepository
                       "${CMAKE_CURRENT_SOURCE_DIR}/unwritten_repository_store.cc"
                       "${CMAKE_CURRENT_SOURCE_DIR}/unwritten_repository_file.cc"
                       "${CMAKE_CURRENT_SOURCE_DIR}/registration.cc")
-add_dependencies(libpaludisunwrittenrepository libpaludisutil_SE)
+add_dependencies(libpaludisunwrittenrepository libpaludis_SE libpaludisutil_SE)
 
 paludis_add_test(unwritten_repository GTEST)
 

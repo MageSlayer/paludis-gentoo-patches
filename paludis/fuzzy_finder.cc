@@ -99,11 +99,11 @@ namespace
         if (_package.length() < 3)
             return result;
 
-        for (const auto & p : *pkgs)
-            if ((std::string::npos != stringify(p.package()).find(_package)) || (
-                        tolower(p.package().value()[0]) == _first_char &&
-                        _distance_calculator.distance_with(tolower_0_cost(p.package().value())) <= _threshold))
-                result->insert(p);
+        for (const auto & qpn : *pkgs)
+            if ((std::string::npos != stringify(qpn.package()).find(_package)) || (
+                        tolower(qpn.package().value()[0]) == _first_char &&
+                        _distance_calculator.distance_with(tolower_0_cost(qpn.package().value())) <= _threshold))
+                result->insert(qpn);
 
         return result;
     }
@@ -159,9 +159,8 @@ FuzzyCandidatesFinder::FuzzyCandidatesFinder(const Environment & e, const std::s
 
     std::shared_ptr<const PackageIDSequence> ids(e[selection::BestVersionOnly(g | FuzzyPackageName(package) | filter)]);
 
-    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end())
-            ; i != i_end ; ++i)
-        _imp->candidates.push_back((*i)->name());
+    for (const auto & id : *ids)
+        _imp->candidates.push_back(id->name());
 }
 
 FuzzyCandidatesFinder::~FuzzyCandidatesFinder() = default;

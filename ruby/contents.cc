@@ -151,8 +151,8 @@ namespace
         std::shared_ptr<Contents> * ptr;
         Data_Get_Struct(self, std::shared_ptr<Contents>, ptr);
 
-        for (Contents::ConstIterator i ((*ptr)->begin()), i_end((*ptr)->end()) ; i != i_end; ++i)
-            rb_yield(contents_entry_to_value(*i));
+        for (const auto & entry : *(*ptr))
+            rb_yield(contents_entry_to_value(entry));
         return self;
     }
 
@@ -295,10 +295,9 @@ namespace
     {
         std::shared_ptr<const ContentsEntry> * self_ptr;
         Data_Get_Struct(self, std::shared_ptr<const ContentsEntry>, self_ptr);
-        for (ContentsEntry::MetadataConstIterator it((*self_ptr)->begin_metadata()),
-                it_end((*self_ptr)->end_metadata()); it_end != it; ++it)
+        for (const auto & key : (*self_ptr)->metadata())
         {
-            VALUE val(metadata_key_to_value(*it));
+            VALUE val(metadata_key_to_value(key));
             if (Qnil != val)
                 rb_yield(val);
         }

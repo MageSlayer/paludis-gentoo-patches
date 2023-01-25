@@ -49,7 +49,7 @@ exheres_internal_postinst()
 
     if [[ -z "${PALUDIS_DO_NOTHING_SANDBOXY}" ]]; then
         SANDBOX_WRITE="${old_sandbox_write}"
-        esandbox check >/dev/null 2>&1 && esandbox allow "${ROOT}"
+        esandbox check >/dev/null 2>&1 && esandbox disallow "${ROOT}"
     fi
     true
 }

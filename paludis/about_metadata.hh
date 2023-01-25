@@ -53,10 +53,10 @@ namespace paludis
             Pimp<AboutMetadata> _imp;
 
             AboutMetadata();
-            ~AboutMetadata();
+            ~AboutMetadata() override;
 
         protected:
-            void need_keys_added() const;
+            void need_keys_added() const override;
     };
 
     extern template class Pimp<AboutMetadata>;

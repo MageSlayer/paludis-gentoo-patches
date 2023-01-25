@@ -49,7 +49,8 @@ namespace paludis
             NamedValue<n::package, QualifiedPackageName> package;
             NamedValue<n::slot, SlotNameOrNull> slot;
 
-            Resolvent(const Resolvent &);
+            Resolvent(const Resolvent &) = default;
+            Resolvent & operator=(const Resolvent &) = default;
 
             Resolvent(const QualifiedPackageName &, const SlotName &, const DestinationType);
             Resolvent(const QualifiedPackageName &, const SlotNameOrNull &, const DestinationType);

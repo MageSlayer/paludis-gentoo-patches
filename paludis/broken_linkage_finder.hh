@@ -25,7 +25,7 @@
 #include <paludis/util/iterator_range.hh>
 #include <paludis/util/pimp.hh>
 #include <paludis/util/sequence-fwd.hh>
-#include <paludis/util/wrapped_forward_iterator-fwd.hh>
+#include <paludis/util/wrapped_forward_iterator.hh>
 
 #include <paludis/environment-fwd.hh>
 #include <paludis/package_id-fwd.hh>
@@ -68,6 +68,15 @@ namespace paludis
                 const PALUDIS_ATTRIBUTE((warn_unused_result));
             IteratorRange<MissingRequirementConstIterator> missing_requirements(const std::shared_ptr<const PackageID> &, const FSPath &) const;
     };
+
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<
+            BrokenLinkageFinder::BrokenPackageConstIteratorTag,
+            const std::shared_ptr<const PackageID>>;
+    extern template class PALUDIS_VISIBLE
+            WrappedForwardIterator<BrokenLinkageFinder::BrokenFileConstIteratorTag, const FSPath>;
+    extern template class PALUDIS_VISIBLE WrappedForwardIterator<
+            BrokenLinkageFinder::MissingRequirementConstIteratorTag,
+            const std::string>;
 }
 
 #endif

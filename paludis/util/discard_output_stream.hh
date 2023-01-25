@@ -29,11 +29,11 @@ namespace paludis
         public std::streambuf
     {
         protected:
-            virtual int_type
-            overflow(int_type c);
+            int_type
+            overflow(int_type c) override;
 
-            virtual std::streamsize
-            xsputn(const char * s, std::streamsize num);
+            std::streamsize
+            xsputn(const char * s, std::streamsize num) override;
     };
 
     class PALUDIS_VISIBLE DiscardOutputStreamBase

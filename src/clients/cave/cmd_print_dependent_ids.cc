@@ -51,7 +51,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -102,7 +101,7 @@ PrintDependentIDsCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("print-dependent-ids requires exactly one parameter");
 
     auto installed_filter(filter::InstalledAtRoot(env->system_root_key()->parse_value()));
@@ -121,9 +120,8 @@ PrintDependentIDsCommand::run(
                 installed_filter)]);
 
     auto dependents(resolver::collect_dependents(env.get(), *ids->begin(), installed_ids));
-    for (auto i(dependents->begin()), i_end(dependents->end()) ;
-            i != i_end ; ++i)
-        cout << format_package_id(*i, cmdline.a_format.argument());
+    for (const auto & dependent : *dependents)
+        cout << format_package_id(dependent, cmdline.a_format.argument());
 
     return dependents->empty() ? EXIT_FAILURE : EXIT_SUCCESS;
 }

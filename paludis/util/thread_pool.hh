@@ -59,7 +59,7 @@ namespace paludis
             /**
              * Create a new thread in our pool.
              */
-            void create_thread(const std::function<void () noexcept> &);
+            void create_thread(const std::function<void ()> &);
 
             /**
              * How many threads does our pool contain?

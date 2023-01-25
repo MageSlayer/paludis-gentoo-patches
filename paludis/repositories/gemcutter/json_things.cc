@@ -42,7 +42,8 @@ namespace
             if ((! dep) || (! json_is_object(dep)))
                 throw JSONError("Entry dep is not an object");
 
-            std::string dep_name, dep_requirements;
+            std::string dep_name;
+            std::string dep_requirements;
 
             json_t * dep_name_id(json_object_get(dep, "name"));
             if ((! dep_name_id) || json_is_null(dep_name_id) || ! json_is_string(dep_name_id))
@@ -90,10 +91,21 @@ gemcutter_json_things_parse_all_gems(
     {
         Context item_context("When parsing entry " + stringify(i) + ":");
 
-        std::string name, version, authors, bug_tracker_uri, documentation_uri, gem_uri, homepage_uri,
-            info, mailing_list_uri, project_uri, source_code_uri, wiki_uri;
+        std::string name;
+        std::string version;
+        std::string authors;
+        std::string bug_tracker_uri;
+        std::string documentation_uri;
+        std::string gem_uri;
+        std::string homepage_uri;
+        std::string info;
+        std::string mailing_list_uri;
+        std::string project_uri;
+        std::string source_code_uri;
+        std::string wiki_uri;
 
-        std::shared_ptr<GemJSONDependencies> development_dependencies, runtime_dependencies;
+        std::shared_ptr<GemJSONDependencies> development_dependencies;
+        std::shared_ptr<GemJSONDependencies> runtime_dependencies;
 
         json_t * entry(json_array_get(root, i));
         if ((! entry) || (! json_is_object(entry)))

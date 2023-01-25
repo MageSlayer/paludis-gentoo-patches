@@ -4,7 +4,7 @@
 
 <h2>IRC</h2>
 
-<p>You can find us on IRC in <code>#paludis</code> on <code>irc.freenode.net</code>.</p>
+<p>You can find us on IRC in <code>#paludis</code> on <code>irc.libera.chat</code>.</p>
 
 <h2>Mailing Lists</h2>
 
@@ -19,6 +19,6 @@
 
 <h2>Bug Reports</h2>
 
-<p>We use <a href="http://paludis.exherbo.org/trac/">Trac</a> for bug reports, feature requests and
-so on.</p>
+<p>We use <a href="https://gitlab.exherbo.org/paludis/paludis/-/issues">Gitlab</a> for bug reports, feature requests
+and so on.</p>
 

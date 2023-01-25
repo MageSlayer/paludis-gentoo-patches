@@ -329,13 +329,13 @@ TEST(ERepository, PackageID)
         EXPECT_EQ(2, std::distance(versions->begin(), versions->end()));
         EXPECT_TRUE(indirect_iterator(versions->end()) != std::find_if(
                     indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                    std::bind(std::equal_to<VersionSpec>(), std::bind(std::mem_fn(&PackageID::version), _1), VersionSpec("1", VersionSpecOptions()))));
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&PackageID::version), _1), VersionSpec("1", VersionSpecOptions()))));
         EXPECT_TRUE(indirect_iterator(versions->end()) != std::find_if(
                     indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                    std::bind(std::equal_to<VersionSpec>(), std::bind(std::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1", VersionSpecOptions()))));
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1", VersionSpecOptions()))));
         EXPECT_TRUE(indirect_iterator(versions->end()) == std::find_if(
                     indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                    std::bind(std::equal_to<VersionSpec>(), std::bind(std::mem_fn(&PackageID::version), _1), VersionSpec("2", VersionSpecOptions()))));
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&PackageID::version), _1), VersionSpec("2", VersionSpecOptions()))));
 
         versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-neither"), { });
         EXPECT_TRUE(versions->empty());
@@ -367,13 +367,13 @@ TEST(ERepository, DuffVersions)
         EXPECT_EQ(2, std::distance(versions->begin(), versions->end()));
         EXPECT_TRUE(indirect_iterator(versions->end()) != std::find_if(
                     indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                    std::bind(std::equal_to<VersionSpec>(), std::bind(std::mem_fn(&PackageID::version), _1), VersionSpec("1", VersionSpecOptions()))));
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&PackageID::version), _1), VersionSpec("1", VersionSpecOptions()))));
         EXPECT_TRUE(indirect_iterator(versions->end()) != std::find_if(
                     indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                    std::bind(std::equal_to<VersionSpec>(), std::bind(std::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1", VersionSpecOptions()))));
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&PackageID::version), _1), VersionSpec("1.1-r1", VersionSpecOptions()))));
         EXPECT_TRUE(indirect_iterator(versions->end()) == std::find_if(
                     indirect_iterator(versions->begin()), indirect_iterator(versions->end()),
-                    std::bind(std::equal_to<VersionSpec>(), std::bind(std::mem_fn(&PackageID::version), _1), VersionSpec("2", VersionSpecOptions()))));
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&PackageID::version), _1), VersionSpec("2", VersionSpecOptions()))));
 
         versions = repo->package_ids(QualifiedPackageName("cat-one/pkg-neither"), { });
         EXPECT_TRUE(versions->empty());

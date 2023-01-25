@@ -70,7 +70,8 @@ TEST(Graph, Directed)
     for (char mc('a') ; mc < 'g' ; ++mc)
         for (char nc('a') ; nc < 'g' ; ++nc)
         {
-            std::string m(stringify(mc)), n(stringify(nc));
+            std::string m(stringify(mc));
+            std::string n(stringify(nc));
 
             if (g.has_edge(m, n))
             {

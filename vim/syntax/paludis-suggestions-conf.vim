@@ -12,7 +12,7 @@ if &compatible || v:version < 700
 endif
 
 if exists("b:current_syntax")
-  finish
+    finish
 endif
 
 syn region PaludisSuggestionsConfComment start=/^\s*#/ end=/$/
@@ -38,5 +38,4 @@ hi def link PaludisSuggestionsConfName             Keyword
 hi def link PaludisSuggestionsConfContinuation     Preproc
 
 let b:current_syntax = "paludis-suggestions-conf"
-
 

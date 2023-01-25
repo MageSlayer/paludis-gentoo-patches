@@ -334,7 +334,7 @@ Deserialisator::Deserialisator(Deserialisation & d, const std::string & c) :
 
 Deserialisator::~Deserialisator() noexcept(false)
 {
-    if (! std::uncaught_exception())
+    if (0 == std::uncaught_exceptions())
     {
         if (! _imp->keys.empty())
             throw InternalError(PALUDIS_HERE, "keys not empty when deserialising '" + _imp->class_name + "', keys remaining are { "

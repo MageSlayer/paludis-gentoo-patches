@@ -46,7 +46,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -91,7 +90,7 @@ HasVersionCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("has-version takes exactly one parameter");
 
     auto s(parse_user_package_dep_spec(*cmdline.begin_parameters(), env.get(), { }));

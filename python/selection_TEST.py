@@ -25,16 +25,21 @@ import unittest
 
 Log.instance.log_level = LogLevel.WARNING
 
+
 class TestCase_01_Sekection(unittest.TestCase):
     def test_01_get(self):
         pass
 
     def test_02_str(self):
-        self.assertEquals(str(Selection.SomeArbitraryVersion(
-            FilteredGenerator(Generator.All(), Filter.All()))),
-            "some arbitrary version from all packages with filter all matches")
+        self.assertEqual(
+            str(
+                Selection.SomeArbitraryVersion(
+                    FilteredGenerator(Generator.All(), Filter.All())
+                )
+            ),
+            "some arbitrary version from all packages with filter all matches",
+        )
 
 
 if __name__ == "__main__":
     unittest.main()
-

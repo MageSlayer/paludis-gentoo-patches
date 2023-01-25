@@ -113,7 +113,9 @@ UserDepSpecTest::check_spec(
     }
 
     if (! version_requirement_mode.empty())
+    {
         EXPECT_EQ(version_requirement_mode, stringify(spec.version_requirements_mode()));
+    }
 
     if (version_requirements.empty())
         EXPECT_TRUE((! spec.version_requirements_ptr()) || spec.version_requirements_ptr()->empty());

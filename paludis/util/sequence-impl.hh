@@ -74,7 +74,7 @@ paludis::Sequence<T_>::Sequence() :
 }
 
 template <typename T_>
-paludis::Sequence<T_>::~Sequence() = default;
+paludis::Sequence<T_>::~Sequence<T_>() = default;
 
 template <typename T_>
 typename paludis::Sequence<T_>::ConstIterator

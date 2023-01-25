@@ -66,12 +66,12 @@ namespace paludis
 
             public:
                 NothingNoChangeDecision(const Resolvent &, const bool);
-                ~NothingNoChangeDecision();
+                ~NothingNoChangeDecision() override;
 
-                virtual const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const Resolvent resolvent() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool taken() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class PALUDIS_VISIBLE ExistingNoChangeDecision :
@@ -88,17 +88,17 @@ namespace paludis
                         const ExistingPackageIDAttributes &,
                         const bool taken
                         );
-                ~ExistingNoChangeDecision();
+                ~ExistingNoChangeDecision() override;
 
                 const std::shared_ptr<const PackageID> existing_id() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const ExistingPackageIDAttributes attributes() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const Resolvent resolvent() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool taken() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
         };
 
         class PALUDIS_VISIBLE ConfirmableDecision :
@@ -163,7 +163,7 @@ namespace paludis
                         const std::function<void (ChangesToMakeDecision &)> &
                         );
 
-                ~ChangesToMakeDecision();
+                ~ChangesToMakeDecision() override;
 
                 const std::shared_ptr<const Destination> destination() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -187,13 +187,13 @@ namespace paludis
 
                 void set_change_type(ChangeType);
 
-                virtual const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const Resolvent resolvent() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool taken() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::shared_ptr<const RequiredConfirmations> required_confirmations_if_any() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const RequiredConfirmations> required_confirmations_if_any() const override PALUDIS_ATTRIBUTE((warn_unused_result));
                 void add_required_confirmation(const std::shared_ptr<const RequiredConfirmation> &);
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
 
                 static const std::shared_ptr<ChangesToMakeDecision> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -213,18 +213,18 @@ namespace paludis
                         const Resolvent &,
                         const std::shared_ptr<const PackageIDSequence> &,
                         const bool taken);
-                ~RemoveDecision();
+                ~RemoveDecision() override;
 
-                virtual const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const Resolvent resolvent() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool taken() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
                 const std::shared_ptr<const PackageIDSequence> ids() const
                     PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::shared_ptr<const RequiredConfirmations> required_confirmations_if_any() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const RequiredConfirmations> required_confirmations_if_any() const override PALUDIS_ATTRIBUTE((warn_unused_result));
                 void add_required_confirmation(const std::shared_ptr<const RequiredConfirmation> &);
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
 
                 static const std::shared_ptr<RemoveDecision> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));
@@ -242,12 +242,12 @@ namespace paludis
                         const Resolvent &,
                         const std::shared_ptr<const UnsuitableCandidates> &,
                         const bool taken);
-                ~UnableToMakeDecision();
+                ~UnableToMakeDecision() override;
 
-                virtual const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const Resolvent resolvent() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool taken() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
 
                 const std::shared_ptr<const UnsuitableCandidates> unsuitable_candidates() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
@@ -268,17 +268,17 @@ namespace paludis
                         const Resolvent &,
                         const std::shared_ptr<const PackageID> &,
                         const bool taken);
-                ~BreakDecision();
+                ~BreakDecision() override;
 
                 const std::shared_ptr<const PackageID> existing_id() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const Resolvent resolvent() const PALUDIS_ATTRIBUTE((warn_unused_result));
-                virtual bool taken() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const Resolvent resolvent() const override PALUDIS_ATTRIBUTE((warn_unused_result));
+                bool taken() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-                virtual const std::shared_ptr<const RequiredConfirmations> required_confirmations_if_any() const PALUDIS_ATTRIBUTE((warn_unused_result));
+                const std::shared_ptr<const RequiredConfirmations> required_confirmations_if_any() const override PALUDIS_ATTRIBUTE((warn_unused_result));
                 void add_required_confirmation(const std::shared_ptr<const RequiredConfirmation> &);
 
-                virtual void serialise(Serialiser &) const;
+                void serialise(Serialiser &) const override;
 
                 static const std::shared_ptr<BreakDecision> deserialise(
                         Deserialisation & d) PALUDIS_ATTRIBUTE((warn_unused_result));

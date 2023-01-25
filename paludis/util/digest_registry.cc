@@ -82,7 +82,7 @@ namespace paludis
 {
     template class Pimp<DigestRegistry>;
     template class Singleton<DigestRegistry>;
-    template class PALUDIS_VISIBLE WrappedForwardIterator<DigestRegistry::AlgorithmsConstIteratorTag, const std::pair<const std::string, DigestRegistry::Function> >;
+    template class WrappedForwardIterator<DigestRegistry::AlgorithmsConstIteratorTag, const std::pair<const std::string, DigestRegistry::Function> >;
 }
 
 

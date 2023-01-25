@@ -198,8 +198,7 @@ Stripper::do_dir_recursive(const FSPath & f)
             {
                 std::string t(file_type(*d));
                 if (std::string::npos != t.find("SB executable") || std::string::npos != t.find("SB shared object") ||
-                    std::string::npos != t.find("SB pie executable")
-                    )
+                                std::string::npos != t.find("SB pie executable"))
                 {
                     if (_imp->options.dwarf_compression())
                         do_dwarf_compress(*d);

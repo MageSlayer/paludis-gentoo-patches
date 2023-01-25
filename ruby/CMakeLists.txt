@@ -28,6 +28,9 @@ if(ENABLE_RUBY)
   target_include_directories(libpaludisruby SYSTEM
                              PRIVATE
                                ${RUBY_INCLUDE_DIRS})
+  if(CXX_SUPPORTS_FDECLSPEC)
+    target_compile_options(libpaludisruby PRIVATE -fdeclspec)
+  endif()
   target_link_libraries(libpaludisruby
                         PRIVATE
                           libpaludis
@@ -40,6 +43,9 @@ if(ENABLE_RUBY)
   target_include_directories(Paludis SYSTEM
                              PRIVATE
                                ${RUBY_INCLUDE_DIRS})
+  if(CXX_SUPPORTS_FDECLSPEC)
+    target_compile_options(Paludis PRIVATE -fdeclspec)
+  endif()
   target_link_libraries(Paludis
                         PRIVATE
                           libpaludisruby)

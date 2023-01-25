@@ -45,9 +45,10 @@ namespace
 TEST(IndirectIterator, VectorSharedInt)
 {
     std::vector<std::shared_ptr<int> > v;
-    v.push_back(std::shared_ptr<int>(std::make_shared<int>(5)));
-    v.push_back(std::shared_ptr<int>(std::make_shared<int>(10)));
-    IndirectIterator<std::vector<std::shared_ptr<int> >::iterator, int> vi(v.begin()), vi_end(v.end());
+    v.push_back(std::make_shared<int>(5));
+    v.push_back(std::make_shared<int>(10));
+    IndirectIterator<std::vector<std::shared_ptr<int> >::iterator, int> vi(v.begin());
+    IndirectIterator<std::vector<std::shared_ptr<int> >::iterator, int> vi_end(v.end());
     ASSERT_TRUE(vi != vi_end);
     ASSERT_TRUE(vi < vi_end);
     ASSERT_TRUE(! (vi > vi_end));
@@ -62,9 +63,10 @@ TEST(IndirectIterator, VectorSharedInt)
 TEST(IndirectIterator, ListSharedInt)
 {
     std::list<std::shared_ptr<int> > v;
-    v.push_back(std::shared_ptr<int>(std::make_shared<int>(5)));
-    v.push_back(std::shared_ptr<int>(std::make_shared<int>(10)));
-    IndirectIterator<std::list<std::shared_ptr<int> >::iterator> vi(v.begin()), vi_end(v.end());
+    v.push_back(std::make_shared<int>(5));
+    v.push_back(std::make_shared<int>(10));
+    IndirectIterator<std::list<std::shared_ptr<int> >::iterator> vi(v.begin());
+    IndirectIterator<std::list<std::shared_ptr<int> >::iterator> vi_end(v.end());
     ASSERT_TRUE(vi != vi_end);
     EXPECT_EQ(5, *vi);
     ASSERT_TRUE(++vi != vi_end);
@@ -77,7 +79,8 @@ TEST(IndirectIterator, VectorIntStar)
     std::vector<int *> v;
     v.push_back(new int(5));
     v.push_back(new int(10));
-    IndirectIterator<std::vector<int *>::iterator, int> vi(v.begin()), vi_end(v.end());
+    IndirectIterator<std::vector<int *>::iterator, int> vi(v.begin());
+    IndirectIterator<std::vector<int *>::iterator, int> vi_end(v.end());
     ASSERT_TRUE(vi != vi_end);
     ASSERT_TRUE(vi < vi_end);
     ASSERT_TRUE(! (vi > vi_end));
@@ -96,7 +99,8 @@ TEST(IndirectIterator, ListIntStar)
     std::list<int *> v;
     v.push_back(new int(5));
     v.push_back(new int(10));
-    IndirectIterator<std::list<int *>::iterator, int> vi(v.begin()), vi_end(v.end());
+    IndirectIterator<std::list<int *>::iterator, int> vi(v.begin());
+    IndirectIterator<std::list<int *>::iterator, int> vi_end(v.end());
     ASSERT_TRUE(vi != vi_end);
     EXPECT_EQ(5, *vi);
     ASSERT_TRUE(++vi != vi_end);

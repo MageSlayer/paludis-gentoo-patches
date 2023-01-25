@@ -72,7 +72,7 @@ PrintChecksumAlgorithmsCommand::run(const std::shared_ptr<Environment> &,
         return EXIT_SUCCESS;
     }
 
-    if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) != 0)
+    if (cmdline.parameters().size() != 0)
         throw args::DoHelp("print-checksum-algorithms takes no parameters");
 
     auto reg(DigestRegistry::get_instance());

@@ -114,7 +114,8 @@ ESlotKeyStore::fetch(
         const std::string & ss,
         const MetadataKeyType mkt) const
 {
-    std::string s(ss), t(ss);
+    std::string s(ss);
+    std::string t(ss);
     if (eapi.supported()->ebuild_options()->has_subslots())
     {
         auto p(s.find('/'));

@@ -90,7 +90,8 @@ UnavailableRepositoryFile::_load(const FSPath & f)
         if (line.empty())
             break;
 
-        std::string key, value;
+        std::string key;
+        std::string value;
         SimpleParser line_parser(line);
         if (line_parser.consume(
                     (+simple_parser::any_except(" \t") >> key) &
@@ -136,7 +137,8 @@ UnavailableRepositoryFile::_load(const FSPath & f)
 
     CategoryNamePart category("x");
     PackageNamePart package("x");
-    SlotName slot("x"), subslot("x");
+    SlotName slot("x");
+    SlotName subslot("x");
     while (std::getline(file, line))
     {
         SimpleParser line_parser(line);
@@ -219,8 +221,7 @@ UnavailableRepositoryFile::_load(const FSPath & f)
             std::shared_ptr<LiteralMetadataValueKey<std::string> > desc(
                     std::make_shared<LiteralMetadataValueKey<std::string>>("DESCRIPTION", "Description", mkt_significant,
                         token));
-            for (std::list<VersionSpec>::const_iterator v(versions.begin()), v_end(versions.end()) ;
-                    v != v_end ; ++v)
+            for (const auto & version : versions)
                 _imp->entries.push_back(make_named_values<UnavailableRepositoryFileEntry>(
                             n::description() = desc,
                             n::name() = category + package,
@@ -228,7 +229,7 @@ UnavailableRepositoryFile::_load(const FSPath & f)
                                 n::match_values() = std::make_pair(slot, subslot),
                                 n::parallel_value() = slot,
                                 n::raw_value() = ss),
-                            n::version() = *v
+                            n::version() = version
                         ));
         }
         else

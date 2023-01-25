@@ -56,13 +56,13 @@ namespace paludis
             FakeRepositoryBase(const Environment * const env, const RepositoryName & name,
                     const RepositoryCapabilities & caps);
 
-            virtual void need_keys_added() const;
+            void need_keys_added() const override;
 
         public:
             /**
              * Destructor.
              */
-            ~FakeRepositoryBase();
+            ~FakeRepositoryBase() override;
 
             /**
              * Add a category.
@@ -88,7 +88,7 @@ namespace paludis
             std::shared_ptr<FakePackageID> add_version(const std::string & c, const std::string & p,
                     const std::string & v);
 
-            virtual void invalidate();
+            void invalidate() override;
 
             /**
              * Fetch our associated environment.
@@ -97,33 +97,33 @@ namespace paludis
 
             /* Repository */
 
-            virtual std::shared_ptr<const PackageIDSequence> package_ids(
+            std::shared_ptr<const PackageIDSequence> package_ids(
                     const QualifiedPackageName &, const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const QualifiedPackageNameSet> package_names(
+            std::shared_ptr<const QualifiedPackageNameSet> package_names(
                     const CategoryNamePart &, const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<const CategoryNamePartSet> category_names(const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<const CategoryNamePartSet> category_names(const RepositoryContentMayExcludes &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool has_package_named(const QualifiedPackageName &, const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool has_package_named(const QualifiedPackageName &, const RepositoryContentMayExcludes &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool has_category_named(const CategoryNamePart &, const RepositoryContentMayExcludes &) const
-                PALUDIS_ATTRIBUTE((warn_unused_result));
+            bool has_category_named(const CategoryNamePart &, const RepositoryContentMayExcludes &) const
+                override PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual bool sync(const std::string &, const std::string &, const std::shared_ptr<OutputManager> &) const;
+            bool sync(const std::string &, const std::string &, const std::shared_ptr<OutputManager> &) const override;
 
             ///\name Set methods
             ///\{
 
-            virtual void populate_sets() const;
+            void populate_sets() const override;
 
             ///\}
 
-            virtual HookResult perform_hook(const Hook & hook, const std::shared_ptr<OutputManager> &);
+            HookResult perform_hook(const Hook & hook, const std::shared_ptr<OutputManager> &) override;
     };
 }
 

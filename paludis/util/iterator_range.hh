@@ -31,6 +31,9 @@ namespace paludis
             Iterator_ _begin, _end;
 
         public:
+            using const_iterator = Iterator_;
+            using value_type = typename Iterator_::value_type;
+
             // TODO(compnerd) use SFINAE to ensure that the container's
             // iterators match the range's iterator
             template <typename Container_>
@@ -56,7 +59,12 @@ namespace paludis
 
             size_t size() const
             {
-                return std::distance(_end, _begin);
+                return std::distance(_begin, _end);
+            }
+
+            bool empty() const
+            {
+                return _begin == _end;
             }
     };
 

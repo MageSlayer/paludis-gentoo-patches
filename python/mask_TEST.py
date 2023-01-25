@@ -29,62 +29,77 @@ import unittest
 
 Log.instance.log_level = LogLevel.WARNING
 
+
 class TestCase_01_Masks(unittest.TestCase):
     def setUp(self):
         self.e = EnvironmentFactory.instance.create("")
 
     def test_01_user_mask(self):
-        q = Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=masked/user-1.0", self.e, []), []))
+        q = Selection.RequireExactlyOne(
+            Generator.Matches(
+                parse_user_package_dep_spec("=masked/user-1.0", self.e, []), []
+            )
+        )
         pid = next(iter(self.e[q]))
         m = next(iter(pid.masks))
 
-        self.assert_(isinstance(m, Mask))
-        self.assert_(isinstance(m, UserMask))
+        self.assertTrue(isinstance(m, Mask))
+        self.assertTrue(isinstance(m, UserMask))
 
-        self.assertEquals(m.key(), "U")
-        self.assertEquals(m.description(), "user")
+        self.assertEqual(m.key(), "U")
+        self.assertEqual(m.description(), "user")
 
     def test_02_unaccepted_mask(self):
-        q = Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=masked/unaccepted-1.0", self.e, []), []))
+        q = Selection.RequireExactlyOne(
+            Generator.Matches(
+                parse_user_package_dep_spec("=masked/unaccepted-1.0", self.e, []), []
+            )
+        )
         pid = next(iter(self.e[q]))
         m = next(iter(pid.masks))
 
-        self.assert_(isinstance(m, Mask))
-        self.assert_(isinstance(m, UnacceptedMask))
+        self.assertTrue(isinstance(m, Mask))
+        self.assertTrue(isinstance(m, UnacceptedMask))
 
-        self.assertEquals(m.key(), "K")
-        self.assertEquals(m.description(), "keyword")
-        self.assertEquals(m.unaccepted_key_name(), "KEYWORDS")
+        self.assertEqual(m.key(), "K")
+        self.assertEqual(m.description(), "keyword")
+        self.assertEqual(m.unaccepted_key_name(), "KEYWORDS")
 
     def test_03_repository_mask(self):
-        q = Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=masked/repo-1.0", self.e, []), []))
+        q = Selection.RequireExactlyOne(
+            Generator.Matches(
+                parse_user_package_dep_spec("=masked/repo-1.0", self.e, []), []
+            )
+        )
         pid = next(iter(self.e[q]))
         m = next(iter(pid.masks))
 
-        self.assert_(isinstance(m, Mask))
-        self.assert_(isinstance(m, RepositoryMask))
+        self.assertTrue(isinstance(m, Mask))
+        self.assertTrue(isinstance(m, RepositoryMask))
 
-        self.assertEquals(m.key(), "R")
-        self.assertEquals(m.description(), "repository")
+        self.assertEqual(m.key(), "R")
+        self.assertEqual(m.description(), "repository")
 
-        package_mask_path = os.path.realpath(os.path.join(os.getcwd(),
-            "mask_TEST_dir/testrepo/profiles/package.mask"))
+        package_mask_path = os.path.realpath(
+            os.path.join(os.getcwd(), "mask_TEST_dir/testrepo/profiles/package.mask")
+        )
 
     def test_04_unsupported_mask(self):
-        q = Selection.RequireExactlyOne(Generator.Matches(
-            parse_user_package_dep_spec("=masked/unsupported-1.0", self.e, []), []))
+        q = Selection.RequireExactlyOne(
+            Generator.Matches(
+                parse_user_package_dep_spec("=masked/unsupported-1.0", self.e, []), []
+            )
+        )
         pid = next(iter(self.e[q]))
         m = next(iter(pid.masks))
 
-        self.assert_(isinstance(m, Mask))
-        self.assert_(isinstance(m, UnsupportedMask))
+        self.assertTrue(isinstance(m, Mask))
+        self.assertTrue(isinstance(m, UnsupportedMask))
 
-        self.assertEquals(m.key(), "E")
-        self.assertEquals(m.description(), "eapi")
-        self.assertEquals(m.explanation(), "Unsupported EAPI 'unsupported'")
+        self.assertEqual(m.key(), "E")
+        self.assertEqual(m.description(), "eapi")
+        self.assertEqual(m.explanation(), "Unsupported EAPI 'unsupported'")
+
 
 class TestCase_02_Masks_subclassing(unittest.TestCase):
     def test_01_user_mask(self):

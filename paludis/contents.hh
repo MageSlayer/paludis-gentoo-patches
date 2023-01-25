@@ -59,14 +59,14 @@ namespace paludis
             Pimp<ContentsEntry> _imp;
 
         protected:
-            virtual void need_keys_added() const;
+            void need_keys_added() const override;
 
         public:
             ///\name Basic operations
             ///\{
 
             ContentsEntry(const FSPath & path);
-            virtual ~ContentsEntry() = 0;
+            ~ContentsEntry() override = 0;
 
             ///\}
 
@@ -93,8 +93,6 @@ namespace paludis
             const std::shared_ptr<const MetadataValueKey<FSPath> > location_key() const;
 
             ///\}
-
-            ///\}
     };
 
     /**
@@ -115,7 +113,7 @@ namespace paludis
             ///\{
 
             ContentsFileEntry(const FSPath &, const std::string &);
-            ~ContentsFileEntry();
+            ~ContentsFileEntry() override;
 
             ///\}
 
@@ -186,7 +184,7 @@ namespace paludis
 
             ContentsSymEntry(const FSPath &, const std::string &,
                              const std::string &);
-            ~ContentsSymEntry();
+            ~ContentsSymEntry() override;
 
             ///\}
 

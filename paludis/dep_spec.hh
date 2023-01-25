@@ -85,7 +85,7 @@ namespace paludis
             ///\name Basic operations
             ///\{
 
-            virtual ~DepSpec();
+            ~DepSpec() override;
 
             DepSpec(const DepSpec &) = delete;
             DepSpec & operator= (const DepSpec &) = delete;
@@ -124,7 +124,7 @@ namespace paludis
 
             ///\}
 
-            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<DepSpec> clone() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -145,7 +145,7 @@ namespace paludis
 
             ///\}
 
-            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<DepSpec> clone() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -166,7 +166,7 @@ namespace paludis
 
             ///\}
 
-            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<DepSpec> clone() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -187,7 +187,7 @@ namespace paludis
 
             ///\}
 
-            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<DepSpec> clone() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -215,7 +215,7 @@ namespace paludis
 
             ConditionalDepSpec(const std::shared_ptr<const ConditionalDepSpecData> &);
             ConditionalDepSpec(const ConditionalDepSpec &);
-            ~ConditionalDepSpec();
+            ~ConditionalDepSpec() override;
 
             ///\}
 
@@ -278,7 +278,7 @@ namespace paludis
 
             StringDepSpec(const std::string &);
 
-            ~StringDepSpec();
+            ~StringDepSpec() override;
 
             ///\}
 
@@ -372,7 +372,7 @@ namespace paludis
 
             PackageDepSpec(const PackageDepSpec &);
 
-            ~PackageDepSpec();
+            ~PackageDepSpec() override;
 
             ///\}
 
@@ -465,7 +465,7 @@ namespace paludis
 
             ///\}
 
-            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<DepSpec> clone() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -491,7 +491,7 @@ namespace paludis
             /// Fetch the name of our set.
             const SetName name() const PALUDIS_ATTRIBUTE((warn_unused_result));
 
-            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<DepSpec> clone() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -512,7 +512,7 @@ namespace paludis
 
             ///\}
 
-            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<DepSpec> clone() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -555,7 +555,7 @@ namespace paludis
              */
             std::string filename() const;
 
-            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<DepSpec> clone() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -578,7 +578,7 @@ namespace paludis
 
             ///\}
 
-            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<DepSpec> clone() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -637,7 +637,7 @@ namespace paludis
              *
              * \since 0.73
              */
-            virtual const std::shared_ptr<const DepSpecAnnotations> maybe_annotations() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            const std::shared_ptr<const DepSpecAnnotations> maybe_annotations() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             /**
              * Change our annotations, may be null.  Forwards to the
@@ -645,9 +645,9 @@ namespace paludis
              *
              * \since 0.73
              */
-            virtual void set_annotations(const std::shared_ptr<const DepSpecAnnotations> &);
+            void set_annotations(const std::shared_ptr<const DepSpecAnnotations> &) override;
 
-            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<DepSpec> clone() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     /**
@@ -672,7 +672,7 @@ namespace paludis
             ///\{
 
             LabelsDepSpec();
-            ~LabelsDepSpec();
+            ~LabelsDepSpec() override;
 
             ///\}
 
@@ -690,7 +690,7 @@ namespace paludis
 
             ///\}
 
-            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<DepSpec> clone() const override PALUDIS_ATTRIBUTE((warn_unused_result));
     };
 
     class PALUDIS_VISIBLE PlainTextLabelDepSpec :
@@ -701,14 +701,17 @@ namespace paludis
             ///\{
 
             PlainTextLabelDepSpec(const std::string &);
-            ~PlainTextLabelDepSpec();
+            ~PlainTextLabelDepSpec() override;
 
             ///\}
 
-            virtual std::shared_ptr<DepSpec> clone() const PALUDIS_ATTRIBUTE((warn_unused_result));
+            std::shared_ptr<DepSpec> clone() const override PALUDIS_ATTRIBUTE((warn_unused_result));
 
             const std::string label() const PALUDIS_ATTRIBUTE((warn_unused_result));
     };
+
+    extern template class PALUDIS_VISIBLE LabelsDepSpec<URILabel>;
+    extern template class PALUDIS_VISIBLE LabelsDepSpec<DependenciesLabel>;
 
     extern template class PALUDIS_VISIBLE WrappedForwardIterator<DependenciesLabelsDepSpec::ConstIteratorTag,
            const std::shared_ptr<const DependenciesLabel> >;

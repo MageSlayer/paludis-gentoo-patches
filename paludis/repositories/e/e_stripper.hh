@@ -60,19 +60,19 @@ namespace paludis
                 Pimp<EStripper> _imp;
 
             protected:
-                virtual void on_enter_dir(const FSPath &);
-                virtual void on_leave_dir(const FSPath &);
+                void on_enter_dir(const FSPath &) override;
+                void on_leave_dir(const FSPath &) override;
 
-                virtual void on_strip(const FSPath &);
-                virtual void on_split(const FSPath &, const FSPath &);
-                virtual void on_dwarf_compress(const FSPath &);
-                virtual void on_unknown(const FSPath &);
+                void on_strip(const FSPath &) override;
+                void on_split(const FSPath &, const FSPath &) override;
+                void on_dwarf_compress(const FSPath &) override;
+                void on_unknown(const FSPath &) override;
 
             public:
                 EStripper(const EStripperOptions &);
-                ~EStripper();
+                ~EStripper() override;
 
-                virtual void strip();
+                void strip() override;
         };
     }
 }

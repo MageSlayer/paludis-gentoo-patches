@@ -35,7 +35,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -79,7 +78,7 @@ SizeCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (std::distance(cmdline.begin_parameters(), cmdline.end_parameters()) != 1)
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("size takes exactly one parameter");
 
     return size_common(env, true, *cmdline.begin_parameters(), true, false);

@@ -97,7 +97,7 @@ TEST(FSStat, Realpath)
     d = e;
     EXPECT_TRUE(! d.stat().is_regular_file());
     EXPECT_TRUE(! d.stat().exists());
-    EXPECT_THROW(e.readlink(), FSError);
+    EXPECT_THROW(auto PALUDIS_ATTRIBUTE((unused)) x = e.readlink(), FSError);
 
     d = FSPath("fs_stat_TEST_dir/all_perms");
     EXPECT_TRUE(! e.stat().is_regular_file());

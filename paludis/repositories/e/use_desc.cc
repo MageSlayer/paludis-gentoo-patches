@@ -52,13 +52,13 @@ namespace paludis
             if (f.stat().is_regular_file_or_symlink_to_regular_file())
             {
                 LineConfigFile ff(f, { lcfo_disallow_continuations });
-                for (LineConfigFile::ConstIterator line(ff.begin()), line_end(ff.end()) ;
-                        line != line_end ; ++line)
+                for (const auto & line : ff)
                 {
-                    std::string::size_type p(line->find(" - "));
+                    std::string::size_type p(line.find(" - "));
                     if (std::string::npos == p)
                         continue;
-                    std::string lhs(line->substr(0, p)), rhs(line->substr(p + 3));
+                    std::string lhs(line.substr(0, p));
+                    std::string rhs(line.substr(p + 3));
 
                     std::string::size_type q(lhs.find(':'));
                     if (std::string::npos == q)
@@ -72,9 +72,8 @@ namespace paludis
 
         Imp(const std::shared_ptr<const UseDescFileInfoSequence> & f)
         {
-            for (UseDescFileInfoSequence::ConstIterator ff(f->begin()), ff_end(f->end()) ;
-                    ff != ff_end ; ++ff)
-                add(ff->first, ff->second);
+            for (const auto & ff : *f)
+                add(ff.first, ff.second);
         }
     };
 }

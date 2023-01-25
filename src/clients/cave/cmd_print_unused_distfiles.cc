@@ -147,7 +147,7 @@ PrintUnusedDistfilesCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("print-unused-distfiles takes no parameters");
 
     //
@@ -159,25 +159,23 @@ PrintUnusedDistfilesCommand::run(
     std::list<Selection> selections;
     selections.push_back(selection::AllVersionsUnsorted(generator::All() | filter::InstalledAtRoot(env->preferred_root_key()->parse_value())));
 
-    for (auto c(cmdline.a_include.begin_args()), c_end(cmdline.a_include.end_args()) ;
-            c != c_end ; ++c)
-        selections.push_back(selection::AllVersionsUnsorted(generator::InRepository(RepositoryName(*c))));
+    for (const auto & repository_name : cmdline.a_include.args())
+        selections.push_back(selection::AllVersionsUnsorted(generator::InRepository(RepositoryName(repository_name))));
 
-    std::set<std::shared_ptr<const PackageID>, PackageIDComparator> already_done((PackageIDComparator(env.get())));
-    for (auto & selection : selections)
+    std::set<std::shared_ptr<const PackageID>, PackageIDComparator> already_done(PackageIDComparator(env.get()));
+    for (const auto & selection : selections)
     {
         auto ids((*env)[selection]);
 
-        for (PackageIDSequence::ConstIterator iter(ids->begin()), end(ids->end()) ;
-                iter != end ; ++iter)
+        for (const auto & id : *ids)
         {
-            if (! already_done.insert(*iter).second)
+            if (! already_done.insert(id).second)
                 continue;
 
-            if ((*iter)->fetches_key())
+            if (id->fetches_key())
             {
-                DistfilesFilter filter(env.get(), *iter, used_distfiles);
-                (*iter)->fetches_key()->parse_value()->top()->accept(filter);
+                DistfilesFilter filter(env.get(), id, used_distfiles);
+                id->fetches_key()->parse_value()->top()->accept(filter);
             }
         }
     }

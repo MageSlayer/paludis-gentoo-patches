@@ -35,11 +35,11 @@ namespace paludis
 
             public:
                 EUnsupportedMask(const char, const std::string &, const std::string &);
-                ~EUnsupportedMask();
+                ~EUnsupportedMask() override;
 
-                virtual char key() const;
-                virtual const std::string description() const;
-                virtual const std::string explanation() const;
+                char key() const override;
+                const std::string description() const override;
+                const std::string explanation() const override;
         };
 
         class ERepositoryMask :
@@ -51,14 +51,14 @@ namespace paludis
             public:
                 ERepositoryMask(const char, const std::string & description,
                         const std::string & comment, const std::string & token, const FSPath &);
-                ~ERepositoryMask();
+                ~ERepositoryMask() override;
 
-                virtual char key() const;
-                const std::string description() const;
+                char key() const override;
+                const std::string description() const override;
 
-                virtual const std::string comment() const;
-                virtual const std::string token() const;
-                virtual const FSPath mask_file() const;
+                const std::string comment() const override;
+                const std::string token() const override;
+                const FSPath mask_file() const override;
         };
 
         const std::shared_ptr<const UnacceptedMask> create_e_unaccepted_mask(
