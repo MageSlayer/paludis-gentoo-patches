@@ -47,17 +47,16 @@ int main(int argc, char * argv[])
                     filter::InstalledAtSlash())]);
 
         /* For each ID: */
-        for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
+        for (const auto & id : *ids)
         {
-            cout << "Information about '" << **i << "':" << endl;
+            cout << "Information about '" << *id << "':" << endl;
 
             /* Do we have a homepage? All PackageID key methods may return a
              * null pointer. */
-            if ((*i)->homepage_key())
+            if (id->homepage_key())
             {
-                DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec> homepages(env.get(), *i);
-                (*i)->homepage_key()->parse_value()->top()->accept(homepages);
+                DepSpecFlattener<SimpleURISpecTree, SimpleURIDepSpec> homepages(env.get(), id);
+                id->homepage_key()->parse_value()->top()->accept(homepages);
 
                 cout << "    " << left << setw(24) << "Homepages:" << " "
                     << join(indirect_iterator(homepages.begin()), indirect_iterator(homepages.end()), " ")
@@ -70,13 +69,13 @@ int main(int argc, char * argv[])
              * want exists, and then visitor_cast<> to see whether it's
              * of a suitable type (the key could be something other than a
              * MetadataSpecTreeKey<PlainTextSpecTree>). */
-            if ((*i)->end_metadata() != (*i)->find_metadata("RESTRICT") &&
-                    visitor_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(**(*i)->find_metadata("RESTRICT")))
+            if (id->end_metadata() != id->find_metadata("RESTRICT") &&
+                    visitor_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(**id->find_metadata("RESTRICT")))
             {
-                DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env.get(), *i);
+                DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env.get(), id);
 
                 visitor_cast<const MetadataSpecTreeKey<PlainTextSpecTree> >(
-                        **(*i)->find_metadata("RESTRICT"))->parse_value()->top()->accept(restricts);
+                        **id->find_metadata("RESTRICT"))->parse_value()->top()->accept(restricts);
 
                 cout << "    " << left << setw(24) << "Restricts:" << " "
                     << join(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()), " ")

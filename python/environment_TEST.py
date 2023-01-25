@@ -32,6 +32,7 @@ import unittest
 
 Log.instance.log_level = LogLevel.WARNING
 
+
 class TestCase_01_Environments(unittest.TestCase):
     def setUp(self):
         self.e = EnvironmentFactory.instance.create("")
@@ -40,31 +41,50 @@ class TestCase_01_Environments(unittest.TestCase):
         self.assertRaises(Exception, Environment)
 
     def test_07_sets(self):
-        self.assert_(isinstance(self.e.set("everything"), AllDepSpec))
-        self.assert_(isinstance(self.e.set_names, SetNameIterable))
+        self.assertTrue(isinstance(self.e.set("everything"), AllDepSpec))
+        self.assertTrue(isinstance(self.e.set_names, SetNameIterable))
 
     def test_12_config_dir(self):
-        self.assert_(isinstance(self.e.config_dir, str))
+        self.assertTrue(isinstance(self.e.config_dir, str))
 
     def test_23_fetch_unique_qpn(self):
-        self.assertEqual(str(QualifiedPackageName("foo/bar")), str(self.e.fetch_unique_qualified_package_name("bar")))
-        self.assertEqual(str(QualifiedPackageName("foo/bar")), str(self.e.fetch_unique_qualified_package_name("bar",
-            Filter.SupportsInstallAction())))
+        self.assertEqual(
+            str(QualifiedPackageName("foo/bar")),
+            str(self.e.fetch_unique_qualified_package_name("bar")),
+        )
+        self.assertEqual(
+            str(QualifiedPackageName("foo/bar")),
+            str(
+                self.e.fetch_unique_qualified_package_name(
+                    "bar", Filter.SupportsInstallAction()
+                )
+            ),
+        )
 
     def test_24_exceptions(self):
-        self.assertRaises(NoSuchPackageError, self.e.fetch_unique_qualified_package_name, "baz")
-        self.assertRaises(NoSuchPackageError, self.e.fetch_unique_qualified_package_name, "foobarbaz")
-        self.assertRaises(NoSuchPackageError, self.e.fetch_unique_qualified_package_name, "bar",
-                Filter.SupportsUninstallAction())
+        self.assertRaises(
+            NoSuchPackageError, self.e.fetch_unique_qualified_package_name, "baz"
+        )
+        self.assertRaises(
+            NoSuchPackageError, self.e.fetch_unique_qualified_package_name, "foobarbaz"
+        )
+        self.assertRaises(
+            NoSuchPackageError,
+            self.e.fetch_unique_qualified_package_name,
+            "bar",
+            Filter.SupportsUninstallAction(),
+        )
 
     def test_25_reduced(self):
-        self.assert_(self.e.reduced_username() != "")
-        self.assert_(self.e.reduced_uid() >= 0)
-        self.assert_(self.e.reduced_gid() >= 0)
+        self.assertTrue(self.e.reduced_username() != "")
+        self.assertTrue(self.e.reduced_uid() >= 0)
+        self.assertTrue(self.e.reduced_gid() >= 0)
+
 
 class TestCase_03_TestEnvironment(unittest.TestCase):
     def test_01_create(self):
         e = TestEnvironment()
+
 
 class TestCase_04_Environment_subclassingd(unittest.TestCase):
     class SubEnv(EnvironmentImplementation):
@@ -118,6 +138,7 @@ class TestCase_04_Environment_subclassingd(unittest.TestCase):
 
     def test_01_environment_implementation(self):
         test_env(self.SubEnv())
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -45,17 +45,12 @@ namespace paludis
                 {
                     namespace bp = boost::python;
                     this->def(bp::self_ns::str(bp::self))
-#if PY_MAJOR_VERSION < 3
-                      .def("__cmp__", &paludis::python::py_cmp<WrappedValue<Tag_> >)
-# else
                       .def(bp::self == bp::self)
                       .def(bp::self != bp::self)
                       .def(bp::self <  bp::self)
                       .def(bp::self <= bp::self)
                       .def(bp::self >  bp::self)
-                      .def(bp::self >= bp::self)
-# endif
-                      ;
+                      .def(bp::self >= bp::self);
                     bp::implicitly_convertible<typename WrappedValueTraits<Tag_>::UnderlyingType,
                             WrappedValue<Tag_> >();
                 }

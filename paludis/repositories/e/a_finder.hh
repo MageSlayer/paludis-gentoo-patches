@@ -55,7 +55,7 @@ namespace paludis
                 typedef std::list<std::pair<const FetchableURIDepSpec *,
                         const URILabelsDepSpec *> >::const_iterator ConstIterator;
 
-                ConstIterator begin();
+                ConstIterator begin() const;
 
                 ConstIterator end() const;
         };

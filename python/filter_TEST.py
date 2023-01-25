@@ -25,14 +25,14 @@ import unittest
 
 Log.instance.log_level = LogLevel.WARNING
 
+
 class TestCase_01_Filter(unittest.TestCase):
     def test_01_get(self):
         pass
 
     def test_02_str(self):
-        self.assertEquals(str(Filter.All()), "all matches")
+        self.assertEqual(str(Filter.All()), "all matches")
 
 
 if __name__ == "__main__":
     unittest.main()
-

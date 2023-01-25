@@ -40,6 +40,7 @@ namespace paludis
             ///\{
 
             FSError(const std::string & message) noexcept;
+            FSError(int error, const std::string & message) noexcept;
 
             ///\}
     };

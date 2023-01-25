@@ -22,7 +22,6 @@
 
 #include <paludis/util/set-fwd.hh>
 #include <paludis/util/options-fwd.hh>
-#include <paludis/repository-fwd.hh>
 #include <memory>
 #include <iosfwd>
 

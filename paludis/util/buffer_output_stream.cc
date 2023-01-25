@@ -92,9 +92,8 @@ BufferOutputStreamBuf::unbuffer(std::ostream & stream)
         _imp->complete_strings.swap(c);
     }
 
-    for (std::list<std::string>::const_iterator s(c.begin()), s_end(c.end()) ;
-            s != s_end ; ++s)
-        stream << *s;
+    for (const auto & s : c)
+        stream << s;
 
     stream << std::flush;
 }

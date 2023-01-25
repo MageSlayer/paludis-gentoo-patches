@@ -39,10 +39,9 @@ CommaSeparatedDepParser::parse(const Environment * const env, const std::string 
     std::list<std::string> tokens;
     tokenise<delim_kind::AnyOfTag, delim_mode::DelimiterTag>(s, ",", "", std::back_inserter(tokens));
 
-    for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-            t != t_end ; ++t)
+    for (const auto & token : tokens)
     {
-        std::string a(strip_leading(strip_trailing(*t, " \t\r\n"), " \t\r\n"));
+        std::string a(strip_leading(strip_trailing(token, " \t\r\n"), " \t\r\n"));
         Context local_context("When parsing token '" + a + "':");
 
         if (a.empty())

@@ -12,7 +12,7 @@ if &compatible || v:version < 700
 endif
 
 if exists("b:current_syntax")
-  finish
+    finish
 endif
 
 syn region PaludisLicensesConfComment start=/^\s*#/ end=/$/
@@ -39,5 +39,4 @@ hi def link PaludisLicensesConfLicenseGroup     Macro
 hi def link PaludisLicensesConfContinuation     Preproc
 
 let b:current_syntax = "paludis-licenses-conf"
-
 

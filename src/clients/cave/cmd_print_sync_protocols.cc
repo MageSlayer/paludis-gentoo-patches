@@ -35,7 +35,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -75,18 +74,15 @@ PrintSyncProtocolsCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("print-sync-protocols takes no parameters");
 
     std::set<std::string> syncers;
 
     std::shared_ptr<const FSPathSequence> fes(env->syncers_dirs());
 
-    for (FSPathSequence::ConstIterator s(fes->begin()), s_end(fes->end());
-            s != s_end; ++s)
+    for (const auto & dir : *fes)
     {
-        FSPath dir(*s);
-
         if (! dir.stat().is_directory())
             continue;
 
@@ -119,4 +115,3 @@ PrintSyncProtocolsCommand::importance() const
 {
     return ci_scripting;
 }
-

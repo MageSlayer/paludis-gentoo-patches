@@ -88,15 +88,14 @@ namespace
     {
         if (full || ! p.package_ptr())
             return stringify(p);
-        else
-        {
-            std::string result(stringify(p.package_ptr()->package()));
-            if (p.slot_requirement_ptr())
-                result = result + stringify(*p.slot_requirement_ptr());
-            if (p.in_repository_ptr())
-                result = result + "::" + stringify(*p.in_repository_ptr());
-            return result;
-        }
+
+        std::string result(stringify(p.package_ptr()->package()));
+        if (p.slot_requirement_ptr())
+            result = result + stringify(*p.slot_requirement_ptr());
+        if (p.in_repository_ptr())
+            result = result + "::" + stringify(*p.in_repository_ptr());
+
+        return result;
     }
 
     struct ShowOneJobAttrs
@@ -114,7 +113,7 @@ namespace
 
         void visit(const InstallJob & job) const
         {
-            output_stream << "label=\"" << short_spec(job.origin_id_spec(), full) << " -> " << job.destination_repository_name() << "\"";
+            output_stream << "label=\"" << short_spec(job.origin_id_spec(), full) << " -> " << job.destination_repository_name() << "\", ";
             switch (job.destination_type())
             {
                 case dt_install_to_slash:
@@ -142,7 +141,7 @@ namespace
         void visit(const UninstallJob & job) const
         {
             output_stream << "label=\"uninstall " << join(job.ids_to_remove_specs()->begin(), job.ids_to_remove_specs()->end(), ", ",
-                    std::bind(&short_spec, std::placeholders::_1, full)) << "\"";
+                    std::bind(&short_spec, std::placeholders::_1, full)) << "\", ";
             output_stream << "shape=hexagon, ";
             output_stream << "fillcolor=slateblue, ";
             output_stream << "style=filled";
@@ -166,22 +165,21 @@ namespace
             (*j)->accept(ShowOneJobAttrs{output_stream, cmdline.graph_jobs_options.a_graph_jobs_full_names.specified()});
             output_stream << " ]" << endl;
 
-            for (auto r((*j)->requirements()->begin()), r_end((*j)->requirements()->end()) ;
-                     r != r_end ; ++r)
+            for (const auto & requirement : *(*j)->requirements())
             {
                 if (! cmdline.graph_jobs_options.a_graph_jobs_all_arrows.specified())
-                    if (! (r->required_if() - jri_require_for_independent).any())
+                    if (! (requirement.required_if() - jri_require_for_independent).any())
                         continue;
 
-                output_stream << "    job" << execute_job_list->number(j) << " -> job" << r->job_number() << " [ ";
-                if (r->required_if()[jri_require_always])
+                output_stream << "    job" << execute_job_list->number(j) << " -> job" << requirement.job_number() << " [";
+                if (requirement.required_if()[jri_require_always])
                     output_stream << " color=crimson";
-                else if (r->required_if()[jri_require_for_satisfied])
+                else if (requirement.required_if()[jri_require_for_satisfied])
                     output_stream << " color=indianred";
-                else if (r->required_if()[jri_require_for_independent])
+                else if (requirement.required_if()[jri_require_for_independent])
                     output_stream << " color=lightpink";
 
-                if (! r->required_if()[jri_fetching])
+                if (! requirement.required_if()[jri_fetching])
                     output_stream << " style=dotted";
 
                 output_stream << " ]" << endl;
@@ -240,18 +238,33 @@ GraphJobsCommand::run(
         close(fd);
     }
 
-    std::shared_ptr<SafeOFStream> stream_if_file;
-    if (! cmdline.graph_jobs_options.a_graph_jobs_basename.argument().empty())
-        stream_if_file = std::make_shared<SafeOFStream>(FSPath(cmdline.graph_jobs_options.a_graph_jobs_basename.argument() + ".graphviz"), -1, true);
+    const std::string graph_jobs_basename =
+            cmdline.graph_jobs_options.a_graph_jobs_basename.argument();
+
+    // If an empty basename was given just print to stdout
+    if (graph_jobs_basename.empty())
+    {
+        graph_jobs(env, cmdline, resolved->job_lists()->execute_job_list(), cout);
+        return 0;
+    }
+
+    const auto filename = FSPath(graph_jobs_basename + ".graphviz");
+
+    // Limit the scope of the SafeOFStream to assure it writes everything to
+    // file on destruction
+    {
+        SafeOFStream stream_if_file(filename, -1, true);
+        graph_jobs(env, cmdline, resolved->job_lists()->execute_job_list(), stream_if_file);
+    }
 
     int retcode(0);
-
-    graph_jobs(env, cmdline, resolved->job_lists()->execute_job_list(), stream_if_file ? *stream_if_file : cout);
-
-    if (stream_if_file && ! cmdline.graph_jobs_options.a_graph_jobs_format.argument().empty())
-        retcode = create_graph(env, cmdline,
-                FSPath(cmdline.graph_jobs_options.a_graph_jobs_basename.argument() + ".graphviz"),
-                FSPath(cmdline.graph_jobs_options.a_graph_jobs_basename.argument() + "." + cmdline.graph_jobs_options.a_graph_jobs_format.argument()));
+    if (! cmdline.graph_jobs_options.a_graph_jobs_format.argument().empty())
+    {
+        const FSPath graph_file(
+                graph_jobs_basename + "." +
+                cmdline.graph_jobs_options.a_graph_jobs_format.argument());
+        retcode = create_graph(env, cmdline, filename, graph_file);
+    }
 
     return retcode;
 }

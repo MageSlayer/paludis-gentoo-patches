@@ -38,11 +38,17 @@ namespace paludis
     };
 
     class PALUDIS_VISIBLE WildcardExpander :
-        public std::iterator<std::forward_iterator_tag, const FSPath>,
         public equality_operators::HasEqualityOperators
     {
         private:
             Pimp<WildcardExpander> _imp;
+
+        public:
+            using iterator_category = std::forward_iterator_tag;
+            using value_type = const FSPath;
+            using difference_type = ptrdiff_t;
+            using pointer = const FSPath *;
+            using reference = const FSPath &;
 
         public:
             WildcardExpander(const std::string &, const FSPath & = FSPath("/"));

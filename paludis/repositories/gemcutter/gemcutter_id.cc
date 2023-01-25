@@ -318,7 +318,7 @@ GemcutterID::extra_hash_value() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 GemcutterID::fs_location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSPath> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -330,7 +330,7 @@ GemcutterID::behaviours_key() const
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 GemcutterID::keywords_key() const
 {
-    return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -348,19 +348,19 @@ GemcutterID::build_dependencies_target_key() const
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 GemcutterID::build_dependencies_host_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 GemcutterID::run_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 GemcutterID::post_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
@@ -372,13 +372,13 @@ GemcutterID::short_description_key() const
 const std::shared_ptr<const MetadataValueKey<std::string> >
 GemcutterID::long_description_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<std::string> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 GemcutterID::fetches_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
@@ -390,7 +390,7 @@ GemcutterID::homepage_key() const
 const std::shared_ptr<const MetadataTimeKey>
 GemcutterID::installed_time_key() const
 {
-    return std::shared_ptr<const MetadataTimeKey>();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >

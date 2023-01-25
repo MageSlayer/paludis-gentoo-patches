@@ -150,8 +150,8 @@ VDBMerger::record_install_file(const FSPath & src, const FSPath & dst_dir, const
     const auto file(dst_dir / src.basename());
     const auto renamed_file(dst_dir / dst_name);
 
-    const std::string tidy(stringify(renamed_file.strip_leading(_imp->realroot))),
-                      tidy_real(stringify(file.strip_leading(_imp->realroot)));
+    const std::string tidy(stringify(renamed_file.strip_leading(_imp->realroot)));
+    const std::string tidy_real(stringify(file.strip_leading(_imp->realroot)));
     const Timestamp timestamp(renamed_file.stat().mtim());
 
     SafeIFStream infile(renamed_file);

@@ -82,11 +82,10 @@ PackageMaskConf::add(const FSPath & filename)
     if (! f)
         return;
 
-    for (LineConfigFile::ConstIterator line(f->begin()), line_end(f->end()) ;
-            line != line_end ; ++line)
+    for (const auto & line : *f)
     {
         std::vector<std::string> tokens;
-        tokenise_whitespace(*line, std::back_inserter(tokens));
+        tokenise_whitespace(line, std::back_inserter(tokens));
 
         if (tokens.empty())
             continue;
@@ -100,9 +99,14 @@ PackageMaskConf::add(const FSPath & filename)
 
         try
         {
-            _imp->masks.push_back(std::make_pair(std::shared_ptr<PackageDepSpec>(std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
-                                    spec, _imp->env,
-                                    { updso_allow_wildcards, updso_no_disambiguation, updso_throw_if_set }))), reasons));
+            _imp->masks.push_back(std::make_pair(
+                    std::make_shared<PackageDepSpec>(parse_user_package_dep_spec(
+                            spec,
+                            _imp->env,
+                            { updso_allow_wildcards,
+                              updso_no_disambiguation,
+                              updso_throw_if_set })),
+                    reasons));
         }
         catch (const GotASetNotAPackageDepSpec &)
         {
@@ -116,18 +120,17 @@ PackageMaskConf::query(const std::shared_ptr<const PackageID> & e, const std::st
 {
     using namespace std::placeholders;
 
-    for (auto i(_imp->masks.begin()), i_end(_imp->masks.end()) ;
-            i != i_end ; ++i)
-        if (match_package(*_imp->env, *i->first, e, nullptr, MatchPackageOptions()))
+    for (const auto & mask : _imp->masks)
+        if (match_package(*_imp->env, *mask.first, e, nullptr, MatchPackageOptions()))
         {
             if (r.empty())
             {
-                if (i->second.empty())
+                if (mask.second.empty())
                     return true;
             }
             else
             {
-                if (i->second.empty() || (i->second.end() != i->second.find(r)))
+                if (mask.second.empty() || (mask.second.end() != mask.second.find(r)))
                     return true;
             }
         }
@@ -135,30 +138,29 @@ PackageMaskConf::query(const std::shared_ptr<const PackageID> & e, const std::st
     {
         std::unique_lock<std::mutex> lock(_imp->set_mutex);
 
-        for (Sets::iterator it(_imp->sets.begin()),
-                 it_end(_imp->sets.end()); it_end != it; ++it)
+        for (auto & set : _imp->sets)
         {
-            if (! it->second.first)
+            if (! set.second.first)
             {
-                it->second.first = _imp->env->set(it->first);
-                if (! it->second.first)
+                set.second.first = _imp->env->set(set.first);
+                if (! set.second.first)
                 {
                     Log::get_instance()->message("paludis_environment.package_mask.unknown_set", ll_warning, lc_no_context) << "Set name '"
-                        << it->first << "' does not exist";
-                    it->second.first = std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
+                        << set.first << "' does not exist";
+                    set.second.first = std::make_shared<SetSpecTree>(std::make_shared<AllDepSpec>());
                 }
             }
 
-            if (match_package_in_set(*_imp->env, *it->second.first, e, { }))
+            if (match_package_in_set(*_imp->env, *set.second.first, e, { }))
             {
                 if (r.empty())
                 {
-                    if (it->second.second.empty())
+                    if (set.second.second.empty())
                         return true;
                 }
                 else
                 {
-                    if (it->second.second.empty() || (it->second.second.end() != it->second.second.find(r)))
+                    if (set.second.second.empty() || (set.second.second.end() != set.second.second.find(r)))
                         return true;
                 }
             }

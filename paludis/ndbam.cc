@@ -230,7 +230,7 @@ NDBAM::has_category_named(const CategoryNamePart & c)
             _imp->category_contents_map.insert(std::make_pair(c, std::make_shared<CategoryContents>()));
             return true;
         }
-        _imp->category_contents_map.insert(std::make_pair(c, std::shared_ptr<CategoryContents>()));
+        _imp->category_contents_map.insert(std::make_pair(c, nullptr));
     }
 
     return false;
@@ -262,7 +262,7 @@ NDBAM::has_package_named(const QualifiedPackageName & q)
             cc.package_contents_map.insert(std::make_pair(q, std::make_shared<PackageContents>()));
             return true;
         }
-        cc.package_contents_map.insert(std::make_pair(q, std::shared_ptr<PackageContents>()));
+        cc.package_contents_map.insert(std::make_pair(q, nullptr));
     }
 
     return false;
@@ -329,7 +329,7 @@ NDBAM::entries(const QualifiedPackageName & q)
                                         n::magic() = m,
                                         n::mutex() = std::make_shared<std::mutex>(),
                                         n::name() = q,
-                                        n::package_id() = std::shared_ptr<PackageID>(),
+                                        n::package_id() = nullptr,
                                         n::slot() = s,
                                         n::version() = v
                                 ))));
@@ -381,7 +381,7 @@ NDBAM::add_entry(const QualifiedPackageName & q, const FSPath & d)
                                 n::magic() = m,
                                 n::mutex() = std::make_shared<std::mutex>(),
                                 n::name() = q,
-                                n::package_id() = std::shared_ptr<PackageID>(),
+                                n::package_id() = nullptr,
                                 n::slot() = s,
                                 n::version() = v
                         ))));
@@ -451,48 +451,48 @@ NDBAM::parse_contents(const PackageID & id,
     }
 
     LineConfigFile f(ff, { });
-    for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
-            line != line_end ; ++line)
+    for (const auto & line : f)
     {
         std::map<std::string, std::string> tokens;
         std::string::size_type p(0);
         bool error(false);
-        while ((! error) && (p < line->length()) && (std::string::npos != p))
+        while ((! error) && (p < line.length()) && (std::string::npos != p))
         {
-            std::string::size_type q(line->find('=', p));
+            std::string::size_type q(line.find('=', p));
             if (std::string::npos == q)
             {
                 Log::get_instance()->message("ndbam.contents.invalid", ll_warning, lc_context)
-                    << "Malformed line '" << *line << "' in '" << ff << "'";
+                    << "Malformed line '" << line << "' in '" << ff << "'";
                 error = true;
                 continue;
             }
 
-            std::string key(line->substr(p, q - p)), value;
+            std::string key(line.substr(p, q - p));
+            std::string value;
             p = q + 1;
-            while (p < line->length() && std::string::npos != p)
+            while (p < line.length() && std::string::npos != p)
             {
-                if ('\\' == (*line)[p])
+                if ('\\' == line[p])
                 {
                     ++p;
-                    if (p >= line->length() || std::string::npos == p)
+                    if (p >= line.length() || std::string::npos == p)
                     {
                         Log::get_instance()->message("ndbam.contents.invalid", ll_warning, lc_context)
-                            << "Malformed line '" << *line << "' in '" << ff << "'";
+                            << "Malformed line '" << line << "' in '" << ff << "'";
                         error = true;
                         break;
                     }
-                    if ('n' == (*line)[p])
+                    if ('n' == line[p])
                         value.append("\n");
                     else
-                        value.append(1, (*line)[p]);
+                        value.append(1, line[p]);
                     ++p;
                 }
-                else if (' ' == (*line)[p])
+                else if (' ' == line[p])
                 {
                     if (! tokens.insert(std::make_pair(key, value)).second)
                         Log::get_instance()->message("ndbam.contents.duplicate", ll_warning, lc_context)
-                            << "Duplicate token '" << key << "' on line '" << *line << "' in '" << ff << "'";
+                            << "Duplicate token '" << key << "' on line '" << line << "' in '" << ff << "'";
                     key.clear();
                     value.clear();
                     ++p;
@@ -500,7 +500,7 @@ NDBAM::parse_contents(const PackageID & id,
                 }
                 else
                 {
-                    value.append(1, (*line)[p]);
+                    value.append(1, line[p]);
                     ++p;
                 }
             }
@@ -509,7 +509,7 @@ NDBAM::parse_contents(const PackageID & id,
             {
                 if (! tokens.insert(std::make_pair(key, value)).second)
                     Log::get_instance()->message("ndbam.contents.duplicate", ll_warning, lc_context)
-                        << "Duplicate token '" << key << "' on line '" << *line << "' in '" << ff << "'";
+                        << "Duplicate token '" << key << "' on line '" << line << "' in '" << ff << "'";
             }
         }
 
@@ -519,7 +519,7 @@ NDBAM::parse_contents(const PackageID & id,
         if (! tokens.count("type"))
         {
             Log::get_instance()->message("ndbam.contents.no_key.type", ll_warning, lc_context) <<
-                "No key 'type' found on line '" << *line << "' in '" << ff << "'";
+                "No key 'type' found on line '" << line << "' in '" << ff << "'";
             continue;
         }
         std::string type(tokens.find("type")->second);
@@ -527,7 +527,7 @@ NDBAM::parse_contents(const PackageID & id,
         if (! tokens.count("path"))
         {
             Log::get_instance()->message("ndbam.contents.no_key.path", ll_warning, lc_context) <<
-                "No key 'path' found on line '" << *line << "' in '" << ff << "'";
+                "No key 'path' found on line '" << line << "' in '" << ff << "'";
             continue;
         }
         std::string path(tokens.find("path")->second);
@@ -537,7 +537,7 @@ NDBAM::parse_contents(const PackageID & id,
             if (! tokens.count("md5"))
             {
                 Log::get_instance()->message("ndbam.contents.no_key.md5", ll_warning, lc_context) <<
-                    "No key 'md5' found on sym line '" << *line << "' in '" << ff << "'";
+                    "No key 'md5' found on sym line '" << line << "' in '" << ff << "'";
                 continue;
             }
             std::string md5(tokens.find("md5")->second);
@@ -553,7 +553,7 @@ NDBAM::parse_contents(const PackageID & id,
             if (! tokens.count("mtime"))
             {
                 Log::get_instance()->message("ndbam.contents.no_key.mtime", ll_warning, lc_context) <<
-                    "No key 'mtime' found on sym line '" << *line << "' in '" << ff << "'";
+                    "No key 'mtime' found on sym line '" << line << "' in '" << ff << "'";
                 continue;
             }
             time_t mtime(destringify<time_t>(tokens.find("mtime")->second));
@@ -575,7 +575,7 @@ NDBAM::parse_contents(const PackageID & id,
             if (! tokens.count("target"))
             {
                 Log::get_instance()->message("ndbam.contents.no_key.target", ll_warning, lc_context) <<
-                    "No key 'target' found on sym line '" << *line << "' in '" << ff << "'";
+                    "No key 'target' found on sym line '" << line << "' in '" << ff << "'";
                 continue;
             }
             std::string target(tokens.find("target")->second);
@@ -583,7 +583,7 @@ NDBAM::parse_contents(const PackageID & id,
             if (! tokens.count("mtime"))
             {
                 Log::get_instance()->message("ndbam.contents.no_key.mtime", ll_warning, lc_context) <<
-                    "No key 'mtime' found on sym line '" << *line << "' in '" << ff << "'";
+                    "No key 'mtime' found on sym line '" << line << "' in '" << ff << "'";
                 continue;
             }
             time_t mtime(destringify<time_t>(tokens.find("mtime")->second));
@@ -604,7 +604,7 @@ NDBAM::parse_contents(const PackageID & id,
         }
         else
             Log::get_instance()->message("ndbam.contents.unknown_type", ll_warning, lc_context) <<
-                "Unknown type '" << type << "' found on line '" << *line << "' in '" << ff << "'";
+                "Unknown type '" << type << "' found on line '" << line << "' in '" << ff << "'";
     }
 }
 

@@ -136,6 +136,7 @@ namespace paludis
             ///\{
 
             FSMergerError(const std::string & msg) noexcept;
+            FSMergerError(int error, const std::string & msg) noexcept;
 
             ///\}
     };

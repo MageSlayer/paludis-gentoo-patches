@@ -34,8 +34,6 @@
 
 using namespace paludis;
 using namespace cave;
-using std::cout;
-using std::endl;
 
 namespace paludis
 {
@@ -65,9 +63,8 @@ ScriptCommand::run(
         )
 {
     std::string arg_str;
-    for (Sequence<std::string>::ConstIterator n(args->begin()), n_end(args->end()) ;
-            n != n_end ; ++n)
-        arg_str = arg_str + " " + args::escape(*n);
+    for (const auto & arg : *args)
+        arg_str = arg_str + " " + args::escape(arg);
 
     Process process((ProcessCommand(stringify(_imp->executable) + arg_str)));
     int retcode(process.run().wait());

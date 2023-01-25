@@ -121,14 +121,13 @@ InstalledUnpackagedRepository::package_ids(const QualifiedPackageName & q, const
     std::shared_ptr<NDBAMEntrySequence> entries(_imp->ndbam.entries(q));
     std::shared_ptr<PackageIDSequence> result(std::make_shared<PackageIDSequence>());
 
-    for (IndirectIterator<NDBAMEntrySequence::ConstIterator> e(entries->begin()), e_end(entries->end()) ;
-            e != e_end ; ++e)
+    for (auto & entry : *entries)
     {
-        std::unique_lock<std::mutex> l(*(*e).mutex());
-        if (! (*e).package_id())
-            (*e).package_id() = std::make_shared<InstalledUnpackagedID>(_imp->params.environment(), (*e).name(), (*e).version(),
-                        (*e).slot(), name(), (*e).fs_location(), (*e).magic(), installed_root_key()->parse_value(), &_imp->ndbam);
-        result->push_back((*e).package_id());
+        std::unique_lock<std::mutex> l(*entry->mutex());
+        if (! entry->package_id())
+            entry->package_id() = std::make_shared<InstalledUnpackagedID>(_imp->params.environment(), entry->name(), entry->version(),
+                        entry->slot(), name(), entry->fs_location(), entry->magic(), installed_root_key()->parse_value(), &_imp->ndbam);
+        result->push_back(entry->package_id());
     }
 
     return result;
@@ -260,16 +259,16 @@ InstalledUnpackagedRepository::merge(const MergeParams & m)
         rewrite_ids_over_to_root = kk->parse_value();
     }
 
-    std::shared_ptr<const PackageID> if_overwritten_id, if_same_name_id;
+    std::shared_ptr<const PackageID> if_overwritten_id;
+    std::shared_ptr<const PackageID> if_same_name_id;
     {
         std::shared_ptr<const PackageIDSequence> ids(package_ids(m.package_id()->name(), { }));
-        for (PackageIDSequence::ConstIterator v(ids->begin()), v_end(ids->end()) ;
-                v != v_end ; ++v)
+        for (const auto & id : *ids)
         {
-            if_same_name_id = *v;
-            if ((*v)->version() == m.package_id()->version() && parallel_slot_is_same(*v, m.package_id()))
+            if_same_name_id = id;
+            if (id->version() == m.package_id()->version() && parallel_slot_is_same(id, m.package_id()))
             {
-                if_overwritten_id = *v;
+                if_overwritten_id = id;
                 break;
             }
         }
@@ -499,4 +498,3 @@ InstalledUnpackagedRepository::maybe_expand_licence_nonrecursively(const std::st
 {
     return nullptr;
 }
-

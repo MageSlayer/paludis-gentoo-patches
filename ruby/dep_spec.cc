@@ -448,9 +448,8 @@ namespace
 
         if (rb_block_given_p())
         {
-            for (URILabelsDepSpec::ConstIterator it(real_ptr->begin()),
-                     it_end(real_ptr->end()); it_end != it; ++it)
-                rb_yield(uri_label_to_value(*it));
+            for (const auto & label : *real_ptr)
+                rb_yield(uri_label_to_value(label));
 
             return Qnil;
         }
@@ -458,9 +457,8 @@ namespace
         {
             VALUE result(rb_ary_new());
 
-            for (URILabelsDepSpec::ConstIterator it(real_ptr->begin()),
-                     it_end(real_ptr->end()); it_end != it; ++it)
-                rb_ary_push(result, uri_label_to_value(*it));
+            for (const auto & label : *real_ptr)
+                rb_ary_push(result, uri_label_to_value(label));
 
             return result;
         }
@@ -475,9 +473,8 @@ namespace
 
         if (rb_block_given_p())
         {
-            for (DependenciesLabelsDepSpec::ConstIterator it(real_ptr->begin()),
-                     it_end(real_ptr->end()); it_end != it; ++it)
-                rb_yield(dependencies_label_to_value(*it));
+            for (const auto & label : *real_ptr)
+                rb_yield(dependencies_label_to_value(label));
 
             return Qnil;
         }
@@ -485,9 +482,8 @@ namespace
         {
             VALUE result(rb_ary_new());
 
-            for (DependenciesLabelsDepSpec::ConstIterator it(real_ptr->begin()),
-                     it_end(real_ptr->end()); it_end != it; ++it)
-                rb_ary_push(result, dependencies_label_to_value(*it));
+            for (const auto & label : *real_ptr)
+                rb_ary_push(result, dependencies_label_to_value(label));
 
             return result;
         }
@@ -794,17 +790,15 @@ namespace
         Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
         VALUE result(rb_ary_new());
         VALUE result_hash;
-        if (std::static_pointer_cast<const WrappedSpec<PackageDepSpec> >(*ptr)->spec()->version_requirements_ptr())
-            for (VersionRequirements::ConstIterator i(std::static_pointer_cast<const PackageDepSpec>((*ptr)->base_spec())->
-                        version_requirements_ptr()->begin()),
-                    i_end(std::static_pointer_cast<const PackageDepSpec>((*ptr)->base_spec())->version_requirements_ptr()->end()) ;
-                    i != i_end; ++i)
+        const auto & version_requirements = std::static_pointer_cast<const WrappedSpec<PackageDepSpec>>(*ptr)->spec()->version_requirements_ptr();
+        if (version_requirements)
+            for (const auto & requirement : *version_requirements)
             {
                 result_hash = rb_hash_new();
                 rb_hash_aset(result_hash, ID2SYM(rb_intern("operator")),
-                    rb_str_new2(stringify(i->version_operator()).c_str()));
+                    rb_str_new2(stringify(requirement.version_operator()).c_str()));
                 rb_hash_aset(result_hash, ID2SYM(rb_intern("spec")),
-                    version_spec_to_value(i->version_spec()));
+                    version_spec_to_value(requirement.version_spec()));
                 rb_ary_push(result, result_hash);
             }
         return result;
@@ -900,11 +894,10 @@ namespace
             Data_Get_Struct(self, std::shared_ptr<WrappedSpecBase>, ptr);
 
             if ((*ptr)->children())
-                for (WrappedSpecBase::Children::const_iterator i((*ptr)->children()->begin()), i_end((*ptr)->children()->end()) ;
-                        i != i_end ; ++i)
+                for (const auto & child : *(*ptr)->children())
                 {
-                    std::shared_ptr<const WrappedSpecBase> * newptr(new std::shared_ptr<const WrappedSpecBase>(i->second));
-                    rb_yield(Data_Wrap_Struct(i->first, 0, &Common<std::shared_ptr<const WrappedSpecBase> >::free, newptr));
+                    std::shared_ptr<const WrappedSpecBase> * newptr(new std::shared_ptr<const WrappedSpecBase>(child.second));
+                    rb_yield(Data_Wrap_Struct(child.first, 0, &Common<std::shared_ptr<const WrappedSpecBase> >::free, newptr));
                 }
             return self;
         }

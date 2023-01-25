@@ -138,25 +138,24 @@ namespace
                     tokenise_whitespace(lines[m.inherited()->flat_list_index()], std::inserter(tokens, tokens.begin()));
                     auto repo(_imp->env->fetch_repository(id->repository_name()));
                     FSPath eclassdir((repo->location_key()->parse_value() / "eclass").realpath_if_exists());
-                    for (std::set<std::string>::const_iterator it(tokens.begin()),
-                             it_end(tokens.end()); it_end != it; ++it)
+                    for (const auto & token : tokens)
                     {
-                        const std::pair<FSPath, FSStat> * eclass(_imp->eclass_mtimes->eclass(*it));
+                        const std::pair<FSPath, FSStat> * eclass(_imp->eclass_mtimes->eclass(token));
                         if (eclass)
                             Log::get_instance()->message("e.cache.flat_list.eclass.path", ll_debug, lc_context)
-                                << "Cache-requested eclass '" << *it << "' maps to '" << eclass->first << "'";
+                                << "Cache-requested eclass '" << token << "' maps to '" << eclass->first << "'";
 
                         if (! eclass)
                         {
                             Log::get_instance()->message("e.cache.flat_list.eclass.missing", ll_debug, lc_context)
-                                << "Can't find cache-requested eclass '" << *it << "'";
+                                << "Can't find cache-requested eclass '" << token << "'";
                             ok = false;
                         }
 
                         else if (eclass->first.dirname() != eclassdir)
                         {
                             Log::get_instance()->message("e.cache.flat_list.eclass.wrong_location", ll_debug, lc_context)
-                                << "Cache-requested eclass '" << *it << "' was found at '"
+                                << "Cache-requested eclass '" << token << "' was found at '"
                                 << eclass->first.dirname() << "', but expected '" << eclassdir << "'";
                             ok = false;
                         }
@@ -164,7 +163,7 @@ namespace
                         else if (eclass->second.mtim().seconds() > cache_time)
                         {
                             Log::get_instance()->message("e.cache.flat_list.eclass.wrong_mtime", ll_debug, lc_context)
-                                << "Cache-requested eclass '" << *it << "' has mtime "
+                                << "Cache-requested eclass '" << token << "' has mtime "
                                 << eclass->second.mtim().seconds() << ", but expected at most " << cache_time;
                             ok = false;
                         }
@@ -376,7 +375,8 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
             std::vector<std::string> inherited;
 
             {
-                bool ok(true), is_md5(false);
+                bool ok(true);
+                bool is_md5(false);
 
                 std::map<std::string, std::string>::const_iterator md5_it(keys.find("_md5_"));
                 if (keys.end() != md5_it)
@@ -449,7 +449,8 @@ EbuildFlatMetadataCache::load(const std::shared_ptr<const EbuildID> & id, const 
 
                         else if (is_md5)
                         {
-                            std::string cache_md5(*it), actual_md5(_imp->eclass_mtimes->md5(eclass->first));
+                            std::string cache_md5(*it);
+                            std::string actual_md5(_imp->eclass_mtimes->md5(eclass->first));
                             if (actual_md5 != cache_md5)
                             {
                                 Log::get_instance()->message("e.cache.flat_hash.eclass.wrong_md5", ll_debug, lc_context)
@@ -786,13 +787,12 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
     {
         std::vector<std::string> eclasses;
         auto inherited(id->inherited_key()->parse_value());
-        for (auto it(inherited->begin()), it_end(inherited->end()) ;
-                it != it_end ; ++it)
+        for (const auto & it : *inherited)
         {
-            auto eclass(_imp->eclass_mtimes->eclass(*it));
+            auto eclass(_imp->eclass_mtimes->eclass(it));
             if (! eclass)
-                throw InternalError(PALUDIS_HERE, "eclass '" + *it + "' disappeared?");
-            eclasses.push_back(*it);
+                throw InternalError(PALUDIS_HERE, "eclass '" + it + "' disappeared?");
+            eclasses.push_back(it);
             eclasses.push_back(stringify(eclass->first.dirname()));
             eclasses.push_back(stringify(eclass->second.mtim().seconds()));
         }
@@ -803,13 +803,12 @@ EbuildFlatMetadataCache::save(const std::shared_ptr<const EbuildID> & id)
     {
         std::vector<std::string> exlibs;
         auto inherited(id->inherited_key()->parse_value());
-        for (auto it(inherited->begin()), it_end(inherited->end()) ;
-                it != it_end ; ++it)
+        for (const auto & it : *inherited)
         {
-            auto exlib(_imp->eclass_mtimes->exlib(*it, id->name()));
+            auto exlib(_imp->eclass_mtimes->exlib(it, id->name()));
             if (! exlib)
-                throw InternalError(PALUDIS_HERE, "exlib '" + *it + "' for '" + stringify(id->name()) + "' disappeared?");
-            exlibs.push_back(*it);
+                throw InternalError(PALUDIS_HERE, "exlib '" + it + "' for '" + stringify(id->name()) + "' disappeared?");
+            exlibs.push_back(it);
             exlibs.push_back(stringify(exlib->first.dirname()));
             exlibs.push_back(stringify(exlib->second.mtim().seconds()));
         }

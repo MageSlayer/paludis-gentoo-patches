@@ -274,11 +274,9 @@ UnavailableRepositoryID::perform_action(Action & action) const
             throw InternalError(PALUDIS_HERE, "bad WantPhase");
     }
 
-    for (PackageIDSequence::ConstIterator i(install_action->options.replacing()->begin()),
-            i_end(install_action->options.replacing()->end()) ;
-            i != i_end ; ++i)
+    for (const auto & replaced_id : *install_action->options.replacing())
     {
-        Context local_context("When cleaning '" + stringify(**i) + "':");
+        Context local_context("When cleaning '" + stringify(*replaced_id) + "':");
 
         UninstallActionOptions uo(make_named_values<UninstallActionOptions>(
                     n::config_protect() = used_config_protect,
@@ -290,7 +288,7 @@ UnavailableRepositoryID::perform_action(Action & action) const
                     n::override_contents() = nullptr,
                     n::want_phase() = install_action->options.want_phase()
                     ));
-        install_action->options.perform_uninstall()(*i, uo);
+        install_action->options.perform_uninstall()(replaced_id, uo);
     }
 
     output_manager->succeeded();
@@ -311,7 +309,7 @@ UnavailableRepositoryID::extra_hash_value() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 UnavailableRepositoryID::fs_location_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSPath> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -323,7 +321,7 @@ UnavailableRepositoryID::behaviours_key() const
 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >
 UnavailableRepositoryID::keywords_key() const
 {
-    return std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
@@ -347,13 +345,13 @@ UnavailableRepositoryID::build_dependencies_host_key() const
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailableRepositoryID::run_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >
 UnavailableRepositoryID::post_dependencies_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataValueKey<std::string> >
@@ -365,25 +363,25 @@ UnavailableRepositoryID::short_description_key() const
 const std::shared_ptr<const MetadataValueKey<std::string> >
 UnavailableRepositoryID::long_description_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<std::string> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >
 UnavailableRepositoryID::fetches_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >
 UnavailableRepositoryID::homepage_key() const
 {
-    return std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataTimeKey>
 UnavailableRepositoryID::installed_time_key() const
 {
-    return std::shared_ptr<const MetadataTimeKey>();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -414,4 +412,3 @@ namespace paludis
 {
     template class Pimp<UnavailableRepositoryID>;
 }
-

@@ -97,17 +97,14 @@ namespace
         if (id->choices_key())
         {
             auto choices(id->choices_key()->parse_value());
-            for (Choices::ConstIterator k(choices->begin()),
-                    k_end(choices->end()) ;
-                    k != k_end ; ++k)
+            for (const auto & choice : *choices)
             {
-                if ((*k)->prefix() != prefix)
+                if (choice->prefix() != prefix)
                     continue;
 
-                for (Choice::ConstIterator i((*k)->begin()), i_end((*k)->end()) ;
-                        i != i_end ; ++i)
-                    if ((*i)->name_with_prefix() == name_with_prefix)
-                        return *i;
+                for (const auto & value : *choice)
+                    if (value->name_with_prefix() == name_with_prefix)
+                        return value;
             }
         }
 
@@ -143,10 +140,9 @@ MyOptionsRequirementsVerifier::verify_one(
         }
     }
 
-    for (auto m(annotations->begin()), m_end(annotations->end()) ;
-            m != m_end ; ++m)
+    for (const auto & annotation : *annotations)
     {
-        switch (m->kind())
+        switch (annotation.kind())
         {
             case dsak_synthetic:
             case dsak_expanded:
@@ -160,27 +156,26 @@ MyOptionsRequirementsVerifier::verify_one(
                 throw InternalError(PALUDIS_HERE, "bad dsak");
         }
 
-        switch (m->role())
+        switch (annotation.role())
         {
             case dsar_myoptions_requires:
                 {
                     std::list<std::string> tokens;
-                    tokenise_whitespace(m->value(), std::back_inserter(tokens));
+                    tokenise_whitespace(annotation.value(), std::back_inserter(tokens));
                     ChoicePrefixName prefix("");
-                    for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                            t != t_end ; ++t)
+                    for (const auto & token : tokens)
                     {
-                        if (t->empty())
+                        if (token.empty())
                             continue;
 
-                        if (':' == t->at(t->length() - 1))
+                        if (':' == token.at(token.length() - 1))
                         {
-                            prefix = ChoicePrefixName(t->substr(0, t->length() - 1));
+                            prefix = ChoicePrefixName(token.substr(0, token.length() - 1));
                             continue;
                         }
 
                         bool req_state(true);
-                        std::string req_flag_s(*t);
+                        std::string req_flag_s(token);
                         if ('-' == req_flag_s.at(0))
                         {
                             req_state = false;
@@ -240,9 +235,8 @@ MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<PlainText
 {
     Context context("When verifying requirements for item '" + stringify(*node.spec()) + "':");
 
-    for (std::list<ChildrenList>::iterator l(_imp->current_children_stack.begin()), l_end(_imp->current_children_stack.end()) ;
-            l != l_end ; ++l)
-        l->push_back(std::make_pair(*_imp->current_prefix_stack.begin(), node.spec()->text()));
+    for (auto & children : _imp->current_children_stack)
+        children.push_back(std::make_pair(*_imp->current_prefix_stack.begin(), node.spec()->text()));
 
     {
         Context local_context("When finding associated choice:");
@@ -255,8 +249,8 @@ MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<PlainText
         std::shared_ptr<const ChoiceValue> choice_value(find_choice_value(_imp->id, *_imp->current_prefix_stack.begin(), active_flag));
 
         if (choice_value && choice_value->enabled() == active_myoption.second)
-            for (int & l : _imp->number_enabled_stack)
-                ++l;
+            for (int & number_enabled : _imp->number_enabled_stack)
+                ++number_enabled;
     }
 
     if ((! node.spec()->maybe_annotations()) || (node.spec()->maybe_annotations()->begin() == node.spec()->maybe_annotations()->end()))
@@ -292,55 +286,50 @@ MyOptionsRequirementsVerifier::visit(const PlainTextSpecTree::NodeType<AllDepSpe
     std::for_each(indirect_iterator(node.begin()), indirect_iterator(node.end()), accept_visitor(*this));
     if (node.spec()->maybe_annotations() && (node.spec()->maybe_annotations()->begin() != node.spec()->maybe_annotations()->end()))
     {
-        for (ChildrenList::const_iterator i(_imp->current_children_stack.begin()->begin()),
-                i_end(_imp->current_children_stack.begin()->end()) ;
-                i != i_end ; ++i)
-            verify_one(i->first, i->second, node.spec()->maybe_annotations());
+        for (const auto & i : *_imp->current_children_stack.begin())
+            verify_one(i.first, i.second, node.spec()->maybe_annotations());
 
-        for (auto m(node.spec()->maybe_annotations()->begin()), m_end(node.spec()->maybe_annotations()->end()) ;
-                m != m_end ; ++m)
+        for (const auto & annotation : *node.spec()->maybe_annotations())
         {
-            switch (m->role())
+            switch (annotation.role())
             {
                 case dsar_myoptions_n_at_least_one:
                 case dsar_myoptions_n_at_most_one:
                 case dsar_myoptions_n_exactly_one:
                     {
                         std::string children_s;
-                        for (ChildrenList::const_iterator i(_imp->current_children_stack.begin()->begin()),
-                                i_end(_imp->current_children_stack.begin()->end()) ;
-                                i != i_end ; ++i)
+                        for (const auto & i : *_imp->current_children_stack.begin())
                         {
                             if (! children_s.empty())
                                 children_s.append(", ");
 
-                            if (! stringify(i->first).empty())
+                            if (! stringify(i.first).empty())
                             {
-                                children_s.append(stringify(i->first));
+                                children_s.append(stringify(i.first));
                                 children_s.append(stringify(_imp->id->eapi()->supported()->choices_options()->use_expand_separator()));
                             }
-                            children_s.append(stringify(i->second));
+                            children_s.append(stringify(i.second));
                         }
 
                         children_s = "( " + children_s + " )";
 
-                        if (dsar_myoptions_n_at_least_one == m->role())
+                        if (dsar_myoptions_n_at_least_one == annotation.role())
                         {
                             if (*_imp->number_enabled_stack.begin() < 1)
                                 _imp->unmet_requirements->push_back("At least one of options " + children_s + " must be met");
                         }
-                        else if (dsar_myoptions_n_at_most_one == m->role())
+                        else if (dsar_myoptions_n_at_most_one == annotation.role())
                         {
                             if (*_imp->number_enabled_stack.begin() > 1)
                                 _imp->unmet_requirements->push_back("At most one of options " + children_s + " must be met");
                         }
-                        else if (dsar_myoptions_n_exactly_one == m->role())
+                        else if (dsar_myoptions_n_exactly_one == annotation.role())
                         {
                             if (*_imp->number_enabled_stack.begin() != 1)
                                 _imp->unmet_requirements->push_back("Exactly one of options " + children_s + " must be met");
                         }
                         else
-                            _imp->unmet_requirements->push_back("Don't know what '" + stringify(m->value()) + "' means");
+                            _imp->unmet_requirements->push_back("Don't know what '" + stringify(annotation.value()) + "' means");
                     }
                     break;
 

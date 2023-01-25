@@ -62,20 +62,20 @@ paludis::erepository::do_fetch_action(
 
     Context context("When fetching '" + stringify(*id) + "':");
 
-    bool fetch_restrict(false), userpriv_restrict(false);
+    bool fetch_restrict(false);
+    bool userpriv_restrict(false);
     {
         DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env, id);
         if (id->restrict_key())
             id->restrict_key()->parse_value()->top()->accept(restricts);
 
-        for (DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec>::ConstIterator i(restricts.begin()), i_end(restricts.end()) ;
-                i != i_end ; ++i)
+        for (const auto & restrict : restricts)
         {
             if (id->eapi()->supported()->ebuild_options()->restrict_fetch()->end() !=
                     std::find(id->eapi()->supported()->ebuild_options()->restrict_fetch()->begin(),
-                        id->eapi()->supported()->ebuild_options()->restrict_fetch()->end(), (*i)->text()))
+                        id->eapi()->supported()->ebuild_options()->restrict_fetch()->end(), restrict->text()))
                 fetch_restrict = true;
-            if ("userpriv" == (*i)->text() || "nouserpriv" == (*i)->text())
+            if ("userpriv" == restrict->text() || "nouserpriv" == restrict->text())
                 userpriv_restrict = true;
         }
     }
@@ -84,7 +84,8 @@ paludis::erepository::do_fetch_action(
             check_userpriv(FSPath(repo->params().distdir()), env,
                 id->eapi()->supported()->userpriv_cannot_use_root()));
 
-    std::string archives, all_archives;
+    std::string archives;
+    std::string all_archives;
     std::tie(archives, all_archives) = make_archives_strings(env, id);
 
     /* Strip trailing space. Some ebuilds rely upon this. From kde-meta.eclass:
@@ -141,18 +142,17 @@ paludis::erepository::do_fetch_action(
         std::shared_ptr<const FSPathSequence> exlibsdirs(repo->layout()->exlibsdirs(id->name()));
 
         EAPIPhases fetch_extra_phases(id->eapi()->supported()->ebuild_phases()->ebuild_fetch_extra());
-        if ((! fetch_action.options.ignore_unfetched()) && (fetch_extra_phases.begin_phases() != fetch_extra_phases.end_phases()))
+        if ((! fetch_action.options.ignore_unfetched()) && (fetch_extra_phases.begin() != fetch_extra_phases.end()))
         {
             FSPath package_builddir(repo->params().builddir() / (stringify(id->name().category()) + "-" +
                     stringify(id->name().package()) + "-" + stringify(id->version()) + "-fetch_extra"));
 
-            for (EAPIPhases::ConstIterator phase(fetch_extra_phases.begin_phases()), phase_end(fetch_extra_phases.end_phases()) ;
-                    phase != phase_end ; ++phase)
+            for (const auto & phase : fetch_extra_phases)
             {
                 bool skip(false);
                 do
                 {
-                    switch (fetch_action.options.want_phase()(phase->equal_option("skipname")))
+                    switch (fetch_action.options.want_phase()(phase.equal_option("skipname")))
                     {
                         case wp_yes:
                             continue;
@@ -174,7 +174,7 @@ paludis::erepository::do_fetch_action(
                 if (skip)
                     continue;
 
-                if (can_skip_phase(env, id, *phase))
+                if (can_skip_phase(env, id, phase))
                     continue;
 
                 const auto params = repo->params();
@@ -182,8 +182,8 @@ paludis::erepository::do_fetch_action(
 
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                         n::builddir() = params.builddir(),
-                        n::clearenv() = phase->option("clearenv"),
-                        n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                        n::clearenv() = phase.option("clearenv"),
+                        n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                         n::distdir() = params.distdir(),
                         n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                         n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -201,9 +201,9 @@ paludis::erepository::do_fetch_action(
                                 ? (*params.master_repositories()->begin())->params().location()
                                 : params.location(),
                         n::root() = "/",
-                        n::sandbox() = phase->option("sandbox"),
-                        n::sydbox() = phase->option("sydbox"),
-                        n::userpriv() = phase->option("userpriv") && userpriv_ok,
+                        n::sandbox() = phase.option("sandbox"),
+                        n::sydbox() = phase.option("sydbox"),
+                        n::userpriv() = phase.option("userpriv") && userpriv_ok,
                         n::volatile_files() = nullptr
                         ));
 
@@ -228,13 +228,12 @@ paludis::erepository::do_fetch_action(
         if (c.need_nofetch())
         {
             EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_nofetch());
-            for (EAPIPhases::ConstIterator phase(phases.begin_phases()), phase_end(phases.end_phases()) ;
-                    phase != phase_end ; ++phase)
+            for (const auto & phase : phases)
             {
                 EbuildCommandParams command_params(make_named_values<EbuildCommandParams>(
                         n::builddir() = repo->params().builddir(),
-                        n::clearenv() = phase->option("clearenv"),
-                        n::commands() = join(phase->begin_commands(), phase->end_commands(), " "),
+                        n::clearenv() = phase.option("clearenv"),
+                        n::commands() = join(phase.begin_commands(), phase.end_commands(), " "),
                         n::distdir() = repo->params().distdir(),
                         n::ebuild_dir() = repo->layout()->package_directory(id->name()),
                         n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -250,9 +249,9 @@ paludis::erepository::do_fetch_action(
                         n::portdir() = (repo->params().master_repositories() && ! repo->params().master_repositories()->empty()) ?
                             (*repo->params().master_repositories()->begin())->params().location() : repo->params().location(),
                         n::root() = "/",
-                        n::sandbox() = phase->option("sandbox"),
-                        n::sydbox() = phase->option("sydbox"),
-                        n::userpriv() = phase->option("userpriv") && userpriv_ok,
+                        n::sandbox() = phase.option("sandbox"),
+                        n::sydbox() = phase.option("sydbox"),
+                        n::userpriv() = phase.option("userpriv") && userpriv_ok,
                         n::volatile_files() = nullptr
                         ));
 

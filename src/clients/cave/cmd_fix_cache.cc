@@ -39,7 +39,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -98,7 +97,7 @@ FixCacheCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("fix-cache takes no parameters");
 
     std::set<RepositoryName> repository_names;
@@ -108,37 +107,29 @@ FixCacheCommand::run(
     if (cmdline.a_repository.specified())
     {
         all = false;
-        for (args::StringSetArg::ConstIterator p(cmdline.a_repository.begin_args()),
-                p_end(cmdline.a_repository.end_args()) ;
-                p != p_end ; ++p)
-            repository_names.insert(RepositoryName(*p));
+        for (const auto & repository : cmdline.a_repository.args())
+            repository_names.insert(RepositoryName(repository));
     }
 
     if (cmdline.a_installable.specified())
     {
         all = false;
-        for (IndirectIterator<Environment::RepositoryConstIterator, const Repository>
-                r(env->begin_repositories()), r_end(env->end_repositories());
-                r != r_end; ++r)
-            if (! r->installed_root_key())
-                repository_names.insert(r->name());
+        for (const auto & repository : env->repositories())
+            if (! repository->installed_root_key())
+                repository_names.insert(repository->name());
     }
 
     if (cmdline.a_installed.specified())
     {
         all = false;
-        for (IndirectIterator<Environment::RepositoryConstIterator, const Repository>
-                r(env->begin_repositories()), r_end(env->end_repositories());
-                r != r_end; ++r)
-            if (r->installed_root_key())
-                repository_names.insert(r->name());
+        for (const auto & repository : env->repositories())
+            if (repository->installed_root_key())
+                repository_names.insert(repository->name());
     }
 
     if (all)
-        for (IndirectIterator<Environment::RepositoryConstIterator, const Repository>
-                r(env->begin_repositories()), r_end(env->end_repositories());
-                r != r_end; ++r)
-            repository_names.insert(r->name());
+        for (const auto & repository : env->repositories())
+            repository_names.insert(repository->name());
 
     for (const auto & repository_name : repository_names)
     {

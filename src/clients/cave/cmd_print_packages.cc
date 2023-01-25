@@ -37,7 +37,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -65,10 +64,8 @@ namespace
 
         PrintPackagesCommandLine() :
             g_filters(main_options_section(), "Filters", "Filter the output. Each filter may be specified more than once."),
-            a_repository(&g_filters, "repository", 'r', "Show only names in the specified repository.",
-                    args::StringSetArg::StringSetArgOptions()),
-            a_category(&g_filters, "category", 'c', "Show only names in the specified category.",
-                    args::StringSetArg::StringSetArgOptions())
+            a_repository(&g_filters, "repository", 'r', "Show only names in the specified repository."),
+            a_category(&g_filters, "category", 'c', "Show only names in the specified category.")
         {
         }
     };
@@ -89,7 +86,7 @@ PrintPackagesCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("print-packages takes no parameters");
 
     std::set<QualifiedPackageName> all_packages;
@@ -101,15 +98,14 @@ PrintPackagesCommand::run(
                 continue;
 
         std::shared_ptr<const CategoryNamePartSet> categories(repository->category_names({}));
-        for (CategoryNamePartSet::ConstIterator c(categories->begin()), c_end(categories->end());
-                c != c_end; ++c)
+        for (const auto & category : *categories)
         {
             if (cmdline.a_category.specified())
                 if (cmdline.a_category.end_args() == std::find(
-                            cmdline.a_category.begin_args(), cmdline.a_category.end_args(), stringify(*c)))
+                            cmdline.a_category.begin_args(), cmdline.a_category.end_args(), stringify(category)))
                     continue;
 
-            std::shared_ptr<const QualifiedPackageNameSet> packages(repository->package_names(*c, { }));
+            std::shared_ptr<const QualifiedPackageNameSet> packages(repository->package_names(category, { }));
             std::copy(packages->begin(), packages->end(), std::inserter(all_packages, all_packages.begin()));
         }
     }

@@ -56,7 +56,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -219,7 +218,7 @@ VerifyCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (1 != std::distance(cmdline.begin_parameters(), cmdline.end_parameters()))
+    if (cmdline.parameters().size() != 1)
         throw args::DoHelp("verify takes exactly one parameter");
 
     PackageDepSpec spec(parse_spec_with_nice_error(*cmdline.begin_parameters(), env.get(),
@@ -233,14 +232,13 @@ VerifyCommand::run(
         nothing_matching_error(env.get(), *cmdline.begin_parameters(), filter::InstalledAtRoot(env->preferred_root_key()->parse_value()));
 
     int exit_status(0);
-    for (PackageIDSequence::ConstIterator i(entries->begin()), i_end(entries->end()) ;
-            i != i_end ; ++i)
+    for (const auto & id : *entries)
     {
-        auto contents((*i)->contents());
+        auto contents(id->contents());
         if (! contents)
             continue;
 
-        Verifier v(*i);
+        Verifier v(id);
         std::for_each(indirect_iterator(contents->begin()), indirect_iterator(contents->end()), accept_visitor(v));
         exit_status |= v.exit_status;
     }

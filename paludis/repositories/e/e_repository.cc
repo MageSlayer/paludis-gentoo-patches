@@ -116,8 +116,6 @@
 
 #include "config.h"
 
-#define STUPID_CAST(type, val) reinterpret_cast<type>(reinterpret_cast<uintptr_t>(val))
-
 /** \file
  * Imp of ERepository.
  *
@@ -143,9 +141,8 @@ namespace
         if (r)
         {
             result = std::make_shared<FSPathSequence>();
-            for (ERepositorySequence::ConstIterator e(r->begin()), e_end(r->end()) ;
-                    e != e_end ; ++e)
-                result->push_back((*e)->location_key()->parse_value());
+            for (const auto & repository : *r)
+                result->push_back(repository->location_key()->parse_value());
         }
 
         return result;
@@ -159,9 +156,8 @@ namespace
         if (r)
         {
             result = std::make_shared<Sequence<std::string>>();
-            for (ERepositorySequence::ConstIterator e(r->begin()), e_end(r->end()) ;
-                    e != e_end ; ++e)
-                result->push_back(stringify((*e)->name()));
+            for (const auto & repository : *r)
+                result->push_back(stringify(repository->name()));
         }
 
         return result;
@@ -328,9 +324,9 @@ namespace paludis
         builddir_key(std::make_shared<LiteralMetadataValueKey<FSPath> >(
                     "builddir", "builddir", mkt_normal, params.builddir())),
         master_repositories_key(params.master_repositories() ?
-                std::shared_ptr<MetadataCollectionKey<Sequence<std::string> > >(std::make_shared<LiteralMetadataStringSequenceKey>(
-                        "master_repository", "master_repository", mkt_normal, get_master_names(params.master_repositories()))) :
-                std::shared_ptr<MetadataCollectionKey<Sequence<std::string> > >()),
+                std::make_shared<LiteralMetadataStringSequenceKey>(
+                        "master_repository", "master_repository", mkt_normal, get_master_names(params.master_repositories())) :
+                nullptr),
         eapi_when_unknown_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                     "eapi_when_unknown", "eapi_when_unknown", mkt_normal, params.eapi_when_unknown())),
         eapi_when_unspecified_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
@@ -348,14 +344,14 @@ namespace paludis
                     std::bind(std::mem_fn(&FSStat::is_regular_file_or_symlink_to_regular_file),
                         std::bind(std::mem_fn(&FSPath::stat), std::placeholders::_1))) ?
                 std::make_shared<InfoPkgsMetadataKey>(params.environment(), layout->info_packages_files(), repo) :
-                std::shared_ptr<InfoPkgsMetadataKey>()
+                nullptr
                 ),
         info_vars_key(layout->info_variables_files()->end() != std::find_if(layout->info_variables_files()->begin(),
                     layout->info_variables_files()->end(),
                     std::bind(std::mem_fn(&FSStat::is_regular_file_or_symlink_to_regular_file),
                         std::bind(std::mem_fn(&FSPath::stat), std::placeholders::_1))) ?
                 std::make_shared<InfoVarsMetadataKey>(layout->info_variables_files()) :
-                std::shared_ptr<InfoVarsMetadataKey>()
+                nullptr
                 ),
         binary_destination_key(std::make_shared<LiteralMetadataValueKey<bool> >(
                     "binary_destination", "binary_destination", params.binary_destination() ? mkt_normal : mkt_internal,
@@ -406,9 +402,8 @@ namespace paludis
         if (mtfs.exists())
             master_mtime = mtfs.mtim().seconds();
 
-        for (auto i(params.sync()->begin()), i_end(params.sync()->end()) ;
-                i != i_end ; ++i)
-            sync_hosts->insert(i->first, extract_host_from_url(i->second));
+        for (const auto & sync_entry : *params.sync())
+            sync_hosts->insert(sync_entry.first, extract_host_from_url(sync_entry.second));
     }
 
     Imp<ERepository>::~Imp() = default;
@@ -426,11 +421,9 @@ namespace paludis
         if (params.auto_profiles())
         {
             FSPath profiles_desc("/dev/null");
-            for (FSPathSequence::ConstIterator f(layout->profiles_desc_files()->begin()),
-                    f_end(layout->profiles_desc_files()->end()) ;
-                    f != f_end ; ++f)
-                if (f->stat().is_regular_file_or_symlink_to_regular_file())
-                    profiles_desc = *f;
+            for (const auto & file : *layout->profiles_desc_files())
+                if (file.stat().is_regular_file_or_symlink_to_regular_file())
+                    profiles_desc = file;
 
             std::shared_ptr<FSPathSequence> auto_profiles(std::make_shared<FSPathSequence>());
 
@@ -443,11 +436,10 @@ namespace paludis
             {
                 Context context("When loading profiles.desc file '" + stringify(profiles_desc) + "':");
                 LineConfigFile f(profiles_desc, { });
-                for (LineConfigFile::ConstIterator line(f.begin()), line_end(f.end()) ;
-                        line != line_end ; ++line)
+                for (const auto & line : f)
                 {
                     std::vector<std::string> tokens;
-                    tokenise_whitespace(*line, std::back_inserter(tokens));
+                    tokenise_whitespace(line, std::back_inserter(tokens));
                     if (tokens.size() < 3)
                         continue;
 
@@ -634,13 +626,12 @@ ERepository::arch_flags() const
 
         bool found_one(false);
         std::shared_ptr<const FSPathSequence> arch_list_files(_imp->layout->arch_list_files());
-        for (FSPathSequence::ConstIterator p(arch_list_files->begin()), p_end(arch_list_files->end()) ;
-                p != p_end ; ++p)
+        for (const auto & file : *arch_list_files)
         {
-            if (! p->stat().exists())
+            if (! file.stat().exists())
                 continue;
 
-            LineConfigFile archs(*p, { lcfo_disallow_continuations });
+            LineConfigFile archs(file, { lcfo_disallow_continuations });
             std::copy(archs.begin(), archs.end(), create_inserter<UnprefixedChoiceName>(_imp->arch_flags->inserter()));
             found_one = true;
         }
@@ -656,19 +647,6 @@ ERepository::arch_flags() const
     return _imp->arch_flags;
 }
 
-namespace
-{
-    struct Randomator
-    {
-        std::mt19937 & rand;
-
-        int operator() (int n)
-        {
-            return rand() % n;
-        }
-    };
-}
-
 void
 ERepository::need_mirrors() const
 {
@@ -678,22 +656,21 @@ ERepository::need_mirrors() const
     {
         bool found_one(false);
         std::shared_ptr<const FSPathSequence> mirror_files(_imp->layout->mirror_files());
-        for (FSPathSequence::ConstIterator p(mirror_files->begin()), p_end(mirror_files->end()) ;
-                p != p_end ; ++p)
+        for (const auto & p : *mirror_files)
         {
-            if (p->stat().exists())
+            if (p.stat().exists())
             {
-                LineConfigFile mirrors(*p, { lcfo_disallow_continuations });
-                for (LineConfigFile::ConstIterator line(mirrors.begin()) ; line != mirrors.end() ; ++line)
+                LineConfigFile mirrors(p, { lcfo_disallow_continuations });
+                for (const auto & mirror : mirrors)
                 {
                     std::vector<std::string> ee;
-                    tokenise_whitespace(*line, std::back_inserter(ee));
+                    tokenise_whitespace(mirror, std::back_inserter(ee));
                     if (! ee.empty())
                     {
                         /* pick up to five random mirrors only */
-                        std::mt19937 random(std::time(nullptr));
-                        Randomator randomator{random};
-                        std::random_shuffle(next(ee.begin()), ee.end(), randomator);
+                        std::random_device rd;
+                        std::mt19937 random(rd());
+                        std::shuffle(next(ee.begin()), ee.end(), random);
                         if (ee.size() > 6)
                             ee.resize(6);
 
@@ -728,7 +705,8 @@ ERepository::sync(
 {
     Context context("When syncing repository '" + stringify(name()) + "':");
 
-    std::string sync_uri, sync_options;
+    std::string sync_uri;
+    std::string sync_options;
     if (_imp->params.sync()->end() != _imp->params.sync()->find(source))
         sync_uri = _imp->params.sync()->find(source)->second;
     if (sync_uri.empty())
@@ -741,13 +719,12 @@ ERepository::sync(
     tokenise_whitespace(sync_uri, std::back_inserter(sync_list));
 
     bool ok(false);
-    for (std::list<std::string>::const_iterator s(sync_list.begin()),
-            s_end(sync_list.end()) ; s != s_end ; ++s)
+    for (const auto & s : sync_list)
     {
         DefaultSyncer syncer(make_named_values<SyncerParams>(
                     n::environment() = _imp->params.environment(),
                     n::local() = stringify(_imp->params.location()),
-                    n::remote() = *s,
+                    n::remote() = s,
                     n::revision() = revision
                 ));
 
@@ -815,14 +792,13 @@ ERepository::purge_invalid_cache() const
 
                 std::shared_ptr<const PackageIDSequence> ids(_imp->layout->package_ids(cnp + p));
                 bool found(false);
-                for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                        i != i_end ; ++i)
+                for (const auto & i : *ids)
                 {
                     /* 00 is *not* equal to 0 here */
-                    if (stringify((*i)->version()) != stringify(v))
+                    if (stringify(i->version()) != stringify(v))
                         continue;
 
-                    std::static_pointer_cast<const ERepositoryID>(*i)->purge_invalid_cache();
+                    std::static_pointer_cast<const ERepositoryID>(i)->purge_invalid_cache();
 
                     found = true;
                     break;
@@ -982,10 +958,9 @@ ERepository::some_ids_might_not_be_masked() const
 void
 ERepository::make_manifest(const QualifiedPackageName & qpn)
 {
-    for (Set<std::string>::ConstIterator it(_imp->params.manifest_hashes()->begin()),
-             it_end(_imp->params.manifest_hashes()->end()); it_end != it; ++it)
-        if (! DigestRegistry::get_instance()->get(*it))
-            throw ERepositoryConfigurationError("Manifest hash function '" + *it + "' is not supported");
+    for (const auto & hash : *_imp->params.manifest_hashes())
+        if (! DigestRegistry::get_instance()->get(hash))
+            throw ERepositoryConfigurationError("Manifest hash function '" + hash + "' is not supported");
 
     FSPath package_dir = _imp->layout->package_directory(qpn);
 
@@ -994,12 +969,12 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
     if (! _imp->params.thin_manifests())
     {
-        for (auto f(files->begin()) ; f != files->end() ; ++f)
+        for (const auto & path_to_type : *files)
         {
-            FSPath file(f->first);
+            FSPath file(path_to_type.first);
             FSStat file_stat(file);
             std::string filename = file.basename();
-            std::string file_type(f->second);
+            std::string file_type(path_to_type.second);
 
             if ("AUX" == file_type)
             {
@@ -1010,41 +985,36 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
             std::string line(file_type + " " + filename + " " + stringify(file.stat().file_size()));
 
-            for (Set<std::string>::ConstIterator it(_imp->params.manifest_hashes()->begin()),
-                     it_end(_imp->params.manifest_hashes()->end()); it_end != it; ++it)
+            for (const auto & hash : *_imp->params.manifest_hashes())
             {
                 file_stream.clear();
                 file_stream.seekg(0, std::ios::beg);
-                line += " " + *it + " " + DigestRegistry::get_instance()->get(*it)(file_stream);
+                line += " " + hash + " " + DigestRegistry::get_instance()->get(hash)(file_stream);
             }
 
             lines.push_back(std::make_pair(std::make_pair(file_type, filename), line));
         }
     }
 
-    std::shared_ptr<const PackageIDSequence> versions;
-    versions = package_ids(qpn, { });
-
+    std::shared_ptr<const PackageIDSequence> ids = package_ids(qpn, { });
     std::set<std::string> done_files;
 
-    for (PackageIDSequence::ConstIterator v(versions->begin()),
-            v_end(versions->end()) ;
-            v != v_end ; ++v)
+    for (const auto & id : *ids)
     {
-        std::shared_ptr<const PackageID> id = (*v);
         if (! id->fetches_key())
             continue;
+
         AAVisitor aa;
         id->fetches_key()->parse_value()->top()->accept(aa);
 
-        for (AAVisitor::ConstIterator d(aa.begin()) ;
-                d != aa.end() ; ++d)
+        for (const auto & distfile : aa)
         {
-            if (done_files.count(*d))
+            if (done_files.count(distfile))
                 continue;
-            done_files.insert(*d);
 
-            FSPath f(params().distdir() / *d);
+            done_files.insert(distfile);
+
+            FSPath f(params().distdir() / distfile);
             FSStat f_stat(f);
 
             if (! f_stat.is_regular_file_or_symlink_to_regular_file())
@@ -1056,9 +1026,8 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
 
             std::string line("DIST " + f.basename() + " " + stringify(f_stat.file_size()));
 
-            for (Set<std::string>::ConstIterator it(_imp->params.manifest_hashes()->begin()),
-                     it_end(_imp->params.manifest_hashes()->end()); it_end != it; ++it)
-                line += " " + *it + " " + hashes->get(*it, f, file_stream);
+            for (const auto & hash : *_imp->params.manifest_hashes())
+                line += " " + hash + " " + hashes->get(hash, f, file_stream);
 
             lines.push_back(std::make_pair(std::make_pair("DIST", f.basename()), line));
         }
@@ -1074,8 +1043,8 @@ ERepository::make_manifest(const QualifiedPackageName & qpn)
         if (! manifest)
             throw ERepositoryConfigurationError("Couldn't open Manifest for writing.");
 
-        for (auto it(lines.begin()), it_end(lines.end()); it_end != it; ++it)
-            manifest << it->second << std::endl;
+        for (const auto & line : lines)
+            manifest << line.second << std::endl;
     }
 }
 
@@ -1099,7 +1068,7 @@ ERepository::location_key() const
 const std::shared_ptr<const MetadataValueKey<FSPath> >
 ERepository::installed_root_key() const
 {
-    return std::shared_ptr<const MetadataValueKey<FSPath> >();
+    return nullptr;
 }
 
 const std::shared_ptr<const MetadataCollectionKey<Set<std::string> > >
@@ -1175,12 +1144,11 @@ ERepository::repository_factory_create(
     {
         std::list<std::string> tokens;
         tokenise_whitespace(layout_conf->get("masters"), std::back_inserter(tokens));
-        for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                t != t_end ; ++t)
+        for (const auto & token : tokens)
         {
-            Context context_local("When finding configuration information for master '" + *t + "':");
+            Context context_local("When finding configuration information for master '" + token + "':");
 
-            RepositoryName master_repository_name(*t);
+            RepositoryName master_repository_name(token);
             if (master_repository_name == our_name)
             {
                 Log::get_instance()->message("e.ebuild.configuration.own_master_repository", ll_warning, lc_context)
@@ -1209,14 +1177,15 @@ ERepository::repository_factory_create(
             catch (const NoSuchRepositoryError &)
             {
                 throw ERepositoryConfigurationError("According to '" + stringify(FSPath(location) / "metadata/layout.conf")
-                        + "', the repository specified by '" + f("repo_file") + "' requires repository '" + *t +
+                        + "', the repository specified by '" + f("repo_file") + "' requires repository '" + token +
                         "', which you do not have available");
             }
         }
     }
 
     std::shared_ptr<FSPathSequence> profiles(std::make_shared<FSPathSequence>());
-    bool profiles_explicitly_set(false), auto_profiles(false);
+    bool profiles_explicitly_set(false);
+    bool auto_profiles(false);
     tokenise_whitespace(f("profiles"), create_inserter<FSPath>(std::back_inserter(*profiles)));
     if (profiles->empty())
     {
@@ -1242,9 +1211,8 @@ ERepository::repository_factory_create(
     {
         if (master_repositories)
         {
-            for (ERepositorySequence::ConstIterator e(master_repositories->begin()),
-                    e_end(master_repositories->end()) ; e != e_end ; ++e)
-                std::copy((*e)->params().eclassdirs()->begin(), (*e)->params().eclassdirs()->end(), eclassdirs->back_inserter());
+            for (const auto & e : *master_repositories)
+                std::copy(e->params().eclassdirs()->begin(), e->params().eclassdirs()->end(), eclassdirs->back_inserter());
         }
         eclassdirs->push_back(FSPath(location + "/eclass"));
     }
@@ -1535,9 +1503,8 @@ ERepository::repository_factory_dependencies(
         {
             std::list<std::string> tokens;
             tokenise_whitespace(layout_conf->get("masters"), std::back_inserter(tokens));
-            for (std::list<std::string>::const_iterator t(tokens.begin()), t_end(tokens.end()) ;
-                    t != t_end ; ++t)
-                result->insert(RepositoryName(*t));
+            for (const auto & token : tokens)
+                result->insert(RepositoryName(token));
         }
 
         if ((! layout_conf) || (layout_conf->get("masters").empty()))
@@ -1608,31 +1575,30 @@ void
 ERepository::populate_sets() const
 {
     const std::shared_ptr<const SetNameSet> sets(_imp->sets_ptr->sets_list());
-    for (SetNameSet::ConstIterator s(sets->begin()), s_end(sets->end()) ;
-            s != s_end ; ++s)
+    for (const auto & set : *sets)
     {
-        if (stringify(*s) == "system")
+        if (stringify(set) == "system")
         {
             _imp->need_profiles();
             _imp->params.environment()->add_set(
-                    *s,
-                    SetName(stringify(*s) + "::" + stringify(name())),
+                    set,
+                    SetName(stringify(set) + "::" + stringify(name())),
                     std::bind(&get_system_set, _imp->profile_ptr->system_packages()),
                     true);
         }
         else
         {
             _imp->params.environment()->add_set(
-                    *s,
-                    SetName(stringify(*s) + "::" + stringify(name())),
-                    std::bind(&get_set, _imp->sets_ptr, *s),
+                    set,
+                    SetName(stringify(set) + "::" + stringify(name())),
+                    std::bind(&get_set, _imp->sets_ptr, set),
                     true);
 
-            if (stringify(*s) != "security" && stringify(*s) != "insecurity")
+            if (stringify(set) != "security" && stringify(set) != "insecurity")
                 _imp->params.environment()->add_set(
-                        SetName(stringify(*s) + "*"),
-                        SetName(stringify(*s) + "::" + stringify(name()) + "*"),
-                        std::bind(&get_set, _imp->sets_ptr, SetName(stringify(*s) + "*")),
+                        SetName(stringify(set) + "*"),
+                        SetName(stringify(set) + "::" + stringify(name()) + "*"),
+                        std::bind(&get_set, _imp->sets_ptr, SetName(stringify(set) + "*")),
                         true);
         }
     }
@@ -1668,7 +1634,7 @@ ERepository::get_environment_variable(
 
     EAPIPhases phases(id->eapi()->supported()->ebuild_phases()->ebuild_variable());
 
-    int c(std::distance(phases.begin_phases(), phases.end_phases()));
+    int c(std::distance(phases.begin(), phases.end()));
     if (1 != c)
         throw EAPIConfigurationError("EAPI '" + id->eapi()->name() + "' defines "
                 + (c == 0 ? "no" : stringify(c)) + " ebuild variable phases but expected exactly one");
@@ -1681,11 +1647,12 @@ ERepository::get_environment_variable(
         if (id->restrict_key())
             id->restrict_key()->parse_value()->top()->accept(restricts);
 
+        // MARKER: refactor
         userpriv_restrict =
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "userpriv")) ||
             indirect_iterator(restricts.end()) != std::find_if(indirect_iterator(restricts.begin()), indirect_iterator(restricts.end()),
-                    std::bind(std::equal_to<std::string>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
+                    std::bind(std::equal_to<>(), std::bind(std::mem_fn(&StringDepSpec::text), _1), "nouserpriv"));
     }
     bool userpriv_ok((! userpriv_restrict) && (_imp->params.environment()->reduced_gid() != getgid()) &&
             check_userpriv(FSPath(_imp->params.builddir()), _imp->params.environment(), id->eapi()->supported()->userpriv_cannot_use_root()));
@@ -1694,8 +1661,8 @@ ERepository::get_environment_variable(
 
     EbuildVariableCommand cmd(make_named_values<EbuildCommandParams>(
             n::builddir() = _imp->params.builddir(),
-            n::clearenv() = phases.begin_phases()->option("clearenv"),
-            n::commands() = join(phases.begin_phases()->begin_commands(), phases.begin_phases()->end_commands(), " "),
+            n::clearenv() = phases.begin()->option("clearenv"),
+            n::commands() = join(phases.begin()->begin_commands(), phases.begin()->end_commands(), " "),
             n::distdir() = _imp->params.distdir(),
             n::ebuild_dir() = layout()->package_directory(id->name()),
             n::ebuild_file() = id->fs_location_key()->parse_value(),
@@ -1712,9 +1679,9 @@ ERepository::get_environment_variable(
                 (_imp->params.master_repositories() && ! _imp->params.master_repositories()->empty()) ?
                 (*_imp->params.master_repositories()->begin())->params().location() : _imp->params.location(),
             n::root() = "/",
-            n::sandbox() = phases.begin_phases()->option("sandbox"),
-            n::sydbox() = phases.begin_phases()->option("sydbox"),
-            n::userpriv() = phases.begin_phases()->option("userpriv") && userpriv_ok,
+            n::sandbox() = phases.begin()->option("sandbox"),
+            n::sydbox() = phases.begin()->option("sydbox"),
+            n::userpriv() = phases.begin()->option("userpriv") && userpriv_ok,
             n::volatile_files() = nullptr
             ),
 
@@ -1731,10 +1698,9 @@ namespace
 {
     std::shared_ptr<const PackageID> find_id(const std::shared_ptr<const PackageIDSequence> & ids, const VersionSpec & v)
     {
-        for (auto i(ids->begin()), i_end(ids->end()) ;
-                i != i_end ; ++i)
-            if ((*i)->version() == v)
-                return *i;
+        for (const auto & id : *ids)
+            if (id->version() == v)
+                return id;
         return nullptr;
     }
 }
@@ -1798,12 +1764,12 @@ ERepository::merge(const MergeParams & m)
     {
         auto kk(m.package_id()->keywords_key()->parse_value());
         auto binary_keywords_filter(_imp->binary_keywords_filter->parse_value());
-        for (auto k(kk->begin()), k_end(kk->end()) ; k != k_end ; ++k)
-            if (binary_keywords_filter->end() != binary_keywords_filter->find(stringify(*k)))
+        for (const auto & k : *kk)
+            if (binary_keywords_filter->end() != binary_keywords_filter->find(stringify(k)))
             {
                 if (! binary_keywords.empty())
                     binary_keywords.append(" ");
-                binary_keywords.append(stringify(*k));
+                binary_keywords.append(stringify(k));
             }
     }
 
@@ -1841,16 +1807,15 @@ ERepository::merge(const MergeParams & m)
         replaces.push_back(is_replace);
     }
 
-    for (auto r(m.replacing()->begin()), r_end(m.replacing()->end()) ;
-            r != r_end ; ++r)
+    for (const auto & r : *m.replacing())
     {
-        if (is_replace && (*r)->name() == is_replace->name() && (*r)->version() == is_replace->version())
+        if (is_replace && r->name() == is_replace->name() && r->version() == is_replace->version())
             continue;
 
-        if ((*r)->repository_name() != name())
+        if (r->repository_name() != name())
             continue;
 
-        FSPath p((*r)->fs_location_key()->parse_value());
+        FSPath p(r->fs_location_key()->parse_value());
         FSStat p_stat(p);
         if (p_stat.exists())
         {
@@ -1858,7 +1823,7 @@ ERepository::merge(const MergeParams & m)
             p.unlink();
         }
 
-        replaces.push_back(*r);
+        replaces.push_back(r);
     }
 
     if (_imp->params.write_cache() != FSPath("/var/empty"))
@@ -1921,4 +1886,3 @@ ERepository::maybe_expand_licence_nonrecursively(const std::string & s) const
 {
     return _imp->licence_groups->maybe_expand_licence_nonrecursively(s);
 }
-

@@ -32,35 +32,63 @@ import unittest
 
 Log.instance.log_level = LogLevel.WARNING
 
+
 class TestCase_01_MetadataKeys(unittest.TestCase):
     def setUp(self):
         self.e = EnvironmentFactory.instance.create("")
-        self.pid = next(iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", [])))
-        self.ipid = next(iter(self.e.fetch_repository("installed").package_ids("cat-one/pkg-one", [])))
+        self.pid = next(
+            iter(self.e.fetch_repository("testrepo").package_ids("foo/bar", []))
+        )
+        self.ipid = next(
+            iter(
+                self.e.fetch_repository("installed").package_ids("cat-one/pkg-one", [])
+            )
+        )
 
     def test_02_installed_time(self):
-        self.assertEquals(self.pid.find_metadata("INSTALLED_TIME"), None)
-        self.assert_(isinstance(self.ipid.find_metadata("INSTALLED_TIME"), MetadataTimeKey))
+        self.assertEqual(self.pid.find_metadata("INSTALLED_TIME"), None)
+        self.assertTrue(
+            isinstance(self.ipid.find_metadata("INSTALLED_TIME"), MetadataTimeKey)
+        )
 
     def test_03_repository(self):
-        self.assertEquals(self.pid.find_metadata("REPOSITORIES"), None)
-        self.assert_(isinstance(self.ipid.find_metadata("REPOSITORIES"), MetadataStringIterableKey))
+        self.assertEqual(self.pid.find_metadata("REPOSITORIES"), None)
+        self.assertTrue(
+            isinstance(
+                self.ipid.find_metadata("REPOSITORIES"), MetadataStringIterableKey
+            )
+        )
 
     def test_04_keywords(self):
-        self.assert_(isinstance(self.pid.find_metadata("KEYWORDS"), MetadataKeywordNameIterableKey))
-        self.assertEquals(self.ipid.find_metadata("KEYWORDS"), None)
+        self.assertTrue(
+            isinstance(
+                self.pid.find_metadata("KEYWORDS"), MetadataKeywordNameIterableKey
+            )
+        )
+        self.assertEqual(self.ipid.find_metadata("KEYWORDS"), None)
 
     def test_07_inherited(self):
-        self.assert_(isinstance(self.pid.find_metadata("INHERITED"), MetadataStringIterableKey))
-        self.assert_(isinstance(self.ipid.find_metadata("INHERITED"), MetadataStringIterableKey))
+        self.assertTrue(
+            isinstance(self.pid.find_metadata("INHERITED"), MetadataStringIterableKey)
+        )
+        self.assertTrue(
+            isinstance(self.ipid.find_metadata("INHERITED"), MetadataStringIterableKey)
+        )
 
     def test_08_depend(self):
-        self.assert_(isinstance(self.pid.find_metadata("DEPEND"), MetadataDependencySpecTreeKey))
-        self.assertEquals(self.ipid.find_metadata("DEPEND"), None)
+        self.assertTrue(
+            isinstance(self.pid.find_metadata("DEPEND"), MetadataDependencySpecTreeKey)
+        )
+        self.assertEqual(self.ipid.find_metadata("DEPEND"), None)
 
     def test_011_choices(self):
-        self.assert_(isinstance(self.pid.find_metadata("PALUDIS_CHOICES"), MetadataChoicesKey))
-        self.assert_(isinstance(self.ipid.find_metadata("PALUDIS_CHOICES"), MetadataChoicesKey))
+        self.assertTrue(
+            isinstance(self.pid.find_metadata("PALUDIS_CHOICES"), MetadataChoicesKey)
+        )
+        self.assertTrue(
+            isinstance(self.ipid.find_metadata("PALUDIS_CHOICES"), MetadataChoicesKey)
+        )
+
 
 class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
     def test_01_package_id(self):
@@ -70,7 +98,9 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
 
             def parse_value(self):
                 e = EnvironmentFactory.instance.create("")
-                pid = next(iter(e.fetch_repository("testrepo").package_ids("foo/bar", [])))
+                pid = next(
+                    iter(e.fetch_repository("testrepo").package_ids("foo/bar", []))
+                )
                 return pid
 
             def raw_name(self):
@@ -144,7 +174,6 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
 
         test_metadata_keyword_name_set_key(TestKey())
 
-
     def test_09_string_iterable(self):
         class TestKey(MetadataStringIterableKey):
             def __init__(self):
@@ -176,13 +205,13 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return AllDepSpec()
 
             def pretty_print(self, f):
-                #TODO
-                #return f.format_use_dep_spec_plain(...)
+                # TODO
+                # return f.format_use_dep_spec_plain(...)
                 return "str"
 
             def pretty_print_flat(self, f):
-                #TODO
-                #return f.format_use_dep_spec_plain(...)
+                # TODO
+                # return f.format_use_dep_spec_plain(...)
                 return "str"
 
             def raw_name(self):
@@ -224,7 +253,6 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
 
         test_metadata_dependency_spec_tree_key(TestKey())
 
-
     def test_13_plain_text_spec_tree(self):
         class TestKey(MetadataPlainTextSpecTreeKey):
             def __init__(self):
@@ -234,13 +262,13 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return AllDepSpec()
 
             def pretty_print(self, f):
-                #TODO
-                #return f.format_plain_text_dep_spec_plain(PlainTextDepSpec("foo"))
+                # TODO
+                # return f.format_plain_text_dep_spec_plain(PlainTextDepSpec("foo"))
                 return "str"
 
             def pretty_print_flat(self, f):
-                #TODO
-                #return f.format_plain_text_dep_spec_plain(PlainTextDepSpec("foo"))
+                # TODO
+                # return f.format_plain_text_dep_spec_plain(PlainTextDepSpec("foo"))
                 return "str"
 
             def raw_name(self):
@@ -263,13 +291,13 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return AllDepSpec()
 
             def pretty_print(self, f):
-                #TODO
-                #return f.format_use_dep_spec_plain(...)
+                # TODO
+                # return f.format_use_dep_spec_plain(...)
                 return "str"
 
             def pretty_print_flat(self, f):
-                #TODO
-                #return f.format_use_dep_spec_plain(...)
+                # TODO
+                # return f.format_use_dep_spec_plain(...)
                 return "str"
 
             def initial_label(self):
@@ -295,13 +323,13 @@ class TestCase_02_MetadataKeys_suclassing(unittest.TestCase):
                 return AllDepSpec()
 
             def pretty_print(self, f):
-                #TODO
-                #return f.format_use_dep_spec_plain(...)
+                # TODO
+                # return f.format_use_dep_spec_plain(...)
                 return "str"
 
             def pretty_print_flat(self, f):
-                #TODO
-                #return f.format_use_dep_spec_plain(...)
+                # TODO
+                # return f.format_use_dep_spec_plain(...)
                 return "str"
 
             def raw_name(self):

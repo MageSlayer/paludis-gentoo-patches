@@ -147,7 +147,8 @@ VDBUnmerger::config_protected(const FSPath & f) const
 std::string
 VDBUnmerger::make_tidy(const FSPath & f) const
 {
-    std::string root_str(stringify(_imp->options.root())), f_str(stringify(f));
+    std::string root_str(stringify(_imp->options.root()));
+    std::string f_str(stringify(f));
     if (root_str == "/")
         root_str.clear();
     if (0 != f_str.compare(0, root_str.length(), root_str))
@@ -171,9 +172,8 @@ namespace
 void
 VDBUnmerger::populate_unmerge_set()
 {
-    for (Contents::ConstIterator c(_imp->options.contents()->begin()), c_end(_imp->options.contents()->end()) ;
-            c != c_end ; ++c)
-        add_unmerge_entry(get_et(**c), *c);
+    for (const auto & entry : *_imp->options.contents())
+        add_unmerge_entry(get_et(*entry), entry);
 }
 
 namespace
@@ -290,4 +290,3 @@ VDBUnmergerError::VDBUnmergerError(const std::string & s) noexcept :
     UnmergerError(s)
 {
 }
-

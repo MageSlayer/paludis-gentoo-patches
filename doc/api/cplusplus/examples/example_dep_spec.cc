@@ -44,8 +44,7 @@ int main(int argc, char * argv[])
                     CommandLine::get_instance()->a_environment.argument()));
 
         /* For each command line parameter... */
-        for (CommandLine::ParametersConstIterator q(CommandLine::get_instance()->begin_parameters()),
-                q_end(CommandLine::get_instance()->end_parameters()) ; q != q_end ; ++q)
+        for (const auto & param : CommandLine::get_instance()->parameters())
         {
             /* Create a PackageDepSpec from the parameter. For user-inputted
              * data, parse_user_package_dep_spec() should be used. If wildcards
@@ -54,7 +53,8 @@ int main(int argc, char * argv[])
              * updso_throw_if_set and catch the GotASetNotAPackageDepSpec
              * exception. If data about the spec is known at compile time,
              * make_package_dep_spec() should be used instead. */
-            PackageDepSpec spec(parse_user_package_dep_spec(*q, env.get(), { updso_allow_wildcards }));
+            PackageDepSpec spec(
+                    parse_user_package_dep_spec(param, env.get(), {updso_allow_wildcards}));
 
             /* Display information about the PackageDepSpec. */
             cout << "Information about '" << spec << "':" << endl;
@@ -72,8 +72,7 @@ int main(int argc, char * argv[])
             {
                 cout << "    " << left << setw(24) << "Version requirements:" << " ";
                 bool need_join(false);
-                for (VersionRequirements::ConstIterator r(spec.version_requirements_ptr()->begin()),
-                        r_end(spec.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+                for (const auto & requirement : *spec.version_requirements_ptr())
                 {
                     if (need_join)
                     {
@@ -92,7 +91,7 @@ int main(int argc, char * argv[])
                         }
                     }
 
-                    cout << r->version_operator() << r->version_spec();
+                    cout << requirement.version_operator() << requirement.version_spec();
                     need_join = true;
                 }
                 cout << endl;
@@ -127,13 +126,12 @@ int main(int argc, char * argv[])
             {
                 cout << "    " << left << setw(24) << "Additional requirements:" << " ";
                 bool need_join(false);
-                for (AdditionalPackageDepSpecRequirements::ConstIterator u(spec.additional_requirements_ptr()->begin()),
-                        u_end(spec.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
+                for (const auto & requirement : *spec.additional_requirements_ptr())
                 {
                     if (need_join)
                         cout << " and ";
 
-                    cout << (*u)->as_raw_string() + " (meaning: " + (*u)->as_human_string(nullptr) + ")";
+                    cout << requirement->as_raw_string() + " (meaning: " + requirement->as_human_string(nullptr) + ")";
                     need_join = true;
                 }
                 cout << endl;
@@ -144,12 +142,11 @@ int main(int argc, char * argv[])
             std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(
                         generator::Matches(spec, nullptr, { }))]);
             bool need_indent(false);
-            for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & id : *ids)
             {
                 if (need_indent)
                     cout << "    " << left << setw(24) << "" << " ";
-                cout << **i << endl;
+                cout << *id << endl;
                 need_indent = true;
             }
 
@@ -183,4 +180,3 @@ int main(int argc, char * argv[])
 
     return EXIT_SUCCESS;
 }
-

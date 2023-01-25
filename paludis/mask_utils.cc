@@ -81,9 +81,8 @@ namespace
 bool
 paludis::not_strongly_masked(const std::shared_ptr<const PackageID> & id)
 {
-    for (auto m(id->begin_masks()), m_end(id->end_masks()) ;
-            m != m_end ; ++m)
-        if (! (*m)->accept_returning<bool>(WeakMask{id}))
+    for (const auto & mask : id->masks())
+        if (! mask->accept_returning<bool>(WeakMask{id}))
             return false;
 
     return true;

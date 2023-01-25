@@ -105,7 +105,8 @@ paludis::cave::format_string(
                         if (tokens.size() != 2)
                             throw FormatStringError(f, "{column} takes one parameter");
 
-                        int c(destringify<unsigned>(tokens.at(1))), l(0);
+                        int c(destringify<unsigned>(tokens.at(1)));
+                        int l(0);
                         for (int q(0), q_end(result.length()) ; q != q_end ; ++q)
                             if (27 == result[q])
                             {

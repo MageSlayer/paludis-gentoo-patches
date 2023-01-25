@@ -62,10 +62,9 @@ namespace
 
             if (s.version_requirements_ptr())
             {
-                for (VersionRequirements::ConstIterator r(s.version_requirements_ptr()->begin()),
-                        r_end(s.version_requirements_ptr()->end()) ; r != r_end ; ++r)
+                for (const auto & requirement : *s.version_requirements_ptr())
                     tokens.insert("version_requirement:" + stringify(s.version_requirements_mode()) +
-                            stringify(r->version_operator()) + stringify(r->version_spec()));
+                            stringify(requirement.version_operator()) + stringify(requirement.version_spec()));
             }
 
             if (s.slot_requirement_ptr())
@@ -102,9 +101,8 @@ namespace
 
             if (s.additional_requirements_ptr())
             {
-                for (AdditionalPackageDepSpecRequirements::ConstIterator u(s.additional_requirements_ptr()->begin()),
-                        u_end(s.additional_requirements_ptr()->end()) ; u != u_end ; ++u)
-                    tokens.insert("additional_requirement:" + stringify(**u));
+                for (const auto & requirement : *s.additional_requirements_ptr())
+                    tokens.insert("additional_requirement:" + stringify(*requirement));
             }
 
             return "PackageDepSpec(" + join(tokens.begin(), tokens.end(), ";") + ")";
@@ -154,25 +152,26 @@ paludis::resolver::get_sameness(
             installable_choices = installable_id->choices_key()->parse_value();
             existing_choices = existing_id->choices_key()->parse_value();
 
-            std::set<ChoiceNameWithPrefix> i_common, u_common;
-            for (const auto & c : *installable_choices)
+            std::set<ChoiceNameWithPrefix> i_common;
+            std::set<ChoiceNameWithPrefix> u_common;
+            for (const auto & choice : *installable_choices)
             {
-                if (! c->consider_added_or_changed())
+                if (! choice->consider_added_or_changed())
                     continue;
 
-                for (const auto & v : *c)
-                    if (co_explicit == v->origin())
-                        i_common.insert(v->name_with_prefix());
+                for (const auto & value : *choice)
+                    if (co_explicit == value->origin())
+                        i_common.insert(value->name_with_prefix());
             }
 
-            for (const auto & c : *existing_choices)
+            for (const auto & choice : *existing_choices)
             {
-                if (! c->consider_added_or_changed())
+                if (! choice->consider_added_or_changed())
                     continue;
 
-                for (const auto & v : *c)
-                    if (co_explicit == v->origin())
-                        u_common.insert(v->name_with_prefix());
+                for (const auto & value : *choice)
+                    if (co_explicit == value->origin())
+                        u_common.insert(value->name_with_prefix());
             }
 
             std::set_intersection(
@@ -181,9 +180,9 @@ paludis::resolver::get_sameness(
                     std::inserter(common, common.begin()));
         }
 
-        for (const auto & f : common)
-            if (installable_choices->find_by_name_with_prefix(f)->enabled() !=
-                    existing_choices->find_by_name_with_prefix(f)->enabled())
+        for (const auto & full_name : common)
+            if (installable_choices->find_by_name_with_prefix(full_name)->enabled() !=
+                    existing_choices->find_by_name_with_prefix(full_name)->enabled())
             {
                 is_same = false;
                 is_same_metadata = false;

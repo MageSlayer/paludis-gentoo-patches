@@ -48,7 +48,6 @@
 using namespace paludis;
 using namespace cave;
 using std::cout;
-using std::endl;
 
 namespace
 {
@@ -82,8 +81,7 @@ namespace
         PrintIDsCommandLine() :
             g_filters(main_options_section(), "Filters", "Filter the output. Each filter may be specified more than once."),
             a_matching(&g_filters, "matching", 'm', "Show only IDs matching this spec. If specified multiple "
-                    "times, only IDs matching every spec are selected.",
-                    args::StringSetArg::StringSetArgOptions()),
+                    "times, only IDs matching every spec are selected."),
             a_supporting(&g_filters, "supporting", 's', "Show only IDs supporting this action. If specified "
                     "multiple times, all listed actions must be supported.",
                     args::StringSetArg::StringSetArgOptions
@@ -117,11 +115,11 @@ namespace
         FilterHandler
     {
         const PrintIDsCommandLine & cmdline;
-        const std::string mask;
+        const std::string mask_filter;
 
         WithMaskFilterHandler(const PrintIDsCommandLine & c, const std::string & f) :
             cmdline(c),
-            mask(f)
+            mask_filter(f)
         {
         }
 
@@ -132,7 +130,7 @@ namespace
 
         std::string as_string() const override
         {
-            return "with mask '" + mask + "'";
+            return "with mask '" + mask_filter + "'";
         }
 
         std::shared_ptr<const RepositoryNameSet> repositories(
@@ -164,61 +162,56 @@ namespace
         {
             std::shared_ptr<PackageIDSet> result(std::make_shared<PackageIDSet>());
 
-            for (PackageIDSet::ConstIterator i(c->begin()), i_end(c->end()) ;
-                    i != i_end ; ++i)
+            for (const auto & id : *c)
             {
-                if (mask == "none")
+                if (mask_filter == "none")
                 {
-                    if (! (*i)->masked())
-                        result->insert(*i);
+                    if (! id->masked())
+                        result->insert(id);
                 }
-                else if (mask == "any")
+                else if (mask_filter == "any")
                 {
-                    if ((*i)->masked())
-                        result->insert(*i);
+                    if (id->masked())
+                        result->insert(id);
                 }
-                else if (mask == "user")
+                else if (mask_filter == "user")
                 {
-                    for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
-                            m != m_end ; ++m)
-                        if (visitor_cast<const UserMask>(**m))
+                    for (const auto & mask : id->masks())
+                        if (visitor_cast<const UserMask>(*mask))
                         {
-                            result->insert(*i);
+                            result->insert(id);
                             break;
                         }
                 }
-                else if (mask == "unaccepted")
+                else if (mask_filter == "unaccepted")
                 {
-                    for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
-                            m != m_end ; ++m)
-                        if (visitor_cast<const UnacceptedMask>(**m))
+                    for (const auto & mask : id->masks())
+                        if (visitor_cast<const UnacceptedMask>(*mask))
                         {
-                            result->insert(*i);
+                            result->insert(id);
                             break;
                         }
                 }
-                else if (mask == "repository")
+                else if (mask_filter == "repository")
                 {
-                    for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
-                            m != m_end ; ++m)
-                        if (visitor_cast<const RepositoryMask>(**m))
+                    for (const auto & mask : id->masks())
+                        if (visitor_cast<const RepositoryMask>(*mask))
                         {
-                            result->insert(*i);
+                            result->insert(id);
                             break;
                         }
                 }
-                else if (mask == "unsupported")
+                else if (mask_filter == "unsupported")
                 {
-                    for (PackageID::MasksConstIterator m((*i)->begin_masks()), m_end((*i)->end_masks()) ;
-                            m != m_end ; ++m)
-                        if (visitor_cast<const UnsupportedMask>(**m))
+                    for (const auto & mask : id->masks())
+                        if (visitor_cast<const UnsupportedMask>(*mask))
                         {
-                            result->insert(*i);
+                            result->insert(id);
                             break;
                         }
                 }
                 else
-                    throw args::DoHelp("Unknown --" + cmdline.a_with_mask.long_name() + " value '" + mask + "'");
+                    throw args::DoHelp("Unknown --" + cmdline.a_with_mask.long_name() + " value '" + mask_filter + "'");
             }
 
             return result;
@@ -250,17 +243,15 @@ PrintIDsCommand::run(
         return EXIT_SUCCESS;
     }
 
-    if (cmdline.begin_parameters() != cmdline.end_parameters())
+    if (! cmdline.parameters().empty())
         throw args::DoHelp("print-ids takes no parameters");
 
     Generator g((generator::All()));
     if (cmdline.a_matching.specified())
     {
-        for (args::StringSetArg::ConstIterator m(cmdline.a_matching.begin_args()),
-                m_end(cmdline.a_matching.end_args()) ;
-                m != m_end ; ++m)
+        for (const auto & matching_spec : cmdline.a_matching.args())
         {
-            PackageDepSpec s(parse_user_package_dep_spec(*m, env.get(), { updso_allow_wildcards }));
+            PackageDepSpec s(parse_user_package_dep_spec(matching_spec, env.get(), { updso_allow_wildcards }));
             g = g & generator::Matches(s, nullptr, { });
         }
     }
@@ -269,43 +260,38 @@ PrintIDsCommand::run(
 
     if (cmdline.a_supporting.specified())
     {
-        for (args::StringSetArg::ConstIterator m(cmdline.a_supporting.begin_args()),
-                m_end(cmdline.a_supporting.end_args()) ;
-                m != m_end ; ++m)
+        for (const auto & action : cmdline.a_supporting.args())
         {
-            if (*m == "install")
+            if (action == "install")
                 fg = fg | filter::SupportsAction<InstallAction>();
-            else if (*m == "uninstall")
+            else if (action == "uninstall")
                 fg = fg | filter::SupportsAction<UninstallAction>();
-            else if (*m == "pretend")
+            else if (action == "pretend")
                 fg = fg | filter::SupportsAction<PretendAction>();
-            else if (*m == "config")
+            else if (action == "config")
                 fg = fg | filter::SupportsAction<ConfigAction>();
-            else if (*m == "fetch")
+            else if (action == "fetch")
                 fg = fg | filter::SupportsAction<FetchAction>();
-            else if (*m == "pretend-fetch")
+            else if (action == "pretend-fetch")
                 fg = fg | filter::SupportsAction<PretendFetchAction>();
-            else if (*m == "info")
+            else if (action == "info")
                 fg = fg | filter::SupportsAction<InfoAction>();
             else
-                throw args::DoHelp("Unknown --" + cmdline.a_supporting.long_name() + " value '" + *m + "'");
+                throw args::DoHelp("Unknown --" + cmdline.a_supporting.long_name() + " value '" + action + "'");
         }
     }
 
     if (cmdline.a_with_mask.specified())
     {
-        for (args::StringSetArg::ConstIterator m(cmdline.a_with_mask.begin_args()),
-                m_end(cmdline.a_with_mask.end_args()) ;
-                m != m_end ; ++m)
+        for (const auto & mask : cmdline.a_with_mask.args())
         {
-            fg = fg | WithMaskFilter(cmdline, *m);
+            fg = fg | WithMaskFilter(cmdline, mask);
         }
     }
 
     const std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(fg)]);
-    for (PackageIDSequence::ConstIterator i(ids->begin()), i_end(ids->end()) ;
-            i != i_end ; ++i)
-        cout << format_package_id(*i, cmdline.a_format.argument());
+    for (const auto & id : *ids)
+        cout << format_package_id(id, cmdline.a_format.argument());
 
     return EXIT_SUCCESS;
 }

@@ -54,7 +54,7 @@ JobRequirement::serialise(Serialiser & s) const
 }
 
 bool
-JobRequirementComparator::operator() (const JobRequirement & a, const JobRequirement & b)
+JobRequirementComparator::operator() (const JobRequirement & a, const JobRequirement & b) const
 {
     if (a.job_number() < b.job_number())
         return true;
@@ -78,13 +78,12 @@ paludis::resolver::minimise_requirements(const std::shared_ptr<const JobRequirem
     const std::shared_ptr<JobRequirements> result(std::make_shared<JobRequirements>());
     std::set<JobRequirement, JobRequirementComparator> duplicates;
 
-    for (auto r(reqs->begin()), r_end(reqs->end()) ;
-            r != r_end ; ++r)
+    for (const auto & requirement : *reqs)
     {
-        if (! duplicates.insert(*r).second)
+        if (! duplicates.insert(requirement).second)
             continue;
 
-        result->push_back(*r);
+        result->push_back(requirement);
     }
 
     return result;

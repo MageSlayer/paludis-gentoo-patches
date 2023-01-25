@@ -36,7 +36,8 @@ namespace
 
 TEST(EnumIterator, Works)
 {
-    EnumIterator<Numbers> n, n_end(last_number);
+    EnumIterator<Numbers> n;
+    EnumIterator<Numbers> n_end(last_number);
 
     ASSERT_TRUE(n != n_end);
     EXPECT_EQ(one, *n);

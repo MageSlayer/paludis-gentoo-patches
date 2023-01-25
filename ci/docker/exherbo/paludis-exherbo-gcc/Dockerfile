@@ -1,4 +1,4 @@
-FROM exherbo/exherbo-x86_64-pc-linux-gnu-base:latest
+FROM exherbo/exherbo-x86_64-pc-linux-gnu-gcc-base:latest
 MAINTAINER Marvin Schmidt <marv@exherbo.org>
 
 # Control dependency versions
@@ -7,6 +7,9 @@ ENV DEPENDENCY_VERSIONS ${DEPENDENCY_VERSIONS:-stable}
 
 ARG PYTHON_ABI
 ENV PYTHON_ABI ${PYTHON_ABI}
+
+# Build generic binaries
+COPY ./config/bashrc /etc/paludis/bashrc
 
 # Switch to option.conf.d layout
 RUN rm /etc/paludis/options.conf \

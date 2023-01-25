@@ -60,17 +60,6 @@ namespace paludis
     };
 }
 
-namespace
-{
-    struct IsNotAbsolutePath : std::unary_function<std::string, bool>
-    {
-        bool operator() (const std::string & str)
-        {
-            return str.empty() || '/' != str[0];
-        }
-    };
-}
-
 LibtoolLinkageChecker::LibtoolLinkageChecker(const FSPath & root) :
     _imp(root)
 {
@@ -109,7 +98,10 @@ LibtoolLinkageChecker::check_file(const FSPath & file)
         return true;
     }
 
-    deps.erase(std::remove_if(deps.begin(), deps.end(), IsNotAbsolutePath()), deps.end());
+    const auto is_not_absolute_path = [](const std::string & str) {
+        return str.empty() || '/' != str[0];
+    };
+    deps.erase(std::remove_if(deps.begin(), deps.end(), is_not_absolute_path), deps.end());
     if (deps.empty())
     {
         Log::get_instance()->message("broken_linkage_finder.no_libtool", ll_debug, lc_context)
@@ -117,25 +109,24 @@ LibtoolLinkageChecker::check_file(const FSPath & file)
         return true;
     }
 
-    for (std::vector<std::string>::const_iterator it(deps.begin()),
-             it_end(deps.end()); it_end != it; ++it)
+    for (const auto & it : deps)
     {
         try
         {
-            FSPath dep(_imp->root / *it);
+            FSPath dep(_imp->root / it);
             if (! dereference_with_root(dep, _imp->root).stat().is_regular_file())
             {
                 Log::get_instance()->message("broken_linkage_finder.dependency_missing",
-                    ll_debug, lc_context) << "Dependency '" << *it <<
+                    ll_debug, lc_context) << "Dependency '" << it <<
                     "' is missing or not a regular file in '" << _imp->root << "'";
 
                 std::unique_lock<std::mutex> l(_imp->mutex);
-                _imp->breakage.push_back(std::make_pair(file, *it));
+                _imp->breakage.push_back(std::make_pair(file, it));
             }
 
             else
                 Log::get_instance()->message("broken_linkage_finder.dependency_exists", ll_debug, lc_context)
-                    << "Dependency '" << *it << "' exists in '" << _imp->root << "'";
+                    << "Dependency '" << it << "' exists in '" << _imp->root << "'";
         }
 
         catch (const FSError & ex)
@@ -161,7 +152,6 @@ void
 LibtoolLinkageChecker::need_breakage_added(
     const std::function<void (const FSPath &, const std::string &)> & callback)
 {
-    for (Breakage::const_iterator it(_imp->breakage.begin()), it_end(_imp->breakage.end()); it_end != it; ++it)
-        callback(it->first, it->second);
+    for (const auto & it : _imp->breakage)
+        callback(it.first, it.second);
 }
-

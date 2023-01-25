@@ -94,7 +94,7 @@ paludis::cave::owner_common(
     {
         if (! query.empty() && '/' == query.at(0))
             handler = handle_full;
-        else if (std::string::npos != query.find("/"))
+        else if (std::string::npos != query.find('/'))
             handler = handle_partial;
         else
             handler = handle_basename;
@@ -103,16 +103,16 @@ paludis::cave::owner_common(
     std::shared_ptr<const PackageIDSequence> ids((*env)[selection::AllVersionsSorted(generator::All() |
                 filter::InstalledAtRoot(env->preferred_root_key()->parse_value()) | matching )]);
 
-    for (PackageIDSequence::ConstIterator p(ids->begin()), p_end(ids->end()); p != p_end; ++p)
+    for (const auto & id : *ids)
     {
-        std::shared_ptr<const Contents> contents((*p)->contents());
+        std::shared_ptr<const Contents> contents(id->contents());
         if (! contents)
             continue;
 
         if (contents->end() != std::find_if(contents->begin(), contents->end(), std::bind(handler, query,
                         std::placeholders::_1)))
         {
-            callback(*p);
+            callback(id);
             found = true;
         }
     }

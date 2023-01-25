@@ -122,18 +122,17 @@ ExheresLayout::ExheresLayout(const Environment * const e, const ERepository * co
 {
     if (master_repositories_locations())
     {
-        for (FSPathSequence::ConstIterator l(master_repositories_locations()->begin()), l_end(master_repositories_locations()->end()) ;
-                l != l_end ; ++l)
+        for (const auto & location : *master_repositories_locations())
         {
             /* don't also follow our masters' masters. Otherwise things like masters = arbor x11 will
              * get weird... */
-            _imp->arch_list_files->push_back(*l / "metadata" / "arch.conf");
-            _imp->repository_mask_files->push_back(*l / "metadata" / "repository_mask.conf");
-            _imp->profiles_desc_files->push_back(*l / "metadata" / "profiles_desc.conf");
-            _imp->mirror_files->push_back(*l / "metadata" / "mirrors.conf");
-            _imp->info_variables_files->push_back(*l / "metadata" / "info" / "variables.conf");
+            _imp->arch_list_files->push_back(location / "metadata" / "arch.conf");
+            _imp->repository_mask_files->push_back(location / "metadata" / "repository_mask.conf");
+            _imp->profiles_desc_files->push_back(location / "metadata" / "profiles_desc.conf");
+            _imp->mirror_files->push_back(location / "metadata" / "mirrors.conf");
+            _imp->info_variables_files->push_back(location / "metadata" / "info" / "variables.conf");
 
-            FSPath descs(*l / "metadata" / "options" / "descriptions");
+            FSPath descs(location / "metadata" / "options" / "descriptions");
             if (descs.stat().is_directory_or_symlink_to_directory())
             {
                 for (FSIterator d(descs, { }), d_end ; d != d_end ; ++d)
@@ -200,25 +199,23 @@ ExheresLayout::need_category_names() const
     std::list<FSPath> cats_list;
     cats_list.push_back(categories_file());
 
-    for (std::list<FSPath>::const_iterator i(cats_list.begin()), i_end(cats_list.end()) ;
-            i != i_end ; ++i)
+    for (const auto & i : cats_list)
     {
-        if (! i->stat().exists())
+        if (! i.stat().exists())
             continue;
 
-        LineConfigFile cats(*i, { });
+        LineConfigFile cats(i, { });
 
-        for (LineConfigFile::ConstIterator line(cats.begin()), line_end(cats.end()) ;
-                line != line_end ; ++line)
+        for (const auto & line : cats)
         {
             try
             {
-                _imp->category_names.insert(std::make_pair(CategoryNamePart(*line), false));
+                _imp->category_names.insert(std::make_pair(CategoryNamePart(line), false));
             }
             catch (const NameError & e)
             {
                 Log::get_instance()->message("e.exheres_layout.categories.skipping", ll_warning, lc_context)
-                    << "Skipping line '" << *line << "' in '" << *i << "' due to exception '"
+                    << "Skipping line '" << line << "' in '" << i << "' due to exception '"
                     << e.message() << "' ('" << e.what() << ")";
             }
         }
@@ -259,7 +256,7 @@ ExheresLayout::need_package_ids(const QualifiedPackageName & n) const
         {
             std::shared_ptr<const PackageID> id(_imp->repository->make_id(n, *e));
             if (indirect_iterator(v->end()) != std::find_if(indirect_iterator(v->begin()), indirect_iterator(v->end()),
-                        std::bind(std::equal_to<VersionSpec>(), id->version(), std::bind(std::mem_fn(&PackageID::version), _1))))
+                        std::bind(std::equal_to<>(), id->version(), std::bind(std::mem_fn(&PackageID::version), _1))))
                 Log::get_instance()->message("e.exheres_layout.id.duplicate", ll_warning, lc_context)
                     << "Ignoring entry '" << *e << "' for '" << n << "' in repository '" << _imp->repository->name()
                     << "' because another equivalent version already exists";
@@ -399,10 +396,9 @@ ExheresLayout::package_names(const CategoryNamePart & c) const
 
     std::shared_ptr<QualifiedPackageNameSet> result(std::make_shared<QualifiedPackageNameSet>());
 
-    for (PackagesMap::const_iterator p(_imp->package_names.begin()), p_end(_imp->package_names.end()) ;
-            p != p_end ; ++p)
-        if (p->first.category() == c)
-            result->insert(p->first);
+    for (const auto & package_name : _imp->package_names)
+        if (package_name.first.category() == c)
+            result->insert(package_name.first);
 
     return result;
 }
@@ -510,10 +506,9 @@ ExheresLayout::exlibsdirs_global() const
 
     if (_imp->repository->params().master_repositories())
     {
-        for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories()->begin()),
-                e_end(_imp->repository->params().master_repositories()->end()) ; e != e_end ; ++e)
+        for (const auto & e : *_imp->repository->params().master_repositories())
         {
-            std::shared_ptr<const FSPathSequence> master((*e)->layout()->exlibsdirs_global());
+            std::shared_ptr<const FSPathSequence> master(e->layout()->exlibsdirs_global());
             std::copy(master->begin(), master->end(), result->back_inserter());
         }
     }
@@ -529,10 +524,9 @@ ExheresLayout::exlibsdirs_category(const CategoryNamePart & c) const
 
     if (_imp->repository->params().master_repositories())
     {
-        for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories()->begin()),
-                e_end(_imp->repository->params().master_repositories()->end()) ; e != e_end ; ++e)
+        for (const auto & e : *_imp->repository->params().master_repositories())
         {
-            std::shared_ptr<const FSPathSequence> master((*e)->layout()->exlibsdirs_category(c));
+            std::shared_ptr<const FSPathSequence> master(e->layout()->exlibsdirs_category(c));
             std::copy(master->begin(), master->end(), result->back_inserter());
         }
     }
@@ -548,10 +542,9 @@ ExheresLayout::exlibsdirs_package(const QualifiedPackageName & q) const
 
     if (_imp->repository->params().master_repositories())
     {
-        for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories()->begin()),
-                e_end(_imp->repository->params().master_repositories()->end()) ; e != e_end ; ++e)
+        for (const auto & erepository : *_imp->repository->params().master_repositories())
         {
-            std::shared_ptr<const FSPathSequence> master((*e)->layout()->exlibsdirs_package(q));
+            std::shared_ptr<const FSPathSequence> master(erepository->layout()->exlibsdirs_package(q));
             std::copy(master->begin(), master->end(), result->back_inserter());
         }
     }
@@ -567,10 +560,9 @@ ExheresLayout::licenses_dirs() const
 
     if (_imp->repository->params().master_repositories())
     {
-        for (ERepositorySequence::ConstIterator e(_imp->repository->params().master_repositories()->begin()),
-                e_end(_imp->repository->params().master_repositories()->end()) ; e != e_end ; ++e)
+        for (const auto & e : *_imp->repository->params().master_repositories())
         {
-            std::shared_ptr<const FSPathSequence> master((*e)->layout()->licenses_dirs());
+            std::shared_ptr<const FSPathSequence> master(e->layout()->licenses_dirs());
             std::copy(master->begin(), master->end(), result->back_inserter());
         }
     }
@@ -672,4 +664,3 @@ ExheresLayout::repository_masks(const std::shared_ptr<const PackageID> & id) con
 {
     return _imp->repository_mask_store->query(id);
 }
-

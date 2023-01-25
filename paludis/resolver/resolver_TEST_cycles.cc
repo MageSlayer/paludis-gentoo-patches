@@ -180,7 +180,8 @@ namespace
                 data->install("triangle", "dep-c", "1");
 
             std::shared_ptr<const Resolved> resolved(data->get_resolved("triangle/target"));
-            std::shared_ptr<DecisionChecks> checks, u_checks;
+            std::shared_ptr<DecisionChecks> checks;
+            std::shared_ptr<DecisionChecks> u_checks;
 
             if (b_installed_)
             {
@@ -256,7 +257,8 @@ namespace
             data->get_use_existing_nothing_helper.set_use_existing_for_dependencies(ue_if_same);
 
             std::shared_ptr<const Resolved> resolved(data->get_resolved(cat + "/target"));
-            std::shared_ptr<DecisionChecks> checks, u_checks;
+            std::shared_ptr<DecisionChecks> checks;
+            std::shared_ptr<DecisionChecks> u_checks;
 
             if (runtime_ || installed_version_ == 1)
             {
