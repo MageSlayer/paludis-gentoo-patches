@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source "${PALUDIS_EBUILD_DIR}/echo_functions.bash"
+source "${PALUDIS_ECHO_FUNCTIONS_DIR:-${PALUDIS_EBUILD_DIR}}/echo_functions.bash"
 
 old_set=$-
 set -a
