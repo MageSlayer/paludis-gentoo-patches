@@ -38,10 +38,10 @@ fi
 ret=0
 
 for x in "$@"; do
-    if [[ -e ${x} ]]; then
+    if [[ -e "${x}" ]]; then
         mytiny="$(basename "${x}")"
         mydir="${!PALUDIS_IMAGE_DIR_VAR%/}/${DESTTREE#/}/share/locale/${mytiny%.*}/LC_MESSAGES"
-        if [[ ! -d ${mydir} ]]; then
+        if [[ ! -d "${mydir}" ]]; then
             install -d "${mydir}"
         fi
         install -m0644 "${x}" "${mydir}/${MOPREFIX}.mo" || ret=2

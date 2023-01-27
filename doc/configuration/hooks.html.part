@@ -403,7 +403,7 @@ hook_run_install_all_post()
 {
     # ensure that einfo etc are available
     export PATH="$(${PALUDIS_EBUILD_DIR}/utils/canonicalise ${PALUDIS_EBUILD_DIR}/utils/ ):${PATH}"
-    source ${PALUDIS_EBUILD_DIR}/echo_functions.bash
+    source "${PALUDIS_ECHO_FUNCTIONS_DIR:-${PALUDIS_EBUILD_DIR}}/echo_functions.bash"
 
     echo
     einfo "Checking for monkeys..."
