@@ -4,9 +4,9 @@ paludis_generate_header("..")
 paludis_generate_footer("..")
 
 if(cave IN_LIST PALUDIS_CLIENTS)
-  set(ENABLE_CAVE_CLIENT FALSE)
-else()
   set(ENABLE_CAVE_CLIENT TRUE)
+else()
+  set(ENABLE_CAVE_CLIENT FALSE)
 endif()
 
 function(paludis_generate_cave_command_html_doc subcommand)
