@@ -24,9 +24,6 @@ a rather ugly way of handling things. We do have equivalents to most values:</p>
     shipping one as a demo hook at some point. Note that collision-protect is
     conceptually broken and you shouldn't be using it.</dd>
 
-    <dt>distcc</dt>
-    <dd>See <a href="howdoi.html#distcc">Use <code>distcc</code></a>.</dd>
-
     <dt>keepwork, keeptemp, noclean</dt>
     <dd>You can use <code>BUILD_OPTIONS: work=preserve</code> for a similar effect.</dd>
 
