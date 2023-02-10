@@ -6,7 +6,10 @@ cmake_policy(SET CMP0051 NEW)
 cmake_policy(SET CMP0057 NEW)
 cmake_policy(SET CMP0058 NEW)
 
-project(paludis VERSION 3.0.0)
+project(paludis VERSION 3.0.0
+    DESCRIPTION "The one true package mangler"
+    HOMEPAGE_URL "https://paludis.exherbo.org/"
+)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 
