@@ -4,6 +4,42 @@ News for Paludis
 This file lists the major changes between versions. For a more detailed list
 of every change, see the Git log.
 
+3.0.0:
+    * Support for multiarch and cross compiled packages
+
+    * As a consequence infrastructure was added to ban unprefixed build tools
+
+    * General code modernisation, C++ 17 is now required
+
+    * Update supported ruby versions (2.6 - 3.1)
+
+    * Update supported python versions, drop support for python 2, 3.6 - 3.11
+      are supported, 3.10 is the default
+
+    * The autotools build was replaced with a cmake based one
+
+    * Disallow unexported phases
+
+    * New --format shorthand '%I' for '%c/%p%:%s'
+
+    * Compatibility fixes for building with gcc 7 and 13
+
+    * Adjust the stripper for file >= 5.33 and PIE executables
+
+    * Compatibility fixes for bash 5 and 5.2
+
+    * Compatibility fixes for clang
+
+    * Compatibility fixes for gtest 1.8 and 1.1.11
+
+    * Compatibility fixes for newer Linux kernels
+
+    * Compatibility fixes for building against libc++
+
+    * Compatibility fixes for building python bindings with boost 1.63.0
+
+    * Bug fixes
+
 2.6.0:
     * Bug fixes.
 
