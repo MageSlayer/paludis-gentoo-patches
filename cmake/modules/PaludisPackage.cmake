@@ -1,6 +1,6 @@
 
 set(CPACK_SET_DESTDIR TRUE)
-set(CPACK_SOURCE_GENERATOR "TBZ2")
+set(CPACK_SOURCE_GENERATOR "TXZ")
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 set(CPACK_PACKAGE_VERISON_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERISON_MINOR ${PROJECT_VERSION_MINOR})
@@ -12,9 +12,12 @@ set(CPACK_SOURCE_IGNORE_FILES
       "\\\\.sw[opn]$"
       ".*~"
       "cscope.*"
+      "/.gitattributes"
       "/.gitignore"
+      "/.gitlab-ci.yml"
       "/.gitreview"
-      "files.m4"
+      "/.mailmap"
+      ".*\.patch"
       "${CPACK_SOURCE_IGNORE_FILES}")
 
 include(CPack)
