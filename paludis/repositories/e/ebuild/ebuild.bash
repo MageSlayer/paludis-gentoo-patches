@@ -91,6 +91,9 @@ shopt -s expand_aliases
 for p in ${PALUDIS_SHELL_OPTIONS} ; do
     shopt -s ${p}
 done
+for p in ${PALUDIS_SHELL_OPTIONS_DISABLED} ; do
+    shopt -u ${p}
+done
 
 ebuild_cleanup_slashes ROOT
 
