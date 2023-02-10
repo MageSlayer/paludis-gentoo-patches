@@ -89,10 +89,10 @@ shopt -s expand_aliases
 [[ -z ${PALUDIS_SHELL_OPTIONS} && unset == ${PALUDIS_SHELL_OPTIONS-unset} ]] &&
     shopt -s extglob
 for p in ${PALUDIS_SHELL_OPTIONS} ; do
-    shopt -s ${p}
+    shopt -p|grep -q ${p} && shopt -s ${p}
 done
 for p in ${PALUDIS_SHELL_OPTIONS_DISABLED} ; do
-    shopt -u ${p}
+    shopt -p|grep -q ${p} && shopt -u ${p}
 done
 
 ebuild_cleanup_slashes ROOT
