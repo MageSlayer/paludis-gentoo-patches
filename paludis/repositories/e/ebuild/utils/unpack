@@ -111,6 +111,17 @@ unpack_xz() {
     xz -dc "${1}" > "${UNPACKTODIR}/$(basename "${1%.*}" )"
 }
 
+unpack_tar.zst() {
+    echo zstd -dc "${1}" \| strip_tar_corruption \| tar xf - --no-same-owner "${TAR_OPTIONS[@]}"
+    zstd -dc "${1}" | strip_tar_corruption | tar xf - --no-same-owner "${TAR_OPTIONS[@]}"
+    assert "Couldn't unpack ${1}"
+}
+
+unpack_zst() {
+    echo zstd -dc "${1}" \> "${UNPACKTODIR}/$(basename "${1%.*}" )" 1>&2
+    zstd -dc "${1}" > "${UNPACKTODIR}/$(basename "${1%.*}" )"
+}
+
 unpack_one()
 {
     local file=${1} compare=${1}

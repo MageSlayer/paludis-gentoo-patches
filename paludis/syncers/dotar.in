@@ -175,7 +175,7 @@ fi
 
 UNPACKDIR="${TEMP}/repository"
 mkdir "${UNPACKDIR}"
-export PALUDIS_UNPACK_SUFFIXES="tar tar.gz,tgz,tar.Z tar.bz2,tbz2,tbz zip,ZIP,jar rar,RAR lha,LHa,LHA,lzh a,deb tar.lzma 7z,7Z tar.xz,txz"
+export PALUDIS_UNPACK_SUFFIXES="tar tar.gz,tgz,tar.Z tar.bz2,tbz2,tbz zip,ZIP,jar rar,RAR lha,LHa,LHA,lzh a,deb tar.lzma 7z,7Z tar.xz,txz tar.zst"
 export PALUDIS_UNPACK_UNRECOGNISED_IS_FATAL=yes
 export PALUDIS_UNPACK_FIX_PERMISSIONS=
 export PALUDIS_UNPACK_ANY_PATH=yes
