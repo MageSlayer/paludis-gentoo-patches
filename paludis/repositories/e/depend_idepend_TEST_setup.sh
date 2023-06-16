@@ -22,7 +22,6 @@ cat <<END > profiles/profile/virtuals
 END
 cat <<END > profiles/profile/make.defaults
 ARCH="test"
-USERLAND="GNU"
 KERNEL="linux"
 LIBC="glibc"
 CHOST="i286-badger-linux-gnu"

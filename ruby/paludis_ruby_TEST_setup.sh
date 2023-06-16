@@ -48,7 +48,6 @@ foo
 END
 cat <<END > profiles/testprofile/make.defaults
 ARCH=test
-USERLAND=test
 KERNEL=test
 END
 cat <<END > profiles/profiles.desc

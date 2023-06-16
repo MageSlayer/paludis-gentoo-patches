@@ -60,11 +60,10 @@ cat
 END
 cat <<END > profiles/testprofile/make.defaults
 ARCH=test
-USERLAND=test
 KERNEL=test
 TESTPROFILE_WAS_SOURCED=yes
 PROFILE_ORDERING=1
-USE_EXPAND="USERLAND KERNEL"
+USE_EXPAND="KERNEL"
 END
 
 cat <<"END" > cat/a/a-1.ebuild || exit 1

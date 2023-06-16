@@ -26,7 +26,6 @@ cat <<END > profiles/categories || exit 1
 END
 cat <<END > profiles/testprofile/make.defaults
 ARCH=test
-USERLAND=test
 KERNEL=test
 END
 cat <<END > profiles/profiles.desc

@@ -14,7 +14,6 @@ echo installed >>namesincrtest/.cache/names/installed/_VERSION_
 
 cat <<END > namesincrtest_src/profiles/profile/make.defaults
 ARCH=test
-USERLAND="GNU"
 KERNEL="linux"
 CHOST="i286-badger-linux-gnu"
 END

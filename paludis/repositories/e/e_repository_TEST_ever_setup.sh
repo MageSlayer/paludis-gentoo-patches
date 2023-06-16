@@ -26,7 +26,6 @@ cat <<END > profiles/profile/make.defaults
 CHOST="i286-badger-linux-gnu"
 SUBOPTIONS="LINGUAS"
 LINGUAS="en en_GB en_GB@UTF-8"
-USERLAND="GNU"
 OPTIONS="weasel spinach"
 END
 mkdir -p "packages/cat/ever-at-least"

@@ -62,7 +62,6 @@ END
 
 cat <<END > profiles/testprofile/make.defaults || exit 1
 ARCH=test
-USERLAND=test
 KERNEL=test
 USE="test1 test2 -test5"
 END

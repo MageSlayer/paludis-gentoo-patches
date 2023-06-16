@@ -21,15 +21,13 @@ echo "test-repo" >> profiles/repo_name || exit 1
 echo "cat" >> profiles/categories || exit 1
 cat <<END > profiles/profile/make.defaults
 ARCH="cheese"
-USERLAND="GNU"
 KERNEL="linux"
 LIBC="glibc"
 CHOST="i286-badger-linux-gnu"
 LINGUAS="enabled_en enabled_en_GB enabled_en_GB@UTF-8"
-USE_EXPAND="LINGUAS USERLAND RUBY_TARGETS"
+USE_EXPAND="LINGUAS RUBY_TARGETS"
 USE_EXPAND_UNPREFIXED="ARCH"
-USE_EXPAND_IMPLICIT="USERLAND ARCH"
-USE_EXPAND_VALUES_USERLAND="GNU"
+USE_EXPAND_IMPLICIT="ARCH"
 USE_EXPAND_VALUES_ARCH="cheese otherarch"
 IUSE_IMPLICIT="build"
 RUBY_TARGETS="ruby24 -ruby25"
@@ -229,7 +227,6 @@ S="${WORKDIR}"
 
 pkg_setup() {
     use build && die "build set"
-    use userland_GNU || die "userland_GNU not set"
     use cheese || die "cheese not set"
     use otherarch && die "otherarch set"
 }

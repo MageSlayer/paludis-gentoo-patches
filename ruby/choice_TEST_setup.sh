@@ -47,7 +47,6 @@ test testprofile stable
 END
 cat <<END > profiles/testprofile/make.defaults
 ARCH=test
-USERLAND=test
 KERNEL=test
 USE_EXPAND=LINGUAS
 USE=flag1

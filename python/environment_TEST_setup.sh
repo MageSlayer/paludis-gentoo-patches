@@ -49,7 +49,6 @@ foo
 END
 cat <<END > profiles/testprofile/make.defaults
 ARCH=test
-USERLAND=test
 KERNEL=test
 END
 cat <<END > profiles/profiles.desc
@@ -82,7 +81,6 @@ cd slaverepo || exit 1
 echo "slaverepo" > profiles/repo_name || exit 1
 cat <<END > profiles/testprofile/make.defaults
 ARCH=test
-USERLAND=test
 KERNEL=test
 END
 cat <<END > profiles/profiles.desc
@@ -92,7 +90,6 @@ END
 
 cat <<END > profiles/testprofile/make.defaults
 ARCH=test
-USERLAND=test
 KERNEL=test
 END
 cat <<END > profiles/profiles.desc

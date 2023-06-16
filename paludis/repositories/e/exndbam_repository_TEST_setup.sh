@@ -16,7 +16,6 @@ mkdir -p postinsttest postinsttest_src1/{eclass,profiles/profile,cat/pkg} || exi
 
 cat <<END > postinsttest_src1/profiles/profile/make.defaults
 ARCH=test
-USERLAND="GNU"
 KERNEL="linux"
 CHOST="i286-badger-linux-gnu"
 END

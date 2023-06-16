@@ -33,15 +33,13 @@ virtual/virtual-doesnotexist cat/doesnotexist
 END
 cat <<END > profiles/profile/make.defaults
 ARCH="cheese"
-USERLAND="GNU"
 KERNEL="linux"
 LIBC="glibc"
 CHOST="i286-badger-linux-gnu"
 LINGUAS="enabled_en enabled_en_GB enabled_en_GB@UTF-8"
-USE_EXPAND="LINGUAS USERLAND"
+USE_EXPAND="LINGUAS"
 USE_EXPAND_UNPREFIXED="ARCH"
-USE_EXPAND_IMPLICIT="USERLAND ARCH"
-USE_EXPAND_VALUES_USERLAND="GNU"
+USE_EXPAND_IMPLICIT="ARCH"
 USE_EXPAND_VALUES_ARCH="cheese otherarch"
 IUSE_IMPLICIT="build"
 END
@@ -655,9 +653,8 @@ LICENSE="GPL-2"
 KEYWORDS="test"
 
 pkg_setup() {
-    [[ $USE == "enabled-weasel linguas_enabled_en linguas_enabled_en_GB linguas_enabled_en_GB@UTF-8 userland_GNU cheese " ]] \
+    [[ $USE == "enabled-weasel linguas_enabled_en linguas_enabled_en_GB linguas_enabled_en_GB@UTF-8 cheese " ]] \
         || die "USE=$USE is wrong"
-    [[ $USERLAND == "GNU" ]] || die "USERLAND=$USERLAND is wrong"
     [[ $LINGUAS == "enabled_en enabled_en_GB enabled_en_GB@UTF-8" ]] || die "LINGUAS=$LINGUAS is wrong"
 }
 END
@@ -984,7 +981,6 @@ S="${WORKDIR}"
 
 pkg_setup() {
     use build && die "build set"
-    use userland_GNU || die "userland_GNU not set"
     use cheese || die "cheese not set"
     use otherarch && die "otherarch set"
 }

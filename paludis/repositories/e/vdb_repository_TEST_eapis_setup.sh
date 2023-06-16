@@ -13,7 +13,6 @@ mkdir -p dstrepo
 mkdir -p srcrepo/{profiles/profile,cat/{target,vars}{,-exheres},eclass}
 cat <<END > srcrepo/profiles/profile/make.defaults
 ARCH=test
-USERLAND="GNU"
 KERNEL="linux"
 CHOST="i286-badger-linux-gnu"
 END

@@ -86,7 +86,6 @@ mkdir -p reinstalltest reinstalltest_src{1,2}/{eclass,profiles/profile,cat/pkg} 
 
 cat <<END > reinstalltest_src1/profiles/profile/make.defaults
 ARCH=test
-USERLAND="GNU"
 KERNEL="linux"
 CHOST="i286-badger-linux-gnu"
 END
@@ -105,7 +104,6 @@ mkdir -p postinsttest postinsttest_src1/{eclass,profiles/profile,cat/pkg} || exi
 
 cat <<END > postinsttest_src1/profiles/profile/make.defaults
 ARCH=test
-USERLAND="GNU"
 KERNEL="linux"
 CHOST="i286-badger-linux-gnu"
 END
@@ -153,7 +151,6 @@ mkdir -p removestalefilesvdb removestalefiles/{eclass,profiles/profile,cat/pkg} 
 
 cat <<END > removestalefiles/profiles/profile/make.defaults
 ARCH=test
-USERLAND="GNU"
 KERNEL="linux"
 CHOST="i286-badger-linux-gnu"
 END

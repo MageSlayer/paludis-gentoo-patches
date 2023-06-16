@@ -30,9 +30,7 @@ cat <<END > profiles/profile/make.defaults
 CHOST="i286-badger-linux-gnu"
 SUBOPTIONS="LINGUAS"
 LINGUAS="en en_GB en_GB@UTF-8"
-USERLAND="GNU"
 OPTIONS="weasel spinach"
-USE_EXPAND="USERLAND"
 END
 mkdir -p "packages/cat/in-ebuild-die"
 cat <<'END' > packages/cat/in-ebuild-die/in-ebuild-die-1.ebuild || exit 1

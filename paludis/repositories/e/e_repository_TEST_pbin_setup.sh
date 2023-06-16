@@ -23,15 +23,13 @@ for e in 0 1 2 3 4 5 ; do
 END
     cat <<END > profiles/profile/make.defaults
 ARCH="cheese"
-USERLAND="GNU"
 KERNEL="linux"
 LIBC="glibc"
 CHOST="i286-badger-linux-gnu"
 LINGUAS="enabled_en enabled_en_GB enabled_en_GB@UTF-8"
-USE_EXPAND="LINGUAS USERLAND"
+USE_EXPAND="LINGUAS"
 USE_EXPAND_UNPREFIXED="ARCH"
-USE_EXPAND_IMPLICIT="USERLAND ARCH"
-USE_EXPAND_VALUES_USERLAND="GNU"
+USE_EXPAND_IMPLICIT="ARCH"
 USE_EXPAND_VALUES_ARCH="cheese otherarch"
 IUSE_IMPLICIT="build"
 END
@@ -67,15 +65,13 @@ END
 END
     cat <<END > profiles/profile/make.defaults
 ARCH="cheese"
-USERLAND="GNU"
 KERNEL="linux"
 LIBC="glibc"
 CHOST="i286-badger-linux-gnu"
 LINGUAS="enabled_en enabled_en_GB enabled_en_GB@UTF-8"
-USE_EXPAND="LINGUAS USERLAND"
+USE_EXPAND="LINGUAS"
 USE_EXPAND_UNPREFIXED="ARCH"
-USE_EXPAND_IMPLICIT="USERLAND ARCH"
-USE_EXPAND_VALUES_USERLAND="GNU"
+USE_EXPAND_IMPLICIT="ARCH"
 USE_EXPAND_VALUES_ARCH="cheese otherarch"
 IUSE_IMPLICIT="build"
 END
@@ -92,15 +88,13 @@ for e in exheres-0 ; do
 END
     cat <<END > profiles/profile/make.defaults
 ARCH="cheese"
-USERLAND="GNU"
 KERNEL="linux"
 LIBC="glibc"
 CHOST="i286-badger-linux-gnu"
 LINGUAS="enabled_en enabled_en_GB enabled_en_GB@UTF-8"
-USE_EXPAND="LINGUAS USERLAND"
+USE_EXPAND="LINGUAS"
 USE_EXPAND_UNPREFIXED="ARCH"
-USE_EXPAND_IMPLICIT="USERLAND ARCH"
-USE_EXPAND_VALUES_USERLAND="GNU"
+USE_EXPAND_IMPLICIT="ARCH"
 USE_EXPAND_VALUES_ARCH="cheese otherarch"
 IUSE_IMPLICIT="build"
 END
@@ -162,15 +156,13 @@ END
 END
     cat <<END > profiles/profile/make.defaults
 ARCH="cheese"
-USERLAND="GNU"
 KERNEL="linux"
 LIBC="glibc"
 CHOST="i286-badger-linux-gnu"
 LINGUAS="enabled_en enabled_en_GB enabled_en_GB@UTF-8"
-USE_EXPAND="LINGUAS USERLAND"
+USE_EXPAND="LINGUAS"
 USE_EXPAND_UNPREFIXED="ARCH"
-USE_EXPAND_IMPLICIT="USERLAND ARCH"
-USE_EXPAND_VALUES_USERLAND="GNU"
+USE_EXPAND_IMPLICIT="ARCH"
 USE_EXPAND_VALUES_ARCH="cheese otherarch"
 IUSE_IMPLICIT="build"
 END

@@ -30,7 +30,6 @@ echo "test-repo" >> profiles/repo_name || exit 1
 echo "cat" >> profiles/categories || exit 1
 cat <<END > profiles/profile/make.defaults
 ARCH=test
-USERLAND="GNU"
 KERNEL="linux"
 LIBC="glibc"
 CHOST="i286-badger-linux-gnu"
