@@ -139,8 +139,8 @@ paludis::erepository::do_install_action(
     bool test_restrict;
     bool strip_restrict;
     {
-        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env, id),
-                                                              properties(env, id);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> restricts(env, id);
+        DepSpecFlattener<PlainTextSpecTree, PlainTextDepSpec> properties(env, id);
         if (id->restrict_key())
             id->restrict_key()->parse_value()->top()->accept(restricts);
         if (id->properties_key())
