@@ -39,7 +39,7 @@ SearchCommandLineMatchOptions::SearchCommandLineMatchOptions(args::ArgsHandler *
             args::EnumArg::EnumArgOptions
             ("text",  't', "Match an exact text substring, ignoring case")
             ("exact", 'x', "Match only an entire exact string, ignoring case")
-            ("regex", 'r', "Match using pcre regular expressions, ignoring case"),
+            ("regex", 'r', "Match using ECMAScript regular expressions, ignoring case"),
             "text"
           ),
     a_case_sensitive(&g_pattern_options, "case-sensitive", 'C', "Make matching case sensitive.", true),
