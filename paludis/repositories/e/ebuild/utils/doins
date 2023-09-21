@@ -63,7 +63,7 @@ fi
 
 ret='0'
 
-for x in "$@"; do
+for x in "${@}"; do
     if [[ -L "${x}" ]]; then
         if [[ -n "${PALUDIS_DOINS_SYMLINK}" ]] ; then
             ln -s "$(readlink "${x}")" "${!PALUDIS_IMAGE_DIR_VAR%/}/${!PALUDIS_INSDESTTREE_VAR#/}/$(basename "${x}")" || ret='2'
