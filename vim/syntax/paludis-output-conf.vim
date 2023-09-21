@@ -54,6 +54,7 @@ syn keyword PaludisOutputConfKnownKey contained
             \ format_error
             \ format_info
             \ format_log
+            \ format_qawarn
             \ format_status
             \ format_warn
             \ handler
