@@ -722,13 +722,13 @@ EAPI="0"
 
 src_unpack() {
     local OUT=$(einfon "einfon output.")
-    [ -z "$OUT" ] || die "einfon failed"
+    [ -n "$OUT" ] || die "einfon failed"
 
     OUT=$(einfo "einfo output.")
-    [ -z "$OUT" ] || die "einfo failed"
+    [ -n "$OUT" ] || die "einfo failed"
 
     OUT=$(elog "elog output.")
-    [ -z "$OUT" ] || die "elog failed"
+    [ -n "$OUT" ] || die "elog failed"
 
     OUT=$(ewarn "ewarn output.")
     [ -z "$OUT" ] || die "ewarn failed"

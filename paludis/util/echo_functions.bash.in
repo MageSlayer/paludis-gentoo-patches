@@ -57,7 +57,11 @@ paludis_ecmd()
 
     # don't try to avoid a newline for einfon. it gets horrible when logging
     # things, and einfon is abused more than it is used correctly.
-    echo -e "${prefix}${message}" >&2
+    if [ -n "${PALUDIS_LOG_TO_STDOUT}" ]; then
+        echo -e "${prefix}${message}"
+    else
+        echo -e "${prefix}${message}" >&2
+    fi
 
     if type perform_hook &>/dev/null ; then
         if [[ -n "${hook}" ]] ; then
@@ -113,7 +117,7 @@ elog()
 
 ewarn()
 {
-    paludis_ecmd \
+    PALUDIS_LOG_TO_STDOUT='' paludis_ecmd \
         "ewarn" \
         "ewarn" \
         "`echo -ne " ${COLOUR_WARN}*${COLOUR_NORMAL} "`" \
@@ -122,7 +126,7 @@ ewarn()
 
 eqawarn()
 {
-    paludis_ecmd \
+    PALUDIS_LOG_TO_STDOUT='' paludis_ecmd \
         "eqawarn" \
         "eqawarn" \
         "`echo -ne " ${COLOUR_WARN}*${COLOUR_NORMAL} "`" \
@@ -131,7 +135,7 @@ eqawarn()
 
 eerror()
 {
-    paludis_ecmd \
+    PALUDIS_LOG_TO_STDOUT='' paludis_ecmd \
         "eerror" \
         "eerror" \
         "`echo -ne " ${COLOUR_BAD}*${COLOUR_NORMAL} "`" \
@@ -170,7 +174,11 @@ _eend()
         msg="${COLOUR_BRACKET}[ ${COLOUR_BAD}!!${COLOUR_BRACKET} ]${COLOUR_NORMAL}"
     fi
 
-    echo -e "${PALUDIS_ENDCOL} ${msg}"
+    if [ -n "${PALUDIS_LOG_TO_STDOUT}" ]; then
+        echo -e "${PALUDIS_ENDCOL} ${msg}"
+    else
+        echo -e "${PALUDIS_ENDCOL} ${msg}" >&2
+    fi
 
     return ${retval}
 }

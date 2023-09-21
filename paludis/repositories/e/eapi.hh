@@ -158,6 +158,7 @@ namespace paludis
         typedef Name<struct name_licence_last_checked> licence_last_checked;
         typedef Name<struct name_license> license;
         typedef Name<struct name_load_modules> load_modules;
+        typedef Name<struct name_log_to_stdout> log_to_stdout;
         typedef Name<struct name_long_description> long_description;
         typedef Name<struct name_merger_options> merger_options;
         typedef Name<struct name_metadata_key> metadata_key;
@@ -503,6 +504,7 @@ namespace paludis
             NamedValue<n::econf_extra_options, std::string> econf_extra_options;
             NamedValue<n::econf_extra_options_help_dependent, std::string> econf_extra_options_help_dependent;
             NamedValue<n::failure_is_fatal, bool> failure_is_fatal;
+            NamedValue<n::log_to_stdout, bool> log_to_stdout;
             NamedValue<n::new_stdin, bool> new_stdin;
             NamedValue<n::unpack_any_path, bool> unpack_any_path;
             NamedValue<n::unpack_case_insensitive, bool> unpack_case_insensitive;
