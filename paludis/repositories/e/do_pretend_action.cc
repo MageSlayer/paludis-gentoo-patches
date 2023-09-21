@@ -137,6 +137,7 @@ paludis::erepository::do_pretend_action(
 
                 EbuildBadOptionsCommand bad_options_cmd(command_params,
                         make_named_values<EbuildBadOptionsCommandParams>(
+                            n::env_unset() = join(profile->env_unset()->begin(), profile->env_unset()->end(), " "),
                             n::expand_vars() = expand_vars,
                             n::profiles() = params.profiles(),
                             n::profiles_with_parents() = profile->profiles_with_parents(),
@@ -205,6 +206,7 @@ paludis::erepository::do_pretend_action(
 
                 EbuildBadOptionsCommand bad_options_cmd(command_params,
                         make_named_values<EbuildBadOptionsCommandParams>(
+                            n::env_unset() = join(profile->env_unset()->begin(), profile->env_unset()->end(), " "),
                             n::expand_vars() = expand_vars,
                             n::profiles() = params.profiles(),
                             n::profiles_with_parents() = profile->profiles_with_parents(),
@@ -272,6 +274,7 @@ paludis::erepository::do_pretend_action(
         EbuildPretendCommand pretend_cmd(command_params,
                 make_named_values<EbuildPretendCommandParams>(
                     n::destination() = destination,
+                    n::env_unset() = join(profile->env_unset()->begin(), profile->env_unset()->end(), " "),
                     n::expand_vars() = expand_vars,
                     n::is_from_pbin() = id->eapi()->supported()->is_pbin(),
                     n::profiles() = params.profiles(),

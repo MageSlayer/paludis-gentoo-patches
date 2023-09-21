@@ -105,6 +105,7 @@ namespace paludis
         typedef Name<struct name_env_ebuild_phase> env_ebuild_phase;
         typedef Name<struct name_env_ebuild_phase_func> env_ebuild_phase_func;
         typedef Name<struct name_env_ed> env_ed;
+        typedef Name<struct name_env_env_unset> env_env_unset;
         typedef Name<struct name_env_eprefix> env_eprefix;
         typedef Name<struct name_env_eroot> env_eroot;
         typedef Name<struct name_env_filesdir> env_filesdir;
@@ -228,6 +229,7 @@ namespace paludis
         typedef Name<struct name_upstream_release_notes> upstream_release_notes;
         typedef Name<struct name_uri_labels> uri_labels;
         typedef Name<struct name_use> use;
+        typedef Name<struct name_use_env_unset> use_env_unset;
         typedef Name<struct name_use_expand> use_expand;
         typedef Name<struct name_use_expand_hidden> use_expand_hidden;
         typedef Name<struct name_use_expand_separator> use_expand_separator;
@@ -362,6 +364,7 @@ namespace paludis
             NamedValue<n::env_ebuild_phase, std::string> env_ebuild_phase;
             NamedValue<n::env_ebuild_phase_func, std::string> env_ebuild_phase_func;
             NamedValue<n::env_ed, std::string> env_ed;
+            NamedValue<n::env_env_unset, std::string> env_env_unset;
             NamedValue<n::env_eprefix, std::string> env_eprefix;
             NamedValue<n::env_eroot, std::string> env_eroot;
             NamedValue<n::env_filesdir, std::string> env_filesdir;
@@ -519,6 +522,7 @@ namespace paludis
             NamedValue<n::unpack_fix_permissions, bool> unpack_fix_permissions;
             NamedValue<n::unpack_suffixes, std::string> unpack_suffixes;
             NamedValue<n::unpack_unrecognised_is_fatal, bool> unpack_unrecognised_is_fatal;
+            NamedValue<n::use_env_unset, bool> use_env_unset;
             NamedValue<n::use_with_enable_empty_third_argument, bool> use_with_enable_empty_third_argument;
         };
 

@@ -86,6 +86,7 @@ namespace
                         n::env_ebuild_phase() = check_get(k, "env_ebuild_phase"),
                         n::env_ebuild_phase_func() = check_get(k, "env_ebuild_phase_func"),
                         n::env_ed() = check_get(k, "env_ed"),
+                        n::env_env_unset() = check_get(k, "env_env_unset"),
                         n::env_eprefix() = check_get(k, "env_eprefix"),
                         n::env_eroot() = check_get(k, "env_eroot"),
                         n::env_filesdir() = check_get(k, "env_filesdir"),
@@ -269,6 +270,7 @@ namespace
                         n::unpack_fix_permissions() = destringify_key<bool>(k, "unpack_fix_permissions"),
                         n::unpack_suffixes() = k.get("unpack_suffixes"),
                         n::unpack_unrecognised_is_fatal() = destringify_key<bool>(k, "unpack_unrecognised_is_fatal"),
+                        n::use_env_unset() = destringify_key<bool>(k, "use_env_unset"),
                         n::use_with_enable_empty_third_argument() = destringify_key<bool>(k, "use_with_enable_empty_third_argument")
                         ));
     }
