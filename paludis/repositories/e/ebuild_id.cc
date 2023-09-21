@@ -1620,15 +1620,25 @@ EbuildID::add_build_options(const std::shared_ptr<Choices> & choices) const
     {
         bool may_be_unrestricted_strip(true);
 
-        /* if we unconditionally restrict an action, don't add / force mask
+        /*
+         * if we unconditionally restrict an action, don't add / force mask
          * a build option for it. but if we conditionally restrict it, do,
-         * to avoid weirdness in cases like RESTRICT="test? ( test )." */
+         * to avoid weirdness in cases like RESTRICT="test? ( test )".
+         *
+         * However, some elements, like strip, might be restricted, but
+         * can be overridden by other things, like the new controllable
+         * strip feature.
+         * For such cases, apply overrides.
+         */
         if (restrict_key())
         {
             UnconditionalRestrictFinder f;
             restrict_key()->parse_value()->top()->accept(f);
+
+            bool strip_override = eapi()->supported()->tools_options()->controllable_strip();
+
             mask_tests = f.s.end() != f.s.find("test");
-            may_be_unrestricted_strip = f.s.end() == f.s.find("strip");
+            may_be_unrestricted_strip = (f.s.end() == f.s.find("strip")) || strip_override;
         }
 
         /* symbols */

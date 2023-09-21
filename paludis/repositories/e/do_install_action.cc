@@ -319,7 +319,7 @@ paludis::erepository::do_install_action(
         }
         else if (phase.option("strip"))
         {
-            if ((! id->eapi()->supported()->is_pbin()) && (! strip_restrict))
+            if ((! id->eapi()->supported()->is_pbin()))
             {
                 std::string libdir("lib");
                 FSPath root(destination->installed_root_key()
@@ -342,13 +342,15 @@ paludis::erepository::do_install_action(
                 EStripper stripper(make_named_values<EStripperOptions>(
                             n::compress_splits() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_compress(
                                 symbols_choice->parameter()),
+                            n::controllable_strip_dir() = package_builddir / "temp",
                             n::debug_dir() = package_builddir / "image" / "usr" / libdir / "debug",
                             n::dwarf_compression() = dwarf_compression && dwarf_compression->enabled(),
                             n::image_dir() = package_builddir / "image",
                             n::output_manager() = output_manager,
                             n::package_id() = id,
                             n::split() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_split(symbols_choice->parameter()),
-                            n::strip() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_strip(symbols_choice->parameter())
+                            n::strip_choice() = symbols_choice && symbols_choice->enabled() && ELikeSymbolsChoiceValue::should_strip(symbols_choice->parameter()),
+                            n::strip_restrict() = strip_restrict
                             ));
                 stripper.strip();
             }

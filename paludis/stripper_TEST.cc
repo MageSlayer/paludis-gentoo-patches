@@ -69,11 +69,14 @@ TEST(Stripper, Works)
 {
     TestStripper s(make_named_values<StripperOptions>(
                 n::compress_splits() = false,
+                n::controllable_strip() = false,
+                n::controllable_strip_dir() = "",
                 n::debug_dir() = FSPath("stripper_TEST_dir/image").realpath() / "usr" / "lib" / "debug",
                 n::dwarf_compression() = false,
                 n::image_dir() = FSPath("stripper_TEST_dir/image").realpath(),
                 n::split() = true,
-                n::strip() = true
+                n::strip_choice() = true,
+                n::strip_restrict() = false
             ));
     s.strip();
 
