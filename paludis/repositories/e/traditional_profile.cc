@@ -465,7 +465,7 @@ namespace
         for (const auto & x : *_imp->use_expand)
             _imp->known_choice_value_names.insert(std::make_pair(tolower(x), std::make_shared<Set<UnprefixedChoiceName>>()));
 
-        for (const auto & u : _imp->use)
+        for (const auto & u : FlagIdStatusMap (_imp->use.begin (), _imp->use.end ()))
         {
             if (! stringify(u.first.first).empty())
             {
