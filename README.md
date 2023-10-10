@@ -24,28 +24,27 @@ https://github.com/MageSlayer/paludis-gentoo-overlay
 
 ### EAPI=8 Branch
 
-**It is not safe to use this branch.**
+**It is not completely safe to use this branch.**
 
 The current implementation should be about feature-complete, with the exception
 that IDEPEND dependencies are merged into RDEPEND and the
 architecture-sensitive part is not implemented. This follows the EAPI=7 BDEPEND
 implementation.
 
-It is **not** well tested.
+By now, it is pretty well tested.
 
-It **may** break your system if you try to use it in the current state.
+However, the EAPI=7 changes are still incomplete and, since EAPI=8 builds on
+the previous EAPI, it's not a good idea to use it yet.
 
-More test cases are required.
-
-While the current test suite executes successfully, most of the new features
-are not hooked up into the testing system yet, so EAPI=8 ebuilds **may** show
-undesired behavior.
+It **may** break your system if you try to use it in the current state, mostly
+due to the unimplemented empty OR/XOR group behavioral changes, which can lead
+to incorrect dependencies being applied.
 
 Packages known to fail:
 
 | Package | Reason | State | Related to EAPI=8 | Has Workaround |
 | ------- | ------ | ----- | ----------------- | -------------- |
 | games-emulation/dolphin | variable in global scope | ❌ | ❌ | declare -g |
-| media-libs/alsa-ucm-conf | doins -r | ❌ | ❌ | - |
+| dev-libs/mpfr | tries to apply all patches in `${DISTDIR}` -- portage creates a package-specific directory and copies all related distfiles to this directory, paludis just uses the global distdir | ❌ | ❌ | change `PATCHES+=( "${DISTDIR}"/ )` to `PATCHES+=( "${DISTDIR}/${MY_P}"*.patch )` |
 
-**It is not safe to use this branch.**
+**It is not completely safe to use this branch.**
