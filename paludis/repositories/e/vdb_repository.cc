@@ -1313,9 +1313,12 @@ VDBRepository::perform_updates()
                 if (id->build_dependencies_host_key())
                     rewrite_dependencies(id->fs_location_key()->parse_value() / id->build_dependencies_host_key()->raw_name(),
                             id->build_dependencies_host_key(), dep_rewrites);
-                if (id->run_dependencies_key())
-                    rewrite_dependencies(id->fs_location_key()->parse_value() / id->run_dependencies_key()->raw_name(),
-                            id->run_dependencies_key(), dep_rewrites);
+                if (id->run_dependencies_target_key())
+                    rewrite_dependencies(id->fs_location_key()->parse_value() / id->run_dependencies_target_key()->raw_name(),
+                            id->run_dependencies_target_key(), dep_rewrites);
+                if (id->run_dependencies_host_key())
+                    rewrite_dependencies(id->fs_location_key()->parse_value() / id->run_dependencies_host_key()->raw_name(),
+                            id->run_dependencies_host_key(), dep_rewrites);
                 if (id->post_dependencies_key())
                     rewrite_dependencies(id->fs_location_key()->parse_value() / id->post_dependencies_key()->raw_name(),
                             id->post_dependencies_key(), dep_rewrites);

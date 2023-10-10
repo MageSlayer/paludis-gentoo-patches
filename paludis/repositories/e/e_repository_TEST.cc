@@ -414,8 +414,8 @@ TEST(ERepository, MetadataUncached)
             id1->build_dependencies_target_key()->parse_value()->top()->accept(pd);
             EXPECT_EQ("foo/bar", stringify(pd));
             erepository::SpecTreePrettyPrinter pr(ff, { });
-            ASSERT_TRUE(bool(id1->run_dependencies_key()));
-            id1->run_dependencies_key()->parse_value()->top()->accept(pr);
+            ASSERT_TRUE(bool(id1->run_dependencies_target_key()));
+            id1->run_dependencies_target_key()->parse_value()->top()->accept(pr);
             EXPECT_EQ("foo/bar", stringify(pr));
 
             const std::shared_ptr<const PackageID> id2(*env[selection::RequireExactlyOne(generator::Matches(
@@ -430,8 +430,8 @@ TEST(ERepository, MetadataUncached)
             id2->build_dependencies_target_key()->parse_value()->top()->accept(pd2);
             EXPECT_EQ("foo/bar bar/baz", stringify(pd2));
             erepository::SpecTreePrettyPrinter pr2(ff, { });
-            ASSERT_TRUE(bool(id2->run_dependencies_key()));
-            id2->run_dependencies_key()->parse_value()->top()->accept(pr2);
+            ASSERT_TRUE(bool(id2->run_dependencies_target_key()));
+            id2->run_dependencies_target_key()->parse_value()->top()->accept(pr2);
             EXPECT_EQ("foo/bar", stringify(pr2));
 
             const std::shared_ptr<const PackageID> id3(*env[selection::RequireExactlyOne(generator::Matches(

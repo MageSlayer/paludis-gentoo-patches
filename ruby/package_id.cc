@@ -430,12 +430,20 @@ namespace
      * Our build dependencies in host architecture
      */
     /*
-     * Document-method: run_dependencies_key
+     * Document-method: run_dependencies_target_key
      *
      * call-seq:
-     *     run_dependencies_key -> MetadataDependencySpecTreeKey
+     *     run_dependencies_target_key -> MetadataDependencySpecTreeKey
      *
-     * Our run dependencies
+     * Our run dependencies in target architecture
+     */
+    /*
+     * Document-method: run_dependencies_host_key
+     *
+     * call-seq:
+     *     run_dependencies_host_key -> MetadataDependencySpecTreeKey
+     *
+     * Our run dependencies in host architecture
      */
     /*
      * Document-method: post_dependencies_key
@@ -528,8 +536,10 @@ namespace
                         &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::build_dependencies_target_key>::fetch)), 0);
         rb_define_method(c_package_id, "build_dependencies_host_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::build_dependencies_host_key>::fetch)), 0);
-        rb_define_method(c_package_id, "run_dependencies_key", RUBY_FUNC_CAST((
-                        &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::run_dependencies_key>::fetch)), 0);
+        rb_define_method(c_package_id, "run_dependencies_target_key", RUBY_FUNC_CAST((
+                        &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::run_dependencies_target_key>::fetch)), 0);
+        rb_define_method(c_package_id, "run_dependencies_host_key", RUBY_FUNC_CAST((
+                        &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::run_dependencies_host_key>::fetch)), 0);
         rb_define_method(c_package_id, "post_dependencies_key", RUBY_FUNC_CAST((
                         &KeyValue<MetadataSpecTreeKey<DependencySpecTree>, &PackageID::post_dependencies_key>::fetch)), 0);
         rb_define_method(c_package_id, "homepage_key", RUBY_FUNC_CAST((

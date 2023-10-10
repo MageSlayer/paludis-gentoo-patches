@@ -38,7 +38,8 @@ namespace paludis
         typedef Name<struct name_name> name;
         typedef Name<struct name_preserve_work> preserve_work;
         typedef Name<struct name_rewrite_ids_over_to_root> rewrite_ids_over_to_root;
-        typedef Name<struct name_run_dependencies> run_dependencies;
+        typedef Name<struct name_run_dependencies_target> run_dependencies_target;
+        typedef Name<struct name_run_dependencies_host> run_dependencies_host;
         typedef Name<struct name_slot> slot;
         typedef Name<struct name_strip> strip;
         typedef Name<struct name_version> version;
@@ -57,7 +58,8 @@ namespace paludis
             NamedValue<n::name, QualifiedPackageName> name;
             NamedValue<n::preserve_work, Tribool> preserve_work;
             NamedValue<n::rewrite_ids_over_to_root, int> rewrite_ids_over_to_root;
-            NamedValue<n::run_dependencies, std::string> run_dependencies;
+            NamedValue<n::run_dependencies_target, std::string> run_dependencies_target;
+            NamedValue<n::run_dependencies_host, std::string> run_dependencies_host;
             NamedValue<n::slot, SlotName> slot;
             NamedValue<n::strip, Tribool> strip;
             NamedValue<n::version, VersionSpec> version;

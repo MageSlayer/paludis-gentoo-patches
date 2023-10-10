@@ -63,7 +63,8 @@ namespace paludis
                 const std::shared_ptr<const MetadataCollectionKey<KeywordNameSet> > keywords_key() const override;
                 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_target_key() const override;
                 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > build_dependencies_host_key() const override;
-                const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_key() const override;
+                const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_target_key() const override;
+                const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > run_dependencies_host_key() const override;
                 const std::shared_ptr<const MetadataSpecTreeKey<DependencySpecTree> > post_dependencies_key() const override;
                 const std::shared_ptr<const MetadataSpecTreeKey<FetchableURISpecTree> > fetches_key() const override;
                 const std::shared_ptr<const MetadataSpecTreeKey<SimpleURISpecTree> > homepage_key() const override;

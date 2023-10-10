@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2009, 2010, 2011, 2012 Ciaran McCreesh
+ * Copyright (c) 2021 Mihai Moldovan
  *
  * This file is part of the Paludis package manager. Paludis is free software;
  * you can redistribute it and/or modify it under the terms of the GNU General
@@ -18,6 +19,8 @@
  */
 
 #include <paludis/repositories/e/e_repository.hh>
+#include <paludis/repositories/e/e_repository_id.hh>
+#include <paludis/repositories/e/eapi.hh>
 #include <paludis/repositories/e/vdb_repository.hh>
 
 #include <paludis/environments/test/test_environment.hh>
@@ -74,40 +77,37 @@ namespace
     struct TestParams
     {
         std::string eapi;
-        bool special;
     };
 
-    struct DependRdependTest :
+    struct DependIdependTest :
         testing::TestWithParam<TestParams>
     {
         std::string eapi;
-        bool special;
 
         void SetUp() override
         {
             eapi = GetParam().eapi;
-            special = GetParam().special;
         }
     };
 }
 
-TEST_P(DependRdependTest, Works)
+TEST_P(DependIdependTest, Works)
 {
     TestEnvironment env;
 
-    FSPath root(FSPath::cwd() / "depend_rdepend_TEST_dir" / "root");
+    FSPath root(FSPath::cwd() / "depend_idepend_TEST_dir" / "root");
 
     std::shared_ptr<Map<std::string, std::string> > keys(std::make_shared<Map<std::string, std::string>>());
     keys->insert("format", "e");
     keys->insert("names_cache", "/var/empty");
-    keys->insert("location", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "repo"));
-    keys->insert("profiles", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "repo/profiles/profile"));
+    keys->insert("location", stringify(FSPath::cwd() / "depend_idepend_TEST_dir" / "repo"));
+    keys->insert("profiles", stringify(FSPath::cwd() / "depend_idepend_TEST_dir" / "repo/profiles/profile"));
     keys->insert("layout", "traditional");
     keys->insert("eapi_when_unknown", "0");
     keys->insert("eapi_when_unspecified", "0");
     keys->insert("profile_eapi", "0");
-    keys->insert("distdir", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "distdir"));
-    keys->insert("builddir", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "build"));
+    keys->insert("distdir", stringify(FSPath::cwd() / "depend_idepend_TEST_dir" / "distdir"));
+    keys->insert("builddir", stringify(FSPath::cwd() / "depend_idepend_TEST_dir" / "build"));
     keys->insert("root", stringify(root));
     std::shared_ptr<Repository> repo(ERepository::repository_factory_create(&env,
                 std::bind(from_keys, keys, std::placeholders::_1)));
@@ -116,7 +116,7 @@ TEST_P(DependRdependTest, Works)
     std::shared_ptr<Map<std::string, std::string> > v_keys(std::make_shared<Map<std::string, std::string>>());
     v_keys->insert("format", "vdb");
     v_keys->insert("names_cache", "/var/empty");
-    v_keys->insert("location", stringify(FSPath::cwd() / "depend_rdepend_TEST_dir" / "vdb"));
+    v_keys->insert("location", stringify(FSPath::cwd() / "depend_idepend_TEST_dir" / "vdb"));
     v_keys->insert("root", stringify(root));
     std::shared_ptr<Repository> v_repo(VDBRepository::repository_factory_create(&env,
                 std::bind(from_keys, keys, std::placeholders::_1)));
@@ -132,35 +132,10 @@ TEST_P(DependRdependTest, Works)
 
     {
         std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Package(
-                        QualifiedPackageName("cat/eapi" + eapi + "donly")))]->begin());
-
-        EXPECT_EQ("the/depend", id->build_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
-        if (special)
-            EXPECT_EQ("the/depend", id->run_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
-        else
-            EXPECT_FALSE(id->run_dependencies_target_key());
-
-        id->perform_action(action);
-
-        v_repo->invalidate();
-
-        std::shared_ptr<const PackageID> v_id(*env[selection::RequireExactlyOne(generator::Package(
-                        QualifiedPackageName("cat/eapi" + eapi + "donly")) |
-                    filter::InstalledAtRoot(root))]->begin());
-
-        EXPECT_EQ("the/depend", v_id->build_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
-        if (special)
-            EXPECT_EQ("the/depend", v_id->run_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
-        else
-            EXPECT_FALSE(v_id->run_dependencies_target_key());
-    }
-
-    {
-        std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Package(
                         QualifiedPackageName("cat/eapi" + eapi + "ronly")))]->begin());
 
-        EXPECT_FALSE(id->build_dependencies_target_key());
         EXPECT_EQ("the/rdepend", id->run_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        EXPECT_FALSE(id->run_dependencies_host_key());
 
         id->perform_action(action);
 
@@ -170,16 +145,50 @@ TEST_P(DependRdependTest, Works)
                         QualifiedPackageName("cat/eapi" + eapi + "ronly")) |
                     filter::InstalledAtRoot(root))]->begin());
 
-        EXPECT_FALSE(v_id->build_dependencies_target_key());
         EXPECT_EQ("the/rdepend", v_id->run_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        EXPECT_FALSE(id->run_dependencies_host_key());
+    }
+
+    {
+        std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Package(
+                        QualifiedPackageName("cat/eapi" + eapi + "ionly")))]->begin());
+        const auto erepoid = std::static_pointer_cast<const erepository::ERepositoryID>(id);
+
+        if (!(erepoid->eapi()->supported()->ebuild_metadata_variables()->run_depend_host()->name().empty()))
+            EXPECT_EQ("the/idepend", id->run_dependencies_host_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        else
+            EXPECT_FALSE(id->run_dependencies_host_key());
+        EXPECT_FALSE(id->run_dependencies_target_key());
+
+        id->perform_action(action);
+
+        v_repo->invalidate();
+
+        std::shared_ptr<const PackageID> v_id(*env[selection::RequireExactlyOne(generator::Package(
+                        QualifiedPackageName("cat/eapi" + eapi + "ionly")) |
+                    filter::InstalledAtRoot(root))]->begin());
+        const auto erepovid = std::static_pointer_cast<const erepository::ERepositoryID>(v_id);
+
+        if (!(erepovid->eapi()->supported()->ebuild_metadata_variables()->run_depend_host()->name().empty()))
+            EXPECT_EQ("the/idepend", v_id->run_dependencies_host_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        else
+            EXPECT_FALSE(id->run_dependencies_host_key());
+        EXPECT_FALSE(id->run_dependencies_target_key());
     }
 
     {
         std::shared_ptr<const PackageID> id(*env[selection::RequireExactlyOne(generator::Package(
                         QualifiedPackageName("cat/eapi" + eapi + "both")))]->begin());
+        const auto erepoid = std::static_pointer_cast<const erepository::ERepositoryID>(id);
 
-        EXPECT_EQ("the/depend", id->build_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
-        EXPECT_EQ("the/rdepend", id->run_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        if (!(erepoid->eapi()->supported()->ebuild_metadata_variables()->run_depend_host()->name().empty())) {
+            EXPECT_EQ("the/rdepend", id->run_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+            EXPECT_EQ("the/idepend", id->run_dependencies_host_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        }
+        else {
+            EXPECT_EQ("the/rdepend", id->run_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+            EXPECT_FALSE(id->run_dependencies_host_key());
+        }
 
         id->perform_action(action);
 
@@ -188,17 +197,20 @@ TEST_P(DependRdependTest, Works)
         std::shared_ptr<const PackageID> v_id(*env[selection::RequireExactlyOne(generator::Package(
                         QualifiedPackageName("cat/eapi" + eapi + "both")) |
                     filter::InstalledAtRoot(root))]->begin());
+        const auto erepovid = std::static_pointer_cast<const erepository::ERepositoryID>(v_id);
 
-        EXPECT_EQ("the/depend", v_id->build_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
-        EXPECT_EQ("the/rdepend", v_id->run_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        if (!(erepovid->eapi()->supported()->ebuild_metadata_variables()->run_depend_host()->name().empty())) {
+            EXPECT_EQ("the/rdepend", v_id->run_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+            EXPECT_EQ("the/idepend", v_id->run_dependencies_host_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+        }
+        else {
+            EXPECT_EQ("the/rdepend", v_id->run_dependencies_target_key()->pretty_print_value(UnformattedPrettyPrinter(), { }));
+            EXPECT_FALSE(id->run_dependencies_host_key());
+        }
     }
 }
 
-INSTANTIATE_TEST_SUITE_P(DependRdepend, DependRdependTest, testing::Values(
-            TestParams{"0", true},
-            TestParams{"1", true},
-            TestParams{"2", true},
-            TestParams{"3", true},
-            TestParams{"4", false}
+INSTANTIATE_TEST_CASE_P(DependIdepend, DependIdependTest, testing::Values(
+            TestParams{"7"},
+            TestParams{"8"}
             ));
-

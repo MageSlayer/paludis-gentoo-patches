@@ -138,33 +138,37 @@ class TestCase_01_PackageID(unittest.TestCase):
         )
         self.assertEqual(self.ipid.build_dependencies_host_key(), None)
 
-    def test_20_run_dependencies_key(self):
-        self.assertEqual(self.pid.run_dependencies_key(), None)
-        self.assertEqual(self.ipid.run_dependencies_key(), None)
+    def test_20_run_dependencies_target_key(self):
+        self.assertEqual(self.pid.run_dependencies_target_key(), None)
+        self.assertEqual(self.ipid.run_dependencies_target_key(), None)
 
-    def test_21_post_dependencies_key(self):
+    def test_21_run_dependencies_host_key(self):
+        self.assertEqual(self.pid.run_dependencies_host_key(), None)
+        self.assertEqual(self.ipid.run_dependencies_host_key(), None)
+
+    def test_22_post_dependencies_key(self):
         self.assertEqual(self.pid.post_dependencies_key(), None)
         self.assertEqual(self.ipid.post_dependencies_key(), None)
 
-    def test_22_fetches_key(self):
+    def test_23_fetches_key(self):
         self.assertTrue(
             isinstance(self.pid.fetches_key(), MetadataFetchableURISpecTreeKey)
         )
         self.assertEqual(self.ipid.fetches_key(), None)
 
-    def test_23_homepage_key(self):
+    def test_24_homepage_key(self):
         self.assertTrue(
             isinstance(self.pid.homepage_key(), MetadataSimpleURISpecTreeKey)
         )
         self.assertEqual(self.ipid.homepage_key(), None)
 
-    def test_24_short_description_key(self):
+    def test_25_short_description_key(self):
         self.assertEqual(self.pid.short_description_key().parse_value(), "Test package")
         self.assertEqual(
             self.ipid.short_description_key().parse_value(), "a description"
         )
 
-    def test_25_long_description_key(self):
+    def test_26_long_description_key(self):
         self.assertEqual(self.pid.long_description_key(), None)
         self.assertEqual(self.ipid.long_description_key(), None)
 

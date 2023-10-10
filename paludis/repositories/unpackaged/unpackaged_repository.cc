@@ -55,14 +55,16 @@ namespace paludis
         std::shared_ptr<const MetadataValueKey<std::string> > format_key;
         std::shared_ptr<const MetadataValueKey<std::string> > build_dependencies_target_key;
         std::shared_ptr<const MetadataValueKey<std::string> > build_dependencies_host_key;
-        std::shared_ptr<const MetadataValueKey<std::string> > run_dependencies_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > run_dependencies_target_key;
+        std::shared_ptr<const MetadataValueKey<std::string> > run_dependencies_host_key;
         std::shared_ptr<const MetadataValueKey<std::string> > description_key;
 
         Imp(const RepositoryName & n,
                 const UnpackagedRepositoryParams & p) :
             params(p),
             id(std::make_shared<UnpackagedID>(params.environment(), params.name(), params.version(), params.slot(), n, params.location(),
-                        params.build_dependencies_target(), params.build_dependencies_host(), params.run_dependencies(), params.description(), params.strip(), params.preserve_work())),
+                        params.build_dependencies_target(), params.build_dependencies_host(), params.run_dependencies_target(),
+                        params.run_dependencies_host(), params.description(), params.strip(), params.preserve_work())),
             ids(std::make_shared<PackageIDSequence>()),
             package_names(std::make_shared<QualifiedPackageNameSet>()),
             category_names(std::make_shared<CategoryNamePartSet>()),
@@ -82,8 +84,10 @@ namespace paludis
                         "build_dependencies_target", "build_dependencies_target", mkt_normal, params.build_dependencies_target())),
             build_dependencies_host_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "build_dependencies_host", "build_dependencies_host", mkt_normal, params.build_dependencies_host())),
-            run_dependencies_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
-                        "run_dependencies", "run_dependencies", mkt_normal, params.run_dependencies())),
+            run_dependencies_target_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
+                        "run_dependencies_target", "run_dependencies_target", mkt_normal, params.run_dependencies_target())),
+            run_dependencies_host_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
+                        "run_dependencies_host", "run_dependencies_host", mkt_normal, params.run_dependencies_host())),
             description_key(std::make_shared<LiteralMetadataValueKey<std::string> >(
                         "description", "description", mkt_normal, params.description()))
         {
@@ -120,7 +124,8 @@ UnpackagedRepository::_add_metadata_keys() const
     add_metadata_key(_imp->format_key);
     add_metadata_key(_imp->build_dependencies_target_key);
     add_metadata_key(_imp->build_dependencies_host_key);
-    add_metadata_key(_imp->run_dependencies_key);
+    add_metadata_key(_imp->run_dependencies_target_key);
+    add_metadata_key(_imp->run_dependencies_host_key);
     add_metadata_key(_imp->description_key);
 }
 
@@ -237,7 +242,8 @@ UnpackagedRepository::repository_factory_create(
 
     std::string build_dependencies_target(f("build_dependencies_target"));
     std::string build_dependencies_host(f("build_dependencies_host"));
-    std::string run_dependencies(f("run_dependencies"));
+    std::string run_dependencies_target(f("run_dependencies_target"));
+    std::string run_dependencies_host(f("run_dependencies_host"));
     std::string description(f("description"));
 
     int rewrite_ids_over_to_root(-1);
@@ -266,7 +272,8 @@ UnpackagedRepository::repository_factory_create(
                     n::name() = QualifiedPackageName(name),
                     n::preserve_work() = preserve_work,
                     n::rewrite_ids_over_to_root() = rewrite_ids_over_to_root,
-                    n::run_dependencies() = run_dependencies,
+                    n::run_dependencies_target() = run_dependencies_target,
+                    n::run_dependencies_host() = run_dependencies_host,
                     n::slot() = SlotName(slot),
                     n::strip() = strip,
                     n::version() = VersionSpec(version, user_version_spec_options())
