@@ -122,6 +122,7 @@ foreach(test
           e_repository_TEST_5
           e_repository_TEST_6
           e_repository_TEST_7
+          e_repository_TEST_8
           e_repository_TEST_ever
           e_repository_TEST_exheres_0
           e_repository_TEST_exlibs
