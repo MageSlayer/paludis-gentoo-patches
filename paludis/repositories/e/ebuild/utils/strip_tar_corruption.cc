@@ -21,6 +21,7 @@
 #include <sstream>
 #include <string>
 #include <cstdlib>
+#include <cstdint>
 
 int main(int, char * argv[])
 {
